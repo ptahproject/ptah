@@ -1,0 +1,143 @@
+=====================
+Portal status message
+=====================
+
+Instead include notification messages directly to template,
+developer can use messaging service.
+
+Main interface is IStatusMessage, it is adapter for IRequest
+so we can have different implementations, for example cookie based or session.
+
+By default only session based service implemented.
+
+   >>> from zope import interface, component
+   >>> from zope.interface.verify import verifyClass
+
+   >>> from memphis import view
+   >>> from memphis.view import interfaces
+   >>> from memphis.view.message import MessageService
+
+   >>> verifyClass(view.IStatusMessage, MessageService)
+   True
+
+   >>> from pyramid.testing import DummyRequest
+   >>> request = DummyRequest()
+
+   >>> service = view.IStatusMessage(request)
+
+   >>> service.messages()
+   ()
+
+There are three predefined message types: 'info', 'warning', 'error':
+
+   >>> msg = component.getAdapter(request, interfaces.IMessage, 'info')
+   >>> print msg.render('Test message')
+   <div class="statusMessage">Test message</div>
+
+Now we can add messages.
+
+   >>> service.add('Test message')
+
+or
+
+   >>> view.addStatusMessage(request, 'Test message')
+
+   >>> bool(service)
+   True
+
+   >>> for msg in service.messages():
+   ...     print msg
+   <div class="statusMessage">Test message</div>
+
+   >>> service.add('Warning message', 'warning')
+
+   >>> for msg in service.messages():
+   ...     print msg
+   <div class="statusMessage">Test message</div>
+   <div class="statusWarningMessage">Warning message</div>
+
+Error message, we can add exception object::
+
+   >>> service.add(Exception('Error message'), 'error')
+
+or text message
+
+   >>> service.add('Error message', 'error')
+
+   >>> for msg in service.messages():
+   ...     print msg
+   <div class="statusMessage">Test message</div>
+   <div class="statusWarningMessage">Warning message</div>
+   <div class="statusStopMessage">Exception: Error message</div>
+   <div class="statusStopMessage">Error message</div>
+
+
+Service removes duplicated messages:
+
+   >>> service.add('Error message', 'error')
+   >>> for msg in service.messages():
+   ...     print msg
+   <div class="statusMessage">Test message</div>
+   <div class="statusWarningMessage">Warning message</div>
+   <div class="statusStopMessage">Exception: Error message</div>
+   <div class="statusStopMessage">Error message</div>
+
+
+Clearing service
+----------------
+
+clear() method return all messages and clear service.
+
+   >>> for msg in service.clear():
+   ...     print msg
+   <div class="statusMessage">Test message</div>
+   <div class="statusWarningMessage">Warning message</div>
+   <div class="statusStopMessage">Exception: Error message</div>
+   <div class="statusStopMessage">Error message</div>
+
+   >>> service.messages()
+   ()
+
+   >>> service.clear()
+   ()
+
+
+Inserting message to template
+-----------------------------
+
+Response should have '200 OK' status and content type 'text/html'
+
+   >>> from webob import Response
+
+   >>> service.add('Test message')
+
+   >>> response = Response(status = '200 OK', content_type='text/xml')
+   >>> response.body = "<body></body>"
+
+   >>> from zope.event import notify
+   >>> from pyramid.events import NewResponse
+
+   >>> notify(NewResponse(request, response))
+   >>> response.body
+   '<body></body>'
+
+To insert messages into body, it should contain '<!--memphis-message-->'::
+
+   >>> service.add('Test message')
+
+   >>> response = Response(status = '200 OK', content_type='text/html')
+   >>> response.body = "<html><body></body></html>"
+
+   >>> notify(NewResponse(request, response))
+   >>> response.body
+   '<html><body></body></html>'
+
+   >>> service.add('Test message')
+
+   >>> response = Response(status = '200 OK', content_type='text/html')
+   >>> response.body = "<html><body><!--memphis-message--></body></html>"
+
+   >>> notify(NewResponse(request, response))
+   >>> response.body
+   '<html><body><div class="statusMessage">Test message</div></body></html>'
+

@@ -1,0 +1,317 @@
+=================
+Pagelet directive
+=================
+
+This doctest file shows how to use pagelets.
+
+  >>> import os, tempfile, sys, pyramid.testing
+  >>> from zope import interface, component
+  >>> from memphis import view as api
+
+  >>> sm = component.getSiteManager()
+  >>> request = pyramid.testing.DummyRequest()
+
+Pagelet is just simple renderer, main perpose is rendering
+different types html snippets for objects.
+
+To create pagelet you have to register pagelet type first. Pagelet type
+is description of context that this pagelet type can by applied and name::
+
+  >>> class IContent(interface.Interface):
+  ...     pass
+
+pagelet requires pagelet type::
+
+  >>> api.registerPagelet(IContent)
+  Traceback (most recent call last):
+  ...
+  ConfigurationError: Can't find pagelet type: '<InterfaceClass memphis.TESTS.IContent>'
+
+define pagelet type::
+
+  >>> class IMyPagelet(interface.Interface):
+  ...     api.pageletType('mypagelet', IContent)
+
+  >>> reGrok()
+
+Here we defined `mypagelet` type, it can be used only for IContent
+and context object should be accesseable by `context` attribute on pagelet
+object.
+
+Now we are ready to define new pagelet::
+
+  >>> class MyPagelet(object):
+  ...     pass
+
+  >>> api.registerPagelet(
+  ...     IMyPagelet)
+
+  >>> api.registerPagelet(
+  ...     IMyPagelet, IContent, klass = MyPagelet)
+
+First parameter is pagelet type interface or pagelet type name. Let's get
+the pagelet::
+
+  >>> pagelet = sm.getMultiAdapter((Content(IContent), request), IMyPagelet)
+
+and check::
+
+  >>> pagelet
+  <memphis.view.pagelet.Pagelet <class 'memphis.TESTS.MyPagelet'> ...>
+
+  >>> pagelet.context
+  <memphis.view.tests.Content ...>
+
+You can create pagelet with template::
+
+  >>> temp_dir = tempfile.mkdtemp()
+  >>> template = os.path.join(temp_dir, 'pagelet.pt')
+  >>> open(template, 'w').write('''<div>My pagelet</div>''')
+
+  >>> api.registerPagelet(
+  ...     IMyPagelet, klass = MyPagelet,
+  ...     template = api.template(template, True))
+
+  >>> pagelet = sm.getMultiAdapter((Content(IContent), request), IMyPagelet)
+
+  >>> pagelet.template
+  <PageTemplateFile /.../pagelet.pt>
+
+  >>> print pagelet()
+  <div>My pagelet</div>
+
+Or you can use package name in path::
+
+  >>> api.registerPagelet(
+  ...     IMyPagelet, klass = MyPagelet,
+  ...     template = api.template('memphis.view:test.pt'))
+
+  >>> pagelet = sm.getMultiAdapter((Content(IContent), request), IMyPagelet)
+
+  >>> pagelet.template
+  <PageTemplateFile /.../memphis/view/test.pt>
+
+  >>> print pagelet()
+  <div>My pagelet</div>
+
+  >>> api.template('memphis.view:unknown.pt')
+  Traceback (most recent call last):
+  ...
+  ValueError: Missing template asset: memphis.view:unknown.pt (/.../unknown.pt)
+
+rendering pagelet
+-----------------
+
+If you want render pagelet from python code you should use
+`memphis.view.renderPagelet` function::
+
+  >>> api.renderPagelet(IMyPagelet, Content(IContent), request)
+  u'<div>My pagelet</div>'
+
+  >>> api.renderPagelet('mypagelet', Content(IContent), request)
+  u'<div>My pagelet</div>'
+
+It riases NotFound error if it can't find pagelet interface, if it cant
+find pagelet itself::
+
+  >>> api.renderPagelet('unkown', Content(IContent), request)
+  Traceback (most recent call last):
+  ...
+  NotFound
+
+  >>> class IUnknown(interface.Interface):
+  ...     pass
+
+  >>> api.renderPagelet(IUnknown, Content(IContent), request)
+  Traceback (most recent call last):
+  ...
+  NotFound
+
+  >>> api.renderPagelet(IMyPagelet, Content(IUnknown), request)
+  Traceback (most recent call last):
+  ...
+  NotFound
+  
+
+TALES `pagelet` expression
+==========================
+
+It possible to get pagelet by type name with tales expression `pagelet:`.
+Let's define `pageletType` and pagelet::
+
+  >>> class ITest(interface.Interface):
+  ...     api.pageletType('test', IContent)
+  >>> reGrok()
+
+  >>> class TestPagelet(api.Pagelet):
+  ...     
+  ...     def render(self):
+  ...         return "Test pagelet"
+
+  >>> api.registerPagelet(ITest, klass=TestPagelet)
+
+Now create view that will use `pagelet:` expression::
+
+  >>> import os, tempfile
+  >>> temp_dir = tempfile.mkdtemp()
+  >>> templateFileName = os.path.join(temp_dir, 'template.pt')
+  >>> open(templateFileName, 'w').write('''
+  ... <html>
+  ...   <body>
+  ...     <h1>My Web Page</h1>
+  ...     <div class="left-column">
+  ...       <tal:block replace="structure pagelet:test" />
+  ...     </div>
+  ...     <div class="main">
+  ...       Content here
+  ...     </div>
+  ...   </body>
+  ... </html>
+  ... ''')
+
+  >>> context = Content(IContent)
+
+  >>> api.registerView(
+  ...     name="test.html",
+  ...     template = api.template(templateFileName, True))
+
+  >>> view = getPyramidView(request, context, 'test.html')
+
+  >>> print view().body
+  <html>
+    <body>
+      <h1>My Web Page</h1>
+      <div class="left-column">
+        Test pagelet
+      </div>
+      <div class="main">
+        Content here
+      </div>
+    </body>
+  </html>
+
+
+You can change context for pagelet `pagelet:newcontext/pagelettype`::
+
+  >>> import os, tempfile
+  >>> temp_dir = tempfile.mkdtemp()
+  >>> templateFileName = os.path.join(temp_dir, 'template1.pt')
+  >>> open(templateFileName, 'w').write('''
+  ... <html>
+  ...   <body>
+  ...     <h1>My Web Page</h1>
+  ...     <div class="left-column">
+  ...       <tal:block replace="structure pagelet:context/test" />
+  ...     </div>
+  ...     <div class="main">
+  ...       Content here
+  ...     </div>
+  ...   </body>
+  ... </html>
+  ... ''')
+
+  >>> context = Content(IContent)
+
+  >>> api.registerView(
+  ...     name="test1.html",
+  ...     template = api.template(templateFileName, True))
+
+  >>> view = getPyramidView(request, context, 'test1.html')
+
+  >>> print view().body
+  <html>
+    <body>
+      <h1>My Web Page</h1>
+      <div class="left-column">
+        Test pagelet
+      </div>
+      <div class="main">
+        Content here
+      </div>
+    </body>
+  </html>
+
+
+If pagelet is not exist, just return empty string
+
+  >>> templateFileName = os.path.join(temp_dir, 'template2.pt')
+  >>> open(templateFileName, 'w').write('''
+  ... <html>
+  ...   <body>
+  ...     <h1>My Web Page</h1>
+  ...     <div class="left-column">
+  ...       <tal:block replace="structure pagelet:test.unknown" />
+  ...     </div>
+  ...     <div class="main">
+  ...       Content here
+  ...     </div>
+  ...   </body>
+  ... </html>
+  ... ''')
+
+  >>> api.registerView(
+  ...     name="test2.html",
+  ...     template = api.template(templateFileName, True))
+
+  >>> view = getPyramidView(request, context, 'test2.html')
+
+  >>> print view().body
+  <html>
+    <body>
+      <h1>My Web Page</h1>
+      <div class="left-column">
+  <BLANKLINE>
+      </div>
+      <div class="main">
+        Content here
+      </div>
+    </body>
+  </html>
+
+
+Pagelet with errors
+
+  >>> class TestPageletError(api.Pagelet):
+  ...     
+  ...     def render(self):
+  ...         raise ValueError('Error')
+
+  >>> api.registerPagelet(ITest, klass = TestPageletError)
+
+  >>> import os, tempfile
+  >>> temp_dir = tempfile.mkdtemp()
+  >>> templateFileName = os.path.join(temp_dir, 'template3.pt')
+  >>> open(templateFileName, 'w').write('''
+  ... <html>
+  ...   <body>
+  ...     <h1>My Web Page</h1>
+  ...     <div class="left-column">
+  ...       <tal:block replace="structure pagelet:test" />
+  ...     </div>
+  ...     <div class="main">
+  ...       Content here
+  ...     </div>
+  ...   </body>
+  ... </html>
+  ... ''')
+
+  >>> context = Content(IContent)
+
+  >>> api.registerView(
+  ...     name="test3.html",
+  ...     template = api.template(templateFileName, True))
+
+  >>> view = getPyramidView(request, context, 'test3.html')
+
+  >>> print view().body
+  <html>
+    <body>
+      <h1>My Web Page</h1>
+      <div class="left-column">
+  <BLANKLINE>
+      </div>
+      <div class="main">
+        Content here
+      </div>
+    </body>
+  </html>

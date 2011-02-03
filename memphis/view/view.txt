@@ -1,0 +1,137 @@
+============
+Pyramid View
+============
+
+This doctest file shows how to use views.
+
+  >>> import pyramid.testing
+  >>> from zope import interface, component, schema
+  >>> from pyramid.interfaces import IView, IRequest
+
+Each view should have unique class, let's create one::
+
+  >>> from memphis import view as api
+
+  >>> class MyView(api.View):
+  ...     """Custom pagelet"""
+
+
+Now this view has to be registered::
+
+  >>> api.registerView(
+  ...     name="index.html",
+  ...     klass = MyView)
+
+
+`registerView` function description::
+
+  # def registerView(
+  #    context=None,
+  #    name='',
+  #    klass=None,
+  #    layer=IRequest,
+  #    template='',
+  #    layout='',
+  #    configContext=None):
+
+`context` is context to which apply view, `context=None` means to all contexts.
+`name` is name of view, it is part of url.
+`klass` is custom implementation for view
+`layer` is pyramid request type
+`template` is path to chameleon template
+`layout` is layout name to use to wrap view
+
+Let's get the view::
+
+  >>> request = pyramid.testing.DummyRequest()
+
+  >>> view = getPyramidView(request, object(), 'index.html')
+
+  >>> view
+  <memphis.view.view.View <class 'memphis.TESTS.MyView'> ...>
+
+  >>> view.context
+  <object object at ...>
+
+We can create view with template. You can use similar path as for
+pyramid. Like '<<package_name>>:template.pt'
+
+  >>> class TestView(object):
+  ...     pass
+
+  >>> api.registerView(
+  ...     name="template.html",
+  ...     klass=TestView,
+  ...     template=api.template('memphis.view:test.pt'))
+
+  >>> view = getPyramidView(request, object(), 'template.html')
+  >>> view
+  <memphis.view.view.View <class 'memphis.TESTS.TestView'> ...>
+
+  >>> view.template
+  <PageTemplateFile /.../test.pt>
+
+  >>> print view.render()
+  <div>My pagelet</div>
+
+  >>> print getPyramidView(request, object(), 'template.html', True)
+  200 OK
+  Content-Type: text/html; charset=UTF-8
+  Content-Length: 21
+  <BLANKLINE>
+  <div>My pagelet</div>
+
+
+Default view
+------------
+
+You can define default view name. It can be used during traversing.
+Let's set default name for all objects::
+
+  >>> from memphis.view.interfaces import IDefaultView
+
+  >>> api.registerDefaultView('index.html')
+  >>> component.getMultiAdapter((object(), request), IDefaultView)
+  'index.html'
+
+
+Full `registerDefaultView` function description::
+
+   # def registerDefaultView(
+   #    name,
+   #    context = interface.Interface,
+   #    layer = IRequest)
+
+Also default view available right from pyramid routing system. Let's use
+`template.html` view from previous section::
+
+  >>> api.registerDefaultView('template.html')
+
+  >>> print getPyramidView(request, object(), '', True)
+  200 OK
+  Content-Type: text/html; charset=UTF-8
+  Content-Length: 21
+  <BLANKLINE>
+  <div>My pagelet</div>
+
+
+HTTP Exceptions
+---------------
+
+You can raise http exceptions from your code and you catch them
+and return as result. For example if you want redirect browser to new
+location::
+
+  >>> from webob.exc import HTTPFound
+
+  >>> class RedirectView(object):
+  ...     def update(self):
+  ...         raise HTTPFound(location='/other.html')
+
+  >>> api.registerView(
+  ...     name="redirect.html",
+  ...     klass=RedirectView)
+
+  >>> getPyramidView(request, object(), 'redirect.html', True)
+  <HTTPFound at ... 302 Found>
+
