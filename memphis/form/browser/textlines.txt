@@ -1,0 +1,96 @@
+================
+TextLines Widget
+================
+
+The text lines widget allows you to store a sequence of textline. This sequence
+is stored as a list or tuple. This depends on what you are using as sequence
+type.
+
+As for all widgets, the text lines widget must provide the new ``IWidget``
+interface:
+
+  >>> from zope.interface.verify import verifyClass
+  >>> from z3c.form import interfaces
+  >>> from z3c.form.browser import textlines
+
+  >>> verifyClass(interfaces.IWidget, textlines.TextLinesWidget)
+  True
+
+The widget can be instantiated only using the request:
+
+  >>> from z3c.form.testing import TestRequest
+  >>> request = TestRequest()
+
+  >>> widget = textlines.TextLinesWidget(request)
+
+Before rendering the widget, one has to set the name and id of the widget:
+
+  >>> widget.id = 'id'
+  >>> widget.name = 'name'
+
+We also need to register the template for at least the widget and request:
+
+  >>> import zope.component
+  >>> from zope.pagetemplate.interfaces import IPageTemplate
+  >>> from z3c.form.testing import getPath
+  >>> from z3c.form.widget import WidgetTemplateFactory
+
+  >>> zope.component.provideAdapter(
+  ...     WidgetTemplateFactory(getPath('textlines_input.pt'), 'text/html'),
+  ...     (None, None, None, None, interfaces.ITextLinesWidget),
+  ...     IPageTemplate, name=interfaces.INPUT_MODE)
+
+If we render the widget we get an empty textarea widget:
+
+  >>> print widget.render()
+  <textarea id="id" name="name" class="textarea-widget"></textarea>
+
+Adding some more attributes to the widget will make it display more:
+
+  >>> widget.id = 'id'
+  >>> widget.name = 'name'
+  >>> widget.value = u'foo\nbar'
+
+  >>> print widget.render()
+  <textarea id="id" name="name" class="textarea-widget">foo
+  bar</textarea>
+
+
+TextLinesFieldWidget
+--------------------
+
+The field widget needs a field:
+
+  >>> import zope.schema
+  >>> text = zope.schema.List(
+  ...     title=u'List',
+  ...      value_type=zope.schema.TextLine())
+
+  >>> widget = textlines.TextLinesFieldWidget(text, request)
+  >>> widget
+  <TextLinesWidget ''>
+
+  >>> widget.id = 'id'
+  >>> widget.name = 'name'
+  >>> widget.value = u'foo\nbar'
+
+  >>> print widget.render()
+  <textarea id="id" name="name" class="textarea-widget">foo
+  bar</textarea>
+
+
+TextLinesFieldWidgetFactory
+---------------------------
+
+  >>> widget = textlines.TextLinesFieldWidgetFactory(text, text.value_type,
+  ...     request)
+  >>> widget
+  <TextLinesWidget ''>
+
+  >>> widget.id = 'id'
+  >>> widget.name = 'name'
+  >>> widget.value = u'foo\nbar'
+
+  >>> print widget.render()
+  <textarea id="id" name="name" class="textarea-widget">foo
+  bar</textarea>

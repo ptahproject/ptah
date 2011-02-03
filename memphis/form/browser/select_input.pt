@@ -1,0 +1,43 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+     xmlns:tal="http://xml.zope.org/namespaces/tal"
+     tal:omit-tag="">  
+<select id="" name="" class="" tabindex="" disabled="" multiple="" size=""
+        tal:attributes="id context.id;
+                        name string:${context.name}:list;
+                        class context.klass;
+                        style context.style;
+                        title context.title;
+                        lang context.lang;
+                        onclick context.onclick;
+                        ondblclick context.ondblclick;
+                        onmousedown context.onmousedown;
+                        onmouseup context.onmouseup;
+                        onmouseover context.onmouseover;
+                        onmousemove context.onmousemove;
+                        onmouseout context.onmouseout;
+                        onkeypress context.onkeypress;
+                        onkeydown context.onkeydown;
+                        onkeyup context.onkeyup;
+                        disabled context.disabled;
+                        tabindex context.tabindex;
+                        onfocus context.onfocus;
+                        onblur context.onblur;
+                        onchange context.onchange;
+                        multiple context.multiple;
+                        size context.size">
+<tal:block repeat="item context.items"
+  ><option id="" value="" selected="selected"
+         tal:condition="item['selected']"
+         tal:attributes="id item['id'];
+                         value item['value']"
+         tal:content="item['content']">label</option
+  ><option id="" value=""
+         tal:condition="not item['selected']"
+         tal:attributes="id item['id'];
+                         value item['value']"
+         tal:content="item['content']">label</option
+></tal:block>
+</select>
+<input name="field-empty-marker" type="hidden" value="1"
+       tal:attributes="name string:${context.name}-empty-marker" />
+</div>

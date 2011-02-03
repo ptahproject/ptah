@@ -1,0 +1,247 @@
+=====
+Terms
+=====
+
+Terms are used to provide choices for sequence widgets or any other construct
+needing them. Since Zope 3 already has sources and vocabularies, the base
+terms class simply builds on them.
+
+Vocabularies
+------------
+
+Thus, let's create a vocabulary first:
+
+  >>> from zope.schema import vocabulary
+  >>> ratings = vocabulary.SimpleVocabulary([
+  ...     vocabulary.SimpleVocabulary.createTerm(0, '0', u'bad'),
+  ...     vocabulary.SimpleVocabulary.createTerm(1, '1', u'okay'),
+  ...     vocabulary.SimpleVocabulary.createTerm(2, '2', u'good')
+  ...     ])
+
+Terms
+~~~~~
+
+Now we can create the terms object:
+
+  >>> from memphis.form import term
+  >>> terms = term.Terms()
+  >>> terms.terms = ratings
+
+Getting a term from a given value is simple:
+
+  >>> terms.getTerm(0).title
+  u'bad'
+  >>> terms.getTerm(3)
+  Traceback (most recent call last):
+  ...
+  LookupError: 3
+
+When converting values from their Web representation back to the internal
+representation, we have to be able to look up a term by its token:
+
+  >>> terms.getTermByToken('0').title
+  u'bad'
+  >>> terms.getTerm('3')
+  Traceback (most recent call last):
+  ...
+  LookupError: 3
+
+However, often we just want the value so asking for the value that is
+represented by a token saves usually one line of code:
+
+  >>> terms.getValue('0')
+  0
+  >>> terms.getValue('3')
+  Traceback (most recent call last):
+  ...
+  LookupError: 3
+
+You can also iterate through all terms:
+
+  >>> [entry.title for entry in terms]
+  [u'bad', u'okay', u'good']
+
+Or ask how many terms you have in the first place:
+
+  >>> len(terms)
+  3
+
+Finally the API allows you to check whether a particular value is available in
+the terms:
+
+  >>> 0 in terms
+  True
+  >>> 3 in terms
+  False
+
+Now, there are several terms implementations that were designed for particular
+fields. Within the framework, terms are used as adapters with the follwoing
+discriminators: context, request, form, field, vocabulary/source and widget.
+
+
+Choice field
+~~~~~~~~~~~~
+
+The first terms implementation is for ``Choice`` fields. Choice fields
+unfortunately can have a vocabulary and a source which behave differently.
+Let's have a look a the vocabulary first:
+
+  >>> import zope.component
+  >>> zope.component.provideAdapter(term.ChoiceTermsVocabulary)
+  >>> from pyramid.testing import DummyRequest as TestRequest
+  >>> request = TestRequest()
+  >>> import memphis.form.widget
+  >>> widget = memphis.form.widget.Widget(request)
+
+  >>> import zope.schema
+
+  >>> ratingField = zope.schema.Choice(
+  ...     title=u'Rating',
+  ...     vocabulary=ratings)
+
+  >>> terms = term.ChoiceTerms(
+  ...     None, request, None, ratingField, widget)
+  >>> [entry.title for entry in terms]
+  [u'bad', u'okay', u'good']
+
+Sometimes choice fields only specify a vocabulary name and the actual
+vocabulary is looked up at run time.
+
+  >>> ratingField2 = zope.schema.Choice(
+  ...     title=u'Rating',
+  ...     vocabulary='Ratings')
+
+Initially we get an error because the "Ratings" vocabulary is not defined:
+
+  >>> terms = term.ChoiceTerms(
+  ...     None, request, None, ratingField2, widget)
+  Traceback (most recent call last):
+  ...
+  VocabularyRegistryError: unknown vocabulary: 'Ratings'
+
+Let's now register the vocabulary under this name:
+
+  >>> def RatingsVocabulary(obj):
+  ...     return ratings
+
+  >>> from zope.schema import vocabulary
+  >>> vr = vocabulary.getVocabularyRegistry()
+  >>> vr.register('Ratings', RatingsVocabulary)
+
+We should now be able to get all terms as before:
+
+  >>> terms = term.ChoiceTerms(
+  ...     None, request, None, ratingField, widget)
+  >>> [entry.title for entry in terms]
+  [u'bad', u'okay', u'good']
+
+
+Bool fields
++++++++++++
+
+A similar terms implementation exists for a ``Bool`` field:
+
+  >>> truthField = zope.schema.Bool()
+
+  >>> terms = term.BoolTerms(None, None, None, truthField, None)
+  >>> [entry.title for entry in terms]
+  [u'yes', u'no']
+
+In case you don't like the choice of 'yes' and 'no' for the labels, we
+can subclass the ``BoolTerms`` class to control the display labels.
+
+  >>> class MyBoolTerms(term.BoolTerms):
+  ...   trueLabel = u'True'
+  ...   falseLabel = u'False'
+
+  >>> terms = MyBoolTerms(None, None, None, truthField, None)
+  >>> [entry.title for entry in terms]
+  [u'True', u'False']
+
+
+Collections
++++++++++++
+
+Finally, there are a terms adapters for all collections. But we have to
+register some adapters before using it:
+
+  >>> from memphis.form import term
+  >>> zope.component.provideAdapter(term.CollectionTerms)
+  >>> zope.component.provideAdapter(term.CollectionTermsVocabulary)
+
+  >>> ratingsField = zope.schema.List(
+  ...     title=u'Ratings',
+  ...     value_type=ratingField)
+
+  >>> terms = term.CollectionTerms(
+  ...     None, request, None, ratingsField, widget)
+  >>> [entry.title for entry in terms]
+  [u'bad', u'okay', u'good']
+
+
+  >>> from zope.schema.vocabulary import SimpleTerm, SimpleVocabulary
+  >>> ratingVoc = SimpleVocabulary(
+  ...     (SimpleTerm(10, '10', 'ugly'),
+  ...      SimpleTerm(20, '20', 'nice',),
+  ...      SimpleTerm(30, '30', 'great')))
+
+
+Choice fields
++++++++++++++
+
+
+Sources can be used with ``Choice`` fields like vocabularies.  First
+we create a field based on the source:
+
+  >>> sourceRatingField = zope.schema.Choice(
+  ...     title=u'Sourced Rating',
+  ...     vocabulary=ratingVoc)
+
+We connect the field to a widget to see the ITerms adapter for sources
+at work:
+
+  >>> terms = term.ChoiceTerms(
+  ...     None, request, None, sourceRatingField, widget)
+
+Iterating over the terms adapter returnes the term objects:
+
+  >>> [entry for entry in terms]
+  [<zope.schema.vocabulary.SimpleTerm object at 0x...>,
+   <zope.schema.vocabulary.SimpleTerm object at 0x...>,
+   <zope.schema.vocabulary.SimpleTerm object at 0x...>]
+  >>> len(terms)
+  3
+  >>> [entry.token for entry in terms]
+  ['10', '20', '30']
+  >>> [entry.title for entry in terms]
+  ['ugly', 'nice', 'great']
+
+Using a token it is possible to look up the term and the value:
+
+  >>> terms.getTermByToken('20').title
+  'nice'
+  >>> terms.getValue('30')
+  30
+
+With can test if a value is in the source:
+
+  >>> 30 in terms
+  True
+  >>> 25 in terms
+  False
+
+
+Collections
++++++++++++
+
+Finally, there are terms adapters for all collections:
+
+  >>> sourceRatingsField = zope.schema.List(
+  ...     title=u'Sourced Ratings',
+  ...     value_type=sourceRatingField)
+
+  >>> terms = term.CollectionTerms(
+  ...     None, request, None, sourceRatingsField, widget)
+  >>> [entry.title for entry in terms]
+  ['ugly', 'nice', 'great']
+

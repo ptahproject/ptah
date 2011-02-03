@@ -1,0 +1,46 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      tal:omit-tag="">
+<div class="multi-widget"
+     tal:attributes="class context.klass">
+  <tal:block repeat="widget context.widgets">
+    <div id="" class="row"
+         tal:attributes="id string:${widget.id}-row"
+         tal:condition="python:widget.mode != 'hidden'">
+      <metal:block define-macro="widget-row">
+        <div class="label" tal:condition="context.showLabel">
+          <label tal:attributes="for widget.id">
+            <span i18n:translate=""
+                tal:content="widget.label">label</span>
+            <span class="required"
+                  tal:condition="widget.required">*</span>
+          </label>
+        </div>
+        <div tal:condition="widget.error"
+             tal:replace="structure widget.error.render()">error</div>
+        <div class="widget">
+          <div class="multi-widget-checkbox">
+            <input id="" name=""
+                   class="multi-widget-checkbox checkbox-widget"
+                   type="checkbox" value="1"
+                   tal:attributes="id string:${widget.id}-remove;
+                                   name string:${widget.name}.remove" />
+          </div>
+          <div class="multi-widget-input"
+               tal:content="structure widget.render()">
+            <input size="24" value="" type="text" />
+          </div>
+        </div>
+      </metal:block>
+    </div>
+  </tal:block>
+  <div class="buttons">
+    <input tal:repeat="action context.actions.values()"
+           tal:replace="structure action.render"
+           />
+   </div>
+</div>
+<input type="hidden" tal:replace="structure context.counterMarker" />
+</html>

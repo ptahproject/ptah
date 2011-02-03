@@ -1,0 +1,653 @@
+=====================
+Hint (title) Adapters
+=====================
+
+A widget can provide a hint. Hints are not a standard concept, the
+implementations can be very different in each project. Hints are most
+of the time implemented with JavaScript since the default ``input
+title`` hint in browsers are almost unusable.
+
+Our hint support is limited and only offers some helpers. Which means
+we will offer an adapter that shows the schema field description as
+the title. Since this is very specific we only provide a
+``FieldDescriptionAsHint`` adapter which you can configure as a named
+IValue adapter.
+
+  >>> import zope.interface
+  >>> import zope.component
+  >>> from memphis.form import form
+  >>> from memphis.form import field
+  >>> from memphis.form import hint
+
+Let's create a couple of simple widgets and forms first:
+
+  >>> class IContent(zope.interface.Interface):
+  ...
+  ...     textLine = zope.schema.TextLine(
+  ...         title=u'Title',
+  ...         description=u'A TextLine description')
+  ...
+  ...     anotherLine = zope.schema.TextLine(
+  ...         title=u'Other')
+
+  >>> class Content(object):
+  ...     zope.interface.implements(IContent)
+  ...
+  ...     textLine = None
+  ...     otherLine = None
+  ...
+  >>> content = Content()
+
+  >>> from memphis.form.testing import TestRequest
+  >>> request = TestRequest()
+
+  >>> class HintForm(form.Form):
+  ...     fields = field.Fields(IContent)
+
+  >>> hintForm = HintForm(content, request)
+
+As you can see, there is no title value set for our widgets:
+
+  >>> hintForm.update()
+  >>> print hintForm.widgets['textLine'].render()
+  <input id="form-widgets-textLine"
+         name="form.widgets.textLine"
+         class="text-widget required textline-field"
+         value="" type="text" />
+
+  >>> print hintForm.widgets['anotherLine'].render()
+  <input id="form-widgets-anotherLine"
+         name="form.widgets.anotherLine"
+         class="text-widget required textline-field"
+         value="" type="text" />
+
+Let's configure our IValue ``hint`` adapter:
+
+  >>> from memphis.form.hint import FieldDescriptionAsHint
+  >>> zope.component.provideAdapter(FieldDescriptionAsHint, name='title')
+
+If we update our form, we can see that the title is used based on the schema
+field description:
+
+  >>> hintForm.update()
+  >>> print hintForm.widgets['textLine'].render()
+  <input id="form-widgets-textLine"
+         name="form.widgets.textLine"
+         class="text-widget required textline-field"
+         title="A TextLine description" value=""
+         type="text" />
+
+If the field has no description as it is with the second one, no "title"
+will be set for the widget:
+
+  >>> print hintForm.widgets['anotherLine'].render()
+  <input id="form-widgets-anotherLine"
+         name="form.widgets.anotherLine"
+         class="text-widget required textline-field"
+         value="" type="text" />
+
+Check all fields
+----------------
+
+Just to make sure that all the widgets are handled correctly, we will
+go through all of them. This sample can be useful if you need to
+implement a JavaScript based hint concept:
+
+  >>> import datetime
+  >>> import decimal
+  >>> from zope.schema import vocabulary
+
+Let's setup a simple vocabulary:
+
+  >>> vocab = vocabulary.SimpleVocabulary([
+  ...     vocabulary.SimpleVocabulary.createTerm(1, '1', u'One'),
+  ...     vocabulary.SimpleVocabulary.createTerm(2, '2', u'Two'),
+  ...     vocabulary.SimpleVocabulary.createTerm(3, '3', u'Three'),
+  ...     vocabulary.SimpleVocabulary.createTerm(4, '4', u'Four'),
+  ...     vocabulary.SimpleVocabulary.createTerm(5, '5', u'Five')
+  ...     ])
+
+  >>> class IAllInOne(zope.interface.Interface):
+  ...
+  ...     asciiField = zope.schema.ASCII(
+  ...         title=u'ASCII',
+  ...         description=u'This is an ASCII field.',
+  ...         default='This is\n ASCII.')
+  ...
+  ...     asciiLineField = zope.schema.ASCIILine(
+  ...         title=u'ASCII Line',
+  ...         description=u'This is an ASCII-Line field.',
+  ...         default='An ASCII line.')
+  ...
+  ...     boolField = zope.schema.Bool(
+  ...         title=u'Boolean',
+  ...         description=u'This is a Bool field.',
+  ...         default=True)
+  ...
+  ...     checkboxBoolField = zope.schema.Bool(
+  ...         title=u'Boolean (Checkbox)',
+  ...         description=u'This is a Bool field displayed suing a checkbox.',
+  ...         default=True)
+  ...
+  ...     bytesLineField = zope.schema.BytesLine(
+  ...         title=u'Bytes Line',
+  ...         description=u'This is a bytes line field.',
+  ...         default='A Bytes line.')
+  ...
+  ...     choiceField = zope.schema.Choice(
+  ...         title=u'Choice',
+  ...         description=u'This is a choice field.',
+  ...         default=3,
+  ...         vocabulary=vocab)
+  ...
+  ...     optionalChoiceField = zope.schema.Choice(
+  ...         title=u'Choice (Not Required)',
+  ...         description=u'This is a non-required choice field.',
+  ...         vocabulary=vocab,
+  ...         required=False)
+  ...
+  ...     promptChoiceField = zope.schema.Choice(
+  ...         title=u'Choice (Explicit Prompt)',
+  ...         description=u'This is a choice field with an explicit prompt.',
+  ...         vocabulary=vocab,
+  ...         required=False)
+  ...
+  ...     dateField = zope.schema.Date(
+  ...         title=u'Date',
+  ...         description=u'This is a Date field.',
+  ...         default=datetime.date(2007, 4, 1))
+  ...
+  ...     datetimeField = zope.schema.Datetime(
+  ...         title=u'Date/Time',
+  ...         description=u'This is a Datetime field.',
+  ...         default=datetime.datetime(2007, 4, 1, 12))
+  ...
+  ...     decimalField = zope.schema.Decimal(
+  ...         title=u'Decimal',
+  ...         description=u'This is a Decimal field.',
+  ...         default=decimal.Decimal('12.87'))
+  ...
+  ...     dottedNameField = zope.schema.DottedName(
+  ...         title=u'Dotted Name',
+  ...         description=u'This is a DottedName field.',
+  ...         default='z3c.form')
+  ...
+  ...     floatField = zope.schema.Float(
+  ...         title=u'Float',
+  ...         description=u'This is a Float field.',
+  ...         default=12.8)
+  ...
+  ...     frozenSetField = zope.schema.FrozenSet(
+  ...         title=u'Frozen Set',
+  ...         description=u'This is a FrozenSet field.',
+  ...         value_type=choiceField,
+  ...         default=frozenset([1, 3]) )
+  ...
+  ...     idField = zope.schema.Id(
+  ...         title=u'Id',
+  ...         description=u'This is a Id field.',
+  ...         default='z3c.form')
+  ...
+  ...     intField = zope.schema.Int(
+  ...         title=u'Integer',
+  ...         description=u'This is a Int field.',
+  ...         default=12345)
+  ...
+  ...     listField = zope.schema.List(
+  ...         title=u'List',
+  ...         description=u'This is a List field.',
+  ...         value_type=choiceField,
+  ...         default=[1, 3])
+  ...
+  ...     passwordField = zope.schema.Password(
+  ...         title=u'Password',
+  ...         description=u'This is a Password field.',
+  ...         default=u'mypwd',
+  ...         required=False)
+  ...
+  ...     setField = zope.schema.Set(
+  ...         title=u'Set',
+  ...         description=u'This is a Set field.',
+  ...         value_type=choiceField,
+  ...         default=set([1, 3]) )
+  ...
+  ...     sourceTextField = zope.schema.SourceText(
+  ...         title=u'Source Text',
+  ...         description=u'This is a SourceText field.',
+  ...         default=u'<source />')
+  ...
+  ...     textField = zope.schema.Text(
+  ...         title=u'Text',
+  ...         description=u'This is a Text field.',
+  ...         default=u'Some\n Text.')
+  ...
+  ...     textLineField = zope.schema.TextLine(
+  ...         title=u'Text Line',
+  ...         description=u'This is a TextLine field.',
+  ...         default=u'Some Text line.')
+  ...
+  ...     timeField = zope.schema.Time(
+  ...         title=u'Time',
+  ...         description=u'This is a Time field.',
+  ...         default=datetime.time(12, 0))
+  ...
+  ...     timedeltaField = zope.schema.Timedelta(
+  ...         title=u'Time Delta',
+  ...         description=u'This is a Timedelta field.',
+  ...         default=datetime.timedelta(days=3))
+  ...
+  ...     tupleField = zope.schema.Tuple(
+  ...         title=u'Tuple',
+  ...         description=u'This is a Tuple field.',
+  ...         value_type=choiceField,
+  ...         default=(1, 3))
+  ...
+  ...     uriField = zope.schema.URI(
+  ...         title=u'URI',
+  ...         description=u'This is a URI field.',
+  ...         default='http://zope.org')
+  ...
+  ...     hiddenField = zope.schema.TextLine(
+  ...         title=u'Hidden Text Line',
+  ...         description=u'This is a hidden TextLine field.',
+  ...         default=u'Some Hidden Text.')
+
+  >>> class AllInOne(object):
+  ...     zope.interface.implements(IAllInOne)
+  ...
+  ...     asciiField = None
+  ...     asciiLineField = None
+  ...     boolField = None
+  ...     checkboxBoolField = None
+  ...     choiceField = None
+  ...     optionalChoiceField = None
+  ...     promptChoiceField = None
+  ...     dateField = None
+  ...     decimalField = None
+  ...     dottedNameField = None
+  ...     floatField = None
+  ...     frozenSetField = None
+  ...     idField = None
+  ...     intField = None
+  ...     listField = None
+  ...     passwordField = None
+  ...     setField = None
+  ...     sourceTextField = None
+  ...     textField = None
+  ...     textLineField = None
+  ...     timeField = None
+  ...     timedeltaField = None
+  ...     tupleField = None
+  ...     uriField = None
+  ...     hiddenField = None
+
+  >>> allInOne = AllInOne()
+
+  >>> class AllInOneForm(form.Form):
+  ...     fields = field.Fields(IAllInOne)
+
+Now test the hints in our widgets:
+
+  >>> allInOneForm = AllInOneForm(allInOne, request)
+  >>> allInOneForm.update()
+  >>> print allInOneForm.widgets['asciiField'].render()
+  <textarea id="form-widgets-asciiField"
+            name="form.widgets.asciiField"
+            class="textarea-widget required ascii-field"
+            title="This is an ASCII field.">This is
+   ASCII.</textarea>
+
+  >>> print allInOneForm.widgets['asciiLineField'].render()
+  <input id="form-widgets-asciiLineField"
+         name="form.widgets.asciiLineField"
+         class="text-widget required asciiline-field"
+         title="This is an ASCII-Line field."
+         value="An ASCII line." type="text" />
+
+  >>> print allInOneForm.widgets['boolField'].render()
+  <span class="option">
+    <label for="form-widgets-boolField-0">
+      <input id="form-widgets-boolField-0"
+             name="form.widgets.boolField"
+             class="radio-widget required bool-field"
+             title="This is a Bool field." value="true"
+             checked="checked" type="radio" />
+      <span class="label">yes</span>
+    </label>
+  </span>
+  <span class="option">
+    <label for="form-widgets-boolField-1">
+      <input id="form-widgets-boolField-1"
+             name="form.widgets.boolField"
+             class="radio-widget required bool-field"
+             title="This is a Bool field." value="false"
+             type="radio" />
+      <span class="label">no</span>
+    </label>
+  </span>
+  <input name="form.widgets.boolField-empty-marker"
+         type="hidden" value="1" />
+
+  >>> print allInOneForm.widgets['checkboxBoolField'].render()
+  <span class="option">
+    <label for="form-widgets-checkboxBoolField-0">
+      <input id="form-widgets-checkboxBoolField-0"
+             name="form.widgets.checkboxBoolField"
+             class="radio-widget required bool-field"
+             title="This is a Bool field displayed suing a checkbox."
+             value="true" checked="checked" type="radio" />
+      <span class="label">yes</span>
+    </label>
+  </span>
+  <span class="option">
+    <label for="form-widgets-checkboxBoolField-1">
+      <input id="form-widgets-checkboxBoolField-1"
+             name="form.widgets.checkboxBoolField"
+             class="radio-widget required bool-field"
+             title="This is a Bool field displayed suing a checkbox."
+             value="false" type="radio" />
+      <span class="label">no</span>
+    </label>
+  </span>
+  <input name="form.widgets.checkboxBoolField-empty-marker"
+         type="hidden" value="1" />
+
+  >>> print allInOneForm.widgets['bytesLineField'].render()
+  <input id="form-widgets-bytesLineField"
+         name="form.widgets.bytesLineField"
+         class="text-widget required bytesline-field"
+         title="This is a bytes line field."
+         value="A Bytes line." type="text" />
+
+  >>> print allInOneForm.widgets['choiceField'].render()
+  <select id="form-widgets-choiceField"
+          name="form.widgets.choiceField:list"
+          class="select-widget required choice-field" size="1"
+          title="This is a choice field.">
+  <option id="form-widgets-choiceField-0" value="1">One</option>
+  <option id="form-widgets-choiceField-1" value="2">Two</option>
+  <option id="form-widgets-choiceField-2" value="3"
+          selected="selected">Three</option>
+  <option id="form-widgets-choiceField-3" value="4">Four</option>
+  <option id="form-widgets-choiceField-4" value="5">Five</option>
+  </select>
+  <input name="form.widgets.choiceField-empty-marker"
+         type="hidden" value="1" />
+
+#  >>> print allInOneForm.widgets['optionalChoiceField'].render()
+  <select id="form-widgets-optionalChoiceField"
+          name="form.widgets.optionalChoiceField:list"
+          class="select-widget choice-field" size="1"
+          title="This is a non-required choice field.">
+  <option id="form-widgets-optionalChoiceField-novalue"
+         value="--NOVALUE--" selected="selected">no value</option>
+  <option id="form-widgets-optionalChoiceField-0" value="1">One</option>
+  <option id="form-widgets-optionalChoiceField-1" value="2">Two</option>
+  <option id="form-widgets-optionalChoiceField-2" value="3">Three</option>
+  <option id="form-widgets-optionalChoiceField-3" value="4">Four</option>
+  <option id="form-widgets-optionalChoiceField-4" value="5">Five</option>
+  </select>
+  <input name="form.widgets.optionalChoiceField-empty-marker"
+         type="hidden" value="1" />
+
+#  >>> print allInOneForm.widgets['promptChoiceField'].render()
+  <select id="form-widgets-promptChoiceField"
+          name="form.widgets.promptChoiceField"
+          class="select-widget choice-field" size="1"
+          title="This is a choice field with an explicit prompt.">
+  <option id="form-widgets-promptChoiceField-novalue"
+          value="--NOVALUE--" selected="selected">no value</option>
+  <option id="form-widgets-promptChoiceField-0" value="1">One</option>
+  <option id="form-widgets-promptChoiceField-1" value="2">Two</option>
+  <option id="form-widgets-promptChoiceField-2" value="3">Three</option>
+  <option id="form-widgets-promptChoiceField-3" value="4">Four</option>
+  <option id="form-widgets-promptChoiceField-4" value="5">Five</option>
+  </select>
+  <input name="form.widgets.promptChoiceField-empty-marker"
+         type="hidden" value="1" />
+
+  >>> print allInOneForm.widgets['dateField'].render()
+  <input id="form-widgets-dateField"
+         name="form.widgets.dateField"
+         class="text-widget required date-field"
+         title="This is a Date field." value="4/1/07"
+         type="text" />
+
+  >>> print allInOneForm.widgets['datetimeField'].render()
+  <input id="form-widgets-datetimeField"
+         name="form.widgets.datetimeField"
+         class="text-widget required datetime-field"
+         title="This is a Datetime field."
+         value="4/1/07 12:00 PM" type="text" />
+
+  >>> print allInOneForm.widgets['decimalField'].render()
+  <input id="form-widgets-decimalField"
+         name="form.widgets.decimalField"
+         class="text-widget required decimal-field"
+         title="This is a Decimal field." value="12.87"
+         type="text" />
+
+  >>> print allInOneForm.widgets['dottedNameField'].render()
+  <input id="form-widgets-dottedNameField"
+         name="form.widgets.dottedNameField"
+         class="text-widget required dottedname-field"
+         title="This is a DottedName field."
+         value="z3c.form" type="text" />
+
+  >>> print allInOneForm.widgets['floatField'].render()
+  <input id="form-widgets-floatField"
+         name="form.widgets.floatField"
+         class="text-widget required float-field"
+         title="This is a Float field." value="12.8"
+         type="text" />
+
+  >>> print allInOneForm.widgets['frozenSetField'].render()
+  <select id="form-widgets-frozenSetField"
+          name="form.widgets.frozenSetField:list"
+          class="select-widget required frozenset-field"
+          multiple="multiple" size="5"
+          title="This is a FrozenSet field.">
+  <option id="form-widgets-frozenSetField-0" value="1"
+          selected="selected">One</option>
+  <option id="form-widgets-frozenSetField-1" value="2">Two</option>
+  <option id="form-widgets-frozenSetField-2" value="3"
+          selected="selected">Three</option>
+  <option id="form-widgets-frozenSetField-3" value="4">Four</option>
+  <option id="form-widgets-frozenSetField-4" value="5">Five</option>
+  </select>
+  <input name="form.widgets.frozenSetField-empty-marker"
+         type="hidden" value="1" />
+
+  >>> print allInOneForm.widgets['idField'].render()
+  <input id="form-widgets-idField"
+         name="form.widgets.idField"
+         class="text-widget required id-field"
+         title="This is a Id field." value="z3c.form"
+         type="text" />
+
+  >>> print allInOneForm.widgets['intField'].render()
+  <input id="form-widgets-intField"
+         name="form.widgets.intField"
+         class="text-widget required int-field"
+         title="This is a Int field." value="12,345"
+         type="text" />
+
+#  >>> print allInOneForm.widgets['listField'].render()
+  <span class="option">
+    <label for="form-widgets-listField-0">
+      <input id="form-widgets-listField-0"
+             name="form.widgets.listField:list"
+             class="radio-widget required list-field"
+             title="This is a List field." value="1"
+             checked="checked" type="radio" />
+      <span class="label">One</span>
+    </label>
+  </span>
+  <span class="option">
+    <label for="form-widgets-listField-1">
+      <input id="form-widgets-listField-1"
+             name="form.widgets.listField:list"
+             class="radio-widget required list-field"
+             title="This is a List field." value="2"
+             type="radio" />
+      <span class="label">Two</span>
+    </label>
+  </span>
+  <span class="option">
+    <label for="form-widgets-listField-2">
+      <input id="form-widgets-listField-2"
+             name="form.widgets.listField:list"
+             class="radio-widget required list-field"
+             title="This is a List field." value="3"
+             checked="checked" type="radio" />
+      <span class="label">Three</span>
+    </label>
+  </span>
+  <span class="option">
+    <label for="form-widgets-listField-3">
+      <input id="form-widgets-listField-3"
+             name="form.widgets.listField:list"
+             class="radio-widget required list-field"
+             title="This is a List field." value="4"
+             type="radio" />
+      <span class="label">Four</span>
+    </label>
+  </span>
+  <span class="option">
+    <label for="form-widgets-listField-4">
+      <input id="form-widgets-listField-4"
+             name="form.widgets.listField:list"
+             class="radio-widget required list-field"
+             title="This is a List field." value="5"
+             type="radio" />
+      <span class="label">Five</span>
+    </label>
+  </span>
+  <input name="form.widgets.listField-empty-marker"
+         type="hidden" value="1" />
+
+  >>> print allInOneForm.widgets['passwordField'].render()
+  <input id="form-widgets-passwordField"
+         name="form.widgets.passwordField"
+         class="password-widget password-field"
+         title="This is a Password field."
+         type="password" />
+
+  >>> print allInOneForm.widgets['setField'].render()
+  <select id="form-widgets-setField"
+          name="form.widgets.setField:list"
+          class="select-widget required set-field"
+          multiple="multiple" size="5"
+          title="This is a Set field.">
+  <option id="form-widgets-setField-0" value="1"
+          selected="selected">One</option>
+  <option id="form-widgets-setField-1" value="2">Two</option>
+  <option id="form-widgets-setField-2" value="3"
+          selected="selected">Three</option>
+  <option id="form-widgets-setField-3" value="4">Four</option>
+  <option id="form-widgets-setField-4" value="5">Five</option>
+  </select>
+  <input name="form.widgets.setField-empty-marker"
+         type="hidden" value="1" />
+
+  >>> print allInOneForm.widgets['sourceTextField'].render()
+  <textarea id="form-widgets-sourceTextField"
+            name="form.widgets.sourceTextField"
+            class="textarea-widget required sourcetext-field"
+            title="This is a SourceText field.">&lt;source /&gt;</textarea>
+
+  >>> print allInOneForm.widgets['textField'].render()
+  <textarea id="form-widgets-textField"
+            name="form.widgets.textField"
+            class="textarea-widget required text-field"
+            title="This is a Text field.">Some
+   Text.</textarea>
+
+  >>> print allInOneForm.widgets['textLineField'].render()
+  <input id="form-widgets-textLineField"
+         name="form.widgets.textLineField"
+         class="text-widget required textline-field"
+         title="This is a TextLine field."
+         value="Some Text line." type="text" />
+
+  >>> print allInOneForm.widgets['timeField'].render()
+  <input id="form-widgets-timeField"
+         name="form.widgets.timeField"
+         class="text-widget required time-field"
+         title="This is a Time field." value="12:00 PM"
+         type="text" />
+
+  >>> print allInOneForm.widgets['timedeltaField'].render()
+  <input id="form-widgets-timedeltaField"
+         name="form.widgets.timedeltaField"
+         class="text-widget required timedelta-field"
+         title="This is a Timedelta field."
+         value="3 days, 0:00:00" type="text" />
+
+#  >>> print allInOneForm.widgets['tupleField'].render()
+  <span class="option">
+    <label for="form-widgets-tupleField-0">
+      <input id="form-widgets-tupleField-0"
+             name="form.widgets.tupleField:list"
+             class="radio-widget required tuple-field"
+             title="This is a Tuple field." value="1"
+             checked="checked" type="radio" />
+      <span class="label">One</span>
+    </label>
+  </span>
+  <span class="option">
+    <label for="form-widgets-tupleField-1">
+      <input id="form-widgets-tupleField-1"
+             name="form.widgets.tupleField:list"
+             class="radio-widget required tuple-field"
+             title="This is a Tuple field." value="2"
+             type="radio" />
+      <span class="label">Two</span>
+    </label>
+  </span>
+  <span class="option">
+    <label for="form-widgets-tupleField-2">
+      <input id="form-widgets-tupleField-2"
+             name="form.widgets.tupleField:list"
+             class="radio-widget required tuple-field"
+             title="This is a Tuple field." value="3"
+             checked="checked" type="radio" />
+      <span class="label">Three</span>
+    </label>
+  </span>
+  <span class="option">
+    <label for="form-widgets-tupleField-3">
+      <input id="form-widgets-tupleField-3"
+             name="form.widgets.tupleField:list"
+             class="radio-widget required tuple-field"
+             title="This is a Tuple field." value="4"
+             type="radio" />
+      <span class="label">Four</span>
+    </label>
+  </span>
+  <span class="option">
+    <label for="form-widgets-tupleField-4">
+      <input id="form-widgets-tupleField-4"
+             name="form.widgets.tupleField:list"
+             class="radio-widget required tuple-field"
+             title="This is a Tuple field." value="5"
+             type="radio" />
+      <span class="label">Five</span>
+    </label>
+  </span>
+  <input name="form.widgets.tupleField-empty-marker"
+         type="hidden" value="1" />
+
+  >>> print allInOneForm.widgets['uriField'].render()
+  <input id="form-widgets-uriField"
+         name="form.widgets.uriField"
+         class="text-widget required uri-field"
+         title="This is a URI field."
+         value="http://zope.org" type="text" />
+
+  >>> print allInOneForm.widgets['hiddenField'].render()
+  <input id="form-widgets-hiddenField"
+         name="form.widgets.hiddenField"
+         class="text-widget required textline-field"
+         title="This is a hidden TextLine field."
+         value="Some Hidden Text." type="text" />

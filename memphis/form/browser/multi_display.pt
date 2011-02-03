@@ -1,0 +1,45 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      tal:omit-tag="">
+<div id="" class=""
+      tal:attributes="id view/id;
+                      class context.klass;
+                      style context.style;
+                      title context.title;
+                      lang context.lang;
+                      onclick context.onclick;
+                      ondblclick context.ondblclick;
+                      onmousedown context.onmousedown;
+                      onmouseup context.onmouseup;
+                      onmouseover context.onmouseover;
+                      onmousemove context.onmousemove;
+                      onmouseout context.onmouseout;
+                      onkeypress context.onkeypress;
+                      onkeydown context.onkeydown;
+                      onkeyup context.onkeyup">
+  <tal:block repeat="widget context.widgets">
+    <div id="" class="row"
+         tal:attributes="id string:${widget.id}-row"
+         tal:condition="python:widget.mode != 'hidden'">
+      <metal:block define-macro="widget-row">
+        <div class="label" tal:condition="context.showLabel">
+          <label tal:attributes="for widget.id">
+            <span i18n:translate=""
+                tal:content="widget.label">label</span>
+            <span class="required"
+                  tal:condition="widget.required">*</span>
+          </label>
+        </div>
+        <div class="widget">
+          <div class="multi-widget-display"
+               tal:content="structure widget.render">
+            <input size="24" value="" type="text" />
+          </div>
+        </div>
+      </metal:block>
+    </div>
+  </tal:block>
+</div>
+</html>

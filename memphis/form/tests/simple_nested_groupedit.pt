@@ -1,0 +1,49 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:tal="http://xml.zope.org/namespaces/tal">       
+  <body>
+    <i tal:condition="view/status" tal:content="view/status"/>
+    <ul tal:condition="view/widgets/errors"
+        metal:define-macro="errors">
+      <li tal:repeat="error view/widgets/errors">
+        <tal:block condition="error/widget">
+          <tal:block replace="error/widget/label" />:
+        </tal:block>
+        <tal:block replace="structure error/render" />
+      </li>
+    </ul>
+    <form action=".">
+      <metal:block metal:define-macro="rows">
+      <div class="row"
+           tal:repeat="widget view/widgets/values">
+        <b tal:condition="widget/error"
+           tal:content="structure widget/error/render" />
+        <label for=""
+               tal:attributes="for widget/id"
+               tal:content="widget/label" />
+        <input type="text" tal:replace="structure widget/render" />
+      </div>
+      </metal:block>
+      <fieldset tal:condition="view/groups|nothing"
+                tal:repeat="view view/groups">
+        <legend tal:condition="view/label"
+                tal:content="view/label">Label</legend>
+        <div metal:use-macro="template/macros/errors" />
+        <div metal:use-macro="template/macros/rows" />
+        <fieldset tal:condition="view/groups|nothing"
+                  tal:repeat="view view/groups">
+          <legend tal:condition="view/label"
+                  tal:content="view/label">Label</legend>
+          <div metal:use-macro="template/macros/errors" />
+          <div metal:use-macro="template/macros/rows" />
+        </fieldset>
+      </fieldset>
+      <div class="action"
+           tal:condition="view/actions|nothing"
+           tal:repeat="action view/actions/values">
+        <input type="submit" tal:replace="structure action/render"
+      /></div>
+    </form>
+  </body>
+</html>

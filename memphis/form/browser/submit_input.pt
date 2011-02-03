@@ -1,0 +1,31 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      tal:omit-tag="">
+<input id="" name="" class="" value=""
+       accesskey="" type="submit" 
+       tal:attributes="id context.id;
+                       name context.name;
+                       class context.klass;
+                       style context.style;
+                       lang context.lang;
+                       onclick context.onclick;
+                       ondblclick context.ondblclick;
+                       onmousedown context.onmousedown;
+                       onmouseup context.onmouseup;
+                       onmouseover context.onmouseover;
+                       onmousemove context.onmousemove;
+                       onmouseout context.onmouseout;
+                       onkeypress context.onkeypress;
+                       onkeydown context.onkeydown;
+                       onkeyup context.onkeyup;
+                       value context.value;
+                       disabled context.disabled;
+                       tabindex context.tabindex;
+                       onfocus context.onfocus;
+                       onblur context.onblur;
+                       onchange context.onchange;
+                       readonly context.readonly;
+                       alt context.alt;
+                       accesskey context.accesskey;
+                       onselect context.onselect" />
+</html>

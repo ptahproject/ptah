@@ -1,0 +1,42 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal">
+  <body>
+    <i tal:condition="view/status" tal:content="view/status" />
+    <ul tal:condition="view/widgets/errors">
+      <li tal:repeat="error view/widgets/errors">
+        <tal:block condition="error/widget">
+          <tal:block replace="error/widget/label" />:
+        </tal:block>
+        <tal:block replace="structure error/render" />
+      </li>
+    </ul>
+    <form action=".">
+      <tal:snippets repeat="snippet view/widgets/values">
+
+      <div class="row" tal:define="is_widget snippet/id | nothing">
+
+        <tal:widget condition="is_widget" 
+                    define="widget snippet">
+        <b tal:condition="widget/error"
+           tal:content="structure widget/error/render"
+        /><label tal:condition="widget/id"
+               for=""
+               tal:attributes="for widget/id"
+               tal:content="widget/label" />
+        <input type="text" tal:replace="structure widget/render" />
+        </tal:widget>
+
+        <tal:provider condition="not:is_widget"
+                      define="contentprovider snippet"
+                      replace="structure contentprovider/render" />
+                      
+      </div>
+
+      </tal:snippets>
+      <div class="action" tal:repeat="action view/actions/values">
+        <input type="submit" tal:replace="structure action/render" />
+      </div>
+    </form>
+  </body>
+</html>

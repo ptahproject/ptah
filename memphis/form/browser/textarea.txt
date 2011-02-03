@@ -1,0 +1,83 @@
+==============
+TextAreaWidget
+==============
+
+The widget can render a text area field for a text:
+
+  >>> from zope.interface.verify import verifyClass
+  >>> from z3c.form import interfaces
+  >>> from z3c.form.browser import textarea
+
+The ``TextAreaWidget`` is a widget:
+
+  >>> verifyClass(interfaces.IWidget, textarea.TextAreaWidget)
+  True
+
+The widget can render a input field only by adapting a request:
+
+  >>> from z3c.form.testing import TestRequest
+  >>> request = TestRequest()
+  >>> widget = textarea.TextAreaWidget(request)
+
+Such a field provides IWidget:
+
+  >>> interfaces.IWidget.providedBy(widget)
+  True
+
+We also need to register the template for at least the widget and request:
+
+  >>> import os.path
+  >>> import zope.interface
+  >>> from zope.publisher.interfaces.browser import IDefaultBrowserLayer
+  >>> from zope.pagetemplate.interfaces import IPageTemplate
+  >>> import z3c.form.browser
+  >>> import z3c.form.widget
+  >>> template = os.path.join(os.path.dirname(z3c.form.browser.__file__),
+  ...     'textarea_input.pt')
+  >>> factory = z3c.form.widget.WidgetTemplateFactory(template)
+  >>> zope.component.provideAdapter(factory,
+  ...     (zope.interface.Interface, IDefaultBrowserLayer, None, None, None),
+  ...     IPageTemplate, name='input')
+
+If we render the widget we get the HTML:
+
+  >>> print widget.render()
+  <textarea class="textarea-widget"></textarea>
+
+Adding some more attributes to the widget will make it display more:
+
+  >>> widget.id = 'id'
+  >>> widget.name = 'name'
+  >>> widget.value = u'value'
+
+  >>> print widget.render()
+  <textarea id="id" name="name" class="textarea-widget">value</textarea>
+
+Check DISPLAY_MODE:
+
+  >>> template = os.path.join(os.path.dirname(z3c.form.browser.__file__),
+  ...     'textarea_display.pt')
+  >>> factory = z3c.form.widget.WidgetTemplateFactory(template)
+  >>> zope.component.provideAdapter(factory,
+  ...     (zope.interface.Interface, IDefaultBrowserLayer, None, None, None),
+  ...     IPageTemplate, name='display')
+
+  >>> widget.value = u'foobar'
+  >>> widget.mode = interfaces.DISPLAY_MODE
+  >>> print widget.render()
+  <span id="id" class="textarea-widget">foobar</span>
+
+Check HIDDEN_MODE:
+
+  >>> template = os.path.join(os.path.dirname(z3c.form.browser.__file__),
+  ...     'textarea_hidden.pt')
+  >>> factory = z3c.form.widget.WidgetTemplateFactory(template)
+  >>> zope.component.provideAdapter(factory,
+  ...     (zope.interface.Interface, IDefaultBrowserLayer, None, None, None),
+  ...     IPageTemplate, name='hidden')
+
+  >>> widget.value = u'foobar'
+  >>> widget.mode = interfaces.HIDDEN_MODE
+  >>> print widget.render()
+  <input class="hidden-widget" id="id" name="name"
+         type="hidden" value="foobar">

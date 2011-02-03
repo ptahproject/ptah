@@ -1,0 +1,222 @@
+=============
+Data Managers
+=============
+
+For the longest time the way widgets retrieved and stored their values on the
+actual content/model was done by binding the field to a context and then
+setting and getting the attribute from it. This has several distinct design
+shortcomings:
+
+1. The field has too much responsibility by knowing about its implementations.
+
+2. There is no way of redefining the method used to store and access data
+   other than rewriting fields.
+
+3. Finding the right content/model to modify is an implicit policy: Find an
+   adapter for the field's schema and then set the value there.
+
+While implementing some real-world projects, we noticed that this approach is
+too limiting and we often could not use the form framework when we wanted or
+had to jump through many hoops to make it work for us. For example, if we want
+to display a form to collect data that does not correspond to a set of content
+components, we were forced to not only write a schema for the form, but also
+implement that schema as a class. but all we wanted was a dictionary. For
+edit-form like tasks we often also had an initial dictionary, which we just
+wanted modified.
+
+Data managers abstract the getting and setting of the data. A data manager is
+responsible for setting one piece of data in a particular context.
+
+  >>> from memphis.form import datamanager
+
+
+Attribute Field Manager
+-----------------------
+
+The most common case, of course, is the management of class attributes through
+fields. In this case, the data manager needs to know about the context and the
+field it is managing the data for.
+
+  >>> import zope.interface
+  >>> import zope.schema
+  >>> class IPerson(zope.interface.Interface):
+  ...     name = zope.schema.TextLine(
+  ...         title=u'Name',
+  ...         default=u'<no name>')
+  ...     phone = zope.schema.TextLine(
+  ...         title=u'Phone')
+
+  >>> class Person(object):
+  ...     zope.interface.implements(IPerson)
+  ...     name = u''
+  ...     def __init__(self, name):
+  ...         self.name = name
+
+  >>> stephan = Person(u'Stephan Richter')
+
+We can now instantiate the data manager for Stephan's name:
+
+  >>> nameDm = datamanager.AttributeField(stephan, IPerson['name'])
+
+The data manager consists of a few simple methods to accomplish its
+purpose. Getting the value is done using the ``get()`` or ``query()`` method:
+
+  >>> nameDm.get()
+  u'Stephan Richter'
+
+  >>> nameDm.query()
+  u'Stephan Richter'
+
+The value can be set using ``set()``:
+
+  >>> nameDm.set(u'Stephan "Caveman" Richter')
+
+  >>> nameDm.get()
+  u'Stephan "Caveman" Richter'
+  >>> stephan.name
+  u'Stephan "Caveman" Richter'
+
+If an attribute is not available, ``get()`` fails and ``query()`` returns a
+default value:
+
+  >>> phoneDm = datamanager.AttributeField(stephan, IPerson['phone'])
+
+  >>> phoneDm.get()
+  Traceback (most recent call last):
+  ...
+  AttributeError: 'Person' object has no attribute 'phone'
+
+  >>> phoneDm.query()
+  <NO_VALUE>
+  >>> phoneDm.query('nothing')
+  'nothing'
+
+If field's schema is not directly provided by the context, the datamanager
+will attempt to find an adapter. Let's give the person an address for example:
+
+  >>> class IAddress(zope.interface.Interface):
+  ...     city = zope.schema.TextLine(title=u'City')
+
+  >>> class Address(object):
+  ...     zope.component.adapts(IPerson)
+  ...     zope.interface.implements(IAddress)
+  ...     def __init__(self, person):
+  ...         self.person = person
+  ...     @apply
+  ...     def city():
+  ...         def get(self):
+  ...             return getattr(self.person, '_city', None)
+  ...         def set(self, value):
+  ...             self.person._city = value
+  ...         return property(get, set)
+
+  >>> zope.component.provideAdapter(Address)
+
+Now we can create a data manager for the city attribute:
+
+  >>> cityDm = datamanager.AttributeField(stephan, IAddress['city'])
+
+Initially there is no value, but of course we can create one:
+
+  >>> cityDm.get()
+
+  >>> cityDm.set(u'Maynard')
+  >>> cityDm.get()
+  u'Maynard'
+
+The value can be accessed through the adapter itself as well:
+
+  >>> IAddress(stephan).city
+  u'Maynard'
+
+While we think that implicitly looking up an adapter is not the cleanest
+solution, it allows us to mimic the behavior of ``zope.formlib``. We think
+that we will eventually provide alternative ways to accomplish the same in a
+more explicit way.
+
+If we try to set a value that is read-only, a type error is raised:
+
+  >>> readOnlyName = zope.schema.TextLine(
+  ...     __name__='name',
+  ...     readonly=True)
+
+  >>> nameDm = datamanager.AttributeField(stephan, readOnlyName)
+  >>> nameDm.set(u'Stephan')
+  Traceback (most recent call last):
+  ...
+  TypeError: Can't set values on read-only fields
+             (name=name, class=__builtin__.Person)
+
+Finally, we instantiate the data manager with a ``zope.schema``
+field. And we can access the different methods like before.
+
+  >>> nameDm = datamanager.AttributeField(
+  ...    stephan, zope.schema.TextLine(__name__ = 'name'))
+
+  >>> nameDm.get()
+  u'Stephan "Caveman" Richter'
+  >>> nameDm.query()
+  u'Stephan "Caveman" Richter'
+
+  >>> nameDm.set(u'Stephan Richter')
+  >>> nameDm.get()
+  u'Stephan Richter'
+
+
+Dictionary Field Manager
+------------------------
+
+Another implementation of the data manager interface is provided by the
+dictionary field manager, which does not expect an instance with attributes as
+its context, but a dictionary. It still uses a field to determine the key to
+modify.
+
+  >>> personDict = {}
+  >>> nameDm = datamanager.DictionaryField(personDict, IPerson['name'])
+
+The datamanager can really only deal with dictionaries and mapping types:
+
+  >>> import zope.interface.common.mapping
+  >>> class MyMapping(object):
+  ...     zope.interface.implements(zope.interface.common.mapping.IMapping)
+  >>> datamanager.DictionaryField(MyMapping(), IPerson['name'])
+  <memphis.form.datamanager.DictionaryField object at ...>
+  >>> datamanager.DictionaryField(dict(),
+  ...     IPerson['name'])
+  <memphis.form.datamanager.DictionaryField object at ...>
+
+  >>> datamanager.DictionaryField([], IPerson['name'])
+  Traceback (most recent call last):
+  ...
+  ValueError: Data are not a dictionary: <type 'list'>
+
+Let's now access the name:
+
+  >>> nameDm.get()
+  Traceback (most recent call last):
+  ...
+  AttributeError
+
+  >>> nameDm.query()
+  <NO_VALUE>
+
+Initially we get the default value (as specified in the field), since the
+person dictionariy has no entry. If no default value has been specified in the
+field, the missing value is returned.
+
+Now we set a value and it should be available:
+
+  >>> nameDm.set(u'Roger Ineichen')
+
+  >>> nameDm.get()
+  u'Roger Ineichen'
+  >>> personDict
+  {'name': u'Roger Ineichen'}
+
+As with the attribute data manager, readonly fields cannot be set:
+
+  >>> nameDm = datamanager.DictionaryField(personDict, readOnlyName)
+  >>> nameDm.set(u'Stephan')
+  Traceback (most recent call last):
+  ...
+  TypeError: Can't set values on read-only fields name=name

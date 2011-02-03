@@ -1,0 +1,9 @@
+<div class="z-form z-form-edit"
+     tal:content="structure pagelet:form.view">
+</div>
+
+<tal:block tal:repeat="context context/forms"
+	   tal:content="structure pagelet:form" />
+
+<tal:block tal:repeat="context context/views"
+	   tal:content="structure context/render" />

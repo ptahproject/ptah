@@ -1,0 +1,16 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+     xmlns:tal="http://xml.zope.org/namespaces/tal"
+     tal:omit-tag="">
+<tal:block tal:repeat="item context.items">
+  <input id="" name="" value="" class="hidden-widget" title=""
+         tabindex="" accesskey=""
+         type="hidden"
+         tal:condition="item['checked']"
+         tal:attributes="id item['id'];
+                         name item['name'];
+                         title context.title;
+                         tabindex context.tabindex;
+                         accesskey context.accesskey;
+                         value item['value']" />
+</tal:block>
+</div>
