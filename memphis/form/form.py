@@ -223,3 +223,41 @@ class Form(BaseForm):
         self.actions.execute()
         if self.refreshActions:
             self.updateActions()
+
+
+class EditForm(Form):
+    """A simple edit form with an apply button."""
+    zope.interface.implements(interfaces.IEditForm)
+
+    ignoreContext = False
+
+    successMessage = _('Data successfully updated.')
+    noChangesMessage = _('No changes were applied.')
+
+    def applyChanges(self, data):
+        content = self.getContent()
+        changes = applyChanges(self, content, data)
+        # ``changes`` is a dictionary; if empty, there were no changes
+        if changes:
+            # Construct change-descriptions for the object-modified event
+            descriptions = []
+            for interface, names in changes.items():
+                descriptions.append(
+                    zope.lifecycleevent.Attributes(interface, *names))
+            # Send out a detailed object-modified event
+            zope.event.notify(
+                zope.lifecycleevent.ObjectModifiedEvent(content, *descriptions))
+        return changes
+
+    @button.buttonAndHandler(_('Apply'), name='apply')
+    def handleApply(self, action):
+        data, errors = self.extractData()
+        if errors:
+            view.addStatusMessage(
+                self.request, self.formErrorsMessage, 'warning')
+            return
+        changes = self.applyChanges(data)
+        if changes:
+            view.addStatusMessage(self.request, self.successMessage)
+        else:
+            view.addStatusMessage(self.request, self.noChangesMessage)

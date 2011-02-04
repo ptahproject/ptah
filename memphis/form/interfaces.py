@@ -951,6 +951,13 @@ class IInputForm(zope.interface.Interface):
         required=False)
 
 
+class IEditForm(IForm):
+    """A form to edit data of a component."""
+
+    def applyChanges(data):
+        """Apply the changes to the content component."""
+
+
 class IFieldsForm(IForm):
     """A form that is based upon defined fields."""
 
