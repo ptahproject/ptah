@@ -23,6 +23,19 @@ Now this view has to be registered::
   ...     klass = MyView)
 
 
+`klass` can be just class, it can inherits from View class or
+`klass` can be None. I `klass` is None or it is not inherited from
+`View` class, system constructs new unique class. If class is inherited
+from View class, new class isn created, but this class can't be used
+for another view.
+
+  >>> api.registerView(
+  ...     name="index1.html",
+  ...     klass = MyView)
+  Traceback (most recent call last):
+  ...
+  ValueError: Class can be used for view only once.
+
 `registerView` function description::
 
   # def registerView(
@@ -48,7 +61,7 @@ Let's get the view::
   >>> view = getPyramidView(request, object(), 'index.html')
 
   >>> view
-  <memphis.view.view.View <class 'memphis.TESTS.MyView'> ...>
+  <memphis.TESTS.index.html ...>
 
   >>> view.context
   <object object at ...>
@@ -135,3 +148,28 @@ location::
   >>> getPyramidView(request, object(), 'redirect.html', True)
   <HTTPFound at ... 302 Found>
 
+
+pyramidView directive
+---------------------
+
+Its possible to use decorator style registration, but class has to be
+inherited from View::
+
+  >>> from memphis import view
+  >>> class View(view.View):
+  ...     view.pyramidView(
+  ...         'testview.html',
+  ...         template=view.template('memphis.view:test.pt'))
+  >>> reGrok()
+
+Parameters are same except klass.
+
+  >>> v = getPyramidView(request, object(), 'testview.html')
+  >>> v
+  <memphis.TESTS.testview.html object at ...>
+
+  >>> v.template
+  <PageTemplateFile /.../test.pt>
+
+  >>> print v.render()
+  <div>My pagelet</div>

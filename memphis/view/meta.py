@@ -7,12 +7,15 @@ from pyramid.interfaces import IRequest
 from zope import interface
 from zope.interface.interface import InterfaceClass
 
-from memphis.view import interfaces, pagelet, pageletType, View, pyramidView
+from memphis.view import interfaces, pageletType, \
+    View, pyramidView, registerView, \
+    Pagelet, pagelet, registerPagelet, registerPageletType
 
 _marker = object()
 
-
 typesExecuted = []
+viewsExecuted = []
+pageletsExecuted = []
 
 
 class PageletTypeGrokker(martian.InstanceGrokker):
@@ -30,12 +33,12 @@ class PageletTypeGrokker(martian.InstanceGrokker):
 
         name, context, info = value
 
-        pagelet.registerPageletType(
+        registerPageletType(
             name, interface, context, configContext, info)
         return True
 
 
-class ViewGrokker(martian.ClassGrokker):
+class PyramidViewGrokker(martian.ClassGrokker):
     martian.component(View)
     martian.directive(pyramidView)
 
@@ -44,9 +47,29 @@ class ViewGrokker(martian.ClassGrokker):
         if value is _marker:
             return False
 
-        name, context, layer, template, layout, permission = value
+        name, context, layer, template, layout, permission, info = value
 
         registerView(
-            name, context, klass, layer, template, layout, permission,
+            name, context, klass, template, layer, layout, permission,
             configContext, info)
+        return True
+
+
+class PageletGrokker(martian.ClassGrokker):
+    martian.component(Pagelet)
+    martian.directive(pagelet)
+
+    def execute(self, klass, configContext=None, **kw):
+        if klass in pageletsExecuted:
+            return False
+        pageletsExecuted.append(klass)
+
+        value = pagelet.bind(default=_marker).get(klass)
+        if value is _marker:
+            return False
+
+        pageletType, context, template, layer, info = value
+
+        registerPagelet(pageletType, context, klass, 
+                        template, layer, configContext, info)
         return True

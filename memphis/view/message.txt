@@ -16,14 +16,15 @@ By default only session based service implemented.
    >>> from memphis import view
    >>> from memphis.view import interfaces
    >>> from memphis.view.message import MessageService
+   >>> from memphis.view.interfaces import IStatusMessage
 
-   >>> verifyClass(view.IStatusMessage, MessageService)
+   >>> verifyClass(IStatusMessage, MessageService)
    True
 
    >>> from pyramid.testing import DummyRequest
    >>> request = DummyRequest()
 
-   >>> service = view.IStatusMessage(request)
+   >>> service = IStatusMessage(request)
 
    >>> service.messages()
    ()

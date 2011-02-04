@@ -131,7 +131,54 @@ find pagelet itself::
   Traceback (most recent call last):
   ...
   NotFound
-  
+
+base Pagelet class
+------------------
+
+If pagelet class inherits from `view.Pagelet` class, this class cant be
+used more than once::
+
+  >>> from memphis import view
+  >>> class TestPagelet(view.Pagelet):
+  ...     pass
+
+  >>> api.registerPagelet(
+  ...     IMyPagelet, klass = TestPagelet,
+  ...     template = api.template('memphis.view:test.pt'))
+
+  >>> api.renderPagelet(IMyPagelet, Content(IContent), request)
+  u'<div>My pagelet</div>'
+
+  >>> api.registerPagelet(
+  ...     IMyPagelet, klass = TestPagelet,
+  ...     template = api.template('memphis.view:test.pt'))
+  Traceback (most recent call last):
+  ...
+  ValueError: Class can be used for pagelet only once.
+
+
+decorator style pagelet
+-----------------------
+
+  >>> class ITestContent(interface.Interface):
+  ...     pass
+
+  >>> class ITestPagelet(interface.Interface):
+  ...     view.pageletType('testPagelet', ITestContent)
+
+  >>> class TestPagelet2(view.Pagelet):
+  ...     pass
+
+  >>> class TestPagelet(view.Pagelet):
+  ...     view.pagelet(ITestPagelet)
+  ...     
+  ...     def render(self):
+  ...         return 'TestPagelet'
+  >>> reGrok()
+
+  >>> api.renderPagelet(ITestPagelet, Content(ITestContent), request)
+  'TestPagelet'
+
 
 TALES `pagelet` expression
 ==========================

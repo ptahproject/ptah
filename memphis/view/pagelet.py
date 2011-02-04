@@ -74,17 +74,24 @@ def registerPageletType(name, iface, context, configContext=None, info=''):
 
 
 def registerPagelet(
-    pageletType, context=None, klass=None,
-    layer=IRequest, template=None, configContext=None, **kw):
+    pageletType, context=None, klass=None, 
+    template=None, layer=IRequest, configContext=None, info='', **kw):
 
     def _register(pageletType, context, klass, layer, template, kw):
+        if klass is not None and hasattr(
+            klass, '__pagelet_%s__'%klass.__name__):
+            raise ValueError("Class can be used for pagelet only once.")
+
         cdict = dict(kw)
-        cdict['template'] = template
+
+        if template is not None:
+            cdict['template'] = template
 
         # find PageletType info
         pt = pageletType.queryTaggedValue('memphis.view.pageletType', None)
         if pt is None:
-            raise ConfigurationError("Can't find pagelet type: '%s'"%pageletType)
+            raise ConfigurationError(
+                "Can't find pagelet type: '%s'"%pageletType)
 
         if context is None:
             requires = [pt.context, layer]
@@ -92,15 +99,19 @@ def registerPagelet(
             requires = [context, layer]
 
         # Build a new class
-        if klass is None:
-            klass = Pagelet
-
-        if issubclass(klass, Pagelet):
-            bases = (klass,)
+        if klass is not None and issubclass(klass, Pagelet):
+            pagelet_class = klass
+            for attr, value in cdict.items():
+                setattr(pagelet_class, attr, value)
+            setattr(pagelet_class, '__pagelet_%s__'%klass.__name__, True)
         else:
-            bases = (klass, Pagelet)
+            # Build a new class
+            if klass is None:
+                bases = (Pagelet,)
+            else:
+                bases = (klass, Pagelet)
 
-        pagelet_class = type('Pagelet %s'%klass, bases, cdict)
+            pagelet_class = type('Pagelet %s'%klass, bases, cdict)
 
         if not pt.type.implementedBy(pagelet_class):
             interface.classImplements(pagelet_class, pt.type)

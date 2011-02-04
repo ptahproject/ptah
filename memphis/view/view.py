@@ -111,7 +111,7 @@ def registerView(
     name='', context=None, klass=None, template=None,
     layer=IRequest, layout='', permission='', configContext=None, info=''):
 
-    if klass is not None and hasattr(klass, '__view__'):
+    if klass is not None and hasattr(klass, '__view_%s__'%klass.__name__):
         raise ValueError("Class can be used for view only once.")
 
     cdict = {'__name__': name,
@@ -123,8 +123,9 @@ def registerView(
 
     if klass is not None and issubclass(klass, View):
         view_class = klass
-        for attr, value in cdict:
+        for attr, value in cdict.items():
             setattr(view_class, attr, value)
+        setattr(view_class, '__view_%s__'%klass.__name__, True)
     else:
         # Build a new class
         if klass is None:
@@ -133,8 +134,6 @@ def registerView(
             bases = (klass, View)
 
         view_class = type('View %s'%klass, bases, cdict)
-
-    view_class.__view__ = True
 
     config.registerAdapter(
         PyramidView(view_class, permission),

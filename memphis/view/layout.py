@@ -80,9 +80,9 @@ class Layout(object):
             context = self.context
             if layoutview.context is not context.__parent__:
                 context = context.__parent__
-            else:
-                context = getattr(context.__parent__, '__parent__', None)
 
+            #else:
+            #    context = getattr(context.__parent__, '__parent__', None)
             #if context is None:
             #    context = getRoot(self.context)
 
