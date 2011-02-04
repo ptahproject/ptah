@@ -78,7 +78,6 @@ class FieldDataConverter(BaseDataConverter):
 
 
 @config.adapter(interfaces.IFieldWidget)
-@zope.component.adapter(interfaces.IFieldWidget)
 @zope.interface.implementer(interfaces.IDataConverter)
 def FieldWidgetDataConverter(widget):
     """Provide a data converter based on a field widget."""
@@ -284,7 +283,8 @@ class SequenceDataConverter(BaseDataConverter):
 
 class CollectionSequenceDataConverter(BaseDataConverter):
     """A special converter between collections and sequence widgets."""
-    config.adapts(zope.schema.interfaces.ICollection, interfaces.ISequenceWidget)
+    config.adapts(zope.schema.interfaces.ICollection, 
+                  interfaces.ISequenceWidget)
 
     def toWidgetValue(self, value):
         """Convert from Python bool to HTML representation."""
@@ -386,7 +386,8 @@ class MultiConverter(BaseDataConverter):
 
 class BoolSingleCheckboxDataConverter(BaseDataConverter):
     "A special converter between boolean fields and single checkbox widgets."
-    config.adapts(zope.schema.interfaces.IBool, interfaces.ISingleCheckBoxWidget)
+    config.adapts(zope.schema.interfaces.IBool, 
+                  interfaces.ISingleCheckBoxWidget)
 
     def toWidgetValue(self, value):
         """Convert from Python bool to HTML representation."""

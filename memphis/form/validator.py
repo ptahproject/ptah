@@ -29,59 +29,22 @@ class SimpleFieldValidator(object):
     zope.interface.implements(interfaces.IValidator)
     config.adapts(
         zope.interface.Interface,
-        zope.interface.Interface,
-        zope.interface.Interface,
-        zope.schema.interfaces.IField,
-        zope.interface.Interface)
+        zope.schema.interfaces.IField)
 
-    def __init__(self, context, request, view, field, widget):
-        self.context = context
-        self.request = request
-        self.view = view
+    def __init__(self, form, field):
+        self.form = form
         self.field = field
-        self.widget = widget
 
     def validate(self, value):
         """See interfaces.IValidator"""
-        context = self.context
-        field = self.field
-        widget = self.widget
-        if context is not None:
-            field = field.bind(context)
-        if value is interfaces.NOT_CHANGED:
-            if (interfaces.IContextAware.providedBy(widget) and
-                not widget.ignoreContext):
-                # get value from context
-                value = zope.component.getMultiAdapter(
-                    (context, field),
-                    interfaces.IDataManager).query()
-            else:
-                value = interfaces.NO_VALUE
-            if value is interfaces.NO_VALUE:
-                # look up default value
-                value = field.default
-                adapter = zope.component.queryMultiAdapter(
-                    (context, self.request, self.view, field, widget),
-                    interfaces.IValue, name='default')
-                if adapter:
-                    value = adapter.get()
-        return field.validate(value)
+        if value is not interfaces.NOT_CHANGED:
+            return self.field.validate(value)
 
     def __repr__(self):
         return "<%s for %s['%s']>" %(
             self.__class__.__name__,
             self.field.interface.getName(),
             self.field.__name__)
-
-
-def WidgetValidatorDiscriminators(
-    validator, context=None, request=None, view=None, field=None, widget=None):
-    zope.component.adapter(
-        util.getSpecification(context),
-        util.getSpecification(request),
-        util.getSpecification(view),
-        util.getSpecification(field),
-        util.getSpecification(widget))(validator)
 
 
 class NoInputData(zope.interface.Invalid):
@@ -163,14 +126,3 @@ class InvariantsValidator(object):
 
     def __repr__(self):
         return '<%s for %s>' %(self.__class__.__name__, self.schema.getName())
-
-
-def WidgetsValidatorDiscriminators(
-    validator,
-    context=None, request=None, view=None, schema=None, manager=None):
-    zope.component.adapter(
-        util.getSpecification(context),
-        util.getSpecification(request),
-        util.getSpecification(view),
-        util.getSpecification(schema),
-        util.getSpecification(manager))(validator)

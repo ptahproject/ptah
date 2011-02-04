@@ -35,7 +35,7 @@ class EditSubForm(form.BaseForm):
         self.request = request
         self.parentForm = self.__parent__ = parentForm
 
-    @button.handler(form.EditForm.buttons['apply'])
+    #@button.handler(form.EditForm.buttons['apply'])
     def handleApply(self, action):
         data, errors = self.widgets.extract()
         if errors:

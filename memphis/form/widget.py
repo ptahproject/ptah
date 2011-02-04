@@ -324,13 +324,17 @@ class MultiWidget(Widget):
                 converter = interfaces.IDataConverter(widget)
                 fvalue = converter.toFieldValue(value)
                 # validate field value
+                field = getattr(widget, 'field', None)
+                if field is not None:
+                    field = field.bind(self.context)
+                
+                if fvalue is interfaces.NOT_CHANGED and \
+                        not widget.ignoreContext:
+                    fvalue = zope.component.getMultiAdapter(
+                        (self.context, field), interfaces.IDataManager).query()
+
                 zope.component.getMultiAdapter(
-                    (self.context,
-                     self.request,
-                     self.form,
-                     getattr(widget, 'field', None),
-                     widget),
-                    interfaces.IValidator).validate(fvalue)
+                    (self.form, field), interfaces.IValidator).validate(fvalue)
                 # convert field value to widget value
                 widget.value = converter.toWidgetValue(fvalue)
             except (zope.schema.ValidationError, ValueError), error:

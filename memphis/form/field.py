@@ -296,13 +296,18 @@ class FieldWidgets(util.Manager):
                 raw = widget.extract()
                 if raw is not interfaces.NO_VALUE:
                     value = interfaces.IDataConverter(widget).toFieldValue(raw)
-                zope.component.getMultiAdapter(
-                    (self.content,
-                     self.request,
-                     self.form,
-                     getattr(widget, 'field', None),
-                     widget),
-                    interfaces.IValidator).validate(value)
+
+                if value is interfaces.NOT_CHANGED and not widget.ignoreContext:
+                    value = zope.component.getMultiAdapter(
+                        (self.context, field), interfaces.IDataManager).query()
+
+                field = getattr(widget, 'field', None)
+                if field is not None:
+                    if self.content is not None:
+                        field = field.bind(self.content)
+                    zope.component.getMultiAdapter(
+                        (self.form, field), 
+                        interfaces.IValidator).validate(value)
             except (zope.interface.Invalid,
                     ValueError, MultipleErrors), error:
                 view = zope.component.getMultiAdapter(

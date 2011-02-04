@@ -81,12 +81,9 @@ class DictionaryField(DataManager):
     your application.
 
     """
-
     config.adapts(dict, zope.schema.interfaces.IField)
 
-    _allowed_data_classes = (
-        dict,
-        )
+    _allowed_data_classes = (dict,)
 
     def __init__(self, data, field):
         if (not isinstance(data, self._allowed_data_classes) and

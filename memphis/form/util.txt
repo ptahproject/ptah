@@ -60,7 +60,7 @@ we need to create a properly developed form:
   ...     name = zope.schema.TextLine(title=u'Name')
 
   >>> from memphis.form import form, field
-  >>> class AddPerson(form.AddForm):
+  >>> class AddPerson(form.Form):
   ...     fields = field.Fields(IPerson)
 
   >>> from pyramid.testing import DummyRequest as TestRequest
@@ -109,7 +109,7 @@ faked form:
   ...     def get(self, name, default):
   ...         return self.data
 
-  >>> class FileUploadFormStub(form.AddForm):
+  >>> class FileUploadFormStub(form.Form):
   ...     def __init__(self):
   ...         self.widgets = WidgetsStub()
   ...

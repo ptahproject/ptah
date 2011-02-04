@@ -48,7 +48,6 @@ class ActionSuccessful(ActionEvent):
 
 class Action(object):
     """Action class."""
-
     zope.interface.implements(interfaces.IAction)
 
     __name__ = __parent__ = None

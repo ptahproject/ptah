@@ -951,35 +951,6 @@ class IInputForm(zope.interface.Interface):
         required=False)
 
 
-class IAddForm(IForm):
-    """A form to create and add a new component."""
-
-    def create(data):
-        """Create the new object using the given data.
-
-        Returns the newly created object.
-        """
-
-    def add(object):
-        """Add the object somewhere."""
-
-    def createAndAdd(data):
-        """Call create and add.
-
-        This method can be used for keep all attributes internal during create
-        and add calls. On sucess we return the new created and added object.
-        If something fails, we return None. The default handleAdd method will
-        only set the _finishedAdd marker on sucess.
-        """
-
-
-class IEditForm(IForm):
-    """A form to edit data of a component."""
-
-    def applyChanges(data):
-        """Apply the changes to the content component."""
-
-
 class IFieldsForm(IForm):
     """A form that is based upon defined fields."""
 

@@ -98,8 +98,7 @@ following signature for its discriminators: context, request, view, field, and
 widget
 
   >>> from memphis.form import validator
-  >>> simple = validator.SimpleFieldValidator(
-  ...     None, None, None, IPerson['login'], None)
+  >>> simple = validator.SimpleFieldValidator(None, IPerson['login'])
 
 A validator has a single method ``validate()``. When the validation is
 successful, ``None`` is returned:
@@ -126,7 +125,7 @@ in the login name:
 
 Let's now try our new validator:
 
-  >>> login = LoginValidator(None, None, None, IPerson['login'], None)
+  >>> login = LoginValidator(None, IPerson['login'])
 
   >>> login.validate(u'srichter1')
 
@@ -144,53 +143,16 @@ and look up the adapter using the usual way:
 
   >>> from memphis.form import interfaces
 
-  >>> zope.component.queryMultiAdapter(
-  ...     (None, None, None, IPerson['login'], None),
+  >>> zope.component.queryMultiAdapter((None, IPerson['login']),
   ...     interfaces.IValidator)
   <LoginValidator for IPerson['login']>
 
-Unfortunately, the adapter is now registered for all fields, so that the
-E-mail field also has this restriction (which is okay in this case, but not
-generally):
 
-  >>> zope.component.queryMultiAdapter(
-  ...     (None, None, None, IPerson['email'], None),
-  ...     interfaces.IValidator)
-  <LoginValidator for IPerson['email']>
+Widget which ignores context
+++++++++++++++++++++++++++++
 
-The validator module provides a helper function to set the discriminators for
-a validator, which can include instances:
-
-  >>> validator.WidgetValidatorDiscriminators(
-  ...     LoginValidator, field=IPerson['login'])
-
-Let's now clean up the component architecture and register the login validator
-again:
-
-  >>> from zope.testing import cleanup
-  >>> cleanup.cleanUp()
-
-  >>> zope.component.provideAdapter(LoginValidator)
-
-  >>> zope.component.queryMultiAdapter(
-  ...     (None, None, None, IPerson['login'], None),
-  ...     interfaces.IValidator)
-  <LoginValidator for IPerson['login']>
-
-  >>> zope.component.queryMultiAdapter(
-  ...     (None, None, None, IPerson['email'], None),
-  ...     interfaces.IValidator)
-
-Widget Validators and File-Uploads
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-File-Uploads behave a bit different than the other form
-elements. Whether the user did not choose a file to upload
-``interfaces.NOT_CHANGED`` is set as value. But the validator knows
-how to handle this.
-
-The example has two bytes fields where File-Uploads are possible, one
-field is required the other one not:
+If the context is ignored in the widget - as in the add form - the
+behavior is the same as if there was no widget:
 
   >>> class IPhoto(zope.interface.Interface):
   ...     data = zope.schema.Bytes(
@@ -200,46 +162,17 @@ field is required the other one not:
   ...         title=u'Thumbnail',
   ...         required=False)
 
-There are several possible cases to differentiate between:
-
-No widget
-+++++++++
-
-If there is no widget or the widget does not provide
-``interfaces.IContextAware``, no value is looked up from the
-context. So the not required field validates successfully but the
-required one has an required missing error, as the default value of
-the field is looked up on the field:
-
-  >>> simple_thumb = validator.SimpleFieldValidator(
-  ...     None, None, None, IPhoto['thumb'], None)
-  >>> simple_thumb.validate(interfaces.NOT_CHANGED)
-
-  >>> simple_data = validator.SimpleFieldValidator(
-  ...     None, None, None, IPhoto['data'], None)
-  >>> simple_data.validate(interfaces.NOT_CHANGED)
-  Traceback (most recent call last):
-  RequiredMissing: data
-
-Widget which ignores context
-++++++++++++++++++++++++++++
-
-If the context is ignored in the widget - as in the add form - the
-behavior is the same as if there was no widget:
-
   >>> import memphis.form.widget
   >>> widget = memphis.form.widget.Widget(None)
   >>> zope.interface.alsoProvides(widget, interfaces.IContextAware)
   >>> widget.ignoreContext = True
   >>> simple_thumb = validator.SimpleFieldValidator(
-  ...     None, None, None, IPhoto['thumb'], widget)
+  ...     None, IPhoto['thumb'])
   >>> simple_thumb.validate(interfaces.NOT_CHANGED)
 
   >>> simple_data = validator.SimpleFieldValidator(
-  ...     None, None, None, IPhoto['data'], widget)
+  ...     None, IPhoto['data'])
   >>> simple_data.validate(interfaces.NOT_CHANGED)
-  Traceback (most recent call last):
-  RequiredMissing: data
 
 Look up value from default adapter
 ++++++++++++++++++++++++++++++++++
@@ -249,11 +182,11 @@ look up the default value using a ``interfaces.IValue``
 adapter. Whether the adapter is found, its value is used as default,
 so the validation of the required field is successful here:
 
-  >>> data_default = memphis.form.widget.StaticWidgetAttribute(
-  ...     'data', context=None, request=None, view=None,
-  ...     field=IPhoto['data'], widget=widget)
-  >>> zope.component.provideAdapter(data_default, name='default')
-  >>> simple_data.validate(interfaces.NOT_CHANGED)
+#  >>> data_default = memphis.form.widget.StaticWidgetAttribute(
+#  ...     'data', context=None, request=None, view=None,
+#  ...     field=IPhoto['data'], widget=widget)
+#  >>> zope.component.provideAdapter(data_default, name='default')
+#  >>> simple_data.validate(interfaces.NOT_CHANGED)
 
 
 Look up value from context
@@ -264,23 +197,24 @@ the value is looked up on the context using a data manager:
 
   >>> class Photo(object):
   ...     zope.interface.implements(IPhoto)
-  ...
   ...     data = None
   ...     thumb = None
   >>> photo = Photo()
   >>> widget.ignoreContext = False
   >>> zope.component.provideAdapter(memphis.form.datamanager.AttributeField)
 
+field has to be bound to context to use context for validation
+
   >>> simple_thumb = validator.SimpleFieldValidator(
-  ...     photo, None, None, IPhoto['thumb'], widget)
+  ...     None, IPhoto['thumb'].bind(photo))
   >>> simple_thumb.validate(interfaces.NOT_CHANGED)
 
 If the value is not set on the context it is a required missing as
 neither context nor input have a valid value:
 
   >>> simple_data = validator.SimpleFieldValidator(
-  ...     photo, None, None, IPhoto['data'], widget)
-  >>> simple_data.validate(interfaces.NOT_CHANGED)
+  ...     None, IPhoto['data'].bind(photo))
+  >>> simple_data.validate(None)
   Traceback (most recent call last):
   RequiredMissing: data
 
@@ -288,16 +222,6 @@ After setting the value validation is successful:
 
   >>> photo.data = 'data'
   >>> simple_data.validate(interfaces.NOT_CHANGED)
-
-
-Clean-up
-++++++++
-
-  >>> gsm = zope.component.getGlobalSiteManager()
-  >>> gsm.unregisterAdapter(memphis.form.datamanager.AttributeField)
-  True
-  >>> gsm.unregisterAdapter(data_default, name='default')
-  True
 
 
 Widget Manager Validators
@@ -312,6 +236,10 @@ schemas:
 
   >>> invariants = validator.InvariantsValidator(
   ...     None, None, None, IPerson, None)
+
+  >>> invariants
+  <InvariantsValidator for IPerson>
+
 
 Widget manager validators have the option to validate a data dictionary,
 
@@ -366,33 +294,6 @@ we can use the validator:
   >>> for e in errors:
   ...     print e.__class__.__name__ + ':', e
   Invalid: Email too long.
-
-To register the custom validator only for this schema, we have to use the
-discriminator generator again.
-
-  >>> from memphis.form import util
-  >>> validator.WidgetsValidatorDiscriminators(
-  ...     CustomValidator, schema=util.getSpecification(IPerson, force=True))
-
-Note: Of course we could have used the ``zope.component.adapts()`` function
-      from within the class, but I think it is too tedious, since you have to
-      specify all discriminators and not only the specific ones you are
-      interested in.
-
-After registering the validator,
-
-  >>> zope.component.provideAdapter(CustomValidator)
-
-it becomes the validator for this schema:
-
-  >>> zope.component.queryMultiAdapter(
-  ...     (None, None, None, IPerson, None), interfaces.IManagerValidator)
-  <CustomValidator for IPerson>
-
-  >>> class ICar(zope.interface.Interface):
-  ...     pass
-  >>> zope.component.queryMultiAdapter(
-  ...     (None, None, None, ICar, None), interfaces.IManagerValidator)
 
 
 The Data Wrapper

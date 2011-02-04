@@ -21,7 +21,6 @@ Before we can start writing forms, we must have the content to work with:
   ...
   ...     id = zope.schema.TextLine(
   ...         title=u'ID',
-  ...         readonly=True,
   ...         required=True)
   ...
   ...     name = zope.schema.TextLine(
@@ -68,42 +67,29 @@ Before we can start writing forms, we must have the content to work with:
 
 Okay, that should suffice for now.
 
-What's next? Well, first things first. Let's create an add form for the
-person. Since practice showed that the ``IAdding`` interface is overkill for
-most projects, the default add form of ``z3c.form`` requires you to define the
-creation and adding mechanism.
+  >>> from pyramid.testing import DummyRequest as TestRequest
+  >>> from memphis.form import form, field, button
 
-**Note**:
-
-  If it is not done, ``NotImplementedError[s]`` are raised:
-
-    >>> from pyramid.testing import DummyRequest as TestRequest
-    >>> from memphis.form import form, field
-
-    >>> abstract = form.AddForm(None, TestRequest())
-
-    >>> abstract.create({})
-    Traceback (most recent call last):
-    ...
-    NotImplementedError
-
-    >>> abstract.add(1)
-    Traceback (most recent call last):
-    ...
-    NotImplementedError
-
-    >>> abstract.nextURL()
-    Traceback (most recent call last):
-    ...
-    NotImplementedError
-
-
-Thus let's now create a working add form:
-
-  >>> class PersonAddForm(form.AddForm):
+  >>> class PersonAddForm(form.Form):
   ...
   ...     fields = field.Fields(IPerson)
-  ...
+  ...     
+  ...     @button.buttonAndHandler(u'Add', name='add')
+  ...     def handleAdd(self, action):
+  ...         data, errors = self.extractData()
+  ...         if errors:
+  ...             self.status = self.formErrorsMessage
+  ...             return
+  ...         obj = self.createAndAdd(data)
+  ...         if obj is not None:
+  ...             # mark only as finished if we get the new object
+  ...             self._finishedAdd = True
+  ...             
+  ...     def createAndAdd(self, data):
+  ...         obj = self.create(data)
+  ...         self.add(obj)
+  ...         return obj
+  ...     
   ...     def create(self, data):
   ...         return Person(**data)
   ...
@@ -702,7 +688,7 @@ cancel action:
   >>> from memphis.form import button
   >>> class AddActions(button.ButtonActions):
   ...     zope.component.adapts(
-  ...         interfaces.IAddForm,
+  ...         PersonAddForm,
   ...         zope.interface.Interface,
   ...         zope.interface.Interface)
   ...
@@ -732,17 +718,17 @@ the add form should display a cancel button:
 But showing the button does not mean it does anything. So we also need a
 custom action handler to handle the cancel action:
 
+  >>> from webob.exc import HTTPFound
   >>> class AddActionHandler(button.ButtonActionHandler):
   ...     zope.component.adapts(
-  ...         interfaces.IAddForm,
+  ...         PersonAddForm,
   ...         zope.interface.Interface,
   ...         zope.interface.Interface,
   ...         button.ButtonAction)
   ...
   ...     def __call__(self):
   ...         if self.action.name == 'form.buttons.cancel':
-  ...            self.form._finishedAdd = True
-  ...            return
+  ...             raise HTTPFound(location=self.form.nextURL())
   ...         super(AddActionHandler, self).__call__()
 
 After registering the action handler,
@@ -755,346 +741,13 @@ we can press the cancel button and we will be forwarded:
 
   >>> addForm = PersonAddForm(root, request)
   >>> addForm.update()
-  >>> addForm.render()
   Traceback (most recent call last):
   ...
-  HTTPMovedPermanently: The resource has been moved to
+  HTTPFound: The resource was found at
 
 Eventually, we might have action managers and handlers that are much more
 powerful and some of the manual labor in this example would become
 unnecessary.
-
-
-Creating an Edit Form
----------------------
-
-Now that we have exhaustively covered the customization possibilities of add
-forms, let's create an edit form. Edit forms are even simpler than add forms,
-since all actions are completely automatic:
-
-  >>> class PersonEditForm(form.EditForm):
-  ...
-  ...     fields = field.Fields(IPerson)
-
-  >>> from memphis import view
-  >>> view.registerPagelet(
-  ...     pagelets.IFormView, PersonEditForm,
-  ...     template = view.template('memphis.form.tests:simple_edit.pt'))
-
-
-We can use the created person from the successful addition above.
-
-  >>> editForm = PersonEditForm(root[u'srichter'], TestRequest())
-
-After adding a template, we can look at the form:
-
-  >>> editForm.update()
-  >>> print editForm.render()
-  <html xmlns="http://www.w3.org/1999/xhtml">
-    <body>
-      <form action=".">
-        <div class="row">
-            <label for="form-widgets-id">ID</label>
-            <span id="form-widgets-id"
-                  class="text-widget required textline-field">srichter</span>
-        </div>
-        <div class="row">
-          <label for="form-widgets-name">Full Name</label>
-          <input type="text" id="form-widgets-name" name="form.widgets.name"
-                 class="text-widget required textline-field"
-                 value="Stephan Richter" />
-        </div>
-        <div class="row">
-          <label for="form-widgets-gender">Gender</label>
-          <select id="form-widgets-gender" name="form.widgets.gender:list"
-                  class="select-widget choice-field" size="1">
-            <option id="form-widgets-gender-novalue"
-                    value="--NOVALUE--">no value</option>
-            <option id="form-widgets-gender-0" value="male"
-                    selected="selected">male</option>
-            <option id="form-widgets-gender-1" value="female">female</option>
-          </select>
-          <input name="form.widgets.gender-empty-marker" type="hidden"
-                 value="1" />
-        </div>
-        <div class="row">
-          <label for="form-widgets-age">Age</label>
-          <input type="text" id="form-widgets-age" name="form.widgets.age"
-                 class="text-widget int-field" value="20" />
-        </div>
-        <div class="action">
-          <input type="submit" id="form-buttons-apply" name="form.buttons.apply"
-                 class="submit-widget button-field" value="Apply" />
-        </div>
-      </form>
-    </body>
-  </html>
-
-As you can see, the data are being pulled in from the context for the edit
-form. Next we will look at the behavior when submitting the form.
-
-
-Failure Upon Submission of Edit Form
-------------------------------------
-
-Let's now submit the form having some invalid data.
-
-  >>> request = TestRequest(params={
-  ...     'form.widgets.name': u'Claudia Richter',
-  ...     'form.widgets.gender': ['female'],
-  ...     'form.widgets.age': u'-1',
-  ...     'form.buttons.apply': u'Apply'}
-  ...     )
-
-  >>> editForm = PersonEditForm(root[u'srichter'], request)
-  >>> editForm.update()
-  >>> print editForm.render()
-  <html xmlns="http://www.w3.org/1999/xhtml">
-    <body>
-      <i>There were some errors.</i>
-      <ul>
-        <li>
-          Age: <div class="error">The value cannot be a negative number.</div>
-        </li>
-      </ul>
-      <form action=".">
-        <div class="row">
-            <label for="form-widgets-id">ID</label>
-            <span id="form-widgets-id"
-                  class="text-widget required textline-field">srichter</span>
-        </div>
-        <div class="row">
-          <label for="form-widgets-name">Full Name</label>
-          <input type="text" id="form-widgets-name" name="form.widgets.name"
-                 class="text-widget required textline-field"
-                 value="Claudia Richter" />
-        </div>
-        <div class="row">
-          <label for="form-widgets-gender">Gender</label>
-          <select id="form-widgets-gender" name="form.widgets.gender:list"
-                  class="select-widget choice-field" size="1">
-            <option id="form-widgets-gender-novalue"
-                    value="--NOVALUE--">no value</option>
-            <option id="form-widgets-gender-0" value="male">male</option>
-            <option id="form-widgets-gender-1" value="female"
-                    selected="selected">female</option>
-          </select>
-          <input name="form.widgets.gender-empty-marker" type="hidden"
-                 value="1" />
-        </div>
-        <div class="row">
-          <b><div class="error">The value cannot be a negative number.</div>
-          </b><label for="form-widgets-age">Age</label>
-          <input type="text" id="form-widgets-age" name="form.widgets.age"
-                 class="text-widget int-field" value="-1" />
-        </div>
-        <div class="action">
-          <input type="submit" id="form-buttons-apply" name="form.buttons.apply"
-                 class="submit-widget button-field" value="Apply" />
-        </div>
-      </form>
-    </body>
-  </html>
-
-
-Successfully Editing Content
-----------------------------
-
-Let's now resubmit the form with valid data, so the data should be updated.
-
-  >>> request = TestRequest(params={
-  ...     'form.widgets.name': u'Claudia Richter',
-  ...     'form.widgets.gender': ['female'],
-  ...     'form.widgets.age': u'27',
-  ...     'form.buttons.apply': u'Apply'}
-  ...     )
-
-  >>> editForm = PersonEditForm(root[u'srichter'], request)
-  >>> editForm.update()
-  >>> print testing.render(editForm, './/xmlns:i')
-  <i>Data successfully updated.</i>
-
-  >>> stephan = root[u'srichter']
-  >>> stephan.name
-  u'Claudia Richter'
-  >>> stephan.gender
-  'female'
-  >>> stephan.age
-  27
-
-When an edit form is successfully committed, a detailed object-modified event
-is sent out telling the system about the changes. To see the error, let's
-create an event subscriber for object-modified events:
-
-  >>> eventlog = []
-  >>> import zope.lifecycleevent
-  >>> @zope.component.adapter(zope.lifecycleevent.ObjectModifiedEvent)
-  ... def logEvent(event):
-  ...     eventlog.append(event)
-  >>> zope.component.provideHandler(logEvent)
-
-Let's now submit the form again, successfully changing the age:
-
-  >>> request = TestRequest(params={
-  ...     'form.widgets.name': u'Claudia Richter',
-  ...     'form.widgets.gender': ['female'],
-  ...     'form.widgets.age': u'29',
-  ...     'form.buttons.apply': u'Apply'}
-  ...     )
-
-  >>> editForm = PersonEditForm(root[u'srichter'], request)
-  >>> editForm.update()
-
-We can now look at the event:
-
-  >>> event = eventlog[-1]
-  >>> event
-  <zope...ObjectModifiedEvent object at ...>
-
-  >>> attrs = event.descriptions[0]
-  >>> attrs.interface
-  <InterfaceClass memphis.TESTS.IPerson>
-  >>> attrs.attributes
-  ('age',)
-
-
-Successful Action with No Changes
----------------------------------
-
-When submitting the form without any changes, the form will tell you so.
-
-  >>> request = TestRequest(params={
-  ...     'form.widgets.name': u'Claudia Richter',
-  ...     'form.widgets.gender': ['female'],
-  ...     'form.widgets.age': u'29',
-  ...     'form.buttons.apply': u'Apply'}
-  ...     )
-
-  >>> editForm = PersonEditForm(root[u'srichter'], request)
-  >>> editForm.update()
-  >>> print testing.render(editForm, './/xmlns:i')
-  <i>No changes were applied.</i>
-
-
-Changing Status Messages
-------------------------
-
-Depending on the project, it is often desirable to change the status messages
-to fit the application. In ``zope.formlib`` this was hard to do, since the
-messages were buried within fairly complex methods that one did not want to
-touch. In this package all those messages are exposed as form attributes.
-
-There are three messages for the edit form:
-
-* ``formErrorsMessage`` -- Indicates that an error occurred while
-  applying the changes. This message is also available for the add form.
-
-* ``successMessage`` -- The form data was successfully applied.
-
-* ``noChangesMessage`` -- No changes were found in the form data.
-
-Let's now change the ``noChangesMessage``:
-
-  >>> editForm.noChangesMessage = u'No changes were detected in the form data.'
-  >>> editForm.update()
-  >>> print testing.render(editForm, './/xmlns:i')
-  <i>No changes were detected in the form data.</i>
-
-When even more flexibility is required within a project, one could also
-implement these messages as properties looking up an attribute value. However,
-we have found this to be a rare case.
-
-
-Creating Edit Forms for Dictionaries
-------------------------------------
-
-Sometimes it is not desirable to edit a class instance that implements the
-fields, but other types of object. A good example is the need to modify a
-simple dictionary, where the field names are the keys. To do that, a special
-data manager for dictionaries is available:
-
-#  >>> from memphis.form import datamanager
-#  >>> zope.component.provideAdapter(datamanager.DictionaryField)
-
-The only step the developer has to complete is to re-implement the form's
-``getContent()`` method to return the dictionary:
-
-  >>> personDict = {'id': u'rineichen', 'name': u'Roger Ineichen',
-  ...               'gender': None, 'age': None}
-  >>> class PersonDictEditForm(PersonEditForm):
-  ...     def getContent(self):
-  ...         return personDict
-
-We can now use the form as usual:
-
-  >>> editForm = PersonDictEditForm(None, TestRequest())
-  >>> editForm.update()
-  >>> print editForm.render()
-  <html xmlns="http://www.w3.org/1999/xhtml">
-    <body>
-      <form action=".">
-        <div class="row">
-          <label for="form-widgets-id">ID</label>
-          <span id="form-widgets-id"
-                class="text-widget required textline-field">rineichen</span>
-        </div>
-        <div class="row">
-          <label for="form-widgets-name">Full Name</label>
-          <input type="text" id="form-widgets-name"
-                 name="form.widgets.name"
-                 class="text-widget required textline-field"
-         value="Roger Ineichen" />
-        </div>
-        <div class="row">
-          <label for="form-widgets-gender">Gender</label>
-          <select id="form-widgets-gender" name="form.widgets.gender:list"
-                  class="select-widget choice-field" size="1">
-            <option id="form-widgets-gender-novalue"
-                    value="--NOVALUE--" selected="selected">no value</option>
-            <option id="form-widgets-gender-0" value="male">male</option>
-            <option id="form-widgets-gender-1" value="female">female</option>
-          </select>
-          <input name="form.widgets.gender-empty-marker" type="hidden"
-                 value="1" />
-        </div>
-        <div class="row">
-          <label for="form-widgets-age">Age</label>
-          <input type="text" id="form-widgets-age"
-                 name="form.widgets.age" class="text-widget int-field"
-                 value="20" />
-        </div>
-        <div class="action">
-          <input type="submit" id="form-buttons-apply"
-                 name="form.buttons.apply" class="submit-widget button-field"
-                 value="Apply" />
-        </div>
-      </form>
-    </body>
-  </html>
-
-Note that the name displayed in the form is identical to the one in the
-dictionary. Let's now submit a form to ensure that the data are also written to
-the dictionary:
-
-  >>> request = TestRequest(params={
-  ...     'form.widgets.name': u'Jesse Ineichen',
-  ...     'form.widgets.gender': ['male'],
-  ...     'form.widgets.age': u'5',
-  ...     'form.buttons.apply': u'Apply'}
-  ...     )
-  >>> editForm = PersonDictEditForm(None, request)
-  >>> editForm.update()
-
-  >>> len(personDict)
-  4
-  >>> personDict['age']
-  5
-  >>> personDict['gender']
-  'male'
-  >>> personDict['id']
-  u'rineichen'
-  >>> personDict['name']
-  u'Jesse Ineichen'
 
 
 Creating a Display Form
@@ -1121,15 +774,15 @@ Creating a display form is simple; just instantiate, update and render it:
       </div>
       <div class="row">
         <span id="form-widgets-name"
-              class="text-widget required textline-field">Claudia Richter</span>
+              class="text-widget required textline-field">Stephan Richter</span>
       </div>
       <div class="row">
         <span id="form-widgets-gender"
               class="select-widget choice-field"><span
-            class="selected-option">female</span></span>
+            class="selected-option">male</span></span>
       </div>
       <div class="row">
-        <span id="form-widgets-age" class="text-widget int-field">29</span>
+        <span id="form-widgets-age" class="text-widget int-field">20</span>
       </div>
     </body>
   </html>
@@ -1329,15 +982,15 @@ Now we can define a field widget factory:
 
 We register the ``MyWidget`` in a form like:
 
-  >>> class MyEditForm(form.EditForm):
-  ...
+  >>> class MyEditForm(form.Form):
+  ...     ignoreContext = False
   ...     fields = field.Fields(IPerson)
   ...     fields['name'].widgetFactory = MyFieldWidget
 
 We can see that the custom widget gets used in the rendered form:
 
   >>> view.registerPagelet(
-  ...     pagelets.IFormView, interfaces.IEditForm,
+  ...     pagelets.IFormView, MyEditForm,
   ...     template = view.template('memphis.form.tests:simple_edit.pt'))
 
   >>> myEdit = MyEditForm(root[u'srichter'], TestRequest())
@@ -1346,7 +999,7 @@ We can see that the custom widget gets used in the rendered form:
   >>> print testing.render(myEdit, './/xmlns:input[@id="form-widgets-name"]')
   <input type="text" id="form-widgets-name"
          name="form.widgets.name" class="MyCSS required textline-field"
-         value="Claudia Richter" />
+         value="Stephan Richter" />
 
 
 Hidden fields
@@ -1356,14 +1009,20 @@ Another important part of a form is that we can generate hidden widgets. We can
 do this in a form by defining a widget mode. We can do this by override the
 setUpWidgets method.
 
-  >>> class HiddenFieldEditForm(form.EditForm):
-  ...
+  >>> class HiddenFieldEditForm(form.Form):
+  ...     
+  ...     ignoreContext = False
   ...     fields = field.Fields(IPerson)
   ...     fields['name'].widgetFactory = MyFieldWidget
   ...
   ...     def updateWidgets(self):
   ...         super(HiddenFieldEditForm, self).updateWidgets()
   ...         self.widgets['age'].mode = interfaces.HIDDEN_MODE
+
+  >>> view.registerPagelet(
+  ...     pagelets.IFormView, HiddenFieldEditForm,
+  ...     template = view.template('memphis.form.tests:simple_edit.pt'))
+
 
 We can see that the widget gets rendered as hidden:
 
@@ -1372,7 +1031,7 @@ We can see that the widget gets rendered as hidden:
   >>> print testing.render(hiddenEdit, './/xmlns:input[@id="form-widgets-age"]')
   <input type="hidden" id="form-widgets-age"
          name="form.widgets.age" class="hidden-widget"
-         value="29" />
+         value="20" />
 
 
 Actions with Errors
@@ -1382,7 +1041,7 @@ Even though the data might be validated correctly, it sometimes happens that
 data turns out to be invalid while the action is executed. In those cases a
 special action execution error can be raised that wraps the original error.
 
-  >>> class PersonAddForm(form.AddForm):
+  >>> class PersonAddForm(form.Form):
   ...
   ...     fields = field.Fields(IPerson).select('id')
   ...
@@ -1392,6 +1051,10 @@ special action execution error can be raised that wraps the original error.
   ...         if data['id'] in self.getContent():
   ...             raise interfaces.WidgetActionExecutionError(
   ...                 'id', zope.interface.Invalid('Id already exists'))
+
+  >>> view.registerPagelet(
+  ...     pagelets.IFormView, PersonAddForm,
+  ...     template = view.template('memphis.form.tests:simple_edit.pt'))
 
 In this case the action execution error is specific to a widget. The framework
 will attach a proper error view to the widget and the widget manager:
@@ -1408,13 +1071,11 @@ will attach a proper error view to the widget and the widget manager:
   (<InvalidErrorViewSnippet for Invalid>,)
   >>> addForm.widgets['id'].error
   <InvalidErrorViewSnippet for Invalid>
-  >>> addForm.status
-  u'There were some errors.'
 
 If the error is non-widget specific, then we can simply use the generic action
 execution error:
 
-  >>> class PersonAddForm(form.AddForm):
+  >>> class PersonAddForm(form.Form):
   ...
   ...     fields = field.Fields(IPerson).select('id')
   ...
@@ -1423,6 +1084,10 @@ execution error:
   ...         raise interfaces.ActionExecutionError(
   ...             zope.interface.Invalid('Some problem occurred.'))
 
+  >>> view.registerPagelet(
+  ...     pagelets.IFormView, PersonAddForm,
+  ...     template = view.template('memphis.form.tests:simple_edit.pt'))
+
 Let's have a look at the result:
 
   >>> addForm = PersonAddForm(root, request)
@@ -1430,8 +1095,6 @@ Let's have a look at the result:
 
   >>> addForm.widgets.errors
   (<InvalidErrorViewSnippet for Invalid>,)
-  >>> addForm.status
-  u'There were some errors.'
 
 **Note**:
 
@@ -1584,14 +1247,6 @@ Form
   >>> interfaces.IDisplayForm.providedBy(obj)
   False
 
-  >>> from memphis.form import interfaces
-  >>> interfaces.IEditForm.providedBy(obj)
-  False
-
-  >>> from memphis.form import interfaces
-  >>> interfaces.IAddForm.providedBy(obj)
-  False
-
 
 DisplayForm
 ~~~~~~~~~~~
@@ -1606,60 +1261,4 @@ DisplayForm
 
   >>> from memphis.form import interfaces
   >>> interfaces.IDisplayForm.providedBy(obj)
-  True
-
-  >>> from memphis.form import interfaces
-  >>> interfaces.IEditForm.providedBy(obj)
-  False
-
-  >>> from memphis.form import interfaces
-  >>> interfaces.IAddForm.providedBy(obj)
-  False
-
-
-EditForm
-~~~~~~~~
-
-  >>> from memphis.form import interfaces
-  >>> obj = form.EditForm(None, None)
-  >>> verifyObject(interfaces.IEditForm, obj)
-  True
-
-  >>> interfaces.IForm.providedBy(obj)
-  True
-
-  >>> from memphis.form import interfaces
-  >>> interfaces.IDisplayForm.providedBy(obj)
-  False
-
-  >>> from memphis.form import interfaces
-  >>> interfaces.IEditForm.providedBy(obj)
-  True
-
-  >>> from memphis.form import interfaces
-  >>> interfaces.IAddForm.providedBy(obj)
-  False
-
-
-AddForm
-~~~~~~~
-
-  >>> from memphis.form import interfaces
-  >>> obj = form.AddForm(None, None)
-  >>> verifyObject(interfaces.IAddForm, obj)
-  True
-
-  >>> interfaces.IForm.providedBy(obj)
-  True
-
-  >>> from memphis.form import interfaces
-  >>> interfaces.IDisplayForm.providedBy(obj)
-  False
-
-  >>> from memphis.form import interfaces
-  >>> interfaces.IEditForm.providedBy(obj)
-  False
-
-  >>> from memphis.form import interfaces
-  >>> interfaces.IAddForm.providedBy(obj)
   True
