@@ -10,6 +10,15 @@ def read(*rnames):
 
 version='0'
 
+install_requires = [
+    'setuptools',
+    'martian',
+    'zope.component',
+    'zope.configuration',
+    ]
+
+test_require = install_requires + ['zope.configuration [test]']
+
 
 setup(name='memphis.config',
       version=version,
@@ -34,17 +43,15 @@ setup(name='memphis.config',
       author_email='fafhrd91@gmail.com',
       url='http://pypi.python.org/pypi/memphis.config/',
       license='BSD-derived (http://www.repoze.org/LICENSE.txt)',
-      packages=find_packages(),
-      namespace_packages=['memphis'],
-      install_requires = ['setuptools',
-                          'martian',
-                          'zope.component',
-                          'zope.configuration',
-                          ],
+      packages = find_packages(),
+      namespace_packages = ['memphis'],
+      install_requires = install_requires,
       extras_require = dict(test=['zope.configuration [test]']),
+      tests_require = test_require,
+      test_suite = "memphis.config.tests",
       include_package_data = True,
       zip_safe = False,
       entry_points = {
         'memphis': ['include = memphis.config']
-        }
+        },
       )

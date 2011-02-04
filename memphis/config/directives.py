@@ -10,11 +10,13 @@ from martian import CLASS, MODULE, ONCE_NOBASE, MULTIPLE_NOBASE
 
 def getInfo(level=3):
     frame = inspect.stack()[level][0]
+    info = ''
     try:
         tb = inspect.getframeinfo(frame)
-        info = ' File "%s", line %d, in %s\n' \
-            '      %s'% (tb.filename, tb.lineno,
-                         tb.function, tb.code_context[0])
+        if tb.code_context:
+            info = ' File "%s", line %d, in %s\n' \
+                '      %s'% (tb.filename, tb.lineno,
+                             tb.function, tb.code_context[0])
     finally:
         del frame
     return info
