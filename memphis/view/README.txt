@@ -126,17 +126,27 @@ Use 'queryLayout' to get layout for view::
 
 Exceptions
 
+  >>> layoutOb.layout = 'unknown'
+  >>> layoutOb()
+  Traceback (most recent call last):
+  ...
+  LayoutNotFound: unknown
+
+You can set skipParent to True, in this case if layout can't find parent
+it just render itself:
+
+  >>> layoutOb.skipParent = True
+  >>> layoutOb()
+  u'<div id="workspace">root</div>'
+
+Can't render layout withour template or custom render method:
+
   >>> layoutOb.template = None
   >>> layoutOb()
   Traceback (most recent call last):
   ...
   RuntimeError: Can't render layout: workspace
 
-  >>> layoutOb.layout = 'unknown'
-  >>> layoutOb()
-  Traceback (most recent call last):
-  ...
-  LayoutNotFound: unknown
 
 
 All three layouts are rendered. View is rendered inside default (nameless)

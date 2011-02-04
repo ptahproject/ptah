@@ -6,7 +6,6 @@ import unittest, doctest, sys
 from zope import interface, component
 from chameleon.zpt.interfaces import IExpressionTranslator
 
-import pyramid.testing
 from pyramid.exceptions import NotFound
 from pyramid.interfaces import IView, IViewClassifier
 
@@ -49,7 +48,6 @@ def setUp(test):
 
 
 def tearDown(test):
-    pyramid.testing.tearDown()
     testing.tearDownTestAsModule(test)
     testing.tearDownConfig(test)
     del memphis.TESTS

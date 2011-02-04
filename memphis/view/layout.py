@@ -29,6 +29,7 @@ class Layout(object):
     template = None
     mainview = None
     maincontext = None
+    skipParent = False
 
     def __init__(self, view, context, request):
         self.view = view
@@ -90,12 +91,15 @@ class Layout(object):
             if layout is not None:
                 return layout(view=view, *args, **kw)
 
-        raise LayoutNotFound(self.layout)
+        if not self.skipParent:
+            raise LayoutNotFound(self.layout)
+
+        return self.render()
 
 
 def registerLayout(
     name='', context=None, view=None, template=None, parent='',
-    klass=None, layer=IRequest, configContext=None, **kwargs):
+    klass=None, layer=IRequest, skipParent=False, configContext=None, **kwargs):
 
     if not parent:
         layout = None
@@ -107,7 +111,8 @@ def registerLayout(
     # Build a new class
     cdict = {'__name__': name,
              'layout': layout,
-             'template': template}
+             'template': template,
+             'skipParent': skipParent}
     cdict.update(kwargs)
 
     if klass is None:
