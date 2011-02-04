@@ -43,6 +43,10 @@ class PyramidViewGrokker(martian.ClassGrokker):
     martian.directive(pyramidView)
 
     def execute(self, klass, configContext=None, **kw):
+        if klass in viewsExecuted:
+            return False
+        viewsExecuted.append(klass)
+
         value = pyramidView.bind(default=_marker).get(klass)
         if value is _marker:
             return False
