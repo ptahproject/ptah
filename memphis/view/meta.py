@@ -60,6 +60,8 @@ class PyramidViewGrokker(martian.ClassGrokker):
             return False
 
         name, context, layer, template, layout, permission, info = value
+        if layer is None:
+            layer = IRequest
 
         registerView(
             name, context, klass, template, layer, layout, permission,
@@ -81,6 +83,8 @@ class PageletGrokker(martian.ClassGrokker):
             return False
 
         pageletType, context, template, layer, info = value
+        if layer is None:
+            layer = IRequest
 
         registerPagelet(pageletType, context, klass, 
                         template, layer, configContext, info)
