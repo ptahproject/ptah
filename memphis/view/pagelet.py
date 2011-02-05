@@ -73,13 +73,19 @@ def registerPageletType(name, iface, context, configContext=None, info=''):
     config.registerUtility(pt, IPageletType, name, configContext, info)
 
 
+_registered = []
+
+@config.cleanup
+def cleanUp():
+    _registered[:] = []
+
+
 def registerPagelet(
     pageletType, context=None, klass=None, 
     template=None, layer=IRequest, configContext=None, info='', **kw):
 
     def _register(pageletType, context, klass, layer, template, kw):
-        if klass is not None and hasattr(
-            klass, '__pagelet_%s__'%klass.__name__):
+        if klass is not None and klass in _registered:
             raise ValueError("Class can be used for pagelet only once.")
 
         cdict = dict(kw)
@@ -100,10 +106,10 @@ def registerPagelet(
 
         # Build a new class
         if klass is not None and issubclass(klass, Pagelet):
+            _registered.append(klass)
             pagelet_class = klass
             for attr, value in cdict.items():
                 setattr(pagelet_class, attr, value)
-            setattr(pagelet_class, '__pagelet_%s__'%klass.__name__, True)
         else:
             # Build a new class
             if klass is None:

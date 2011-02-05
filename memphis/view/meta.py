@@ -7,6 +7,7 @@ from pyramid.interfaces import IRequest
 from zope import interface
 from zope.interface.interface import InterfaceClass
 
+from memphis import config
 from memphis.view import interfaces, pageletType, \
     View, pyramidView, registerView, \
     Pagelet, pagelet, registerPagelet, registerPageletType
@@ -16,6 +17,13 @@ _marker = object()
 typesExecuted = []
 viewsExecuted = []
 pageletsExecuted = []
+
+@config.cleanup
+def cleanUp():
+    global typesExecuted, viewsExecuted, pageletsExecuted
+    typesExecuted = []
+    viewsExecuted = []
+    pageletsExecuted = []
 
 
 class PageletTypeGrokker(martian.InstanceGrokker):

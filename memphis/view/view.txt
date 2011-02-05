@@ -173,3 +173,5 @@ Parameters are same except klass.
 
   >>> print v.render()
   <div>My pagelet</div>
+
+  >>> reGrok()
