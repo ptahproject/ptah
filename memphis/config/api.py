@@ -226,6 +226,11 @@ def loadPackage(name, seen=None, first=True):
         addPackage(name)
 
 
+def cleanup(handler):
+    registerCleanup(handler)
+    return handler
+
+
 def registerCleanup(handler):
     if handler not in cleanups:
         cleanups.append(handler)

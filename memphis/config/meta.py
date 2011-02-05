@@ -140,12 +140,10 @@ class ActionGrokker(martian.GlobalGrokker):
         return True
 
 
+@api.cleanup
 def cleanUp():
     global _adapters, _modules, _utilities
 
     _modules = []
     _adapters = []
     _utilities = []
-
-
-api.registerCleanup(cleanUp)

@@ -98,6 +98,7 @@ It's possible to register function as different adapter:
     >>> del sys.modules[__name__].adaptObject
     >>> catesting.tearDown()
 
+
 Registering class as adapter::
 
     >>> config.begin()
