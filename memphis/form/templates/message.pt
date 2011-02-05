@@ -1,0 +1,11 @@
+<div class="statusWarningMessage">
+  <tal:block content="view.message" />
+  <tal:block condition="view.errors">
+    <br />
+    <ul>
+      <li tal:repeat="err view.errors"
+	  tal:content="structure err.render()">
+      </li>
+    </ul>
+  </tal:block>
+</div>
