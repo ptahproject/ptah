@@ -6,6 +6,7 @@ from memphis.config.api import getContext
 from memphis.config.api import addPackage
 from memphis.config.api import loadPackage
 from memphis.config.api import action as addAction
+from memphis.config.api import registerCleanup
 
 from memphis.config.api import registerAdapter
 from memphis.config.api import registerUtility

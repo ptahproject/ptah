@@ -146,3 +146,6 @@ def cleanUp():
     _modules = []
     _adapters = []
     _utilities = []
+
+
+api.registerCleanup(cleanUp)

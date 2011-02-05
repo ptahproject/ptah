@@ -80,6 +80,7 @@ configContext = None
 grokkerRegistry = martian.GrokkerRegistry()
 grokkerPackages = []
 grokkerPackagesExcludes = {}
+cleanups = []
 
 
 def getContext():
@@ -88,9 +89,10 @@ def getContext():
 
 def begin(packages=None):
     global configContext
-    import meta
 
-    meta.cleanUp()
+    for h in cleanups:
+        h()
+
     grokkerRegistry.clear()
     configContext = ConfigurationMachine()
     registerCommonDirectives(configContext)
@@ -224,9 +226,17 @@ def loadPackage(name, seen=None, first=True):
         addPackage(name)
 
 
+def registerCleanup(handler):
+    if handler not in cleanups:
+        cleanups.append(handler)
+
+
 def cleanUp():
     global grokkerPackages, grokkerPackagesExcludes
 
     grokkerRegistry.clear()
     grokkerPackages = []
     grokkerPackagesExcludes = {}
+
+    for h in cleanups:
+        h()
