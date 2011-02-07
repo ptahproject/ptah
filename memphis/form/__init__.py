@@ -1,7 +1,13 @@
 # python package
 
-#
-from memphis.form.form import Form
+# forms
+from memphis.form.form import Form, EditForm
+
+# fields
+from memphis.form.field import Fields
+
+# buttons
+from memphis.form.button import buttonAndHandler
 
 # pagelets
 from memphis.form.pagelets import IFormView
