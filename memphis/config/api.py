@@ -164,7 +164,10 @@ def registerAdapter(factory, required=None, provides=None, name=u'',
         required = component.adaptedBy(factory)
 
     if provides is None:
-        provides = list(interface.implementedBy(factory))[0]
+        if type(factory) is type:
+            provides = list(interface.implementedBy(factory))[0]
+        else:
+            provides = list(interface.providedBy(factory))[0]
 
     if configContext is None:
         _register(factory, required, provides, name)

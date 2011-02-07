@@ -34,8 +34,8 @@ class adapts(Directive):
     scope = CLASS
     store = ONCE_NOBASE
 
-    def factory(self, *args):
-        name = ''
+    def factory(self, *args, **kw):
+        name = kw.get('name', '')
         required = []
         for val in args:
             if isinstance(val, basestring):
