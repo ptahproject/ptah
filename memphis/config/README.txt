@@ -15,6 +15,7 @@ system::
     >>> config.begin()
     >>> config.addPackage('memphis.config.TESTS', excludes=['zcml'])
 
+
 You can do this before config initialized or before commit. Nothing happens
 if package is adding after configuration commit.
 
@@ -140,7 +141,7 @@ If configuration context is not set adapters are registered immidietly:
 
     >>> catesting.tearDown()
 
-Registering component as adapter:
+Registering function as adapter:
 
     >>> config.registerAdapter(adaptObject)
     >>> print sm.queryAdapter(Content(IObject), IAdapted)

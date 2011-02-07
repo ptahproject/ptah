@@ -9,10 +9,12 @@ Test for `registerUtility`, later registration on `config.commit`::
     ...     pass
     >>> class ITest2(interface.Interface):
     ...     pass
-    >>> def testAdapter(ob):
+
+    >>> @interface.implementer(ITest2)
+    ... def testAdapter(ob):
     ...     return ob
 
-    >>> registerAdapter(testAdapter, (ITest1,), ITest2)
+    >>> registerAdapter(testAdapter, (ITest1,))
 
     >>> class Ob(object):
     ...     def __init__(self, iface):
@@ -35,6 +37,31 @@ Now config context is None, so action should be executed immedietly::
     >>> registerAdapter(testAdapter, (ITest2,), ITest1)
     >>> sm.getAdapter(Ob(ITest2), ITest1)
     <memphis.config.TESTS.Ob object at ...>
+
+Callable instance as adapter::
+
+    >>> begin()
+    >>> commit()
+
+    >>> class Adapter(object):
+    ...     component.adapts(ITest1)
+    ...     interface.implements(ITest2)
+    ...     
+    ...     def __init__(self, ob):
+    ...         self.ob = ob
+    ...     def __call__(self, ad):
+    ...         return self.ob
+
+    >>> adOb = Adapter(Ob(ITest2))
+    >>> registerAdapter(adOb)
+
+    >>> sm.getAdapter(Ob(ITest1), ITest2) is adOb.ob
+    True
+
+    >>> registerAdapter(Adapter)
+    
+    >>> sm.getAdapter(Ob(ITest1), ITest2)
+    <memphis.config.TESTS.Adapter ...>
 
 Test for `registerHanlder`, later registration on `config.commit`::
 
@@ -67,6 +94,7 @@ loadPackage
 
 $Id: api.py 11802 2011-01-31 06:25:41Z fafhrd91 $
 """
+import types
 import martian
 import pkg_resources
 from zope import interface, component
@@ -103,10 +131,11 @@ def begin(packages=None):
         excludes = grokkerPackagesExcludes.get(name, ())
 
         def exclude(modname):
-            if modname.endswith('.pt'):
-                return True
-            return modname in ('tests','testing','ftests') or \
-                modname in excludes
+            if not modname.endswith('.pt'):
+                if modname not in ('tests','testing','ftests') and \
+                        modname not in excludes:
+                    return False
+            return True
 
         martian.grok_dotted_name(
             name, grokkerRegistry, exclude_filter=exclude,
@@ -130,10 +159,11 @@ def addPackage(name, excludes=()):
         if configContext is not None:
             # seems configuration system already initialized
             def exclude(modname):
-                if modname.endswith('.pt'):
-                    return False
-                return (modname in ('tests','testing','ftests') or
-                        modname in excludes)
+                if not modname.endswith('.pt'):
+                    if modname not in ('tests','testing','ftests') and \
+                            modname not in excludes:
+                        return False
+                return True
 
             martian.grok_dotted_name(
                 name, grokkerRegistry, exclude_filter=exclude,
@@ -166,8 +196,12 @@ def registerAdapter(factory, required=None, provides=None, name=u'',
     if provides is None:
         if type(factory) is type:
             provides = list(interface.implementedBy(factory))[0]
-        else:
+        elif hasattr(factory, 'func_name'):
+            provides = list(interface.implementedBy(factory))[0]
+        elif isinstance(type(factory), object):
             provides = list(interface.providedBy(factory))[0]
+            if required is None:
+                required = factory.__class__.__component_adapts__
 
     if configContext is None:
         _register(factory, required, provides, name)
