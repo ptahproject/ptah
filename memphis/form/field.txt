@@ -368,6 +368,10 @@ Next we need a form that specifies the fields to be added:
   >>> class PersonForm(object):
   ...     prefix = 'form.'
   ...     fields = field.Fields(IPerson)
+  ...     def getContent(self):
+  ...         return self.context
+  ...     def validate(self, data):
+  ...         return []
   >>> personForm = PersonForm()
 
 For more details on how to define fields within a form, see ``form.txt``. We
@@ -379,8 +383,9 @@ is true for an add form.
   >>> from pyramid.testing import DummyRequest as TestRequest
   >>> request = TestRequest()
   >>> context = object()
+  >>> personForm.context = context
 
-  >>> manager = field.FieldWidgets(personForm, request, context)
+  >>> manager = field.FieldWidgets(personForm, request)
   >>> manager.ignoreContext = True
 
 
@@ -566,66 +571,17 @@ fields get used.
 Data extraction and validation
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Besides managing widgets, the widget manager also controls the process of
-extracting and validating extracted data. Let's start with the validation
-first, which only validates the data as a whole, assuming each individual
-value being already validated.
-
-Before we can use the method, we have to register a "manager validator":
-
-  >>> from memphis.form import validator
-  >>> zope.component.provideAdapter(validator.InvariantsValidator)
-
-  >>> personForm.fields = field.Fields(IPerson)
-  >>> manager.update()
-
-  >>> manager.validate(
-  ...     {'firstName': u'Stephan', 'lastName': u'Richter'})
-  ()
-
-The result of this method is a tuple of errors that occurred during the
-validation. An empty tuple means the validation succeeded. Let's now make the
-validation fail:
-
-  >>> errors = manager.validate(
-  ...     {'firstName': u'Stephan', 'lastName': u'Richter-Richter'})
-
-  >>> [error.doc() for error in errors]
-  ['The last name is too short.']
-
-A special case occurs when the schema fields are not associated with an
-interface:
-
-  >>> name = zope.schema.TextLine(__name__='name')
-
-  >>> class PersonNameForm(object):
-  ...     prefix = 'form.'
-  ...     fields = field.Fields(name)
-  >>> personNameForm = PersonNameForm()
-
-  >>> manager = field.FieldWidgets(personNameForm, request, context)
-
-In this case, the widget manager's ``validate()`` method should simply ignore
-the field and not try to look up any invariants:
-
-  >>> manager.validate({'name': u'Stephan'})
-  ()
-
 Let's now have a look at the widget manager's ``extract()``, which returns a
-data dictionary and the collection of errors. Before we can validate, we have
-to register a validator for the widget:
-
-  >>> zope.component.provideAdapter(validator.SimpleFieldValidator)
-
-When all goes well, the data dictionary is complete and the error collection
-empty:
+data dictionary and the collection of errors. When all goes well, the data
+dictionary is complete and the error collection empty:
 
   >>> request = TestRequest()
   >>> request.params.update({
   ...     'form.widgets.id': u'srichter',
   ...     'form.widgets.firstName': u'Stephan',
   ...     'form.widgets.lastName': u'Richter'})
-  >>> manager = field.FieldWidgets(personForm, request, context)
+  >>> personForm.fields = field.Fields(IPerson)
+  >>> manager = field.FieldWidgets(personForm, request)
   >>> manager.ignoreContext = True
   >>> manager.update()
 
@@ -650,11 +606,11 @@ name:
   >>> request = TestRequest()
   >>> request.params.update({
   ...     'form.widgets.firstName': u'Stephan', 'form.widgets.id': u'srichter'})
-  >>> manager = field.FieldWidgets(personForm, request, context)
+  >>> manager = field.FieldWidgets(personForm, request)
   >>> manager.ignoreContext = True
   >>> manager.update()
   >>> manager.extract()
-  ({'firstName': u'Stephan'}, (<ErrorViewSnippet for RequiredMissing>,))
+  ({'lastName': None, 'firstName': u'Stephan'}, (<ErrorViewSnippet for RequiredMissing>,))
 
 Or, we could violate a constraint. This constraint raises Invalid, which is
 a convenient way to raise errors where we mainly care about providing a custom
@@ -665,29 +621,29 @@ error message.
   ...     'form.widgets.firstName': u'Stephan', 
   ...     'form.widgets.lastName': u'richter',
   ...     'form.widgets.id': u'srichter'})
-  >>> manager = field.FieldWidgets(personForm, request, context)
+  >>> manager = field.FieldWidgets(personForm, request)
   >>> manager.ignoreContext = True
   >>> manager.update()
   >>> extracted = manager.extract()
   >>> extracted
-  ({'firstName': u'Stephan'}, (<InvalidErrorViewSnippet for Invalid>,))
+  ({'lastName': None, 'firstName': u'Stephan'}, (<InvalidErrorViewSnippet for Invalid>,))
   
   >>> extracted[1][0].createMessage()
   u'Name must have at least one capital letter'
 
 Finally, let's ensure that invariant failures are also caught:
 
-  >>> request = TestRequest()
-  >>> request.params.update({
-  ...     'form.widgets.id': u'srichter',
-  ...     'form.widgets.firstName': u'Stephan',
-  ...     'form.widgets.lastName': u'Richter-Richter'})
-  >>> manager = field.FieldWidgets(personForm, request, context)
-  >>> manager.ignoreContext = True
-  >>> manager.update()
-  >>> data, errors = manager.extract()
-  >>> errors[0].error.doc()
-  'The last name is too short.'
+#  >>> request = TestRequest()
+#  >>> request.params.update({
+#  ...     'form.widgets.id': u'srichter',
+#  ...     'form.widgets.firstName': u'Stephan',
+#  ...     'form.widgets.lastName': u'Richter-Richter'})
+#  >>> manager = field.FieldWidgets(personForm, request)
+#  >>> manager.ignoreContext = True
+#  >>> manager.update()
+#  >>> data, errors = manager.extract()
+#  >>> errors[0].error.doc()
+#  'The last name is too short.'
 
 Note that the errors coming from invariants are all error view snippets as
 well, just as it is the case for field-specific validation errors. And that's
@@ -696,8 +652,8 @@ really all there is!
 By default, the ``extract()`` method not only returns the errors that it
 catches, but also sets them on individual widgets and on the manager:
 
-  >>> manager.errors
-  (<ErrorViewSnippet for LastNameTooShort>,)
+#  >>> manager.errors
+#  (<ErrorViewSnippet for LastNameTooShort>,)
 
 This behavior can be turned off. To demonstrate, let's make a new request that
 causes a widget-level error:
@@ -705,7 +661,7 @@ causes a widget-level error:
   >>> request = TestRequest()
   >>> request.params.update({
   ...     'form.widgets.firstName': u'Stephan', 'form.widgets.id': u'srichter'})
-  >>> manager = field.FieldWidgets(personForm, request, context)
+  >>> manager = field.FieldWidgets(personForm, request)
   >>> manager.ignoreContext = True
   >>> manager.update()
 
@@ -714,7 +670,7 @@ we still get the same result from the method call, ...
 
   >>> manager.setErrors = False
   >>> manager.extract()
-  ({'firstName': u'Stephan'}, (<ErrorViewSnippet for RequiredMissing>,))
+  ({'lastName': None, 'firstName': u'Stephan'}, (<ErrorViewSnippet for RequiredMissing>,))
 
 but there are no side effects on the manager and the widgets:
 
@@ -733,11 +689,16 @@ Note that you can also manually control ignoring the context per field.
   ...     fields = field.Fields(IPerson).select('id')
   ...     fields += field.Fields(IPerson, ignoreContext=True).select(
   ...                   'firstName', 'lastName')
+  ...     def getContent(self):
+  ...         return self.context
+  ...     def validate(self, data):
+  ...         return []
   >>> customPersonForm = CustomPersonForm()
+  >>> customPersonForm.context = object()
 
 Let's now create a manager and update it:
 
-  >>> customManager = field.FieldWidgets(customPersonForm, request, context)
+  >>> customManager = field.FieldWidgets(customPersonForm, request)
   >>> customManager.update()
 
   >>> customManager['id'].ignoreContext
@@ -788,21 +749,25 @@ It can be simply assigned as follows:
 
 Now this widget should be used instead of the registered default one:
 
-#  >>> manager = field.FieldWidgets(personForm, request, srichter)
-#  >>> manager.update()
-#  >>> manager['firstName']
-#  <CustomInputWidget 'form.widgets.firstName'>
+  >>> personForm.context = srichter
+
+  >>> manager = field.FieldWidgets(personForm, request)
+  >>> manager.update()
+  >>> manager['firstName']
+  <CustomInputWidget 'form.widgets.firstName'>
 
 In the background the widget factory assignment really just registered the
 default factory in the ``WidgetFactories`` object, which manages the
 custom widgets for all modes. Now all modes show this input widget:
 
-  >>> manager = field.FieldWidgets(personForm, request, srichter)
+  >>> personForm.context = srichter
+
+  >>> manager = field.FieldWidgets(personForm, request)
   >>> manager.mode = interfaces.DISPLAY_MODE
 
-#  >>> manager.update()
-#  >>> manager['firstName']
-#  <CustomInputWidget 'form.widgets.firstName'>
+  >>> manager.update()
+  >>> manager['firstName']
+  <CustomInputWidget 'form.widgets.firstName'>
 
 However, we can also register a specific widget for the display mode:
 
@@ -819,14 +784,14 @@ However, we can also register a specific widget for the display mode:
 
 Now the display mode should produce the custom display widget, ...
 
-  >>> manager = field.FieldWidgets(personForm, request, srichter)
+  >>> manager = field.FieldWidgets(personForm, request)
   >>> manager.mode = interfaces.DISPLAY_MODE
 
-#  >>> manager.update()
-#  >>> manager['firstName']
-#  <CustomDisplayWidget 'form.widgets.firstName'>
-#  >>> manager['lastName']
-#  <CustomDisplayWidget 'form.widgets.lastName'>
+  >>> manager.update()
+  >>> manager['firstName']
+  <CustomDisplayWidget 'form.widgets.firstName'>
+  >>> manager['lastName']
+  <CustomDisplayWidget 'form.widgets.lastName'>
 
 ... while the input mode still shows the default custom input widget
 on the ``lastName`` field but not on the ``firstName`` field since we

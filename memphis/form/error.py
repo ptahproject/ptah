@@ -22,60 +22,44 @@ import zope.interface
 import zope.schema
 
 from memphis import config, view
-
-import memphis.form
-from memphis.form import interfaces, util, value, pagelets
+from memphis.form import interfaces, util, pagelets
 
 _ = interfaces.MessageFactory
 
 
-ErrorViewMessage = value.StaticValueCreator(
-    discriminators = ('error', 'request', 'widget', 'field', 'form', 'content')
-    )
+class WidgetError(object):
+    zope.interface.implements(interfaces.IWidgetError)
 
-ComputedErrorViewMessage = value.ComputedValueCreator(
-    discriminators = ('error', 'request', 'widget', 'field', 'form', 'content')
-    )
+    def __init__(self, name, error):
+        self.name = name
+        self.error = error
 
 
-def ErrorViewDiscriminators(
-    errorView,
-    error=None, request=None, widget=None, field=None, form=None, content=None):
-    zope.component.adapter(
-        util.getSpecification(error),
-        util.getSpecification(request),
-        util.getSpecification(widget),
-        util.getSpecification(field),
-        util.getSpecification(form),
-        util.getSpecification(content))(errorView)
+class CustomValidationError(zope.schema.ValidationError):
+    """ custom validation error """
+
+    def __init__(self, msg):
+        self.__doc__ = msg
+
+    def doc(self):
+        return self.__doc__
 
 
 class ErrorViewSnippet(object):
     """Error view snippet."""
-    config.adapts(
-        zope.schema.ValidationError, None, None, None, None, None)
+    config.adapts(zope.schema.ValidationError, None)
     zope.interface.implements(interfaces.IErrorViewSnippet)
 
-    def __init__(self, error, request, widget, field, form, content):
+    def __init__(self, error, request):
         self.error = self.context = error
         self.request = request
-        self.widget = widget
-        self.field = field
-        self.form = form
-        self.content = content
 
     def createMessage(self):
         return self.error.doc()
 
-    def update(self):
-        value = zope.component.queryMultiAdapter(
-            (self.context, self.request, self.widget,
-             self.field, self.form, self.content),
-            interfaces.IValue, name='message')
-        if value is not None:
-            self.message = value.get()
-        else:
-            self.message = self.createMessage()
+    def update(self, widget=None):
+        self.widget = widget
+        self.message = self.createMessage()
 
     def render(self):
         return view.renderPagelet(
@@ -88,7 +72,7 @@ class ErrorViewSnippet(object):
 
 class ValueErrorViewSnippet(ErrorViewSnippet):
     """An error view for ValueError."""
-    config.adapts(ValueError, None, None, None, None, None)
+    config.adapts(ValueError, None)
 
     defaultMessage = _('The system could not process the given value.')
 
@@ -98,7 +82,7 @@ class ValueErrorViewSnippet(ErrorViewSnippet):
 
 class InvalidErrorViewSnippet(ErrorViewSnippet):
     """Error view snippet."""
-    config.adapts(zope.interface.Invalid, None, None, None, None, None)
+    config.adapts(zope.interface.Invalid, None)
 
     def createMessage(self):
         return self.error.args[0]
@@ -106,7 +90,7 @@ class InvalidErrorViewSnippet(ErrorViewSnippet):
 
 class MultipleErrorViewSnippet(ErrorViewSnippet):
     """Error view snippet for multiple errors."""
-    config.adapts(interfaces.IMultipleErrors, None, None, None, None, None)
+    config.adapts(interfaces.IMultipleErrors, None)
 
     def update(self):
         pass

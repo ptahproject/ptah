@@ -401,32 +401,6 @@ If we set the show-apply attribute to false, the action will not be available.
 This feature is very helpful in multi-forms and wizards.
 
 
-Customizing the Title
----------------------
-
-As for widgets, it is often desirable to change attributes of the button
-actions without altering any original code. Again we will be using attribute
-value adapters to complete the task. Originally, our title is as follows:
-
-  >>> myform = Form()
-  >>> actions = button.ButtonActions(myform, TestRequest(), None)
-  >>> actions.update()
-  >>> actions['apply'].title
-  u'Apply'
-
-Let's now create a custom label for the action:
-
-  >>> ApplyLabel = button.StaticButtonActionAttribute(
-  ...     u'Apply now', button=myform.buttons['apply'])
-  >>> zope.component.provideAdapter(ApplyLabel, name='title')
-
-Once the button action manager is updated, the new title is chosen:
-
-  >>> actions.update()
-  >>> actions['apply'].title
-  u'Apply now'
-
-
 The Button Manager
 ------------------
 

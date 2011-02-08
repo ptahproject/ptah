@@ -25,18 +25,10 @@ from zope.interface import adapter
 from zope.schema.fieldproperty import FieldProperty
 
 from memphis import config
-from memphis.form import action, interfaces, util, value
+from memphis.form import action, interfaces, util
 from memphis.form.widget import AfterWidgetUpdateEvent
 
 from memphis.form.browser import submit
-
-
-StaticButtonActionAttribute = value.StaticValueCreator(
-    discriminators = ('form', 'request', 'content', 'button', 'manager')
-    )
-ComputedButtonActionAttribute = value.ComputedValueCreator(
-    discriminators = ('form', 'request', 'content', 'button', 'manager')
-    )
 
 
 class Button(zope.schema.Field):
@@ -238,19 +230,16 @@ class ButtonActions(action.Actions):
                     (self.request, button), interfaces.IButtonAction)
             # Step 3: Set the name on the button
             buttonAction.name = prefix + name
-            # Step 4: Set any custom attribute values.
-            title = zope.component.queryMultiAdapter(
-                (self.form, self.request, self.content, button, self),
-                interfaces.IValue, name='title')
-            if title is not None:
-                buttonAction.title = title.get()
+            
             # Step 5: Set the form
             buttonAction.form = self.form
             if not interfaces.IFormAware.providedBy(buttonAction):
                 zope.interface.alsoProvides(buttonAction, interfaces.IFormAware)
+
             # Step 6: Update the new action
             buttonAction.update()
             zope.event.notify(AfterWidgetUpdateEvent(buttonAction))
+
             # Step 7: Add the widget to the manager
             uniqueOrderedKeys.append(name)
             if newButton:

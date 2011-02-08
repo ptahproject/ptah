@@ -99,17 +99,8 @@ def test_suite():
                         ])
                 ),
             doctest.DocFileSuite(
-                '../value.txt',
-                optionflags=doctest.NORMALIZE_WHITESPACE|doctest.ELLIPSIS,
-                checker=checker,
-                ),
-            doctest.DocFileSuite(
-                '../validator.txt',
-                optionflags=doctest.NORMALIZE_WHITESPACE|doctest.ELLIPSIS,
-                checker=checker,
-                ),
-            doctest.DocFileSuite(
                 '../error.txt',
+                setUp=setUp, tearDown=tearDown,
                 optionflags=doctest.NORMALIZE_WHITESPACE|doctest.ELLIPSIS,
                 checker=checker,
                 ),
@@ -121,12 +112,6 @@ def test_suite():
                 ),
             doctest.DocFileSuite(
                 '../term.txt',
-                optionflags=doctest.NORMALIZE_WHITESPACE|doctest.ELLIPSIS,
-                checker=checker,
-                ),
-            doctest.DocFileSuite(
-                '../hint.txt',
-                setUp=setUp, tearDown=tearDown,
                 optionflags=doctest.NORMALIZE_WHITESPACE|doctest.ELLIPSIS,
                 checker=checker,
                 ),

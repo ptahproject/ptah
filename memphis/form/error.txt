@@ -19,8 +19,7 @@ Let's create an error view message for the ``TooSmall`` validation error:
   >>> from zope.schema.interfaces import TooSmall, TooBig
   >>> from pyramid.testing import DummyRequest as TestRequest
 
-  >>> view = error.ErrorViewSnippet(
-  ...     TooSmall(), TestRequest(), None, None, None, None)
+  >>> view = error.ErrorViewSnippet(TooSmall(), TestRequest())
   >>> view
   <ErrorViewSnippet for TooSmall>
 
@@ -37,16 +36,8 @@ view:
   >>> import os
   >>> filename = os.path.join(os.path.dirname(error.__file__), 'error.pt')
 
-#  >>> import zope.component
-#  >>> from zope.pagetemplate.interfaces import IPageTemplate
-#  >>> from z3c.form import interfaces
-
-#  >>> zope.component.provideAdapter(
-#  ...     error.ErrorViewTemplateFactory(filename, 'text/html'),
-#  ...     (interfaces.IErrorViewSnippet, None), IPageTemplate)
-
-#  >>> print view.render()
-#  <div class="error">Value is too small</div>
+  >>> print view.render()
+  <div class="error">Value is too small</div>
 
 
 Customizing Error Messages
@@ -72,18 +63,18 @@ negative age:
 
 So let's register a better message for this particular situation:
 
-  >>> NegativeAgeMessage = error.ErrorViewMessage(
-  ...     u'A negative age is not sensible.',
-  ...     error=TooSmall, field=IPerson['age'])
+#  >>> NegativeAgeMessage = error.ErrorViewMessage(
+#  ...     u'A negative age is not sensible.',
+#  ...     error=TooSmall, field=IPerson['age'])
 
-  >>> zope.component.provideAdapter(NegativeAgeMessage, name='message')
+#  >>> zope.component.provideAdapter(NegativeAgeMessage, name='message')
 
 The created object is a common attribute value for the error view message. The
 discriminators are the same as for the error view itself. Now we create an
 error view message for ``TooSmall`` of the age field:
 
-  >>> view = error.ErrorViewSnippet(
-  ...     TooSmall(), TestRequest(), None, IPerson['age'], None, None)
+#  >>> view = error.ErrorViewSnippet(
+#  ...     TooSmall(), TestRequest(), None, IPerson['age'], None, None)
 
 #  >>> view.update()
 #  >>> print view.render()
@@ -109,14 +100,14 @@ content. Let's use one of them:
 
 Now, register the computed view message:
 
-  >>> ComputedAgeMessage = error.ComputedErrorViewMessage(
-  ...     getAgeTooSmallErrorMessage, error=TooSmall, field=IAdult['age'])
-  >>> zope.component.provideAdapter(ComputedAgeMessage, name='message')
+#  >>> ComputedAgeMessage = error.ComputedErrorViewMessage(
+#  ...     getAgeTooSmallErrorMessage, error=TooSmall, field=IAdult['age'])
+#  >>> zope.component.provideAdapter(ComputedAgeMessage, name='message')
 
 Now, the error view snippet will show dynamically generated message:
 
-  >>> view = error.ErrorViewSnippet(
-  ...     TooSmall(), TestRequest(), None, IAdult['age'], None, None)
+#  >>> view = error.ErrorViewSnippet(
+#  ...     TooSmall(), TestRequest(), None, IAdult['age'], None, None)
 
 #  >>> view.update()
 #  >>> print view.render()
@@ -175,22 +166,21 @@ error. Since data managers can also return value errors, there is also an
 error view for them:
 
   >>> valueError = ValueError(2)
-  >>> errorView = error.ValueErrorViewSnippet(
-  ...     valueError, TestRequest(), None, None, None, None)
+  >>> errorView = error.ValueErrorViewSnippet(valueError, TestRequest())
 
 It uses the same template:
 
-#  >>> errorView.update()
-#  >>> print errorView.render()
-#  <div class="error">The system could not process the given value.</div>
+  >>> errorView.update()
+  >>> print errorView.render()
+  <div class="error">The system could not process the given value.</div>
 
 Unfortunately, we cannot make use of the original string representation of the
 value error, since it cannot be localized well enough. Thus we provide our own
 message. Of course, the message can be overridden:
 
-  >>> CustomMessage = error.ErrorViewMessage(
-  ...     u'The entered value is not valid.', error=ValueError)
-  >>> zope.component.provideAdapter(CustomMessage, name='message')
+#  >>> CustomMessage = error.ErrorViewMessage(
+#  ...     u'The entered value is not valid.', error=ValueError)
+#  >>> zope.component.provideAdapter(CustomMessage, name='message')
 
 Let's now render the snippet again:
 
@@ -208,14 +198,13 @@ invariant finds a problem. We need a special error view snippet for this class
 of errors:
 
   >>> invalidError = zope.interface.Invalid(u'The data was invalid.')
-  >>> errorView = error.InvalidErrorViewSnippet(
-  ...     invalidError, TestRequest(), None, None, None, None)
+  >>> errorView = error.InvalidErrorViewSnippet(invalidError, TestRequest())
 
 Since the same template as before is used, the error simply renders:
 
-#  >>> errorView.update()
-#  >>> print errorView.render()
-#  <div class="error">The data was invalid.</div>
+  >>> errorView.update()
+  >>> print errorView.render()
+  <div class="error">The data was invalid.</div>
 
 As you can see, the first argument to the exception is used as the explanatory
 message of the error.

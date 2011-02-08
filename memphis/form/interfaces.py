@@ -82,26 +82,6 @@ class ISelectionManager(IManager):
 
 # ----[ Validators ]---------------------------------------------------------
 
-class IData(zope.interface.Interface):
-    """A proxy object for form data.
-
-    The object will make all keys within its data attribute available as
-    attributes. The schema that is represented by the data will be directly
-    provided by instances.
-    """
-
-    def __init__(schema, data, context):
-        """The data proxy is instantiated using the schema it represents, the
-        data fulfilling the schema and the context in which the data are
-        validated.
-        """
-
-    __context__ = zope.schema.Field(
-        title=_('Context'),
-        description=_('The context in which the data are validated.'),
-        required=True)
-
-
 class IValidator(zope.interface.Interface):
     """A validator for a particular value."""
 
@@ -111,30 +91,23 @@ class IValidator(zope.interface.Interface):
         If successful, return ``None``. Otherwise raise an ``Invalid`` error.
         """
 
-
-class IManagerValidator(zope.interface.Interface):
-    """A validator that validates a set of data."""
+class IFormValidator(zope.interface.Interface):
+    """A validator for a form."""
 
     def validate(data):
-        """Validate a dictionary of data.
-
-        This method is only responsible of validating relationships between
-        the values in the data. It can be assumed that all values have been
-        validated in isolation before.
-
-        The return value of this method is a tuple of errors that occurred
-        during the validation process.
-        """
-
-    def validateObject(obj):
-        """Validate an object.
-
-        The same semantics as in ``validate()`` apply, except that the values
-        are retrieved from the object and not the data dictionary.
-        """
+        """ validate data """
 
 
 # ----[ Errors ]--------------------------------------------------------------
+
+class IWidgetError(zope.interface.Interface):
+    """ A special error, for can return additional errors and explicitly 
+    set to which widget this error should be appied. """
+
+    name = interface.Attribute('Widget name')
+
+    error = interface.Attribute('Error instance')
+
 
 class IErrorViewSnippet(zope.interface.Interface):
     """A view providing a view for an error"""
@@ -270,15 +243,6 @@ class IDataConverter(zope.interface.Interface):
         If the conversion fails, a ``ValueError`` *must* be raised. If
         the validation fails, a ``ValidationError`` *must* be raised.
         """
-
-
-# value interfaces
-class IValue(zope.interface.Interface):
-    """A value."""
-
-    def get():
-        """Returns the value."""
-
 
 # term interfaces
 class ITerms(zope.interface.Interface):
@@ -884,6 +848,12 @@ class IForm(zope.interface.Interface):
 
         This method is commonly called from the ``update()`` method and is
         mainly meant to be a hook for subclasses.
+        '''
+
+    def validate(data):
+        ''' Do form level validation, like schema invariants, etc.
+        
+        Return sequence of errors or None
         '''
 
     def extractData(setErrors=True):

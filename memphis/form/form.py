@@ -86,10 +86,8 @@ def handleActionError(event):
     action = event.action
     form = action.form
     errorView = zope.component.getMultiAdapter(
-        (event.error.error, action.request, widget,
-         getattr(widget, 'field', None), form, form.getContent()),
-        interfaces.IErrorViewSnippet)
-    errorView.update()
+        (event.error.error, action.request), interfaces.IErrorViewSnippet)
+    errorView.update(widget)
     # Assign the error view to all necessary places.
     if widget:
         widget.error = errorView
@@ -131,7 +129,7 @@ class BaseForm(object):
     def updateWidgets(self):
         '''See interfaces.IForm'''
         self.widgets = zope.component.getMultiAdapter(
-            (self, self.request, self.getContent()), interfaces.IWidgets)
+            (self, self.request), interfaces.IWidgets)
         self.widgets.mode = self.mode
         self.widgets.ignoreContext = self.ignoreContext
         self.widgets.ignoreRequest = self.ignoreRequest
@@ -143,6 +141,14 @@ class BaseForm(object):
         if self.labelRequired is not None and self.widgets is not None \
             and self.widgets.hasRequiredFields:
             return zope.i18n.translate(self.labelRequired, context=self.request)
+
+    def validate(self, data):
+        errors = []
+        for name, validator in zope.component.getAdapters(
+            (self,), interfaces.IFormValidator):
+            errors.extend(validator.validate(data))
+
+        return errors
 
     def extractData(self, setErrors=True):
         '''See interfaces.IForm'''

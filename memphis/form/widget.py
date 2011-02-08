@@ -25,20 +25,13 @@ import zope.schema.interfaces
 from zope.schema.fieldproperty import FieldProperty
 
 from memphis import view
-from memphis.form import interfaces, util, value
+from memphis.form import interfaces, util
 
 from pagelets import \
     IWidgetInputView, IWidgetDisplayView, IWidgetHiddenView
 
 
 PLACEHOLDER = object()
-
-StaticWidgetAttribute = value.StaticValueCreator(
-    discriminators = ('context', 'request', 'view', 'field', 'widget')
-    )
-ComputedWidgetAttribute = value.ComputedValueCreator(
-    discriminators = ('context', 'request', 'view', 'field', 'widget')
-    )
 
 
 class Widget(object):
@@ -89,6 +82,7 @@ class Widget(object):
                 # over everything and nothing else has to be done.
                 self.value = widget_value
                 value = PLACEHOLDER
+
         # Step 1.2: If we have a widget with a field and we have no value yet,
         #           we have some more possible locations to get the value
         if (interfaces.IFieldWidget.providedBy(self) and
@@ -111,27 +105,15 @@ class Widget(object):
                 self.field.default is not None):
                 value = self.field.default
                 lookForDefault = True
+
         # Step 1.3: If we still have not found a value, then we try to get it
         #           from an attribute value
-        if value is interfaces.NO_VALUE or lookForDefault:
-            adapter = zope.component.queryMultiAdapter(
-                (self.context, self.request, self.form, self.field, self),
-                interfaces.IValue, name='default')
-            if adapter:
-                value = adapter.get()
+        # remove during simplification
+
         # Step 1.4: Convert the value to one that the widget can understand
         if value not in (interfaces.NO_VALUE, PLACEHOLDER):
             converter = interfaces.IDataConverter(self)
             self.value = converter.toWidgetValue(value)
-        # Step 2: Update selected attributes
-        for attrName in self._adapterValueAttributes:
-            # only allow to set values for known attributes
-            if hasattr(self, attrName):
-                value = zope.component.queryMultiAdapter(
-                    (self.context, self.request, self.form, self.field, self),
-                    interfaces.IValue, name=attrName)
-                if value is not None:
-                    setattr(self, attrName, value.get())
 
     def render(self):
         """See memphis.form.interfaces.IWidget."""
@@ -340,9 +322,8 @@ class MultiWidget(Widget):
             except (zope.schema.ValidationError, ValueError), error:
                 # on exception, setup the widget error message
                 view = zope.component.getMultiAdapter(
-                    (error, self.request, widget, widget.field,
-                     self.form, self.context), interfaces.IErrorViewSnippet)
-                view.update()
+                    (error, self.request), interfaces.IErrorViewSnippet)
+                view.update(self)
                 widget.error = view
                 # set the wrong value as value
                 widget.value = value

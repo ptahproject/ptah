@@ -24,7 +24,7 @@ from zope.schema.fieldproperty import FieldProperty
 from pyramid.testing import DummyRequest as TestRequest
 
 from memphis.form import browser, button, converter, datamanager, error, field
-from memphis.form import form, interfaces, term, validator, widget
+from memphis.form import form, interfaces, term, widget
 from memphis.form.browser import radio, select, text, textarea
 
 import lxml.html
@@ -55,97 +55,6 @@ class TestingFileUploadDataConverter(converter.FileUploadDataConverter):
 
 def getPath(filename):
     return os.path.join(os.path.dirname(browser.__file__), filename)
-
-
-#############################
-# classes required by ObjectWidget tests
-#
-
-class IMySubObject(zope.interface.Interface):
-    foofield = zope.schema.Int(
-        title=u"My foo field",
-        default=1111,
-        max=9999,
-        required=True)
-    barfield = zope.schema.Int(
-        title=u"My dear bar",
-        default=2222,
-        required=False)
-
-
-class MySubObject(object):
-    zope.interface.implements(IMySubObject)
-
-    foofield = FieldProperty(IMySubObject['foofield'])
-    barfield = FieldProperty(IMySubObject['barfield'])
-
-
-class IMySecond(zope.interface.Interface):
-    subfield = zope.schema.Object(
-        title=u"Second-subobject",
-        schema=IMySubObject)
-    moofield = zope.schema.TextLine(title=u"Something")
-
-
-class MySecond(object):
-    zope.interface.implements(IMySecond)
-
-    subfield = FieldProperty(IMySecond['subfield'])
-    moofield = FieldProperty(IMySecond['moofield'])
-
-
-class IMyObject(zope.interface.Interface):
-    subobject = zope.schema.Object(title=u'my object', schema=IMySubObject)
-    name = zope.schema.TextLine(title=u'name')
-
-
-class MyObject(object):
-    zope.interface.implements(IMyObject)
-    def __init__(self, name=u'', subobject=None):
-        self.subobject=subobject
-        self.name=name
-
-
-class IMyComplexObject(zope.interface.Interface):
-    subobject = zope.schema.Object(title=u'my object', schema=IMySecond)
-    name = zope.schema.TextLine(title=u'name')
-
-
-class IMySubObjectMulti(zope.interface.Interface):
-    foofield = zope.schema.Int(
-        title=u"My foo field",
-        default=None, #default is None here!
-        max=9999,
-        required=True)
-    barfield = zope.schema.Int(
-        title=u"My dear bar",
-        default=2222,
-        required=False)
-
-class MySubObjectMulti(object):
-    zope.interface.implements(IMySubObjectMulti)
-
-    foofield = FieldProperty(IMySubObjectMulti['foofield'])
-    barfield = FieldProperty(IMySubObjectMulti['barfield'])
-
-class IMyMultiObject(zope.interface.Interface):
-    listOfObject = zope.schema.List(
-        title = u"My list field",
-        value_type = zope.schema.Object(
-            title=u'my object widget',
-            schema=IMySubObjectMulti),
-    )
-    name = zope.schema.TextLine(title=u'name')
-
-class MyMultiObject(object):
-    zope.interface.implements(IMyMultiObject)
-
-    listOfObject = FieldProperty(IMyMultiObject['listOfObject'])
-    name = FieldProperty(IMyMultiObject['name'])
-
-    def __init__(self, name=u'', listOfObject=None):
-        self.listOfObject = listOfObject
-        self.name = name
 
 
 ##########################

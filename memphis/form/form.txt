@@ -505,7 +505,18 @@ error now:
   ...     'form.buttons.add': u'Add'}
   ...     )
 
-  >>> addForm = PersonAddForm(root, request)
+  >>> from memphis import form
+  >>> class CustomAddForm(PersonAddForm):
+  ...     
+  ...     def validate(self, data):
+  ...         errors = super(CustomAddForm, self).validate(data)
+  ...
+  ...         if data.get('id', '') == data.get('name'):
+  ...             errors.append(form.CustomValidationError(
+  ...                 "The id and name cannot be the same."))
+  ...         return errors
+
+  >>> addForm = CustomAddForm(root, request)
   >>> addForm.update()
 
 and see how the form looks like:
@@ -546,22 +557,22 @@ But the error message for a negative age is too generic:
   <div class="error">Value is too small</div>
 
 It would be better to say that negative values are disallowed. So let's
-register a new error view snippet for the ``TooSmall`` error:
+override form validation:
 
-  >>> from memphis.form import error
-
-  >>> class TooSmallView(error.ErrorViewSnippet):
-  ...     zope.component.adapts(
-  ...         zope.schema.interfaces.TooSmall, None, None, None, None, None)
+  >>> class CustomAddForm(PersonAddForm):
+  ...     
+  ...     def validate(self, data):
+  ...         errors = super(CustomAddForm, self).validate(data)
   ...
-  ...     def update(self):
-  ...         super(TooSmallView, self).update()
-  ...         if self.field.min == 0:
-  ...             self.message = u'The value cannot be a negative number.'
+  ...         if data.get('age', 0) < 0:
+  ...             errors.append(
+  ...                 form.WidgetError(
+  ...                     'age',
+  ...                     form.CustomValidationError(
+  ...                         "The value cannot be a negative number.")))
+  ...         return errors
 
-  >>> zope.component.provideAdapter(TooSmallView)
-
-  >>> addForm = PersonAddForm(root, request)
+  >>> addForm = CustomAddForm(root, request)
   >>> addForm.update()
   >>> print addForm.widgets['age'].error.render()
   <div class="error">The value cannot be a negative number.</div>
@@ -638,37 +649,6 @@ If we set the labelRequired to None, we do not get a requiredInfo label:
   True
 
 
-Changing Widget Attribute Values
---------------------------------
-
-It frequently happens that a customer comes along and wants to
-slightly or totally change some of the text shown in forms or make
-optional fields required. It does not make sense to always have to
-adjust the schema or implement a custom schema for these use
-cases. With the z3c.form framework all attributes -- for which it is
-sensible to replace a value without touching the code -- are
-customizable via an attribute value adapter.
-
-To demonstrate this feature, let's change the label of the name widget
-from "Name" to "Full Name":
-
-  >>> from memphis.form import widget, testing
-  >>> NameLabel = widget.StaticWidgetAttribute(
-  ...     u'Full Name', field=IPerson['name'])
-  >>> zope.component.provideAdapter(NameLabel, name='label')
-
-When the form renders, the label has now changed:
-
-  >>> addForm = PersonAddForm(root, TestRequest())
-  >>> addForm.update()
-  >>> print testing.render(addForm, './/xmlns:div[2][@class="row"]')
-  <div class="row">
-    <label for="form-widgets-name">Full Name</label>
-    <input class="text-widget required textline-field"
-           id="form-widgets-name" name="form.widgets.name" type="text" value="">
-  </div>
-
-
 Adding a "Cancel" button
 ------------------------
 
@@ -685,13 +665,13 @@ chosen. Here we demonstrate the simplest one.
 The first step is to create a custom action manager that always inserts a
 cancel action:
 
-  >>> from memphis.form import button
+  >>> from memphis.form import button, testing
   >>> class AddActions(button.ButtonActions):
   ...     zope.component.adapts(
   ...         PersonAddForm,
   ...         zope.interface.Interface,
   ...         zope.interface.Interface)
-  ...
+  ...     
   ...     def update(self):
   ...         self.form.buttons = button.Buttons(
   ...             self.form.buttons,
@@ -704,6 +684,7 @@ After registering the new action manager,
 
 the add form should display a cancel button:
 
+  >>> addForm.prefix = 'form.'
   >>> addForm.update()
   >>> print testing.render(addForm, './/xmlns:div[@class="action"]')
   <div class="action">
@@ -978,13 +959,13 @@ Now we can define a field widget factory:
 
   >>> def MyFieldWidget(field, request):
   ...     """IFieldWidget factory for MyWidget."""
-  ...     return widget.FieldWidget(field, MyWidget(request))
+  ...     return form.FieldWidget(field, MyWidget(request))
 
 We register the ``MyWidget`` in a form like:
 
   >>> class MyEditForm(form.Form):
   ...     ignoreContext = False
-  ...     fields = field.Fields(IPerson)
+  ...     fields = form.Fields(IPerson)
   ...     fields['name'].widgetFactory = MyFieldWidget
 
 We can see that the custom widget gets used in the rendered form:
