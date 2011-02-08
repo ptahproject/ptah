@@ -6,6 +6,6 @@
   
   <div class="z-form-fieldset">
     <tal:block tal:repeat="context context.widgets.values()"
-	       tal:content="structure pagelet:form.widget" />
+	       tal:content="structure pagelet:form-widget" />
   </div>
 </div>
