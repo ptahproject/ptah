@@ -57,12 +57,12 @@ def test_suite():
             #    optionflags=doctest.NORMALIZE_WHITESPACE|doctest.ELLIPSIS,
             #    checker=checker,
             #    ),
-            #doctest.DocFileSuite(
-            #    '../subform.txt',
-            #    setUp=setUp, tearDown=tearDown,
-            #    optionflags=doctest.NORMALIZE_WHITESPACE|doctest.ELLIPSIS,
-            #    checker=checker,
-            #    ),
+            doctest.DocFileSuite(
+                '../subform.txt',
+                setUp=setUp, tearDown=tearDown,
+                optionflags=doctest.NORMALIZE_WHITESPACE|doctest.ELLIPSIS,
+                checker=checker,
+                ),
             doctest.DocFileSuite(
                 '../button.txt',
                 setUp=setUp, tearDown=tearDown,

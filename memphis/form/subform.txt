@@ -7,11 +7,6 @@ without defining their purpose, restrictions and assumptions. When we
 initially talked about sub-forms for this package, we quickly noticed that
 there are several classes of sub-forms with different goals.
 
-Of course, we need to setup our defaults for this demonstration as well:
-
-  >>> from memphis.form import testing
-
-
 Class I: The form within the form
 ---------------------------------
 
@@ -67,13 +62,14 @@ We define the owner sub-form as we would any other form. The only difference
 is the template, which should not render a form-tag:
 
   >>> import os
-  >>> from z3c.form import form, field, tests
+  >>> from memphis import view
+  >>> from memphis.form import form, field, tests
 
   >>> templatePath = os.path.dirname(tests.__file__)
 
   >>> class OwnerForm(form.EditForm):
-  ...     template = ViewPageTemplateFile(
-  ...         'simple_owneredit.pt', templatePath)
+  ...     template = view.template('memphis.form.tests:simple_owneredit.pt')
+  ...     
   ...     fields = field.Fields(IOwner)
   ...     prefix = 'owner'
 
@@ -85,9 +81,9 @@ METAL macros, viewlets, or pagelets to make better reuse of some code.
 
   >>> class CarForm(form.EditForm):
   ...     fields = field.Fields(ICar).select('model', 'make')
-  ...     template = ViewPageTemplateFile(
-  ...         'simple_caredit.pt', templatePath)
+  ...     template = view.template('memphis.form.tests:simple_caredit.pt')
   ...     prefix = 'car'
+  ...     
   ...     def update(self):
   ...         self.owner = OwnerForm(self.context.owner, self.request)
   ...         self.owner.update()
@@ -95,7 +91,7 @@ METAL macros, viewlets, or pagelets to make better reuse of some code.
 
 Let's now instantiate the form and render it:
 
-  >>> from z3c.form.testing import TestRequest
+  >>> from pyramid.testing import DummyRequest as TestRequest
   >>> request = TestRequest()
 
   >>> carForm = CarForm(mycar, request)
@@ -149,7 +145,7 @@ Let's now instantiate the form and render it:
 I can now submit the owner form, which should not submit any car changes I
 might have made in the form:
 
-  >>> request = TestRequest(form={
+  >>> request = TestRequest(params={
   ...     'car.widgets.model': u'BMW',
   ...     'car.widgets.make': u'325',
   ...     'owner.widgets.name': u'Stephan Richter',
@@ -192,7 +188,6 @@ Also, the form should say that the data of the owner has changed:
         </div>
         <fieldset>
           <legend>Owner</legend>
-          <i>Data successfully updated.</i>
           <div class="row">
             <label for="owner-widgets-name">Name</label>
             <input type="text" id="owner-widgets-name"
@@ -227,7 +222,7 @@ Also, the form should say that the data of the owner has changed:
 The same is true the other way around as well. Submitting the overall form
 does not submit the owner form:
 
-  >>> request = TestRequest(form={
+  >>> request = TestRequest(params={
   ...     'car.widgets.model': u'BMW',
   ...     'car.widgets.make': u'325',
   ...     'car.buttons.apply': u'Apply',
@@ -262,11 +257,10 @@ a logical unit that shares the action with its parent form. Initially, the
 example does not look very different, except that we use ``EditSubForm`` as a
 base class:
 
-  >>> from z3c.form import subform
+  >>> from memphis.form import subform
 
   >>> class OwnerForm(subform.EditSubForm):
-  ...     template = ViewPageTemplateFile(
-  ...         'simple_subedit.pt', templatePath)
+  ...     template = view.template('memphis.form.tests:simple_subedit.pt')
   ...     fields = field.Fields(IOwner)
   ...     prefix = 'owner'
 
@@ -275,8 +269,7 @@ constructor arguments, the last one being the parent form:
 
   >>> class CarForm(form.EditForm):
   ...     fields = field.Fields(ICar).select('model', 'make')
-  ...     template = ViewPageTemplateFile(
-  ...         'simple_caredit.pt', templatePath)
+  ...     template = view.template('memphis.form.tests:simple_caredit.pt')
   ...     prefix = 'car'
   ...
   ...     def update(self):
@@ -337,7 +330,7 @@ Rendering the form works as before:
 The interesting part of this setup is that the "Apply" button calls the action
 handlers for both, the main and the sub-form:
 
-  >>> request = TestRequest(form={
+  >>> request = TestRequest(params={
   ...     'car.widgets.model': u'Ford',
   ...     'car.widgets.make': u'F150',
   ...     'car.buttons.apply': u'Apply',
@@ -360,7 +353,7 @@ handlers for both, the main and the sub-form:
 Let's now have a look at cases where an error happens. If an error occurs in
 the parent form, the sub-form is still submitted:
 
-  >>> request = TestRequest(form={
+  >>> request = TestRequest(params={
   ...     'car.widgets.model': u'Volvo\n',
   ...     'car.widgets.make': u'450',
   ...     'car.buttons.apply': u'Apply',
@@ -385,7 +378,6 @@ Let's look at the rendered form:
   >>> print carForm.render()
   <html xmlns="http://www.w3.org/1999/xhtml">
     <body>
-      <i>There were some errors.</i>
       <ul>
         <li>
           Model: <div class="error">Constraint not satisfied</div>
@@ -443,7 +435,7 @@ comprehensive.
 Let's now create an error in the sub-form, ensuring that an error message
 occurs:
 
-  >>> request = TestRequest(form={
+  >>> request = TestRequest(params={
   ...     'car.widgets.model': u'Volvo',
   ...     'car.widgets.make': u'450',
   ...     'car.buttons.apply': u'Apply',
@@ -483,7 +475,7 @@ occurs:
 
 If the data did not change, it is also locally reported:
 
-  >>> request = TestRequest(form={
+  >>> request = TestRequest(params={
   ...     'car.widgets.model': u'Ford',
   ...     'car.widgets.make': u'F150',
   ...     'car.buttons.apply': u'Apply',
@@ -521,16 +513,15 @@ form input. You can store the values like in any other forms using the forms
 widget method ``self.widgets.extract()`` which will return the form and
 subform input values.
 
-  >>> from z3c.form.interfaces import IWidgets
+  >>> from memphis.form.interfaces import IWidgets
   >>> class OwnerAddForm(form.EditForm):
-  ...     template = ViewPageTemplateFile(
-  ...         'simple_owneredit.pt', templatePath)
+  ...     template = view.template('memphis.form.tests:simple_owneredit.pt')
   ...     fields = field.Fields(IOwner)
   ...     prefix = 'owner'
   ...
   ...     def updateWidgets(self):
   ...         self.widgets = zope.component.getMultiAdapter(
-  ...             (self, self.request, self.getContent()), IWidgets)
+  ...             (self, self.request), IWidgets)
   ...         self.widgets.ignoreContext = True
   ...         self.widgets.update()
 
@@ -538,13 +529,12 @@ Next we define the car form, which has the owner form as a sub-form.
 
   >>> class CarAddForm(form.EditForm):
   ...     fields = field.Fields(ICar).select('model', 'make')
-  ...     template = ViewPageTemplateFile(
-  ...         'simple_caredit.pt', templatePath)
+  ...     template = view.template('memphis.form.tests:simple_caredit.pt')
   ...     prefix = 'car'
   ...
   ...     def updateWidgets(self):
   ...         self.widgets = zope.component.getMultiAdapter(
-  ...             (self, self.request, self.getContent()), IWidgets)
+  ...             (self, self.request), IWidgets)
   ...         self.widgets.ignoreContext = True
   ...         self.widgets.update()
   ...
@@ -562,7 +552,6 @@ container which we can use for the add form context:
 
 Set up a test request:
 
-  >>> from z3c.form.testing import TestRequest
   >>> request = TestRequest()
 
 And render the form. As you can see, the widgets get rendered without any
@@ -622,7 +611,7 @@ And render the form. As you can see, the widgets get rendered without any
 Let's show how we can extract the input values of the form and the subform.
 First give them some input:
 
-  >>> request = TestRequest(form={
+  >>> request = TestRequest(params={
   ...     'car.widgets.model': u'Ford',
   ...     'car.widgets.make': u'F150',
   ...     'owner.widgets.name': u'Stephan Richter',

@@ -19,6 +19,7 @@ __docformat__ = "reStructuredText"
 import zope.interface
 
 from memphis.form import action, button, form, interfaces
+
 _ = interfaces.MessageFactory
 
 
@@ -35,7 +36,7 @@ class EditSubForm(form.BaseForm):
         self.request = request
         self.parentForm = self.__parent__ = parentForm
 
-    #@button.handler(form.EditForm.buttons['apply'])
+    @button.handler(form.EditForm.buttons['apply'])
     def handleApply(self, action):
         data, errors = self.widgets.extract()
         if errors:
@@ -49,7 +50,6 @@ class EditSubForm(form.BaseForm):
             self.status = self.successMessage
         else:
             self.status = self.noChangesMessage
-
 
     def update(self):
         super(EditSubForm, self).update()
