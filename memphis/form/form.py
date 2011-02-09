@@ -106,10 +106,8 @@ class BaseForm(object):
     fields = field.Fields()
 
     label = None
-    labelRequired = _('<span class="required">*</span>&ndash; required')
     description = ''
     prefix = 'form.'
-    status = ''
     template = None
     widgets  = None
 
@@ -137,12 +135,6 @@ class BaseForm(object):
         self.widgets.ignoreRequest = self.ignoreRequest
         self.widgets.ignoreReadonly = self.ignoreReadonly
         self.widgets.update()
-
-    @property
-    def requiredInfo(self):
-        if self.labelRequired is not None and self.widgets is not None \
-            and self.widgets.hasRequiredFields:
-            return zope.i18n.translate(self.labelRequired, context=self.request)
 
     def validate(self, data):
         errors = []
@@ -241,31 +233,157 @@ class EditForm(Form):
 
     successMessage = _('Data successfully updated.')
     noChangesMessage = _('No changes were applied.')
+    formErrorsMessage = _(u'Please fix indicated errors.')
+
+    groups = ()
+    subforms = ()
+
+    def extractData(self, setErrors=True):
+        data, errors = super(EditForm, self).extractData(setErrors)
+
+        for form in self.groups:
+            formData, formErrors = form.extractData(setErrors)
+            data.update(formData)
+            if formErrors:
+                errors += formErrors
+
+        for form in self.subforms:
+            formData, formErrors = form.extractData(setErrors)
+            if formErrors:
+                errors += formErrors
+
+        return data, errors
 
     def applyChanges(self, data):
         content = self.getContent()
-        changes = applyChanges(self, content, data)
-        # ``changes`` is a dictionary; if empty, there were no changes
-        if changes:
-            # Construct change-descriptions for the object-modified event
+
+        changed = applyChanges(self, content, data)
+
+        for form in self.subforms:
+            data, errors = form.extractData(setErrors=False)
+            for iface, names in form.applyChanges(data).items():
+                changed[iface] = changed.get(iface, []) + names
+
+        for group in self.groups:
+            data, errors = group.extractData(setErrors=False)
+            for iface, names in group.applyChanges(data).items():
+                changed[iface] = changed.get(iface, []) + names
+
+        if changed:
             descriptions = []
-            for interface, names in changes.items():
+            for interface, names in changed.items():
                 descriptions.append(
                     zope.lifecycleevent.Attributes(interface, *names))
             # Send out a detailed object-modified event
             zope.event.notify(
-                zope.lifecycleevent.ObjectModifiedEvent(content, *descriptions))
-        return changes
+                zope.lifecycleevent.ObjectModifiedEvent(content,
+                    *descriptions))
+
+        return changed
+
+    def listWrappedForms(self):
+        return [(name, form) for name, form in
+                zope.component.getAdapters((self.context, self.request, self), 
+                                           interfaces.IWrappedForm)]
+
+    def updateForms(self):
+        groups = []
+        subforms = []
+
+        for name, form in self.listWrappedForms():
+            form.__name__ = name
+            form.update()
+            if not form.isAvailable():
+                continue
+
+            if interfaces.IGroup.providedBy(form):
+                groups.append((form.weight, form))
+            elif interfaces.ISubForm.providedBy(form):
+                subforms.append((form.weight, form))
+
+        #groups.sort()
+        self.groups = [form for name, form in groups]
+
+        #subforms.sort()
+        self.subforms = [form for name, form in subforms]
+
+    def update(self):
+        self.updateWidgets()
+        self.updateActions()
+        self.updateForms()
+
+        self.actions.execute()
+        if self.refreshActions:
+            self.updateActions()
 
     @button.buttonAndHandler(_('Apply'), name='apply')
     def handleApply(self, action):
         data, errors = self.extractData()
         if errors:
             view.addStatusMessage(
-                self.request, self.formErrorsMessage, 'warning')
+                self.request, (self.formErrorsMessage,)+errors, 'formError')
             return
-        changes = self.applyChanges(data)
-        if changes:
+
+        changed = self.applyChanges(data)
+        if changed:
             view.addStatusMessage(self.request, self.successMessage)
         else:
             view.addStatusMessage(self.request, self.noChangesMessage)
+
+
+class SubForm(BaseForm):
+    zope.interface.implements(
+        interfaces.ISubForm, interfaces.IHandlerForm)
+
+    weight = 0
+
+    def __init__(self, context, request, parentForm):
+        self.context = context
+        self.request = request
+        self.parentForm = self.__parent__ = parentForm
+
+    def isAvailable(self):
+        return True
+
+    def applyChanges(self, data):
+        content = self.getContent()
+        changed = applyChanges(self, content, data)
+
+        if changed:
+            descriptions = []
+            for interface, names in changed.items():
+                descriptions.append(
+                    zope.lifecycleevent.Attributes(interface, *names))
+            # Send out a detailed object-modified event
+            zope.event.notify(
+                zope.lifecycleevent.ObjectModifiedEvent(content,
+                    *descriptions))
+
+        return changed
+
+
+class Group(BaseForm):
+    zope.interface.implements(interfaces.IGroup)
+
+    weight = 0
+
+    def __init__(self, context, request, parentForm):
+        self.context = context
+        self.request = request
+        self.parentForm = self.__parent__ = parentForm
+
+    def isAvailable(self):
+        return True
+
+    def updateWidgets(self):
+        '''See interfaces.IForm'''
+        self.widgets = zope.component.getMultiAdapter(
+            (self, self.request, self.getContent()), interfaces.IWidgets)
+        for attrName in ('mode', 'ignoreRequest', 'ignoreContext',
+                         'ignoreReadonly'):
+            value = getattr(self.parentForm.widgets, attrName)
+            setattr(self.widgets, attrName, value)
+        self.widgets.update()
+
+    def applyChanges(self, data):
+        return applyChanges(self, self.getContent(), data)

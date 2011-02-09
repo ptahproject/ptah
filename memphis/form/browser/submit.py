@@ -29,7 +29,7 @@ from memphis.form.browser import button
 class SubmitWidget(button.ButtonWidget):
     """A submit button of a form."""
     zope.interface.implementsOnly(interfaces.ISubmitWidget)
-    klass = u'submit-widget'
+    klass = u'submit-widget z-form-button'
 
 
 @config.adapter(interfaces.IButton, None)

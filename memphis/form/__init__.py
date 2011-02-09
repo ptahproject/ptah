@@ -3,8 +3,7 @@
 # forms
 from memphis.form.form import applyChanges
 from memphis.form.form import extends, handleActionError
-from memphis.form.form import Form, EditForm, DisplayForm
-from memphis.form.subform import EditSubForm
+from memphis.form.form import Form, EditForm, SubForm, Group, DisplayForm
 
 # widget
 from memphis.form.widget import FieldWidget

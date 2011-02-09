@@ -227,8 +227,8 @@ class FieldWidgets(util.Manager):
                     (field.field, self.request), interfaces.IFieldWidget)
 
             # Step 3: Set the prefix for the widget
-            widget.name = prefix + shortName
-            widget.id = (prefix + shortName).replace('.', '-')
+            widget.name = str(prefix + shortName)
+            widget.id = str(prefix + shortName).replace('.', '-')
 
             # Step 4: Set the context
             widget.context = self.content
@@ -304,7 +304,7 @@ class FieldWidgets(util.Manager):
 
         for error in self.form.validate(data):
             if interfaces.IWidgetError.providedBy(error):
-                widget = self[error.name]
+                widget = self.get(error.name)
                 error = error.error
             else:
                 widget = None

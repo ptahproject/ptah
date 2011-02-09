@@ -11,6 +11,10 @@ config.action(
     pagelets.IFormView, interfaces.IInputForm,
     template = view.template('memphis.form:templates/form.pt'))
 
+config.action(
+    view.registerPagelet,
+    pagelets.IFormView, interfaces.IEditForm,
+    template = view.template('memphis.form:templates/editform.pt'))
 
 config.action(
     view.registerPagelet,

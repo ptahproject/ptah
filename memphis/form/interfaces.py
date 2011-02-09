@@ -297,17 +297,6 @@ class IBoolTerms(ITerms):
         required=False)
 
 
-# ----[ Subform factory ]-----------------------------------------------------
-
-class ISubformFactory(zope.interface.Interface):
-    """Factory that will instantiate our subforms for ObjectWidget.
-    """
-
-    def __call__():
-        """Return a default object created to be populated.
-        """
-
-
 # ----[ Widgets ]------------------------------------------------------------
 
 class IWidget(zope.interface.Interface):
@@ -823,22 +812,10 @@ class IForm(zope.interface.Interface):
                       'used in the UI.'),
         required=False)
 
-    labelRequired = zope.schema.TextLine(
-        title=_('Label required'),
-        description=_('A human readable text describing the form that can be '
-                      'used in the UI for rendering a required info legend.'),
-        required=False)
-
     prefix = zope.schema.BytesLine(
         title=_('Prefix'),
         description=_('The prefix of the form used to uniquely identify it.'),
         default='form.')
-
-    status = zope.schema.Text(
-        title=_('Status'),
-        description=_('The status message of the form.'),
-        default=None,
-        required=False)
 
     def getContent():
         '''Return the content to be displayed and/or edited.'''
@@ -868,7 +845,19 @@ class IForm(zope.interface.Interface):
         '''Render the form.'''
 
 
-class ISubForm(IForm):
+class IWrappedForm(IForm):
+    """ """
+
+    weight = interface.Attribute('Sort weight')
+
+    def isAvailable():
+        """ post construction check """
+
+    def applyChanges(data):
+        """ apply changes """
+
+
+class ISubForm(IWrappedForm):
     """A subform."""
 
 
@@ -924,6 +913,15 @@ class IInputForm(zope.interface.Interface):
 class IEditForm(IForm):
     """A form to edit data of a component."""
 
+    groups = interface.Attribute('Groups')
+    subforms = interface.Attribute('Subforms')
+
+    def listWrappedForms():
+        """ list wrapped forms """
+
+    def updateForms():
+        """ load and initialize subforms and groups """
+
     def applyChanges(data):
         """Apply the changes to the content component."""
 
@@ -948,18 +946,8 @@ class IButtonForm(IForm):
         schema=IButtons)
 
 
-class IGroup(IForm):
+class IGroup(IWrappedForm):
     """A group of fields/widgets within a form."""
-
-
-class IGroupForm(object):
-    """A form that supports groups."""
-
-    groups = zope.schema.Tuple(
-        title=u'Groups',
-        description=(u'Initially a collection of group classes, which are '
-                     u'converted to group instances when the form is '
-                     u'updated.'))
 
 
 # ----[ Events ]--------------------------------------------------------------

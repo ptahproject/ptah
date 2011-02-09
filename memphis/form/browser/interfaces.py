@@ -30,14 +30,14 @@ class IHTMLCoreAttributes(zope.interface.Interface):
         required=False)
 
     # HTML "class" attribute; "class" is a keyword in Python.
-    klass = zope.schema.TextLine(
+    klass = zope.schema.ASCII(
         title=u'Class',
         description=(u'This attribute assigns a class name or set of '
                      u'class names to an element. Any number of elements '
                      u'may be assigned the same class name or names.'),
         required=False)
 
-    style = zope.schema.TextLine(
+    style = zope.schema.ASCII(
         title=u'Style',
         description=(u'This attribute offers advisory information about '
                      u'the element for which it is set.'),
