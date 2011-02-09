@@ -1,0 +1,25 @@
+<div class="z-form z-form-edit">
+  <form action="${context.action}" name="${context.name}" id="${context.id}"
+	method="${context.method}" enctype="${context.enctype}"
+	accept="${context.accept}" acceptCharset="${context.acceptCharset}">
+
+    <h1 class="z-form-label" i18n:translate=""
+	tal:content="context.label">Do something</h1>
+    <div class="z-form-description" i18n:translate=""
+	 tal:content="context.description"></div>
+
+    <div class="z-wizard-viewspace"
+	 tal:omit-tag="not (context.groups or context.subforms)">
+      <div class="z-form-fieldset" tal:condition="context.widgets">
+	<tal:block tal:repeat="context context.widgets.values()"
+		   tal:content="structure pagelet:form-widget" />
+      </div>
+   
+      <tal:block tal:condition="context.subforms"
+		 tal:repeat="context context.subforms"
+		 tal:content="structure pagelet:form-view" />
+    </div>
+
+    <tal:block content="structure pagelet:form-actions" />
+  </form>
+</div>
