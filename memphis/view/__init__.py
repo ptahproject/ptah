@@ -15,7 +15,7 @@ from memphis.view.view import renderView
 from memphis.view.view import registerView
 from memphis.view.view import registerDefaultView
 
-from memphis.view.message import addStatusMessage
+from memphis.view.message import addMessage
 
 # directives
 from memphis.view.directives import pagelet

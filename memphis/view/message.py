@@ -13,7 +13,7 @@ from memphis import config
 from interfaces import IMessage, IStatusMessage
 
 
-def addStatusMessage(request, msg, type='info'):
+def addMessage(request, msg, type='info'):
     IStatusMessage(request).add(msg, type)
 
 
