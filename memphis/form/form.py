@@ -95,7 +95,7 @@ def handleActionError(event):
     # If the form supports the ``formErrorsMessage`` attribute, then set the
     # status to it.
     if hasattr(form, 'formErrorsMessage'):
-        view.addStatusMessage(form.request, form.formErrorsMessage, 'error')
+        view.addMessage(form.request, form.formErrorsMessage, 'error')
 
 
 class BaseForm(object):
@@ -320,15 +320,15 @@ class EditForm(Form):
     def handleApply(self, action):
         data, errors = self.extractData()
         if errors:
-            view.addStatusMessage(
+            view.addMessage(
                 self.request, (self.formErrorsMessage,)+errors, 'formError')
             return
 
         changed = self.applyChanges(data)
         if changed:
-            view.addStatusMessage(self.request, self.successMessage)
+            view.addMessage(self.request, self.successMessage)
         else:
-            view.addStatusMessage(self.request, self.noChangesMessage)
+            view.addMessage(self.request, self.noChangesMessage)
 
 
 class SubForm(BaseForm):

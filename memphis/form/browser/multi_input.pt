@@ -38,8 +38,7 @@
   </tal:block>
   <div class="buttons">
     <input tal:repeat="action context.actions.values()"
-           tal:replace="structure action.render"
-           />
+           tal:replace="structure action.render()" />
    </div>
 </div>
 <input type="hidden" tal:replace="structure context.counterMarker" />
