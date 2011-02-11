@@ -41,7 +41,7 @@ Now we can add messages.
 
 or
 
-   >>> view.addStatusMessage(request, 'Test message')
+   >>> view.addMessage(request, 'Test message')
 
    >>> bool(service)
    True
