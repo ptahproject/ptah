@@ -57,14 +57,15 @@ class Widget(object):
     ignoreContext = False
     # See ``interfaces.IFormAware``
     form = None
-    # See ``interfaces.IFieldWidget``
-    field = None
 
-    # Internal attributes
-    _adapterValueAttributes = ('label', 'name', 'required', 'title')
-
-    def __init__(self, request):
+    def __init__(self, field, request):
+        self.field = field
         self.request = request
+
+        self.name = field.__name__
+        self.id = field.__name__.replace('.', '-')
+        self.label = field.title
+        self.required = field.required
 
     def update(self):
         """See z3c.form.interfaces.IWidget."""
@@ -85,9 +86,7 @@ class Widget(object):
 
         # Step 1.2: If we have a widget with a field and we have no value yet,
         #           we have some more possible locations to get the value
-        if (interfaces.IFieldWidget.providedBy(self) and
-            value is interfaces.NO_VALUE and
-            value is not PLACEHOLDER):
+        if value is interfaces.NO_VALUE and value is not PLACEHOLDER:
             # Step 1.2.1: If the widget knows about its context and the
             #              context is to be used to extract a value, get
             #              it now via a data manager.
@@ -188,7 +187,7 @@ class SequenceWidget(Widget):
         """See z3c.form.interfaces.IWidget."""
         if (self.name not in self.request.params and
             self.name+'-empty-marker' in self.request.params):
-            return []
+            return interfaces.NO_VALUE
         value = self.request.params.get(self.name, default)
         if value != default:
             if not isinstance(value, (tuple, list)):
@@ -202,222 +201,3 @@ class SequenceWidget(Widget):
                 except LookupError:
                     return default
         return value
-
-
-class MultiWidget(Widget):
-    """None Term based sequence widget base.
-
-    The multi widget is used for ITuple or IList if no other widget is defined.
-
-    Some IList or ITuple are using another specialized widget if they can
-    choose from a collection. e.g. a IList of IChoice. The base class of such
-    widget is the ISequenceWidget.
-
-    This widget can handle none collection based sequences and offers add or
-    remove values to or from the sequence. Each sequence value get rendered by
-    it's own relevant widget. e.g. IList of ITextLine or ITuple of IInt
-
-    Each widget get rendered within a sequence value. This means each internal
-    widget will repressent one value from the mutli widget value. Based on the
-    nature of this (sub) widget setup the internal widget do not have a real
-    context and can't get binded to it. This makes it impossible to use a
-    sequence of collection where the collection needs a context. But that
-    should not be a problem since sequence of collection will use the
-    SequenceWidget as base.
-    """
-
-    zope.interface.implements(interfaces.IMultiWidget)
-
-    allowAdding = True
-    allowRemoving = True
-
-    widgets = None
-    _value = None
-
-    _mode = FieldProperty(interfaces.IWidget['mode'])
-
-    def __init__(self, request):
-        super(MultiWidget, self).__init__(request)
-        self.widgets = []
-        self._value = []
-
-    @property
-    def counterName(self):
-        return '%s.count' % self.name
-
-    @property
-    def counterMarker(self):
-        # this get called in render from the template and contains always the
-        # right amount of widgets we use.
-        return '<input type="hidden" name="%s" value="%d" />' % (
-            self.counterName, len(self.widgets))
-
-    @apply
-    def mode():
-        """This invokes updateWidgets on any value change e.g. update/extract."""
-        def get(self):
-            return self._mode
-        def set(self, mode):
-            self._mode = mode
-            # ensure that we apply the new mode to the widgets
-            for w in self.widgets:
-                w.mode = mode
-        return property(get, set)
-
-    def getWidget(self, idx):
-        """Setup widget based on index id with or without value."""
-        valueType = self.field.value_type
-        widget = zope.component.getMultiAdapter((valueType, self.request),
-            interfaces.IFieldWidget)
-        self.setName(widget, idx)
-        widget.mode = self.mode
-        #set widget.form (objectwidget needs this)
-        if interfaces.IFormAware.providedBy(self):
-            widget.form = self.form
-            zope.interface.alsoProvides(
-                widget, interfaces.IFormAware)
-        widget.update()
-        return widget
-
-    def setName(self, widget, idx):
-        widget.name = '%s.%i' % (self.name, idx)
-        widget.id = '%s-%i' % (self.id, idx)
-
-    def appendAddingWidget(self):
-        """Simply append a new empty widget with correct (counter) name."""
-        # since we start with idx 0 (zero) we can use the len as next idx
-        idx = len(self.widgets)
-        widget = self.getWidget(idx)
-        self.widgets.append(widget)
-
-    def applyValue(self, widget, value=interfaces.NO_VALUE):
-        """Validate and apply value to given widget.
-
-        This method gets called on any multi widget value change and is
-        responsible for validating the given value and setup an error message.
-
-        This is internal apply value and validation process is needed because
-        nothing outside this multi widget does know something about our
-        internal sub widgets.
-        """
-        if value is not interfaces.NO_VALUE:
-            try:
-                # convert widget value to field value
-                converter = interfaces.IDataConverter(widget)
-                fvalue = converter.toFieldValue(value)
-                # validate field value
-                field = getattr(widget, 'field', None)
-                if field is not None:
-                    field = field.bind(self.context)
-                
-                if fvalue is interfaces.NOT_CHANGED and \
-                        not widget.ignoreContext:
-                    fvalue = zope.component.getMultiAdapter(
-                        (self.context, field), interfaces.IDataManager).query()
-
-                zope.component.getMultiAdapter(
-                    (self.form, field), interfaces.IValidator).validate(fvalue)
-                # convert field value to widget value
-                widget.value = converter.toWidgetValue(fvalue)
-            except (zope.schema.ValidationError, ValueError), error:
-                # on exception, setup the widget error message
-                view = zope.component.getMultiAdapter(
-                    (error, self.request), interfaces.IErrorViewSnippet)
-                view.update(self)
-                widget.error = view
-                # set the wrong value as value
-                widget.value = value
-
-    def updateWidgets(self):
-        """Setup internal widgets based on the value_type for each value item.
-        """
-        oldLen = len(self.widgets)
-        self.widgets = []
-        idx = 0
-        if self.value:
-            for v in self.value:
-                widget = self.getWidget(idx)
-                self.applyValue(widget, v)
-                self.widgets.append(widget)
-                idx += 1
-        missing = oldLen - len(self.widgets)
-        if missing > 0:
-            # add previous existing new added widgtes
-            for i in xrange(missing):
-                widget = self.getWidget(idx)
-                self.widgets.append(widget)
-                idx += 1
-
-    def updateAllowAddRemove(self):
-        """Update the allowAdding/allowRemoving attributes
-        basing on field constraints and current number of widgets
-        """
-        if not zope.schema.interfaces.IMinMaxLen.providedBy(self.field):
-            return
-        max_length = self.field.max_length
-        min_length = self.field.min_length
-        num_items = len(self.widgets)
-        self.allowAdding = bool((not max_length) or (num_items < max_length))
-        self.allowRemoving = bool(num_items and (num_items > min_length))
-
-    @apply
-    def value():
-        """This invokes updateWidgets on any value change e.g. update/extract."""
-        def get(self):
-            return self._value
-        def set(self, value):
-            self._value = value
-            # ensure that we apply our new values to the widgets
-            self.updateWidgets()
-        return property(get, set)
-
-    def extract(self, default=interfaces.NO_VALUE):
-        # This method is responsible to get the widgets value based on the
-        # request and nothing else.
-        # We have to setup the widgets for extract their values, because we
-        # don't know how to do this for every field without the right widgets.
-        # Later we will setup the widgets based on this values. This is needed
-        # because we probably set a new value in the form for our multi widget
-        # which whould generate a different set of widgets.
-        if self.request.params.get(self.counterName) is None:
-            # counter marker not found
-            return interfaces.NO_VALUE
-        counter = int(self.request.params.get(self.counterName, 0))
-        values = []
-        append = values.append
-        # extract value for existing widgets
-        for idx in range(counter):
-            widget = self.getWidget(idx)
-            append(widget.value)
-        if len(values) == 0:
-            # no multi value found
-            return interfaces.NO_VALUE
-        return values
-
-
-def FieldWidget(field, widget):
-    """Set the field for the widget."""
-    widget.field = field
-    if not interfaces.IFieldWidget.providedBy(widget):
-        zope.interface.alsoProvides(widget, interfaces.IFieldWidget)
-    # Initial values are set. They can be overridden while updating the widget
-    # itself later on.
-    widget.name = field.__name__
-    widget.id = field.__name__.replace('.', '-')
-    widget.label = field.title
-    widget.required = field.required
-    return widget
-
-
-class WidgetEvent(object):
-    zope.interface.implements(interfaces.IWidgetEvent)
-
-    def __init__(self, widget):
-        self.widget = widget
-
-    def __repr__(self):
-        return '<%s %r>' %(self.__class__.__name__, self.widget)
-
-
-class AfterWidgetUpdateEvent(WidgetEvent):
-    zope.interface.implementsOnly(interfaces.IAfterWidgetUpdateEvent)

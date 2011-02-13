@@ -21,7 +21,6 @@ import zope.interface
 import zope.schema.interfaces
 
 from memphis import config, view
-
 from memphis.form import interfaces, widget, pagelets
 from memphis.form.browser import text
 
@@ -29,15 +28,9 @@ from memphis.form.browser import text
 class PasswordWidget(text.TextWidget):
     """Input type password widget implementation."""
     zope.interface.implementsOnly(interfaces.IPasswordWidget)
+    config.adapts(zope.schema.interfaces.IPassword, None)
 
     klass = u'password-widget'
-
-
-@config.adapter(zope.schema.interfaces.IPassword, None)
-@zope.interface.implementer(interfaces.IFieldWidget)
-def PasswordFieldWidget(field, request):
-    """IFieldWidget factory for IPasswordWidget."""
-    return widget.FieldWidget(field, PasswordWidget(request))
 
 
 config.action(

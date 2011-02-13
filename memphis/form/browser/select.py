@@ -25,7 +25,7 @@ from zope.i18n import translate
 from memphis import config, view
 
 from memphis.form import interfaces, pagelets
-from memphis.form.widget import SequenceWidget, FieldWidget
+from memphis.form.widget import SequenceWidget
 from memphis.form.browser import widget
 
 _ = interfaces.MessageFactory
@@ -34,16 +34,13 @@ _ = interfaces.MessageFactory
 class SelectWidget(widget.HTMLSelectWidget, SequenceWidget):
     """Select widget implementation."""
     zope.interface.implementsOnly(interfaces.ISelectWidget)
+    config.adapts(zope.schema.interfaces.IChoice, None)
 
     klass = u'select-widget'
     prompt = False
 
     noValueMessage = _('no value')
     promptMessage = _('select a value ...')
-
-    # Internal attributes
-    _adapterValueAttributes = SequenceWidget._adapterValueAttributes + \
-        ('noValueMessage', 'promptMessage', 'prompt')
 
     def isSelected(self, term):
         return term.token in self.value
@@ -81,18 +78,18 @@ class SelectWidget(widget.HTMLSelectWidget, SequenceWidget):
         return items
 
 
-@config.adapter(zope.schema.interfaces.IChoice, None)
-@zope.interface.implementer(interfaces.IFieldWidget)
+#@config.adapter(zope.schema.interfaces.IChoice, None)
+#@zope.interface.implementer(interfaces.IWidget)
 def ChoiceWidgetDispatcher(field, request):
     """Dispatch widget for IChoice based also on its source."""
     return zope.component.getMultiAdapter((field, field.vocabulary, request),
-                                          interfaces.IFieldWidget)
+                                          interfaces.IWidget)
 
 
-@config.adapter(zope.schema.interfaces.IChoice, zope.interface.Interface, None)
-@zope.interface.implementer(interfaces.IFieldWidget)
+#@config.adapter(zope.schema.interfaces.IChoice, zope.interface.Interface, None)
+#@zope.interface.implementer(interfaces.IWidget)
 def SelectFieldWidget(field, source, request=None):
-    """IFieldWidget factory for SelectWidget."""
+    """IWidget factory for SelectWidget."""
     # BBB: emulate our pre-2.0 signature (field, request)
     if request is None:
         real_request = source
@@ -101,12 +98,12 @@ def SelectFieldWidget(field, source, request=None):
     return FieldWidget(field, SelectWidget(real_request))
 
 
-@config.adapter(zope.schema.interfaces.IUnorderedCollection, None)
-@zope.interface.implementer(interfaces.IFieldWidget)
+#@config.adapter(zope.schema.interfaces.IUnorderedCollection, None)
+#@zope.interface.implementer(interfaces.IWidget)
 def CollectionSelectFieldWidget(field, request):
-    """IFieldWidget factory for SelectWidget."""
+    """IWidget factory for SelectWidget."""
     widget = zope.component.getMultiAdapter((field, field.value_type, request),
-        interfaces.IFieldWidget)
+        interfaces.IWidget)
     widget.size = 5
     widget.multiple = 'multiple'
     return widget
@@ -114,9 +111,9 @@ def CollectionSelectFieldWidget(field, request):
 
 @config.adapter(zope.schema.interfaces.IUnorderedCollection,
                 zope.schema.interfaces.IChoice, None)
-@zope.interface.implementer(interfaces.IFieldWidget)
+@zope.interface.implementer(interfaces.IWidget)
 def CollectionChoiceSelectFieldWidget(field, value_type, request):
-    """IFieldWidget factory for SelectWidget."""
+    """IWidget factory for SelectWidget."""
     return SelectFieldWidget(field, None, request)
 
 

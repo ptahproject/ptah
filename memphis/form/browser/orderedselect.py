@@ -25,7 +25,7 @@ from zope.i18n import translate
 from memphis import config, view
 
 from memphis.form import interfaces, pagelets
-from memphis.form.widget import SequenceWidget, FieldWidget
+from memphis.form.widget import SequenceWidget
 from memphis.form.browser import widget
 
 
@@ -70,28 +70,28 @@ class OrderedSelectWidget(widget.HTMLSelectWidget, SequenceWidget):
         return notselecteditems
 
 
-@zope.component.adapter(zope.schema.interfaces.ISequence, None)
-@zope.interface.implementer(interfaces.IFieldWidget)
+#@zope.component.adapter(zope.schema.interfaces.ISequence, None)
+#@zope.interface.implementer(interfaces.IWidget)
 def OrderedSelectFieldWidget(field, request):
-    """IFieldWidget factory for SelectWidget."""
+    """IWidget factory for SelectWidget."""
     return FieldWidget(field, OrderedSelectWidget(request))
 
 
-@config.adapter(zope.schema.interfaces.ISequence, None)
-@zope.interface.implementer(interfaces.IFieldWidget)
+#@config.adapter(zope.schema.interfaces.ISequence, None)
+#@zope.interface.implementer(interfaces.IWidget)
 def SequenceSelectFieldWidget(field, request):
-    """IFieldWidget factory for SelectWidget."""
+    """IWidget factory for SelectWidget."""
     return zope.component.getMultiAdapter(
-        (field, field.value_type, request), interfaces.IFieldWidget)
+        (field, field.value_type, request), interfaces.IWidget)
 
 
 #@config.adapter(
 #    zope.schema.interfaces.IList, zope.schema.interfaces.IChoice, None)
 #@config.adapter(
 #    zope.schema.interfaces.ITuple, zope.schema.interfaces.IChoice, None)
-@zope.interface.implementer(interfaces.IFieldWidget)
+@zope.interface.implementer(interfaces.IWidget)
 def SequenceChoiceSelectFieldWidget(field, value_type, request):
-    """IFieldWidget factory for SelectWidget."""
+    """IWidget factory for SelectWidget."""
     return OrderedSelectFieldWidget(field, request)
 
 

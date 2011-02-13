@@ -26,7 +26,7 @@ from memphis.form.browser import text
 
 class FileWidget(text.TextWidget):
     """Input type text widget implementation."""
-    zope.interface.implementsOnly(interfaces.IFileWidget)
+    zope.interface.implementsOnly(interfaces.IWidget)
 
     klass = u'file-widget'
 
@@ -37,7 +37,7 @@ class FileWidget(text.TextWidget):
 
 
 @zope.component.adapter(zope.schema.interfaces.IBytes, None)
-@zope.interface.implementer(interfaces.IFieldWidget)
+@zope.interface.implementer(interfaces.IWidget)
 def FileFieldWidget(field, request):
-    """IFieldWidget factory for FileWidget."""
+    """IWidget factory for FileWidget."""
     return widget.FieldWidget(field, FileWidget(request))

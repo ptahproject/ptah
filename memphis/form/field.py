@@ -24,7 +24,6 @@ from memphis import config
 
 from memphis.form import interfaces, util, error
 from memphis.form.error import MultipleErrors
-from memphis.form.widget import AfterWidgetUpdateEvent
 
 
 def _initkw(keepReadOnly=(), omitReadOnly=False, **defaults):
@@ -170,7 +169,7 @@ class Fields(util.SelectionManager):
 
 
 class FieldWidgets(util.Manager):
-    """Widget manager for IFieldWidget."""
+    """Widget manager for IWidget."""
     config.adapts(
         interfaces.IFieldsForm,
         zope.interface.Interface)
@@ -224,7 +223,7 @@ class FieldWidgets(util.Manager):
                 widget = factory(field.field, self.request)
             else:
                 widget = zope.component.getMultiAdapter(
-                    (field.field, self.request), interfaces.IFieldWidget)
+                    (field.field, self.request), interfaces.IWidget)
 
             # Step 3: Set the prefix for the widget
             widget.name = str(prefix + shortName)
@@ -249,7 +248,7 @@ class FieldWidgets(util.Manager):
 
             # Step 8: Update the widget
             widget.update()
-            zope.event.notify(AfterWidgetUpdateEvent(widget))
+            #zope.event.notify(AfterWidgetUpdateEvent(widget))
 
             # Step 9: Add the widget to the manager
             if widget.required:

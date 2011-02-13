@@ -26,7 +26,6 @@ from zope.schema.fieldproperty import FieldProperty
 
 from memphis import config
 from memphis.form import action, interfaces, util
-from memphis.form.widget import AfterWidgetUpdateEvent
 
 from memphis.form.browser import submit
 
@@ -184,20 +183,11 @@ class ButtonAction(action.Action, submit.SubmitWidget):
 
     def __init__(self, request, field):
         action.Action.__init__(self, request, field.title)
-        submit.SubmitWidget.__init__(self, request)
-        self.field = field
+        submit.SubmitWidget.__init__(self, field, request)
 
     @property
     def accesskey(self):
         return self.field.accessKey
-
-    @property
-    def value(self):
-        return self.title
-
-    @property
-    def id(self):
-        return self.name.replace('.', '-')
 
 
 class ButtonActions(action.Actions):
@@ -238,7 +228,7 @@ class ButtonActions(action.Actions):
 
             # Step 6: Update the new action
             buttonAction.update()
-            zope.event.notify(AfterWidgetUpdateEvent(buttonAction))
+            #zope.event.notify(AfterWidgetUpdateEvent(buttonAction))
 
             # Step 7: Add the widget to the manager
             uniqueOrderedKeys.append(name)

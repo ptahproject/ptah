@@ -19,7 +19,7 @@ __docformat__ = "reStructuredText"
 import zope.interface
 from zope.schema.fieldproperty import FieldProperty
 
-from memphis.form.interfaces import IFieldWidget
+from memphis.form.interfaces import IWidget
 from memphis.form.browser.interfaces import \
     IHTMLFormElement, IHTMLInputWidget, IHTMLSelectWidget, \
     IHTMLTextInputWidget, IHTMLTextAreaWidget
@@ -113,6 +113,6 @@ def addFieldClass(widget):
 
     If the widget does not have field, then nothing is done.
     """
-    if IFieldWidget.providedBy(widget):
+    if IWidget.providedBy(widget):
         klass = unicode(widget.field.__class__.__name__.lower() + '-field')
         widget.addClass(klass)

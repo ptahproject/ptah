@@ -1,7 +1,3 @@
-""" Setup for memphis.form package
-
-$Id: setup.py 11635 2011-01-18 07:03:08Z fafhrd91 $
-"""
 import sys, os
 from setuptools import setup, find_packages
 
@@ -25,7 +21,7 @@ setup(name='memphis.form',
       classifiers=[
         'Environment :: Web Environment',
         'Intended Audience :: Developers',
-        'License :: OSI Approved :: Repoze Public License',
+        'License :: OSI Approved :: Zope Public License',
         'Programming Language :: Python',
         'Operating System :: OS Independent',
         'Topic :: Internet :: WWW/HTTP',
@@ -33,7 +29,7 @@ setup(name='memphis.form',
       author='Nikolay Kim',
       author_email='fafhrd91@gmail.com',
       url='http://pypi.python.org/pypi/memphis.form/',
-      license='BSD-derived (http://www.repoze.org/LICENSE.txt)',
+      license='ZPL 2.1',
       packages=find_packages(),
       namespace_packages=['memphis'],
       install_requires = ['setuptools',
@@ -51,8 +47,7 @@ setup(name='memphis.form',
                           'zope.i18n',
                           'zope.lifecycleevent',
                           ],
-      extras_require = dict(test=['memphis.view [test]',
-                                  ]),
+      extras_require = dict(test=['memphis.view [test]']),
       include_package_data = True,
       zip_safe = False,
       entry_points = {

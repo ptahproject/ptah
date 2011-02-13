@@ -11,40 +11,25 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""
-$Id: textlines.py 11790 2011-01-31 00:41:45Z fafhrd91 $
-"""
-__docformat__ = "reStructuredText"
-
-import zope.interface
+from zope import interface
+from zope.schema.interfaces import ISequence
 
 from memphis import config, view
-
 from memphis.form import interfaces, pagelets
-from memphis.form import widget
 from memphis.form.browser import textarea
 
 
 class TextLinesWidget(textarea.TextAreaWidget):
     """Input type sequence widget implementation."""
-    zope.interface.implementsOnly(interfaces.ITextLinesWidget)
-
-
-def TextLinesFieldWidget(field, request):
-    """IFieldWidget factory for TextLinesWidget."""
-    return widget.FieldWidget(field, TextLinesWidget(request))
-
-
-@zope.interface.implementer(interfaces.IFieldWidget)
-def TextLinesFieldWidgetFactory(field, value_type, request):
-    """IFieldWidget factory for TextLinesWidget."""
-    return TextLinesFieldWidget(field, request)
+    config.adapts(ISequence, None)
+    interface.implementsOnly(interfaces.ITextLinesWidget)
 
 
 config.action(
     view.registerPagelet,
     pagelets.IWidgetDisplayView, interfaces.ITextLinesWidget,
     template=view.template("memphis.form.browser:textlines_display.pt"))
+
 
 config.action(
     view.registerPagelet,

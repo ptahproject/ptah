@@ -23,7 +23,7 @@ import zope.schema.interfaces
 from memphis import config, view
 
 from memphis.form import interfaces, pagelets
-from memphis.form.widget import Widget, FieldWidget
+from memphis.form.widget import Widget
 from memphis.form.browser import widget
 
 
@@ -52,10 +52,9 @@ class TextWidget(widget.HTMLTextInputWidget, Widget):
 @config.adapter(zope.schema.interfaces.ITime, None)
 @config.adapter(zope.schema.interfaces.ITimedelta, None)
 @config.adapter(zope.schema.interfaces.IURI, None)
-@zope.interface.implementer(interfaces.IFieldWidget)
+@zope.interface.implementer(interfaces.ITextWidget)
 def TextFieldWidget(field, request):
-    """IFieldWidget factory for TextWidget."""
-    return FieldWidget(field, TextWidget(request))
+    return TextWidget(field, request)
 
 
 config.action(

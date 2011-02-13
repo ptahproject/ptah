@@ -26,12 +26,13 @@ from zope.i18n import translate
 from memphis import config, view
 
 from memphis.form import interfaces, pagelets
-from memphis.form.widget import SequenceWidget, FieldWidget
+from memphis.form.widget import SequenceWidget
 from memphis.form.browser import widget
 
 
 class RadioWidget(widget.HTMLInputWidget, SequenceWidget):
     """Input type radio widget implementation."""
+    config.adapts(zope.schema.interfaces.IBool, None)
     zope.interface.implementsOnly(interfaces.IRadioWidget)
 
     klass = u'radio-widget'
@@ -55,13 +56,6 @@ class RadioWidget(widget.HTMLInputWidget, SequenceWidget):
             self.items.append(
                 {'id':id, 'name':self.name, 'value':term.token,
                  'label':label, 'checked':checked})
-
-
-@config.adapter(zope.schema.interfaces.IBool, None)
-@zope.interface.implementer(interfaces.IFieldWidget)
-def RadioFieldWidget(field, request):
-    """IFieldWidget factory for RadioWidget."""
-    return FieldWidget(field, RadioWidget(request))
 
 config.action(
     view.registerPagelet,

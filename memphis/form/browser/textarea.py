@@ -23,13 +23,14 @@ import zope.schema.interfaces
 from memphis import config, view
 
 from memphis.form import interfaces, pagelets
-from memphis.form.widget import Widget, FieldWidget
+from memphis.form.widget import Widget
 from memphis.form.browser import widget
 
 
 class TextAreaWidget(widget.HTMLTextAreaWidget, Widget):
     """Textarea widget implementation."""
     zope.interface.implementsOnly(interfaces.ITextAreaWidget)
+    config.adapts(zope.schema.interfaces.IASCII, None)
 
     klass = u'textarea-widget'
     value = u''
@@ -39,12 +40,9 @@ class TextAreaWidget(widget.HTMLTextAreaWidget, Widget):
         widget.addFieldClass(self)
 
 
-@config.adapter(zope.schema.interfaces.IASCII, None)
-@config.adapter(zope.schema.interfaces.IText, None)
-@zope.interface.implementer(interfaces.IFieldWidget)
-def TextAreaFieldWidget(field, request):
-    """IFieldWidget factory for TextWidget."""
-    return FieldWidget(field, TextAreaWidget(request))
+config.action(
+    config.registerAdapter,
+    TextAreaWidget, (zope.schema.interfaces.IText, None))
 
 
 config.action(
