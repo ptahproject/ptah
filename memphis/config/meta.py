@@ -50,17 +50,18 @@ class AdaptsGrokker(martian.ClassGrokker):
         if value is _marker:
             return False
 
-        required, name, info = value
-        provided = iter(interface.implementedBy(factory)).next()
+        for required, name, info in value:
+            provided = iter(interface.implementedBy(factory)).next()
 
-        if (factory, required, provided) in _adapters:
-            return False
-        _adapters.append((factory, required, provided))
+            if (factory, required, provided, name) in _adapters:
+                continue
+            _adapters.append((factory, required, provided, name))
 
-        factory.__component_adapts__ = required
+            factory.__component_adapts__ = required
 
-        api.registerAdapter(
-            factory, required, provided, name, configContext, info)
+            api.registerAdapter(
+                factory, required, provided, name, configContext, info)
+
         return True
 
 
@@ -97,9 +98,10 @@ class AdapterGrokker(martian.InstanceGrokker):
 
             provides = list(interface.implementedBy(obj))[0]
 
-            for required, info in obj._register_adapter:
+            for required, kwargs, info in obj._register_adapter:
                 api.registerAdapter(
-                    obj, required, provides, '', configContext, info)
+                    obj, required, provides, 
+                    kwargs.get('name',''), configContext, info)
 
             return True
         else:

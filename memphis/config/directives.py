@@ -32,7 +32,7 @@ class action(Directive):
 
 class adapts(Directive):
     scope = CLASS
-    store = ONCE_NOBASE
+    store = MULTIPLE_NOBASE
 
     def factory(self, *args, **kw):
         name = kw.get('name', '')
@@ -55,9 +55,10 @@ class utility(Directive):
 
 class adapter(zope.component.adapter):
 
-    def __init__(self, *args):
+    def __init__(self, *args, **kwargs):
         zope.component.adapter.__init__(self, *args)
         self.required = args
+        self.kwargs = kwargs
 
     def __call__(self, ob):
         ob = zope.component.adapter.__call__(self, ob)
@@ -65,7 +66,7 @@ class adapter(zope.component.adapter):
         if not hasattr(ob, '_register_adapter'):
             ob._register_adapter = []
 
-        ob._register_adapter.append((self.required, getInfo(2)))
+        ob._register_adapter.append((self.required, self.kwargs, getInfo(2)))
         return ob
 
 
@@ -78,5 +79,5 @@ class handler:
         if not hasattr(ob, '_register_handler'):
             ob._register_handler = []
 
-        ob._register_handler.append((self.required, getInfo()))
+        ob._register_handler.append((self.required, getInfo(2)))
         return ob
