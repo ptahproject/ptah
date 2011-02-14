@@ -23,12 +23,18 @@ from memphis.view.directives import pageletType
 from memphis.view.directives import pyramidView
 
 
-from memphis.view.interfaces import IRoot
+# view action
+from memphis.view.action import Action
+from memphis.view.interfaces import IAction
+
+
+# root
+from memphis.view.interfaces import INavigationRoot
 
 
 import zope.interface
 class Root(object):
-    zope.interface.implements(IRoot)
+    zope.interface.implements(INavigationRoot)
 
     __name__ = ''
     __parent__ = None

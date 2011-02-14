@@ -72,10 +72,12 @@ class IDefaultView(interface.Interface):
     name = interface.Attribute("Name of default view")
 
 
-class IRoot(interface.Interface):
+# navigation root
+class INavigationRoot(interface.Interface):
     """ site root """
 
 
+# status message
 class IMessage(interface.Interface):
     """ message """
 
@@ -94,3 +96,17 @@ class IStatusMessage(interface.Interface):
 
     def messages():
         """ return all messages """
+
+
+# view action
+class IAction(interface.Interface):
+    """ view action """
+
+    name = interface.Attribute('Name')
+
+    title = interface.Attribute('Title')
+
+    description = interface.Attribute('Description')
+
+    def url(request):
+        """ build url for action """
