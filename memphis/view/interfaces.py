@@ -108,5 +108,7 @@ class IAction(interface.Interface):
 
     description = interface.Attribute('Description')
 
+    weight = interface.Attribute('Action sort weight')
+
     def url(request):
         """ build url for action """
