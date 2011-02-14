@@ -11,11 +11,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Ordered-Selection Widget Implementation
-
-$Id: orderedselect.py 11790 2011-01-31 00:41:45Z fafhrd91 $
-"""
-__docformat__ = "reStructuredText"
+"""Ordered-Selection Widget Implementation"""
 import zope.component
 import zope.interface
 import zope.schema

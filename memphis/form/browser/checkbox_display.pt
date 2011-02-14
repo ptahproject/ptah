@@ -1,0 +1,21 @@
+<span id="" class=""
+      tal:attributes="id context.id;
+                      class context.klass;
+                      style context.style;
+                      title context.title;
+                      lang context.lang;
+                      onclick context.onclick;
+                      ondblclick context.ondblclick;
+                      onmousedown context.onmousedown;
+                      onmouseup context.onmouseup;
+                      onmouseover context.onmouseover;
+                      onmousemove context.onmousemove;
+                      onmouseout context.onmouseout;
+                      onkeypress context.onkeypress;
+                      onkeydown context.onkeydown;
+                      onkeyup context.onkeyup">
+  <tal:block repeat="value context.displayValue">
+    <span class="selected-option" tal:content="value" />
+    <tal:block condition="not repeat['value'].end">, </tal:block>
+  </tal:block>
+</span>

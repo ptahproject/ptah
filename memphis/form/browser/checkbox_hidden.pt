@@ -1,0 +1,32 @@
+<span class="option"
+      tal:repeat="item context.items">     
+  <input id="" name="" value="" class="hidden-widget" title=""
+         tabindex="" accesskey=""
+         type="hidden"
+         tal:attributes="id item.id;
+                         name item.name;
+                         class context.klass;
+                         value item.value;
+                         style context.style;
+                         title context.title;
+                         lang context.lang;
+                         onclick context.onclick;
+                         ondblclick context.ondblclick;
+                         onmousedown context.onmousedown;
+                         onmouseup context.onmouseup;
+                         onmouseover context.onmouseover;
+                         onmousemove context.onmousemove;
+                         onmouseout context.onmouseout;
+                         onkeypress context.onkeypress;
+                         onkeydown context.onkeydown;
+                         onkeyup context.onkeyup;
+                         disabled context.disabled;
+                         tabindex context.tabindex;
+                         onfocus context.onfocus;
+                         onblur context.onblur;
+                         onchange context.onchange;
+                         readonly context.readonly;
+                         alt context.alt;
+                         accesskey context.accesskey;
+                         onselect context.onselect" />
+</span>

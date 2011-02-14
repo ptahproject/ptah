@@ -11,27 +11,35 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
+""" Text Lines widget implementation """
 from zope import interface
 from zope.schema.interfaces import ISequence
 
 from memphis import config, view
-from memphis.form import interfaces, pagelets
+from memphis.form import pagelets
 from memphis.form.browser import textarea
+from memphis.form.interfaces import _, ITextLinesWidget
 
 
 class TextLinesWidget(textarea.TextAreaWidget):
     """Input type sequence widget implementation."""
     config.adapts(ISequence, None)
-    interface.implementsOnly(interfaces.ITextLinesWidget)
+    config.adapts(ISequence, None, name='textlines')
+    interface.implementsOnly(ITextLinesWidget)
+
+    __fname__ = 'textlines'
+    __title__ = _('Text lines widget')
+    __description__ = _('Text area based widget, '
+                        'each line is treated as sequence element.')
 
 
 config.action(
     view.registerPagelet,
-    pagelets.IWidgetDisplayView, interfaces.ITextLinesWidget,
+    pagelets.IWidgetDisplayView, ITextLinesWidget,
     template=view.template("memphis.form.browser:textlines_display.pt"))
 
 
 config.action(
     view.registerPagelet,
-    pagelets.IWidgetInputView, interfaces.ITextLinesWidget,
+    pagelets.IWidgetInputView, ITextLinesWidget,
     template=view.template("memphis.form.browser:textlines_input.pt"))

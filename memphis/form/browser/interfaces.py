@@ -11,11 +11,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Browser Widget Framework Interfaces
-
-$Id: interfaces.py 11744 2011-01-28 09:15:15Z fafhrd91 $
-"""
-__docformat__ = "reStructuredText"
+"""Browser Widget Framework Interfaces"""
 import zope.interface
 import zope.schema
 

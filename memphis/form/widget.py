@@ -11,32 +11,30 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Widget Framework Implementation
-
-$Id: widget.py 11799 2011-01-31 04:27:03Z fafhrd91 $
-"""
-__docformat__ = "reStructuredText"
-
+"""Widget Framework Implementation"""
 from zope.component import getMultiAdapter
 import zope.interface
-import zope.component
 import zope.schema.interfaces
 #from zope.i18n import translate
 from zope.schema.fieldproperty import FieldProperty
 
-from memphis import view
+from memphis import view, config
 from memphis.form import interfaces, util
 
-from pagelets import \
+from memphis.form.pagelets import \
     IWidgetInputView, IWidgetDisplayView, IWidgetHiddenView
-
 
 PLACEHOLDER = object()
 
 
+@zope.interface.implementer(interfaces.IDefaultWidget)
+@config.adapter(zope.schema.interfaces.IField, None)
+def getDefaultWidget(field, request):
+    return getMultiAdapter((field, request), form.IWidget)
+
+
 class Widget(object):
     """Widget base class."""
-
     zope.interface.implements(interfaces.IWidget)
 
     # widget specific attributes
@@ -52,11 +50,11 @@ class Widget(object):
     # The following attributes are for convenience. They are declared in
     # extensions to the simple widget.
 
-    # See ``interfaces.IContextAware``
     context = None
-    ignoreContext = False
-    # See ``interfaces.IFormAware``
     form = None
+    ignoreContext = False
+
+    __description__ = u''
 
     def __init__(self, field, request):
         self.field = field
@@ -66,6 +64,10 @@ class Widget(object):
         self.id = field.__name__.replace('.', '-')
         self.label = field.title
         self.required = field.required
+
+    @property
+    def __title__(self):
+        return self.__class__.__name__
 
     def update(self):
         """See z3c.form.interfaces.IWidget."""
@@ -90,11 +92,9 @@ class Widget(object):
             # Step 1.2.1: If the widget knows about its context and the
             #              context is to be used to extract a value, get
             #              it now via a data manager.
-            if (interfaces.IContextAware.providedBy(self) and
-                not self.ignoreContext):
-                value = zope.component.getMultiAdapter(
-                    (self.context, self.field),
-                    interfaces.IDataManager).query()
+            if not self.ignoreContext:
+                value = getMultiAdapter(
+                    (self.context, self.field), interfaces.IDataManager).query()
             # Step 1.2.2: If we still do not have a value, we can always use
             #             the default value of the field, id set
             # NOTE: It should check field.default is not missing_value, but
@@ -105,14 +105,9 @@ class Widget(object):
                 value = self.field.default
                 lookForDefault = True
 
-        # Step 1.3: If we still have not found a value, then we try to get it
-        #           from an attribute value
-        # remove during simplification
-
         # Step 1.4: Convert the value to one that the widget can understand
         if value not in (interfaces.NO_VALUE, PLACEHOLDER):
-            converter = interfaces.IDataConverter(self)
-            self.value = converter.toWidgetValue(value)
+            self.value = interfaces.IDataConverter(self).toWidgetValue(value)
 
     def render(self):
         """See memphis.form.interfaces.IWidget."""
@@ -172,7 +167,7 @@ class SequenceWidget(Widget):
 
     def updateTerms(self):
         if self.terms is None:
-            self.terms = zope.component.getMultiAdapter(
+            self.terms = getMultiAdapter(
                 (self.context, self.request, self.form, self.field, self),
                 interfaces.ITerms)
         return self.terms
@@ -187,11 +182,9 @@ class SequenceWidget(Widget):
         """See z3c.form.interfaces.IWidget."""
         if (self.name not in self.request.params and
             self.name+'-empty-marker' in self.request.params):
-            return interfaces.NO_VALUE
-        value = self.request.params.get(self.name, default)
+            return default
+        value = self.request.params.getall(self.name) or default
         if value != default:
-            if not isinstance(value, (tuple, list)):
-                value = (value,)
             # do some kind of validation, at least only use existing values
             for token in value:
                 if token == self.noValueToken:

@@ -31,6 +31,14 @@ def getLocale(request):
     return locales.getLocale(get_locale_name(request), None, None)
 
 
+@config.adapter(interfaces.IWidget)
+@zope.interface.implementer(interfaces.IDataConverter)
+def FieldWidgetDataConverter(widget):
+    """Provide a data converter based on a field widget."""
+    return zope.component.queryMultiAdapter(
+        (widget.field, widget), interfaces.IDataConverter)
+
+
 class BaseDataConverter(object):
     """A base implementation of the data converter."""
     zope.interface.implements(interfaces.IDataConverter)
@@ -71,14 +79,6 @@ class FieldDataConverter(BaseDataConverter):
             raise TypeError(
                 'Field %sof type ``%s`` must provide ``IFromUnicode``.' %(
                     fieldName, type(field).__name__))
-
-
-@config.adapter(interfaces.IWidget)
-@zope.interface.implementer(interfaces.IDataConverter)
-def FieldWidgetDataConverter(widget):
-    """Provide a data converter based on a field widget."""
-    return zope.component.queryMultiAdapter(
-        (widget.field, widget), interfaces.IDataConverter)
 
 
 class FormatterValidationError(zope.schema.ValidationError):

@@ -11,16 +11,11 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Submit Widget Implementation
-
-$Id: submit.py 11790 2011-01-31 00:41:45Z fafhrd91 $
-"""
-__docformat__ = "reStructuredText"
+"""Submit Widget Implementation"""
 import zope.component
 import zope.interface
 
 from memphis import config, view
-
 from memphis.form import interfaces, pagelets
 from memphis.form.browser import button
 

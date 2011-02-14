@@ -11,11 +11,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Button Widget Implementation
-
-$Id: button.py 11790 2011-01-31 00:41:45Z fafhrd91 $
-"""
-__docformat__ = "reStructuredText"
+"""Button Widget Implementation5/"""
 import zope.component
 import zope.interface
 

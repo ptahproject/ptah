@@ -11,35 +11,36 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Password Widget Implementation
-
-$Id: password.py 11790 2011-01-31 00:41:45Z fafhrd91 $
-"""
-__docformat__ = "reStructuredText"
-import zope.component
+"""Password Widget Implementation"""
 import zope.interface
 import zope.schema.interfaces
 
 from memphis import config, view
-from memphis.form import interfaces, widget, pagelets
+from memphis.form import pagelets
 from memphis.form.browser import text
+from memphis.form.interfaces import _, IPasswordWidget
 
 
 class PasswordWidget(text.TextWidget):
     """Input type password widget implementation."""
-    zope.interface.implementsOnly(interfaces.IPasswordWidget)
+    zope.interface.implementsOnly(IPasswordWidget)
     config.adapts(zope.schema.interfaces.IPassword, None)
+    config.adapts(zope.schema.interfaces.IPassword, None, name='password')
+    config.adapts(zope.schema.interfaces.ITextLine, None, name='password')
 
     klass = u'password-widget'
 
+    __fname__ = 'password'
+    __title__ = _('Password Widget')
+    __description__ = _('HTML Password input widget.')
+
 
 config.action(
     view.registerPagelet,
-    pagelets.IWidgetDisplayView, interfaces.IPasswordWidget,
+    pagelets.IWidgetDisplayView, IPasswordWidget,
     template=view.template("memphis.form.browser:password_display.pt"))
 
-
 config.action(
     view.registerPagelet,
-    pagelets.IWidgetInputView, interfaces.IPasswordWidget,
+    pagelets.IWidgetInputView, IPasswordWidget,
     template=view.template("memphis.form.browser:password_input.pt"))

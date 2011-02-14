@@ -299,8 +299,17 @@ class IBoolTerms(ITerms):
 
 # ----[ Widgets ]------------------------------------------------------------
 
+class IDefaultWidget(zope.interface.Interface):
+    """ default widget, third party components
+    can override this adapter and return different widget """
+
+
 class IWidget(zope.interface.Interface):
     """A widget within a form"""
+
+    __fname__ = zope.interface.Attribute('Factory name')
+    __title__ = zope.interface.Attribute('Widget factory title')
+    __description__ = zope.interface.Attribute('Widget factory description')
 
     name = zope.schema.BytesLine(
         title=_('Name'),

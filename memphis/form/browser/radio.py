@@ -11,32 +11,30 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Text Widget Implementation
-
-$Id: radio.py 11797 2011-01-31 04:13:41Z fafhrd91 $
-"""
-__docformat__ = "reStructuredText"
-
-import zope.component
-import zope.interface
-import zope.schema
-import zope.schema.interfaces
+"""Text Widget Implementation"""
+from zope import interface, schema
 from zope.i18n import translate
 
 from memphis import config, view
-
-from memphis.form import interfaces, pagelets
+from memphis.form import pagelets
 from memphis.form.widget import SequenceWidget
 from memphis.form.browser import widget
+from memphis.form.interfaces import _, IRadioWidget
 
 
 class RadioWidget(widget.HTMLInputWidget, SequenceWidget):
     """Input type radio widget implementation."""
-    config.adapts(zope.schema.interfaces.IBool, None)
-    zope.interface.implementsOnly(interfaces.IRadioWidget)
+    interface.implementsOnly(IRadioWidget)
+    config.adapts(schema.interfaces.IBool, None)
+    config.adapts(schema.interfaces.IBool, None, name='radio')
+    config.adapts(schema.interfaces.IChoice, None, name='radio')
 
     klass = u'radio-widget'
     items = ()
+
+    __fname__ = 'radio'
+    __title__ = _('Radio widget')
+    __description__ = _('HTML Radio input widget.')
 
     def isChecked(self, term):
         return term.token in self.value
@@ -50,24 +48,24 @@ class RadioWidget(widget.HTMLInputWidget, SequenceWidget):
             checked = self.isChecked(term)
             id = '%s-%i' % (self.id, count)
             label = term.token
-            if zope.schema.interfaces.ITitledTokenizedTerm.providedBy(term):
-                label = translate(term.title, context=self.request,
-                                  default=term.title)
+            if schema.interfaces.ITitledTokenizedTerm.providedBy(term):
+                label = translate(
+                    term.title, context=self.request, default=term.title)
             self.items.append(
                 {'id':id, 'name':self.name, 'value':term.token,
                  'label':label, 'checked':checked})
 
 config.action(
     view.registerPagelet,
-    pagelets.IWidgetDisplayView, interfaces.IRadioWidget,
+    pagelets.IWidgetDisplayView, IRadioWidget,
     template=view.template("memphis.form.browser:radio_display.pt"))
 
 config.action(
     view.registerPagelet,
-    pagelets.IWidgetInputView, interfaces.IRadioWidget,
+    pagelets.IWidgetInputView, IRadioWidget,
     template=view.template("memphis.form.browser:radio_input.pt"))
 
 config.action(
     view.registerPagelet,
-    pagelets.IWidgetHiddenView, interfaces.IRadioWidget,
+    pagelets.IWidgetHiddenView, IRadioWidget,
     template=view.template("memphis.form.browser:radio_hidden.pt"))

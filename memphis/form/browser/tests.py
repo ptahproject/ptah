@@ -11,11 +11,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""
-$Id: tests.py 11744 2011-01-28 09:15:15Z fafhrd91 $
-"""
-__docformat__ = "reStructuredText"
-
+""" """
 from doctest import DocFileSuite
 import doctest
 import itertools

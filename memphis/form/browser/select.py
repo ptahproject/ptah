@@ -11,36 +11,34 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Text Widget Implementation
-
-$Id: select.py 11790 2011-01-31 00:41:45Z fafhrd91 $
-"""
-__docformat__ = "reStructuredText"
-import zope.component
+"""Text Widget Implementation"""
 import zope.interface
 import zope.schema
 import zope.schema.interfaces
 from zope.i18n import translate
 
 from memphis import config, view
-
-from memphis.form import interfaces, pagelets
+from memphis.form import pagelets
 from memphis.form.widget import SequenceWidget
 from memphis.form.browser import widget
-
-_ = interfaces.MessageFactory
+from memphis.form.interfaces import _, ISelectWidget
 
 
 class SelectWidget(widget.HTMLSelectWidget, SequenceWidget):
     """Select widget implementation."""
-    zope.interface.implementsOnly(interfaces.ISelectWidget)
+    zope.interface.implementsOnly(ISelectWidget)
     config.adapts(zope.schema.interfaces.IChoice, None)
+    config.adapts(zope.schema.interfaces.IChoice, None, name='select')
 
     klass = u'select-widget'
     prompt = False
 
     noValueMessage = _('no value')
     promptMessage = _('select a value ...')
+
+    __fname__ = 'select'
+    __title__ = _('Select widget')
+    __description__ = _('HTML Select input based widget.')
 
     def isSelected(self, term):
         return term.token in self.value
@@ -78,56 +76,27 @@ class SelectWidget(widget.HTMLSelectWidget, SequenceWidget):
         return items
 
 
-#@config.adapter(zope.schema.interfaces.IChoice, None)
-#@zope.interface.implementer(interfaces.IWidget)
-def ChoiceWidgetDispatcher(field, request):
-    """Dispatch widget for IChoice based also on its source."""
-    return zope.component.getMultiAdapter((field, field.vocabulary, request),
-                                          interfaces.IWidget)
+class MultiSelectWidget(SelectWidget):
 
+    size = 5
+    multiple = 'multiple'
 
-#@config.adapter(zope.schema.interfaces.IChoice, zope.interface.Interface, None)
-#@zope.interface.implementer(interfaces.IWidget)
-def SelectFieldWidget(field, source, request=None):
-    """IWidget factory for SelectWidget."""
-    # BBB: emulate our pre-2.0 signature (field, request)
-    if request is None:
-        real_request = source
-    else:
-        real_request = request
-    return FieldWidget(field, SelectWidget(real_request))
-
-
-#@config.adapter(zope.schema.interfaces.IUnorderedCollection, None)
-#@zope.interface.implementer(interfaces.IWidget)
-def CollectionSelectFieldWidget(field, request):
-    """IWidget factory for SelectWidget."""
-    widget = zope.component.getMultiAdapter((field, field.value_type, request),
-        interfaces.IWidget)
-    widget.size = 5
-    widget.multiple = 'multiple'
-    return widget
-
-
-@config.adapter(zope.schema.interfaces.IUnorderedCollection,
-                zope.schema.interfaces.IChoice, None)
-@zope.interface.implementer(interfaces.IWidget)
-def CollectionChoiceSelectFieldWidget(field, value_type, request):
-    """IWidget factory for SelectWidget."""
-    return SelectFieldWidget(field, None, request)
+    __fname__ = 'multiselect'
+    __title__ = _('Multi select widget')
+    __description__ = _('HTML Multi Select input based widget.')
 
 
 config.action(
     view.registerPagelet,
-    pagelets.IWidgetDisplayView, interfaces.ISelectWidget,
+    pagelets.IWidgetDisplayView, ISelectWidget,
     template=view.template("memphis.form.browser:select_display.pt"))
 
 config.action(
     view.registerPagelet,
-    pagelets.IWidgetInputView, interfaces.ISelectWidget,
+    pagelets.IWidgetInputView, ISelectWidget,
     template=view.template("memphis.form.browser:select_input.pt"))
 
 config.action(
     view.registerPagelet,
-    pagelets.IWidgetHiddenView, interfaces.ISelectWidget,
+    pagelets.IWidgetHiddenView, ISelectWidget,
     template=view.template("memphis.form.browser:select_hidden.pt"))

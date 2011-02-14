@@ -11,11 +11,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Widget Framework Implementation
-
-$Id: widget.py 11790 2011-01-31 00:41:45Z fafhrd91 $
-"""
-__docformat__ = "reStructuredText"
+"""Widget Framework Implementation"""
 import zope.interface
 from zope.schema.fieldproperty import FieldProperty
 
