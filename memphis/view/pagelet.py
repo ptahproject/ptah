@@ -2,6 +2,7 @@
 
 $Id: pagelet.py 11636 2011-01-18 08:14:44Z fafhrd91 $
 """
+import logging
 import pyramid
 from pyramid.interfaces import IRequest
 from pyramid.exceptions import NotFound
@@ -13,6 +14,8 @@ from zope.configuration.exceptions import ConfigurationError
 
 from memphis import config
 from memphis.view.interfaces import IPagelet, IPageletType
+
+log = logging.getLogger('memphis.view')
 
 
 class Pagelet(object):
@@ -63,7 +66,11 @@ def renderPagelet(ptype, context, request):
     if pagelet is None:
         raise NotFound
 
-    return pagelet()
+    try:
+        return pagelet()
+    except Exception, e:
+        log.exception(str(e))
+        raise
 
 
 def registerPageletType(name, iface, context, configContext=None, info=''):
