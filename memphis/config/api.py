@@ -92,7 +92,6 @@ loadPackage
     >>> api.grokkerPackages
     ['memphis.config']
 
-$Id: api.py 11802 2011-01-31 06:25:41Z fafhrd91 $
 """
 import types
 import martian

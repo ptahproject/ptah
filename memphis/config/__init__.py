@@ -1,4 +1,4 @@
-# This file is necessary to make this directory a package.
+# memphis.config package public API
 
 from memphis.config.api import begin
 from memphis.config.api import commit

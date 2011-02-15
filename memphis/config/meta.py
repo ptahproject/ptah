@@ -24,7 +24,6 @@ handler
   >>> s = sm.subscribers((Ob(ITest),), None)
   test handler
 
-$Id: meta.py 11743 2011-01-28 08:36:48Z fafhrd91 $
 """
 import martian, sys, types
 from zope import interface, component

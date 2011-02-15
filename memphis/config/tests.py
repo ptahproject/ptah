@@ -1,7 +1,4 @@
-""" memphis.config tests
-
-$Id: tests.py 11802 2011-01-31 06:25:41Z fafhrd91 $
-"""
+""" memphis.config tests """
 import sys, unittest, doctest
 from testing import setUpConfig, tearDownConfig
 from testing import setUpTestAsModule, tearDownTestAsModule

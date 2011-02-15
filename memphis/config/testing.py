@@ -1,7 +1,4 @@
-""" memphis.config tests setup
-
-$Id: testing.py 11802 2011-01-31 06:25:41Z fafhrd91 $
-"""
+""" memphis.config tests setup """
 import os, sys, types
 from zope import interface, component
 from zope.component import getSiteManager

@@ -1,7 +1,4 @@
-"""
-
-$Id: directives.py 11772 2011-01-30 07:32:49Z fafhrd91 $
-"""
+""" directives """
 import inspect
 import zope.component
 from martian.directive import Directive
