@@ -30,7 +30,7 @@ PLACEHOLDER = object()
 @zope.interface.implementer(interfaces.IDefaultWidget)
 @config.adapter(zope.schema.interfaces.IField, None)
 def getDefaultWidget(field, request):
-    return getMultiAdapter((field, request), form.IWidget)
+    return getMultiAdapter((field, request), interfaces.IWidget)
 
 
 class Widget(object):
