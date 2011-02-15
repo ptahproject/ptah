@@ -1,4 +1,4 @@
-# This file is necessary to make this directory a package.
+# memphis.view public API
 
 from memphis.view.path import template
 

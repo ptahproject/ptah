@@ -1,7 +1,4 @@
-"""
-
-$Id: pagelet.py 11636 2011-01-18 08:14:44Z fafhrd91 $
-"""
+""" view implementation """
 from zope import interface, component
 from zope.interface import providedBy
 from zope.component import getSiteManager

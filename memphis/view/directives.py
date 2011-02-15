@@ -1,7 +1,4 @@
-"""
-
-$Id:  2007-12-12 12:27:02Z fafhrd $
-"""
+""" martian directives """
 import martian
 from martian.directive import Directive, CLASS, ONCE, ONCE_NOBASE, ONCE_IFACE
 

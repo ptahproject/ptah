@@ -1,7 +1,3 @@
-"""
-
-$Id: path.py 4670 2011-02-01 08:20:18Z nikolay $
-"""
 import pkg_resources
 from pyramid.path import caller_package, caller_module
 from chameleon.zpt.template import PageTemplateFile

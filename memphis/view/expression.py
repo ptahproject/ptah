@@ -1,7 +1,4 @@
-"""
-
-$Id: expression.py 11635 2011-01-18 07:03:08Z fafhrd91 $
-"""
+""" chameleon tales expression """
 import logging
 from chameleon.core import types
 from chameleon.zpt import expressions

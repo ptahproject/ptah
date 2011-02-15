@@ -1,7 +1,4 @@
-""" memphis.view interfaces
-
-$Id: interfaces.py 11635 2011-01-18 07:03:08Z fafhrd91 $
-"""
+""" memphis.view interfaces """
 from zope import interface
 from pyramid.interfaces import IView
 

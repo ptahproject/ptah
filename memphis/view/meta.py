@@ -1,7 +1,4 @@
-"""
-
-$Id:  2007-12-12 12:27:02Z fafhrd $
-"""
+""" martian grokkers """
 import martian
 from pyramid.interfaces import IRequest
 from zope import interface

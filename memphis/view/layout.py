@@ -1,7 +1,4 @@
-"""
-
-$Id: layout.py 11635 2011-01-18 07:03:08Z fafhrd91 $
-"""
+""" layout implementation """
 from zope import interface, component
 from pyramid.interfaces import IRequest
 

@@ -1,7 +1,4 @@
-"""
-
-$Id: message.py 4698 2011-02-02 18:32:05Z nikolay $
-"""
+""" status message implementation """
 import cgi
 from zope import interface, component
 from zope.component import getAdapter, queryUtility

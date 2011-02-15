@@ -1,7 +1,4 @@
-"""
-
-$Id: tests.py 11635 2011-01-18 07:03:08Z fafhrd91 $
-"""
+""" tests """
 import unittest, doctest, sys
 from zope import interface, component
 from chameleon.zpt.interfaces import IExpressionTranslator

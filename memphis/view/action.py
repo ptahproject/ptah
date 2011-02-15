@@ -1,3 +1,4 @@
+""" view action implementation """
 from pyramid import url
 from zope import interface
 

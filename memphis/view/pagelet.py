@@ -1,7 +1,4 @@
-"""
-
-$Id: pagelet.py 11636 2011-01-18 08:14:44Z fafhrd91 $
-"""
+""" pagelet implementation """
 import logging
 import pyramid
 from pyramid.interfaces import IRequest
