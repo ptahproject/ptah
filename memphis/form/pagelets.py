@@ -1,7 +1,3 @@
-"""
-
-$Id: pagelets.py 11797 2011-01-31 04:13:41Z fafhrd91 $
-"""
 from zope import interface
 from memphis import view
 from memphis.form.interfaces import IForm, IWidget, IErrorViewSnippet

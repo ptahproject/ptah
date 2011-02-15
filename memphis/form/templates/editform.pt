@@ -8,7 +8,7 @@
     <div class="z-form-description" i18n:translate=""
 	 tal:content="context.description"></div>
 
-    <div class="z-wizard-viewspace"
+    <div 
 	 tal:omit-tag="not (context.groups or context.subforms)">
       <div class="z-form-fieldset" tal:condition="context.widgets">
 	<tal:block tal:repeat="context context.widgets.values()"
