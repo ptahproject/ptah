@@ -5,6 +5,8 @@ from memphis.form.form import applyChanges
 from memphis.form.form import extends, handleActionError
 from memphis.form.form import Form, EditForm, SubForm, Group, DisplayForm
 
+from memphis.form.interfaces import ISubForm, IGroup
+
 # widget
 from memphis.form.widget import Widget
 from memphis.form.interfaces import IWidget, IDefaultWidget

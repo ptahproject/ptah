@@ -287,8 +287,8 @@ class EditForm(Form):
                                            interfaces.IWrappedForm)]
 
     def updateForms(self):
-        groups = []
-        subforms = []
+        self.groups = []
+        self.subforms = []
 
         for name, form in self.listWrappedForms():
             form.__name__ = name
@@ -297,15 +297,12 @@ class EditForm(Form):
                 continue
 
             if interfaces.IGroup.providedBy(form):
-                groups.append((form.weight, form))
+                self.groups.append(form)
             elif interfaces.ISubForm.providedBy(form):
-                subforms.append((form.weight, form))
+                self.subforms.append(form)
 
-        #groups.sort()
-        self.groups = [form for name, form in groups]
-
-        #subforms.sort()
-        self.subforms = [form for name, form in subforms]
+        self.groups.sort(key = lambda f: f.weight)
+        self.subforms.sort(key = lambda f: f.weight)
 
     def update(self):
         self.updateWidgets()
