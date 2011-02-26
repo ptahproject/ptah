@@ -44,7 +44,7 @@ class AdaptsGrokker(martian.ClassGrokker):
     martian.component(types.ObjectType)
     martian.directive(adapts)
 
-    def execute(self, factory, configContext=None, **kw):
+    def execute(self, factory, configContext=api.UNSET, **kw):
         value = adapts.bind(default=_marker).get(factory)
         if value is _marker:
             return False
@@ -68,7 +68,7 @@ class UtilityGrokker(martian.ClassGrokker):
     martian.component(types.ObjectType)
     martian.directive(utility)
 
-    def execute(self, factory, configContext=None, **kw):
+    def execute(self, factory, configContext=api.UNSET, **kw):
         value = utility.bind(default=_marker).get(factory)
         if value is _marker:
             return False
@@ -89,7 +89,7 @@ class UtilityGrokker(martian.ClassGrokker):
 class AdapterGrokker(martian.InstanceGrokker):
     martian.component(types.FunctionType)
 
-    def grok(self, name, obj, configContext=None, **kw):
+    def grok(self, name, obj, configContext=api.UNSET, **kw):
         if getattr(obj, '_register_adapter', False):
             if (name, obj) in _adapters:
                 return False
@@ -110,7 +110,7 @@ class AdapterGrokker(martian.InstanceGrokker):
 class HandlerGrokker(martian.InstanceGrokker):
     martian.component(types.FunctionType)
 
-    def grok(self, name, obj, configContext=None, **kw):
+    def grok(self, name, obj, configContext=api.UNSET, **kw):
         if getattr(obj, '_register_handler', False):
             for required, info in obj._register_handler:
                 api.registerHandler(obj, required, configContext, info)
@@ -121,7 +121,7 @@ class HandlerGrokker(martian.InstanceGrokker):
 
 class ActionGrokker(martian.GlobalGrokker):
 
-    def grok(self, name, module, configContext=None, **kw):
+    def grok(self, name, module, configContext=api.UNSET, **kw):
         value = action.bind(default=_marker).get(module)
         if value is not _marker:
             if (name, module) in _modules:
@@ -133,7 +133,7 @@ class ActionGrokker(martian.GlobalGrokker):
                 if 'discriminator' in kwargs:
                     discriminator = kwargs['discriminator']
                     del kwargs['discriminator']
-                    api.action(None, discriminator,
+                    api.action(configContext, discriminator,
                                callable, args, kwargs, info=info)
                 else:
                     callable(*args, **kwargs)

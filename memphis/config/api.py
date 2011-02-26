@@ -103,6 +103,7 @@ from zope.configuration.config import ConfigurationMachine
 from zope.configuration.xmlconfig import registerCommonDirectives
 
 
+UNSET = object()
 configContext = None
 grokkerRegistry = martian.GrokkerRegistry()
 grokkerPackages = []
@@ -169,9 +170,9 @@ def addPackage(name, excludes=()):
                 configContext=configContext)
 
 
-def action(context=None, discriminator=None,
+def action(context=UNSET, discriminator=None,
            callable=None, args=(), kw={}, order=0, info=''):
-    if context is None:
+    if context is UNSET:
         context = getContext()
 
     if context is None:
@@ -182,12 +183,9 @@ def action(context=None, discriminator=None,
 
 
 def registerAdapter(factory, required=None, provides=None, name=u'',
-                    configContext=None, info=''):
+                    configContext=UNSET, info=''):
     def _register(*args, **kw):
         getSiteManager().registerAdapter(*args, **kw)
-
-    if configContext is None:
-        configContext = getContext()
 
     if required is None:
         required = component.adaptedBy(factory)
@@ -202,6 +200,9 @@ def registerAdapter(factory, required=None, provides=None, name=u'',
             if required is None:
                 required = factory.__class__.__component_adapts__
 
+    if configContext is UNSET:
+        configContext = getContext()
+
     if configContext is None:
         _register(factory, required, provides, name)
     else:
@@ -211,11 +212,11 @@ def registerAdapter(factory, required=None, provides=None, name=u'',
             args=(factory, required, provides, name), info=info)
 
 
-def registerUtility(comp, provides=None, name='', configContext=None, info=''):
+def registerUtility(comp, provides=None, name='', configContext=UNSET, info=''):
     def _register(*args, **kw):
         getSiteManager().registerUtility(*args, **kw)
 
-    if configContext is None:
+    if configContext is UNSET:
         configContext = getContext()
 
     if configContext is None:
@@ -227,11 +228,11 @@ def registerUtility(comp, provides=None, name='', configContext=None, info=''):
             args=(comp, provides, name), info=info)
 
 
-def registerHandler(handler, requires=None, configContext=None, info=''):
+def registerHandler(handler, requires=None, configContext=UNSET, info=''):
     def _register(*args, **kw):
         getSiteManager().registerHandler(*args, **kw)
 
-    if configContext is None:
+    if configContext is UNSET:
         configContext = getContext()
 
     if configContext is None:
