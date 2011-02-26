@@ -5,7 +5,8 @@ from memphis.form.form import applyChanges
 from memphis.form.form import extends, handleActionError
 from memphis.form.form import Form, EditForm, SubForm, Group, DisplayForm
 
-from memphis.form.interfaces import ISubForm, IGroup
+from memphis.form.interfaces import ISubForm, IGroup, IDisplayForm
+from memphis.form.interfaces import IInputMode, IDisplayMode, IHiddenMode
 
 # widget
 from memphis.form.widget import Widget
@@ -18,6 +19,9 @@ from memphis.form.field import Fields
 from memphis.form.field import FieldValidator
 from memphis.form.interfaces import IValidator
 from memphis.form.interfaces import IFormValidator
+
+# converter
+from memphis.form.interfaces import IDataConverter
 
 # buttons
 from memphis.form.button import buttonAndHandler

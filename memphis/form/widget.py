@@ -56,6 +56,12 @@ class Widget(object):
 
     __description__ = u''
 
+    mode_mapping = {
+        interfaces.IInputMode: IWidgetInputView,
+        interfaces.IDisplayMode: IWidgetDisplayView,
+        interfaces.IHiddenMode: IWidgetHiddenView}
+
+
     def __init__(self, field, request):
         self.field = field
         self.request = request
@@ -111,12 +117,8 @@ class Widget(object):
 
     def render(self):
         """See memphis.form.interfaces.IWidget."""
-        m = {
-            interfaces.INPUT_MODE: IWidgetInputView,
-            interfaces.DISPLAY_MODE: IWidgetDisplayView,
-            interfaces.HIDDEN_MODE: IWidgetHiddenView}
-
-        return view.renderPagelet(m[self.mode], self, self.request)
+        return view.renderPagelet(
+            self.mode_mapping[self.mode], self, self.request)
 
     def extract(self, default=interfaces.NO_VALUE):
         """See memphis.form.interfaces.IWidget."""

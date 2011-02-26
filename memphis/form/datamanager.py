@@ -49,26 +49,18 @@ class AttributeField(DataManager):
         return context
 
     def get(self):
-        """See z3c.form.interfaces.IDataManager"""
-        return getattr(self.adapted_context, self.field.__name__)
+        return self.field.get(self.adapted_context)
 
     def query(self, default=interfaces.NO_VALUE):
-        """See z3c.form.interfaces.IDataManager"""
         try:
             return self.get()
         except AttributeError:
             return default
 
     def set(self, value):
-        """See z3c.form.interfaces.IDataManager"""
-        if self.field.readonly:
-            raise TypeError("Can't set values on read-only fields "
-                            "(name=%s, class=%s.%s)"
-                            % (self.field.__name__,
-                               self.context.__class__.__module__,
-                               self.context.__class__.__name__))
-        # get the right adapter or context
-        setattr(self.adapted_context, self.field.__name__, value)
+        context = self.adapted_context
+        field = self.field.bind(context)
+        field.set(context, value)
 
 
 class DictionaryField(DataManager):

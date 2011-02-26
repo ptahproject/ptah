@@ -1,6 +1,7 @@
 from zope import interface
 from memphis import view
 from memphis.form.interfaces import IForm, IWidget, IErrorViewSnippet
+from memphis.form.interfaces import IInputMode, IDisplayMode, IHiddenMode
 
 
 class IFormView(interface.Interface):
@@ -16,6 +17,11 @@ class IFormActionsView(interface.Interface):
 class IFormWidgetView(interface.Interface):
     """ widget view """
     view.pageletType('form-widget', IWidget)
+
+
+class IFormDisplayWidgetView(interface.Interface):
+    """ widget view """
+    view.pageletType('form-display-widget', IWidget)
 
 
 class IWidgetInputView(interface.Interface):

@@ -176,7 +176,7 @@ class FieldWidgets(util.Manager):
     zope.interface.implementsOnly(interfaces.IWidgets)
 
     prefix = 'widgets.'
-    mode = interfaces.INPUT_MODE
+    mode = interfaces.IInputMode
     errors = ()
     hasRequiredFields = False
     ignoreContext = False
@@ -209,7 +209,7 @@ class FieldWidgets(util.Manager):
             if field.mode is not None:
                 mode = field.mode
             elif field.field.readonly and not self.ignoreReadonly:
-                mode = interfaces.DISPLAY_MODE
+                mode = interfaces.IDisplayMode
 
             # Step 2: Get the widget for the given field.
             shortName = field.__name__
@@ -267,7 +267,7 @@ class FieldWidgets(util.Manager):
         data = {}
         errors = ()
         for name, widget in self.items():
-            if widget.mode == interfaces.DISPLAY_MODE:
+            if widget.mode == interfaces.IDisplayMode:
                 continue
 
             value = widget.field.missing_value

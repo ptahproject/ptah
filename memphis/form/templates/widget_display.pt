@@ -1,0 +1,10 @@
+<div class="z-form-field">
+  <label class="discreet"
+	 tal:attributes="for context.id;
+			 title context.field.description"
+	 tal:content="context.label">The Label</label>
+  <div tal:content="structure context.render()">
+    <input type="text" style="width:100%" />
+  </div>
+</div>
+

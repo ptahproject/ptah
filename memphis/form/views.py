@@ -21,18 +21,25 @@ config.action(
     pagelets.IFormView, interfaces.ISubForm,
     template = view.template('memphis.form:templates/subform.pt'))
 
+config.action(
+    view.registerPagelet,
+    pagelets.IFormView, interfaces.IDisplayForm,
+    template = view.template('memphis.form:templates/displayform.pt'))
 
 config.action(
     view.registerPagelet,
     pagelets.IFormActionsView, interfaces.IInputForm,
     template = view.template('memphis.form:templates/formactions.pt'))
 
-
 config.action(
     view.registerPagelet,
     pagelets.IFormWidgetView, interfaces.IWidget,
     template = view.template('memphis.form:templates/widget.pt'))
 
+config.action(
+    view.registerPagelet,
+    pagelets.IFormDisplayWidgetView, interfaces.IWidget,
+    template = view.template('memphis.form:templates/widget_display.pt'))
 
 config.action(
     view.registerPagelet,

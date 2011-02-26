@@ -111,7 +111,7 @@ class BaseForm(object):
     template = None
     widgets  = None
 
-    mode = interfaces.INPUT_MODE
+    mode = interfaces.IInputMode
     ignoreContext = False
     ignoreRequest = False
     ignoreReadonly = False
@@ -172,7 +172,7 @@ class DisplayForm(BaseForm):
 
     zope.interface.implements(interfaces.IDisplayForm)
 
-    mode = interfaces.DISPLAY_MODE
+    mode = interfaces.IDisplayMode
     ignoreRequest = True
 
 
@@ -281,16 +281,16 @@ class EditForm(Form):
 
         return changed
 
-    def listWrappedForms(self):
+    def listInlineForms(self):
         return [(name, form) for name, form in
                 zope.component.getAdapters((self.context, self.request, self), 
-                                           interfaces.IWrappedForm)]
+                                           interfaces.IInlineForm)]
 
     def updateForms(self):
         self.groups = []
         self.subforms = []
 
-        for name, form in self.listWrappedForms():
+        for name, form in self.listInlineForms():
             form.__name__ = name
             form.update()
             if not form.isAvailable():

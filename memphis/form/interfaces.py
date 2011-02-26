@@ -25,9 +25,15 @@ from pyramid.i18n import TranslationStringFactory
 
 MessageFactory = _ = TranslationStringFactory('memphis.form')
 
-INPUT_MODE = 'input'
-DISPLAY_MODE = 'display'
-HIDDEN_MODE = 'hidden'
+
+class IInputMode(interface.Interface):
+    """ Input mode """
+
+class IDisplayMode(interface.Interface):
+    """ display mode """
+
+class IHiddenMode(interface.Interface):
+    """ hidden mode """
 
 
 class NOT_CHANGED(object):
@@ -328,10 +334,11 @@ class IWidget(zope.interface.Interface):
         '''),
         required=True)
 
-    mode = zope.schema.BytesLine(
+    mode = zope.schema.Choice(
         title=_('Mode'),
         description=_('A widget mode.'),
-        default=INPUT_MODE,
+        default=IInputMode,
+        values=(IInputMode, IDisplayMode, IHiddenMode),
         required=True)
 
     required = zope.schema.Bool(
@@ -507,10 +514,11 @@ class IWidgets(IManager):
         default='widgets.',
         required=True)
 
-    mode = zope.schema.BytesLine(
-        title=_('Prefix'),
-        description=_('The prefix of the widgets.'),
-        default=INPUT_MODE,
+    mode = zope.schema.Choice(
+        title=_('Mode'),
+        description=_('A widget mode.'),
+        default=IInputMode,
+        values=(IInputMode, IDisplayMode, IHiddenMode),
         required=True)
 
     errors = zope.schema.Field(
@@ -830,7 +838,7 @@ class IForm(zope.interface.Interface):
         '''Render the form.'''
 
 
-class IWrappedForm(IForm):
+class IInlineForm(IForm):
     """ """
 
     weight = interface.Attribute('Sort weight')
@@ -842,7 +850,7 @@ class IWrappedForm(IForm):
         """ apply changes """
 
 
-class ISubForm(IWrappedForm):
+class ISubForm(IInlineForm):
     """A subform."""
 
 
@@ -931,5 +939,5 @@ class IButtonForm(IForm):
         schema=IButtons)
 
 
-class IGroup(IWrappedForm):
+class IGroup(IInlineForm):
     """A group of fields/widgets within a form."""
