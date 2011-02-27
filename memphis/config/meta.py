@@ -121,7 +121,7 @@ class HandlerGrokker(martian.InstanceGrokker):
 
 class ActionGrokker(martian.GlobalGrokker):
 
-    def grok(self, name, module, configContext=api.UNSET, **kw):
+    def grok(self, name, module, configContext=None, **kw):
         value = action.bind(default=_marker).get(module)
         if value is not _marker:
             if (name, module) in _modules:
@@ -133,7 +133,7 @@ class ActionGrokker(martian.GlobalGrokker):
                 if 'discriminator' in kwargs:
                     discriminator = kwargs['discriminator']
                     del kwargs['discriminator']
-                    api.action(configContext, discriminator,
+                    api.action(None, discriminator,
                                callable, args, kwargs, info=info)
                 else:
                     callable(*args, **kwargs)

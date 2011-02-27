@@ -146,8 +146,9 @@ def commit():
     global configContext
 
     if configContext is not None:
-        configContext.execute_actions()
+        config = configContext
         configContext = None
+        config.execute_actions()
 
 
 def addPackage(name, excludes=()):
@@ -172,7 +173,7 @@ def addPackage(name, excludes=()):
 
 def action(context=UNSET, discriminator=None,
            callable=None, args=(), kw={}, order=0, info=''):
-    if context is UNSET:
+    if context is None or context is UNSET:
         context = getContext()
 
     if context is None:
