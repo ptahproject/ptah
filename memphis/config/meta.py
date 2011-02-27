@@ -133,10 +133,11 @@ class ActionGrokker(martian.GlobalGrokker):
                 if 'discriminator' in kwargs:
                     discriminator = kwargs['discriminator']
                     del kwargs['discriminator']
-                    api.action(None, discriminator,
+                    api.action(configContext, discriminator,
                                callable, args, kwargs, info=info)
-                else:
-                    callable(*args, **kwargs)
+                    continue
+
+                callable(*args, **kwargs)
 
         return True
 
