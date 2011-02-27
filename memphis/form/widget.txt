@@ -54,8 +54,10 @@ instantiate it using the request:
   >>> from pyramid.testing import DummyRequest as TestRequest
   >>> from memphis import view
   >>> from memphis.form import widget
+  >>> from zope.schema import Int
+  >>> field = Int(title=u'Age')
   >>> request = TestRequest()
-  >>> age = widget.Widget(request)
+  >>> age = widget.Widget(field, request)
 
 In this case we instantiated a generic widget. A full set of simple
 browser-based widgets can be found in the ``browser/`` package. Since no
@@ -122,7 +124,7 @@ of the widget. By default, there are two widget modes: "input" and
 kinds of modes as needed for a project. The default mode is "input":
 
   >>> from memphis.form import interfaces
-  >>> age.mode is interfaces.INPUT_MODE
+  >>> age.mode is interfaces.IInputMode
   True
 
   >>> import zope.component
@@ -165,24 +167,7 @@ widget's properties. Let's create a field first:
 
 We can now use our simple widget and create a field widget from it:
 
-  >>> ageWidget = widget.FieldWidget(ageField, age)
-
-Such a widget provides ``IFieldWidget``:
-
-  >>> interfaces.IFieldWidget.providedBy(ageWidget)
-  True
-
-Of course, this is more commonly done using an adapter. Commonly those
-adapters look like this:
-
-  >>> @zope.component.adapter(zope.schema.Int, TestRequest)
-  ... @zope.interface.implementer(interfaces.IFieldWidget)
-  ... def IntWidget(field, request):
-  ...     return widget.FieldWidget(field, widget.Widget(request))
-
-  >>> zope.component.provideAdapter(IntWidget)
-  >>> ageWidget = zope.component.getMultiAdapter((ageField, request),
-  ...     interfaces.IFieldWidget)
+  >>> ageWidget = widget.Widget(ageField, request)
 
 Now we just have to update and render the widget:
 
@@ -284,7 +269,11 @@ The options available for selections are known as terms. Initially, there are
 no terms:
 
   >>> request = TestRequest()
-  >>> seqWidget = widget.SequenceWidget(request)
+  >>> seqField = zope.schema.List(
+  ...     __name__ = 'seq',
+  ...     title = u'Age')
+
+  >>> seqWidget = widget.SequenceWidget(seqField, request)
   >>> seqWidget.name = 'seq'
 
   >>> seqWidget.terms is None
