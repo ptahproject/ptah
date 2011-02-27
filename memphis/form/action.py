@@ -89,8 +89,10 @@ class Actions(util.Manager):
 
     def execute(self):
         """See memphis.form.interfaces.IActions."""
+        sm = zope.component.getSiteManager()
+
         for action in self.executedActions:
-            handler = zope.component.queryMultiAdapter(
+            handler = sm.queryMultiAdapter(
                 (self.form, self.request, self.content, action),
                 interface=interfaces.IActionHandler)
             if handler is not None:

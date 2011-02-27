@@ -13,8 +13,6 @@
 ##############################################################################
 """Widget Framework Implementation"""
 import zope.interface
-from zope.schema.fieldproperty import FieldProperty
-
 from memphis.form.interfaces import IWidget
 from memphis.form.browser.interfaces import \
     IHTMLFormElement, IHTMLInputWidget, IHTMLSelectWidget, \
@@ -24,45 +22,38 @@ from memphis.form.browser.interfaces import \
 class HTMLFormElement(object):
     zope.interface.implements(IHTMLFormElement)
 
-    id = FieldProperty(IHTMLFormElement['id'])
-    klass = FieldProperty(IHTMLFormElement['klass'])
-    style = FieldProperty(IHTMLFormElement['style'])
-    title = FieldProperty(IHTMLFormElement['title'])
+    id = None
+    klass = None
+    style = None
+    title = None
 
-    lang = FieldProperty(IHTMLFormElement['lang'])
+    lang = None
 
-    onclick = FieldProperty(IHTMLFormElement['onclick'])
-    ondblclick = FieldProperty(IHTMLFormElement['ondblclick'])
-    onmousedown = FieldProperty(IHTMLFormElement['onmousedown'])
-    onmouseup = FieldProperty(IHTMLFormElement['onmouseup'])
-    onmouseover = FieldProperty(IHTMLFormElement['onmouseover'])
-    onmousemove = FieldProperty(IHTMLFormElement['onmousemove'])
-    onmouseout = FieldProperty(IHTMLFormElement['onmouseout'])
-    onkeypress = FieldProperty(IHTMLFormElement['onkeypress'])
-    onkeydown = FieldProperty(IHTMLFormElement['onkeydown'])
-    onkeyup = FieldProperty(IHTMLFormElement['onkeyup'])
+    onclick = None
+    ondblclick = None
+    onmousedown = None
+    onmouseup = None
+    onmouseover = None
+    onmousemove = None
+    onmouseout = None
+    onkeypress = None
+    onkeydown = None
+    onkeyup = None
 
-    disabled = FieldProperty(IHTMLFormElement['disabled'])
-    tabindex = FieldProperty(IHTMLFormElement['tabindex'])
-    onfocus = FieldProperty(IHTMLFormElement['onfocus'])
-    onblur = FieldProperty(IHTMLFormElement['onblur'])
-    onchange = FieldProperty(IHTMLFormElement['onchange'])
+    disabled = None
+    tabindex = None
+    onfocus = None
+    onblur = None
+    onchange = None
 
     def addClass(self, klass):
         """See interfaces.IHTMLFormElement"""
         if not self.klass:
-            self.klass = unicode(klass)
+            self.klass = klass
         else:
             #make sure items are not repeated
-            parts = self.klass.split()+[unicode(klass)]
-            seen = {}
-            unique = []
-            for item in parts:
-                if item in seen:
-                    continue
-                seen[item]=1
-                unique.append(item)
-            self.klass = u' '.join(unique)
+            if klass not in self.klass:
+                self.klass = u'%s %s'%(self.klass, klass)
 
     def update(self):
         """See memphis.form.interfaces.IWidget"""
@@ -74,34 +65,34 @@ class HTMLFormElement(object):
 class HTMLInputWidget(HTMLFormElement):
     zope.interface.implements(IHTMLInputWidget)
 
-    readonly = FieldProperty(IHTMLInputWidget['readonly'])
-    alt = FieldProperty(IHTMLInputWidget['alt'])
-    accesskey = FieldProperty(IHTMLInputWidget['accesskey'])
-    onselect = FieldProperty(IHTMLInputWidget['onselect'])
+    readonly = None
+    alt = None
+    accesskey = None
+    onselect = None
 
 
 class HTMLTextInputWidget(HTMLInputWidget):
     zope.interface.implements(IHTMLTextInputWidget)
 
-    size = FieldProperty(IHTMLTextInputWidget['size'])
-    maxlength = FieldProperty(IHTMLTextInputWidget['maxlength'])
+    size = None
+    maxlength = None
 
 
 class HTMLTextAreaWidget(HTMLFormElement):
     zope.interface.implements(IHTMLTextAreaWidget)
 
-    rows = FieldProperty(IHTMLTextAreaWidget['rows'])
-    cols = FieldProperty(IHTMLTextAreaWidget['cols'])
-    readonly = FieldProperty(IHTMLTextAreaWidget['readonly'])
-    accesskey = FieldProperty(IHTMLTextAreaWidget['accesskey'])
-    onselect = FieldProperty(IHTMLTextAreaWidget['onselect'])
+    rows = None
+    cols = None
+    readonly = None
+    accesskey = None
+    onselect = None
 
 
 class HTMLSelectWidget(HTMLFormElement):
     zope.interface.implements(IHTMLSelectWidget)
 
-    multiple = FieldProperty(IHTMLSelectWidget['multiple'])
-    size = FieldProperty(IHTMLSelectWidget['size'])
+    multiple = None
+    size = 1
 
 
 def addFieldClass(widget):

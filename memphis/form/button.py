@@ -20,6 +20,7 @@ import sys
 import zope.event
 import zope.interface
 import zope.schema
+import zope.component
 
 from zope.interface import adapter
 from zope.schema.fieldproperty import FieldProperty
@@ -34,8 +35,8 @@ class Button(zope.schema.Field):
     """A simple button in a form."""
     zope.interface.implements(interfaces.IButton)
 
-    accessKey = FieldProperty(interfaces.IButton['accessKey'])
-    actionFactory = FieldProperty(interfaces.IButton['actionFactory'])
+    accessKey = None #FieldProperty(interfaces.IButton['accessKey'])
+    actionFactory = None #FieldProperty(interfaces.IButton['actionFactory'])
 
     def __init__(self, *args, **kwargs):
         # Provide some shortcut ways to specify the name
@@ -182,7 +183,7 @@ class ButtonAction(action.Action, submit.SubmitWidget):
     config.adapts(None, interfaces.IButton)
 
     def __init__(self, request, field):
-        action.Action.__init__(self, request, field.title)
+        action.Action.__init__(self, request, field.title, field.__name__)
         submit.SubmitWidget.__init__(self, field, request)
 
     @property

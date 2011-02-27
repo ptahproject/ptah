@@ -15,8 +15,6 @@
 from zope.component import getMultiAdapter
 import zope.interface
 import zope.schema.interfaces
-#from zope.i18n import translate
-from zope.schema.fieldproperty import FieldProperty
 
 from memphis import view, config
 from memphis.form import interfaces, util
@@ -38,14 +36,14 @@ class Widget(object):
     zope.interface.implements(interfaces.IWidget)
 
     # widget specific attributes
-    name = FieldProperty(interfaces.IWidget['name'])
-    label = FieldProperty(interfaces.IWidget['label'])
-    mode = FieldProperty(interfaces.IWidget['mode'])
-    required = FieldProperty(interfaces.IWidget['required'])
-    error = FieldProperty(interfaces.IWidget['error'])
-    value = FieldProperty(interfaces.IWidget['value'])
-    ignoreRequest = FieldProperty(interfaces.IWidget['ignoreRequest'])
-    setErrors = FieldProperty(interfaces.IWidget['setErrors'])
+    name = '' 
+    label = u''
+    mode = interfaces.IInputMode 
+    required = False 
+    error = None 
+    value = None 
+    ignoreRequest = False
+    setErrors = True
 
     # The following attributes are for convenience. They are declared in
     # extensions to the simple widget.
@@ -60,7 +58,6 @@ class Widget(object):
         interfaces.IInputMode: IWidgetInputView,
         interfaces.IDisplayMode: IWidgetDisplayView,
         interfaces.IHiddenMode: IWidgetHiddenView}
-
 
     def __init__(self, field, request):
         self.field = field
@@ -113,7 +110,9 @@ class Widget(object):
 
         # Step 1.4: Convert the value to one that the widget can understand
         if value not in (interfaces.NO_VALUE, PLACEHOLDER):
-            self.value = interfaces.IDataConverter(self).toWidgetValue(value)
+            self.value = getMultiAdapter(
+                (self.field, self), 
+                interfaces.IDataConverter).toWidgetValue(value)
 
     def render(self):
         """See memphis.form.interfaces.IWidget."""

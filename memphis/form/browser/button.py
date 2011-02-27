@@ -11,8 +11,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Button Widget Implementation5/"""
-import zope.component
+"""Button Widget Implementation"""
 import zope.interface
 
 from memphis import config, view

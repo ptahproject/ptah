@@ -11,14 +11,8 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Widget Framework Implementation
-
-$Id: datamanager.py 11776 2011-01-30 07:41:15Z fafhrd91 $
-"""
-__docformat__ = "reStructuredText"
-
+"""Widget Framework Implementation"""
 import zope.interface
-import zope.component
 import zope.schema
 from zope.interface.common import mapping
 
@@ -27,13 +21,10 @@ from memphis.form import interfaces
 
 _marker = []
 
-class DataManager(object):
-    """Data manager base class."""
-    zope.interface.implements(interfaces.IDataManager)
 
-
-class AttributeField(DataManager):
+class AttributeField(object):
     """Attribute field."""
+    zope.interface.implements(interfaces.IDataManager)
     config.adapts(zope.interface.Interface, zope.schema.interfaces.IField)
 
     def __init__(self, context, field):
@@ -63,7 +54,7 @@ class AttributeField(DataManager):
         field.set(context, value)
 
 
-class DictionaryField(DataManager):
+class DictionaryField(object):
     """Dictionary field.
 
     NOTE: Even though, this data manager allows nearly all kinds of
@@ -73,6 +64,7 @@ class DictionaryField(DataManager):
     your application.
 
     """
+    zope.interface.implements(interfaces.IDataManager)
     config.adapts(dict, zope.schema.interfaces.IField)
 
     _allowed_data_classes = (dict,)

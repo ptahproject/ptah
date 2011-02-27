@@ -16,7 +16,6 @@ import datetime
 import decimal
 import zope.i18n.format
 import zope.interface
-import zope.component
 import zope.schema
 from pyramid.i18n import get_locale_name
 from zope.i18n.locales import locales
@@ -29,14 +28,6 @@ _ = interfaces.MessageFactory
 
 def getLocale(request):
     return locales.getLocale(get_locale_name(request), None, None)
-
-
-@config.adapter(interfaces.IWidget)
-@zope.interface.implementer(interfaces.IDataConverter)
-def FieldWidgetDataConverter(widget):
-    """Provide a data converter based on a field widget."""
-    return zope.component.queryMultiAdapter(
-        (widget.field, widget), interfaces.IDataConverter)
 
 
 class BaseDataConverter(object):
@@ -318,7 +309,7 @@ class TextLinesConverter(BaseDataConverter):
         # if the value is the missing value, then an empty list is produced.
         if value is self.field.missing_value:
             return u''
-        return u'\n'.join(unicode(v) for v in value)
+        return u'\n'.join(v for v in value)
 
     def toFieldValue(self, value):
         """See interfaces.IDataConverter"""

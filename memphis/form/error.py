@@ -96,7 +96,7 @@ class MultipleErrorViewSnippet(ErrorViewSnippet):
         pass
 
     def render(self):
-        return ''.join([view.render() for view in self.error.errors])
+        return u''.join(view.render() for view in self.error.errors)
 
 
 class MultipleErrors(Exception):

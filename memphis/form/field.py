@@ -11,17 +11,12 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Field Implementation
-
-$Id: field.py 11776 2011-01-30 07:41:15Z fafhrd91 $
-"""
-__docformat__ = "reStructuredText"
+"""Field Implementation"""
 import zope.component
 import zope.interface
 import zope.schema.interfaces
 
 from memphis import config
-
 from memphis.form import interfaces, util, error
 from memphis.form.error import MultipleErrors
 
@@ -30,41 +25,11 @@ def _initkw(keepReadOnly=(), omitReadOnly=False, **defaults):
     return keepReadOnly, omitReadOnly, defaults
 
 
-class WidgetFactories(dict):
-
-    def __init__(self):
-        super(WidgetFactories, self).__init__()
-        self.default = None
-
-    def __getitem__(self, key):
-        if key not in self and self.default:
-            return self.default
-        return super(WidgetFactories, self).__getitem__(key)
-
-    def get(self, key, default=None):
-        if key not in self and self.default:
-            return self.default
-        return super(WidgetFactories, self).get(key, default)
-
-
-class WidgetFactoryProperty(object):
-
-    def __get__(self, inst, klass):
-        if not hasattr(inst, '_widgetFactories'):
-            inst._widgetFactories = WidgetFactories()
-        return inst._widgetFactories
-
-    def __set__(self, inst, value):
-        if not hasattr(inst, '_widgetFactories'):
-            inst._widgetFactories = WidgetFactories()
-        inst._widgetFactories.default = value
-
-
 class Field(object):
     """Field implementation."""
     zope.interface.implements(interfaces.IField)
 
-    widgetFactory = WidgetFactoryProperty()
+    widgetFactory = ''
 
     def __init__(self, field, name=None, prefix='', mode=None, interface=None,
                  ignoreContext=None):
@@ -195,6 +160,8 @@ class FieldWidgets(util.Manager):
         # Create a unique prefix.
         prefix = util.expandPrefix(self.form.prefix)
         prefix += util.expandPrefix(self.prefix)
+        request = self.request
+        sm = zope.component.getSiteManager()
 
         # Walk through each field, making a widget out of it.
         uniqueOrderedKeys = []
@@ -215,17 +182,16 @@ class FieldWidgets(util.Manager):
             shortName = field.__name__
 
             widget = None
-            factory = field.widgetFactory.get(mode)
+            factory = field.widgetFactory
             if isinstance(factory, basestring):
-                widget = zope.component.queryMultiAdapter(
-                    (field.field, self.request),
-                    interfaces.IWidget, name=factory)
+                widget = sm.queryMultiAdapter(
+                    (field.field, request), interfaces.IWidget, name=factory)
             elif callable(factory):
-                widget = factory(field.field, self.request)
+                widget = factory(field.field, request)
 
             if widget is None:
-                widget = zope.component.getMultiAdapter(
-                    (field.field, self.request), interfaces.IDefaultWidget)
+                widget = sm.getMultiAdapter(
+                    (field.field, request), interfaces.IDefaultWidget)
 
             # Step 3: Set the prefix for the widget
             widget.name = str(prefix + shortName)
@@ -266,6 +232,8 @@ class FieldWidgets(util.Manager):
         """See interfaces.IWidgets"""
         data = {}
         errors = ()
+        sm = zope.component.getSiteManager()
+
         for name, widget in self.items():
             if widget.mode == interfaces.IDisplayMode:
                 continue
@@ -275,10 +243,12 @@ class FieldWidgets(util.Manager):
                 widget.setErrors = self.setErrors
                 raw = widget.extract()
                 if raw is not interfaces.NO_VALUE:
-                    value = interfaces.IDataConverter(widget).toFieldValue(raw)
+                    value = sm.getMultiAdapter(
+                        (widget.field, widget), 
+                        interfaces.IDataConverter).toFieldValue(raw)
 
                 if value is interfaces.NOT_CHANGED and not widget.ignoreContext:
-                    value = zope.component.getMultiAdapter(
+                    value = sm.getMultiAdapter(
                         (self.context, field), interfaces.IDataManager).query()
 
                 # validate value
@@ -286,12 +256,11 @@ class FieldWidgets(util.Manager):
                 if field is not None:
                     if self.content is not None:
                         field = field.bind(self.content)
-                    zope.component.getMultiAdapter(
-                        (self.form, field),
-                        interfaces.IValidator).validate(value)
+                    sm.getMultiAdapter((self.form, field),
+                                       interfaces.IValidator).validate(value)
             except (zope.interface.Invalid,
                     ValueError, MultipleErrors), error:
-                view = zope.component.getMultiAdapter(
+                view = sm.getMultiAdapter(
                     (error, self.request), interfaces.IErrorViewSnippet)
                 view.update(widget)
                 if self.setErrors:
@@ -307,7 +276,7 @@ class FieldWidgets(util.Manager):
             else:
                 widget = None
 
-            view = zope.component.getMultiAdapter(
+            view = sm.getMultiAdapter(
                 (error, self.request), interfaces.IErrorViewSnippet)
             view.update(widget)
             errors += (view,)

@@ -12,9 +12,7 @@
 #
 ##############################################################################
 """Submit Widget Implementation"""
-import zope.component
 import zope.interface
-
 from memphis import config, view
 from memphis.form import interfaces, pagelets
 from memphis.form.browser import button

@@ -186,13 +186,13 @@ class Form(BaseForm):
 
     buttons = button.Buttons()
 
-    method = FieldProperty(interfaces.IInputForm['method'])
-    enctype = FieldProperty(interfaces.IInputForm['enctype'])
-    acceptCharset = FieldProperty(interfaces.IInputForm['acceptCharset'])
-    accept = FieldProperty(interfaces.IInputForm['accept'])
+    method = 'post' #FieldProperty(interfaces.IInputForm['method'])
+    enctype = 'multipart/form-data' #FieldProperty(interfaces.IInputForm['enctype'])
+    acceptCharset = None #FieldProperty(interfaces.IInputForm['acceptCharset'])
+    accept = None #FieldProperty(interfaces.IInputForm['accept'])
 
-    actions = FieldProperty(interfaces.IActionForm['actions'])
-    refreshActions = FieldProperty(interfaces.IActionForm['refreshActions'])
+    actions = None #FieldProperty(interfaces.IActionForm['actions'])
+    refreshActions = False #FieldProperty(interfaces.IActionForm['refreshActions'])
 
     # common string for use in validation status messages
     formErrorsMessage = _('There were some errors.')
