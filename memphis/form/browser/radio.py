@@ -25,7 +25,6 @@ from memphis.form.interfaces import _, IRadioWidget
 class RadioWidget(widget.HTMLInputWidget, SequenceWidget):
     """Input type radio widget implementation."""
     interface.implementsOnly(IRadioWidget)
-    config.adapts(schema.interfaces.IBool, None)
     config.adapts(schema.interfaces.IBool, None, name='radio')
     config.adapts(schema.interfaces.IChoice, None, name='radio')
 
@@ -55,6 +54,16 @@ class RadioWidget(widget.HTMLInputWidget, SequenceWidget):
                 {'id':id, 'name':self.name, 'value':term.token,
                  'label':label, 'checked':checked})
 
+
+class HorizontalRadioWidget(RadioWidget):
+    config.adapts(schema.interfaces.IBool, None)
+    config.adapts(schema.interfaces.IBool, None, name='radio-horizontal')
+
+    __fname__ = 'radio-horizontal'
+    __title__ = _('Horizontal Radio widget')
+    __description__ = _('HTML Radio input widget.')
+
+
 config.action(
     view.registerPagelet,
     pagelets.IWidgetDisplayView, IRadioWidget,
@@ -64,6 +73,11 @@ config.action(
     view.registerPagelet,
     pagelets.IWidgetInputView, IRadioWidget,
     template=view.template("memphis.form.browser:radio_input.pt"))
+
+config.action(
+    view.registerPagelet,
+    pagelets.IWidgetInputView, HorizontalRadioWidget,
+    template=view.template("memphis.form.browser:radiohoriz_input.pt"))
 
 config.action(
     view.registerPagelet,
