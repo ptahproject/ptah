@@ -58,7 +58,7 @@ Here is another layout::
 
 Difference is in `parent` parameter, it indicates that 
 'workspace' layout uses 'portal' layout as parent. so 'workspace' renderes
- inside 'portal' layout
+inside 'portal' layout
 
 Now we need pagelet view::
 
