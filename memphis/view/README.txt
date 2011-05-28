@@ -105,7 +105,9 @@ use `workspace` layout as parent::
   >>> print view().body
   <html>
      <body>
-        <div id="portal"><div id="workspace"><div id="content">root</div></div></div>
+        <div id="portal">
+          <div id="workspace">
+            <div id="content">root</div></div></div>
      </body>
   </html>
 
@@ -120,7 +122,8 @@ Use 'queryLayout' to get layout for view::
   >>> print layoutOb()
   <html>
     <body>
-       <div id="portal"><div id="workspace">root</div></div>
+       <div id="portal">
+          <div id="workspace">root</div></div>
     </body>
   </html>
 
@@ -136,8 +139,8 @@ You can set skipParent to True, in this case if layout can't find parent
 it just render itself:
 
   >>> layoutOb.skipParent = True
-  >>> layoutOb()
-  u'<div id="workspace">root</div>'
+  >>> print layoutOb()
+  <div id="workspace">root</div>
 
 Can't render layout withour template or custom render method:
 
@@ -169,7 +172,9 @@ Let's create more content objects::
   >>> print MyView(folder1, request)().body
   <html>
     <body>
-      <div id="portal"><div id="workspace"><div id="content">folder1</div></div></div>
+      <div id="portal">
+        <div id="workspace">
+          <div id="content">folder1</div></div></div>
     </body>
   </html>
 
@@ -185,7 +190,9 @@ And some more objects::
   >>> print MyView(folder1_1_1, request)().body
   <html>
     <body>
-      <div id="portal"><div id="workspace"><div id="content">folder1_1_1</div></div></div>
+      <div id="portal">
+        <div id="workspace">
+          <div id="content">folder1_1_1</div></div></div>
     </body>
   </html>
 
@@ -223,10 +230,12 @@ Register layout::
   >>> print MyView(folder1, request)().body
   <html>
     <body>
-      <div id="portal"><table id="columns">
+      <div id="portal">
+        <table id="columns">
           <tr>
             <td id="column1">Column1</td>
-            <td id="column2"><div id="content">folder1</div></td>
+            <td id="column2">
+               <div id="content">folder1</div></td>
             <td id="column3">Column3</td>
           </tr>
         </table></div>
@@ -238,10 +247,12 @@ folder1 uses new 'workspace' layout, but what about subfolders folders::
   >>> print MyView(folder1_1, request)().body
   <html>
     <body>
-      <div id="portal"><table id="columns">
+      <div id="portal">
+        <table id="columns">
           <tr>
             <td id="column1">Column1</td>
-            <td id="column2"><div id="content">folder1_1</div></td>
+            <td id="column2">
+               <div id="content">folder1_1</div></td>
             <td id="column3">Column3</td>
           </tr> 
         </table></div>
@@ -252,10 +263,12 @@ folder1 uses new 'workspace' layout, but what about subfolders folders::
   >>> print MyView(folder1_1_1, request)().body
   <html>
     <body>
-      <div id="portal"><table id="columns">
+      <div id="portal">
+        <table id="columns">
           <tr>
             <td id="column1">Column1</td>
-            <td id="column2"><div id="content">folder1_1_1</div></td>
+            <td id="column2">
+               <div id="content">folder1_1_1</div></td>
             <td id="column3">Column3</td>
           </tr>
         </table></div>
@@ -286,10 +299,13 @@ Remark: we can use nameless layout as parent with `parent="."`::
   >>> print MyView(folder1_1, request)().body
   <html>
     <body>
-      <div id="portal"><table id="columns">
+      <div id="portal">
+        <table id="columns">
           <tr>
             <td id="column1">Column1</td>
-            <td id="column2"><div id="content"><div id="content1_1">
+            <td id="column2">
+              <div id="content">
+               <div id="content1_1">
                <h1>Folder1_1</h1>
                <div>folder1_1</div>
             </div></div></td>
@@ -323,12 +339,16 @@ And same for folder1_1_1
   >>> print MyView(folder1_1_1, request)().body
   <html>
     <body>
-      <div id="portal"><table id="columns">
+      <div id="portal">
+      <table id="columns">
          <tr>
             <td id="column1">Column1</td>
-            <td id="column2"><div id="content"><div id="content1_1">
+            <td id="column2">
+              <div id="content">
+              <div id="content1_1">
               <h1>Folder1_1</h1>
-              <div><div id="content1_1_1">
+              <div>
+                 <div id="content1_1_1">
                  <h1>Folder1_1_1</h1>
                  <div>folder1_1_1</div>
               </div></div>

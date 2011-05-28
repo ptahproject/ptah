@@ -1,7 +1,6 @@
 """ tests """
 import unittest, doctest, sys
 from zope import interface, component
-from chameleon.zpt.interfaces import IExpressionTranslator
 
 from pyramid.exceptions import NotFound
 from pyramid.interfaces import IView, IViewClassifier

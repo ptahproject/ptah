@@ -34,6 +34,7 @@ from memphis.view.action import Action, registerAction, registerActions
 import zope.interface
 from memphis.view.interfaces import INavigationRoot
 
+
 class Root(object):
     zope.interface.implements(INavigationRoot)
 

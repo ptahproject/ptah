@@ -1,12 +1,12 @@
-""" Setup for memphis.view package
-
-$Id: setup.py 11635 2011-01-18 07:03:08Z fafhrd91 $
-"""
+""" Setup for memphis.view package """
 import sys, os
 from setuptools import setup, find_packages
 
 def read(*rnames):
-    return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
+    try:
+        return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
+    except IOError:
+        return ''
 
 version='0.1'
 
@@ -37,7 +37,7 @@ setup(name='memphis.view',
       packages=find_packages(),
       namespace_packages=['memphis'],
       install_requires = ['setuptools',
-                          'Chameleon',
+                          'Chameleon>=2.0-rc11',
                           'pyramid',
                           'zope.event',
                           'zope.schema',

@@ -1,8 +1,11 @@
 """ chameleon tales expression """
 import logging
-from chameleon.core import types
-from chameleon.zpt import expressions
-from chameleon.zpt.interfaces import IExpressionTranslator
+import ast
+from chameleon import astutil
+from chameleon.codegen import template
+from chameleon.astutil import Symbol
+from chameleon.astutil import Static
+from chameleon.zpt.template import PageTemplate
 
 from zope import component
 from zope.component import getUtility, queryUtility, queryMultiAdapter
@@ -27,25 +30,33 @@ class PageletTraverser(object):
         return u''
 
 
-class PageletTranslator(expressions.ExpressionTranslator):
-    config.utility(IExpressionTranslator, 'pagelet')
+class PageletExpr(object):
 
-    symbol = '_get_memphis_pagelet'
-    pagelet_traverser = PageletTraverser()
+    traverser = Static(
+        template("cls()", cls=Symbol(PageletTraverser), mode="eval")
+        )
 
-    def translate(self, string, escape=None):
-        if '/' in string:
-            name, ptname = string.split('/', 1)
+    def __init__(self, expression):
+        if '/' in expression:
+            name, ptname = expression.split('/', 1)
         else:
             name = 'context'
-            ptname = string
+            ptname = expression
+        self.name, self.ptname = name, ptname
 
-        pt = queryUtility(IPageletType, ptname)
+    def __call__(self, target, engine):
+        pt = queryUtility(IPageletType, self.ptname)
         if pt is None:
-            log.warning("Can't find pagelet type: %s"%string)
-            return types.value("")
+            log.warning("Can't find pagelet type: %s"%self.ptname)
+            return [ast.Assign([target], ast.Str(''))]
+                                
+        return template(
+            "target = traverse(name, context, request)",
+            target=target,
+            traverse=self.traverser,
+            name=ast.Str(self.ptname),
+            context=astutil.load(self.name)
+            )
 
-        value = types.value("%s('%s', %s, request)" % \
-                                (self.symbol, ptname, name))
-        value.symbol_mapping[self.symbol] = self.pagelet_traverser
-        return value
+
+PageTemplate.expression_types['pagelet'] = PageletExpr
