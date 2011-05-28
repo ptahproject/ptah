@@ -1,14 +1,11 @@
-""" Setup for memphis.config package
-
-$Id: setup.py 11802 2011-01-31 06:25:41Z fafhrd91 $
-"""
+""" Setup for memphis.config package """
 import sys, os
 from setuptools import setup, find_packages
 
 def read(*rnames):
     return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
 
-version='0.1'
+version='0.2'
 
 install_requires = [
     'setuptools',
