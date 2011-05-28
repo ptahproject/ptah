@@ -3,7 +3,10 @@ import sys, os
 from setuptools import setup, find_packages
 
 def read(*rnames):
-    return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
+    try:
+        return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
+    except IOError:
+        return ''
 
 version='0.2'
 
