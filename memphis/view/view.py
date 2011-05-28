@@ -141,7 +141,7 @@ def registerView(
 
     config.registerAdapter(
         PyramidView(view_class, permission),
-        (IViewClassifier, layer, context), IView, name, 
+        (IViewClassifier, layer, context), IView, name,
         configContext, info)
 
 

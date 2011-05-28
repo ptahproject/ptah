@@ -49,7 +49,7 @@ class PageletExpr(object):
         if pt is None:
             log.warning("Can't find pagelet type: %s"%self.ptname)
             return [ast.Assign([target], ast.Str(''))]
-                                
+
         return template(
             "target = traverse(name, context, request)",
             target=target,

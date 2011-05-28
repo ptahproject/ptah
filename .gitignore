@@ -11,4 +11,5 @@ var/*
 *.pyc
 *.pt.py
 *.pt.pyc
+*.bak
 .DS_Store

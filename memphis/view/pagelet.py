@@ -85,7 +85,7 @@ def cleanUp():
 
 
 def registerPagelet(
-    pageletType, context=None, klass=None, 
+    pageletType, context=None, klass=None,
     template=None, layer=IRequest, configContext=None, info='', **kw):
 
     def _register(pageletType, context, klass, layer, template, kw):

@@ -25,6 +25,6 @@ class pyramidView(Directive):
     scope = CLASS
     store = ONCE_NOBASE
 
-    def factory(self, name, context=None, template=None, 
+    def factory(self, name, context=None, template=None,
                 layer=None, layout='', permission=''):
         return name, context, layer, template, layout, permission, getInfo()

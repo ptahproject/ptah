@@ -11,7 +11,7 @@ def registerActions(*actions):
         registerAction(*data)
 
 
-def registerAction(name='', context=None, 
+def registerAction(name='', context=None,
                    title = u'', description = u'', weight = 0):
     action = Action(name, title, description, weight)
 

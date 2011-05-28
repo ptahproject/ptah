@@ -83,6 +83,6 @@ class PageletGrokker(martian.ClassGrokker):
         if layer is None:
             layer = IRequest
 
-        registerPagelet(pageletType, context, klass, 
+        registerPagelet(pageletType, context, klass,
                         template, layer, configContext, info)
         return True
