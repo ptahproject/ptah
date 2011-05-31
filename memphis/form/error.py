@@ -27,6 +27,27 @@ from memphis.form import interfaces, util, pagelets
 _ = interfaces.MessageFactory
 
 
+class Errors(list):
+    
+    def __init__(self, *args):
+        super(Errors, self).__init__(*args)
+
+        self.widgetErrors = {}
+
+    def append(self, error):
+        if interfaces.IWidgetError.providedBy(error):
+            self.widgetErrors[error.name] = error
+
+        super(Errors, self).append(error)
+
+    def extend(self, lst):
+        for error in lst:
+            self.append(error)
+
+    def getWidgetError(self, name, default=None):
+        return self.widgetErrors.get(name, default)
+
+
 class WidgetError(object):
     zope.interface.implements(interfaces.IWidgetError)
 
@@ -68,6 +89,12 @@ class ErrorViewSnippet(object):
     def __repr__(self):
         return '<%s for %s>' %(
             self.__class__.__name__, self.error.__class__.__name__)
+
+
+class StrErrorViewSnippet(ErrorViewSnippet):
+
+    def createMessage(self):
+        return self.error
 
 
 class ValueErrorViewSnippet(ErrorViewSnippet):

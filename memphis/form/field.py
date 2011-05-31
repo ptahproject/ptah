@@ -17,8 +17,9 @@ import zope.interface
 import zope.schema.interfaces
 
 from memphis import config
-from memphis.form import interfaces, util, error
-from memphis.form.error import MultipleErrors
+from memphis.form import interfaces, util
+from memphis.form.error import \
+    Errors, WidgetError, MultipleErrors, StrErrorViewSnippet
 
 
 def _initkw(keepReadOnly=(), omitReadOnly=False, **defaults):
@@ -231,8 +232,9 @@ class FieldWidgets(util.Manager):
     def extract(self):
         """See interfaces.IWidgets"""
         data = {}
-        errors = ()
         sm = zope.component.getSiteManager()
+        errors = Errors()
+        errorViews = []
 
         for name, widget in self.items():
             if widget.mode == interfaces.IDisplayMode:
@@ -260,32 +262,37 @@ class FieldWidgets(util.Manager):
                                        interfaces.IValidator).validate(value)
             except (zope.interface.Invalid,
                     ValueError, MultipleErrors), error:
+                errors.append(WidgetError(name, error))
                 view = sm.getMultiAdapter(
                     (error, self.request), interfaces.IErrorViewSnippet)
                 view.update(widget)
                 if self.setErrors:
                     widget.error = view
-                errors += (view,)
+                errorViews.append(view)
 
             data[widget.__name__] = value
 
-        for error in self.form.validate(data):
+        self.form.validate(data, errors)
+
+        for error in errors:
             if interfaces.IWidgetError.providedBy(error):
                 widget = self.get(error.name)
                 error = error.error
             else:
                 widget = None
 
-            view = sm.getMultiAdapter(
+            view = sm.queryMultiAdapter(
                 (error, self.request), interfaces.IErrorViewSnippet)
+            if view is None:
+                view = StrErrorViewSnippet(error, self.request)
             view.update(widget)
-            errors += (view,)
+            errorViews.append(view)
             
             if self.setErrors and widget is not None:
                 widget.error = view
 
         if self.setErrors:
-            self.errors = errors
+            self.errors = errorViews
 
         return data, errors
 

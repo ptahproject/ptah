@@ -101,7 +101,7 @@ class IFormValidator(zope.interface.Interface):
     """A validator for a form."""
 
     def validate(data):
-        """ validate data """
+        """ validate data, return dictionary """
 
 
 # ----[ Errors ]--------------------------------------------------------------

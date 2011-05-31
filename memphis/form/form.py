@@ -136,13 +136,10 @@ class BaseForm(object):
         self.widgets.ignoreReadonly = self.ignoreReadonly
         self.widgets.update()
 
-    def validate(self, data):
-        errors = []
+    def validate(self, data, errors):
         for name, validator in zope.component.getAdapters(
             (self,), interfaces.IFormValidator):
             errors.extend(validator.validate(data))
-
-        return errors
 
     def extractData(self, setErrors=True):
         '''See interfaces.IForm'''
