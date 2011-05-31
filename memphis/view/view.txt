@@ -5,7 +5,7 @@ Pyramid View
 This doctest file shows how to use views.
 
   >>> import pyramid.testing
-  >>> from zope import interface, component, schema
+  >>> from zope import interface, component
   >>> from pyramid.interfaces import IView, IRequest
 
 Each view should have unique class, let's create one::

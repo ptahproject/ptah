@@ -27,6 +27,7 @@ class Layout(object):
     mainview = None
     maincontext = None
     skipParent = False
+    renderParams = None
 
     def __init__(self, view, context, request):
         self.view = view
@@ -42,15 +43,16 @@ class Layout(object):
         if self.template is None:
             raise RuntimeError("Can't render layout: %s"%self.__name__)
 
-        kwargs = {'view': self.view,
-                  'context': self.view.context,
-                  'layout': self,
-                  'layoutcontext': self.context,
-                  'mainview': self.mainview,
-                  'maincontext': self.maincontext,
-                  'request': self.request,
-                  'template': self.template,
-                  'nothing': None}
+        kwargs = self.renderParams or {}
+        kwargs.update({'view': self.view,
+                       'context': self.view.context,
+                       'layout': self,
+                       'layoutcontext': self.context,
+                       'mainview': self.mainview,
+                       'maincontext': self.maincontext,
+                       'request': self.request,
+                       'template': self.template,
+                       'nothing': None})
 
         return self.template(**kwargs)
 
@@ -64,7 +66,7 @@ class Layout(object):
         if layout is not None:
             self.view = layout
 
-        self.update()
+        self.renderParams = self.update()
 
         if self.layout is None:
             return self.render()

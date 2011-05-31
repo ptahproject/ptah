@@ -20,6 +20,8 @@ class View(object):
     template = None
     layoutname = ''
     isRedirected = False
+    renderParams = None
+
     content_type = 'text/html'
 
     def __init__(self, context, request):
@@ -34,17 +36,18 @@ class View(object):
         pass
 
     def render(self):
-        kwargs = {'view': self,
-                  'context': self.context,
-                  'request': self.request,
-                  'template': self.template,
-                  'nothing': None}
+        kwargs = self.renderParams or {}
+        kwargs.update({'view': self,
+                       'context': self.context,
+                       'request': self.request,
+                       'template': self.template,
+                       'nothing': None})
 
         return self.template(**kwargs)
 
     def __call__(self, *args, **kw):
         try:
-            self.update()
+            self.renderParams = self.update()
 
             layout = queryLayout(
                 self, self.request, self.__parent__, self.layoutname)

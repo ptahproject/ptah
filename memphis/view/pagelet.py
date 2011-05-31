@@ -19,6 +19,7 @@ class Pagelet(object):
     interface.implements(IPagelet)
 
     template = None
+    renderParams = None
 
     def __init__(self, context, request):
         self.context = context
@@ -28,16 +29,17 @@ class Pagelet(object):
         pass
 
     def render(self):
-        kwargs = {'view': self,
-                  'context': self.context,
-                  'request': self.request,
-                  'nothing': None,
-                  'template': self.template}
+        kwargs = self.renderParams or {}
+        kwargs.update({'view': self,
+                       'context': self.context,
+                       'request': self.request,
+                       'nothing': None,
+                       'template': self.template})
 
         return self.template(**kwargs)
 
     def __call__(self, *args, **kw):
-        self.update()
+        self.renderParams = self.update()
         return self.render()
 
 

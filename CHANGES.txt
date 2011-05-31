@@ -2,6 +2,13 @@
 CHANGES
 =======
 
+0.2 (2011-05-30)
+----------------
+
+- If view's update method returns dict
+  use this dict as locals for template.
+
+
 0.1 (2011-05-27)
 ----------------
 

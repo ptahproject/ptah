@@ -8,7 +8,7 @@ def read(*rnames):
     except IOError:
         return ''
 
-version='0.1'
+version='0.2'
 
 
 setup(name='memphis.view',
@@ -40,7 +40,6 @@ setup(name='memphis.view',
                           'Chameleon>=2.0-rc11',
                           'pyramid',
                           'zope.event',
-                          'zope.schema',
                           'zope.component',
                           'zope.interface',
                           'zope.configuration',
