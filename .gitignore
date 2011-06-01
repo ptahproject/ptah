@@ -1,0 +1,15 @@
+*~
+bin
+parts
+coverage
+eggs
+sources
+dist
+.installed.cfg
+develop-eggs
+var/*
+*.egg-info
+*.pyc
+*.pt.py
+*.pt.pyc
+.DS_Store
