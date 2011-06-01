@@ -1,7 +1,8 @@
 <div class="z-form z-form-standard">
   <form action="${context.action}" name="${context.name}" id="${context.id}"
 	method="${context.method}" enctype="${context.enctype}"
-	accept="${context.accept}" acceptCharset="${context.acceptCharset}">
+	accept="${context.accept}" acceptCharset="${context.acceptCharset}"
+	tal:attributes="autocomplete getattr(context, 'autocomplete', None)">
 
     <h1 class="z-form-label" i18n:translate=""
 	tal:content="context.label">Do something</h1>

@@ -1,26 +1,9 @@
-##############################################################################
-#
-# Copyright (c) 2007 Zope Foundation and Contributors.
-# All Rights Reserved.
-#
-# This software is subject to the provisions of the Zope Public License,
-# Version 2.1 (ZPL).  A copy of the ZPL should accompany this distribution.
-# THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
-# WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-# WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE.
-#
-##############################################################################
-"""Form Implementation
-
-$Id: form.py 11797 2011-01-31 04:13:41Z fafhrd91 $
-"""
-__docformat__ = "reStructuredText"
+"""Form Implementation"""
 import sys
-import zope.interface
 import zope.component
 import zope.event
 import zope.lifecycleevent
+from zope import interface
 from zope.component import getMultiAdapter
 from zope.schema.fieldproperty import FieldProperty
 
@@ -43,8 +26,7 @@ def applyChanges(form, content, data):
         if data[name] is interfaces.NOT_CHANGED:
             continue
         # Get the datamanager and get the original value
-        dm = zope.component.getMultiAdapter(
-            (content, field.field), interfaces.IDataManager)
+        dm = getMultiAdapter((content, field.field), interfaces.IDataManager)
         # Only update the data, if it is different
         # Or we can not get the original value, in which case we can not check
         # Or it is an Object, in case we'll never know
@@ -85,7 +67,7 @@ def handleActionError(event):
     # Create an error view for the error.
     action = event.action
     form = action.form
-    errorView = zope.component.getMultiAdapter(
+    errorView = getMultiAdapter(
         (event.error.error, action.request), interfaces.IErrorViewSnippet)
     errorView.update(widget)
     # Assign the error view to all necessary places.
@@ -100,8 +82,7 @@ def handleActionError(event):
 
 class BaseForm(object):
     """A base form."""
-    zope.interface.implements(interfaces.IForm,
-                              interfaces.IFieldsForm)
+    interface.implements(interfaces.IForm, interfaces.IFieldsForm)
 
     fields = field.Fields()
 
@@ -166,8 +147,7 @@ class BaseForm(object):
 
 
 class DisplayForm(BaseForm):
-
-    zope.interface.implements(interfaces.IDisplayForm)
+    interface.implements(interfaces.IDisplayForm)
 
     mode = interfaces.IDisplayMode
     ignoreRequest = True
@@ -175,7 +155,7 @@ class DisplayForm(BaseForm):
 
 class Form(BaseForm):
     """The Form."""
-    zope.interface.implements(
+    interface.implements(
         interfaces.IInputForm, interfaces.IButtonForm,
         interfaces.IHandlerForm, interfaces.IActionForm)
 
@@ -183,13 +163,12 @@ class Form(BaseForm):
 
     buttons = button.Buttons()
 
-    method = 'post' #FieldProperty(interfaces.IInputForm['method'])
-    enctype = 'multipart/form-data' #FieldProperty(interfaces.IInputForm['enctype'])
-    acceptCharset = None #FieldProperty(interfaces.IInputForm['acceptCharset'])
-    accept = None #FieldProperty(interfaces.IInputForm['accept'])
-
-    actions = None #FieldProperty(interfaces.IActionForm['actions'])
-    refreshActions = False #FieldProperty(interfaces.IActionForm['refreshActions'])
+    method = 'post'
+    enctype = 'multipart/form-data'
+    acceptCharset = None
+    accept = None
+    actions = None
+    refreshActions = False
 
     # common string for use in validation status messages
     formErrorsMessage = _('There were some errors.')
@@ -209,7 +188,7 @@ class Form(BaseForm):
         return self.name.replace('.', '-')
 
     def updateActions(self):
-        self.actions = zope.component.getMultiAdapter(
+        self.actions = getMultiAdapter(
             (self, self.request, self.getContent()), interfaces.IActions)
         self.actions.update()
 
@@ -224,7 +203,7 @@ class Form(BaseForm):
 
 class EditForm(Form):
     """A simple edit form with an apply button."""
-    zope.interface.implements(interfaces.IEditForm)
+    interface.implements(interfaces.IEditForm)
 
     ignoreContext = False
 
@@ -326,8 +305,7 @@ class EditForm(Form):
 
 
 class SubForm(BaseForm):
-    zope.interface.implements(
-        interfaces.ISubForm, interfaces.IHandlerForm)
+    interface.implements(interfaces.ISubForm, interfaces.IHandlerForm)
 
     weight = 0
 
@@ -357,7 +335,7 @@ class SubForm(BaseForm):
 
 
 class Group(BaseForm):
-    zope.interface.implements(interfaces.IGroup)
+    interface.implements(interfaces.IGroup)
 
     weight = 0
 
@@ -371,7 +349,7 @@ class Group(BaseForm):
 
     def updateWidgets(self):
         '''See interfaces.IForm'''
-        self.widgets = zope.component.getMultiAdapter(
+        self.widgets = getMultiAdapter(
             (self, self.request, self.getContent()), interfaces.IWidgets)
         for attrName in ('mode', 'ignoreRequest', 'ignoreContext',
                          'ignoreReadonly'):

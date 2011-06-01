@@ -100,11 +100,24 @@ class IValidator(zope.interface.Interface):
 class IFormValidator(zope.interface.Interface):
     """A validator for a form."""
 
-    def validate(data):
-        """ validate data, return dictionary """
+    def validate(data, errors):
+        """ validate data, errors is IErrors object """
 
 
 # ----[ Errors ]--------------------------------------------------------------
+
+class IErrors(zope.interface.Interface):
+    """ list """
+
+    def append(error):
+        """ append error """
+
+    def extend(errors):
+        """ extend with errors """
+
+    def getWidgetError(name, default=None):
+        """ return widget error """
+
 
 class IWidgetError(zope.interface.Interface):
     """ A special error, for can return additional errors and explicitly 
@@ -820,10 +833,10 @@ class IForm(zope.interface.Interface):
         mainly meant to be a hook for subclasses.
         '''
 
-    def validate(data):
+    def validate(data, errors):
         ''' Do form level validation, like schema invariants, etc.
         
-        Return sequence of errors or None
+        Add errors to errors (IErrors) object.
         '''
 
     def extractData(setErrors=True):

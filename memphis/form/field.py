@@ -1,16 +1,3 @@
-##############################################################################
-#
-# Copyright (c) 2006 Zope Foundation and Contributors.
-# All Rights Reserved.
-#
-# This software is subject to the provisions of the Zope Public License,
-# Version 2.1 (ZPL).  A copy of the ZPL should accompany this distribution.
-# THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
-# WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-# WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE.
-#
-##############################################################################
 """Field Implementation"""
 import zope.component
 import zope.interface
@@ -19,7 +6,7 @@ import zope.schema.interfaces
 from memphis import config
 from memphis.form import interfaces, util
 from memphis.form.error import \
-    Errors, WidgetError, MultipleErrors, StrErrorViewSnippet
+    Errors, WidgetError, MultipleErrors, ErrorViewSnippet
 
 
 def _initkw(keepReadOnly=(), omitReadOnly=False, **defaults):
@@ -104,7 +91,6 @@ class Fields(util.SelectionManager):
             self._data_keys.append(name)
             self._data[name] = form_field
 
-
     def select(self, *names, **kwargs):
         """See interfaces.IFields"""
         prefix = kwargs.pop('prefix', None)
@@ -118,7 +104,6 @@ class Fields(util.SelectionManager):
                             for field in self.values()
                             if field.field.interface is interface])
         return self.__class__(*[mapping[name] for name in names])
-
 
     def omit(self, *names, **kwargs):
         """See interfaces.IFields"""
@@ -284,7 +269,7 @@ class FieldWidgets(util.Manager):
             view = sm.queryMultiAdapter(
                 (error, self.request), interfaces.IErrorViewSnippet)
             if view is None:
-                view = StrErrorViewSnippet(error, self.request)
+                view = ErrorViewSnippet(error, self.request)
             view.update(widget)
             errorViews.append(view)
             

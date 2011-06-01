@@ -28,6 +28,7 @@ _ = interfaces.MessageFactory
 
 
 class Errors(list):
+    zope.interface.implements(interfaces.IErrors)
     
     def __init__(self, *args):
         super(Errors, self).__init__(*args)
@@ -68,7 +69,6 @@ class CustomValidationError(zope.schema.ValidationError):
 
 class ErrorViewSnippet(object):
     """Error view snippet."""
-    config.adapts(zope.schema.ValidationError, None)
     zope.interface.implements(interfaces.IErrorViewSnippet)
 
     def __init__(self, error, request):
@@ -76,7 +76,7 @@ class ErrorViewSnippet(object):
         self.request = request
 
     def createMessage(self):
-        return self.error.doc()
+        return self.error
 
     def update(self, widget=None):
         self.widget = widget
@@ -87,17 +87,21 @@ class ErrorViewSnippet(object):
             pagelets.IErrorViewSnippetView, self, self.request)
 
     def __repr__(self):
+        return '<%s for %s>' %(self.__class__.__name__, self.error)
+
+
+class ValidationErrorViewSnippet(ErrorViewSnippet):
+    config.adapts(zope.schema.ValidationError, None)
+
+    def createMessage(self):
+        return self.error.doc()
+
+    def __repr__(self):
         return '<%s for %s>' %(
             self.__class__.__name__, self.error.__class__.__name__)
 
 
-class StrErrorViewSnippet(ErrorViewSnippet):
-
-    def createMessage(self):
-        return self.error
-
-
-class ValueErrorViewSnippet(ErrorViewSnippet):
+class ValueErrorViewSnippet(ValidationErrorViewSnippet):
     """An error view for ValueError."""
     config.adapts(ValueError, None)
 
@@ -107,7 +111,7 @@ class ValueErrorViewSnippet(ErrorViewSnippet):
         return self.defaultMessage
 
 
-class InvalidErrorViewSnippet(ErrorViewSnippet):
+class InvalidErrorViewSnippet(ValidationErrorViewSnippet):
     """Error view snippet."""
     config.adapts(zope.interface.Invalid, None)
 
@@ -115,7 +119,7 @@ class InvalidErrorViewSnippet(ErrorViewSnippet):
         return self.error.args[0]
 
 
-class MultipleErrorViewSnippet(ErrorViewSnippet):
+class MultipleErrorViewSnippet(ValidationErrorViewSnippet):
     """Error view snippet for multiple errors."""
     config.adapts(interfaces.IMultipleErrors, None)
 

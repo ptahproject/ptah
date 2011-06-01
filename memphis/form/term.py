@@ -60,8 +60,7 @@ def ChoiceTerms(context, request, form, field, widget):
     field = field.bind(context)
     terms = field.vocabulary
     return zope.component.queryMultiAdapter(
-        (context, request, form, field, terms, widget),
-        interfaces.ITerms)
+        (context, request, form, field, terms, widget), interfaces.ITerms)
 
 
 class ChoiceTermsVocabulary(Terms):
