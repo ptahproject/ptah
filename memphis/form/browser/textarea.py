@@ -42,17 +42,14 @@ class TextAreaWidget(widget.HTMLTextAreaWidget, Widget):
         widget.addFieldClass(self)
 
 
-config.action(
-    view.registerPagelet,
+view.registerPagelet(
     pagelets.IWidgetDisplayView, ITextAreaWidget,
     template=view.template("memphis.form.browser:textarea_display.pt"))
 
-config.action(
-    view.registerPagelet,
+view.registerPagelet(
     pagelets.IWidgetInputView, ITextAreaWidget,
     template=view.template("memphis.form.browser:textarea_input.pt"))
 
-config.action(
-    view.registerPagelet,
+view.registerPagelet(
     pagelets.IWidgetHiddenView, ITextAreaWidget,
     template=view.template("memphis.form.browser:textarea_hidden.pt"))

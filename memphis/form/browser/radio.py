@@ -64,22 +64,18 @@ class HorizontalRadioWidget(RadioWidget):
     __description__ = _('HTML Radio input widget.')
 
 
-config.action(
-    view.registerPagelet,
+view.registerPagelet(
     pagelets.IWidgetDisplayView, IRadioWidget,
     template=view.template("memphis.form.browser:radio_display.pt"))
 
-config.action(
-    view.registerPagelet,
+view.registerPagelet(
     pagelets.IWidgetInputView, IRadioWidget,
     template=view.template("memphis.form.browser:radio_input.pt"))
 
-config.action(
-    view.registerPagelet,
+view.registerPagelet(
     pagelets.IWidgetInputView, HorizontalRadioWidget,
     template=view.template("memphis.form.browser:radiohoriz_input.pt"))
 
-config.action(
-    view.registerPagelet,
+view.registerPagelet(
     pagelets.IWidgetHiddenView, IRadioWidget,
     template=view.template("memphis.form.browser:radio_hidden.pt"))

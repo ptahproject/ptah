@@ -2,7 +2,13 @@
 CHANGES
 =======
 
-0.1 (Unreleased)
+0.2 (Unreleased)
+----------------
+
+- config.action is not required for view.registerPagelet call
+
+
+0.1 (2011-05-30)
 ----------------
 
 - Initial release

@@ -78,17 +78,14 @@ class SingleCheckBoxWidget(CheckBoxWidget):
         return self.terms
 
 
-config.action(
-    view.registerPagelet,
+view.registerPagelet(
     pagelets.IWidgetDisplayView, ICheckBoxWidget,
     template=view.template("memphis.form.browser:checkbox_display.pt"))
 
-config.action(
-    view.registerPagelet,
+view.registerPagelet(
     pagelets.IWidgetInputView, ICheckBoxWidget,
     template=view.template("memphis.form.browser:checkbox_input.pt"))
 
-config.action(
-    view.registerPagelet,
+view.registerPagelet(
     pagelets.IWidgetHiddenView, ICheckBoxWidget,
     template=view.template("memphis.form.browser:checkbox_hidden.pt"))

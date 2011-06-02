@@ -14,7 +14,7 @@
 """Button Widget Implementation"""
 import zope.interface
 
-from memphis import config, view
+from memphis import view
 from memphis.form import interfaces, pagelets
 from memphis.form.widget import Widget
 from memphis.form.browser import widget
@@ -34,13 +34,10 @@ class ButtonWidget(widget.HTMLInputWidget, Widget):
         widget.addFieldClass(self)
 
 
-config.action(
-    view.registerPagelet,
+view.registerPagelet(
     pagelets.IWidgetDisplayView, interfaces.IButtonWidget,
     template=view.template("memphis.form.browser:button_display.pt"))
 
-
-config.action(
-    view.registerPagelet,
+view.registerPagelet(
     pagelets.IWidgetInputView, interfaces.IButtonWidget,
     template=view.template("memphis.form.browser:button_input.pt"))

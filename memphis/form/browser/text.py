@@ -62,17 +62,14 @@ class TextWidget(widget.HTMLTextInputWidget, Widget):
         widget.addFieldClass(self)
 
 
-config.action(
-    view.registerPagelet,
+view.registerPagelet(
     pagelets.IWidgetDisplayView, ITextWidget,
     template=view.template("memphis.form.browser:text_display.pt"))
 
-config.action(
-    view.registerPagelet,
+view.registerPagelet(
     pagelets.IWidgetInputView, ITextWidget,
     template=view.template("memphis.form.browser:text_input.pt"))
 
-config.action(
-    view.registerPagelet,
+view.registerPagelet(
     pagelets.IWidgetHiddenView, ITextWidget,
     template=view.template("memphis.form.browser:text_hidden.pt"))

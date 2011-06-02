@@ -33,13 +33,10 @@ class TextLinesWidget(textarea.TextAreaWidget):
                         'each line is treated as sequence element.')
 
 
-config.action(
-    view.registerPagelet,
+view.registerPagelet(
     pagelets.IWidgetDisplayView, ITextLinesWidget,
     template=view.template("memphis.form.browser:textlines_display.pt"))
 
-
-config.action(
-    view.registerPagelet,
+view.registerPagelet(
     pagelets.IWidgetInputView, ITextLinesWidget,
     template=view.template("memphis.form.browser:textlines_input.pt"))

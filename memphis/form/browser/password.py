@@ -35,12 +35,10 @@ class PasswordWidget(text.TextWidget):
     __description__ = _('HTML Password input widget.')
 
 
-config.action(
-    view.registerPagelet,
+view.registerPagelet(
     pagelets.IWidgetDisplayView, IPasswordWidget,
     template=view.template("memphis.form.browser:password_display.pt"))
 
-config.action(
-    view.registerPagelet,
+view.registerPagelet(
     pagelets.IWidgetInputView, IPasswordWidget,
     template=view.template("memphis.form.browser:password_input.pt"))

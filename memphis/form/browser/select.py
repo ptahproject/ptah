@@ -86,17 +86,14 @@ class MultiSelectWidget(SelectWidget):
     __description__ = _('HTML Multi Select input based widget.')
 
 
-config.action(
-    view.registerPagelet,
+view.registerPagelet(
     pagelets.IWidgetDisplayView, ISelectWidget,
     template=view.template("memphis.form.browser:select_display.pt"))
 
-config.action(
-    view.registerPagelet,
+view.registerPagelet(
     pagelets.IWidgetInputView, ISelectWidget,
     template=view.template("memphis.form.browser:select_input.pt"))
 
-config.action(
-    view.registerPagelet,
+view.registerPagelet(
     pagelets.IWidgetHiddenView, ISelectWidget,
     template=view.template("memphis.form.browser:select_hidden.pt"))

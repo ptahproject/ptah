@@ -91,13 +91,11 @@ def SequenceChoiceSelectFieldWidget(field, value_type, request):
     return OrderedSelectFieldWidget(field, request)
 
 
-config.action(
-    view.registerPagelet,
+view.registerPagelet(
     pagelets.IWidgetDisplayView, interfaces.IOrderedSelectWidget,
     template=view.template("memphis.form.browser:orderedselect_display.pt"))
 
 
-config.action(
-    view.registerPagelet,
+view.registerPagelet(
     pagelets.IWidgetInputView, interfaces.IOrderedSelectWidget,
     template=view.template("memphis.form.browser:orderedselect_input.pt"))

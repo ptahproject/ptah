@@ -26,13 +26,11 @@ class SubmitWidget(button.ButtonWidget):
     klass = u'submit-widget z-form-button'
 
 
-config.action(
-    view.registerPagelet,
+view.registerPagelet(
     pagelets.IWidgetDisplayView, interfaces.ISubmitWidget,
     template=view.template("memphis.form.browser:submit_display.pt"))
 
 
-config.action(
-    view.registerPagelet,
+view.registerPagelet(
     pagelets.IWidgetInputView, interfaces.ISubmitWidget,
     template=view.template("memphis.form.browser:submit_input.pt"))
