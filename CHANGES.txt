@@ -2,6 +2,13 @@
 CHANGES
 =======
 
+0.3 (Unreleased)
+----------------
+
+- Allow to redefine context of 'action' directive
+  by passing frame object as '__frame' parameter.
+
+
 0.1 (2011-05-27)
 ----------------
 

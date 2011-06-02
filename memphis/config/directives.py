@@ -1,7 +1,8 @@
 """ directives """
-import inspect
+import sys, inspect
 import zope.component
 from martian.directive import Directive
+from martian.error import GrokImportError
 from martian import CLASS, MODULE, ONCE_NOBASE, MULTIPLE_NOBASE
 
 
@@ -22,6 +23,31 @@ def getInfo(level=3):
 class action(Directive):
     scope = MODULE
     store = MULTIPLE_NOBASE
+
+    def __init__(self, *args, **kw):
+        self.name = self.__class__.__name__
+        
+        _frame = kw.get('__frame', None)
+        if _frame is None:
+            self.frame = frame = sys._getframe(1)
+        else:
+            self.frame = frame = _frame
+            del kw['__frame']
+
+        if not self.scope.check(frame):
+            raise GrokImportError("The '%s' directive can only be used on "
+                                  "%s level." %
+                                  (self.name, self.scope.description))
+            
+        self.check_factory_signature(*args, **kw)
+        
+        validate = getattr(self, 'validate', None)
+        if validate is not None:
+            validate(*args, **kw)
+            
+        value = self.factory(*args, **kw)
+                                         
+        self.store.set(frame.f_locals, self, value)
 
     def factory(self, callable, *args, **kw):
         return callable, args, kw, getInfo()

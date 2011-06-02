@@ -104,7 +104,7 @@ from zope.configuration.xmlconfig import registerCommonDirectives
 
 
 UNSET = object()
-configContext = None
+configContext = ConfigurationMachine()
 grokkerRegistry = martian.GrokkerRegistry()
 grokkerPackages = []
 grokkerPackagesExcludes = {}
@@ -117,6 +117,8 @@ def getContext():
 
 def begin(packages=None):
     global configContext
+    if configContext is not None:
+        commit()
 
     for h in cleanups:
         h()
