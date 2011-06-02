@@ -2,6 +2,12 @@
 CHANGES
 =======
 
+0.3 (Unreleased)
+----------------
+
+- Use config.action in 'view.registerView' and 'view.registerPage'
+
+
 0.2 (2011-05-30)
 ----------------
 

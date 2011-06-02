@@ -1,5 +1,6 @@
 """ pagelet implementation """
-import logging
+import sys, logging
+
 import pyramid
 from pyramid.interfaces import IRequest
 from pyramid.exceptions import NotFound
@@ -10,6 +11,7 @@ from zope.interface.interface import InterfaceClass
 from zope.configuration.exceptions import ConfigurationError
 
 from memphis import config
+from memphis.config.directives import getInfo
 from memphis.view.interfaces import IPagelet, IPageletType
 
 log = logging.getLogger('memphis.view')
@@ -72,7 +74,15 @@ def renderPagelet(ptype, context, request):
         raise
 
 
-def registerPageletType(name, iface, context, configContext=None, info=''):
+def registerPageletType(name, iface, context, configContext=None):
+
+    config.action(
+        registerPageletTypeImpl,
+        name, iface, context, configContext, getInfo(),
+        __frame = sys._getframe(1))
+
+
+def registerPageletTypeImpl(name, iface, context, configContext=None, info=''):
     pt = PageletType(name, iface, context)
 
     iface.setTaggedValue('memphis.view.pageletType', pt)
@@ -87,6 +97,22 @@ def cleanUp():
 
 
 def registerPagelet(
+    pageletType, context=None, klass=None,
+    template=None, layer=IRequest, configContext=None, **kw):
+
+    info = getInfo(2)
+    try:
+        config.action(
+            registerPageletImpl,
+            pageletType, context, klass,
+            template, layer, configContext, info, 
+            __frame = sys._getframe(1), **kw)
+    except:
+        log.info(info)
+        raise
+
+
+def registerPageletImpl(
     pageletType, context=None, klass=None,
     template=None, layer=IRequest, configContext=None, info='', **kw):
 

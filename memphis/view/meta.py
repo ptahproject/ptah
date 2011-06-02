@@ -6,14 +6,17 @@ from zope.interface.interface import InterfaceClass
 
 from memphis import config
 from memphis.view import interfaces, pageletType, \
-    View, pyramidView, registerView, \
-    Pagelet, pagelet, registerPagelet, registerPageletType
+    View, pyramidView, Pagelet, pagelet
+from memphis.view.view import registerViewImpl
+from memphis.view.pagelet import registerPageletImpl
+from memphis.view.pagelet import registerPageletTypeImpl
 
 _marker = object()
 
 typesExecuted = []
 viewsExecuted = []
 pageletsExecuted = []
+
 
 @config.cleanup
 def cleanUp():
@@ -38,7 +41,7 @@ class PageletTypeGrokker(martian.InstanceGrokker):
 
         name, context, info = value
 
-        registerPageletType(
+        registerPageletTypeImpl(
             name, interface, context, configContext, info)
         return True
 
@@ -60,7 +63,7 @@ class PyramidViewGrokker(martian.ClassGrokker):
         if layer is None:
             layer = IRequest
 
-        registerView(
+        registerViewImpl(
             name, context, klass, template, layer, layout, permission,
             configContext, info)
         return True
@@ -83,6 +86,6 @@ class PageletGrokker(martian.ClassGrokker):
         if layer is None:
             layer = IRequest
 
-        registerPagelet(pageletType, context, klass,
-                        template, layer, configContext, info)
+        registerPageletImpl(pageletType, context, klass,
+                            template, layer, configContext, info)
         return True

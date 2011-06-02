@@ -1,4 +1,5 @@
 """ view implementation """
+import sys
 from zope import interface, component
 from zope.interface import providedBy
 from zope.component import getSiteManager
@@ -9,6 +10,8 @@ from pyramid.response import Response
 from pyramid.interfaces import IRequest, IView, IViewClassifier
 
 from memphis import config
+from memphis.config.directives import getInfo
+
 from memphis.view.layout import queryLayout
 from memphis.view.interfaces import IDefaultView
 
@@ -116,6 +119,17 @@ def cleanUp():
 
 def registerView(
     name='', context=None, klass=None, template=None,
+    layer=IRequest, layout='', permission='', configContext=None):
+    
+    config.action(
+        registerViewImpl,
+        name, context, klass, template, 
+        layer, layout, permission, configContext, getInfo(),
+        __frame = sys._getframe(1))
+
+
+def registerViewImpl(
+    name='', context=None, klass=None, template=None,
     layer=IRequest, layout='', permission='', configContext=None, info=''):
 
     if klass is not None and klass in _registered:
@@ -150,9 +164,17 @@ def registerView(
 
 def registerDefaultView(name, context=interface.Interface,
                         layer=IRequest, configContext = None):
+
+    config.action(
+        registerDefaultViewImpl, name, context, layer, configContext, getInfo(),
+        __frame = sys._getframe(1))
+
+
+def registerDefaultViewImpl(name, context=interface.Interface,
+                            layer=IRequest, configContext = None, info=''):
     config.registerAdapter(
-        DefaultView(name), (context, layer), IDefaultView, '', configContext)
+        DefaultView(name), (context, layer), IDefaultView, '', configContext, info)
 
     config.registerAdapter(
         DefaultPyramidView(name),
-        (IViewClassifier, layer, context), IView, '', configContext)
+        (IViewClassifier, layer, context), IView, '', configContext, info)
