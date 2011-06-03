@@ -5,7 +5,7 @@ def read(*rnames):
     return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
 
 
-version='0.1'
+version='0.2'
 
 
 setup(name='memphis.form',
@@ -30,7 +30,7 @@ setup(name='memphis.form',
       author='Nikolay Kim',
       author_email='fafhrd91@gmail.com',
       url='http://pypi.python.org/pypi/memphis.form/',
-      license='ZPL 2.1',
+      license='BSD-derived (http://www.repoze.org/LICENSE.txt)',
       packages=find_packages(),
       namespace_packages=['memphis'],
       install_requires = ['setuptools',
