@@ -59,14 +59,15 @@ action
   >>> action.immediately = False
 
 """
-import martian, sys, types
+import martian, sys, types, random
 from zope import interface, component
 from zope.interface.interface import InterfaceClass
 
-from memphis.config import api, directives
+from memphis.config import api, zca, directives
 from memphis.config.directives import adapts
 from memphis.config.directives import utility
 from memphis.config.directives import action
+from memphis.config.directives import registerIn
 
 _marker = object()
 _adapters = []
@@ -172,6 +173,22 @@ class ActionGrokker(martian.GlobalGrokker):
                     continue
 
                 callable(*args, **kwargs)
+
+        return True
+
+
+class RegisterInGrokker(martian.GlobalGrokker):
+
+    def grok(self, name, module, configContext=None, **kw):
+        value = registerIn.bind(default=_marker).get(module)
+        if value is not _marker:
+            if (name, module) not in _modules or \
+                    getattr(module, '__fake_module__', False):
+                _modules.append((name, module))
+
+                api.action(
+                    discriminator='registerIn: %s'%random.randint(1, 99999),
+                    callable=zca.registerIn, args=(value,))
 
         return True
 

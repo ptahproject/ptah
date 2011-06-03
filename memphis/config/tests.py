@@ -34,4 +34,8 @@ def test_suite():
                 'memphis.config.meta',
                 setUp=setUp, tearDown=tearDown,
                 optionflags=doctest.NORMALIZE_WHITESPACE|doctest.ELLIPSIS),
+            doctest.DocTestSuite(
+                'memphis.config.zca',
+                setUp=setUp, tearDown=tearDown,
+                optionflags=doctest.NORMALIZE_WHITESPACE|doctest.ELLIPSIS),
             ))

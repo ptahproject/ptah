@@ -54,6 +54,14 @@ class action(Directive):
         return callable, args, kw, getInfo()
 
 
+class registerIn(Directive):
+    scope = MODULE
+    store = ONCE_NOBASE
+
+    def factory(self, name):
+        return name
+
+
 class adapts(Directive):
     scope = CLASS
     store = MULTIPLE_NOBASE

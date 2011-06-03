@@ -11,6 +11,8 @@ from memphis.config import api, meta, directives
 class FakeModule(types.ModuleType):
     """A fake module."""
 
+    __fake_module__ = True
+
     def __init__(self, dict):
         self.fake_module = True
         for key, val in dict.items():

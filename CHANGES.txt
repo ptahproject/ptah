@@ -2,6 +2,13 @@
 CHANGES
 =======
 
+0.4 (Unreleased)
+----------------
+
+- Added 'registerIn' module directive, it allows
+  to redirect all registrations to different Components object.
+
+
 0.3 (2011-06-02)
 ----------------
 
