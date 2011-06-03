@@ -99,7 +99,7 @@ class AdapterGrokker(martian.InstanceGrokker):
 
             for required, kwargs, info in obj._register_adapter:
                 api.registerAdapter(
-                    obj, required, provides, 
+                    obj, required, provides,
                     kwargs.get('name',''), configContext, info)
 
             return True
@@ -124,9 +124,9 @@ class ActionGrokker(martian.GlobalGrokker):
     def grok(self, name, module, configContext=None, **kw):
         value = action.bind(default=_marker).get(module)
         if value is not _marker:
-            if (name, module) in _modules:
-                return False
-            _modules.append((name, module))
+            #if (name, module) in _modules:
+            #    return False
+            #_modules.append((name, module))
 
             for callable, args, kwargs, info in value:
                 kwargs = dict(kwargs)

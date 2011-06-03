@@ -46,7 +46,7 @@ Callable instance as adapter::
     >>> class Adapter(object):
     ...     component.adapts(ITest1)
     ...     interface.implements(ITest2)
-    ...     
+    ...
     ...     def __init__(self, ob):
     ...         self.ob = ob
     ...     def __call__(self, ad):
@@ -59,7 +59,7 @@ Callable instance as adapter::
     True
 
     >>> registerAdapter(Adapter)
-    
+
     >>> sm.getAdapter(Ob(ITest1), ITest2)
     <memphis.config.TESTS.Adapter ...>
 

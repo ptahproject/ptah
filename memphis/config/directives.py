@@ -24,9 +24,12 @@ class action(Directive):
     scope = MODULE
     store = MULTIPLE_NOBASE
 
+    # for tests only
+    immediately = False
+
     def __init__(self, *args, **kw):
         self.name = self.__class__.__name__
-        
+
         _frame = kw.get('__frame', None)
         if _frame is None:
             self.frame = frame = sys._getframe(1)
@@ -38,16 +41,18 @@ class action(Directive):
             raise GrokImportError("The '%s' directive can only be used on "
                                   "%s level." %
                                   (self.name, self.scope.description))
-            
+
         self.check_factory_signature(*args, **kw)
-        
+
         validate = getattr(self, 'validate', None)
         if validate is not None:
             validate(*args, **kw)
-            
+
         value = self.factory(*args, **kw)
-                                         
-        self.store.set(frame.f_locals, self, value)
+        if self.immediately:
+            value[0](*value[1], **value[2])
+        else:
+            self.store.set(frame.f_locals, self, value)
 
     def factory(self, callable, *args, **kw):
         return callable, args, kw, getInfo()
