@@ -8,7 +8,7 @@ def read(*rnames):
     except IOError:
         return ''
 
-version='0.3dev'
+version='0.3'
 
 install_requires = [
     'setuptools',
