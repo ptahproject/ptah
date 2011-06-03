@@ -100,16 +100,11 @@ def registerPagelet(
     pageletType, context=None, klass=None,
     template=None, layer=IRequest, configContext=None, **kw):
 
-    info = getInfo(2)
-    try:
-        config.action(
-            registerPageletImpl,
-            pageletType, context, klass,
-            template, layer, configContext, info, 
-            __frame = sys._getframe(1), **kw)
-    except:
-        log.info(info)
-        raise
+    config.action(
+        registerPageletImpl,
+        pageletType, context, klass,
+        template, layer, configContext, getInfo(2), 
+        __frame = sys._getframe(1), **kw)
 
 
 def registerPageletImpl(

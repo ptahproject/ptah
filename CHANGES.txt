@@ -2,10 +2,12 @@
 CHANGES
 =======
 
-0.3 (Unreleased)
+0.3 (2011-06-03)
 ----------------
 
 - Use config.action in 'view.registerView' and 'view.registerPage'
+
+- Secure view if permission is supplied
 
 
 0.2 (2011-05-30)

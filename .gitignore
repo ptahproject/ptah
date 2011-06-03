@@ -4,6 +4,7 @@ parts
 coverage
 eggs
 sources
+dist
 .installed.cfg
 develop-eggs
 var/*

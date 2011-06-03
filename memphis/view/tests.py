@@ -6,8 +6,11 @@ from pyramid.exceptions import NotFound
 from pyramid.interfaces import IView, IViewClassifier
 
 import memphis
+import memphis.view
 from memphis import config
 from memphis.config import testing
+
+import view, pagelet
 
 
 class Content(object):

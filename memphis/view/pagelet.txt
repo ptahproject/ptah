@@ -7,6 +7,7 @@ This doctest file shows how to use pagelets.
   >>> import os, tempfile, sys, pyramid.testing
   >>> from zope import interface, component
   >>> from memphis import view as api
+  >>> from memphis import config
 
   >>> sm = component.getSiteManager()
   >>> request = pyramid.testing.DummyRequest()
@@ -43,11 +44,11 @@ Now we are ready to define new pagelet::
   >>> class MyPagelet(object):
   ...     pass
 
-  >>> api.registerPagelet(
-  ...     IMyPagelet)
+  >>> api.registerPagelet(IMyPagelet)
 
   >>> api.registerPagelet(
   ...     IMyPagelet, IContent, klass = MyPagelet)
+
 
 First parameter is pagelet type interface or pagelet type name. Let's get
 the pagelet::
@@ -164,9 +165,10 @@ decorator style pagelet
   ...     pass
 
   >>> class ITestPagelet(interface.Interface):
-  ...     view.pageletType('testPagelet', ITestContent)
+  ...     pass
+  >>> view.registerPageletType('testPagelet', ITestPagelet, ITestContent)
 
-  >>> class TestPagelet2(view.Pagelet):
+  >>> class _TestPagelet(view.Pagelet):
   ...     pass
 
   >>> class TestPagelet(view.Pagelet):
@@ -178,6 +180,23 @@ decorator style pagelet
 
   >>> api.renderPagelet(ITestPagelet, Content(ITestContent), request)
   'TestPagelet'
+
+pagelet with error
+
+  >>> class ITestPagelet2(interface.Interface):
+  ...     view.pageletType('testPagelet2', ITestContent)
+
+  >>> class TestPagelet2(view.Pagelet):
+  ...     view.pagelet(ITestPagelet2)
+  ...     
+  ...     def render(self):
+  ...         raise ValueError('Error')
+  >>> reGrok()
+
+  >>> api.renderPagelet(ITestPagelet2, Content(ITestContent), request)
+  Traceback (most recent call last):
+  ...
+  ValueError: Error
 
 
 TALES `pagelet` expression

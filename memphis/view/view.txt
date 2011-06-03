@@ -175,3 +175,62 @@ Parameters are same except klass.
   <div>My pagelet</div>
 
   >>> reGrok()
+
+
+view permission
+---------------
+
+  >>> from pyramid.interfaces import IAuthenticationPolicy
+
+  >>> class SimpleAuth(object):
+  ...     interface.implements(IAuthenticationPolicy)
+  ...     
+  ...     allowed = False
+  ...     
+  ...     def effective_principals(self, request):
+  ...         return (1,2)
+  ...     
+  ...     def permits(self, context, princials, permission):
+  ...         return self.allowed
+
+  >>> component.getSiteManager().registerUtility(
+  ...     SimpleAuth(), IAuthenticationPolicy)
+
+  >>> class SecuredView(api.View):
+  ...     """Custom pagelet"""
+  ...     def render(self):
+  ...         return 'SecuredView'
+
+  >>> api.registerView(
+  ...     name="protected.html",
+  ...     klass = SecuredView, permission='Protected')
+
+  >>> getPyramidView(request, object(), 'protected.html', call=True)
+  Traceback (most recent call last):
+  ...
+  Forbidden: Unauthorized: <class 'memphis.TESTS.protected.html'> failed permission check
+
+  >>> SimpleAuth.allowed = True
+  >>> print getPyramidView(request, object(), 'protected.html', call=True)
+  200 OK
+  Content-Type: text/html; charset=UTF-8
+  Content-Length: 11
+  <BLANKLINE>
+  SecuredView
+
+  >>> class SecuredView(api.View):
+  ...     """Custom pagelet"""
+  ...     def render(self):
+  ...         return 'SecuredView'
+
+  >>> api.registerView(
+  ...     name="unprotected.html",
+  ...     klass = SecuredView, permission='__no_permission_required__')
+
+  >>> SimpleAuth.allowed = False
+  >>> print getPyramidView(request, object(), 'unprotected.html', call=True)
+  200 OK
+  Content-Type: text/html; charset=UTF-8
+  Content-Length: 11
+  <BLANKLINE>
+  SecuredView

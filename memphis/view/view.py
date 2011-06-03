@@ -7,7 +7,9 @@ from zope.component import getSiteManager
 from webob.exc import HTTPException
 
 from pyramid.response import Response
+from pyramid.exceptions import Forbidden
 from pyramid.interfaces import IRequest, IView, IViewClassifier
+from pyramid.interfaces import IAuthenticationPolicy
 
 from memphis import config
 from memphis.config.directives import getInfo
@@ -87,18 +89,31 @@ def renderView(name, context, request):
 
 class PyramidView(object):
 
-    def __init__(self, factory, permission):
+    def __init__(self, factory):
         self.factory = factory
-        self.permission = permission
 
     def view(self, context, request):
         """ i use this for testing only """
         return self.factory(context, request)
 
     def __call__(self, context, request):
-        # fixme: add security checks here
-
         return self.factory(context, request)()
+
+
+class SecuredPyramidView(PyramidView):
+
+    def __init__(self, factory, auth, permission):
+        self.factory = factory
+        self.auth = auth
+        self.permission = permission
+
+    def __call__(self, context, request):
+        principals = self.auth.effective_principals(request)
+        if self.auth.permits(context, principals, self.permission):
+            return self.factory(context, request)()
+        msg = getattr(request, 'authdebug_message',
+                      'Unauthorized: %s failed permission check' % self.factory)
+        raise Forbidden(msg)
 
 
 class DefaultPyramidView(object):
@@ -132,6 +147,9 @@ def registerViewImpl(
     name='', context=None, klass=None, template=None,
     layer=IRequest, layout='', permission='', configContext=None, info=''):
 
+    if permission == '__no_permission_required__':
+        permission = None
+
     if klass is not None and klass in _registered:
         raise ValueError("Class can be used for view only once.")
 
@@ -156,8 +174,14 @@ def registerViewImpl(
 
         view_class = type('View %s'%klass, bases, cdict)
 
+    auth = getSiteManager().queryUtility(IAuthenticationPolicy)
+    if auth and permission:
+        view = SecuredPyramidView(view_class, auth, permission)
+    else:
+        view = PyramidView(view_class)
+
     config.registerAdapter(
-        PyramidView(view_class, permission),
+        view,
         (IViewClassifier, layer, context), IView, name,
         configContext, info)
 
