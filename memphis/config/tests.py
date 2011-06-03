@@ -10,6 +10,7 @@ def setUp(test):
     memphis.config.loadPackage('memphis.config')
     setUpConfig(test)
     setUpTestAsModule(test, 'memphis.config.TESTS')
+    memphis.config.action.immediately = False
     memphis.config.TESTS = sys.modules['memphis.config.TESTS']
 
 

@@ -24,6 +24,40 @@ handler
   >>> s = sm.subscribers((Ob(ITest),), None)
   test handler
 
+action
+------
+
+  >>> api.begin()
+  >>> def actionMeth():
+  ...     print 'actionMeth'
+
+  >>> def wrongScope():
+  ...     action(actionMeth)
+
+  >>> wrongScope()
+  Traceback (most recent call last):
+  ...
+  GrokImportError: The 'action' directive can only be used on module level.
+
+  >>> action(actionMeth)
+  <memphis.config.directives.action ...>
+
+  >>> action.immediately = True
+  >>> action(actionMeth)
+  actionMeth
+  <memphis.config.directives.action ...>
+
+  >>> import sys
+  >>> frame = sys._getframe(0)
+
+  >>> def differentScope():
+  ...     action(actionMeth, __frame=frame)
+
+  >>> differentScope()
+  actionMeth
+
+  >>> action.immediately = False
+
 """
 import martian, sys, types
 from zope import interface, component
@@ -124,9 +158,9 @@ class ActionGrokker(martian.GlobalGrokker):
     def grok(self, name, module, configContext=None, **kw):
         value = action.bind(default=_marker).get(module)
         if value is not _marker:
-            #if (name, module) in _modules:
-            #    return False
-            #_modules.append((name, module))
+            if (name, module) in _modules:
+                return False
+            _modules.append((name, module))
 
             for callable, args, kwargs, info in value:
                 kwargs = dict(kwargs)

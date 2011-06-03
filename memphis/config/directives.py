@@ -44,10 +44,6 @@ class action(Directive):
 
         self.check_factory_signature(*args, **kw)
 
-        validate = getattr(self, 'validate', None)
-        if validate is not None:
-            validate(*args, **kw)
-
         value = self.factory(*args, **kw)
         if self.immediately:
             value[0](*value[1], **value[2])

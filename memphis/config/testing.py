@@ -5,7 +5,7 @@ from zope.component import getSiteManager
 from zope.component import hooks, eventtesting
 from zope.component import testing as catesting
 
-from memphis.config import api, meta
+from memphis.config import api, meta, directives
 
 
 class FakeModule(types.ModuleType):
@@ -49,8 +49,10 @@ def setUpConfig(test):
     hooks.setHooks()
     api.begin()
     api.commit()
+    directives.action.immediately = True
 
 
 def tearDownConfig(test):
     api.cleanUp()
     catesting.tearDown(test)
+    directives.action.immediately = False
