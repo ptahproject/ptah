@@ -24,7 +24,6 @@ class View(object):
     __name__ = ''
     template = None
     layoutname = ''
-    isRedirected = False
     renderParams = None
 
     content_type = 'text/html'
@@ -190,14 +189,17 @@ def registerDefaultView(name, context=interface.Interface,
                         layer=IRequest, configContext = None):
 
     config.action(
-        registerDefaultViewImpl, name, context, layer, configContext, getInfo(),
+        registerDefaultViewImpl, name, context, layer, 
+        configContext, getInfo(),
         __frame = sys._getframe(1))
 
 
 def registerDefaultViewImpl(name, context=interface.Interface,
                             layer=IRequest, configContext = None, info=''):
     config.registerAdapter(
-        DefaultView(name), (context, layer), IDefaultView, '', configContext, info)
+        DefaultView(name), 
+        (context, layer), 
+        IDefaultView, '', configContext, info)
 
     config.registerAdapter(
         DefaultPyramidView(name),

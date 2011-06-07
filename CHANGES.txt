@@ -2,6 +2,16 @@
 CHANGES
 =======
 
+
+0.4 (Unreleased)
+----------------
+
+- Use config.action in 'layout.registerLayout'
+
+- Added 'path' API funcion, it tranforms related path
+  to absolute.
+
+
 0.3 (2011-06-03)
 ----------------
 

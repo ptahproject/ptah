@@ -2,7 +2,8 @@ import pkg_resources
 from pyramid.path import caller_package, caller_module
 from chameleon.zpt.template import PageTemplateFile
 
-def template(spec, abs=False):
+
+def path(spec, abs=False):
     try:
         package_name, filename = spec.split(':', 1)
     except ValueError:
@@ -13,8 +14,16 @@ def template(spec, abs=False):
     if not abs:
         abspath = pkg_resources.resource_filename(package_name, filename)
         if not pkg_resources.resource_exists(package_name, filename):
-            raise ValueError('Missing template asset: %s (%s)' % (spec,abspath))
+            return None
     else:
         abspath = spec
+
+    return abspath
+
+
+def template(spec, abs=False):
+    abspath = path(spec, abs)
+    if not abspath:
+        raise ValueError('Missing template asset: %s' % spec)
 
     return PageTemplateFile(abspath)

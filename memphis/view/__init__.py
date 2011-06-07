@@ -1,6 +1,6 @@
 # memphis.view public API
 
-from memphis.view.path import template
+from memphis.view.path import path, template
 
 # pagelet
 from memphis.view.pagelet import Pagelet

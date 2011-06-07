@@ -1,13 +1,15 @@
 """ layout implementation """
-from zope import interface, component
-from pyramid.interfaces import IRequest
+import sys
+from zope import interface
+from zope.component import getSiteManager
 
 from memphis import config
+from memphis.config.directives import getInfo
 from memphis.view.interfaces import ILayout, LayoutNotFound
 
 
 def queryLayout(view, request, context, name=''):
-    sm = component.getSiteManager()
+    sm = getSiteManager()
 
     while context is not None:
         layout = sm.queryMultiAdapter((view, context, request), ILayout, name)
@@ -98,7 +100,20 @@ class Layout(object):
 
 def registerLayout(
     name='', context=None, view=None, template=None, parent='',
-    klass=None, layer=IRequest, skipParent=False, configContext=None, **kwargs):
+    klass=None, layer=interface.Interface, 
+    skipParent=False, configContext=None, **kwargs):
+    
+    config.action(
+        registerLayoutImpl,
+        name, context, view, template, parent,
+        klass, layer, skipParent, configContext, getInfo(),
+        __frame = sys._getframe(1), **kwargs)
+
+
+def registerLayoutImpl(
+    name='', context=None, view=None, template=None, parent='',
+    klass=None, layer=interface.Interface, 
+    skipParent=False, configContext=None, info='', **kwargs):
 
     if not parent:
         layout = None
@@ -121,6 +136,6 @@ def registerLayout(
 
     newclass = type(str('Layout<%s>'%name), bases, cdict)
 
-    # register layout
+    # register layout adapter
     config.registerAdapter(
-        newclass, (view, context, layer), ILayout, name, configContext)
+        newclass, (view, context, layer), ILayout, name, configContext, info)

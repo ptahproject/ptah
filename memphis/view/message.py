@@ -49,7 +49,10 @@ class MessageService(object):
 
     def __init__(self, request):
         self.request = request
-        self.session = request.session
+        try:
+            self.session = request.session
+        except:
+            self.session = {}
 
     def add(self, text, type='info'):
         message = getAdapter(self.request, IMessage, type)
