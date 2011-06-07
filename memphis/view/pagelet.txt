@@ -98,7 +98,7 @@ Or you can use package name in path::
   >>> api.template('memphis.view:unknown.pt')
   Traceback (most recent call last):
   ...
-  ValueError: Missing template asset: memphis.view:unknown.pt (/.../unknown.pt)
+  ValueError: Missing template asset: memphis.view:unknown.pt
 
 rendering pagelet
 -----------------
