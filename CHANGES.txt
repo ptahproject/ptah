@@ -3,7 +3,7 @@ CHANGES
 =======
 
 
-0.4 (Unreleased)
+0.4 (2011-06-07)
 ----------------
 
 - Added 'layout' decorator style layout registration.
