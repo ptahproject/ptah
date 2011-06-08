@@ -6,6 +6,8 @@ CHANGES
 0.4 (Unreleased)
 ----------------
 
+- Added 'layout' decorator style layout registration.
+
 - Use config.action in 'layout.registerLayout'
 
 - Added 'path' API funcion, it tranforms related path

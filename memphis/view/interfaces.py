@@ -93,19 +93,3 @@ class IStatusMessage(interface.Interface):
 
     def messages():
         """ return all messages """
-
-
-# view action
-class IAction(interface.Interface):
-    """ view action """
-
-    name = interface.Attribute('Name')
-
-    title = interface.Attribute('Title')
-
-    description = interface.Attribute('Description')
-
-    weight = interface.Attribute('Action sort weight')
-
-    def url(request):
-        """ build url for action """

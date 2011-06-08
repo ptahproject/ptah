@@ -100,6 +100,7 @@ Or you can use package name in path::
   ...
   ValueError: Missing template asset: memphis.view:unknown.pt
 
+
 rendering pagelet
 -----------------
 
@@ -118,7 +119,7 @@ find pagelet itself::
   >>> api.renderPagelet('unkown', Content(IContent), request)
   Traceback (most recent call last):
   ...
-  NotFound
+  HTTPNotFound: The resource could not be found.
 
   >>> class IUnknown(interface.Interface):
   ...     pass
@@ -126,12 +127,13 @@ find pagelet itself::
   >>> api.renderPagelet(IUnknown, Content(IContent), request)
   Traceback (most recent call last):
   ...
-  NotFound
+  HTTPNotFound: The resource could not be found.
 
   >>> api.renderPagelet(IMyPagelet, Content(IUnknown), request)
   Traceback (most recent call last):
   ...
-  NotFound
+  HTTPNotFound: The resource could not be found.
+
 
 base Pagelet class
 ------------------

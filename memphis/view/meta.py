@@ -1,29 +1,31 @@
 """ martian grokkers """
 import martian
-from pyramid.interfaces import IRequest
 from zope import interface
 from zope.interface.interface import InterfaceClass
 
 from memphis import config
 from memphis.view import interfaces, pageletType, \
-    View, pyramidView, Pagelet, pagelet
-from memphis.view.view import registerViewImpl
+    pyramidView, Pagelet, pagelet, layout
+from memphis.view.view import View, registerViewImpl
 from memphis.view.pagelet import registerPageletImpl
 from memphis.view.pagelet import registerPageletTypeImpl
+from memphis.view.layout import Layout, registerLayoutImpl
 
 _marker = object()
 
 typesExecuted = []
 viewsExecuted = []
 pageletsExecuted = []
+layoutsExecuted = []
 
 
 @config.cleanup
 def cleanUp():
-    global typesExecuted, viewsExecuted, pageletsExecuted
+    global typesExecuted, viewsExecuted, pageletsExecuted, layoutsExecutes
     typesExecuted = []
     viewsExecuted = []
     pageletsExecuted = []
+    layoutsExecutes = []
 
 
 class PageletTypeGrokker(martian.InstanceGrokker):
@@ -61,7 +63,7 @@ class PyramidViewGrokker(martian.ClassGrokker):
 
         name, context, layer, template, layout, permission, info = value
         if layer is None:
-            layer = IRequest
+            layer = interface.Interface
 
         registerViewImpl(
             name, context, klass, template, layer, layout, permission,
@@ -84,8 +86,31 @@ class PageletGrokker(martian.ClassGrokker):
 
         pageletType, context, template, layer, info = value
         if layer is None:
-            layer = IRequest
+            layer = interface.Interface
 
         registerPageletImpl(pageletType, context, klass,
                             template, layer, configContext, info)
+        return True
+
+
+class LayoutGrokker(martian.ClassGrokker):
+    martian.component(Layout)
+    martian.directive(pyramidView)
+
+    def execute(self, klass, configContext=None, **kw):
+        if klass in layoutsExecuted:
+            return False
+        layoutsExecuted.append(klass)
+
+        value = layout.bind(default=_marker).get(klass)
+        if value is _marker:
+            return False
+
+        name, context, view, parent, layer, skipParent, kwargs, info = value
+        if layer is None:
+            layer = interface.Interface
+
+        registerLayoutImpl(
+            name, context, view, None, parent,
+            klass, layer, skipParent, configContext, info, **kwargs)
         return True

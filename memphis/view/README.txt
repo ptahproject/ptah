@@ -359,4 +359,43 @@ And same for folder1_1_1
     </body>
   </html>
 
+
+use decorator style layout definition::
+
+
+  >>> class MyPagelet(api.Layout):
+  ...     api.layout('', IFolder1_1_1, parent='.')
+  ...     
+  ...     template=api.template(layoutcontent1_1_1, True)
+
+  >>> reGrok()
+
+  >>> print MyView(folder1_1_1, request)().body
+  <html>
+    <body>
+      <div id="portal">
+      <table id="columns">
+         <tr>
+            <td id="column1">Column1</td>
+            <td id="column2">
+              <div id="content">
+              <div id="content1_1">
+              <h1>Folder1_1</h1>
+              <div>
+                 <div id="content1_1_1">
+                 <h1>Folder1_1_1</h1>
+                 <div>folder1_1_1</div>
+              </div></div>
+            </div></div></td>
+            <td id="column3">Column3</td>
+         </tr>
+      </table></div>
+    </body>
+  </html>
+
+  >>> class TestPagelet(api.Layout):
+  ...     pass
+
+  >>> reGrok()
+
   >>> shutil.rmtree(temp_dir)

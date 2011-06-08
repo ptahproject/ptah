@@ -25,6 +25,8 @@ def queryLayout(view, request, context, name=''):
 class Layout(object):
     interface.implements(ILayout)
 
+    __name__ = ''
+
     template = None
     mainview = None
     maincontext = None
@@ -125,17 +127,26 @@ def registerLayoutImpl(
     # Build a new class
     cdict = {'__name__': name,
              'layout': layout,
-             'template': template,
              'skipParent': skipParent}
+    if template is not None:
+        cdict['template'] = template
+
     cdict.update(kwargs)
 
-    if klass is None:
-        bases = (Layout,)
+    if klass is not None and issubclass(klass, Layout):
+        layout_class = klass
+        for attr, value in cdict.items():
+            setattr(layout_class, attr, value)
     else:
-        bases = (klass, Layout)
+        if klass is None:
+            bases = (Layout,)
+        else:
+            bases = (klass, Layout)
 
-    newclass = type(str('Layout<%s>'%name), bases, cdict)
+        layout_class = type(str('Layout<%s>'%name), bases, cdict)
 
     # register layout adapter
     config.registerAdapter(
-        newclass, (view, context, layer), ILayout, name, configContext, info)
+        layout_class, 
+        (view, context, layer), 
+        ILayout, name, configContext, info)

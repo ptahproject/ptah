@@ -19,16 +19,13 @@ from memphis.view.view import registerView
 from memphis.view.view import registerDefaultView
 
 # directives
+from memphis.view.directives import layout
 from memphis.view.directives import pagelet
 from memphis.view.directives import pageletType
 from memphis.view.directives import pyramidView
 
 # status message
 from memphis.view.message import addMessage
-
-# view action
-from memphis.view.interfaces import IAction
-from memphis.view.action import Action, registerAction, registerActions
 
 # navigation root
 import zope.interface

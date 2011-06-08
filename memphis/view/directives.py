@@ -28,3 +28,12 @@ class pyramidView(Directive):
     def factory(self, name, context=None, template=None,
                 layer=None, layout='', permission=''):
         return name, context, layer, template, layout, permission, getInfo()
+
+
+class layout(Directive):
+    scope = CLASS
+    store = ONCE_NOBASE
+
+    def factory(self, name='', context=None, view=None, parent='',
+                layer=None, skipParent=False, **kwargs):
+        return name, context, view, parent, layer, skipParent, kwargs, getInfo()

@@ -1,9 +1,6 @@
 """ pagelet implementation """
 import sys, logging
-
-import pyramid
-from pyramid.interfaces import IRequest
-from pyramid.exceptions import NotFound
+from webob.exc import HTTPNotFound
 
 from zope import interface, component
 from zope.component import queryUtility, queryMultiAdapter
@@ -61,11 +58,11 @@ def renderPagelet(ptype, context, request):
         pt = queryUtility(IPageletType, ptype)
 
     if pt is None:
-        raise NotFound
+        raise HTTPNotFound
 
     pagelet = queryMultiAdapter((context, request), pt.type)
     if pagelet is None:
-        raise NotFound
+        raise HTTPNotFound
 
     try:
         return pagelet()
@@ -98,7 +95,7 @@ def cleanUp():
 
 def registerPagelet(
     pageletType, context=None, klass=None,
-    template=None, layer=IRequest, configContext=None, **kw):
+    template=None, layer=interface.Interface, configContext=None, **kw):
 
     config.action(
         registerPageletImpl,
@@ -109,14 +106,13 @@ def registerPagelet(
 
 def registerPageletImpl(
     pageletType, context=None, klass=None,
-    template=None, layer=IRequest, configContext=None, info='', **kw):
+    template=None, layer=interface.Interface, configContext=None, info='',**kw):
 
     def _register(pageletType, context, klass, layer, template, kw):
         if klass is not None and klass in _registered:
             raise ValueError("Class can be used for pagelet only once.")
 
         cdict = dict(kw)
-
         if template is not None:
             cdict['template'] = template
 
