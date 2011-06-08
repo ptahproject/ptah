@@ -8,7 +8,7 @@ def read(*rnames):
     except IOError:
         return ''
 
-version='0.4'
+version='0.5dev'
 
 
 setup(name='memphis.view',
