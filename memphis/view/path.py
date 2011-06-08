@@ -3,12 +3,13 @@ from pyramid.path import caller_package, caller_module
 from chameleon.zpt.template import PageTemplateFile
 
 
-def path(spec, abs=False):
+def path(spec, abs=False, package_name=None):
     try:
         package_name, filename = spec.split(':', 1)
     except ValueError:
         # somehow we were passed a relative pathname
-        package_name = caller_package(2).__name__
+        if package_name is None:
+            package_name = caller_package(2).__name__
         filename = spec
 
     if not abs:
@@ -22,7 +23,7 @@ def path(spec, abs=False):
 
 
 def template(spec, abs=False):
-    abspath = path(spec, abs)
+    abspath = path(spec, abs, caller_package(2).__name__)
     if not abspath:
         raise ValueError('Missing template asset: %s' % spec)
 
