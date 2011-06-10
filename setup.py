@@ -52,6 +52,7 @@ setup(name='memphis.view',
       include_package_data = True,
       zip_safe = False,
       entry_points = {
-        'memphis': ['include = memphis.view']
+        'memphis': ['grokker = memphis.view.meta',
+                    'package = memphis.view']
         }
       )
