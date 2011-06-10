@@ -1,11 +1,8 @@
-"""  formError status message type
-
-$Id:  2007-12-12 12:27:02Z fafhrd $
-"""
+""" formError status message type """
 from zope import interface
-from pyramid.interfaces import IRequest
 
 from memphis import view, config
+from memphis.view.compat import IRequest
 from memphis.view.message import Message
 from memphis.form.interfaces import IErrorViewSnippet
 

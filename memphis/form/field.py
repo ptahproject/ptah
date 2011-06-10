@@ -2,6 +2,7 @@
 import zope.component
 import zope.interface
 import zope.schema.interfaces
+from zope.component import getSiteManager
 
 from memphis import config
 from memphis.form import interfaces, util
@@ -19,8 +20,7 @@ class Field(object):
 
     widgetFactory = ''
 
-    def __init__(self, field, name=None, prefix='', mode=None, interface=None,
-                 ignoreContext=None):
+    def __init__(self, field, name=None, prefix='', mode=None, interface=None):
         self.field = field
         if name is None:
             name = field.__name__
@@ -31,7 +31,6 @@ class Field(object):
         if interface is None:
             interface = field.interface
         self.interface = interface
-        self.ignoreContext = ignoreContext
 
     def __repr__(self):
         return '<%s %r>' % (self.__class__.__name__, self.__name__)
@@ -130,8 +129,6 @@ class FieldWidgets(util.Manager):
     mode = interfaces.IInputMode
     errors = ()
     hasRequiredFields = False
-    ignoreContext = False
-    ignoreRequest = False
     ignoreReadonly = False
     setErrors = True
 
@@ -140,6 +137,7 @@ class FieldWidgets(util.Manager):
         self.form = form
         self.request = request
         self.content = form.getContent()
+        self.arguments = form.getArguments()
 
     def update(self):
         """See interfaces.IWidgets"""
@@ -147,16 +145,13 @@ class FieldWidgets(util.Manager):
         prefix = util.expandPrefix(self.form.prefix)
         prefix += util.expandPrefix(self.prefix)
         request = self.request
-        sm = zope.component.getSiteManager()
+        arguments = self.arguments
+
+        sm = getSiteManager()
 
         # Walk through each field, making a widget out of it.
         uniqueOrderedKeys = []
         for field in self.form.fields.values():
-            # Step 0. Determine whether the context should be ignored.
-            ignoreContext = self.ignoreContext
-            if field.ignoreContext is not None:
-                ignoreContext = field.ignoreContext
-
             # Step 1: Determine the mode of the widget.
             mode = self.mode
             if field.mode is not None:
@@ -190,8 +185,7 @@ class FieldWidgets(util.Manager):
             widget.form = self.form
 
             # Step 6: Set some variables
-            widget.ignoreContext = ignoreContext
-            widget.ignoreRequest = self.ignoreRequest
+            widget.arguments = arguments
 
             # Step 7: Set the mode of the widget
             widget.mode = mode
@@ -234,7 +228,7 @@ class FieldWidgets(util.Manager):
                         (widget.field, widget), 
                         interfaces.IDataConverter).toFieldValue(raw)
 
-                if value is interfaces.NOT_CHANGED and not widget.ignoreContext:
+                if value is interfaces.NOT_CHANGED:
                     value = sm.getMultiAdapter(
                         (self.context, field), interfaces.IDataManager).query()
 

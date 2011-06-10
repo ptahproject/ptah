@@ -17,8 +17,13 @@ import decimal
 import zope.i18n.format
 import zope.interface
 import zope.schema
-from pyramid.i18n import get_locale_name
 from zope.i18n.locales import locales
+
+try:
+    from pyramid.i18n import get_locale_name
+except:
+    def get_locale_name(request):
+        return request.locale
 
 from memphis import config
 from memphis.form import interfaces

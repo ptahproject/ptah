@@ -2,6 +2,18 @@
 CHANGES
 =======
 
+0.3 (Unreleased)
+----------------
+
+- Removed Form.ignoreContext attribute,
+  instead of ignoreContext return None from getContent() method
+  
+- Removed Form.ignoreRequest attribute,
+  instead of ignoreRequest return empty dict from getArguments() method
+  
+- Added zope support
+
+
 0.2 (2011-06-03)
 ----------------
 

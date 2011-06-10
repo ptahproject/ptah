@@ -21,7 +21,10 @@ import zope.i18nmessageid
 import zope.interface
 import zope.schema
 from zope.interface.common import mapping
-from pyramid.i18n import TranslationStringFactory
+try:
+    from pyramid.i18n import TranslationStringFactory
+except:
+    from zope.i18nmessageid import MessageFactory as TranslationStringFactory
 
 MessageFactory = _ = TranslationStringFactory('memphis.form')
 
@@ -183,12 +186,6 @@ class IField(zope.interface.Interface):
         title=_('Interface'),
         description=_('The interface from which the field is coming.'),
         required=True)
-
-    ignoreContext = zope.schema.Bool(
-        title=_('Ignore Context'),
-        description=_('A flag, when set, forces the widget not to look at '
-                      'the context for a value.'),
-        required=False)
 
     widgetFactory = zope.schema.Field(
         title=_('Widget Factory'),
@@ -374,10 +371,9 @@ class IWidget(zope.interface.Interface):
 
     template = zope.interface.Attribute('''The widget template''')
 
-    ignoreRequest = zope.schema.Bool(
-        title=_('Ignore Request'),
-        description=_('A flag, when set, forces the widget not to look at '
-                      'the request for a value.'),
+    arguments = zope.schema.Bool(
+        title=_('Arguments'),
+        description=_('Widgets extract value from arguments.'),
         default=False,
         required=False)
 
@@ -541,18 +537,6 @@ class IWidgets(IManager):
         default=(),
         required=True)
 
-    ignoreContext = zope.schema.Bool(
-        title=_('Ignore Context'),
-        description=_('If set the context is ignored to retrieve a value.'),
-        default=False,
-        required=True)
-
-    ignoreRequest = zope.schema.Bool(
-        title=_('Ignore Request'),
-        description=_('If set the request is ignored to retrieve a value.'),
-        default=False,
-        required=True)
-
     ignoreReadonly = zope.schema.Bool(
         title=_('Ignore Readonly'),
         description=_('If set then readonly fields will also be shown.'),
@@ -578,6 +562,8 @@ class IWidgets(IManager):
         title=_('Field'),
         description=_('The schema field which the widget is representing.'),
         required=True)
+
+    arguments = interface.Attribute('Arguments')
 
     def update():
         """Setup widgets."""
@@ -762,13 +748,6 @@ class IContextAware(zope.interface.Interface):
         description=_('The context in which the widget is displayed.'),
         required=True)
 
-    ignoreContext = zope.schema.Bool(
-        title=_('Ignore Context'),
-        description=_('A flag, when set, forces the widget not to look at '
-                      'the context for a value.'),
-        default=False,
-        required=False)
-
 
 class IFormAware(zope.interface.Interface):
     """Offers a form attribute.
@@ -786,18 +765,6 @@ class IForm(zope.interface.Interface):
     mode = zope.schema.Field(
         title=_('Mode'),
         description=_('The mode in which to render the widgets.'),
-        required=True)
-
-    ignoreContext = zope.schema.Bool(
-        title=_('Ignore Context'),
-        description=_('If set the context is ignored to retrieve a value.'),
-        default=False,
-        required=True)
-
-    ignoreRequest = zope.schema.Bool(
-        title=_('Ignore Request'),
-        description=_('If set the request is ignored to retrieve a value.'),
-        default=False,
         required=True)
 
     ignoreReadonly = zope.schema.Bool(
@@ -822,6 +789,9 @@ class IForm(zope.interface.Interface):
         title=_('Prefix'),
         description=_('The prefix of the form used to uniquely identify it.'),
         default='form.')
+
+    def getRequest():
+        '''Return the request params.'''
 
     def getContent():
         '''Return the content to be displayed and/or edited.'''

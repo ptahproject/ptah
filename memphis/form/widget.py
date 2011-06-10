@@ -42,15 +42,12 @@ class Widget(object):
     required = False 
     error = None 
     value = None 
-    ignoreRequest = False
     setErrors = True
 
     # The following attributes are for convenience. They are declared in
     # extensions to the simple widget.
 
-    context = None
     form = None
-    ignoreContext = False
 
     __description__ = u''
 
@@ -62,6 +59,7 @@ class Widget(object):
     def __init__(self, field, request):
         self.field = field
         self.request = request
+        self.arguments = {}
 
         self.name = field.__name__
         self.id = field.__name__.replace('.', '-')
@@ -78,7 +76,7 @@ class Widget(object):
         value = interfaces.NO_VALUE
         lookForDefault = False
         # Step 1.1: If possible, get a value from the request
-        if not self.ignoreRequest:
+        if not self.arguments:
             #at this turn we do not need errors to be set on widgets
             #errors will be set when extract gets called from form.extractData
             self.setErrors = False
@@ -95,7 +93,7 @@ class Widget(object):
             # Step 1.2.1: If the widget knows about its context and the
             #              context is to be used to extract a value, get
             #              it now via a data manager.
-            if not self.ignoreContext:
+            if self.context is not None:
                 value = getMultiAdapter(
                     (self.context, self.field), interfaces.IDataManager).query()
             # Step 1.2.2: If we still do not have a value, we can always use
@@ -121,7 +119,7 @@ class Widget(object):
 
     def extract(self, default=interfaces.NO_VALUE):
         """See memphis.form.interfaces.IWidget."""
-        return self.request.params.get(self.name, default)
+        return self.arguments.get(self.name, default)
 
     def __repr__(self):
         return '<%s %r>' % (self.__class__.__name__, self.name)
@@ -142,7 +140,6 @@ class SequenceWidget(Widget):
     See also the MultiWidget for build sequence values based on none collection
     based values. e.g. IList of ITextLine
     """
-
     zope.interface.implements(interfaces.ISequenceWidget)
 
     value = ()
@@ -181,10 +178,10 @@ class SequenceWidget(Widget):
 
     def extract(self, default=interfaces.NO_VALUE):
         """See z3c.form.interfaces.IWidget."""
-        if (self.name not in self.request.params and
-            self.name+'-empty-marker' in self.request.params):
+        if (self.name not in self.arguments and
+            self.name+'-empty-marker' in self.arguments):
             return default
-        value = self.request.params.getall(self.name) or default
+        value = self.arguments.getall(self.name) or default
         if value != default:
             # do some kind of validation, at least only use existing values
             for token in value:

@@ -14,6 +14,7 @@
 """Widget Framework Implementation"""
 import zope.interface
 import zope.schema
+from zope import interface
 from zope.interface.common import mapping
 
 from memphis import config
@@ -24,8 +25,8 @@ _marker = []
 
 class AttributeField(object):
     """Attribute field."""
-    zope.interface.implements(interfaces.IDataManager)
-    config.adapts(zope.interface.Interface, zope.schema.interfaces.IField)
+    interface.implements(interfaces.IDataManager)
+    config.adapts(interface.Interface, zope.schema.interfaces.IField)
 
     def __init__(self, context, field):
         self.context = context
@@ -62,9 +63,8 @@ class DictionaryField(object):
     would otherwise get picked up in undesired scenarios. If you want
     to it use for another mapping, register the appropriate adapter in
     your application.
-
     """
-    zope.interface.implements(interfaces.IDataManager)
+    interface.implements(interfaces.IDataManager)
     config.adapts(dict, zope.schema.interfaces.IField)
 
     _allowed_data_classes = (dict,)
@@ -77,18 +77,15 @@ class DictionaryField(object):
         self.field = field
 
     def get(self):
-        """See z3c.form.interfaces.IDataManager"""
         value = self.data.get(self.field.__name__, _marker)
         if value is _marker:
             raise AttributeError
         return value
 
     def query(self, default=interfaces.NO_VALUE):
-        """See z3c.form.interfaces.IDataManager"""
         return self.data.get(self.field.__name__, default)
 
     def set(self, value):
-        """See z3c.form.interfaces.IDataManager"""
         if self.field.readonly:
             raise TypeError("Can't set values on read-only fields name=%s"
                             % self.field.__name__)

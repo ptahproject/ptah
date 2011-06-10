@@ -1,13 +1,12 @@
 """Form Implementation"""
 import sys
-import zope.component
-import zope.event
-import zope.lifecycleevent
-from zope import interface
-from zope.component import getMultiAdapter
+from zope import interface, event
+from zope.component import getAdapters, getMultiAdapter
+from zope.lifecycleevent import Attributes, ObjectModifiedEvent
 from zope.schema.fieldproperty import FieldProperty
 
 from webob.exc import HTTPFound
+from webob.multidict import UnicodeMultiDict
 
 from memphis import view, config
 from memphis.form import button, field, interfaces, util, pagelets
@@ -93,8 +92,6 @@ class BaseForm(object):
     widgets  = None
 
     mode = interfaces.IInputMode
-    ignoreContext = False
-    ignoreRequest = False
     ignoreReadonly = False
 
     subforms = ()
@@ -102,24 +99,27 @@ class BaseForm(object):
     def __init__(self, context, request):
         self.context = context
         self.request = request
+        self.__parent__ = context
 
     def getContent(self):
-        '''See interfaces.IForm'''
-        return self.context
+        return None
+
+    def getArguments(self):
+        try:
+            return self.request.params
+        except:
+            return UnicodeMultiDict(self.request.form, 'utf-8')
 
     def updateWidgets(self):
         '''See interfaces.IForm'''
-        self.widgets = zope.component.getMultiAdapter(
+        self.widgets = getMultiAdapter(
             (self, self.request), interfaces.IWidgets)
         self.widgets.mode = self.mode
-        self.widgets.ignoreContext = self.ignoreContext
-        self.widgets.ignoreRequest = self.ignoreRequest
         self.widgets.ignoreReadonly = self.ignoreReadonly
         self.widgets.update()
 
     def validate(self, data, errors):
-        for name, validator in zope.component.getAdapters(
-            (self,), interfaces.IFormValidator):
+        for name, validator in getAdapters((self,), interfaces.IFormValidator):
             errors.extend(validator.validate(data))
 
     def extractData(self, setErrors=True):
@@ -150,7 +150,9 @@ class DisplayForm(BaseForm):
     interface.implements(interfaces.IDisplayForm)
 
     mode = interfaces.IDisplayMode
-    ignoreRequest = True
+
+    def getRequest(self):
+        return {}
 
 
 class Form(BaseForm):
@@ -158,8 +160,6 @@ class Form(BaseForm):
     interface.implements(
         interfaces.IInputForm, interfaces.IButtonForm,
         interfaces.IHandlerForm, interfaces.IActionForm)
-
-    ignoreContext = True
 
     buttons = button.Buttons()
 
@@ -175,12 +175,13 @@ class Form(BaseForm):
 
     @property
     def action(self):
-        """See interfaces.IInputForm"""
-        return self.request.url
+        try:
+            self.request.getURL()
+        except:
+            return self.request.url
 
     @property
     def name(self):
-        """See interfaces.IInputForm"""
         return self.prefix.strip('.')
 
     @property
@@ -188,9 +189,10 @@ class Form(BaseForm):
         return self.name.replace('.', '-')
 
     def updateActions(self):
+        arguments = self.getArguments()
         self.actions = getMultiAdapter(
             (self, self.request, self.getContent()), interfaces.IActions)
-        self.actions.update()
+        self.actions.update(arguments)
 
     def update(self):
         super(Form, self).update()
@@ -205,14 +207,15 @@ class EditForm(Form):
     """A simple edit form with an apply button."""
     interface.implements(interfaces.IEditForm)
 
-    ignoreContext = False
-
     successMessage = _('Data successfully updated.')
     noChangesMessage = _('No changes were applied.')
     formErrorsMessage = _(u'Please fix indicated errors.')
 
     groups = ()
     subforms = ()
+
+    def getContent(self):
+        return self.context
 
     def extractData(self, setErrors=True):
         data, errors = super(EditForm, self).extractData(setErrors)
@@ -230,10 +233,12 @@ class EditForm(Form):
 
         return data, errors
 
+    def _applyChanges(self, content, data):
+        return applyChanges(self, content, data)
+
     def applyChanges(self, data):
         content = self.getContent()
-
-        changed = applyChanges(self, content, data)
+        changed = self._applyChanges(content, data)
 
         for form in self.subforms:
             data, errors = form.extractData(setErrors=False)
@@ -248,19 +253,17 @@ class EditForm(Form):
         if changed:
             descriptions = []
             for interface, names in changed.items():
-                descriptions.append(
-                    zope.lifecycleevent.Attributes(interface, *names))
+                descriptions.append(Attributes(interface, *names))
+
             # Send out a detailed object-modified event
-            zope.event.notify(
-                zope.lifecycleevent.ObjectModifiedEvent(content,
-                    *descriptions))
+            event.notify(ObjectModifiedEvent(content, *descriptions))
 
         return changed
 
     def listInlineForms(self):
         return [(name, form) for name, form in
-                zope.component.getAdapters((self.context, self.request, self), 
-                                           interfaces.IInlineForm)]
+                getAdapters((self.context, self.request, self), 
+                            interfaces.IInlineForm)]
 
     def updateForms(self):
         self.groups = []
@@ -294,7 +297,8 @@ class EditForm(Form):
         data, errors = self.extractData()
         if errors:
             view.addMessage(
-                self.request, (self.formErrorsMessage,)+errors, 'formError')
+                self.request, 
+                (self.formErrorsMessage,)+tuple(errors), 'formError')
             return
 
         changed = self.applyChanges(data)
@@ -317,19 +321,19 @@ class SubForm(BaseForm):
     def isAvailable(self):
         return True
 
+    def _applyChanges(self, content, data):
+        return applyChanges(self, content, data)
+
     def applyChanges(self, data):
         content = self.getContent()
-        changed = applyChanges(self, content, data)
+        changed = self._applyChanges(content, data)
 
         if changed:
             descriptions = []
             for interface, names in changed.items():
-                descriptions.append(
-                    zope.lifecycleevent.Attributes(interface, *names))
+                descriptions.append(Attributes(interface, *names))
             # Send out a detailed object-modified event
-            zope.event.notify(
-                zope.lifecycleevent.ObjectModifiedEvent(content,
-                    *descriptions))
+            event.notify(ObjectModifiedEvent(content, *descriptions))
 
         return changed
 
@@ -351,11 +355,13 @@ class Group(BaseForm):
         '''See interfaces.IForm'''
         self.widgets = getMultiAdapter(
             (self, self.request, self.getContent()), interfaces.IWidgets)
-        for attrName in ('mode', 'ignoreRequest', 'ignoreContext',
-                         'ignoreReadonly'):
+        for attrName in ('mode', 'ignoreReadonly'):
             value = getattr(self.parentForm.widgets, attrName)
             setattr(self.widgets, attrName, value)
         self.widgets.update()
 
+    def _applyChanges(self, content, data):
+        return applyChanges(self, content, data)
+
     def applyChanges(self, data):
-        return applyChanges(self, self.getContent(), data)
+        return self._applyChanges(self.getContent(), data)

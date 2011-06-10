@@ -197,8 +197,9 @@ class ButtonActions(action.Actions):
         zope.interface.Interface,
         zope.interface.Interface)
 
-    def update(self):
-        """See z3c.form.interfaces.IActions."""
+    def update(self, arguments):
+        self.arguments = arguments
+
         # Create a unique prefix.
         prefix = util.expandPrefix(self.form.prefix)
         prefix += util.expandPrefix(self.form.buttons.prefix)
