@@ -59,7 +59,7 @@ class Widget(object):
     def __init__(self, field, request):
         self.field = field
         self.request = request
-        self.arguments = {}
+        self.params = {}
 
         self.name = field.__name__
         self.id = field.__name__.replace('.', '-')
@@ -76,16 +76,13 @@ class Widget(object):
         value = interfaces.NO_VALUE
         lookForDefault = False
         # Step 1.1: If possible, get a value from the request
-        if not self.arguments:
-            #at this turn we do not need errors to be set on widgets
-            #errors will be set when extract gets called from form.extractData
-            self.setErrors = False
-            widget_value = self.extract()
-            if widget_value is not interfaces.NO_VALUE:
-                # Once we found the value in the request, it takes precendence
-                # over everything and nothing else has to be done.
-                self.value = widget_value
-                value = PLACEHOLDER
+        self.setErrors = False
+        widget_value = self.extract()
+        if widget_value is not interfaces.NO_VALUE:
+            # Once we found the value in the request, it takes precendence
+            # over everything and nothing else has to be done.
+            self.value = widget_value
+            value = PLACEHOLDER
 
         # Step 1.2: If we have a widget with a field and we have no value yet,
         #           we have some more possible locations to get the value
@@ -119,7 +116,7 @@ class Widget(object):
 
     def extract(self, default=interfaces.NO_VALUE):
         """See memphis.form.interfaces.IWidget."""
-        return self.arguments.get(self.name, default)
+        return self.params.get(self.name, default)
 
     def __repr__(self):
         return '<%s %r>' % (self.__class__.__name__, self.name)
@@ -178,10 +175,10 @@ class SequenceWidget(Widget):
 
     def extract(self, default=interfaces.NO_VALUE):
         """See z3c.form.interfaces.IWidget."""
-        if (self.name not in self.arguments and
-            self.name+'-empty-marker' in self.arguments):
+        if (self.name not in self.params and
+            self.name+'-empty-marker' in self.params):
             return default
-        value = self.arguments.getall(self.name) or default
+        value = self.params.getall(self.name) or default
         if value != default:
             # do some kind of validation, at least only use existing values
             for token in value:

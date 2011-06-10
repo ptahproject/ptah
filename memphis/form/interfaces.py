@@ -371,9 +371,8 @@ class IWidget(zope.interface.Interface):
 
     template = zope.interface.Attribute('''The widget template''')
 
-    arguments = zope.schema.Bool(
-        title=_('Arguments'),
-        description=_('Widgets extract value from arguments.'),
+    params = zope.schema.Bool(
+        title=_('Request params'),
         default=False,
         required=False)
 
@@ -562,8 +561,6 @@ class IWidgets(IManager):
         title=_('Field'),
         description=_('The schema field which the widget is representing.'),
         required=True)
-
-    arguments = interface.Attribute('Arguments')
 
     def update():
         """Setup widgets."""

@@ -59,8 +59,8 @@ class Action(object):
             name = util.createId(title)
         self.name = name
 
-    def isExecuted(self, arguments):
-        return self.name in arguments
+    def isExecuted(self, params):
+        return self.name in params
 
     def __repr__(self):
         return '<%s %r %r>' % (self.__class__.__name__, self.name, self.title)
@@ -81,11 +81,11 @@ class Actions(util.Manager):
     @property
     def executedActions(self):
         return [action for action in self.values()
-                if action.isExecuted(self.arguments)]
+                if action.isExecuted(self.params)]
 
-    def update(self, arguments):
+    def update(self, params):
         """See memphis.form.interfaces.IActions."""
-        self.arguments = arguments
+        self.params = params
 
     def execute(self):
         """See memphis.form.interfaces.IActions."""

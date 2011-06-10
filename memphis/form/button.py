@@ -197,8 +197,8 @@ class ButtonActions(action.Actions):
         zope.interface.Interface,
         zope.interface.Interface)
 
-    def update(self, arguments):
-        self.arguments = arguments
+    def update(self, params):
+        self.params = params
 
         # Create a unique prefix.
         prefix = util.expandPrefix(self.form.prefix)

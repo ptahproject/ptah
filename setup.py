@@ -51,6 +51,6 @@ setup(name='memphis.form',
       include_package_data = True,
       zip_safe = False,
       entry_points = {
-        'memphis': ['include = memphis.form']
+        'memphis': ['package = memphis.form']
         }
       )

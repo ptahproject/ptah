@@ -104,7 +104,7 @@ class BaseForm(object):
     def getContent(self):
         return None
 
-    def getArguments(self):
+    def getRequestParams(self):
         try:
             return self.request.params
         except:
@@ -189,10 +189,10 @@ class Form(BaseForm):
         return self.name.replace('.', '-')
 
     def updateActions(self):
-        arguments = self.getArguments()
+        params = self.getRequestParams()
         self.actions = getMultiAdapter(
             (self, self.request, self.getContent()), interfaces.IActions)
-        self.actions.update(arguments)
+        self.actions.update(params)
 
     def update(self):
         super(Form, self).update()

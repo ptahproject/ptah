@@ -137,7 +137,6 @@ class FieldWidgets(util.Manager):
         self.form = form
         self.request = request
         self.content = form.getContent()
-        self.arguments = form.getArguments()
 
     def update(self):
         """See interfaces.IWidgets"""
@@ -145,7 +144,7 @@ class FieldWidgets(util.Manager):
         prefix = util.expandPrefix(self.form.prefix)
         prefix += util.expandPrefix(self.prefix)
         request = self.request
-        arguments = self.arguments
+        params = self.form.getRequestParams()
 
         sm = getSiteManager()
 
@@ -185,7 +184,7 @@ class FieldWidgets(util.Manager):
             widget.form = self.form
 
             # Step 6: Set some variables
-            widget.arguments = arguments
+            widget.params = params
 
             # Step 7: Set the mode of the widget
             widget.mode = mode
