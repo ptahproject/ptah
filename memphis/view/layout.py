@@ -31,7 +31,8 @@ class Layout(object):
     mainview = None
     maincontext = None
     skipParent = False
-    renderParams = None
+
+    _params = None
 
     def __init__(self, view, context, request):
         self.view = view
@@ -47,7 +48,7 @@ class Layout(object):
         if self.template is None:
             raise RuntimeError("Can't render layout: %s"%self.__name__)
 
-        kwargs = self.renderParams or {}
+        kwargs = self._params or {}
         kwargs.update({'view': self.view,
                        'context': self.view.context,
                        'layout': self,
@@ -70,7 +71,7 @@ class Layout(object):
         if layout is not None:
             self.view = layout
 
-        self.renderParams = self.update()
+        self._params = self.update()
 
         if self.layout is None:
             return self.render()
@@ -104,7 +105,7 @@ def registerLayout(
     name='', context=None, view=None, template=None, parent='',
     klass=None, layer=interface.Interface, 
     skipParent=False, configContext=None, **kwargs):
-    
+
     config.action(
         registerLayoutImpl,
         name, context, view, template, parent,
@@ -148,5 +149,4 @@ def registerLayoutImpl(
     # register layout adapter
     config.registerAdapter(
         layout_class, 
-        (view, context, layer), 
-        ILayout, name, configContext, info)
+        (view, context, layer), ILayout, name, configContext, info)

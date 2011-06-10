@@ -2,16 +2,23 @@
 import cgi
 from zope import interface, component
 from zope.component import getAdapter, queryUtility
-from pyramid.i18n import get_localizer
-from pyramid.interfaces import IRequest, INewResponse
+try:
+    from pyramid.i18n import get_localizer
+    from pyramid.interfaces import INewResponse
+except:
+    class INewResponse(interface.Interface):
+        pass
 
 from memphis import config
 
+from compat import IRequest
 from interfaces import IMessage, IStatusMessage
 
 
 def addMessage(request, msg, type='info'):
-    IStatusMessage(request).add(msg, type)
+    srv = IStatusMessage(request, None)
+    if srv is not None:
+        srv.add(msg, type)
 
 
 @config.adapter(IRequest)

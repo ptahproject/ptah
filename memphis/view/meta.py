@@ -4,9 +4,7 @@ from zope import interface
 from zope.interface.interface import InterfaceClass
 
 from memphis import config
-from memphis.view import interfaces, pageletType, \
-    pyramidView, Pagelet, pagelet, layout
-from memphis.view.view import View, registerViewImpl
+from memphis.view import pageletType, Pagelet, pagelet, layout
 from memphis.view.pagelet import registerPageletImpl
 from memphis.view.pagelet import registerPageletTypeImpl
 from memphis.view.layout import Layout, registerLayoutImpl
@@ -14,7 +12,6 @@ from memphis.view.layout import Layout, registerLayoutImpl
 _marker = object()
 
 typesExecuted = []
-viewsExecuted = []
 pageletsExecuted = []
 layoutsExecuted = []
 
@@ -23,7 +20,6 @@ layoutsExecuted = []
 def cleanUp():
     global typesExecuted, viewsExecuted, pageletsExecuted, layoutsExecutes
     typesExecuted = []
-    viewsExecuted = []
     pageletsExecuted = []
     layoutsExecutes = []
 
@@ -45,29 +41,6 @@ class PageletTypeGrokker(martian.InstanceGrokker):
 
         registerPageletTypeImpl(
             name, interface, context, configContext, info)
-        return True
-
-
-class PyramidViewGrokker(martian.ClassGrokker):
-    martian.component(View)
-    martian.directive(pyramidView)
-
-    def execute(self, klass, configContext=None, **kw):
-        if klass in viewsExecuted:
-            return False
-        viewsExecuted.append(klass)
-
-        value = pyramidView.bind(default=_marker).get(klass)
-        if value is _marker:
-            return False
-
-        name, context, layer, template, layout, permission, info = value
-        if layer is None:
-            layer = interface.Interface
-
-        registerViewImpl(
-            name, context, klass, template, layer, layout, permission,
-            configContext, info)
         return True
 
 
@@ -95,7 +68,7 @@ class PageletGrokker(martian.ClassGrokker):
 
 class LayoutGrokker(martian.ClassGrokker):
     martian.component(Layout)
-    martian.directive(pyramidView)
+    martian.directive(layout)
 
     def execute(self, klass, configContext=None, **kw):
         if klass in layoutsExecuted:

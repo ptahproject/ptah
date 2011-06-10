@@ -1,27 +1,21 @@
 """ memphis.view interfaces """
 from zope import interface
-from pyramid.interfaces import IView
 
 
 class LayoutNotFound(LookupError):
     """ Layout not found exception """
 
 
-class IPagelet(interface.Interface):
-    """ pagelet """
+class IView(interface.Interface):
+    """ view """
+
+    __name__ = interface.Attribute('Name')
+    __parent__ = interface.Attribute('Parent')
 
     context = interface.Attribute('Context')
-
-    contexts = interface.Attribute('Additional contexts')
-
+    request = interface.Attribute('Request')
+    template = interface.Attribute('Template')
     layoutname = interface.Attribute('Layout name')
-
-    isRedirected = interface.Attribute('is redirected')
-
-    def redirect(url=''):
-        """Redirect URL, if `update` method needs redirect,
-        it should call `redirect` method, __call__ method should
-        check isRendered before render or layout."""
 
     def update():
         """Update the pagelet data."""
@@ -29,11 +23,27 @@ class IPagelet(interface.Interface):
     def render():
         """Render the pagelet content w/o o-wrap."""
 
-    def updateAndRender():
-        """Update pagelet and render. Prefered way to render pagelet."""
+    def __call__():
+        """Update and render pagelet"""
 
-    def isAvailable():
-        """Is available"""
+
+class IPagelet(interface.Interface):
+    """ pagelet """
+
+    context = interface.Attribute('Context')
+
+    request = interface.Attribute('Request')
+
+    template = interface.Attribute('Template')
+
+    def update():
+        """Update the pagelet data."""
+
+    def render():
+        """Render the pagelet content w/o o-wrap."""
+
+    def __call__():
+        """Update and render pagelet"""
 
 
 class IPageletType(interface.Interface):
@@ -61,12 +71,6 @@ class ILayout(interface.Interface):
 
     def __call__(layout=None, view=None, *args, **kw):
         """ build layout tree and render """
-
-
-class IDefaultView(interface.Interface):
-    """ default view """
-
-    name = interface.Attribute("Name of default view")
 
 
 # navigation root

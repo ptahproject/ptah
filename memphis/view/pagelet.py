@@ -5,7 +5,6 @@ from webob.exc import HTTPNotFound
 from zope import interface, component
 from zope.component import queryUtility, queryMultiAdapter
 from zope.interface.interface import InterfaceClass
-from zope.configuration.exceptions import ConfigurationError
 
 from memphis import config
 from memphis.config.directives import getInfo
@@ -18,7 +17,7 @@ class Pagelet(object):
     interface.implements(IPagelet)
 
     template = None
-    renderParams = None
+    _params = None
 
     def __init__(self, context, request):
         self.context = context
@@ -28,7 +27,7 @@ class Pagelet(object):
         pass
 
     def render(self):
-        kwargs = self.renderParams or {}
+        kwargs = self._params or {}
         kwargs.update({'view': self,
                        'context': self.context,
                        'request': self.request,
@@ -38,7 +37,7 @@ class Pagelet(object):
         return self.template(**kwargs)
 
     def __call__(self, *args, **kw):
-        self.renderParams = self.update()
+        self._params = self.update()
         return self.render()
 
 
@@ -119,7 +118,7 @@ def registerPageletImpl(
         # find PageletType info
         pt = pageletType.queryTaggedValue('memphis.view.pageletType', None)
         if pt is None:
-            raise ConfigurationError(
+            raise LookupError(
                 "Can't find pagelet type: '%s'"%pageletType)
 
         if context is None:

@@ -21,13 +21,24 @@ class pageletType(Directive):
         return name, context, getInfo()
 
 
+class zopeView(Directive):
+    scope = CLASS
+    store = ONCE_NOBASE
+
+    def factory(self, name, context=None, template=None,
+                layer=None, layout='', permission='', default=False):
+        return name, context, layer, template, \
+            layout, permission, default, getInfo()
+
+
 class pyramidView(Directive):
     scope = CLASS
     store = ONCE_NOBASE
 
     def factory(self, name, context=None, template=None,
-                layer=None, layout='', permission=''):
-        return name, context, layer, template, layout, permission, getInfo()
+                layer=None, layout='', permission='', default=False):
+        return name, context, layer, template, \
+            layout, permission, default, getInfo()
 
 
 class layout(Directive):

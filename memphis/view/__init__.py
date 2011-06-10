@@ -14,14 +14,31 @@ from memphis.view.layout import registerLayout
 
 # view
 from memphis.view.view import View
-from memphis.view.view import renderView
-from memphis.view.view import registerView
-from memphis.view.view import registerDefaultView
+
+# pyramid view
+try:
+    from memphis.view.compat_pyramid import renderView
+    from memphis.view.compat_pyramid import registerView
+    from memphis.view.compat_pyramid import registerDefaultView
+except ImportError:
+    import sys, types
+    compat_pyramid = types.ModuleType('memphis.view.compat_pyramid')
+    sys.modules['memphis.view.compat_pyramid'] = compat_pyramid
+
+# zope view
+try:
+    from memphis.view.compat_zope import registerZopeView
+    from memphis.view.compat_zope import registerZopeDefaultView
+except ImportError:
+    import sys, types
+    compat_zope = types.ModuleType('memphis.view.compat_zope')
+    sys.modules['memphis.view.compat_zope'] = compat_zope
 
 # directives
 from memphis.view.directives import layout
 from memphis.view.directives import pagelet
 from memphis.view.directives import pageletType
+from memphis.view.directives import zopeView
 from memphis.view.directives import pyramidView
 
 # status message
