@@ -53,6 +53,6 @@ setup(name='memphis.config',
       include_package_data = True,
       zip_safe = False,
       entry_points = {
-        'memphis': ['include = memphis.config']
+        'memphis': ['package = memphis.config']
         },
       )

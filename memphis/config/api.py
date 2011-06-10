@@ -150,6 +150,9 @@ def commit():
     if configContext is not None:
         config = configContext
         configContext = None
+        #import sys
+        #for ac in config.actions:
+        #    print >>sys.stderr, ac[0]
         config.execute_actions()
 
 
@@ -181,8 +184,7 @@ def action(context=UNSET, discriminator=None,
     if context is None:
         callable(*args, **kw)
     else:
-        context.info = info
-        context.action(discriminator, callable, args, kw, order)
+        context.action(discriminator, callable, args, kw, order, info=info)
 
 
 def registerAdapter(factory, required=None, provides=None, name=u'',
@@ -258,7 +260,17 @@ def loadPackage(name, seen=None, first=True):
             continue
         loadPackage(pkg, seen, False)
 
-    ep = pkg_resources.get_entry_map(dist, 'memphis').get('include')
+    distmap = pkg_resources.get_entry_map(dist, 'memphis')
+
+    ep = distmap.get('grokker')
+    if ep is not None:
+        addPackage(ep.module_name)
+
+    ep = distmap.get('package')
+    if ep is not None:
+        addPackage(ep.module_name)
+
+    ep = distmap.get('include')
     if ep is not None:
         addPackage(ep.module_name)
 
