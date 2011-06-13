@@ -159,25 +159,26 @@ class ActionGrokker(martian.GlobalGrokker):
     def grok(self, name, module, configContext=None, **kw):
         value = action.bind(default=_marker).get(module)
         if value is not _marker:
-            if (name, module) in _modules:
-                return False
-            _modules.append((name, module))
+            if (name, module) not in _modules or \
+                    getattr(module, '__fake_module__', False):
+                _modules.append((name, module))
 
-            for callable, args, kwargs, info in value:
-                kwargs = dict(kwargs)
-                if 'discriminator' in kwargs:
-                    discriminator = kwargs['discriminator']
-                    del kwargs['discriminator']
-                    if 'actionOrder' in kwargs:
-                        order = kwargs['actionOrder']
-                        del kwargs['actionOrder']
-                    else:
-                        order = 0
-                    api.action(configContext, discriminator,
-                               callable, args, kwargs, order=order, info=info)
-                    continue
-
-                callable(*args, **kwargs)
+                for callable, args, kwargs, info in value:
+                    kwargs = dict(kwargs)
+                    if 'discriminator' in kwargs:
+                        discriminator = kwargs['discriminator']
+                        del kwargs['discriminator']
+                        if 'actionOrder' in kwargs:
+                            order = kwargs['actionOrder']
+                            del kwargs['actionOrder']
+                        else:
+                            order = 0
+                        api.action(
+                            configContext, discriminator,
+                            callable, args, kwargs, order=order, info=info)
+                        continue
+                
+                    callable(*args, **kwargs)
 
         return True
 
