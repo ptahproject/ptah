@@ -2,11 +2,11 @@
 import sys
 import martian
 from webob import Response
+from AccessControl import Unauthorized, getSecurityManager
 
 from zope import interface
 from zope.publisher.interfaces import IDefaultViewName
 from zope.publisher.interfaces.browser import IDefaultBrowserLayer
-from AccessControl import Unauthorized, getSecurityManager
 
 from memphis import config
 from memphis.view.view import View

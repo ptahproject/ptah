@@ -44,7 +44,11 @@ setup(name='memphis.view',
                           'memphis.config',
                           ],
       extras_require = dict(
-        test=['memphis.config [test]'],
+        test=['memphis.config [test]',
+              'pyramid',
+              'zope.publisher',
+              'AccessControl',
+              ],
         pyramid=['pyramid'],
         zope=['AccessControl',
               'zope.publisher']

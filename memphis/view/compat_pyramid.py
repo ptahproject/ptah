@@ -3,15 +3,19 @@ import sys
 import martian
 from zope import interface
 from zope.interface import providedBy
-from zope.component import getSiteManager
+from zope.component import getSiteManager, queryUtility
 
 from webob.exc import HTTPForbidden
-from pyramid.interfaces import \
-    IRequest, IView, IViewClassifier, IAuthenticationPolicy
+from pyramid.interfaces import IView, IViewClassifier
+from pyramid.interfaces import IRequest, INewResponse
+from pyramid.interfaces import IAuthenticationPolicy
 
 from memphis import config
 from memphis.view.view import View
 from memphis.view.directives import pyramidView, getInfo
+
+from memphis.view.message import MessageService
+from memphis.view.interfaces import IStatusMessage
 
 
 def renderView(name, context, request):
@@ -51,15 +55,6 @@ class SecuredPyramidView(PyramidView):
         msg = getattr(request, 'authdebug_message',
                       'Unauthorized: %s failed permission check' % self.factory)
         raise HTTPForbidden(msg)
-
-
-registered = []
-viewsExecuted = []
-
-@config.cleanup
-def cleanUp():
-    registered[:] = []
-    viewsExecuted[:] = []
 
 
 class PyramidViewGrokker(martian.ClassGrokker):
@@ -166,3 +161,40 @@ def registerDefaultViewImpl(name, context=interface.Interface,
     config.registerAdapter(
         view,
         (IViewClassifier, layer, context), IView, '', configContext, info)
+
+
+@config.adapter(IRequest)
+@interface.implementer(IStatusMessage)
+def getMessageService(request):
+    service = queryUtility(IStatusMessage)
+    if service is None:
+        service = MessageService(request)
+    return service
+
+
+@config.handler(INewResponse)
+def responseHandler(event):
+    request = event.request
+    response = event.response
+
+    if (response.status == '200 OK') and (response.content_type == 'text/html'):
+        service = IStatusMessage(request, None)
+        if service is not None:
+            messages = service.clear()
+            if messages:
+                msg = u'\n'.join(messages)
+                msg = msg.encode('utf-8', 'ignore')
+
+                body = response.body
+                body = body.replace('<!--memphis-message-->', msg, 1)
+                response.body = body
+
+
+
+registered = []
+viewsExecuted = []
+
+@config.cleanup
+def cleanUp():
+    registered[:] = []
+    viewsExecuted[:] = []

@@ -59,7 +59,7 @@ def test_suite():
                 setUp=setUp, tearDown=tearDown,
                 optionflags=doctest.NORMALIZE_WHITESPACE|doctest.ELLIPSIS),
             doctest.DocFileSuite(
-                'view.txt',
+                'compat_pyramid.txt',
                 setUp=setUp, tearDown=tearDown,
                 optionflags=doctest.NORMALIZE_WHITESPACE|doctest.ELLIPSIS),
             doctest.DocFileSuite(

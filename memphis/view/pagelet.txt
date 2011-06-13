@@ -26,7 +26,7 @@ pagelet requires pagelet type::
   >>> api.registerPagelet(IContent)
   Traceback (most recent call last):
   ...
-  ConfigurationError: Can't find pagelet type: '<InterfaceClass memphis.TESTS.IContent>'
+  LookupError: Can't find pagelet type: '<InterfaceClass memphis.TESTS.IContent>'
 
 define pagelet type::
 

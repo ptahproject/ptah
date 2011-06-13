@@ -1,51 +1,17 @@
 """ status message implementation """
 import cgi
-from zope import interface, component
+from zope import interface
 from zope.component import getAdapter, queryUtility
-try:
-    from pyramid.i18n import get_localizer
-    from pyramid.interfaces import INewResponse
-except:
-    class INewResponse(interface.Interface):
-        pass
 
 from memphis import config
-
-from compat import IRequest
-from interfaces import IMessage, IStatusMessage
+from memphis.view.interfaces import IMessage, IStatusMessage
+from memphis.view.compat import translate, IZopeRequest, IPyramidRequest
 
 
 def addMessage(request, msg, type='info'):
     srv = IStatusMessage(request, None)
     if srv is not None:
         srv.add(msg, type)
-
-
-@config.adapter(IRequest)
-@interface.implementer(IStatusMessage)
-def getMessageService(request):
-    service = queryUtility(IStatusMessage)
-    if service is None:
-        service = MessageService(request)
-    return service
-
-
-@config.handler(INewResponse)
-def responseHandler(event):
-    request = event.request
-    response = event.response
-
-    if (response.status == '200 OK') and (response.content_type == 'text/html'):
-        service = IStatusMessage(request, None)
-        if service is not None:
-            messages = service.clear()
-            if messages:
-                msg = u'\n'.join(messages)
-                msg = msg.encode('utf-8', 'ignore')
-
-                body = response.body
-                body = body.replace('<!--memphis-message-->', msg, 1)
-                response.body = body
 
 
 class MessageService(object):
@@ -94,24 +60,26 @@ class Message(object):
 
 
 class InformationMessage(Message):
-    config.adapts(IRequest, 'info')
+    config.adapts(IZopeRequest, 'info')
+    config.adapts(IPyramidRequest, 'info')
 
     cssClass = 'statusMessage'
 
     def render(self, message):
-        localizer = get_localizer(self.request)
         return '<div class="%s">%s</div>'%(
-            self.cssClass, cgi.escape(localizer.translate(message), True))
+            self.cssClass, cgi.escape(translate(message, self.request), True))
 
 
 class WarningMessage(InformationMessage):
-    config.adapts(IRequest, 'warning')
+    config.adapts(IZopeRequest, 'warning')
+    config.adapts(IPyramidRequest, 'warning')
 
     cssClass = 'statusWarningMessage'
 
 
 class ErrorMessage(InformationMessage):
-    config.adapts(IRequest, 'error')
+    config.adapts(IZopeRequest, 'error')
+    config.adapts(IPyramidRequest, 'error')
 
     cssClass = 'statusStopMessage'
 

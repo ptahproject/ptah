@@ -1,6 +1,8 @@
 # memphis.view public API
 
-from memphis.view.path import path, template
+# path/template
+from memphis.view.path import path
+from memphis.view.path import template
 
 # pagelet
 from memphis.view.pagelet import Pagelet
@@ -43,6 +45,11 @@ from memphis.view.directives import pyramidView
 
 # status message
 from memphis.view.message import addMessage
+
+# compat api
+from memphis.view.compat import getLocale
+from memphis.view.compat import translate
+from memphis.view.compat import TranslationStringFactory
 
 # navigation root
 import zope.interface

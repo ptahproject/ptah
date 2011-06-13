@@ -45,6 +45,7 @@ for another view.
   #    layer=IRequest,
   #    template='',
   #    layout='',
+  #    default='',
   #    configContext=None):
 
 `context` is context to which apply view, `context=None` means to all contexts.
@@ -53,6 +54,7 @@ for another view.
 `layer` is pyramid request type
 `template` is path to chameleon template
 `layout` is layout name to use to wrap view
+`default` is this view should be default view
 
 Let's get the view::
 
@@ -79,7 +81,7 @@ pyramid. Like '<<package_name>>:template.pt'
 
   >>> view = getPyramidView(request, object(), 'template.html')
   >>> view
-  <memphis.view.view.View <class 'memphis.TESTS.TestView'> ...>
+  <memphis.view.compat_pyramid.View <class 'memphis.TESTS.TestView'> ...>
 
   >>> view.template
   <PageTemplateFile /.../test.pt>
@@ -101,11 +103,7 @@ Default view
 You can define default view name. It can be used during traversing.
 Let's set default name for all objects::
 
-  >>> from memphis.view.interfaces import IDefaultView
-
   >>> api.registerDefaultView('index.html')
-  >>> component.getMultiAdapter((object(), request), IDefaultView)
-  'index.html'
 
 
 Full `registerDefaultView` function description::
@@ -208,7 +206,7 @@ view permission
   >>> getPyramidView(request, object(), 'protected.html', call=True)
   Traceback (most recent call last):
   ...
-  Forbidden: Unauthorized: <class 'memphis.TESTS.protected.html'> failed permission check
+  HTTPForbidden: Unauthorized: <class 'memphis.TESTS.protected.html'> failed permission check
 
   >>> SimpleAuth.allowed = True
   >>> print getPyramidView(request, object(), 'protected.html', call=True)
