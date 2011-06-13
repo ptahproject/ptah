@@ -189,8 +189,8 @@ def action(context=UNSET, discriminator=None,
 
 def registerAdapter(factory, required=None, provides=None, name=u'',
                     configContext=UNSET, info=''):
-    def _register(*args, **kw):
-        getSiteManager().registerAdapter(*args, **kw)
+    def _register():
+        getSiteManager().registerAdapter(factory, required, provides, name)
 
     if required is None:
         required = component.adaptedBy(factory)
@@ -209,42 +209,40 @@ def registerAdapter(factory, required=None, provides=None, name=u'',
         configContext = getContext()
 
     if configContext is None:
-        _register(factory, required, provides, name)
+        _register()
     else:
         action(
             configContext, ('adapter', required, provides, name),
-            callable = _register,
-            args=(factory, required, provides, name), info=info)
+            callable = _register, info=info)
 
 
 def registerUtility(comp, provides=None, name='', configContext=UNSET, info=''):
-    def _register(*args, **kw):
-        getSiteManager().registerUtility(*args, **kw)
+    def _register():
+        getSiteManager().registerUtility(comp, provides, name)
 
     if configContext is UNSET:
         configContext = getContext()
 
     if configContext is None:
-        _register(comp, provides, name=name)
+        _register()
     else:
         action(
             configContext, ('utility', provides, name),
-            callable = _register,
-            args=(comp, provides, name), info=info)
+            callable = _register, info=info)
 
 
 def registerHandler(handler, requires=None, configContext=UNSET, info=''):
-    def _register(*args, **kw):
-        getSiteManager().registerHandler(*args, **kw)
+    def _register():
+        getSiteManager().registerHandler(handler, requires)
 
     if configContext is UNSET:
         configContext = getContext()
 
     if configContext is None:
-        _register(handler, requires)
+        _register()
     else:
         action(configContext, None,
-               callable = _register, args=(handler, requires), info='')
+               callable = _register, args=(), info='')
 
 
 def loadPackage(name, seen=None, first=True):
