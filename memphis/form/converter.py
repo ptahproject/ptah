@@ -17,22 +17,11 @@ import decimal
 import zope.i18n.format
 import zope.interface
 import zope.schema
-from zope.i18n.locales import locales
 
-try:
-    from pyramid.i18n import get_locale_name
-except:
-    def get_locale_name(request):
-        return request.locale
-
-from memphis import config
+from memphis import config, view
 from memphis.form import interfaces
 
 _ = interfaces.MessageFactory
-
-
-def getLocale(request):
-    return locales.getLocale(get_locale_name(request), None, None)
 
 
 class BaseDataConverter(object):
@@ -97,7 +86,7 @@ class NumberDataConverter(BaseDataConverter):
 
     def __init__(self, field, widget):
         super(NumberDataConverter, self).__init__(field, widget)
-        locale = getLocale(self.widget.request)
+        locale = view.getLocale(self.widget.request)
         self.formatter = locale.numbers.getFormatter('decimal')
         self.formatter.type = self.type
 
@@ -147,7 +136,7 @@ class CalendarDataConverter(BaseDataConverter):
 
     def __init__(self, field, widget):
         super(CalendarDataConverter, self).__init__(field, widget)
-        locale = getLocale(self.widget.request)
+        locale = view.getLocale(self.widget.request)
         self.formatter = locale.dates.getFormatter(self.type, self.length)
 
     def toWidgetValue(self, value):

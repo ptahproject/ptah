@@ -2,13 +2,14 @@
 from zope import interface
 
 from memphis import view, config
-from memphis.view.compat import IRequest
+from memphis.view.compat import IPyramidRequest, IZopeRequest
 from memphis.view.message import Message
 from memphis.form.interfaces import IErrorViewSnippet
 
 
 class FormErrorStatusMessage(Message):
-    config.adapts(IRequest, 'formError')
+    config.adapts(IZopeRequest, 'formError')
+    config.adapts(IPyramidRequest, 'formError')
 
     template = view.template('memphis.form:templates/message.pt')
 

@@ -21,10 +21,7 @@ import zope.i18nmessageid
 import zope.interface
 import zope.schema
 from zope.interface.common import mapping
-try:
-    from pyramid.i18n import TranslationStringFactory
-except:
-    from zope.i18nmessageid import MessageFactory as TranslationStringFactory
+from memphis.view import TranslationStringFactory
 
 MessageFactory = _ = TranslationStringFactory('memphis.form')
 

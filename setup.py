@@ -5,12 +5,12 @@ def read(*rnames):
     return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
 
 
-version='0.2'
+version='0.3'
 
 
 setup(name='memphis.form',
       version=version,
-      description="This is fork of z3c.form library.",
+      description="Fork of z3c.form library.",
       long_description=(
           'Detailed Documentation\n' +
           '======================\n'
@@ -47,7 +47,9 @@ setup(name='memphis.form',
                           'zope.i18n',
                           'zope.lifecycleevent',
                           ],
-      extras_require = dict(test=['memphis.view [test]']),
+      extras_require = dict(
+          test=['pyramid',
+                'memphis.view [test]',]),
       include_package_data = True,
       zip_safe = False,
       entry_points = {
