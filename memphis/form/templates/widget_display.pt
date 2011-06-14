@@ -1,4 +1,4 @@
-<div class="z-form-field">
+<div class="field">
   <label class="discreet"
 	 tal:attributes="for context.id;
 			 title context.field.description"
@@ -7,4 +7,3 @@
     <input type="text" style="width:100%" />
   </div>
 </div>
-

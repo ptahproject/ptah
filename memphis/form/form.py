@@ -318,6 +318,9 @@ class SubForm(BaseForm):
         self.request = request
         self.parentForm = self.__parent__ = parentForm
 
+    def getContent(self):
+        return self.context
+
     def isAvailable(self):
         return True
 

@@ -1,15 +1,15 @@
-<div class="z-form z-form-display">
-  <h1 class="z-form-label" i18n:translate=""
+<div class="form-display">
+  <h1 class="documentFirstHeading" i18n:translate=""
       tal:condition="context.label"
       tal:content="context.label">Do something</h1>
-  <div class="z-form-description" i18n:translate=""
+  <div class="form-description" i18n:translate=""
        tal:condition="context.description"
        tal:content="context.description"></div>
 
-  <div class="z-form-fieldset" tal:condition="context.widgets">
+  <fieldset class="formPanel" tal:condition="context.widgets">
     <tal:block tal:repeat="context context.widgets.values()"
                tal:content="structure pagelet:form-display-widget" />
-  </div>
+  </fieldset>
 
   <tal:block tal:condition="context.subforms"
              tal:repeat="context context.subforms"

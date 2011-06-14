@@ -1,7 +1,4 @@
-<div class="z-form-controls" tal:condition="context.actions.values()">
-  <span>
-    <hr />
-    <input tal:repeat="action context.actions.values()"
-	   tal:replace="structure action.render()" />
-  </span>
+<div class="formControls" tal:condition="context.actions.values()">
+  <input tal:repeat="action context.actions.values()"
+	 tal:replace="structure action.render()" />
 </div>

@@ -4,8 +4,8 @@
   <div class="z-form-description" tal:condition="context.description"
        tal:content="context.description"></div>
   
-  <div class="z-form-fieldset">
+  <fieldset class="formPanel">
     <tal:block tal:repeat="context context.widgets.values()"
 	       tal:content="structure pagelet:form-widget" />
-  </div>
+  </fieldset>
 </div>

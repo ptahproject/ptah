@@ -1,16 +1,19 @@
-<div class="z-form-field"
+<div class="field"
      tal:define="error context.error|nothing"
-     tal:attributes="class error and'z-form-field error'or'z-form-field'">
-  <label tal:attributes="for context.id;
+     tal:attributes="class error and 'field error' or 'field'">
+  <label class="formQuestion" 
+	 tal:attributes="for context.id;
 			 title context.field.description">
     ${context.label}
+    <span class="required" title="Required" style="color: #f00;"
+	  tal:condition="context.required">
+      &#x25a0;
+    </span>
   </label>
-  <span class="z-form-fieldRequired"
-	tal:condition="context.required">*</span>
   <div tal:condition="error" tal:replace="structure error.render()">
     The Error
   </div>
-  <div class="z-form-help" 
+  <div class="formHelp" 
        tal:condition="context.field.description"
        tal:content="structure context.field.description"></div>
   <div tal:content="structure context.render()">
