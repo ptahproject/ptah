@@ -10,7 +10,33 @@ from zope.publisher.interfaces.browser import IDefaultBrowserLayer
 
 from memphis import config
 from memphis.view.view import View
+from memphis.view.layout import Layout
 from memphis.view.directives import zopeView, getInfo
+
+
+class ZopeLayout(Layout):
+
+    def render(self):
+        if self.template is None:
+            raise RuntimeError("Can't render layout: %s"%self.__name__)
+
+        template = self.template.im_func
+
+        namespace = template.pt_getContext(self.view, request=self.request)
+
+        kwargs = self._params or {}
+        kwargs.update({'view': self.view,
+                       'context': self.view.context,
+                       'layout': self,
+                       'layoutcontext': self.context,
+                       'mainview': self.mainview,
+                       'maincontext': self.maincontext,
+                       'request': self.request,
+                       'template': template,
+                       'nothing': None})
+        namespace.update(kwargs)
+
+        return template.pt_render(namespace, showtal= 0, sourceAnnotations= 0)
 
 
 class ZopeView(object):
@@ -75,32 +101,32 @@ class ZopeViewGrokker(martian.ClassGrokker):
             return False
 
         name, context, layer, template, \
-            layout, permission, default, info = value
+            layout, permission, default, decorator, info = value
         if layer is None:
             layer = IDefaultBrowserLayer
 
         registerViewImpl(
             name, context, klass, template, layer, layout, permission,
-            default, configContext, info)
+            default, decorator, configContext, info)
         return True
 
 
 def registerZopeView(
     name='', context=None, klass=None, template=None,
     layer=IDefaultBrowserLayer, layout='', permission='', default=False, 
-    configContext=None):
+    decorator=None, configContext=None):
     
     config.action(
         registerViewImpl,
         name, context, klass, template, 
-        layer, layout, permission, default, configContext, 
+        layer, layout, permission, default, decorator, configContext, 
         directives.getInfo(), __frame = sys._getframe(1))
 
 
 def registerViewImpl(
     name='', context=None, klass=None, template=None,
     layer=IDefaultBrowserLayer, layout='', permission='', default=False,
-    configContext=None, info=''):
+    decorator=None, configContext=None, info=''):
 
     if permission in ('zope2.Public', 'zope.Public'):
         permission = None
@@ -130,6 +156,9 @@ def registerViewImpl(
             bases = (klass, View)
 
         view_class = type('View %s'%klass, bases, cdict)
+
+    if decorator is not None:
+        view_class = decorator(view_class)
 
     if permission:
         def zview(context, request):

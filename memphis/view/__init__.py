@@ -29,6 +29,7 @@ except ImportError:
 
 # zope view
 try:
+    from memphis.view.compat_zope import ZopeLayout
     from memphis.view.compat_zope import registerZopeView
     from memphis.view.compat_zope import registerZopeDefaultView
 except ImportError:

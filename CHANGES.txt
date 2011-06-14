@@ -8,6 +8,8 @@ CHANGES
 
 - Added zope support
 
+- Added 'decorator' param to registerZopeView
+
 
 0.4 (2011-06-07)
 ----------------

@@ -25,10 +25,10 @@ class zopeView(Directive):
     scope = CLASS
     store = ONCE_NOBASE
 
-    def factory(self, name, context=None, template=None,
-                layer=None, layout='', permission='', default=False):
+    def factory(self, name, context=None, template=None, layer=None, 
+                layout='', permission='', default=False, decorator=None):
         return name, context, layer, template, \
-            layout, permission, default, getInfo()
+            layout, permission, default, decorator, getInfo()
 
 
 class pyramidView(Directive):
