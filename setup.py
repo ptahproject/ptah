@@ -53,6 +53,7 @@ setup(name='memphis.config',
       include_package_data = True,
       zip_safe = False,
       entry_points = {
-        'memphis': ['package = memphis.config']
+        'memphis': ['grokker = memphis.config.meta',
+                    'package = memphis.config']
         },
       )

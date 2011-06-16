@@ -68,7 +68,11 @@ from memphis.config import api, directives
 from memphis.config.directives import action
 
 
-action(api.registerHandler, objectEventNotify)
+@action
+def registerObjectEvent():
+    sm = globalSiteManager
+    sm.unregisterHandler(objectEventNotify)
+    sm.registerHandler(objectEventNotify)
 
 
 registries = {}
@@ -85,7 +89,6 @@ class Registry(Components):
 
     def __reduce__(self):
         return BC, self.__name__
-
 
 
 class BrokenRegistry(Components):

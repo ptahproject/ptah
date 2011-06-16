@@ -90,7 +90,7 @@ loadPackage
     >>> api.grokkerPackages = []
     >>> loadPackage('memphis.config')
     >>> api.grokkerPackages
-    ['memphis.config']
+    ['memphis.config.meta', 'memphis.config']
 
 """
 import types
@@ -116,7 +116,7 @@ def getContext():
 
 
 def begin(packages=None):
-    global configContext
+    global configContext, grokkerPackages
     if configContext is not None:
         commit()
 
@@ -150,9 +150,6 @@ def commit():
     if configContext is not None:
         config = configContext
         configContext = None
-        #import sys
-        #for ac in config.actions:
-        #    print >>sys.stderr, ac[0]
         config.execute_actions()
 
 
@@ -265,10 +262,6 @@ def loadPackage(name, seen=None, first=True):
         addPackage(ep.module_name)
 
     ep = distmap.get('package')
-    if ep is not None:
-        addPackage(ep.module_name)
-
-    ep = distmap.get('include')
     if ep is not None:
         addPackage(ep.module_name)
 

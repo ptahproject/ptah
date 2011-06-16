@@ -11,6 +11,9 @@ CHANGES
 - Added abolity to load grokkers before other code. Usefull
   if package implements some grokkers and uses them in the same time.
 
+- Re-register objectEventNodify handler rather than just register.
+  This fixes bug with event been send two times.
+
 
 0.3 (2011-06-02)
 ----------------

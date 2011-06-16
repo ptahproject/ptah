@@ -207,21 +207,20 @@ each time config is reinitialized (testing support)::
 
     >>> config.begin()
 
-    >>> _ = config.action(testFunc, discriminator=('test',))
+    >>> _ = config.action(testFunc, discriminator=('test',), actionOrder=10)
 
     >>> reGrok()
 
     >>> config.commit()
     My test function
 
-    >>> from memphis.config import meta
-    >>> meta.cleanUp()
-
     >>> reGrok()
     My test function
 
 
 Without `discriminator` configAction executed immidietly.
+
+    >>> del locals()['memphis.config.directives.action']
 
     >>> config.begin()
 
@@ -231,14 +230,11 @@ Without `discriminator` configAction executed immidietly.
     >>> _ = config.action(testFunc1)
 
     >>> reGrok()
-
-#    My test1 function
+    My test1 function
 
     >>> config.commit()
     My test function
-    
-    >>> meta.cleanUp()
 
-    >>> reGrok()
+    reGrok()
     My test function
     My test1 function

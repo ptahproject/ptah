@@ -173,12 +173,12 @@ class ActionGrokker(martian.GlobalGrokker):
                             del kwargs['actionOrder']
                         else:
                             order = 0
+
                         api.action(
                             configContext, discriminator,
                             callable, args, kwargs, order=order, info=info)
-                        continue
-                
-                    callable(*args, **kwargs)
+                    else:
+                        callable(*args, **kwargs)
 
         return True
 
