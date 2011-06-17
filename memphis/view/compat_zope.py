@@ -1,6 +1,5 @@
-""" zope view """
-import sys
-import martian
+""" zope related classes """
+import sys, martian
 from webob import Response
 from AccessControl import Unauthorized, getSecurityManager
 
@@ -14,7 +13,7 @@ from memphis.view.layout import Layout
 from memphis.view.directives import zopeView, getInfo
 
 
-class ZopeLayout(Layout):
+class ZopeLayout(object):
 
     def render(self):
         if self.template is None:
