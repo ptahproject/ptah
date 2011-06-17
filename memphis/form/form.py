@@ -292,8 +292,8 @@ class EditForm(Form):
         if self.refreshActions:
             self.updateActions()
 
-    @button.buttonAndHandler(_('Apply'), name='apply')
-    def handleApply(self, action):
+    @button.buttonAndHandler(_('Save'), name='save')
+    def handleSave(self, action):
         data, errors = self.extractData()
         if errors:
             view.addMessage(
@@ -306,6 +306,21 @@ class EditForm(Form):
             view.addMessage(self.request, self.successMessage)
         else:
             view.addMessage(self.request, self.noChangesMessage)
+
+        nextURL = self.nextURL()
+        if nextURL:
+            raise HTTPFound(location=nextURL)
+
+    @button.buttonAndHandler(_('Cancel'), name='cancel')
+    def handleCancel(self, action):
+        data, errors = self.extractData()
+        raise HTTPFound(location=self.cancelURL())
+
+    def nextURL(self):
+        pass
+
+    def cancelURL(self):
+        return '../'
 
 
 class SubForm(BaseForm):
