@@ -3,22 +3,10 @@ import sys, os
 from setuptools import setup, find_packages
 
 def read(*rnames):
-    try:
-        return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
-    except IOError:
-        return ''
+    return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
+
 
 version='0.4'
-
-install_requires = [
-    'setuptools',
-    'martian',
-    'zope.component',
-    'zope.configuration',
-    ]
-
-test_require = install_requires + ['zope.configuration [test]']
-
 
 setup(name='memphis.config',
       version=version,
@@ -44,12 +32,15 @@ setup(name='memphis.config',
       url='http://pypi.python.org/pypi/memphis.config/',
       license='BSD-derived (http://www.repoze.org/LICENSE.txt)',
       packages = find_packages(),
-      package_data = {'': ['*.txt', '*.rst']},
       namespace_packages = ['memphis'],
-      install_requires = install_requires,
-      extras_require = dict(test=['zope.configuration [test]']),
-      tests_require = test_require,
-      test_suite = "memphis.config.tests",
+      install_requires = [
+        'setuptools',
+        'martian >= 0.14',
+        'zope.component',
+        'zope.configuration',
+        ],
+      extras_require = dict(
+        test=['zope.configuration [test]']),
       include_package_data = True,
       zip_safe = False,
       entry_points = {
