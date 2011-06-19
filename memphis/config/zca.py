@@ -5,16 +5,16 @@ registry
   >>> api.begin()
 
   >>> from zope import interface
-  >>> from zope.component import getSiteManager
-
   >>> from memphis.config import directives
 
   >>> sm1 = registry('sm1')
-  >>> def _sm1(context=None):
-  ...   return sm1
-  >>> _ = getSiteManager.sethook(_sm1)
-
   >>> reg = registry('test')
+
+  >>> getRegistry('test') is reg
+  True
+
+  >>> getRegistry() == [reg, sm1]
+  True
 
   >>> _ = directives.registerIn('test')
 
@@ -44,14 +44,16 @@ registry
 
   >>> f, name = reg.__reduce__()
   >>> f, name
-  (<function BC at ...>, 'test')
+  (<function BC at ...>, ('test',))
 
-  >>> f(None, name) is reg
+  >>> f(*name) is reg
   True
+
+  >>> reGrok()
 
   >>> del registries['test']
 
-  >>> f(None, name)
+  >>> f(*name)
   Broken registry
 
   >>> registerInEnd()
@@ -59,10 +61,12 @@ registry
   True
 
 """
-import random
+import random, pkg_resources
 from zope.component import globalSiteManager, getSiteManager
+from zope.component.hooks import getSite, setSite
 from zope.component.registry import Components
 from zope.component.event import objectEventNotify
+from zope.component.globalregistry import BaseGlobalComponents
 
 from memphis.config import api, directives
 from memphis.config.directives import action
@@ -77,7 +81,7 @@ def registerObjectEvent():
 
 registries = {}
 
-def BC(components, name):
+def BC(name):
     bc = registries.get(name, None)
     if bc is None:
         return broken
@@ -85,10 +89,18 @@ def BC(components, name):
         return bc
 
 
-class Registry(Components):
+class Registry(BaseGlobalComponents):
+
+    def __init__(self, name, title=u'', description=u'', addon=False):
+        self.title = title
+        self.description = description
+        self.addon = addon
+        self.__name__ = name
+        self.__parent__ =  globalSiteManager
+        super(Registry, self).__init__(name)
 
     def __reduce__(self):
-        return BC, self.__name__
+        return BC, (self.__name__,)
 
 
 class BrokenRegistry(Components):
@@ -101,47 +113,48 @@ class BrokenRegistry(Components):
         return "Broken registry"
 
 
+class Site(object):
+
+    def __init__(self, sm):
+        self.sm = sm
+
+    def getSiteManager(self):
+        return self.sm
+
+
 broken = BrokenRegistry()
 
 
 stack = []
 
-def registry(name):
+def registry(name, title=u'', description=u'', addon=False):
     sm = Registry(name)
+    sm.title = title
+    sm.description = description,
+    sm.addon = addon
     registries[name] = sm
     return sm
 
 
+def getRegistry(name=None):
+    if name is not None:
+        return registries.get(name)
+    return registries.values()
+
+
 def registerIn(name):
     sm = registries[name]
-    def _sm(context=None):
-        return sm
 
-    curr_sm = getSiteManager()
-    if curr_sm is not globalSiteManager:
-        stack.append(getSiteManager())
+    curr_site = getSite()
+    stack.append(curr_site)
 
-    getSiteManager.sethook(_sm)
+    setSite(Site(sm))
 
 
 def registerInEnd():
     if not stack:
-        getSiteManager.reset()
+        setSite(None)
         return
 
-    sm = stack.pop()
-    def _sm(context=None):
-        return sm
-
-    getSiteManager.sethook(_sm)
-
-
-def _finalizeModule(name, mod, kw, _marker=object()):
-    value = directives.registerIn.bind(default=_marker).get(mod)
-    if value is not _marker:
-        api.action(
-            discriminator='registerInEnd: %s'%random.randint(1, 99999),
-            callable=registerInEnd)
-
-
-api.grokkerRegistry.finalize = _finalizeModule
+    site = stack.pop()
+    setSite(site)

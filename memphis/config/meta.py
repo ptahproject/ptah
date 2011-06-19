@@ -72,6 +72,7 @@ from memphis.config.directives import registerIn
 _marker = object()
 _adapters = []
 _modules = []
+_rmodules = []
 _utilities = []
 
 
@@ -94,7 +95,8 @@ class AdaptsGrokker(martian.ClassGrokker):
             factory.__component_adapts__ = required
 
             api.registerAdapter(
-                factory, required, provided, name, configContext, info)
+                factory, required, provided, name, configContext, 
+                (api.distname(factory.__module__), 220), info)
 
         return True
 
@@ -117,7 +119,9 @@ class UtilityGrokker(martian.ClassGrokker):
         if not provides.implementedBy(factory):
             interface.classImplements(factory, provides)
 
-        api.registerUtility(factory(), provides, name, configContext, info)
+        comp = factory()
+        api.registerUtility(comp, provides, name, configContext, 
+                            (api.distname(comp.__module__), 230), info)
         return True
 
 
@@ -135,8 +139,8 @@ class AdapterGrokker(martian.InstanceGrokker):
             for required, kwargs, info in obj._register_adapter:
                 api.registerAdapter(
                     obj, required, provides,
-                    kwargs.get('name',''), configContext, info)
-
+                    kwargs.get('name',''), configContext, 
+                    (api.distname(obj.__module__), 220), info)
             return True
         else:
             return False
@@ -148,7 +152,9 @@ class HandlerGrokker(martian.InstanceGrokker):
     def grok(self, name, obj, configContext=api.UNSET, **kw):
         if getattr(obj, '_register_handler', False):
             for required, info in obj._register_handler:
-                api.registerHandler(obj, required, configContext, info)
+                api.registerHandler(
+                    obj, required, configContext, 
+                    (api.distname(obj.__module__), 210), info)
             return True
         else:
             return False
@@ -156,7 +162,7 @@ class HandlerGrokker(martian.InstanceGrokker):
 
 class ActionGrokker(martian.GlobalGrokker):
 
-    def grok(self, name, module, configContext=None, **kw):
+    def grok(self, name, module, configContext=api.UNSET, **kw):
         value = action.bind(default=_marker).get(module)
         if value is not _marker:
             if (name, module) not in _modules or \
@@ -166,13 +172,12 @@ class ActionGrokker(martian.GlobalGrokker):
                 for callable, args, kwargs, info in value:
                     kwargs = dict(kwargs)
                     if 'discriminator' in kwargs:
+                        order = 0
                         discriminator = kwargs['discriminator']
                         del kwargs['discriminator']
                         if 'actionOrder' in kwargs:
                             order = kwargs['actionOrder']
                             del kwargs['actionOrder']
-                        else:
-                            order = 0
 
                         api.action(
                             configContext, discriminator,
@@ -185,24 +190,36 @@ class ActionGrokker(martian.GlobalGrokker):
 
 class RegisterInGrokker(martian.GlobalGrokker):
 
-    def grok(self, name, module, configContext=None, **kw):
+    def grok(self, name, module, configContext=api.UNSET, **kw):
         value = registerIn.bind(default=_marker).get(module)
         if value is not _marker:
-            if (name, module) not in _modules or \
+            if (name, module) not in _rmodules or \
                     getattr(module, '__fake_module__', False):
-                _modules.append((name, module))
+                _rmodules.append((name, module))
+
+                id = random.randint(1, 99999)
+                api.action(
+                    configContext,
+                    discriminator='registerIn: %s'%id,
+                    callable=zca.registerIn, args=(value,),
+                    order = (api.distname(module.__name__), 9),
+                    )
 
                 api.action(
-                    discriminator='registerIn: %s'%random.randint(1, 99999),
-                    callable=zca.registerIn, args=(value,))
+                    configContext,
+                    discriminator='registerInEnd: %s'%id,
+                    callable=zca.registerInEnd,
+                    order = (api.distname(module.__name__), 999999999),
+                    )
 
         return True
 
 
 @api.cleanup
 def cleanUp():
-    global _adapters, _modules, _utilities
+    global _adapters, _modules, _rmodules, _utilities
 
     _modules = []
+    _rmodules = []
     _adapters = []
     _utilities = []

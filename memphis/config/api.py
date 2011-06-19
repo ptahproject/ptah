@@ -185,7 +185,7 @@ def action(context=UNSET, discriminator=None,
 
 
 def registerAdapter(factory, required=None, provides=None, name=u'',
-                    configContext=UNSET, info=''):
+                    configContext=UNSET, order=0, info=''):
     def _register():
         getSiteManager().registerAdapter(factory, required, provides, name)
 
@@ -210,10 +210,11 @@ def registerAdapter(factory, required=None, provides=None, name=u'',
     else:
         action(
             configContext, ('adapter', required, provides, name),
-            callable = _register, info=info)
+            callable = _register, order = order, info=info)
 
 
-def registerUtility(comp, provides=None, name='', configContext=UNSET, info=''):
+def registerUtility(comp, provides=None, name='', 
+                    configContext=UNSET, order = 0, info=''):
     def _register():
         getSiteManager().registerUtility(comp, provides, name)
 
@@ -225,10 +226,11 @@ def registerUtility(comp, provides=None, name='', configContext=UNSET, info=''):
     else:
         action(
             configContext, ('utility', provides, name),
-            callable = _register, info=info)
+            callable = _register, order = order, info=info)
 
 
-def registerHandler(handler, requires=None, configContext=UNSET, info=''):
+def registerHandler(handler, requires=None, 
+                    configContext=UNSET, order = 0, info=''):
     def _register():
         getSiteManager().registerHandler(handler, requires)
 
@@ -239,7 +241,7 @@ def registerHandler(handler, requires=None, configContext=UNSET, info=''):
         _register()
     else:
         action(configContext, None,
-               callable = _register, args=(), info='')
+               callable = _register, args=(), order = order, info='')
 
 
 def loadPackage(name, seen=None, first=True):
@@ -277,6 +279,26 @@ def cleanup(handler):
 def registerCleanup(handler):
     if handler not in cleanups:
         cleanups.append(handler)
+
+
+def distname(name):
+    """
+    >>> print distname('memphis.config.test')
+    memphis.config
+
+    >>> print distname('uknown.unkown')
+    None
+    """
+
+    while 1:
+        try:
+            dist = pkg_resources.get_distribution(name)
+            return dist.project_name
+        except pkg_resources.DistributionNotFound:
+            if '.' in name:
+                name = name.rsplit('.', 1)[0]
+            else:
+                return None
 
 
 def cleanUp():

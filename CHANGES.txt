@@ -8,8 +8,8 @@ CHANGES
 - Added 'registerIn' module directive, it allows
   to redirect all registrations to different Components object.
 
-- Added abolity to load grokkers before other code. Usefull
-  if package implements some grokkers and uses them in the same time.
+- Added ability to load grokkers before other code. Usefull
+  if package implements grokkers and uses them at the same time.
 
 - Re-register objectEventNodify handler rather than just register.
   This fixes bug with event been send two times.
