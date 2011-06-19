@@ -1,0 +1,217 @@
+=========
+Zope View
+=========
+
+This doctest file shows how to use views.
+
+  >>> from zope import interface, component
+  >>> from zope.interface import Interface
+  >>> from zope.component import getSiteManager
+
+Each view has to have unique class, let's create one::
+
+  >>> from memphis import view as api
+
+  >>> class MyView(api.View):
+  ...     """Custom pagelet"""
+
+
+Now this view has to be registered::
+
+  >>> api.registerZopeView(
+  ...     name="index.html",
+  ...     klass = MyView)
+
+
+`klass` can be just class, it can inherits from View class or
+`klass` can be None. I `klass` is None or it is not inherited from
+`View` class, system constructs new unique class. If class is inherited
+from View class, new class isn created, but this class can't be used
+for another view.
+
+  >>> api.registerZopeView(
+  ...     name="index1.html",
+  ...     klass = MyView)
+  Traceback (most recent call last):
+  ...
+  ValueError: Class can be used for view only once.
+
+`registerZopeView` function description::
+
+  # def registerView(
+  #    context=None,
+  #    name='',
+  #    klass=None,
+  #    layer=IRequest,
+  #    template='',
+  #    layout='',
+  #    default='',
+  #    configContext=None):
+
+`context` is context to which apply view, `context=None` means to all contexts.
+`name` is name of view, it is part of url.
+`klass` is custom implementation for view
+`layer` is pyramid request type
+`template` is path to chameleon template
+`layout` is layout name to use to wrap view
+`default` is this view should be default view
+
+Let's get the view::
+
+  >>> from ZPublisher.HTTPRequest import HTTPRequest
+  >>> from ZPublisher.HTTPResponse import HTTPResponse
+  >>> from zope.publisher.interfaces import IDefaultViewName
+  >>> from zope.publisher.interfaces.browser import IDefaultBrowserLayer
+  >>> request = HTTPRequest(
+  ...     '', {'SERVER_NAME': 'http://localhost',
+  ...          'SERVER_PORT': '80'}, HTTPResponse())
+  >>> interface.directlyProvides(request, IDefaultBrowserLayer)
+
+  >>> sm = getSiteManager()
+
+  >>> view = sm.getMultiAdapter((object(), request), Interface, 'index.html')
+
+  >>> view.factory
+  <class 'memphis.TESTS.MyView'>
+
+  >>> view.context
+  <object object at ...>
+
+We can create view with template. You can use similar path as for
+pyramid. Like '<<package_name>>:template.pt'
+
+  >>> class TestView(object):
+  ...     pass
+
+  >>> api.registerZopeView(
+  ...     name="template.html",
+  ...     klass=TestView,
+  ...     template=api.template('memphis.view:test.pt'))
+
+  >>> view = sm.getMultiAdapter((object(), request), Interface, 'template.html')
+  >>> view.factory
+  <class 'memphis.view.compat_zope.View <class 'memphis.TESTS.TestView'>'>
+
+  >>> view.factory.template
+  <PageTemplateFile /.../test.pt>
+
+  >>> print view()
+  <div>My pagelet</div>
+
+
+Default view
+------------
+
+You can define default view name. It can be used during traversing.
+Let's set default name for all objects::
+
+  >>> api.registerZopeDefaultView('index.html')
+
+
+Full `registerZopeDefaultView` function description::
+
+   # def registerDefaultView(
+   #    name,
+   #    context = interface.Interface,
+   #    layer = IDefaultBrowserLayer)
+
+Also default view available right from pyramid routing system. Let's use
+`template.html` view from previous section::
+
+  >>> api.registerZopeDefaultView('template.html')
+
+  >>> from zope.publisher.defaultview import getDefaultViewName
+
+  >>> getDefaultViewName(object(), request)
+  'template.html'
+
+
+HTTP Exceptions
+---------------
+
+You can raise http exceptions from your code and you catch them
+and return as result. For example if you want redirect browser to new
+location::
+
+  >>> from webob.exc import HTTPFound
+
+  >>> class RedirectView(object):
+  ...     def update(self):
+  ...         raise HTTPFound(location='/other.html')
+
+  >>> api.registerZopeView(
+  ...     name="redirect.html",
+  ...     klass=RedirectView)
+
+  >>> view = sm.getMultiAdapter((object(), request), Interface, 'redirect.html')
+  >>> _ = view()
+  >>> request.response.getStatus()
+  302
+
+
+zopeView directive
+------------------
+
+Its possible to use decorator style registration, but class has to be
+inherited from View::
+
+  >>> from memphis import view
+  >>> class View(view.View):
+  ...     view.zopeView(
+  ...         'testview.html',
+  ...         template=view.template('memphis.view:test.pt'))
+  >>> reGrok()
+
+Parameters are same except klass.
+
+  >>> v = sm.getMultiAdapter((object(), request), Interface, 'testview.html')
+  >>> v.factory
+  <class 'memphis.TESTS.View'>
+
+  >>> v.factory.template
+  <PageTemplateFile /.../test.pt>
+
+  >>> print v()
+  <div>My pagelet</div>
+
+  >>> reGrok()
+
+
+view permission
+---------------
+
+  >>> class SecuredView(api.View):
+  ...     """Custom pagelet"""
+  ...     def render(self):
+  ...         return 'SecuredView'
+
+  >>> api.registerZopeView(
+  ...     name="protected.html",
+  ...     klass = SecuredView, permission='Protected')
+
+  >>> class SecuredView(api.View):
+  ...     """Custom pagelet"""
+  ...     def render(self):
+  ...         return 'SecuredView'
+
+  >>> api.registerZopeView(
+  ...     name="unprotected.html",
+  ...     klass = SecuredView, permission='zope.Public')
+
+  >>> v = sm.getMultiAdapter((object(), request), Interface, 'protected.html')
+  >>> v()
+  Traceback (most recent call last):
+  ...
+  Unauthorized: Unauthorized()
+
+  >>> v = sm.getMultiAdapter((object(), request), Interface, 'unprotected.html')
+  >>> v()
+  'SecuredView'
+
+  SimpleAuth.allowed = True
+  print getPyramidView(request, object(), 'protected.html', call=True)
+  200 OK
+  Content-Type: text/html; charset=UTF-8
+  Content-Length: 11
+  <BLANKLINE>
+  SecuredView
