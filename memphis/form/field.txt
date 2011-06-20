@@ -361,6 +361,8 @@ Next we need a form that specifies the fields to be added:
   ...     fields = field.Fields(IPerson)
   ...     params = MultiDict()
   ...     
+  ...     def getContext(self):
+  ...         return None
   ...     def getContent(self):
   ...         return self.content
   ...     def validate(self, data, errors):
@@ -654,6 +656,8 @@ Note that you can also manually control ignoring the context per field.
   ...     prefix = 'form.'
   ...     fields = field.Fields(IPerson).select('id')
   ...     fields += field.Fields(IPerson).select('firstName', 'lastName')
+  ...     def getContext(self):
+  ...         return None
   ...     def getContent(self):
   ...         return None
   ...     def validate(self, data,errors):
