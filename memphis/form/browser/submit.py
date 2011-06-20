@@ -23,7 +23,7 @@ class SubmitWidget(button.ButtonWidget):
     config.adapts(interfaces.IButton, None)
     zope.interface.implementsOnly(interfaces.ISubmitWidget)
 
-    klass = u'submit-widget z-form-button'
+    klass = u'submit-widget'
 
 
 view.registerPagelet(

@@ -11,11 +11,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Button and Button Manager implementation
-
-$Id: button.py 11790 2011-01-31 00:41:45Z fafhrd91 $
-"""
-__docformat__ = "reStructuredText"
+"""Button and Button Manager implementation"""
 import sys
 import zope.event
 import zope.interface
@@ -35,8 +31,8 @@ class Button(zope.schema.Field):
     """A simple button in a form."""
     zope.interface.implements(interfaces.IButton)
 
-    accessKey = None #FieldProperty(interfaces.IButton['accessKey'])
-    actionFactory = None #FieldProperty(interfaces.IButton['actionFactory'])
+    accessKey = None
+    actionFactory = None
 
     def __init__(self, *args, **kwargs):
         # Provide some shortcut ways to specify the name
@@ -203,6 +199,7 @@ class ButtonActions(action.Actions):
         # Create a unique prefix.
         prefix = util.expandPrefix(self.form.prefix)
         prefix += util.expandPrefix(self.form.buttons.prefix)
+
         # Walk through each field, making an action out of it.
         uniqueOrderedKeys = []
         for name, button in self.form.buttons.items():
@@ -210,6 +207,7 @@ class ButtonActions(action.Actions):
             #         fulfilled.
             if button.condition is not None and not button.condition(self.form):
                 continue
+
             # Step 2: Get the action for the given button.
             newButton = True
             if name in self._data:
@@ -220,17 +218,16 @@ class ButtonActions(action.Actions):
             else:
                 buttonAction = zope.component.getMultiAdapter(
                     (self.request, button), interfaces.IButtonAction)
+
             # Step 3: Set the name on the button
             buttonAction.name = prefix + name
-            
+            buttonAction.id = buttonAction.name.replace('.', '-')
+
             # Step 5: Set the form
             buttonAction.form = self.form
-            if not interfaces.IFormAware.providedBy(buttonAction):
-                zope.interface.alsoProvides(buttonAction, interfaces.IFormAware)
 
             # Step 6: Update the new action
             buttonAction.update()
-            #zope.event.notify(AfterWidgetUpdateEvent(buttonAction))
 
             # Step 7: Add the widget to the manager
             uniqueOrderedKeys.append(name)

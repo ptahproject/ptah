@@ -6,7 +6,7 @@ from memphis.form.form import extends, handleActionError
 from memphis.form.form import Form, EditForm, SubForm, Group, DisplayForm
 
 from memphis.form.interfaces import ISubForm, IGroup, IDisplayForm
-from memphis.form.interfaces import IInputMode, IDisplayMode, IHiddenMode
+from memphis.form.interfaces import INPUT_MODE, DISPLAY_MODE, HIDDEN_MODE
 
 # widget
 from memphis.form.widget import Widget
@@ -16,8 +16,6 @@ from memphis.form.interfaces import IWidget, IDefaultWidget
 from memphis.form.field import Fields
 
 # validators
-from memphis.form.field import FieldValidator
-from memphis.form.interfaces import IValidator
 from memphis.form.interfaces import IFormValidator
 
 # converter
@@ -28,7 +26,6 @@ from memphis.form.button import buttonAndHandler
 
 # errors
 from memphis.form.error import WidgetError
-from memphis.form.error import CustomValidationError
 
 # pagelets
 from memphis.form.pagelets import IFormView

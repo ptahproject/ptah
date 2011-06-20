@@ -286,23 +286,12 @@ constructor that are used to set up the fields:
     >>> from memphis.form import interfaces
     >>> manager = field.Fields(IPerson, mode=interfaces.DISPLAY_MODE)
     >>> manager['country'].mode
-    'display'
+    <InterfaceClass memphis.form.interfaces.DISPLAY_MODE>
 
-* ``ignoreContext``
+* ``content``
 
-  While the ``ignoreContext`` flag is usually set on the form, it is sometimes
-  desirable to set the flag for a particular field.
-
-    >>> manager = field.Fields(IPerson)
-    >>> manager['country'].ignoreContext
-
-    >>> manager = field.Fields(IPerson, ignoreContext=True)
-    >>> manager['country'].ignoreContext
-    True
-
-    >>> manager = field.Fields(IPerson, ignoreContext=False)
-    >>> manager['country'].ignoreContext
-    False
+  While the ``content`` is usually set on the form, it is sometimes
+  desirable to set the content for a particular field.
 
 
 Fields Widget Manager
@@ -364,14 +353,20 @@ definitions and create widgets for them. Thus, let's create a schema first:
 Next we need a form that specifies the fields to be added:
 
   >>> from memphis.form import field
+  >>> from webob.multidict import MultiDict
 
   >>> class PersonForm(object):
+  ...     content = None
   ...     prefix = 'form.'
   ...     fields = field.Fields(IPerson)
+  ...     params = MultiDict()
+  ...     
   ...     def getContent(self):
-  ...         return self.context
-  ...     def validate(self, data):
-  ...         return []
+  ...         return self.content
+  ...     def validate(self, data, errors):
+  ...         pass
+  ...     def getRequestParams(self):
+  ...         return self.params
   >>> personForm = PersonForm()
 
 For more details on how to define fields within a form, see ``form.txt``. We
@@ -380,13 +375,14 @@ which the widgets are created, the request, and the context that is being
 manipulated. In the simplest case the context is ``None`` and ignored, as it
 is true for an add form.
 
-  >>> from pyramid.testing import DummyRequest as TestRequest
-  >>> request = TestRequest()
+  >>> from webob.multidict import MultiDict
+  >>> from pyramid.testing import DummyRequest
+  >>> request = DummyRequest()
   >>> context = object()
   >>> personForm.context = context
 
   >>> manager = field.FieldWidgets(personForm, request)
-  >>> manager.ignoreContext = True
+  >>> manager.content = None
 
 
 Widget Mapping
@@ -404,18 +400,7 @@ id to widget value, is empty:
   []
 
 Only by "updating" the manager, will the widgets become available; before we can
-use the update method, however, we have to register the ``IFieldWidget`` adapter
-for the ``ITextLine`` field:
-
-  >>> from memphis import config
-  >>> from memphis.form import interfaces, widget
-
-  >>> @zope.component.adapter(zope.schema.TextLine, TestRequest)
-  ... @zope.interface.implementer(interfaces.IFieldWidget)
-  ... def TextFieldWidget(field, request):
-  ...     return widget.FieldWidget(field, widget.Widget(request))
-
-  >>> zope.component.provideAdapter(TextFieldWidget)
+use the update method, however, we have to register the ``ITextLine`` widget:
 
   >>> manager.update()
 
@@ -435,7 +420,7 @@ order of keys:
 Let's make sure that all enumerable mapping functions work correctly:
 
   >>> manager['lastName']
-  <Widget 'form.widgets.lastName'>
+  <TextWidget 'form.widgets.lastName'>
 
   >>> manager['unknown']
   Traceback (most recent call last):
@@ -443,7 +428,7 @@ Let's make sure that all enumerable mapping functions work correctly:
   KeyError: 'unknown'
 
   >>> manager.get('lastName')
-  <Widget 'form.widgets.lastName'>
+  <TextWidget 'form.widgets.lastName'>
 
   >>> manager.get('unknown', 'default')
   'default'
@@ -457,14 +442,14 @@ Let's make sure that all enumerable mapping functions work correctly:
   ['id', 'lastName', 'firstName']
 
   >>> manager.values()
-  [<Widget 'form.widgets.id'>,
-   <Widget 'form.widgets.lastName'>,
-   <Widget 'form.widgets.firstName'>]
+  [<TextWidget 'form.widgets.id'>,
+   <TextWidget 'form.widgets.lastName'>,
+   <TextWidget 'form.widgets.firstName'>]
 
   >>> manager.items()
-  [('id', <Widget 'form.widgets.id'>),
-   ('lastName', <Widget 'form.widgets.lastName'>),
-   ('firstName', <Widget 'form.widgets.firstName'>)]
+  [('id', <TextWidget 'form.widgets.id'>),
+   ('lastName', <TextWidget 'form.widgets.lastName'>),
+   ('firstName', <TextWidget 'form.widgets.firstName'>)]
 
   >>> len(manager)
   3
@@ -475,12 +460,12 @@ It is also possible to delete widgets from the manager:
   >>> len(manager)
   2
   >>> manager.values()
-  [<Widget 'form.widgets.id'>, <Widget 'form.widgets.lastName'>]
+  [<TextWidget 'form.widgets.id'>, <TextWidget 'form.widgets.lastName'>]
   >>> manager.keys()
   ['id', 'lastName']
   >>> manager.items()
-  [('id', <Widget 'form.widgets.id'>),
-  ('lastName', <Widget 'form.widgets.lastName'>)]
+  [('id', <TextWidget 'form.widgets.id'>),
+   ('lastName', <TextWidget 'form.widgets.lastName'>)]
 
 Note that deleting a non-existent widget causes a ``KeyError`` to be raised:
 
@@ -502,13 +487,6 @@ When a widget is added to the widget manager, it is located:
   >>> lname.__parent__
   <memphis.form.field.FieldWidgets object at ...>
 
-All widgets created by this widget manager are context aware:
-
-  >>> interfaces.IContextAware.providedBy(lname)
-  True
-  >>> lname.context is context
-  True
-
 
 Determination of the widget mode
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -516,13 +494,13 @@ Determination of the widget mode
 By default, all widgets will also assume the mode of the manager:
 
   >>> manager['lastName'].mode
-  'input'
+  <InterfaceClass memphis.form.interfaces.INPUT_MODE>
 
   >>> manager.mode = interfaces.DISPLAY_MODE
   >>> manager.update()
 
   >>> manager['lastName'].mode
-  'display'
+  <InterfaceClass memphis.form.interfaces.DISPLAY_MODE>
 
 The exception is when some fields specifically desire a different mode. In the
 first case, all "readonly" fields will be shown in display mode:
@@ -531,7 +509,7 @@ first case, all "readonly" fields will be shown in display mode:
   >>> manager.update()
 
   >>> manager['id'].mode
-  'display'
+  <InterfaceClass memphis.form.interfaces.DISPLAY_MODE>
 
 An exception is made when the flag, "ignoreReadonly" is set:
 
@@ -539,7 +517,7 @@ An exception is made when the flag, "ignoreReadonly" is set:
   >>> manager.update()
 
   >>> manager['id'].mode
-  'input'
+  <InterfaceClass memphis.form.interfaces.INPUT_MODE>
 
 In the second case, the last name will inherit the mode from the widget
 manager, while the first name will want to use a display widget:
@@ -552,9 +530,10 @@ manager, while the first name will want to use a display widget:
   >>> manager.update()
 
   >>> manager['lastName'].mode
-  'input'
+  <InterfaceClass memphis.form.interfaces.INPUT_MODE>
+
   >>> manager['firstName'].mode
-  'display'
+  <InterfaceClass memphis.form.interfaces.DISPLAY_MODE>
 
 
 Required fields
@@ -575,14 +554,12 @@ Let's now have a look at the widget manager's ``extract()``, which returns a
 data dictionary and the collection of errors. When all goes well, the data
 dictionary is complete and the error collection empty:
 
-  >>> request = TestRequest()
-  >>> request.params.update({
+  >>> personForm.fields = field.Fields(IPerson)
+  >>> personForm.params = MultiDict({
   ...     'form.widgets.id': u'srichter',
   ...     'form.widgets.firstName': u'Stephan',
   ...     'form.widgets.lastName': u'Richter'})
-  >>> personForm.fields = field.Fields(IPerson)
   >>> manager = field.FieldWidgets(personForm, request)
-  >>> manager.ignoreContext = True
   >>> manager.update()
 
   >>> data, errors = manager.extract()
@@ -591,55 +568,44 @@ dictionary is complete and the error collection empty:
   >>> data['lastName']
   u'Richter'
   >>> errors
-  ()
-
-Since all errors are immediately converted to error view snippets, we have to
-provide the adapter from a validation error to an error view snippet first:
-
-  >>> from memphis.form import error
-  >>> zope.component.provideAdapter(error.ErrorViewSnippet)
-  >>> zope.component.provideAdapter(error.InvalidErrorViewSnippet)
+  []
 
 Let's now cause a widget-level error by not submitting the required last
 name:
 
-  >>> request = TestRequest()
-  >>> request.params.update({
-  ...     'form.widgets.firstName': u'Stephan', 'form.widgets.id': u'srichter'})
+  >>> personForm.params = MultiDict({
+  ...     'form.widgets.firstName': u'Stephan',
+  ...     'form.widgets.id': u'srichter'})
   >>> manager = field.FieldWidgets(personForm, request)
-  >>> manager.ignoreContext = True
   >>> manager.update()
   >>> manager.extract()
-  ({'lastName': None, 'firstName': u'Stephan'}, (<ErrorViewSnippet for RequiredMissing>,))
+  ({'lastName': None, 'firstName': u'Stephan'}, [<ValidationErrorViewSnippet for RequiredMissing>])
 
 Or, we could violate a constraint. This constraint raises Invalid, which is
 a convenient way to raise errors where we mainly care about providing a custom
 error message.
 
-  >>> request = TestRequest()
-  >>> request.params.update({
+  >>> personForm.params = MultiDict({
   ...     'form.widgets.firstName': u'Stephan', 
   ...     'form.widgets.lastName': u'richter',
   ...     'form.widgets.id': u'srichter'})
   >>> manager = field.FieldWidgets(personForm, request)
-  >>> manager.ignoreContext = True
+  >>> manager.content = None
   >>> manager.update()
   >>> extracted = manager.extract()
   >>> extracted
-  ({'lastName': None, 'firstName': u'Stephan'}, (<InvalidErrorViewSnippet for Invalid>,))
+  ({'lastName': None, 'firstName': u'Stephan'}, [<InvalidErrorViewSnippet for Invalid>])
   
   >>> extracted[1][0].createMessage()
   u'Name must have at least one capital letter'
 
 Finally, let's ensure that invariant failures are also caught:
 
-#  >>> request = TestRequest()
-#  >>> request.params.update({
+#  >>> personForm.params = MultiDict({
 #  ...     'form.widgets.id': u'srichter',
 #  ...     'form.widgets.firstName': u'Stephan',
 #  ...     'form.widgets.lastName': u'Richter-Richter'})
 #  >>> manager = field.FieldWidgets(personForm, request)
-#  >>> manager.ignoreContext = True
 #  >>> manager.update()
 #  >>> data, errors = manager.extract()
 #  >>> errors[0].error.doc()
@@ -658,11 +624,10 @@ catches, but also sets them on individual widgets and on the manager:
 This behavior can be turned off. To demonstrate, let's make a new request that
 causes a widget-level error:
 
-  >>> request = TestRequest()
-  >>> request.params.update({
-  ...     'form.widgets.firstName': u'Stephan', 'form.widgets.id': u'srichter'})
+  >>> personForm.params = MultiDict({
+  ...     'form.widgets.firstName': u'Stephan',
+  ...     'form.widgets.id': u'srichter'})
   >>> manager = field.FieldWidgets(personForm, request)
-  >>> manager.ignoreContext = True
   >>> manager.update()
 
 We have to set the setErrors property to False before calling extract,
@@ -670,7 +635,7 @@ we still get the same result from the method call, ...
 
   >>> manager.setErrors = False
   >>> manager.extract()
-  ({'lastName': None, 'firstName': u'Stephan'}, (<ErrorViewSnippet for RequiredMissing>,))
+  ({'lastName': None, 'firstName': u'Stephan'}, [<ValidationErrorViewSnippet for RequiredMissing>])
 
 but there are no side effects on the manager and the widgets:
 
@@ -678,6 +643,7 @@ but there are no side effects on the manager and the widgets:
   ()
   >>> manager['lastName'].error is None
   True
+
 
 Customization of Ignoring the Context
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -687,12 +653,13 @@ Note that you can also manually control ignoring the context per field.
   >>> class CustomPersonForm(object):
   ...     prefix = 'form.'
   ...     fields = field.Fields(IPerson).select('id')
-  ...     fields += field.Fields(IPerson, ignoreContext=True).select(
-  ...                   'firstName', 'lastName')
+  ...     fields += field.Fields(IPerson).select('firstName', 'lastName')
   ...     def getContent(self):
-  ...         return self.context
-  ...     def validate(self, data):
-  ...         return []
+  ...         return None
+  ...     def validate(self, data,errors):
+  ...         pass
+  ...     def getRequestParams(self):
+  ...         return {}
   >>> customPersonForm = CustomPersonForm()
   >>> customPersonForm.context = object()
 
@@ -701,12 +668,9 @@ Let's now create a manager and update it:
   >>> customManager = field.FieldWidgets(customPersonForm, request)
   >>> customManager.update()
 
-  >>> customManager['id'].ignoreContext
-  False
-  >>> customManager['firstName'].ignoreContext
-  True
-  >>> customManager['lastName'].ignoreContext
-  True
+  >>> customManager['id'].content = None
+  >>> customManager['firstName'].content = customPersonForm.context
+  >>> customManager['lastName'].content = customPersonForm.context
 
 
 Fields -- Custom Widget Factories
@@ -728,28 +692,26 @@ registered widgets are used:
 
   >>> srichter = Person(u'Stephan', u'Richter')
 
-#  >>> manager = field.FieldWidgets(personForm, request, srichter)
-#  >>> manager.update()
+  >>> manager = field.FieldWidgets(personForm, request)
+  >>> manager.update()
 
-#  >>> manager['firstName']
-#  <Widget 'form.widgets.firstName'>
+  >>> manager['firstName']
+  <TextWidget 'form.widgets.firstName'>
 
 Now we would like to have our own custom input widget:
 
+  >>> from memphis.form import widget
   >>> class CustomInputWidget(widget.Widget):
   ...     pass
 
-  >>> def CustomInputWidgetFactory(field, request):
-  ...     return widget.FieldWidget(field, CustomInputWidget(request))
-
 It can be simply assigned as follows:
 
-  >>> personForm.fields['firstName'].widgetFactory = CustomInputWidgetFactory
-  >>> personForm.fields['lastName'].widgetFactory = CustomInputWidgetFactory
+  >>> personForm.fields['firstName'].widgetFactory = CustomInputWidget
+  >>> personForm.fields['lastName'].widgetFactory = CustomInputWidget
 
 Now this widget should be used instead of the registered default one:
 
-  >>> personForm.context = srichter
+  >>> personForm.content = srichter
 
   >>> manager = field.FieldWidgets(personForm, request)
   >>> manager.update()
@@ -768,83 +730,3 @@ custom widgets for all modes. Now all modes show this input widget:
   >>> manager.update()
   >>> manager['firstName']
   <CustomInputWidget 'form.widgets.firstName'>
-
-However, we can also register a specific widget for the display mode:
-
-  >>> class CustomDisplayWidget(widget.Widget):
-  ...     pass
-
-  >>> def CustomDisplayWidgetFactory(field, request):
-  ...     return widget.FieldWidget(field, CustomDisplayWidget(request))
-
-  >>> personForm.fields['firstName']\
-  ...     .widgetFactory[interfaces.DISPLAY_MODE] = CustomDisplayWidgetFactory
-  >>> personForm.fields['lastName']\
-  ...     .widgetFactory[interfaces.DISPLAY_MODE] = CustomDisplayWidgetFactory
-
-Now the display mode should produce the custom display widget, ...
-
-  >>> manager = field.FieldWidgets(personForm, request)
-  >>> manager.mode = interfaces.DISPLAY_MODE
-
-  >>> manager.update()
-  >>> manager['firstName']
-  <CustomDisplayWidget 'form.widgets.firstName'>
-  >>> manager['lastName']
-  <CustomDisplayWidget 'form.widgets.lastName'>
-
-... while the input mode still shows the default custom input widget
-on the ``lastName`` field but not on the ``firstName`` field since we
-don't have the ``test.Edit`` permission:
-
-#  >>> manager = field.FieldWidgets(personForm, request, srichter)
-#  >>> manager.mode = interfaces.INPUT_MODE
-#  >>> manager.update()
-#  >>> manager['firstName']
-#  <CustomDisplayWidget 'form.widgets.firstName'>
-#  >>> manager['lastName']
-#  <CustomInputWidget 'form.widgets.lastName'>
-
-The widgets factories component,
-
-  >>> factories = personForm.fields['firstName'].widgetFactory
-  >>> factories
-  {'display': <function CustomDisplayWidgetFactory at ...>}
-
-is pretty much a standard dictionary that also manages a default value:
-
-#  >>> factories.default
-#  <function CustomInputWidgetFactory at ...>
-
-When getting a value for a key, if the key is not found, the default is
-returned:
-
-  >>> factories.keys()
-  ['display']
-
-  >>> factories[interfaces.DISPLAY_MODE]
-  <function CustomDisplayWidgetFactory at ...>
-  >>> factories[interfaces.INPUT_MODE]
-  <function CustomInputWidgetFactory at ...>
-
-  >>> factories.get(interfaces.DISPLAY_MODE)
-  <function CustomDisplayWidgetFactory at ...>
-  >>> factories.get(interfaces.INPUT_MODE)
-  <function CustomInputWidgetFactory at ...>
-
-If no default is specified,
-
-  >>> factories.default = None
-
-then the dictionary behaves as usual:
-
-  >>> factories[interfaces.DISPLAY_MODE]
-  <function CustomDisplayWidgetFactory at ...>
-  >>> factories[interfaces.INPUT_MODE]
-  Traceback (most recent call last):
-  ...
-  KeyError: 'input'
-
-  >>> factories.get(interfaces.DISPLAY_MODE)
-  <function CustomDisplayWidgetFactory at ...>
-  >>> factories.get(interfaces.INPUT_MODE)

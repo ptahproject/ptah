@@ -1,21 +1,4 @@
-##############################################################################
-#
-# Copyright (c) 2007 Zope Foundation and Contributors.
-# All Rights Reserved.
-#
-# This software is subject to the provisions of the Zope Public License,
-# Version 2.1 (ZPL).  A copy of the ZPL should accompany this distribution.
-# THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
-# WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-# WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE.
-#
-##############################################################################
-"""Form and Widget Framework Interfaces
-
-$Id: interfaces.py 11790 2011-01-31 00:41:45Z fafhrd91 $
-"""
-__docformat__ = "reStructuredText"
+""" Form and Widget Framework Interfaces """
 from zope import interface
 import zope.i18nmessageid
 import zope.interface
@@ -26,13 +9,15 @@ from memphis.view import TranslationStringFactory
 MessageFactory = _ = TranslationStringFactory('memphis.form')
 
 
-class IInputMode(interface.Interface):
+class INPUT_MODE(interface.Interface):
     """ Input mode """
 
-class IDisplayMode(interface.Interface):
+
+class DISPLAY_MODE(interface.Interface):
     """ display mode """
 
-class IHiddenMode(interface.Interface):
+
+class HIDDEN_MODE(interface.Interface):
     """ hidden mode """
 
 
@@ -87,15 +72,6 @@ class ISelectionManager(IManager):
 
 
 # ----[ Validators ]---------------------------------------------------------
-
-class IValidator(zope.interface.Interface):
-    """A validator for a particular value."""
-
-    def validate(value):
-        """Validate the value.
-
-        If successful, return ``None``. Otherwise raise an ``Invalid`` error.
-        """
 
 class IFormValidator(zope.interface.Interface):
     """A validator for a form."""
@@ -344,8 +320,8 @@ class IWidget(zope.interface.Interface):
     mode = zope.schema.Choice(
         title=_('Mode'),
         description=_('A widget mode.'),
-        default=IInputMode,
-        values=(IInputMode, IDisplayMode, IHiddenMode),
+        default=INPUT_MODE,
+        values=(INPUT_MODE, DISPLAY_MODE, HIDDEN_MODE),
         required=True)
 
     required = zope.schema.Bool(
@@ -522,8 +498,8 @@ class IWidgets(IManager):
     mode = zope.schema.Choice(
         title=_('Mode'),
         description=_('A widget mode.'),
-        default=IInputMode,
-        values=(IInputMode, IDisplayMode, IHiddenMode),
+        default=INPUT_MODE,
+        values=(INPUT_MODE, DISPLAY_MODE, HIDDEN_MODE),
         required=True)
 
     errors = zope.schema.Field(
@@ -730,29 +706,6 @@ class IActionForm(zope.interface.Interface):
         required=True)
 
 
-class IContextAware(zope.interface.Interface):
-    """Offers a context attribute.
-
-    For advanced uses, the widget will make decisions based on the context
-    it is rendered in.
-    """
-
-    context = zope.schema.Field(
-        title=_('Context'),
-        description=_('The context in which the widget is displayed.'),
-        required=True)
-
-
-class IFormAware(zope.interface.Interface):
-    """Offers a form attribute.
-
-    For advanced uses the widget will make decisions based on the form
-    it is rendered in.
-    """
-
-    form = zope.schema.Field()
-
-
 class IForm(zope.interface.Interface):
     """Form"""
 
@@ -784,7 +737,7 @@ class IForm(zope.interface.Interface):
         description=_('The prefix of the form used to uniquely identify it.'),
         default='form.')
 
-    def getRequest():
+    def getRequestParams():
         '''Return the request params.'''
 
     def getContent():

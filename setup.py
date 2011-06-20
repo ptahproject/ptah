@@ -7,7 +7,6 @@ def read(*rnames):
 
 version='0.3'
 
-
 setup(name='memphis.form',
       version=version,
       description="Fork of z3c.form library.",
@@ -34,7 +33,6 @@ setup(name='memphis.form',
       packages=find_packages(),
       namespace_packages=['memphis'],
       install_requires = ['setuptools',
-                          'lxml',
                           'chameleon',
                           'memphis.view',
                           'memphis.config',
@@ -48,7 +46,8 @@ setup(name='memphis.form',
                           'zope.lifecycleevent',
                           ],
       extras_require = dict(
-          test=['pyramid',
+          test=['lxml',
+                'pyramid',
                 'memphis.view [test]',]),
       include_package_data = True,
       zip_safe = False,

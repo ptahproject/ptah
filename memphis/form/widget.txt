@@ -2,49 +2,6 @@
 Widgets
 =======
 
-Widgets are small UI components that accept and process the textual user
-input. The only responsibility of a widget is to represent a value to the
-user, allow it to be modified and then return a new value. Good examples of
-widgets include the Qt widgets and HTML widgets. The widget is not responsible
-for converting its value to the desired internal value or validate the
-incoming data. These responsibilities are passed data converters and
-validators, respectively.
-
-There are several problems that can be identified in the original Zope 3 widget
-implementation located at ``zope.app.form``.
-
-(1) Field Dependence -- Widgets are always views of fields. While this might
-    be a correct choice for a high-level API, it is fundamentally wrong. It
-    disallows us to use widgets without defining fields. This also couples
-    certain pieces of information too tightly to the field, especially, value
-    retrieval from and storage to the context, validation and raw data
-    conversion.
-
-(2) Form Dependence -- While widgets do not have to be located within a form,
-    they are usually tightly coupled to it. It is very difficult to use
-    widgets outside the context of a form.
-
-(3) Traversability -- Widgets cannot be traversed, which means that they
-    cannot interact easily using Javascript. This is not a fundamental
-    problem, but simply a lack of the current design to recognize that small
-    UI components must also be traversable and thus have a URI.
-
-(4) Customizability -- A consequence of issue (1) is that widgets are not
-    customizable enough. Implementing real-world projects has shown that
-    widgets often want a very fine-grained ability to customize values. A
-    prime example is the label. Because the label of a widget is retrieved
-    from the field title, it is impossible to provide an alternative label for
-    a widget. While the label could be changed from the form, this would
-    require rewriting the entire form to change a label. Instead, we often
-    endde up writing cusom schemas.
-
-(5) Flexibility -- Oftentimes it is desired to have one widget, but multiple
-    styles of representation. For example, in one scenario the widget uses a
-    plain HTML widget and in another a fancy JavaScript widget is used. The
-    current implementation makes it very hard to provide alternative styles
-    for a widget.
-
-
 Creating and Using Simple Widgets
 ---------------------------------
 
@@ -54,7 +11,9 @@ instantiate it using the request:
   >>> from pyramid.testing import DummyRequest as TestRequest
   >>> from memphis import view
   >>> from memphis.form import widget
+  >>> from webob.multidict import MultiDict
   >>> from zope.schema import Int
+
   >>> field = Int(title=u'Age')
   >>> request = TestRequest()
   >>> age = widget.Widget(field, request)
@@ -67,6 +26,11 @@ do it by hand:
   >>> age.name = 'age'
   >>> age.label = u'Age'
   >>> age.value = '39'
+  
+  >>> age.__title__
+  'Widget'
+  >>> repr(age)
+  "<Widget 'age'>"
 
 The most important attributes are the "name" and the "value". The name is used
 to identify the widget within the form. The value is either the value to be
@@ -124,7 +88,7 @@ of the widget. By default, there are two widget modes: "input" and
 kinds of modes as needed for a project. The default mode is "input":
 
   >>> from memphis.form import interfaces
-  >>> age.mode is interfaces.IInputMode
+  >>> age.mode is interfaces.INPUT_MODE
   True
 
   >>> import zope.component
@@ -138,8 +102,7 @@ Once everything is set up, the widget is updated and then rendered:
 If a value is found in the request, it takes precedence, since the user
 entered the value:
 
-  >>> age.request = TestRequest()
-  >>> age.request.params.update({'age': '25'})
+  >>> age.params = MultiDict({'age': '25'})
   >>> age.update()
   >>> print age.render()
   <input type="text" name="age" value="25" />
@@ -147,7 +110,7 @@ entered the value:
 However, there is an option to turn off all request data:
 
   >>> age.value = '39'
-  >>> age.ignoreRequest = True
+  >>> age.params = {}
   >>> age.update()
   >>> print age.render()
   <input type="text" name="age" value="39" />
@@ -201,7 +164,7 @@ that defines how to convert from the field value to the widget value.
 
 Again, the request value is honored above everything else:
 
-  >>> ageWidget.request = TestRequest(params={'age': '25'})
+  >>> ageWidget.params = {'age': '25'}
   >>> ageWidget.update()
   >>> print ageWidget.render()
   <input type="text" name="age" value="25" />
@@ -216,46 +179,33 @@ be set as the context of the widget:
   >>> class Person(object):
   ...     age = 45
 
-  >>> ageWidget.context = Person()
-  >>> zope.interface.alsoProvides(ageWidget, interfaces.IContextAware)
+  >>> ageWidget.params = {}
+  >>> ageWidget.content = Person()
 
-The result is that the context value takes over precendence over the default
+The result is that the content value takes over precendence over the default
 value:
-
-  >>> ageWidget.request = TestRequest()
-  
-#  >>> ageWidget.update()
-#  Traceback (most recent call last):
-#  ...
-#  ComponentLookupError: ((...), <InterfaceClass ...IDataManager>, u'')
-
-This call fails because the widget does not know how to extract the value from
-the context. Registering a data manager for the widget does the trick:
-
-#  >>> from memphis.form import datamanager
-#  >>> zope.component.provideAdapter(datamanager.AttributeField)
 
   >>> ageWidget.update()
   >>> print ageWidget.render()
   <input type="text" name="age" value="45" />
 
-The context can be explicitely ignored, making the widget display the default
+The content can be explicitely ignored, making the widget display the default
 value again:
 
-  >>> ageWidget.ignoreContext = True
+  >>> ageWidget.content = None
   >>> ageWidget.update()
   >>> print ageWidget.render()
   <input type="text" name="age" value="30" />
 
 Again, the request value is honored above everything else:
 
-  >>> ageWidget.request = TestRequest(params={'age': '25'})
-  >>> ageWidget.ignoreContext = False
+  >>> ageWidget.params = {'age': '25'}
+  >>> ageWidget.content = None
   >>> ageWidget.update()
   >>> print ageWidget.render()
   <input type="text" name="age" value="25" />
 
-  >>> ageWidget.context = Person()
+  >>> ageWidget.content = Person()
 
 
 Sequence Widget
@@ -268,7 +218,6 @@ widget implementation to support this use case.
 The options available for selections are known as terms. Initially, there are
 no terms:
 
-  >>> request = TestRequest()
   >>> seqField = zope.schema.List(
   ...     __name__ = 'seq',
   ...     title = u'Age')
@@ -286,6 +235,7 @@ default implementation, so we have to provide one ourselves:
   >>> from zope.schema import vocabulary
   >>> class Terms(vocabulary.SimpleVocabulary):
   ...     zope.interface.implements(interfaces.ITerms)
+  ...     
   ...     def getValue(self, token):
   ...         return self.getTermByToken(token).value
 
@@ -306,31 +256,31 @@ The value of a sequence widget is a tuple/list of term tokens. When extracting
 values from the request, the values must be valid tokens, otherwise the
 default value is returned:
 
-  >>> seqWidget.request = TestRequest(params={'seq': ['v1']})
+  >>> seqWidget.params = MultiDict({'seq': 'v1'})
   >>> seqWidget.extract()
   ['v1']
 
-  >>> seqWidget.request = TestRequest(params={'seq': ['v4']})
+  >>> seqWidget.params = MultiDict({'seq': 'v4'})
   >>> seqWidget.extract()
   <NO_VALUE>
 
-  >>> seqWidget.request = TestRequest(params={'seq-empty-marker': '1'})
+  >>> seqWidget.params = MultiDict({'seq-empty-marker': '1'})
   >>> seqWidget.extract()
-  []
+  <NO_VALUE>
 
 Note that we also support single values being returned outside a sequence. The
 extracted value is then wrapped by a tuple. This feature is useful when
 integrating with third-party client frameworks that do not know about the Zope
 naming conventions.
 
-  >>> seqWidget.request = TestRequest(params={'seq': 'v1'})
+  >>> seqWidget.params = MultiDict({'seq': 'v1'})
   >>> seqWidget.extract()
-  ('v1',)
+  ['v1']
 
 If the no-value token has been selected, it is returned without further
 verification:
 
-  >>> seqWidget.request = TestRequest(params={'seq': [seqWidget.noValueToken]})
+  >>> seqWidget.params = MultiDict({'seq': seqWidget.noValueToken})
   >>> seqWidget.extract()
   ['--NOVALUE--']
 
@@ -358,245 +308,16 @@ instantiate a field widget. Let's do this with a choice field:
 
 Let's now create the field widget:
 
-  >>> seqWidget = widget.FieldWidget(seqField, widget.SequenceWidget(request))
+  >>> seqWidget = widget.SequenceWidget(seqField, request)
   >>> seqWidget.terms
 
 The terms should be available as soon as the widget is updated:
-
-#  >>> seqWidget.update()
-#  Traceback (most recent call last):
-#  ...
-#  ComponentLookupError: ((...), <InterfaceClass ...ITerms>, u'')
-
-This failed, because we did not register an adapter for the terms yet. After
-the adapter is registered, everything should work as expected:
-
-#  >>> from z3c.form import term
-#  >>> zope.component.provideAdapter(term.ChoiceTermsVocabulary)
-#  >>> zope.component.provideAdapter(term.ChoiceTerms)
 
   >>> seqWidget.update()
   >>> seqWidget.terms
   <memphis.form.term.ChoiceTermsVocabulary object at ...>
 
 So that's it. Everything else is the same from then on.
-
-
-Multi Widget
-------------
-
-A common use case in user interfaces is to ask the user to define one or more
-items. The ``widget`` module provides a basic widget implementation to support
-this use case.
-
-The `MultiWidget` allows to store none, one or more values for a sequence
-field.  Don't get cinfused by the term sequence. Ther sequence used in
-`SequenceWidget` means that the widget can choose from a sequence of values
-which is a really a collection. The `MultiWidget` can collect values for build
-and store a sequence of values like used in `ITuple` or `IList` field.
-
-  >>> request = TestRequest()
-  >>> multiWidget = widget.MultiWidget(request)
-  >>> multiWidget.name = 'multi.name'
-  >>> multiWidget.id = 'multi-id'
-
-  >>> multiWidget.value
-  []
-
-Let's define a field for our multi widget:
-
-  >>> multiField = zope.schema.List(
-  ...     value_type=zope.schema.Int(default=42))
-  >>> multiWidget.field = multiField
-
-The value of a multi widget is always list. When extracting values from the
-request, the values must be a list of valid values based on the value_type
-field used from the used sequence field. The widget also uses a counter which
-is required for processing the input from a request. The counter is a marker
-for build the right amount of enumerated widgets.
-
-If we provide no request we will get no value:
-
-  >>> multiWidget.extract()
-  <NO_VALUE>
-
-If we provide an empty counter we will get no value:
-
-  >>> multiWidget.request = TestRequest(params={'multi.name.count':'0'})
-  >>> multiWidget.extract()
-  <NO_VALUE>
-
-If we provide real values within the request, we will get it back:
-
-  >>> multiWidget.request = TestRequest(params={'multi.name.count':'2',
-  ...                                           'multi.name.0':u'42',
-  ...                                           'multi.name.1':u'43'})
-  >>> multiWidget.extract()
-  [u'42', u'43']
-
-If we provide a bad value we will get the bad value within the extract method.
-Our widget update process will validate this bad value later:
-
-  >>> multiWidget.request = TestRequest(params={'multi.name.count':'1',
-  ...                                           'multi.name.0':u'bad'})
-  >>> multiWidget.extract()
-  [u'bad']
-
-Storing a widget value forces to update the (sub) widgets. this forces also to
-validate the (sub) widget values. For showing this we nee dot register a
-validator:
-
-#  >>> from memphis.form.validator import SimpleFieldValidator
-#  >>> zope.component.provideAdapter(SimpleFieldValidator)
-
-Since the value of the widget is a list of (widget) value items, when
-displaying the values, they can be used as they are:
-
-  >>> multiWidget.request = TestRequest(params={'multi.name.count':'2',
-  ...                                           'multi.name.0':u'42',
-  ...                                           'multi.name.1':u'43'})
-  >>> multiWidget.value = multiWidget.extract()
-  >>> multiWidget.value
-  [u'42', u'43']
-
-Each widget normaly gets first processed by it's update method call after
-intialization. This update call forces to call extract, which first will get
-the right amount of (sub) widgets by the given counter value. Based on that
-counter value the right amount of widgets will get created. Each widget will
-return it's own value and this collected values get returned by the extract
-method. The multi widget update method will then store this values if any given
-as multi widget value argument. If extract doesn't return a value the multi
-widget update method will use it's default value. If we store a given value
-from the extract as multi widget value, this will force to setup the multi
-widget widgets based on the given values and apply the right value for them.
-After that the mutli widget is ready for rendering. The good thing about that
-pattern is that it is possible to set a value before or after the update method
-is called. At any time if we change the mutli widget value the (sub) widgets
-get updated within the new relevant value.
-
-  >>> multiRequest = TestRequest(params={'multi.name.count':'2',
-  ...                                    'multi.name.0':u'42',
-  ...                                    'multi.name.1':u'43'})
-
-  >>> multiWidget = widget.FieldWidget(multiField, widget.MultiWidget(
-  ...     multiRequest))
-  >>> multiWidget.name = 'multi.name'
-  >>> multiWidget.value
-  []
-
-  >>> multiWidget.update()
-
-  >>> multiWidget.widgets[0].value
-  u'42'
-
-  >>> multiWidget.widgets[1].value
-  u'43'
-
-  >>> multiWidget.value
-  [u'42', u'43']
-
-MultiWidget also declares the ``allowAdding`` and ``allowRemoving``
-attributes that can be used in browser presentation to control add/remove
-button availability. To ease working with common cases, the
-``updateAllowAddRemove`` method provided that will set those attributes
-in respect to field's min_length and max_length, if the field provides
-zope.schema.interfaces.IMinMaxLen interface.
-
-Let's define a field with min and max length constraints and create
-a widget for it.
-
-  >>> multiField = zope.schema.List(
-  ...     value_type=zope.schema.Int(),
-  ...     min_length=2,
-  ...     max_length=5)
-
-  >>> request = TestRequest()
-  >>> multiWidget = widget.FieldWidget(multiField, widget.MultiWidget(request))
-
-Now, let's check if the function will do the right thing depending on
-the value:
-
-No value:
-
-  >>> multiWidget.updateAllowAddRemove()
-  >>> multiWidget.allowAdding, multiWidget.allowRemoving
-  (True, False)
-
-Minimum length:
-
-  >>> multiWidget.value = [u'3', u'5']
-  >>> multiWidget.updateAllowAddRemove()
-  >>> multiWidget.allowAdding, multiWidget.allowRemoving
-  (True, False)
-
-Some allowed length:
-
-  >>> multiWidget.value = [u'3', u'5', u'8', u'6']
-  >>> multiWidget.updateAllowAddRemove()
-  >>> multiWidget.allowAdding, multiWidget.allowRemoving
-  (True, True)
-
-Maximum length:
-
-  >>> multiWidget.value = [u'3', u'5', u'8', u'6', u'42']
-  >>> multiWidget.updateAllowAddRemove()
-  >>> multiWidget.allowAdding, multiWidget.allowRemoving
-  (False, True)
-
-Over maximum length:
-
-  >>> multiWidget.value = [u'3', u'5', u'8', u'6', u'42', u'45']
-  >>> multiWidget.updateAllowAddRemove()
-  >>> multiWidget.allowAdding, multiWidget.allowRemoving
-  (False, True)
-
-I know a guy who once switched widget mode in the middle. All simple widgets
-are easy to hack, but multiWidget needs to update all subwidgets:
-
-  >>> [w.mode for w in multiWidget.widgets]
-  ['input', 'input', 'input', 'input', 'input', 'input']
-
-Switch the multiWidget mode:
-
-  >>> multiWidget.mode = interfaces.DISPLAY_MODE
-
-Yes, all subwigets switch mode:
-
-  >>> [w.mode for w in multiWidget.widgets]
-  ['display', 'display', 'display', 'display', 'display', 'display']
-
-Widget Events
--------------
-
-Widget-system interaction can be very rich and wants to be extended in
-unexpected ways. Thus there exists a generic widget event that can be used by
-other code.
-
-  >>> event = widget.WidgetEvent(ageWidget)
-  >>> event
-  <WidgetEvent <Widget 'age'>>
-
-These events provide the ``IWidgetEvent`` interface:
-
-  >>> interfaces.IWidgetEvent.providedBy(event)
-  True
-
-There exists a special event that can be send out after a widget has been
-updated, ...
-
-  >>> afterUpdate = widget.AfterWidgetUpdateEvent(ageWidget)
-  >>> afterUpdate
-  <AfterWidgetUpdateEvent <Widget 'age'>>
-
-which provides another special interface:
-
-  >>> interfaces.IAfterWidgetUpdateEvent.providedBy(afterUpdate)
-  True
-
-This event should be used by widget-managing components and is not created and
-sent out internally by the widget's ``update()`` method. The event was
-designed to provide an additional hook between updating the widget and
-rendering it.
 
 
 Cleanup

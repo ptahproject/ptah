@@ -6,12 +6,14 @@ from zope.lifecycleevent import Attributes, ObjectModifiedEvent
 from zope.schema.fieldproperty import FieldProperty
 
 from webob.exc import HTTPFound
-from webob.multidict import UnicodeMultiDict
+from webob.multidict import UnicodeMultiDict, MultiDict
 
 from memphis import view, config
 from memphis.form import button, field, interfaces, util, pagelets
 
 _ = interfaces.MessageFactory
+
+empty_params = UnicodeMultiDict(MultiDict({}), 'utf-8')
 
 
 def applyChanges(form, content, data):
@@ -56,8 +58,8 @@ def extends(*args, **kwargs):
 @config.handler(interfaces.IActionErrorEvent)
 def handleActionError(event):
     # Only react to the event, if the form is a standard form.
-    if not (interfaces.IFormAware.providedBy(event.action) and
-            interfaces.IForm.providedBy(event.action.form)):
+    form = getattr(event.action, 'form', None)
+    if not interfaces.IForm.providedBy(form):
         return
     # If the error was widget-specific, look up the widget.
     widget = None
@@ -90,8 +92,9 @@ class BaseForm(object):
     prefix = 'form.'
     template = None
     widgets  = None
+    content = None
 
-    mode = interfaces.IInputMode
+    mode = interfaces.INPUT_MODE
     ignoreReadonly = False
 
     subforms = ()
@@ -102,7 +105,7 @@ class BaseForm(object):
         self.__parent__ = context
 
     def getContent(self):
-        return None
+        return self.content
 
     def getRequestParams(self):
         try:
@@ -149,10 +152,10 @@ class BaseForm(object):
 class DisplayForm(BaseForm):
     interface.implements(interfaces.IDisplayForm)
 
-    mode = interfaces.IDisplayMode
+    mode = interfaces.DISPLAY_MODE
 
-    def getRequest(self):
-        return {}
+    def getRequestParams(self):
+        return empty_params
 
 
 class Form(BaseForm):
@@ -213,9 +216,6 @@ class EditForm(Form):
 
     groups = ()
     subforms = ()
-
-    def getContent(self):
-        return self.context
 
     def extractData(self, setErrors=True):
         data, errors = super(EditForm, self).extractData(setErrors)
@@ -284,6 +284,8 @@ class EditForm(Form):
         self.subforms.sort(key = lambda f: f.weight)
 
     def update(self):
+        self.content = self.context
+
         self.updateWidgets()
         self.updateActions()
         self.updateForms()
@@ -332,6 +334,7 @@ class SubForm(BaseForm):
         self.context = context
         self.request = request
         self.parentForm = self.__parent__ = parentForm
+        self.mode = parentForm.mode
 
     def getContent(self):
         return self.context
@@ -365,6 +368,7 @@ class Group(BaseForm):
         self.context = context
         self.request = request
         self.parentForm = self.__parent__ = parentForm
+        self.mode = parentForm.mode
 
     def isAvailable(self):
         return True

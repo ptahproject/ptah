@@ -44,6 +44,7 @@ provides those buttons.
 Let's now create an action manager for the button manager in the form. To do
 that we first need a request and a form instance:
 
+  >>> from webob.multidict import MultiDict
   >>> from pyramid.testing import DummyRequest as TestRequest
   >>> request = TestRequest()
   >>> form = Form()
@@ -58,7 +59,7 @@ context/content. A special button-action-manager implementation is available
 in the ``button`` package:
 
   >>> actions = button.ButtonActions(form, request, None)
-  >>> actions.update()
+  >>> actions.update(MultiDict())
 
 Once the action manager is updated, the buttons should be available as
 actions:
@@ -91,7 +92,7 @@ provided interface, he is also responsible for remove existing actions.
 
 As you can see we still will get the old button action if we only call update:
 
-  >>> actions.update()
+  >>> actions.update(MultiDict())
   >>> actions.keys()
   ['apply', 'cancel']
 
@@ -101,7 +102,7 @@ As you can see we still will get the old button action if we only call update:
 This means we have to remove the previous action before we call update:
 
   >>> del actions['apply']
-  >>> actions.update()
+  >>> actions.update(MultiDict())
 
 Make sure we do not append a button twice to the key and value lists by calling
 update twice:
@@ -126,10 +127,10 @@ actionFactory attribute.
 Again, remove the old button action befor we call update:
 
   >>> del actions['apply']
-  >>> actions.update()
+  >>> actions.update(MultiDict())
   This button factory creates a button only once.
 
-  >>> actions.update()
+  >>> actions.update(MultiDict())
   >>> actions['apply'].css
   'happy'
 
@@ -140,14 +141,14 @@ the button attributes without to lose changes:
   >>> actions['apply'].css
   'very happy'
 
-  >>> actions.update()
+  >>> actions.update(MultiDict())
   >>> actions['apply'].css
   'very happy'
 
 But let's not digress too much and get rid of this customization
 
   >>> form.buttons['apply'].actionFactory = None
-  >>> actions.update()
+  >>> actions.update(MultiDict())
 
 Button actions are locations:
 
@@ -200,10 +201,11 @@ So in this case executing the actions does not do anything:
 But if the request contains the information that the button was pressed, the
 execution works:
 
-  >>> request = TestRequest(params={'form.buttons.apply': 'Apply'})
+  >>> params = MultiDict({'form.buttons.apply': 'Apply'})
+  >>> request = TestRequest()
 
   >>> actions = button.ButtonActions(form, request, None)
-  >>> actions.update()
+  >>> actions.update(params)
   >>> actions.execute()
   successfully applied
 
@@ -287,14 +289,14 @@ This declaration behaves identical to the one before:
   >>> request = TestRequest()
 
   >>> actions = button.ButtonActions(form, request, None)
-  >>> actions.update()
+  >>> actions.update(MultiDict())
   >>> actions.execute()
 
 When sending in the right information, the actions are executed:
 
-  >>> request = TestRequest(params={'form.buttons.apply': 'Apply'})
+  >>> request = TestRequest()
   >>> actions = button.ButtonActions(form, request, None)
-  >>> actions.update()
+  >>> actions.update(MultiDict({'form.buttons.apply': 'Apply'}))
   >>> actions.execute()
   successfully applied
 
@@ -315,9 +317,8 @@ for it. By default the name is computed from the title of the button, which is
 required. All (keyword) arguments are forwarded to the button
 constructor. Let's now render the form:
 
-  >>> request = TestRequest(params={'form.buttons.apply': 'Apply'})
   >>> actions = button.ButtonActions(form, request, None)
-  >>> actions.update()
+  >>> actions.update(MultiDict({'form.buttons.apply': 'Apply'}))
   >>> actions.execute()
   successfully applied
 
@@ -386,7 +387,7 @@ is available as action:
 
   >>> myform = Form()
   >>> actions = button.ButtonActions(myform, TestRequest(), None)
-  >>> actions.update()
+  >>> actions.update(MultiDict())
   >>> actions.keys()
   ['apply']
 
@@ -394,7 +395,7 @@ If we set the show-apply attribute to false, the action will not be available.
 
   >>> myform.showApply = False
   >>> actions = button.ButtonActions(myform, TestRequest(), None)
-  >>> actions.update()
+  >>> actions.update(MultiDict())
   >>> actions.keys()
   []
 

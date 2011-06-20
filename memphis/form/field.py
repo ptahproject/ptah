@@ -2,6 +2,7 @@
 import zope.component
 import zope.interface
 import zope.schema.interfaces
+from zope import interface
 from zope.component import getSiteManager
 
 from memphis import config
@@ -16,7 +17,7 @@ def _initkw(keepReadOnly=(), omitReadOnly=False, **defaults):
 
 class Field(object):
     """Field implementation."""
-    zope.interface.implements(interfaces.IField)
+    interface.implements(interfaces.IField)
 
     widgetFactory = ''
 
@@ -24,7 +25,6 @@ class Field(object):
         self.field = field
         if name is None:
             name = field.__name__
-        assert name
         self.__name__ = util.expandPrefix(prefix) + name
         self.prefix = prefix
         self.mode = mode
@@ -38,7 +38,7 @@ class Field(object):
 
 class Fields(util.SelectionManager):
     """Field manager."""
-    zope.interface.implements(interfaces.IFields)
+    interface.implements(interfaces.IFields)
     managerInterface = interfaces.IFields
 
     def __init__(self, *args, **kw):
@@ -46,7 +46,7 @@ class Fields(util.SelectionManager):
 
         fields = []
         for arg in args:
-            if isinstance(arg, zope.interface.interface.InterfaceClass):
+            if isinstance(arg, interface.interface.InterfaceClass):
                 for name, field in zope.schema.getFieldsInOrder(arg):
                     fields.append((name, field, arg))
 
@@ -70,6 +70,7 @@ class Fields(util.SelectionManager):
         self._data_keys = []
         self._data_values = []
         self._data = {}
+
         for name, field, iface in fields:
             if isinstance(field, Field):
                 form_field = field
@@ -121,12 +122,11 @@ class Fields(util.SelectionManager):
 class FieldWidgets(util.Manager):
     """Widget manager for IWidget."""
     config.adapts(
-        interfaces.IFieldsForm,
-        zope.interface.Interface)
-    zope.interface.implementsOnly(interfaces.IWidgets)
+        interfaces.IFieldsForm, interface.Interface)
+    interface.implementsOnly(interfaces.IWidgets)
 
     prefix = 'widgets.'
-    mode = interfaces.IInputMode
+    mode = interfaces.INPUT_MODE
     errors = ()
     hasRequiredFields = False
     ignoreReadonly = False
@@ -136,10 +136,13 @@ class FieldWidgets(util.Manager):
         super(FieldWidgets, self).__init__()
         self.form = form
         self.request = request
-        self.content = form.getContent()
 
     def update(self):
-        """See interfaces.IWidgets"""
+        content = self.content = self.form.getContent()
+
+        self._data = {}
+        self._data_values = []
+
         # Create a unique prefix.
         prefix = util.expandPrefix(self.form.prefix)
         prefix += util.expandPrefix(self.prefix)
@@ -156,7 +159,7 @@ class FieldWidgets(util.Manager):
             if field.mode is not None:
                 mode = field.mode
             elif field.field.readonly and not self.ignoreReadonly:
-                mode = interfaces.IDisplayMode
+                mode = interfaces.DISPLAY_MODE
 
             # Step 2: Get the widget for the given field.
             shortName = field.__name__
@@ -177,8 +180,8 @@ class FieldWidgets(util.Manager):
             widget.name = str(prefix + shortName)
             widget.id = str(prefix + shortName).replace('.', '-')
 
-            # Step 4: Set the context
-            widget.context = self.content
+            # Step 4: Set the content
+            widget.content = content
 
             # Step 5: Set the form
             widget.form = self.form
@@ -210,12 +213,12 @@ class FieldWidgets(util.Manager):
     def extract(self):
         """See interfaces.IWidgets"""
         data = {}
-        sm = zope.component.getSiteManager()
+        sm = getSiteManager()
         errors = Errors()
         errorViews = []
 
         for name, widget in self.items():
-            if widget.mode == interfaces.IDisplayMode:
+            if widget.mode == interfaces.DISPLAY_MODE:
                 continue
 
             value = widget.field.missing_value
@@ -236,22 +239,19 @@ class FieldWidgets(util.Manager):
                 if field is not None:
                     if self.content is not None:
                         field = field.bind(self.content)
-                    sm.getMultiAdapter((self.form, field),
-                                       interfaces.IValidator).validate(value)
-            except (zope.interface.Invalid,
-                    ValueError, MultipleErrors), error:
+
+                    if value is not interfaces.NOT_CHANGED:
+                        field.validate(value)
+
+            except (interface.Invalid, ValueError, MultipleErrors), error:
                 errors.append(WidgetError(name, error))
-                view = sm.getMultiAdapter(
-                    (error, self.request), interfaces.IErrorViewSnippet)
-                view.update(widget)
-                if self.setErrors:
-                    widget.error = view
-                errorViews.append(view)
 
             data[widget.__name__] = value
 
+        # call form validation
         self.form.validate(data, errors)
 
+        # prepare errors for viewing
         for error in errors:
             if interfaces.IWidgetError.providedBy(error):
                 widget = self.get(error.name)
@@ -272,25 +272,4 @@ class FieldWidgets(util.Manager):
         if self.setErrors:
             self.errors = errorViews
 
-        return data, errors
-
-
-class FieldValidator(object):
-    """Simple Field Validator"""
-    zope.interface.implements(interfaces.IValidator)
-    config.adapts(zope.interface.Interface,
-                  zope.schema.interfaces.IField)
-
-    def __init__(self, form, field):
-        self.form = form
-        self.field = field
-
-    def validate(self, value):
-        """See interfaces.IValidator"""
-        if value is not interfaces.NOT_CHANGED:
-            return self.field.validate(value)
-
-    def __repr__(self):
-        return "<%s for %s['%s']>" %(
-            self.__class__.__name__,
-            self.field.interface.getName(), self.field.__name__)
+        return data, errorViews

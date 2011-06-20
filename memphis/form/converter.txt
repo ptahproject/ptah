@@ -21,7 +21,7 @@ Let's look at the ``Int`` field to ``TextWidget`` converter as an example:
 
   >>> from pyramid.testing import DummyRequest as TestRequest
   >>> from memphis.form import widget
-  >>> text = widget.Widget(TestRequest())
+  >>> text = widget.Widget(age, TestRequest())
 
   >>> from memphis.form import converter
   >>> conv = converter.FieldDataConverter(age, text)
@@ -77,7 +77,7 @@ conversion error:
   >>> conv.toFieldValue('3.4')
   Traceback (most recent call last):
   ...
-  ValueError: invalid literal for int(): 3.4
+  ValueError: invalid literal for int() with base 10: '3.4'
 
 Also, the conversion to the field value also validates the data; in this case
 negative values are not allowed:
@@ -101,20 +101,6 @@ Once we ensure that our widget is a text widget, we can lookup the adapter:
   >>> zope.interface.alsoProvides(text, interfaces.ITextWidget)
 
   >>> zope.component.getMultiAdapter((age, text), interfaces.IDataConverter)
-  <FieldDataConverter converts from Int to Widget>
-
-For field-widgets there is a helper adapter that makes the lookup even
-simpler:
-
-  >>> zope.component.provideAdapter(converter.FieldWidgetDataConverter)
-
-After converting our simple widget to a field widget,
-
-  >>> fieldtext = widget.FieldWidget(age, text)
-
-we can now lookup the data converter adapter just by the field widget itself:
-
-  >>> interfaces.IDataConverter(fieldtext)
   <FieldDataConverter converts from Int to Widget>
 
 
@@ -226,9 +212,9 @@ Formatting and parsing should work just fine:
   u'10,239.43'
 
   >>> decimaldc.toFieldValue(u'7.43')
-  Decimal("7.43")
+  Decimal('7.43')
   >>> decimaldc.toFieldValue(u'10,239.43')
-  Decimal("10239.43")
+  Decimal('10239.43')
 
 Again, the error message, is customized to the floating point:
 
@@ -509,7 +495,7 @@ Let's now create a choice field (using a vocabulary) and a widget:
   ...              ]) )
 
   >>> from memphis.form import widget
-  >>> seqWidget = widget.SequenceWidget(TestRequest())
+  >>> seqWidget = widget.SequenceWidget(gender, TestRequest())
   >>> seqWidget.field = gender
 
 We now use the field and widget to instantiate the converter:
@@ -633,7 +619,7 @@ Let's now create a list field (using the previously defined field using
 a vocabulary) and a widget:
 
   >>> genders = zope.schema.List(value_type=gender)
-  >>> seqWidget = widget.SequenceWidget(TestRequest())
+  >>> seqWidget = widget.SequenceWidget(genders, TestRequest())
   >>> seqWidget.field = genders
 
 We now use the field and widget to instantiate the converter:
@@ -680,7 +666,7 @@ For some field, like the ``Set``, the collection type is a tuple. Sigh. In
 these cases we use the last entry in the tuple as the type to use:
 
   >>> genders = zope.schema.Set(value_type=gender)
-  >>> seqWidget = widget.SequenceWidget(TestRequest())
+  >>> seqWidget = widget.SequenceWidget(genders, TestRequest())
   >>> seqWidget.field = genders
 
   >>> csdv = converter.CollectionSequenceDataConverter(genders, seqWidget)
@@ -701,9 +687,7 @@ not yet retrieved, the converter will ask the widget to do so when in need.
 
 So let's see how this works when getting the widget value:
 
-  >>> seqWidget = widget.SequenceWidget(TestRequest())
-  >>> seqWidget.field = genders
-
+  >>> seqWidget = widget.SequenceWidget(genders, TestRequest())
   >>> seqWidget.terms
 
   >>> csdv = converter.CollectionSequenceDataConverter(genders, seqWidget)
@@ -715,9 +699,7 @@ So let's see how this works when getting the widget value:
 
 The same is true when getting the field value:
 
-  >>> seqWidget = widget.SequenceWidget(TestRequest())
-  >>> seqWidget.field = genders
-
+  >>> seqWidget = widget.SequenceWidget(genders, TestRequest())
   >>> seqWidget.terms
 
   >>> csdv = converter.CollectionSequenceDataConverter(genders, seqWidget)
@@ -734,8 +716,7 @@ Corner case: Just in case the field has a sequence as ``_type``:
   ...     _type = (list, tuple)
 
   >>> genders = myField(value_type=gender)
-  >>> seqWidget = widget.SequenceWidget(TestRequest())
-  >>> seqWidget.field = genders
+  >>> seqWidget = widget.SequenceWidget(genders, TestRequest())
 
 We now use the field and widget to instantiate the converter:
 
@@ -793,62 +774,29 @@ field and a widget:
   ...     )
 
   >>> from memphis.form.browser import textlines
-  >>> tlWidget = textlines.TextLinesWidget(TestRequest())
-  >>> tlWidget.field = languages
+  >>> tlWidget = textlines.TextLinesWidget(languages, TestRequest())
 
 We now use the field and widget to instantiate the converter:
 
-#  >>> tlc = converter.TextLinesConverter(languages, tlWidget)
+  >>> tlc = converter.TextLinesConverter(languages, tlWidget)
 
 We can now convert a real value to a widget value:
 
-#  >>> tlc.toWidgetValue([u'de', u'fr', u'en'])
-#  u'de\nfr\nen'
+  >>> tlc.toWidgetValue([u'de', u'fr', u'en'])
+  u'de\nfr\nen'
 
 
 The result is always a string, since text lines widgets only deal with textarea
 as input field. Of course, we can convert the widget value back to an internal
 value:
 
-#  >>> tlc.toFieldValue('de\nfr\nen')
-#  [u'de', u'fr', u'en']
+  >>> tlc.toFieldValue('de\nfr\nen')
+  [u'de', u'fr', u'en']
 
 Each line should be one item:
 
-#  >>> tlc.toFieldValue('this morning\ntomorrow evening\nyesterday')
-#  [u'this morning', u'tomorrow evening', u'yesterday']
-
-An empty string will also cause the missing value to be returned:
-
-#  >>> tlc.toFieldValue('') is None
-#  True
-
-It also should work for schema fields that define their type as tuple,
-for instance zope.schema.Int declares its type as (int, long).
-
-  >>> ids = zope.schema.List(
-  ...     value_type=zope.schema.Int(),
-  ...     )
-
-Let's illustrate the problem:
-
-  >>> zope.schema.Int._type
-  (<type 'int'>, <type 'long'>)
-
-The converter will use the first one.
-
-  >>> tlWidget.field = ids
-  >>> tlc = converter.TextLinesConverter(ids, tlWidget)
-
-Of course, it still can convert to the widget value:
-
-  >>> tlc.toWidgetValue([1,2,3])
-  u'1\n2\n3'
-
-And back:
-
-  >>> tlc.toFieldValue(u'1\n2\n3\n')
-  [1, 2, 3]
+  >>> tlc.toFieldValue('this morning\ntomorrow evening\nyesterday')
+  [u'this morning', u'tomorrow evening', u'yesterday']
 
 An empty string will also cause the missing value to be returned:
 
@@ -859,77 +807,3 @@ Converting Missing value to Widget value returns '':
 
   >>> tlc.toWidgetValue(tlc.field.missing_value)
   u''
-
-Just in case the field has sequence as its ``_type``:
-
-  >>> class myField(zope.schema.List):
-  ...     _type = (list, tuple)
-
-  >>> ids = myField(
-  ...     value_type=zope.schema.Int(),
-  ...     )
-
-The converter will use the latter one.
-
-  >>> tlWidget.field = ids
-  >>> tlc = converter.TextLinesConverter(ids, tlWidget)
-
-Of course, it still can convert to the widget value:
-
-  >>> tlc.toWidgetValue([1,2,3])
-  u'1\n2\n3'
-
-And back:
-
-  >>> tlc.toFieldValue(u'1\n2\n3\n')
-  (1, 2, 3)
-
-
-Multi Data Converter
---------------------
-
-For multi widgets and fields that work with a sequence of other basic types, a
-separate data converter is required. Let's create a list of integers field and
-a widget:
-
-  >>> numbers = zope.schema.List(
-  ...     value_type=zope.schema.Int(),
-  ...     default=[],
-  ...     missing_value=None,
-  ...     )
-
-  >>> from memphis.form.browser import multi
-  >>> multiWidget = multi.MultiWidget(TestRequest())
-  >>> multiWidget.field = numbers
-
-Before we can convert, we have to regsiter a widget for the integer field:
-
-  >>> from memphis.form.browser import text
-  >>> zope.component.provideAdapter(
-  ...     text.TextFieldWidget,
-  ...     (zope.schema.Int, TestRequest))
-
-We now use the field and widget to instantiate the converter:
-
-  >>> conv = converter.MultiConverter(numbers, multiWidget)
-
-We can now convert a list of integers to the multi-widget internal
-representation:
-
-  >>> conv.toWidgetValue([1, 2, 3])
-  [u'1', u'2', u'3']
-
-If the value is the missing value, an empty list is returned:
-
-  >>> conv.toWidgetValue(None)
-  []
-
-Now, let's look at the reverse:
-
-  >>> conv.toFieldValue([u'1', u'2', u'3'])
-  [1, 2, 3]
-
-If the list is empty, the missing value is returned:
-
-  >>> conv.toFieldValue([]) is None
-  True

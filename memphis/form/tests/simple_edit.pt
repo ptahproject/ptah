@@ -2,7 +2,6 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:tal="http://xml.zope.org/namespaces/tal">       
   <body>
-    <i tal:condition="context.status" tal:content="context.status" />
     <ul tal:condition="context.widgets.errors">
       <li tal:repeat="error context.widgets.errors">
         <tal:block condition="error.widget">

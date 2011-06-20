@@ -45,6 +45,7 @@ def test_suite():
                 optionflags=doctest.NORMALIZE_WHITESPACE|doctest.ELLIPSIS,
                 checker=checker,
                 ),
+
             doctest.DocFileSuite(
                 '../form.txt',
                 setUp=setUp, tearDown=tearDown,
@@ -57,12 +58,12 @@ def test_suite():
             #    optionflags=doctest.NORMALIZE_WHITESPACE|doctest.ELLIPSIS,
             #    checker=checker,
             #    ),
-            doctest.DocFileSuite(
-                '../subform.txt',
-                setUp=setUp, tearDown=tearDown,
-                optionflags=doctest.NORMALIZE_WHITESPACE|doctest.ELLIPSIS,
-                checker=checker,
-                ),
+            #doctest.DocFileSuite(
+            #    '../subform.txt',
+            #    setUp=setUp, tearDown=tearDown,
+            #    optionflags=doctest.NORMALIZE_WHITESPACE|doctest.ELLIPSIS,
+            #    checker=checker,
+            #    ),
             doctest.DocFileSuite(
                 '../button.txt',
                 setUp=setUp, tearDown=tearDown,
@@ -89,14 +90,6 @@ def test_suite():
             doctest.DocFileSuite(
                 '../converter.txt',
                 optionflags=doctest.NORMALIZE_WHITESPACE|doctest.ELLIPSIS,
-                checker=renormalizing.RENormalizing([
-                        (re.compile(
-                                r"(invalid literal for int\(\)) with base 10: '(.*)'"),
-                        r'\1: \2'),
-                        (re.compile(
-                                r"Decimal\('(.*)'\)"),
-                         r'Decimal("\1")'),
-                        ])
                 ),
             doctest.DocFileSuite(
                 '../error.txt',

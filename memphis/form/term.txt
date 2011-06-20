@@ -91,13 +91,13 @@ Let's have a look a the vocabulary first:
   >>> from pyramid.testing import DummyRequest as TestRequest
   >>> request = TestRequest()
   >>> import memphis.form.widget
-  >>> widget = memphis.form.widget.Widget(request)
-
   >>> import zope.schema
 
   >>> ratingField = zope.schema.Choice(
   ...     title=u'Rating',
   ...     vocabulary=ratings)
+
+  >>> widget = memphis.form.widget.Widget(ratingField, request)
 
   >>> terms = term.ChoiceTerms(
   ...     None, request, None, ratingField, widget)
@@ -110,6 +110,8 @@ vocabulary is looked up at run time.
   >>> ratingField2 = zope.schema.Choice(
   ...     title=u'Rating',
   ...     vocabulary='Ratings')
+
+  >>> widget = memphis.form.widget.Widget(ratingField2, request)
 
 Initially we get an error because the "Ratings" vocabulary is not defined:
 

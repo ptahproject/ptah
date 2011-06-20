@@ -19,9 +19,9 @@ Let's create an error view message for the ``TooSmall`` validation error:
   >>> from zope.schema.interfaces import TooSmall, TooBig
   >>> from pyramid.testing import DummyRequest as TestRequest
 
-  >>> view = error.ErrorViewSnippet(TooSmall(), TestRequest())
+  >>> view = error.ValidationErrorViewSnippet(TooSmall(), TestRequest())
   >>> view
-  <ErrorViewSnippet for TooSmall>
+  <ValidationErrorViewSnippet for TooSmall>
 
 The discriminators for an error view are as follows: error, request, widget,
 field, form, and content. After updating the view, a test message is available:
@@ -58,29 +58,8 @@ let's create somewhat more interesting setup:
 You must agree, that the follwoing message is pretty dull when entering a
 negative age:
 
-#  >>> print view.render()
-#  <div class="error">Value is too small</div>
-
-So let's register a better message for this particular situation:
-
-#  >>> NegativeAgeMessage = error.ErrorViewMessage(
-#  ...     u'A negative age is not sensible.',
-#  ...     error=TooSmall, field=IPerson['age'])
-
-#  >>> zope.component.provideAdapter(NegativeAgeMessage, name='message')
-
-The created object is a common attribute value for the error view message. The
-discriminators are the same as for the error view itself. Now we create an
-error view message for ``TooSmall`` of the age field:
-
-#  >>> view = error.ErrorViewSnippet(
-#  ...     TooSmall(), TestRequest(), None, IPerson['age'], None, None)
-
-#  >>> view.update()
-#  >>> print view.render()
-#  <div class="error">A negative age is not sensible.</div>
-
-Much better, isn't it?
+  >>> print view.render()
+  <div class="error">Value is too small</div>
 
 We can also provide dynamic error view messages that are computed each time we
 get an error. For example, we have an IAdult interface that have minimal age of

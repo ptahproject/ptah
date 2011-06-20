@@ -11,11 +11,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Utilities helpful to the package.
-
-$Id: util.py 11744 2011-01-28 09:15:15Z fafhrd91 $
-"""
-__docformat__ = "reStructuredText"
+"""Utilities helpful to the package."""
 import re
 import types
 import string
@@ -43,6 +39,7 @@ def createCSSId(name):
 
 
 classTypes = type, types.ClassType
+
 
 def getSpecification(spec, force=False):
     """Get the specification of the given object.
@@ -213,10 +210,6 @@ class Manager(object):
     def __contains__(self, name):
         return bool(self.get(name))
 
-    #XXX TODO:
-    # Add __setitem__ that will add key, value at the end of both lists as in PEP0372
-    # Add insertBefore(key)
-    #     insertAfter(key)
 
 class SelectionManager(Manager):
     """Non-persisents ISelectionManager implementation."""

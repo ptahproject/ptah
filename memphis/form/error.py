@@ -57,16 +57,6 @@ class WidgetError(object):
         self.error = error
 
 
-class CustomValidationError(zope.schema.ValidationError):
-    """ custom validation error """
-
-    def __init__(self, msg):
-        self.__doc__ = msg
-
-    def doc(self):
-        return self.__doc__
-
-
 class ErrorViewSnippet(object):
     """Error view snippet."""
     zope.interface.implements(interfaces.IErrorViewSnippet)

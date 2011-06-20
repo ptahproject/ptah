@@ -44,6 +44,7 @@ our three discriminators, just enough to get it working:
   ...     zope.interface.implements(zope.interface.Interface)
   >>> content = Content()
 
+  >>> from webob.multidict import MultiDict
   >>> from pyramid.testing import DummyRequest as TestRequest
   >>> request = TestRequest()
 
@@ -84,7 +85,7 @@ The action is added immediately:
 However, you should not rely on it being added, and always update the manager
 once all actions were defined:
 
-  >>> manager.update()
+  >>> manager.update(MultiDict())
 
 Note: If the title of the action is a more complex unicode string and no name
 is specified for the action, then a hexadecimal name is created from the
@@ -135,7 +136,7 @@ When an action is executed, an execution adapter is looked up. If there is no
 adapter, nothing happens. So let's create a request that submits the apply
 button:
 
-  >>> request = TestRequest(params={'apply': 'Apply'})
+  >>> request = TestRequest()
   >>> manager = SimpleActions(form, request, content)
 
 We also want to have two buttons in this case, so that we can ensure that only
@@ -146,7 +147,7 @@ one is executed:
 
   >>> cancel = action.Action(request, u'Cancel')
   >>> manager.append(cancel.name, cancel)
-  >>> manager.update()
+  >>> manager.update(MultiDict({'apply': 'Apply'}))
 
 Now that the manager is updated, we can ask it for the "executed" actions:
 
@@ -182,8 +183,9 @@ action. Now, executing the actions calls this handler:
 
 Of course it only works for the "Apply" action and not ""Cancel":
 
-  >>> request = TestRequest(form={'cancel': 'Cancel'})
-  >>> manager.request = apply.request = cancel.request = request
+  >>> request = TestRequest()
+  >>> manager.params = apply.params = cancel.params = \
+  ...    MultiDict({'cancel': 'Cancel'})
   >>> manager.execute()
 
 Further, when a handler is successfully executed, an event is sent out, so
@@ -198,8 +200,7 @@ let's register an event handler:
 
 Let's now execute the "Apply" action again:
 
-  >>> request = TestRequest(params={'apply': 'Apply'})
-  >>> manager.request = apply.request = cancel.request = request
+  >>> manager.params = apply.params = cancel.params = MultiDict({'apply': 'Apply'})
   >>> manager.execute()
   successfully applied
 
@@ -228,8 +229,8 @@ case a simple invalid error.
 
 Executing the "Cancel" action now produces the action error event:
 
-  >>> request = TestRequest(params={'cancel': 'Cancel'})
-  >>> manager.request = apply.request = cancel.request = request
+  >>> params = MultiDict({'cancel': 'Cancel'})
+  >>> manager.params = apply.params = cancel.params = params
   >>> manager.execute()
 
   >>> eventlog[-1]
@@ -237,4 +238,3 @@ Executing the "Cancel" action now produces the action error event:
 
   >>> eventlog[-1].error
   <ActionExecutionError wrapping ...Invalid...>
-
