@@ -109,6 +109,8 @@ grokkerRegistry = martian.GrokkerRegistry()
 grokkerPackages = []
 grokkerPackagesExcludes = {}
 cleanups = []
+modulenum = {}
+modulenext = 0
 
 
 def getContext():
@@ -145,12 +147,25 @@ def begin(packages=None):
 
 
 def commit():
-    global configContext
+    global configContext, modulenext
 
     if configContext is not None:
         config = configContext
         configContext = None
         config.execute_actions()
+        modulenum.clear()
+        modulenext = 1
+
+
+def moduleNum(name):
+    global modulenext
+
+    if name in modulenum:
+        return modulenum[name]
+
+    modulenext += 1
+    modulenum[name] = modulenext
+    return modulenext
 
 
 def addPackage(name, excludes=()):
@@ -281,32 +296,14 @@ def registerCleanup(handler):
         cleanups.append(handler)
 
 
-def distname(name):
-    """
-    >>> print distname('memphis.config.test')
-    memphis.config
-
-    >>> print distname('uknown.unkown')
-    None
-    """
-
-    while 1:
-        try:
-            dist = pkg_resources.get_distribution(name)
-            return dist.project_name
-        except pkg_resources.DistributionNotFound:
-            if '.' in name:
-                name = name.rsplit('.', 1)[0]
-            else:
-                return None
-
-
 def cleanUp():
-    global grokkerPackages, grokkerPackagesExcludes
+    global grokkerPackages, grokkerPackagesExcludes, modulenext
 
     grokkerRegistry.clear()
     grokkerPackages = []
     grokkerPackagesExcludes = {}
+    modulenum.clear()
+    modulenext = 1
 
     for h in cleanups:
         h()

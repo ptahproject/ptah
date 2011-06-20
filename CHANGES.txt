@@ -2,6 +2,12 @@
 CHANGES
 =======
 
+0.5 (2011-06-20)
+----------------
+
+- Fix registerIn directives, organize all registrations by module.
+
+
 0.4 (2011-06-19)
 ----------------
 

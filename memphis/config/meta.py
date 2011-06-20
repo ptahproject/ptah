@@ -96,7 +96,7 @@ class AdaptsGrokker(martian.ClassGrokker):
 
             api.registerAdapter(
                 factory, required, provided, name, configContext, 
-                (api.distname(factory.__module__), 220), info)
+                (api.moduleNum(factory.__module__), 220), info)
 
         return True
 
@@ -121,7 +121,7 @@ class UtilityGrokker(martian.ClassGrokker):
 
         comp = factory()
         api.registerUtility(comp, provides, name, configContext, 
-                            (api.distname(comp.__module__), 230), info)
+                            (api.moduleNum(comp.__module__), 230), info)
         return True
 
 
@@ -140,7 +140,7 @@ class AdapterGrokker(martian.InstanceGrokker):
                 api.registerAdapter(
                     obj, required, provides,
                     kwargs.get('name',''), configContext, 
-                    (api.distname(obj.__module__), 220), info)
+                    (api.moduleNum(obj.__module__), 220), info)
             return True
         else:
             return False
@@ -154,7 +154,7 @@ class HandlerGrokker(martian.InstanceGrokker):
             for required, info in obj._register_handler:
                 api.registerHandler(
                     obj, required, configContext, 
-                    (api.distname(obj.__module__), 210), info)
+                    (api.moduleNum(obj.__module__), 210), info)
             return True
         else:
             return False
@@ -202,14 +202,14 @@ class RegisterInGrokker(martian.GlobalGrokker):
                     configContext,
                     discriminator='registerIn: %s'%id,
                     callable=zca.registerIn, args=(value,),
-                    order = (api.distname(module.__name__), 9),
+                    order = (api.moduleNum(module.__name__), 9),
                     )
 
                 api.action(
                     configContext,
                     discriminator='registerInEnd: %s'%id,
                     callable=zca.registerInEnd,
-                    order = (api.distname(module.__name__), 999999999),
+                    order = (api.moduleNum(module.__name__), 999999999),
                     )
 
         return True
