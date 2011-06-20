@@ -148,6 +148,7 @@ class FieldWidgets(util.Manager):
         prefix += util.expandPrefix(self.prefix)
         request = self.request
         params = self.form.getRequestParams()
+        context = self.form.getContext()
 
         sm = getSiteManager()
 
@@ -181,6 +182,7 @@ class FieldWidgets(util.Manager):
             widget.id = str(prefix + shortName).replace('.', '-')
 
             # Step 4: Set the content
+            widget.context = context
             widget.content = content
 
             # Step 5: Set the form

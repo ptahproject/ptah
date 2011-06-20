@@ -45,6 +45,7 @@ class Widget(object):
 
     form = None
     content = None
+    context = None
 
     def __init__(self, field, request):
         self.field = field

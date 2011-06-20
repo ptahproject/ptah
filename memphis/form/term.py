@@ -57,7 +57,7 @@ class Terms(object):
     zope.schema.interfaces.IChoice,
     interfaces.IWidget)
 def ChoiceTerms(context, request, form, field, widget):
-    field = field.bind(context)
+    field = field.bind(context or widget.context)
     terms = field.vocabulary
     return zope.component.queryMultiAdapter(
         (context, request, form, field, terms, widget), interfaces.ITerms)
@@ -119,7 +119,7 @@ class BoolTerms(Terms):
     zope.schema.interfaces.ICollection,
     interfaces.IWidget)
 def CollectionTerms(context, request, form, field, widget):
-    terms = field.value_type.bind(context).vocabulary
+    terms = field.value_type.bind(context or widget.context).vocabulary
     return zope.component.queryMultiAdapter(
         (context, request, form, field, terms, widget),
         interfaces.ITerms)

@@ -4,8 +4,7 @@ from setuptools import setup, find_packages
 def read(*rnames):
     return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
 
-
-version='0.3'
+version='0.4'
 
 setup(name='memphis.form',
       version=version,

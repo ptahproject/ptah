@@ -104,6 +104,9 @@ class BaseForm(object):
         self.request = request
         self.__parent__ = context
 
+    def getContext(self):
+        return self.context
+
     def getContent(self):
         return self.content
 
