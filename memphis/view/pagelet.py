@@ -97,7 +97,7 @@ def registerPagelet(
         template, layer, configContext, getInfo(2), 
         __frame = frame,
         discriminator = ('memphis.view:pagelet', pageletType, context, layer),
-        actionOrder = (config.distname(frame.f_locals['__name__']), 300),
+        actionOrder = (config.moduleNum(frame.f_locals['__name__']), 300),
         **kw)
 
 

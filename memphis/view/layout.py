@@ -114,7 +114,7 @@ def registerLayout(
         klass, layer, skipParent, configContext, getInfo(2),
         __frame = frame,
         discriminator = ('memphis.view:layout', name, context, view, layer),
-        actionOrder = (config.distname(frame.f_locals['__name__']), 300),
+        actionOrder = (config.moduleNum(frame.f_locals['__name__']), 300),
         **kwargs)
 
 

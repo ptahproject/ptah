@@ -113,7 +113,7 @@ class ZopeViewGrokker(martian.ClassGrokker):
             callable = registerViewImpl,
             args = (name, context, klass, template, layer, layout, permission,
                     default, decorator),
-            order = (config.distname(klass.__module__), 300),
+            order = (config.moduleNum(klass.__module__), 300),
             info = info)
         return True
 
@@ -131,7 +131,7 @@ def registerZopeView(
         layer, layout, permission, default, decorator, configContext, 
         getInfo(), __frame = frame)
         #discriminator = ('memphis.view:zopeView', name, context, layer),
-        #actionOrder = (config.distname(frame.f_locals['__name__']), 300))
+        #actionOrder = (config.moduleNum(frame.f_locals['__name__']), 300))
 
 
 def registerViewImpl(
@@ -197,7 +197,7 @@ def registerZopeDefaultView(
         configContext, getInfo(), __frame = frame,
         )
         #discriminator = ('memphis.view:defaultZopeView', name, context),
-        #actionOrder = (config.distname(frame.f_locals['__name__']), 300))
+        #actionOrder = (config.moduleNum(frame.f_locals['__name__']), 300))
 
 
 def registerDefaultViewImpl(

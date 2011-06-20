@@ -66,7 +66,7 @@ class PageletGrokker(martian.ClassGrokker):
             discriminator = ('memphis.view:pagelet',pageletType,context,layer),
             callable = registerPageletImpl,
             args = (pageletType, context, klass, template, layer),
-            order = (config.distname(klass.__module__), 300),
+            order = (config.moduleNum(klass.__module__), 300),
             info = info)
         return True
 
@@ -94,7 +94,7 @@ class LayoutGrokker(martian.ClassGrokker):
             callable = registerLayoutImpl,
             args = (name, context, view, None, parent,
                     klass, layer, skipParent),
-            order = (config.distname(klass.__module__), 300),
+            order = (config.moduleNum(klass.__module__), 300),
             info = info,
             **kwargs)
 
