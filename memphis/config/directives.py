@@ -30,12 +30,10 @@ class action(Directive):
     def __init__(self, *args, **kw):
         self.name = self.__class__.__name__
 
-        _frame = kw.get('__frame', None)
-        if _frame is None:
-            self.frame = frame = sys._getframe(1)
+        if '__frame' in kw:
+            self.frame = frame = kw.pop('__frame')
         else:
-            self.frame = frame = _frame
-            del kw['__frame']
+            self.frame = frame = sys._getframe(1)
 
         if not self.scope.check(frame):
             raise GrokImportError("The '%s' directive can only be used on "
@@ -51,7 +49,11 @@ class action(Directive):
             self.store.set(frame.f_locals, self, value)
 
     def factory(self, callable, *args, **kw):
-        return callable, args, kw, getInfo()
+        if '__info' in kw:
+            info = kw.pop('__info')
+        else:
+            info = getInfo()
+        return callable, args, kw, info
 
 
 class registerIn(Directive):

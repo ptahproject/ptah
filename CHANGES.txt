@@ -14,6 +14,9 @@ CHANGES
 - Re-register objectEventNodify handler rather than just register.
   This fixes bug with event been send two times.
 
+- Action directive accepts custom __info attribute instead of 
+  default getInfo.
+
 
 0.3 (2011-06-02)
 ----------------
