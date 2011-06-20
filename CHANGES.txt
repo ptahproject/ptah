@@ -2,7 +2,7 @@
 CHANGES
 =======
 
-0.4 (Unreleased)
+0.4 (2011-06-19)
 ----------------
 
 - Added 'registerIn' module directive, it allows
