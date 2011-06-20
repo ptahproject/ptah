@@ -5,7 +5,7 @@ from zope import interface
 from zope.interface import providedBy
 from zope.component import getSiteManager, queryUtility
 
-from webob.exc import HTTPForbidden
+from webob.exc import HTTPForbidden, HTTPException
 from pyramid.interfaces import IView, IViewClassifier
 from pyramid.interfaces import IRequest, INewResponse
 from pyramid.interfaces import IAuthenticationPolicy
@@ -38,7 +38,10 @@ class PyramidView(object):
         return self.factory(context, request)
 
     def __call__(self, context, request):
-        return self.factory(context, request)()
+        try:
+            return self.factory(context, request)()
+        except HTTPException, exc:
+            return exc
 
 
 class SecuredPyramidView(PyramidView):
@@ -51,7 +54,10 @@ class SecuredPyramidView(PyramidView):
     def __call__(self, context, request):
         principals = self.auth.effective_principals(request)
         if self.auth.permits(context, principals, self.permission):
-            return self.factory(context, request)()
+            try:
+                return self.factory(context, request)()
+            except HTTPException, exc:
+                return exc
         msg = getattr(request, 'authdebug_message',
                       'Unauthorized: %s failed permission check' % self.factory)
         raise HTTPForbidden(msg)
@@ -73,32 +79,32 @@ class PyramidViewGrokker(martian.ClassGrokker):
             return False
 
         name, context, layer, template, \
-            layout, permission, default, info = value
+            layout, permission, default, decorator, info = value
         if layer is None:
             layer = IRequest
 
         registerViewImpl(
             name, context, klass, template, layer, layout, permission,
-            default, configContext, info)
+            default, decorator, configContext, info)
         return True
 
 
 def registerView(
     name='', context=None, klass=None, template=None,
     layer=IRequest, layout='', permission='', 
-    default=False, configContext=config.UNSET):
+    default=False, decorator=None, configContext=config.UNSET):
 
     config.action(
         registerViewImpl,
         name, context, klass, template, 
-        layer, layout, permission, default, configContext, getInfo(),
+        layer, layout, permission, default, decorator, configContext, getInfo(),
         __frame = sys._getframe(1))
 
 
 def registerViewImpl(
     name='', context=None, klass=None, template=None,
     layer=IRequest, layout='', permission='', 
-    default=False, configContext=config.UNSET, info=''):
+    default=False, decorator=None, configContext=config.UNSET, info=''):
 
     if permission == '__no_permission_required__':
         permission = None
@@ -127,6 +133,9 @@ def registerViewImpl(
             bases = (klass, View)
 
         view_class = type('View %s'%klass, bases, cdict)
+
+    if decorator:
+        view_class = decorator(view_class)
 
     auth = getSiteManager().queryUtility(IAuthenticationPolicy)
     if auth and permission:
