@@ -3,13 +3,10 @@ import sys, os
 from setuptools import setup, find_packages
 
 def read(*rnames):
-    try:
-        return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
-    except IOError:
-        return ''
+    return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
 
-version='0.5dev'
 
+version='0.5'
 
 setup(name='memphis.view',
       version=version,
@@ -47,10 +44,13 @@ setup(name='memphis.view',
         test=['memphis.config [test]',
               'pyramid',
               'zope.publisher',
+              'Zope2',
               'AccessControl',
+              'Products.statusmessages',
               ],
         pyramid=['pyramid'],
         zope=['AccessControl',
+              'Products.statusmessages',
               'zope.publisher']
         ),
       include_package_data = True,

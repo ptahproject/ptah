@@ -2,6 +2,8 @@
 import sys, martian
 from webob import Response
 from AccessControl import Unauthorized, getSecurityManager
+from Products.statusmessages.interfaces import \
+    IStatusMessage as ZopeIStatusMessage
 
 from zope import interface
 from zope.publisher.interfaces import IDefaultViewName
@@ -11,6 +13,7 @@ from memphis import config
 from memphis.view.view import View
 from memphis.view.layout import Layout
 from memphis.view.directives import zopeView, getInfo
+from memphis.view.interfaces import IStatusMessage
 
 
 class ZopeLayout(object):
@@ -90,7 +93,7 @@ class ZopeViewGrokker(martian.ClassGrokker):
 
     _marker = object()
 
-    def execute(self, klass, configContext=None, **kw):
+    def execute(self, klass, configContext=config.UNSET, **kw):
         if klass in viewsExecuted:
             return False
         viewsExecuted.append(klass)
@@ -104,28 +107,37 @@ class ZopeViewGrokker(martian.ClassGrokker):
         if layer is None:
             layer = IDefaultBrowserLayer
 
-        registerViewImpl(
-            name, context, klass, template, layer, layout, permission,
-            default, decorator, configContext, info)
+        config.addAction(
+            configContext,
+            discriminator = ('memphis.view:zopeView', name, context, layer),
+            callable = registerViewImpl,
+            args = (name, context, klass, template, layer, layout, permission,
+                    default, decorator),
+            order = (config.distname(klass.__module__), 300),
+            info = info)
         return True
 
 
 def registerZopeView(
     name='', context=None, klass=None, template=None,
     layer=IDefaultBrowserLayer, layout='', permission='', default=False, 
-    decorator=None, configContext=None):
+    decorator=None, configContext=config.UNSET):
     
+    frame = sys._getframe(1)
+
     config.action(
         registerViewImpl,
         name, context, klass, template, 
         layer, layout, permission, default, decorator, configContext, 
-        directives.getInfo(), __frame = sys._getframe(1))
+        getInfo(), __frame = frame)
+        #discriminator = ('memphis.view:zopeView', name, context, layer),
+        #actionOrder = (config.distname(frame.f_locals['__name__']), 300))
 
 
 def registerViewImpl(
     name='', context=None, klass=None, template=None,
     layer=IDefaultBrowserLayer, layout='', permission='', default=False,
-    decorator=None, configContext=None, info=''):
+    decorator=None, configContext=config.UNSET, info=''):
 
     if permission in ('zope2.Public', 'zope.Public'):
         permission = None
@@ -176,17 +188,28 @@ def registerViewImpl(
 
 def registerZopeDefaultView(
     name, context=interface.Interface, 
-    layer=IDefaultBrowserLayer, configContext=None):
+    layer=IDefaultBrowserLayer, configContext=config.UNSET):
 
+    frame = sys._getframe(1)
+    
     config.action(
         registerDefaultViewImpl, name, context, layer, 
-        configContext, directives.getInfo(), __frame = sys._getframe(1))
+        configContext, getInfo(), __frame = frame,
+        )
+        #discriminator = ('memphis.view:defaultZopeView', name, context),
+        #actionOrder = (config.distname(frame.f_locals['__name__']), 300))
 
 
 def registerDefaultViewImpl(
     name, context=interface.Interface,
-    layer=IDefaultBrowserLayer, configContext=None, info=''):
+    layer=IDefaultBrowserLayer, configContext=config.UNSET, info=''):
 
     config.registerAdapter(
         name,
         (context, layer), IDefaultViewName, '', configContext, info)
+
+
+@config.adapter(IDefaultBrowserLayer)
+@interface.implementer(IStatusMessage)
+def getMessageService(request):
+    return ZopeIStatusMessage(request)

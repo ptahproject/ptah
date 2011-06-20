@@ -63,7 +63,7 @@ class PyramidViewGrokker(martian.ClassGrokker):
 
     _marker = object()
 
-    def execute(self, klass, configContext=None, **kw):
+    def execute(self, klass, configContext=config.UNSET, **kw):
         if klass in viewsExecuted:
             return False
         viewsExecuted.append(klass)
@@ -86,7 +86,7 @@ class PyramidViewGrokker(martian.ClassGrokker):
 def registerView(
     name='', context=None, klass=None, template=None,
     layer=IRequest, layout='', permission='', 
-    default=False, configContext=None):
+    default=False, configContext=config.UNSET):
 
     config.action(
         registerViewImpl,
@@ -98,7 +98,7 @@ def registerView(
 def registerViewImpl(
     name='', context=None, klass=None, template=None,
     layer=IRequest, layout='', permission='', 
-    default=False, configContext=None, info=''):
+    default=False, configContext=config.UNSET, info=''):
 
     if permission == '__no_permission_required__':
         permission = None
@@ -144,7 +144,7 @@ def registerViewImpl(
 
 
 def registerDefaultView(name, context=interface.Interface,
-                        layer=IRequest, configContext = None):
+                        layer=IRequest, configContext = config.UNSET):
 
     config.action(
         registerDefaultViewImpl, name, context, layer, 
@@ -152,8 +152,9 @@ def registerDefaultView(name, context=interface.Interface,
         __frame = sys._getframe(1))
 
 
-def registerDefaultViewImpl(name, context=interface.Interface,
-                            layer=IRequest, configContext = None, info=''):
+def registerDefaultViewImpl(
+    name, context=interface.Interface,
+    layer=IRequest, configContext = config.UNSET, info=''):
 
     def view(context, request):
         return renderView(name, context, request)

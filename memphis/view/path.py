@@ -33,6 +33,7 @@ ignore_types = [ imp.C_EXTENSION, imp.C_BUILTIN ]
 init_names = [ '__init__%s' % x[0] for x in imp.get_suffixes() if
                x[0] and x[2] not in ignore_types ]
 
+
 def caller_path(path, level=2):
     if not os.path.isabs(path):
         module = caller_module(level+1)
@@ -40,11 +41,13 @@ def caller_path(path, level=2):
         path = os.path.join(prefix, path)
     return path
 
+
 def caller_module(level=2, sys=sys):
     module_globals = sys._getframe(level).f_globals
     module_name = module_globals.get('__name__') or '__main__'
     module = sys.modules[module_name]
     return module
+
 
 def package_name(pkg_or_module):
     """ If this function is passed a module, return the dotted Python
@@ -61,11 +64,13 @@ def package_name(pkg_or_module):
         return pkg_name
     return pkg_name.rsplit('.', 1)[0]
 
+
 def package_of(pkg_or_module):
     """ Return the package of a module or return the package itself """
     pkg_name = package_name(pkg_or_module)
     __import__(pkg_name)
     return sys.modules[pkg_name]
+
 
 def caller_package(level=2, caller_module=caller_module):
     # caller_module in arglist for tests
@@ -77,6 +82,7 @@ def caller_package(level=2, caller_module=caller_module):
     # Go up one level to get package
     package_name = module.__name__.rsplit('.', 1)[0]
     return sys.modules[package_name]
+
 
 def package_path(package):
     # computing the abspath is actually kinda expensive so we memoize
@@ -93,4 +99,3 @@ def package_path(package):
             # this is only an optimization, ignore any error
             pass
     return prefix
-

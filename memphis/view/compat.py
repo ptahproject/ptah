@@ -62,10 +62,10 @@ def getLocale(request):
             return locale
 
 
-def translate(msgid, domain=None, mapping=None, context=None,
+def translate(msgid, context=None, domain=None, mapping=None, 
               target_language=None, default=None):
-    if IPyramidRequest.providedBy(request):
-        return get_localizer(request).translate(msgid, domain, mapping)
+    if IPyramidRequest.providedBy(context):
+        return get_localizer(context).translate(msgid, domain, mapping)
     else:
         return i18n_translate(msgid, domain=domain, mapping=mapping,
                               context=context, target_language=target_language,

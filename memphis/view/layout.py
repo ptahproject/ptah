@@ -104,19 +104,24 @@ class Layout(object):
 def registerLayout(
     name='', context=None, view=None, template=None, parent='',
     klass=None, layer=interface.Interface, 
-    skipParent=False, configContext=None, **kwargs):
+    skipParent=False, configContext=config.UNSET, **kwargs):
+
+    frame = sys._getframe(1)
 
     config.action(
         registerLayoutImpl,
         name, context, view, template, parent,
-        klass, layer, skipParent, configContext, getInfo(),
-        __frame = sys._getframe(1), **kwargs)
+        klass, layer, skipParent, configContext, getInfo(2),
+        __frame = frame,
+        discriminator = ('memphis.view:layout', name, context, view, layer),
+        actionOrder = (config.distname(frame.f_locals['__name__']), 300),
+        **kwargs)
 
 
 def registerLayoutImpl(
     name='', context=None, view=None, template=None, parent='',
     klass=None, layer=interface.Interface, 
-    skipParent=False, configContext=None, info='', **kwargs):
+    skipParent=False, configContext=config.UNSET, info='', **kwargs):
 
     if not parent:
         layout = None

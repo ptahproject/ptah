@@ -51,15 +51,7 @@ class PageletType(object):
 
 
 def renderPagelet(ptype, context, request):
-    if isinstance(ptype, InterfaceClass):
-        pt = ptype.queryTaggedValue('memphis.view.pageletType', None)
-    else:
-        pt = queryUtility(IPageletType, ptype)
-
-    if pt is None:
-        raise HTTPNotFound
-
-    pagelet = queryMultiAdapter((context, request), pt.type)
+    pagelet = queryMultiAdapter((context, request), ptype)
     if pagelet is None:
         raise HTTPNotFound
 
@@ -70,7 +62,7 @@ def renderPagelet(ptype, context, request):
         raise
 
 
-def registerPageletType(name, iface, context, configContext=None):
+def registerPageletType(name, iface, context, configContext=config.UNSET):
 
     config.action(
         registerPageletTypeImpl,
@@ -78,7 +70,8 @@ def registerPageletType(name, iface, context, configContext=None):
         __frame = sys._getframe(1))
 
 
-def registerPageletTypeImpl(name, iface, context, configContext=None, info=''):
+def registerPageletTypeImpl(name, iface, context, 
+                            configContext=config.UNSET, info=''):
     pt = PageletType(name, iface, context)
 
     iface.setTaggedValue('memphis.view.pageletType', pt)
@@ -94,62 +87,60 @@ def cleanUp():
 
 def registerPagelet(
     pageletType, context=None, klass=None,
-    template=None, layer=interface.Interface, configContext=None, **kw):
+    template=None, layer=interface.Interface, configContext=config.UNSET, **kw):
+
+    frame = sys._getframe(1)
 
     config.action(
         registerPageletImpl,
         pageletType, context, klass,
         template, layer, configContext, getInfo(2), 
-        __frame = sys._getframe(1), **kw)
+        __frame = frame,
+        discriminator = ('memphis.view:pagelet', pageletType, context, layer),
+        actionOrder = (config.distname(frame.f_locals['__name__']), 300),
+        **kw)
 
 
 def registerPageletImpl(
     pageletType, context=None, klass=None,
-    template=None, layer=interface.Interface, configContext=None, info='',**kw):
+    template=None, layer=interface.Interface, 
+    configContext=config.UNSET, info='', **kw):
 
-    def _register(pageletType, context, klass, layer, template, kw):
-        if klass is not None and klass in _registered:
-            raise ValueError("Class can be used for pagelet only once.")
+    if klass is not None and klass in _registered:
+        raise ValueError("Class can be used for pagelet only once.")
 
-        cdict = dict(kw)
-        if template is not None:
-            cdict['template'] = template
+    cdict = dict(kw)
+    if template is not None:
+        cdict['template'] = template
 
-        # find PageletType info
-        pt = pageletType.queryTaggedValue('memphis.view.pageletType', None)
-        if pt is None:
-            raise LookupError(
-                "Can't find pagelet type: '%s'"%pageletType)
+    # find PageletType info
+    pt = pageletType.queryTaggedValue('memphis.view.pageletType', None)
+    if pt is None:
+        raise LookupError(
+            "Can't find pagelet type: '%s'"%pageletType)
 
-        if context is None:
-            requires = [pt.context, layer]
-        else:
-            requires = [context, layer]
+    if context is None:
+        requires = [pt.context, layer]
+    else:
+        requires = [context, layer]
 
+    # Build a new class
+    if klass is not None and issubclass(klass, Pagelet):
+        _registered.append(klass)
+        pagelet_class = klass
+        for attr, value in cdict.items():
+            setattr(pagelet_class, attr, value)
+    else:
         # Build a new class
-        if klass is not None and issubclass(klass, Pagelet):
-            _registered.append(klass)
-            pagelet_class = klass
-            for attr, value in cdict.items():
-                setattr(pagelet_class, attr, value)
+        if klass is None:
+            bases = (Pagelet,)
         else:
-            # Build a new class
-            if klass is None:
-                bases = (Pagelet,)
-            else:
-                bases = (klass, Pagelet)
+            bases = (klass, Pagelet)
+            
+        pagelet_class = type('Pagelet %s'%klass, bases, cdict)
 
-            pagelet_class = type('Pagelet %s'%klass, bases, cdict)
+    if not pt.type.implementedBy(pagelet_class):
+        interface.classImplements(pagelet_class, pt.type)
 
-        if not pt.type.implementedBy(pagelet_class):
-            interface.classImplements(pagelet_class, pt.type)
-
-        # register pagelet
-        component.getSiteManager().registerAdapter(
-            pagelet_class, requires, pt.type)
-
-    config.addAction(
-        configContext,
-        ('memphis.view:registerPagelet', pageletType, context, layer),
-        callable = _register,
-        args = (pageletType, context, klass, layer, template, kw))
+    # register pagelet
+    component.getSiteManager().registerAdapter(pagelet_class, requires, pt.type)

@@ -3,7 +3,7 @@ CHANGES
 =======
 
 
-0.5 (Unreleased)
+0.5 (2011-06-19)
 ----------------
 
 - Added zope support

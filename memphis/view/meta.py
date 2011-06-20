@@ -28,7 +28,7 @@ class PageletTypeGrokker(martian.InstanceGrokker):
     martian.component(InterfaceClass)
     martian.directive(pageletType)
 
-    def grok(self, name, interface, configContext=None, **kw):
+    def grok(self, name, interface, configContext=config.UNSET, **kw):
         if interface in typesExecuted:
             return False
         typesExecuted.append(interface)
@@ -48,7 +48,7 @@ class PageletGrokker(martian.ClassGrokker):
     martian.component(Pagelet)
     martian.directive(pagelet)
 
-    def execute(self, klass, configContext=None, **kw):
+    def execute(self, klass, configContext=config.UNSET, **kw):
         if klass in pageletsExecuted:
             return False
         pageletsExecuted.append(klass)
@@ -61,8 +61,13 @@ class PageletGrokker(martian.ClassGrokker):
         if layer is None:
             layer = interface.Interface
 
-        registerPageletImpl(pageletType, context, klass,
-                            template, layer, configContext, info)
+        config.addAction(
+            configContext,
+            discriminator = ('memphis.view:pagelet',pageletType,context,layer),
+            callable = registerPageletImpl,
+            args = (pageletType, context, klass, template, layer),
+            order = (config.distname(klass.__module__), 300),
+            info = info)
         return True
 
 
@@ -70,7 +75,7 @@ class LayoutGrokker(martian.ClassGrokker):
     martian.component(Layout)
     martian.directive(layout)
 
-    def execute(self, klass, configContext=None, **kw):
+    def execute(self, klass, configContext=config.UNSET, **kw):
         if klass in layoutsExecuted:
             return False
         layoutsExecuted.append(klass)
@@ -83,7 +88,14 @@ class LayoutGrokker(martian.ClassGrokker):
         if layer is None:
             layer = interface.Interface
 
-        registerLayoutImpl(
-            name, context, view, None, parent,
-            klass, layer, skipParent, configContext, info, **kwargs)
+        config.addAction(
+            configContext,
+            discriminator = ('memphis.view:layout', name, context, view, layer),
+            callable = registerLayoutImpl,
+            args = (name, context, view, None, parent,
+                    klass, layer, skipParent),
+            order = (config.distname(klass.__module__), 300),
+            info = info,
+            **kwargs)
+
         return True
