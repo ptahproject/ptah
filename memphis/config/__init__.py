@@ -26,3 +26,27 @@ from memphis.config.directives import handler
 from memphis.config.directives import action
 from memphis.config.directives import utility
 from memphis.config.directives import registerIn
+
+
+commitOnDatabaseOpened = True
+try:
+    from zope.processlifetime import IDatabaseOpenedWithRoot
+
+    import pkg_resources
+    from zope.component import getSiteManager
+
+    def commitConfig(ev):
+        if commitOnDatabaseOpened:
+
+            for dist in pkg_resources.working_set:
+                distmap = pkg_resources.get_entry_map(dist, 'memphis')
+                if distmap:
+                    loadPackage(dist.project_name)
+
+            begin()
+            commit()
+
+    getSiteManager().registerHandler(commitConfig, (IDatabaseOpenedWithRoot,))
+
+except ImportError:
+    pass

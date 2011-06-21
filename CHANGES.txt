@@ -2,6 +2,13 @@
 CHANGES
 =======
 
+
+0.6 (Unreleased)
+----------------
+
+- Added different memphis initialization procedure.
+
+
 0.5 (2011-06-20)
 ----------------
 

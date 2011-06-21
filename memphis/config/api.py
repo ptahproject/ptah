@@ -104,7 +104,7 @@ from zope.configuration.xmlconfig import registerCommonDirectives
 
 
 UNSET = object()
-configContext = ConfigurationMachine()
+configContext = None
 grokkerRegistry = martian.GrokkerRegistry()
 grokkerPackages = []
 grokkerPackagesExcludes = {}
