@@ -45,6 +45,8 @@ setup(name='memphis.config',
       zip_safe = False,
       entry_points = {
         'memphis': ['grokker = memphis.config.meta',
-                    'package = memphis.config']
+                    'package = memphis.config'],
+        'z3c.autoinclude.plugin':
+                   ['target = plone'],
         },
       )

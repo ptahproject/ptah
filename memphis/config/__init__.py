@@ -37,7 +37,6 @@ try:
 
     def commitConfig(ev):
         if commitOnDatabaseOpened:
-
             for dist in pkg_resources.working_set:
                 distmap = pkg_resources.get_entry_map(dist, 'memphis')
                 if distmap:
