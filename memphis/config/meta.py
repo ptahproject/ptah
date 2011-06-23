@@ -171,13 +171,13 @@ class ActionGrokker(martian.GlobalGrokker):
 
                 for callable, args, kwargs, info in value:
                     kwargs = dict(kwargs)
-                    if 'discriminator' in kwargs:
+                    if '__discriminator' in kwargs:
                         order = 0
-                        discriminator = kwargs['discriminator']
-                        del kwargs['discriminator']
-                        if 'actionOrder' in kwargs:
-                            order = kwargs['actionOrder']
-                            del kwargs['actionOrder']
+                        discriminator = kwargs['__discriminator']
+                        del kwargs['__discriminator']
+                        if '__order' in kwargs:
+                            order = kwargs['__order']
+                            del kwargs['__order']
 
                         api.action(
                             configContext, discriminator,

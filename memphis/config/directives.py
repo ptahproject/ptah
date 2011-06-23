@@ -44,6 +44,9 @@ class action(Directive):
 
         value = self.factory(*args, **kw)
         if self.immediately:
+            for key in ('__order', '__discriminator'):
+                if key in value[2]:
+                    del value[2][key]
             value[0](*value[1], **value[2])
         else:
             self.store.set(frame.f_locals, self, value)
