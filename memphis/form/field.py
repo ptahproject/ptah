@@ -218,6 +218,7 @@ class FieldWidgets(util.Manager):
         sm = getSiteManager()
         errors = Errors()
         errorViews = []
+        context = self.form.getContext()
 
         for name, widget in self.items():
             if widget.mode == interfaces.DISPLAY_MODE:
@@ -239,8 +240,8 @@ class FieldWidgets(util.Manager):
                 # validate value
                 field = getattr(widget, 'field', None)
                 if field is not None:
-                    if self.content is not None:
-                        field = field.bind(self.content)
+                    if context is not None:
+                        field = field.bind(context)
 
                     if value is not interfaces.NOT_CHANGED:
                         field.validate(value)

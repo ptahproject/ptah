@@ -2,11 +2,6 @@
 Field Managers
 ==============
 
-One of the features in ``zope.formlib`` that works really well is the syntax
-used to define the contents of the form. The formlib uses form fields, to
-describe how the form should be put together. Since we liked this way of
-working, this package offers this feature as well in a very similar way.
-
 A field manager organizes all fields to be displayed within a form. Each field
 is associated with additional meta-data. The simplest way to create a field
 manager is to specify the schema from which to extract all fields.
