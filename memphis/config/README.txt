@@ -207,7 +207,7 @@ each time config is reinitialized (testing support)::
 
     >>> config.begin()
 
-    >>> _ = config.action(testFunc, discriminator=('test',), actionOrder=10)
+    >>> _ = config.action(testFunc, __discriminator=('test',), __order=10)
 
     >>> reGrok()
 
