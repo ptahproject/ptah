@@ -37,6 +37,7 @@ setup(name='memphis.view',
                           'chameleon>=2.0-rc11',
                           'zope.component',
                           'zope.interface',
+                          'zope.i18n',
                           'memphis.config',
                           ],
       extras_require = dict(
