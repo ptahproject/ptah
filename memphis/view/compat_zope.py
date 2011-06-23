@@ -129,9 +129,10 @@ def registerZopeView(
         registerViewImpl,
         name, context, klass, template, 
         layer, layout, permission, default, decorator, configContext, 
-        getInfo(), __frame = frame)
-        #discriminator = ('memphis.view:zopeView', name, context, layer),
-        #actionOrder = (config.moduleNum(frame.f_locals['__name__']), 300))
+        getInfo(),
+        __frame = frame,
+        __discriminator = ('memphis.view:zopeView', name, context, layer),
+        __order = (config.moduleNum(frame.f_locals['__name__']), 300))
 
 
 def registerViewImpl(
@@ -194,10 +195,10 @@ def registerZopeDefaultView(
     
     config.action(
         registerDefaultViewImpl, name, context, layer, 
-        configContext, getInfo(), __frame = frame,
-        )
-        #discriminator = ('memphis.view:defaultZopeView', name, context),
-        #actionOrder = (config.moduleNum(frame.f_locals['__name__']), 300))
+        configContext, getInfo(), 
+        __frame = frame,
+        __discriminator = ('memphis.view:defaultZopeView', name, context),
+        __order = (config.moduleNum(frame.f_locals['__name__']), 300))
 
 
 def registerDefaultViewImpl(
