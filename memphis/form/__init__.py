@@ -5,7 +5,7 @@ from memphis.form.form import applyChanges
 from memphis.form.form import extends, handleActionError
 from memphis.form.form import Form, EditForm, SubForm, Group, DisplayForm
 
-from memphis.form.interfaces import ISubForm, IGroup, IDisplayForm
+from memphis.form.interfaces import IForm, ISubForm, IGroup, IDisplayForm
 from memphis.form.interfaces import INPUT_MODE, DISPLAY_MODE, HIDDEN_MODE
 
 # widget
