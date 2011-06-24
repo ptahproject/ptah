@@ -78,7 +78,6 @@ def registerObjectEvent():
     sm.unregisterHandler(objectEventNotify)
     sm.registerHandler(objectEventNotify)
 
-
 registries = {}
 
 def BC(name):
@@ -130,7 +129,7 @@ stack = []
 def registry(name, title=u'', description=u'', addon=False):
     sm = Registry(name)
     sm.title = title
-    sm.description = description,
+    sm.description = description
     sm.addon = addon
     registries[name] = sm
     return sm
@@ -158,3 +157,8 @@ def registerInEnd():
 
     site = stack.pop()
     setSite(site)
+
+
+@api.cleanup
+def cleanup():
+    registries.clear()
