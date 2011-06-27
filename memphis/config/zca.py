@@ -61,7 +61,7 @@ registry
   True
 
 """
-import random, pkg_resources
+import sys, random, pkg_resources
 from zope.component import globalSiteManager, getSiteManager
 from zope.component.hooks import getSite, setSite
 from zope.component.registry import Components
@@ -77,6 +77,7 @@ def registerObjectEvent():
     sm = globalSiteManager
     sm.unregisterHandler(objectEventNotify)
     sm.registerHandler(objectEventNotify)
+
 
 registries = {}
 
@@ -132,6 +133,19 @@ def registry(name, title=u'', description=u'', addon=False):
     sm.description = description
     sm.addon = addon
     registries[name] = sm
+
+    def complete():
+        registries[name] = sm
+
+    frame = sys._getframe(1)
+
+    action(
+        complete,
+        __frame = frame,
+        __info = directives.getInfo(2),
+        __discriminator = ('memphis.config:registry', name),
+        __order = (api.moduleNum(frame.f_locals['__name__']), 0))
+
     return sm
 
 
