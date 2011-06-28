@@ -54,7 +54,7 @@ registry
   >>> del registries['test']
 
   >>> f(*name)
-  Broken registry
+  Broken registry: test
 
   >>> registerInEnd()
   >>> globalSiteManager is getSiteManager()
