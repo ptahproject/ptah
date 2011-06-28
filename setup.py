@@ -40,7 +40,8 @@ setup(name='memphis.config',
         'zope.configuration',
         ],
       extras_require = dict(
-        test=['zope.configuration [test]']),
+        test=['zope.configuration [test]',
+              'zope.processlifetime',]),
       include_package_data = True,
       zip_safe = False,
       entry_points = {
