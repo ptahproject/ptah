@@ -64,7 +64,7 @@ class registerIn(Directive):
     store = ONCE_NOBASE
 
     def factory(self, name):
-        return name
+        return name, getInfo()
 
 
 class adapts(Directive):

@@ -84,7 +84,8 @@ registries = {}
 def BC(name):
     bc = registries.get(name, None)
     if bc is None:
-        return broken
+        registries[name] = BrokenRegistry(name)
+        return registries[name]
     else:
         return bc
 
@@ -96,21 +97,23 @@ class Registry(BaseGlobalComponents):
         self.description = description
         self.addon = addon
         self.__name__ = name
-        self.__parent__ =  globalSiteManager
         super(Registry, self).__init__(name)
 
     def __reduce__(self):
         return BC, (self.__name__,)
 
 
-class BrokenRegistry(Components):
+class BrokenRegistry(BaseGlobalComponents):
 
-    def __init__(self):
-        self.__parent__ =  globalSiteManager
-        super(BrokenRegistry, self).__init__('broken')
+    def __init__(self, name, title=u'', description=u'', addon=False):
+        self.title = title
+        self.description = description
+        self.addon = addon
+        self.__name__ = name
+        super(BrokenRegistry, self).__init__(name)
 
     def __repr__(self):
-        return "Broken registry"
+        return "Broken registry: %s"%self.__name__
 
 
 class Site(object):
@@ -120,9 +123,6 @@ class Site(object):
 
     def getSiteManager(self):
         return self.sm
-
-
-broken = BrokenRegistry()
 
 
 stack = []

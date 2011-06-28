@@ -198,11 +198,13 @@ class RegisterInGrokker(martian.GlobalGrokker):
                 _rmodules.append((name, module))
 
                 id = random.randint(1, 99999)
+                name, info = value
                 api.action(
                     configContext,
                     discriminator='registerIn: %s'%id,
-                    callable=zca.registerIn, args=(value,),
+                    callable=zca.registerIn, args=(name,),
                     order = (api.moduleNum(module.__name__), 9),
+                    info = info
                     )
 
                 api.action(
