@@ -6,7 +6,7 @@ def read(*rnames):
     return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
 
 
-version='0.6'
+version='0.7dev'
 
 setup(name='memphis.config',
       version=version,
