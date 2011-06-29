@@ -3,10 +3,14 @@ CHANGES
 =======
 
 
-0.6 (Unreleased)
+0.6 (2011-06-29)
 ----------------
 
 - Added different memphis initialization procedure.
+
+- Change api for action directive.
+  `discriminator` renamed to `__discriminator`,
+  `actionOrder` renamed to `__order`.
 
 
 0.5 (2011-06-20)
