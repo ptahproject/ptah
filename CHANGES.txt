@@ -3,6 +3,14 @@ CHANGES
 =======
 
 
+0.8 (2011-06-29)
+----------------
+
+- Added missing 'zope.i18n' dependency
+
+- Use __discriminator and __order (changes in memphis.config api)
+
+
 0.7 (2011-06-20)
 ----------------
 
