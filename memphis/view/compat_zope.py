@@ -120,7 +120,7 @@ class ZopeViewGrokker(martian.ClassGrokker):
 
 def registerZopeView(
     name='', context=None, klass=None, template=None,
-    layer=IDefaultBrowserLayer, layout='', permission='', default=False, 
+    layer=IDefaultBrowserLayer, layout=None, permission='', default=False, 
     decorator=None, configContext=config.UNSET):
     
     frame = sys._getframe(1)
@@ -137,7 +137,7 @@ def registerZopeView(
 
 def registerViewImpl(
     name='', context=None, klass=None, template=None,
-    layer=IDefaultBrowserLayer, layout='', permission='', default=False,
+    layer=IDefaultBrowserLayer, layout=None, permission='', default=False,
     decorator=None, configContext=config.UNSET, info=''):
 
     if permission in ('zope2.Public', 'zope.Public'):
@@ -147,8 +147,9 @@ def registerViewImpl(
         raise ValueError("Class can be used for view only once.")
 
     cdict = {'__name__': name,
-             'layoutname': layout,
              'template': template}
+    if layout is not None:
+        cdict['layout'] = layout
 
     if context is None:
         context = interface.Interface

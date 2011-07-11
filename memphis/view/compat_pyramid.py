@@ -91,7 +91,7 @@ class PyramidViewGrokker(martian.ClassGrokker):
 
 def registerView(
     name='', context=None, klass=None, template=None,
-    layer=IRequest, layout='', permission='', 
+    layer=IRequest, layout=None, permission='', 
     default=False, decorator=None, configContext=config.UNSET):
 
     config.action(
@@ -112,11 +112,11 @@ def registerViewImpl(
     if klass is not None and klass in registered:
         raise ValueError("Class can be used for view only once.")
 
-    cdict = {'__name__': name,
-             'layoutname': layout}
+    cdict = {'__name__': name}
+    if layout is not None:
+        cdict['layout'] = layout
     if template is not None:
         cdict['template'] = template
-
     if context is None:
         context = interface.Interface
 

@@ -12,7 +12,7 @@ class View(object):
 
     __name__ = ''
     template = None
-    layoutname = ''
+    layout = ''
     content_type = 'text/html'
     
     _params = None
@@ -39,12 +39,15 @@ class View(object):
         try:
             self._params = self.update()
 
-            layout = queryLayout(
-                self, self.request, self.__parent__, self.layoutname)
-            if layout is None:
+            if self.layout is None:
                 res = self.render()
             else:
-                res = layout()
+                layout = queryLayout(
+                    self, self.request, self.__parent__, self.layout)
+                if layout is None:
+                    res = self.render()
+                else:
+                    res = layout()
 
             return Response(body=res, status=200,
                             content_type = self.content_type)

@@ -15,7 +15,7 @@ class IView(interface.Interface):
     context = interface.Attribute('Context')
     request = interface.Attribute('Request')
     template = interface.Attribute('Template')
-    layoutname = interface.Attribute('Layout name')
+    layout = interface.Attribute('Layout name')
 
     def update():
         """Update the pagelet data."""
