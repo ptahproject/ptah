@@ -112,8 +112,9 @@ def registerViewImpl(
     if klass is not None and klass in registered:
         raise ValueError("Class can be used for view only once.")
 
-    cdict = {'__name__': name,
-             'layout': layout}
+    cdict = {'__name__': name}
+    if layout or layout is None:
+        cdict['layout'] = layout
     if template is not None:
         cdict['template'] = template
     if context is None:

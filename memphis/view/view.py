@@ -25,7 +25,6 @@ class View(object):
         self.context = context
         self.request = request
         self.__parent__ = context
-        self.response_headers = {}
 
     def update(self):
         pass
@@ -38,6 +37,12 @@ class View(object):
                        'nothing': None})
 
         return self.template(**kwargs)
+
+    @property
+    def response_headers(self):
+        value = {}
+        self.__dict__['response_headers'] = value
+        return value
 
     def __call__(self, *args, **kw):
         try:
