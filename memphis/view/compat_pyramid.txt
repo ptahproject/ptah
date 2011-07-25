@@ -175,6 +175,98 @@ Parameters are same except klass.
   >>> reGrok()
 
 
+subpath decorator
+-----------------
+
+Its possible to publish method of view.
+
+  >>> class ViewWithSubpath(api.View):
+  ...     updated = False
+  ...     
+  ...     def update(self):
+  ...         self.updated = True
+  ...         return {'test':1}
+  ...         
+  ...     def render(self):
+  ...         return 'ViewWithSubpath.render'
+  ...     
+  ...     @api.subpath()
+  ...     def subpath1(self):
+  ...         return 'ViewWithSubpath.subpath1'
+  ...     
+  ...     @api.subpath(name='test', content_type='text/plain', updateView=True)
+  ...     def subpath2(self):
+  ...         return 'ViewWithSubpath.subpath2'
+  ...     
+  ...     @api.subpath(renderer=api.json, updateView=True)
+  ...     def subpath3(self):
+  ...         return {'view': 'subpath3'}
+  ...     
+  ...     @api.subpath(template=api.template('memphis.view:test.pt'),
+  ...                  updateView=True)
+  ...     def subpath4(self):
+  ...         return {}
+  ...     
+  ...     @api.subpath()
+  ...     def subpath5(self):
+  ...         raise HTTPFound(location='/')
+
+  >>> api.registerView(
+  ...     name="view",
+  ...     klass = ViewWithSubpath)
+
+  >>> request.subpath = ()
+  >>> view = getPyramidView(request, object(), 'view')
+  >>> print view()
+  200 OK
+  Content-Type: text/html; charset=UTF-8
+  ...
+  ViewWithSubpath.render
+
+  >>> request.subpath = ('subpath1',)
+  >>> view = getPyramidView(request, object(), 'view')
+  >>> print view()
+  200 OK
+  ...
+  ViewWithSubpath.subpath1
+
+  >>> request.subpath = ('test',)
+  >>> print view()
+  200 OK
+  Content-Type: text/plain; charset=UTF-8
+  ...
+  ViewWithSubpath.subpath2
+
+  >>> view.updated
+  True
+
+  >>> request.subpath = ('subpath3',)
+  >>> print view()
+  200 OK
+  Content-Type: text/json; charset=UTF-8
+  ...
+  {"view": "subpath3"}
+
+  >>> request.subpath = ('subpath4',)
+  >>> print view()
+  200 OK
+  ...
+  <div>My pagelet</div>
+
+  >>> request.subpath = ('subpath5',)
+  >>> view()
+  <HTTPFound at ... 302 Found>
+
+Can't apply to function
+
+  >>> @api.subpath()
+  ... def test():
+  ...     pass
+  Traceback (most recent call last):
+  ...
+  ValueError: Can apply 'subpath' decorator only to class methods
+  
+
 view permission
 ---------------
 

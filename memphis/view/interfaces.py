@@ -17,6 +17,10 @@ class IView(interface.Interface):
     template = interface.Attribute('Template')
     layout = interface.Attribute('Layout name')
 
+    content_type = interface.Attribute('Content type')
+    response_headers = interface.Attribute('Response headers')
+    response_status = interface.Attribute('Response status')
+
     def update():
         """Update the pagelet data."""
 
@@ -71,6 +75,15 @@ class ILayout(interface.Interface):
 
     def __call__(layout=None, view=None, *args, **kw):
         """ build layout tree and render """
+
+
+class IRenderer(interface.Interface):
+    """ renderer """
+
+    content_type = interface.Attribute('Renderer content_type')
+
+    def __call__(result):
+        """ render result """
 
 
 # navigation root

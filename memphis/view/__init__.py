@@ -1,5 +1,9 @@
 # memphis.view public API
 
+# interfaces
+from memphis.view.interfaces import IView
+from memphis.view.interfaces import IRenderer
+
 # path/template
 from memphis.view.path import path
 from memphis.view.path import template
@@ -16,6 +20,8 @@ from memphis.view.layout import registerLayout
 
 # view
 from memphis.view.view import View
+from memphis.view.view import subpath
+from memphis.view.view import json
 
 # pyramid view
 try:

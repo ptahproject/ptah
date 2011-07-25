@@ -11,7 +11,7 @@ from pyramid.interfaces import IRequest, INewResponse
 from pyramid.interfaces import IAuthenticationPolicy
 
 from memphis import config
-from memphis.view.view import View
+from memphis.view.view import View, subpathWrapper
 from memphis.view.directives import pyramidView, getInfo
 
 from memphis.view.message import MessageService
@@ -91,7 +91,7 @@ class PyramidViewGrokker(martian.ClassGrokker):
 
 def registerView(
     name='', context=None, klass=None, template=None,
-    layer=IRequest, layout=None, permission='', 
+    layer=IRequest, layout='', permission='', 
     default=False, decorator=None, configContext=config.UNSET):
 
     config.action(
@@ -112,11 +112,9 @@ def registerViewImpl(
     if klass is not None and klass in registered:
         raise ValueError("Class can be used for view only once.")
 
-    cdict = {'__name__': name}
-    if layout is not None:
-        cdict['layout'] = layout
-    if template is not None:
-        cdict['template'] = template
+    cdict = {'__name__': name,
+             'layout': layout,
+             'template': template}
     if context is None:
         context = interface.Interface
 
@@ -134,6 +132,10 @@ def registerViewImpl(
 
         view_class = type('View %s'%klass, bases, cdict)
 
+    # add 'subpath' support
+    subpathWrapper(view_class)
+
+    # decorate view class
     if decorator:
         view_class = decorator(view_class)
 

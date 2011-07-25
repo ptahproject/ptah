@@ -5,7 +5,11 @@ CHANGES
 0.9 (Unreleased)
 ----------------
 
-- ...
+- Added 'view.subpath' decorator for view methods.
+  It's possible to call method as subpath of view,
+  example: 
+     /login.html - fullpage
+     /login.html/validate - validate method only
 
 
 0.8 (2011-07-08)
