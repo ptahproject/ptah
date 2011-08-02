@@ -5,7 +5,11 @@ CHANGES
 0.7 (Unreleased)
 ----------------
 
-- Added settings api
+- Added simple settings management api
+
+- Added 'settings' paste command.
+  -l all settings descriptions
+  -p dump all default settings
 
 
 0.6 (2011-06-29)

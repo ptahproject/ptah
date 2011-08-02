@@ -7,6 +7,7 @@ from memphis.config.api import UNSET
 from memphis.config.api import getContext
 from memphis.config.api import addPackage
 from memphis.config.api import loadPackage
+from memphis.config.api import loadPackages
 from memphis.config.api import action as addAction
 from memphis.config.api import cleanup
 from memphis.config.api import registerCleanup
@@ -29,6 +30,7 @@ from memphis.config.directives import registerIn
 
 from memphis.config.settings import Settings
 from memphis.config.settings import FileStorage
+from memphis.config.settings import SimpleWatcher
 from memphis.config.settings import initSettings
 from memphis.config.settings import registerSettings
 

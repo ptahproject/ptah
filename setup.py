@@ -36,6 +36,7 @@ setup(name='memphis.config',
       install_requires = [
         'setuptools',
         'colander',
+        'ordereddict',
         'martian >= 0.14',
         'zope.component',
         'zope.configuration',
@@ -49,6 +50,9 @@ setup(name='memphis.config',
         'memphis': ['grokker = memphis.config.meta',
                     'package = memphis.config'],
         'z3c.autoinclude.plugin':
-                   ['target = plone'],
+            ['target = plone'],
+        'paste.paster_command': [
+            'settings = memphis.config.commands:SettingsCommand',
+            ],
         },
       )

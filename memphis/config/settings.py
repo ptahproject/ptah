@@ -1,8 +1,17 @@
 """ settings api """
-import colander
-import transaction
+import sys, time
 import os.path, ConfigParser
-from pprint import pprint
+from ordereddict import OrderedDict
+from datetime import datetime, timedelta
+
+try:
+    import transaction
+except ImportError:
+    transaction = None
+
+import api
+import colander
+from directives import action, getInfo
 
 
 def initSettings(settings, loader=None, section=ConfigParser.DEFAULTSECT):
@@ -11,7 +20,7 @@ def initSettings(settings, loader=None, section=ConfigParser.DEFAULTSECT):
             settings.get('settings',''),
             settings.get('defaultsettings', ''),
             settings.get('here', ''))
-        
+
     Settings.init(loader, settings)
 
 
@@ -19,21 +28,35 @@ def registerSettings(*args, **kw):
     prefix = kw.get('prefix','')
     title = kw.get('title','')
     description = kw.get('description','')
+    configContext = kw.get('configContext', api.UNSET)
 
     group = Settings.register(prefix, title, description)
 
     for node in args:
-        group.register(node)
+        action(
+            registerSettingsImpl,
+            node, kw, configContext, getInfo(),
+            __discriminator = ('memphis:registerSettings', node.name, prefix),
+            __info = getInfo(2),
+            __frame = sys._getframe(1))
 
     return group
+
+
+def registerSettingsImpl(node, kw, configContext=api.UNSET, info=''):
+    prefix = kw.get('prefix','')
+    title = kw.get('title','')
+    description = kw.get('description','')
+
+    group = Settings.register(prefix, title, description)
+    group.register(node)
 
 
 class SettingsImpl(object):
     """ simple settings management system """
 
-    _loader = None
+    loader = None
     _changed = False
-
 
     def __init__(self):
         self.groups = {}
@@ -56,10 +79,10 @@ class SettingsImpl(object):
                         group.schema[k].default = v
 
     def init(self, loader, defaults=None):
-        self._loader = loader
+        self.loader = loader
 
-        def update():
-            loader.onupdate = update
+        if loader is None:
+            return
 
         if defaults:
             self._load(defaults, True)
@@ -75,12 +98,16 @@ class SettingsImpl(object):
         prefix, name = attr.rsplir('.', 1)
         return self.groups[prefix][name]
 
+    def load(self):
+        if self.loader is not None:
+            self._load(self.loader.load())
+
     def save(self, *args):
         self._changed = False
-        if self._loader is not None:
+        if self.loader is not None:
             data = self.export()
             if data:
-                self._loader.save(data)
+                self.loader.save(data)
 
     def export(self, default=False):
         result = {}
@@ -89,11 +116,12 @@ class SettingsImpl(object):
 
         result = self.schema.serialize(result)
 
-        for prefix, group in self.groups.items():
-            schema = group.schema
-            for key, val in group.items():
-                if val == schema[key].default:
-                    del result[prefix][key]
+        if not default:
+            for prefix, group in self.groups.items():
+                schema = group.schema
+                for key, val in group.items():
+                    if val == schema[key].default:
+                        del result[prefix][key]
 
         return self.schema.flatten(result)
 
@@ -111,15 +139,12 @@ class SettingsImpl(object):
         pass
 
 
-Settings = SettingsImpl()
-
-
 class Group(dict):
 
     def __init__(self, prefix, settings, title, description):
         self.__dict__['prefix'] = prefix
         self.__dict__['title'] = title
-        self.__dict__['description'] = title
+        self.__dict__['description'] = description
         self.__dict__['settings'] = settings
         self.__dict__['schema'] = colander.SchemaNode(
             colander.Mapping(), name=prefix, missing=colander.null)
@@ -142,25 +167,6 @@ class Group(dict):
         pass
 
 
-class Storage(object):
-    """ """
-
-    def __init__(self):
-        self.onupdate = None
-
-    def load(self):
-        raise NotImplemented
-
-    def loadDefault(self):
-        raise NotImplemented
-
-    def save(self):
-        raise NotImplemented
-    
-    def update(self):
-        raise NotImplemented
-
-
 class FileStorage(object):
     """ Simple ConfigParser file storage """
 
@@ -170,8 +176,6 @@ class FileStorage(object):
         self.cfgdefaults = cfgdefaults
         self.here = here
         self.section = section
-        self.watcher = False
-        self.onupdate = None
 
     def load(self):
         if os.path.exists(self.cfg):
@@ -193,7 +197,7 @@ class FileStorage(object):
         if not os.path.exists(self.cfg):
             pass
 
-        parser = ConfigParser.SafeConfigParser()
+        parser = ConfigParser.SafeConfigParser(dict_type=OrderedDict)
         parser.read(self.cfg)
 
         if self.section != ConfigParser.DEFAULTSECT and \
@@ -211,6 +215,26 @@ class FileStorage(object):
         finally:
             fp.close()
 
-    def update(self):
-        if not callable(self.onupdate):
-            return
+
+Settings = SettingsImpl()
+
+
+class SimpleWatcher(object):
+
+    def __init__(self, settings, timeout=5):
+        self.settings = settings
+        self.timeout = timedelta(seconds=timeout)
+        self.checked = datetime.now()
+        self.mtime = time.time()
+
+    def check(self, *args):
+        now = datetime.now()
+        if (self.checked + self.timeout) < now:
+            self.checked = now
+
+            cfg = self.settings.loader.cfg
+            if os.path.exists(cfg):
+                t = os.path.getmtime(cfg)
+                if t > self.mtime:
+                    self.mtime = t
+                    self.settings.load()

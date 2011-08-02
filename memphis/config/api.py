@@ -286,6 +286,22 @@ def loadPackage(name, seen=None, first=True):
         addPackage(name)
 
 
+def loadPackages():
+    seen = set()
+
+    for dist in pkg_resources.working_set:
+        pkg = dist.project_name
+        if pkg in seen:
+            continue
+
+        distmap = pkg_resources.get_entry_map(dist, 'memphis')
+
+        if 'grokker' in distmap or 'package' in distmap:
+            loadPackage(pkg, seen)
+        else:
+            seen.add(pkg)
+
+
 def cleanup(handler):
     registerCleanup(handler)
     return handler
