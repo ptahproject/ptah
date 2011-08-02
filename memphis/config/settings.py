@@ -68,6 +68,7 @@ class SettingsImpl(object):
             transaction.get().addAfterCommitHook(self.save)
 
     def _load(self, rawdata, setdefaults=False):
+        rawdata = dict((k.lower(), v) for k, v in rawdata.items())
         data = self.schema.unflatten(rawdata)
         data = self.schema.deserialize(data)
 
