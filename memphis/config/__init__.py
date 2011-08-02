@@ -27,6 +27,9 @@ from memphis.config.directives import action
 from memphis.config.directives import utility
 from memphis.config.directives import registerIn
 
+from memphis.config.settings import Settings
+from memphis.config.settings import registerSettings
+
 
 commitOnDatabaseOpened = True
 try:
