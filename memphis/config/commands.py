@@ -84,10 +84,11 @@ class SettingsCommand(Command):
 
             print
             for node in group.schema:
+                default = '<required>' if node.required else node.default
                 print nameWrap.fill(
                     '%s.%s: %s (%s: %s)'%(
                         name, node.name, node.title, 
-                        node.typ.__class__.__name__, node.default))
+                        node.typ.__class__.__name__, default))
 
                 print nameTitleWrap.fill(node.description)
                 print

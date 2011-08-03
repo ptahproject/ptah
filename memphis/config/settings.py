@@ -11,7 +11,7 @@ try:
 except ImportError:
     transaction = None
 
-import api, colander
+import api, schema
 from directives import action, getInfo
 
 
@@ -63,33 +63,34 @@ def initSettings(settings,
     event.notify(SettingsInitialized(config))
 
 
-def registerSettings(grpname, *args, **kw):
-    title = kw.get('title','')
-    description = kw.get('description','')
-    configContext = kw.get('configContext', api.UNSET)
+def registerSettings(name, *args, **kw):
+    title = kw.get('title', '')
+    description = kw.get('description', '')
+    validator = kw.get('validator', None)
     category = kw.get('category', None)
 
-    group = Settings.register(grpname, title, description)
-
-    if category is not None:
-        interface.directlyProvides(group, category)
+    group = Settings.register(name, title, description)
 
     for node in args:
         action(
             registerSettingsImpl,
-            grpname, node, kw, configContext, getInfo(),
-            __discriminator = ('memphis:registerSettings', node.name, grpname),
+            name, title, description, validator, category, node, 
+            __discriminator = ('memphis:registerSettings', node.name, name),
             __info = getInfo(2),
             __frame = sys._getframe(1))
 
     return group
 
 
-def registerSettingsImpl(grpname, node, kw, configContext=api.UNSET, info=''):
-    title = kw.get('title', '')
-    description = kw.get('description',' ')
+def registerSettingsImpl(name, title, description, validator, category, node):
+    group = Settings.register(name, title, description)
 
-    group = Settings.register(grpname, title, description)
+    if category is not None and not category.providedBy(group):
+        interface.directlyProvides(group, category)
+
+    if validator is not None:
+        group.schema.validator.add(validator)
+
     group.register(node)
 
 
@@ -100,7 +101,7 @@ class SettingsImpl(dict):
     _changed = False
 
     def __init__(self):
-        self.schema = colander.SchemaNode(colander.Mapping())
+        self.schema = schema.SchemaNode(schema.Mapping())
 
     def changed(self):
         if not self._changed:
@@ -173,6 +174,31 @@ class SettingsImpl(dict):
         pass
 
 
+class GroupValidator(object):
+
+    def __init__(self):
+        self._validators = []
+
+    def add(self, validator):
+        if validator not in self._validators:
+            self._validators.append(validator)
+
+    def __call__(self, node, appstruct):
+        error = None
+        for validator in self._validators:
+            try:
+                validator(node, appstruct)
+            except schema.Invalid, e:
+                if error is None:
+                    error = schema.Invalid(node)
+                error.add(e, node.children.index(e.node))
+
+        if error is not None:
+            raise error
+
+
+_marker = object()
+
 class Group(dict):
 
     def __init__(self, prefix, settings, title, description):
@@ -180,15 +206,21 @@ class Group(dict):
         self.__dict__['title'] = title
         self.__dict__['description'] = description
         self.__dict__['settings'] = settings
-        self.__dict__['schema'] = colander.SchemaNode(
-            colander.Mapping(), name=prefix, missing=colander.null)
+        self.__dict__['schema'] = schema.SchemaNode(
+            schema.Mapping(), 
+            name=prefix,
+            required=False,
+            validator=GroupValidator())
 
     def register(self, node):
         super(Group, self).__setitem__(node.name, node.default)
         self.schema.add(node)
 
-    def __getattr__(self, attr, default=None):
-        return self.get(attr, default)
+    def __getattr__(self, attr, default=_marker):
+        res = self.get(attr, default)
+        if res is _marker:
+            raise AttributeError(attr)
+        return res
 
     def __setitem__(self, attr, value):
         if attr is self.schema:
