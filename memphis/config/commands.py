@@ -13,8 +13,8 @@ grpTitleWrap = textwrap.TextWrapper(
     subsequent_indent='  ')
 
 grpDescriptionWrap = textwrap.TextWrapper(
-    initial_indent='  :',
-    subsequent_indent='   ')
+    initial_indent='    ',
+    subsequent_indent='    ')
 
 
 nameWrap = textwrap.TextWrapper(
@@ -71,7 +71,7 @@ class SettingsCommand(Command):
             return
 
         # print description
-        groups = config.Settings.groups.items()
+        groups = config.Settings.items()
         groups.sort()
 
         for name, group in groups:
@@ -85,9 +85,9 @@ class SettingsCommand(Command):
             print
             for node in group.schema:
                 print nameWrap.fill(
-                    '%s.%s: %s'%(name, node.name, node.typ.__class__.__name__))
-                
-                print nameTitleWrap.fill('%s %s'%(node.title, node.description))
-                print
+                    '%s.%s: %s (%s: %s)'%(
+                        name, node.name, node.title, 
+                        node.typ.__class__.__name__, node.default))
 
-            print
+                print nameTitleWrap.fill(node.description)
+                print

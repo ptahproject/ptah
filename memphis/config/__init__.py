@@ -33,6 +33,9 @@ from memphis.config.settings import FileStorage
 from memphis.config.settings import SimpleWatcher
 from memphis.config.settings import initSettings
 from memphis.config.settings import registerSettings
+from memphis.config.settings import SettingsInitialized
+from memphis.config.settings import SettingsInitializing
+from memphis.config.settings import SettingsGroupModified
 
 
 commitOnDatabaseOpened = True

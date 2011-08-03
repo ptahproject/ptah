@@ -40,6 +40,7 @@ setup(name='memphis.config',
         'martian >= 0.14',
         'zope.component',
         'zope.configuration',
+        'zope.event',
         ],
       extras_require = dict(
         test=['zope.configuration [test]',

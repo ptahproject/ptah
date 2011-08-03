@@ -1589,9 +1589,6 @@ class SchemaNode(object):
             appstruct = self.preparer(appstruct)
 
         if appstruct is null:
-            appstruct = self.default
-
-        if appstruct is null:
             appstruct = self.missing
             if appstruct is required:
                 raise Invalid(self, _('Required'))
