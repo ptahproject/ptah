@@ -37,9 +37,17 @@ class SettingsGroupModified(ObjectEvent):
     """ settings group has been modified event """
 
 
+_settings_initialized = False
+
 def initSettings(settings, 
                  config=None, loader=None, 
                  section=ConfigParser.DEFAULTSECT):
+    global _settings_initialized
+    if _settings_initialized:
+        raise RuntimeError("'initSettings' is been called two times.")
+
+    _settings_initialized = True
+
     here = settings.get('here', '')
     if loader is None:
         loader = FileStorage(
