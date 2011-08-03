@@ -63,14 +63,13 @@ def initSettings(settings,
     event.notify(SettingsInitialized(config))
 
 
-def registerSettings(*args, **kw):
-    grp = kw.get('group','')
+def registerSettings(grpname, *args, **kw):
     title = kw.get('title','')
     description = kw.get('description','')
     configContext = kw.get('configContext', api.UNSET)
     category = kw.get('category', None)
 
-    group = Settings.register(grp, title, description)
+    group = Settings.register(grpname, title, description)
 
     if category is not None:
         interface.directlyProvides(group, category)
@@ -78,20 +77,19 @@ def registerSettings(*args, **kw):
     for node in args:
         action(
             registerSettingsImpl,
-            node, kw, configContext, getInfo(),
-            __discriminator = ('memphis:registerSettings', node.name, grp),
+            grpname, node, kw, configContext, getInfo(),
+            __discriminator = ('memphis:registerSettings', node.name, grpname),
             __info = getInfo(2),
             __frame = sys._getframe(1))
 
     return group
 
 
-def registerSettingsImpl(node, kw, configContext=api.UNSET, info=''):
-    grp = kw.get('group', '')
+def registerSettingsImpl(grpname, node, kw, configContext=api.UNSET, info=''):
     title = kw.get('title', '')
     description = kw.get('description',' ')
 
-    group = Settings.register(grp, title, description)
+    group = Settings.register(grpname, title, description)
     group.register(node)
 
 
