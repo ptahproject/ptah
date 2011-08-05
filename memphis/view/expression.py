@@ -6,6 +6,7 @@ from chameleon.codegen import template
 from chameleon.astutil import Symbol
 from chameleon.astutil import Static
 from chameleon.zpt.template import PageTemplate
+from chameleon.zpt.template import PageTemplateFile
 
 from zope import component
 from zope.component import getUtility, queryUtility, queryMultiAdapter
@@ -60,3 +61,4 @@ class PageletExpr(object):
 
 
 PageTemplate.expression_types['pagelet'] = PageletExpr
+PageTemplateFile.expression_types['pagelet'] = PageletExpr

@@ -5,6 +5,8 @@ CHANGES
 0.9 (Unreleased)
 ----------------
 
+- Fixed Chameleon 2.2 compatibility
+
 - Added 'view.subpath' decorator for view methods.
   It's possible to call method as subpath of view,
   example: 
