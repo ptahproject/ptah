@@ -489,8 +489,9 @@ class Mapping(SchemaType):
         for subnode in node.children:
             name = subnode.name
             substruct = appstruct.get(name, null)
-            result.update(subnode.typ.flatten(subnode, substruct,
-                                              prefix=selfprefix))
+            if substruct is not null:
+                result.update(subnode.typ.flatten(
+                        subnode, substruct, prefix=selfprefix))
         return result
 
     def unflatten(self, node, paths, fstruct):
@@ -786,7 +787,7 @@ class Sequence(Positional, SchemaType):
             subname = '%s%s' % (selfprefix, num)
             subprefix = subname
             result.update(childnode.typ.flatten(
-                childnode, subval, prefix=subprefix, listitem=True))
+                    childnode, subval, prefix=subprefix, listitem=True))
 
         return result
 
@@ -912,7 +913,7 @@ class String(SchemaType):
                             mapping={'val':appstruct, 'err':e})
                           )
     def deserialize(self, node, cstruct):
-        if not cstruct:
+        if not isinstance(cstruct, basestring):
             return null
 
         try:
@@ -1755,7 +1756,7 @@ def _unflatten_mapping(node, paths, fstruct,
     subpaths = []
     curname = None
     for path in paths:
-        if path == node_name:
+        if path == node_name or (prefix and not path.startswith(prefix)):
             # flattened structs contain non-leaf nodes which are ignored
             # during unflattening.
             continue
@@ -1768,17 +1769,30 @@ def _unflatten_mapping(node, paths, fstruct,
         if curname is None:
             curname = name
         elif name != curname:
-            subnode = get_child(curname)
-            appstruct[curname] = subnode.typ.unflatten(
-                subnode, subpaths, subfstruct)
-            subfstruct = {}
-            subpaths = []
-            curname = name
+            try:
+                subnode = get_child(curname)
+            except:
+                subfstruct = {}
+                subpaths = []
+                curname = name
+            else:
+                appstruct[curname] = subnode.typ.unflatten(
+                    subnode, subpaths, subfstruct)
+                subfstruct = {}
+                subpaths = []
+                curname = name
+
         subpath = rewrite_subpath(subpath)
         subfstruct[subpath] = fstruct[path]
         subpaths.append(subpath)
+
     if curname is not None:
-        subnode = get_child(curname)
-        appstruct[curname] = subnode.typ.unflatten(
-            subnode, subpaths, subfstruct)
+        try:
+            subnode = get_child(curname)
+        except KeyError:
+            pass
+        else:
+            appstruct[curname] = subnode.typ.unflatten(
+                subnode, subpaths, subfstruct)
+
     return appstruct

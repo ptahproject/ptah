@@ -28,6 +28,8 @@ from memphis.config.directives import utility
 from memphis.config.directives import registerIn
 
 from memphis.config.settings import Settings
+from memphis.config.settings import FileStorage
+from memphis.config.settings import initSettings
 from memphis.config.settings import registerSettings
 
 

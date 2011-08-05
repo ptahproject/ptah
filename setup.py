@@ -35,6 +35,7 @@ setup(name='memphis.config',
       namespace_packages = ['memphis'],
       install_requires = [
         'setuptools',
+        'colander',
         'martian >= 0.14',
         'zope.component',
         'zope.configuration',
