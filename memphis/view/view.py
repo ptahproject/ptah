@@ -1,5 +1,5 @@
 """ view implementation """
-import json, sys
+import simplejson, sys
 from zope import interface
 from webob import Response
 from webob.exc import HTTPException
@@ -180,7 +180,7 @@ class JSONRenderer(object):
 
     content_type = 'text/json'
 
-    def __call__(self, result, dumps=json.dumps):
+    def __call__(self, result, dumps=simplejson.dumps):
         return dumps(result)
 
 

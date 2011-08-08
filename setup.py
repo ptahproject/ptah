@@ -39,6 +39,7 @@ setup(name='memphis.view',
                           'zope.interface',
                           'zope.i18n',
                           'memphis.config >= 0.6',
+                          'simplejson',
                           ],
       extras_require = dict(
         test=['memphis.config [test]',

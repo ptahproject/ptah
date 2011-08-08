@@ -13,6 +13,8 @@ CHANGES
      /login.html - fullpage
      /login.html/validate - validate method only
 
+- Use simplejson instead of standard json for renderer
+
 
 0.8 (2011-07-08)
 ----------------
