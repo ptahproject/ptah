@@ -1,5 +1,5 @@
 """ settings api """
-import sys, time
+import sys, time, logging
 import os.path, ConfigParser
 import colander
 from ordereddict import OrderedDict
@@ -14,6 +14,8 @@ except ImportError:
 
 import api, schema
 from directives import action, getInfo
+
+log = logging.getLogger('memphis.config')
 
 
 class SettingsInitializing(object):
@@ -111,14 +113,17 @@ class SettingsImpl(dict):
     """ simple settings management system """
 
     loader = None
-    _changed = False
+    _changed = None
 
     def __init__(self):
         self.schema = schema.SchemaNode(schema.Mapping())
 
     def changed(self, group, attrs):
         if not self._changed:
-            self._changed = True
+            if self._changed is None:
+                self._changed = {}
+            data = self._changed.setdefault(group, set())
+            data.update(attrs)
             transaction.get().addAfterCommitHook(self.save)
 
     def _load(self, rawdata, setdefaults=False):
@@ -129,7 +134,17 @@ class SettingsImpl(dict):
             data = self.schema.deserialize(data)
         except colander.Invalid, e:
             errs = e.asdict()
-            raise
+            log.error('Error loading settings, reloading with defaults: \n%s'%(
+                    '\n'.join('%s: %s'%(k, v) for k, v in errs.items())))
+
+            [rawdata.pop(k) for k in errs.keys()]
+
+            data = self.schema.unflatten(rawdata)
+            try:
+                data = self.schema.deserialize(data)
+            except colander.Invalid, e:
+                log.error('Error loading settings')
+                return
 
         for name, group in self.items():
             if name in data and data[name]:
@@ -155,7 +170,12 @@ class SettingsImpl(dict):
             self._load(self.loader.load())
 
     def save(self, *args):
-        self._changed = False
+        if self._changed is not None:
+            for grp, attrs in self._changed.items():
+                event.notify(self[grp])
+
+            self._changed = None
+
         if self.loader is not None:
             data = self.export()
             if data:
@@ -268,6 +288,7 @@ class FileStorage(object):
 
     def load(self):
         if os.path.exists(self.cfg):
+            log.info("Loading settings: %s"%self.cfg)
             parser = ConfigParser.SafeConfigParser()
             parser.read(self.cfg)
             return dict(parser.items(self.section, vars={'here': self.here}))
@@ -276,6 +297,7 @@ class FileStorage(object):
 
     def loadDefaults(self):
         if os.path.exists(self.cfgdefaults):
+            log.info("Loading default settings: %s"%self.cfg)
             parser = ConfigParser.SafeConfigParser()
             parser.read(self.cfgdefaults)
             data = dict(parser.items(self.section, vars={'here': self.here}))
@@ -296,6 +318,8 @@ class FileStorage(object):
     def save(self, data):
         if not os.path.exists(self.cfg):
             pass
+
+        log.info("Loading settings: %s"%self.cfg)
 
         parser = ConfigParser.ConfigParser(dict_type=OrderedDict)
         parser.read(self.cfg)
