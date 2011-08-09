@@ -231,7 +231,7 @@ class Group(dict):
         return res
 
     def __setitem__(self, attr, value):
-        if attr in self.schema and valie != self[attr]:
+        if attr in self.schema and value != self[attr]:
             self.settings.changed(self.name, (attr,))
         super(Group, self).__setitem__(attr, value)
 
