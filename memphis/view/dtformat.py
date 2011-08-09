@@ -11,7 +11,7 @@ from memphis.view.formatter import format
 
 _ = translationstring.TranslationStringFactory('memphis.view')
 
-_tzs = dict((str(tz).lower(), str(tz)) for tz in pytz.common_timezones)
+_tzs = dict((str(tz).lower(), str(tz)) for tz in pytz.all_timezones)
 
 
 class Timezone(colander.SchemaType):
@@ -24,14 +24,19 @@ class Timezone(colander.SchemaType):
         return str(appstruct)
 
     def deserialize(self, node, cstruct):
+        if cstruct is colander.null:
+            return colander.null
+
         try:
             v = str(cstruct)
+            if v.startswith('GMT'):
+                v = 'Etc/%s'%v
             try:
                 return pytz.timezone(v)
             except:
                 return pytz.timezone(_tzs[v.lower()])
         except Exception, e:
-            raise Invalid(
+            raise colander.Invalid(
                 node, _('${val} is not a timezone', mapping={'val':cstruct}))
 
 
