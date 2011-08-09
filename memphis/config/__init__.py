@@ -37,6 +37,12 @@ from memphis.config.settings import SettingsInitialized
 from memphis.config.settings import SettingsInitializing
 from memphis.config.settings import SettingsGroupModified
 
+from memphis.config.schema import SchemaNode
+from memphis.config.schema import Mapping
+from memphis.config.schema import Sequence
+from memphis.config.schema import Str, String
+from memphis.config.schema import RequiredWidthDependency
+
 
 commitOnDatabaseOpened = True
 try:

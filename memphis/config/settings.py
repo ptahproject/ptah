@@ -1,6 +1,7 @@
 """ settings api """
 import sys, time
 import os.path, ConfigParser
+import colander
 from ordereddict import OrderedDict
 from datetime import datetime, timedelta
 from zope import interface, event
@@ -11,7 +12,7 @@ try:
 except ImportError:
     transaction = None
 
-import api, colander
+import api, schema
 from directives import action, getInfo
 
 
@@ -97,7 +98,11 @@ def registerSettingsImpl(name, title, description, validator, category, node):
         interface.directlyProvides(group, category)
 
     if validator is not None:
-        group.schema.validator.add(validator)
+        if type(validator) not in (list, tuple):
+            validator = validator,
+
+        for v in validator:
+            group.schema.validator.add(v)
 
     group.register(node)
 
@@ -109,7 +114,7 @@ class SettingsImpl(dict):
     _changed = False
 
     def __init__(self):
-        self.schema = colander.SchemaNode(colander.Mapping())
+        self.schema = schema.SchemaNode(schema.Mapping())
 
     def changed(self, group, attrs):
         if not self._changed:
@@ -119,7 +124,12 @@ class SettingsImpl(dict):
     def _load(self, rawdata, setdefaults=False):
         rawdata = dict((k.lower(), v) for k, v in rawdata.items())
         data = self.schema.unflatten(rawdata)
-        data = self.schema.deserialize(data)
+
+        try:
+            data = self.schema.deserialize(data)
+        except colander.Invalid, e:
+            errs = e.asdict()
+            raise
 
         for name, group in self.items():
             if name in data and data[name]:
@@ -199,7 +209,11 @@ class GroupValidator(object):
             except colander.Invalid, e:
                 if error is None:
                     error = colander.Invalid(node)
-                error.add(e, node.children.index(e.node))
+
+                if e.node is node:
+                    error.add(e, node)
+                else:
+                    error.add(e, node.children.index(e.node))
 
         if error is not None:
             raise error
@@ -214,8 +228,8 @@ class Group(dict):
         self.__dict__['title'] = title
         self.__dict__['description'] = description
         self.__dict__['settings'] = settings
-        self.__dict__['schema'] = colander.SchemaNode(
-            colander.Mapping(), 
+        self.__dict__['schema'] = schema.SchemaNode(
+            schema.Mapping(), 
             name=name,
             required=False,
             validator=GroupValidator())
