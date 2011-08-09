@@ -35,7 +35,7 @@ class SettingsCommand(Command):
 
     summary = "Memphis settings management"
     usage = ""
-    group_name = "memphis"
+    group_name = "Memphis"
     parser = Command.standard_parser(verbose=False)
     parser.add_option('-l', '--list', dest='list', 
                       action="store_true",

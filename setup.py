@@ -35,13 +35,16 @@ setup(name='memphis.config',
       namespace_packages = ['memphis'],
       install_requires = [
         'setuptools',
+        'Paste',
+        'PasteDeploy',
+        'PasteScript',
         'ordereddict',
         'martian >= 0.14',
         'iso8601',
-        'translationstring',
         'zope.component',
         'zope.configuration',
         'zope.event',
+        'translationstring',
         ],
       extras_require = dict(
         test=['zope.configuration [test]',
@@ -53,7 +56,7 @@ setup(name='memphis.config',
                     'package = memphis.config'],
         'z3c.autoinclude.plugin':
             ['target = plone'],
-        'paste.paster_command': [
+        'paste.global_paster_command': [
             'settings = memphis.config.commands:SettingsCommand',
             ],
         },
