@@ -17,6 +17,8 @@ CHANGES
 
 - Check if render method return Response object
 
+- Added 'response_headers' to View class (list of headers)
+
 
 0.8 (2011-07-08)
 ----------------

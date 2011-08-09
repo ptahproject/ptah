@@ -40,7 +40,7 @@ class View(object):
 
     @property
     def response_headers(self):
-        value = {}
+        value = []
         self.__dict__['response_headers'] = value
         return value
 
@@ -63,7 +63,7 @@ class View(object):
 
             return Response(body = res, 
                             status = self.response_status,
-                            headerlist = self.response_headers.items(),
+                            headerlist = self.response_headers,
                             content_type = self.content_type)
         except HTTPException, response:
             return response
@@ -89,7 +89,7 @@ def subpathWrapper(view):
                         return res
                     return Response(body = res,
                                     status = self.response_status,
-                                    headerlist = self.response_headers.items(),
+                                    headerlist = self.response_headers,
                                     content_type = self.content_type)
                 except HTTPException, response:
                     return response
