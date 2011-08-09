@@ -37,10 +37,11 @@ class SettingsCommand(Command):
     usage = ""
     group_name = "Memphis"
     parser = Command.standard_parser(verbose=False)
-    parser.add_option('-l', '--list', dest='list', 
+    parser.add_option('-a', '--all', dest='all',
                       action="store_true",
                       help = 'List all registered settings')
-
+    parser.add_option('-l', '--list', dest='section', default='',
+                      help = 'List registered settings')
     parser.add_option('-p', '--print', dest='printcfg', 
                       action="store_true",
                       help = 'Print default settings in ConfigParser format')
@@ -55,7 +56,7 @@ class SettingsCommand(Command):
         if self.options.printcfg:
             data = config.Settings.export(True)
 
-            parser = ConfigParser.SafeConfigParser(dict_type=OrderedDict)
+            parser = ConfigParser.ConfigParser(dict_type=OrderedDict)
             items = data.items()
             items.sort()
             for key, val in items:
@@ -70,11 +71,19 @@ class SettingsCommand(Command):
             print fp.getvalue()
             return
 
+        if self.options.all:
+            section = ''
+        else:
+            section = self.options.section
+
         # print description
         groups = config.Settings.items()
         groups.sort()
 
         for name, group in groups:
+            if section and name != section:
+                continue
+
             print ''
             title = group.title or name
 

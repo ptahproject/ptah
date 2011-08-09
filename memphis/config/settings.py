@@ -283,7 +283,7 @@ class FileStorage(object):
         if not os.path.exists(self.cfg):
             pass
 
-        parser = ConfigParser.SafeConfigParser(dict_type=OrderedDict)
+        parser = ConfigParser.ConfigParser(dict_type=OrderedDict)
         parser.read(self.cfg)
 
         if self.section != ConfigParser.DEFAULTSECT and \
