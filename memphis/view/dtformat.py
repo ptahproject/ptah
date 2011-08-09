@@ -1,11 +1,10 @@
 """ date fomratters """
 import pytz
+import colander
 import translationstring
 from datetime import date, datetime, timedelta
 
 from memphis import config
-from memphis.config import colander
-from memphis.config.colander import null
 from memphis.view.compat import translate
 from memphis.view.formatter import format
 
@@ -18,13 +17,13 @@ class Timezone(colander.SchemaType):
     """ timezone """
 
     def serialize(self, node, appstruct):
-        if appstruct is null:
-            return null
+        if appstruct is colander.null:
+            return colander.null
 
         return str(appstruct)
 
     def deserialize(self, node, cstruct):
-        if cstruct is colander.null:
+        if cstruct is colander.null or not cstruct:
             return colander.null
 
         try:
@@ -37,69 +36,69 @@ class Timezone(colander.SchemaType):
                 return pytz.timezone(_tzs[v.lower()])
         except Exception, e:
             raise colander.Invalid(
-                node, _('${val} is not a timezone', mapping={'val':cstruct}))
+                node, _('"${val}" is not a timezone', mapping={'val':cstruct}))
 
 
 FORMAT = config.registerSettings(
     'format',
 
-    colander.SchemaNode(
+    config.SchemaNode(
         Timezone(),
         name = 'timezone',
         default = pytz.timezone('US/Pacific'),
         title = _('Timezone'),
         description = _('Site wide timezone.')),
 
-    colander.SchemaNode(
+    config.SchemaNode(
         colander.Str(),
         name = 'date_short',
         default = u'%m/%d/%y',
         title = _(u'Date'),
         description = _(u'Date short format')),
 
-    colander.SchemaNode(
+    config.SchemaNode(
         colander.Str(),
         name = 'date_medium',
         default = u'%b %d, %Y',
         title = _(u'Date'),
         description = _(u'Date medium format')),
 
-    colander.SchemaNode(
+    config.SchemaNode(
         colander.Str(),
         name = 'date_long',
         default = u'%B %d, %Y',
         title = _(u'Date'),
         description = _(u'Date long format')),
 
-    colander.SchemaNode(
+    config.SchemaNode(
         colander.Str(),
         name = 'date_full',
         default = u'%A, %B %d, %Y',
         title = _(u'Date'),
         description = _(u'Date full format')),
 
-    colander.SchemaNode(
+    config.SchemaNode(
         colander.Str(),
         name = 'time_short',
         default = u'%I:%M %p',
         title = _(u'Time'),
         description = _(u'Time short format')),
 
-    colander.SchemaNode(
+    config.SchemaNode(
         colander.Str(),
         name = 'time_medium',
         default = u'%I:%M:%S %p',
         title = _(u'Time'),
         description = _(u'Time medium format')),
 
-    colander.SchemaNode(
+    config.SchemaNode(
         colander.Str(),
         name = 'time_long',
         default = u'%I:%M:%S %p %z',
         title = _(u'Time'),
         description = _(u'Time long format')),
 
-    colander.SchemaNode(
+    config.SchemaNode(
         colander.Str(),
         name = 'time_full',
         default = u'%I:%M:%S %p %Z',
