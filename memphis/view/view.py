@@ -58,6 +58,9 @@ class View(object):
                 else:
                     res = layout()
 
+            if isinstance(res, Response):
+                return res
+
             return Response(body = res, 
                             status = self.response_status,
                             headerlist = self.response_headers.items(),
