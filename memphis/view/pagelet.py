@@ -7,6 +7,7 @@ from zope.component import queryUtility, queryMultiAdapter
 from zope.interface.interface import InterfaceClass
 
 from memphis import config
+from memphis.view.formatter import format
 from memphis.config.directives import getInfo
 from memphis.view.interfaces import IPagelet, IPageletType
 
@@ -32,6 +33,7 @@ class Pagelet(object):
                        'context': self.context,
                        'request': self.request,
                        'nothing': None,
+                       'format': format,
                        'template': self.template})
 
         return self.template(**kwargs)

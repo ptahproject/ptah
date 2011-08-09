@@ -4,6 +4,7 @@ from zope import interface
 from zope.component import getSiteManager
 
 from memphis import config
+from memphis.view.formatter import format
 from memphis.config.directives import getInfo
 from memphis.view.interfaces import ILayout, LayoutNotFound
 
@@ -57,6 +58,7 @@ class Layout(object):
                        'maincontext': self.maincontext,
                        'request': self.request,
                        'template': self.template,
+                       'format': format,
                        'nothing': None})
 
         return self.template(**kwargs)

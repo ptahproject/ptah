@@ -5,6 +5,7 @@ from webob import Response
 from webob.exc import HTTPException
 
 from memphis.view.compat import IView
+from memphis.view.formatter import format
 from memphis.view.layout import queryLayout
 from memphis.view.interfaces import IRenderer
 
@@ -34,6 +35,7 @@ class View(object):
         kwargs.update({'view': self,
                        'context': self.context,
                        'request': self.request,
+                       'format': format,
                        'nothing': None})
 
         return self.template(**kwargs)

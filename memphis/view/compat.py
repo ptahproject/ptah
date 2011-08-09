@@ -1,9 +1,9 @@
 """ pyramid/zope compatibility """
 from zope import interface
-from zope.i18n.locales import locales
-from zope.i18n.interfaces import IUserPreferredLanguages
 
 try:
+    from zope.i18n.locales import locales
+    from zope.i18n.interfaces import IUserPreferredLanguages
     from zope.i18n import translate as i18n_translate
     from zope.publisher.interfaces.browser \
         import IBrowserView as IZopeView

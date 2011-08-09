@@ -7,17 +7,19 @@ CHANGES
 
 - Fixed Chameleon 2.2 compatibility
 
+- Added 'response_headers' to View class (list of headers)
+
 - Added 'view.subpath' decorator for view methods.
   It's possible to call method as subpath of view,
   example: 
      /login.html - fullpage
      /login.html/validate - validate method only
 
+- Added datetime and time delta fomatters
+
 - Use simplejson instead of standard json for renderer
 
 - Check if render method return Response object
-
-- Added 'response_headers' to View class (list of headers)
 
 
 0.8 (2011-07-08)

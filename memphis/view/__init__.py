@@ -53,6 +53,9 @@ from memphis.view.directives import pyramidView
 # status message
 from memphis.view.message import addMessage
 
+# format
+from memphis.view.formatter import format
+
 # compat api
 from memphis.view.compat import getLocale
 from memphis.view.compat import translate
