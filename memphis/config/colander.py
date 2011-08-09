@@ -45,7 +45,7 @@ class Invalid(Exception):
     the value for a particular node was not valid.
 
     The constructor receives a mandatory ``node`` argument.  This must
-    be an instance of the :class:`schema.SchemaNode` class, or at
+    be an instance of the :class:`colander.SchemaNode` class, or at
     least something with the same interface.
 
     The constructor also receives an optional ``msg`` keyword
@@ -77,7 +77,7 @@ class Invalid(Exception):
 
     def add(self, exc, pos=None):
         """ Add a child exception; ``exc`` must be an instance of
-        :class:`schema.Invalid` or a subclass.
+        :class:`colander.Invalid` or a subclass.
 
         ``pos`` is a value important for accurate error reporting.  If
         it is provided, it must be an integer representing the
@@ -110,7 +110,7 @@ class Invalid(Exception):
         :exc:`KeyError`.
 
         This method is typically only useful if the ``node`` attribute
-        of the exception upon which it is called is a schema node
+        of the exception upon which it is called is a colander node
         representing a mapping.
         """
         for num, child in enumerate(self.node.children):
@@ -124,8 +124,8 @@ class Invalid(Exception):
         """ A generator which returns each path through the exception
         graph.  Each path is represented as a tuple of exception
         nodes.  Within each tuple, the leftmost item will represent
-        the root schema node, the rightmost item will represent the
-        leaf schema node."""
+        the root colander node, the rightmost item will represent the
+        leaf colander node."""
         def traverse(node, stack):
             stack.append(node)
 
@@ -177,7 +177,7 @@ class Required(Invalid):
 
 class All(object):
     """ Composite validator which succeeds if none of its
-    subvalidators raises an :class:`schema.Invalid` exception"""
+    subvalidators raises an :class:`colander.Invalid` exception"""
 
     def __init__(self, *validators):
         self.validators = validators
@@ -387,7 +387,7 @@ class RequiredWidthDependency(object):
 
 
 class SchemaType(object):
-    """ Base class for all schema types """
+    """ Base class for all colander types """
 
     def flatten(self, node, appstruct, prefix='', listitem=False):
         result = {}
@@ -429,7 +429,7 @@ class Mapping(SchemaType):
         ``deserialize`` method of this instance.  All the potential
         values of ``unknown`` are strings.  They are:
 
-        - ``ignore`` means that keys that are not present in the schema
+        - ``ignore`` means that keys that are not present in the colander
           associated with this type will be ignored during
           deserialization.
 
@@ -443,10 +443,10 @@ class Mapping(SchemaType):
         Default: ``ignore``.
 
     Special behavior is exhibited when a subvalue of a mapping is
-    present in the schema but is missing from the mapping passed to
+    present in the colander but is missing from the mapping passed to
     either the ``serialize`` or ``deserialize`` method of this class.
     In this case, the :attr:`colander.null` value will be passed to
-    the ``serialize`` or ``deserialize`` method of the schema node
+    the ``serialize`` or ``deserialize`` method of the colander node
     representing the subvalue of the mapping respectively.  During
     serialization, this will result in the behavior described in
     :ref:`serializing_null` for the subnode.  During deserialization,
@@ -1488,7 +1488,7 @@ def timeparse(t, format):
 
 class SchemaNode(object):
     """
-    Fundamental building block of schemas.
+    Fundamental building block of colanders.
 
     The constructor accepts these positional arguments:
 
@@ -1579,7 +1579,7 @@ class SchemaNode(object):
 
     def serialize(self, appstruct=null):
         """ Serialize the :term:`appstruct` to a :term:`cstruct` based
-        on the schema represented by this node and return the
+        on the colander represented by this node and return the
         cstruct.
 
         If ``appstruct`` is :attr:`colander.null`, return the
@@ -1591,40 +1591,40 @@ class SchemaNode(object):
         """
         if appstruct is null:
             appstruct = self.default
-        if isinstance(appstruct, deferred): # unbound schema with deferreds
+        if isinstance(appstruct, deferred): # unbound colander with deferreds
             appstruct = null
         cstruct = self.typ.serialize(self, appstruct)
         return cstruct
 
     def flatten(self, appstruct):
-        """ Create an fstruct from the appstruct based on the schema
+        """ Create an fstruct from the appstruct based on the colander
         represented by this node and return the fstruct.  An fstruct
         is a flattened representation of an appstruct.  An fstruct is
         a dictionary; its keys are dotted names.  Each dotted name
-        represents a location in the schema.  The values of an fstruct
+        represents a location in the colander.  The values of an fstruct
         dictionary are appstruct subvalues."""
         flat = self.typ.flatten(self, appstruct)
         return flat
 
     def unflatten(self, fstruct):
-        """ Create an appstruct based on the schema represented by
+        """ Create an appstruct based on the colander represented by
         this node using the fstruct passed. """
         paths = sorted(fstruct.keys())
         return self.typ.unflatten(self, paths, fstruct)
 
     def set_value(self, appstruct, dotted_name, value):
-        """ Uses the schema to set a value in an appstruct from a dotted_name
+        """ Uses the colander to set a value in an appstruct from a dotted_name
         path. """
         self.typ.set_value(self, appstruct, dotted_name, value)
 
     def get_value(self, appstruct, dotted_name):
-        """ Traverses the appstruct using the schema and retrieves the value
+        """ Traverses the appstruct using the colander and retrieves the value
         specified by the dotted_name path."""
         return self.typ.get_value(self, appstruct, dotted_name)
 
     def deserialize(self, cstruct=null):
         """ Deserialize the :term:`cstruct` into an :term:`appstruct` based
-        on the schema, run this :term:`appstruct` through the
+        on the colander, run this :term:`appstruct` through the
         preparer, if one is present, then validate the
         prepared appstruct.  The ``cstruct`` value is deserialized into an
         ``appstruct`` unconditionally.
@@ -1660,7 +1660,7 @@ class SchemaNode(object):
         self.children.append(node)
 
     def clone(self):
-        """ Clone the schema node and return the clone.  All subnodes
+        """ Clone the colander node and return the clone.  All subnodes
         are also cloned recursively.  Attributes present in node
         dictionaries are preserved."""
         cloned = self.__class__(self.typ)
@@ -1669,11 +1669,11 @@ class SchemaNode(object):
         return cloned
 
     def bind(self, **kw):
-        """ Resolve any deferred values attached to this schema node
+        """ Resolve any deferred values attached to this colander node
         and its children (recursively), using the keywords passed as
         ``kw`` as input to each deferred value.  This function
-        *clones* the schema it is called upon and returns the cloned
-        value.  The original schema node (the source of the clone)
+        *clones* the colander it is called upon and returns the cloned
+        value.  The original colander node (the source of the clone)
         is not modified."""
         cloned = self.clone()
         cloned._bind(kw)
@@ -1704,7 +1704,7 @@ class SchemaNode(object):
         raise KeyError(name)
 
     def __iter__(self):
-        """ Iterate over the children nodes of this schema node """
+        """ Iterate over the children nodes of this colander node """
         return iter(self.children)
 
     def __contains__(self, name):
@@ -1731,18 +1731,18 @@ class _SchemaMeta(type):
                 if value.raw_title is _marker:
                     value.title = name.replace('_', ' ').title()
                 nodes.append((value._order, value))
-        cls.__schema_nodes__ = nodes
+        cls.__colander_nodes__ = nodes
         # Combine all attrs from this class and its subclasses.
         extended = []
         for c in cls.__mro__:
-            extended.extend(getattr(c, '__schema_nodes__', []))
+            extended.extend(getattr(c, '__colander_nodes__', []))
         # Sort the attrs to maintain the order as defined, and assign to the
         # class.
         extended.sort()
         cls.nodes = [x[1] for x in extended]
 
 class Schema(object):
-    schema_type = Mapping
+    colander_type = Mapping
     node_type = SchemaNode
     __metaclass__ = _SchemaMeta
 
@@ -1750,7 +1750,7 @@ class Schema(object):
         node = object.__new__(cls.node_type)
         node.name = None
         node._order = SchemaNode._counter.next()
-        typ = cls.schema_type()
+        typ = cls.colander_type()
         node.__init__(typ, *args, **kw)
         for n in cls.nodes:
             node.add(n)
@@ -1759,7 +1759,7 @@ class Schema(object):
 MappingSchema = Schema
 
 class SequenceSchema(object):
-    schema_type = Sequence
+    colander_type = Sequence
     node_type = SchemaNode
     __metaclass__ = _SchemaMeta
 
@@ -1767,20 +1767,22 @@ class SequenceSchema(object):
         node = object.__new__(cls.node_type)
         node.name = None
         node._order = SchemaNode._counter.next()
-        typ = cls.schema_type()
+        typ = cls.colander_type()
         node.__init__(typ, *args, **kw)
         if not len(cls.nodes) == 1:
             raise Invalid(node,
-                          'Sequence schemas must have exactly one child node')
+                          'Sequence colanders must have exactly one child node')
         for n in cls.nodes:
             node.add(n)
         return node
 
+
 class TupleSchema(Schema):
-    schema_type = Tuple
+    colander_type = Tuple
+
 
 class deferred(object):
-    """ A decorator which can be used to define deferred schema values
+    """ A decorator which can be used to define deferred colander values
     (missing values, widgets, validators, etc.)"""
     def __init__(self, wrapped):
         self.wrapped = wrapped

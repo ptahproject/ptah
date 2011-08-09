@@ -11,7 +11,7 @@ try:
 except ImportError:
     transaction = None
 
-import api, schema
+import api, colander
 from directives import action, getInfo
 
 
@@ -109,9 +109,9 @@ class SettingsImpl(dict):
     _changed = False
 
     def __init__(self):
-        self.schema = schema.SchemaNode(schema.Mapping())
+        self.schema = colander.SchemaNode(colander.Mapping())
 
-    def changed(self):
+    def changed(self, group, attrs):
         if not self._changed:
             self._changed = True
             transaction.get().addAfterCommitHook(self.save)
@@ -196,9 +196,9 @@ class GroupValidator(object):
         for validator in self._validators:
             try:
                 validator(node, appstruct)
-            except schema.Invalid, e:
+            except colander.Invalid, e:
                 if error is None:
-                    error = schema.Invalid(node)
+                    error = colander.Invalid(node)
                 error.add(e, node.children.index(e.node))
 
         if error is not None:
@@ -209,14 +209,14 @@ _marker = object()
 
 class Group(dict):
 
-    def __init__(self, prefix, settings, title, description):
-        self.__dict__['prefix'] = prefix
+    def __init__(self, name, settings, title, description):
+        self.__dict__['name'] = name
         self.__dict__['title'] = title
         self.__dict__['description'] = description
         self.__dict__['settings'] = settings
-        self.__dict__['schema'] = schema.SchemaNode(
-            schema.Mapping(), 
-            name=prefix,
+        self.__dict__['schema'] = colander.SchemaNode(
+            colander.Mapping(), 
+            name=name,
             required=False,
             validator=GroupValidator())
 
@@ -231,8 +231,8 @@ class Group(dict):
         return res
 
     def __setitem__(self, attr, value):
-        if attr is self.schema:
-            self.settings.changed()
+        if attr in self.schema and valie != self[attr]:
+            self.settings.changed(self.name, (attr,))
         super(Group, self).__setitem__(attr, value)
 
     def validate(self, name, value):
