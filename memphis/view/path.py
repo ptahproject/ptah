@@ -1,5 +1,6 @@
 import os, sys, imp, pkg_resources
 from chameleon.zpt.template import PageTemplateFile
+from memphis.view.formatter import format
 
 
 def path(spec, abs=False, package_name=None):
@@ -26,7 +27,7 @@ def template(spec, abs=False):
     if not abspath:
         raise ValueError('Missing template asset: %s' % spec)
 
-    return PageTemplateFile(abspath)
+    return PageTemplateFile(abspath, extra_builtins={'format': format})
 
 
 ignore_types = [ imp.C_EXTENSION, imp.C_BUILTIN ]

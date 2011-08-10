@@ -155,5 +155,22 @@ def timedeltaFormatter(value, type='short', request=None):
         return str(value).split('.')[0]
 
 
+_size_types = {
+    'b': (1.0, 'B'),
+    'k': (1024.0, 'Kb'),
+    'm': (1048576.0, 'Mb'),
+}
+
+def sizeFormatter(value, type='k', request=None):
+    """ size formatter """
+    if not isinstance(value, int):
+        return value
+
+    f,t = _size_types.get(type, (1024.0, 'Kb'))
+
+    return '%.2f %s'%(value/f, t)
+
+
 format['datetime'] = datetimeFormatter
 format['timedelta'] = timedeltaFormatter
+format['size'] = sizeFormatter

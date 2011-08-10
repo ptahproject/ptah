@@ -15,7 +15,11 @@ CHANGES
      /login.html - fullpage
      /login.html/validate - validate method only
 
-- Added datetime and time delta fomatters
+- Added datetime formatter
+
+- Added timedelta formatter
+
+- Added size formatter
 
 - Use simplejson instead of standard json for renderer
 
