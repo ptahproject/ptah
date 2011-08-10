@@ -18,7 +18,7 @@ import zope.schema.interfaces
 from memphis import config, view
 from memphis.form import pagelets
 from memphis.form.widget import Widget
-from memphis.form.browser import widget
+from memphis.form.widgets import widget
 from memphis.form.interfaces import _, ITextAreaWidget
 
 
@@ -47,12 +47,12 @@ class TextAreaWidget(widget.HTMLTextAreaWidget, Widget):
 
 view.registerPagelet(
     pagelets.IWidgetDisplayView, ITextAreaWidget,
-    template=view.template("memphis.form.browser:textarea_display.pt"))
+    template=view.template("memphis.form.widgets:textarea_display.pt"))
 
 view.registerPagelet(
     pagelets.IWidgetInputView, ITextAreaWidget,
-    template=view.template("memphis.form.browser:textarea_input.pt"))
+    template=view.template("memphis.form.widgets:textarea_input.pt"))
 
 view.registerPagelet(
     pagelets.IWidgetHiddenView, ITextAreaWidget,
-    template=view.template("memphis.form.browser:textarea_hidden.pt"))
+    template=view.template("memphis.form.widgets:textarea_hidden.pt"))

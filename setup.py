@@ -41,7 +41,6 @@ setup(name='memphis.form',
                           'zope.interface',
                           'zope.configuration',
                           'zope.contenttype',
-                          'zope.i18n',
                           'zope.lifecycleevent',
                           ],
       extras_require = dict(

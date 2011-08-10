@@ -1,17 +1,5 @@
-##############################################################################
-#
-# Copyright (c) 2007 Zope Foundation and Contributors.
-# All Rights Reserved.
-#
-# This software is subject to the provisions of the Zope Public License,
-# Version 2.1 (ZPL).  A copy of the ZPL should accompany this distribution.
-# THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
-# WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-# WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE.
-#
-##############################################################################
 """ Widget Framework Implementation """
+import colander
 from zope import interface
 from zope.component import getMultiAdapter
 from zope.schema.interfaces import IField, ITitledTokenizedTerm
@@ -47,13 +35,14 @@ class Widget(object):
     content = None
     context = None
 
-    def __init__(self, field, request):
+    def __init__(self, field, typ, request):
         self.field = field
+        self.typ = typ
         self.request = request
         self.params = MultiDict({})
 
-        self.name = field.__name__
-        self.id = field.__name__.replace('.', '-')
+        self.name = field.name
+        self.id = field.name.replace('.', '-')
         self.label = field.title
         self.required = field.required
 
@@ -84,11 +73,12 @@ class Widget(object):
             if self.content is not None:
                 value = getMultiAdapter(
                     (self.content, self.field), interfaces.IDataManager).query()
+
             # Step 1.2.2: If we still do not have a value, we can always use
             #             the default value of the field, id set
             # NOTE: It should check field.default is not missing_value, but
             # that requires fixing zope.schema first
-            if ((value is self.field.missing_value or
+            if ((value is self.field.missing or
                  value is interfaces.NO_VALUE) and
                 self.field.default is not None):
                 value = self.field.default
@@ -96,9 +86,7 @@ class Widget(object):
 
         # Step 1.4: Convert the value to one that the widget can understand
         if value not in (interfaces.NO_VALUE, PLACEHOLDER):
-            self.value = getMultiAdapter(
-                (self.field, self), 
-                interfaces.IDataConverter).toWidgetValue(value)
+            self.value = self.field.serialize(value)
 
     def render(self):
         # render pagelet, check memphis/form/pagelets.py
@@ -152,7 +140,7 @@ class SequenceWidget(Widget):
     def updateTerms(self):
         if self.terms is None:
             self.terms = getMultiAdapter(
-                (self.content, self.request, self.form, self.field, self),
+                (self.content, self.field, self.field.typ, self), 
                 interfaces.ITerms)
         return self.terms
 
@@ -165,6 +153,7 @@ class SequenceWidget(Widget):
         if (self.name not in self.params and
             self.name+'-empty-marker' in self.params):
             return default
+
         value = self.params.getall(self.name) or default
         if value != default:
             # do some kind of validation, at least only use existing values
@@ -175,4 +164,12 @@ class SequenceWidget(Widget):
                     self.terms.getTermByToken(token)
                 except LookupError:
                     return default
+
+        if value is not default and \
+                not isinstance(self.field.typ, colander.Positional):
+            if value:
+                return value[0]
+            else:
+                return default
+
         return value

@@ -1,34 +1,16 @@
-##############################################################################
-#
-# Copyright (c) 2007 Zope Foundation and Contributors.
-# All Rights Reserved.
-#
-# This software is subject to the provisions of the Zope Public License,
-# Version 2.1 (ZPL).  A copy of the ZPL should accompany this distribution.
-# THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
-# WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-# WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE.
-#
-##############################################################################
-"""Text Widget Implementation"""
-import zope.interface
-import zope.schema
-import zope.schema.interfaces
-from zope.i18n import translate
+""" Select/Multi select widget implementation """
+from zope import interface, schema
 
 from memphis import config, view
 from memphis.form import pagelets
 from memphis.form.widget import SequenceWidget
-from memphis.form.browser import widget
+from memphis.form.widgets import widget
 from memphis.form.interfaces import _, ISelectWidget
 
 
 class SelectWidget(widget.HTMLSelectWidget, SequenceWidget):
     """Select widget implementation."""
-    zope.interface.implementsOnly(ISelectWidget)
-    config.adapts(zope.schema.interfaces.IChoice, None)
-    config.adapts(zope.schema.interfaces.IChoice, None, name='select')
+    interface.implementsOnly(ISelectWidget)
 
     klass = u'select-widget'
     prompt = False
@@ -44,8 +26,8 @@ class SelectWidget(widget.HTMLSelectWidget, SequenceWidget):
         return term.token in self.value
 
     def update(self):
-        """See memphis.form.interfaces.IWidget."""
         super(SelectWidget, self).update()
+
         widget.addFieldClass(self)
 
     @property
@@ -68,7 +50,7 @@ class SelectWidget(widget.HTMLSelectWidget, SequenceWidget):
             id = '%s-%i' % (self.id, count)
             content = term.token
             if zope.schema.interfaces.ITitledTokenizedTerm.providedBy(term):
-                content = translate(
+                content = view.translate(
                     term.title, context=self.request, default=term.title)
             items.append(
                 {'id':id, 'value':term.token, 'content':content,
@@ -88,12 +70,12 @@ class MultiSelectWidget(SelectWidget):
 
 view.registerPagelet(
     pagelets.IWidgetDisplayView, ISelectWidget,
-    template=view.template("memphis.form.browser:select_display.pt"))
+    template=view.template("memphis.form.widgets:select_display.pt"))
 
 view.registerPagelet(
     pagelets.IWidgetInputView, ISelectWidget,
-    template=view.template("memphis.form.browser:select_input.pt"))
+    template=view.template("memphis.form.widgets:select_input.pt"))
 
 view.registerPagelet(
     pagelets.IWidgetHiddenView, ISelectWidget,
-    template=view.template("memphis.form.browser:select_hidden.pt"))
+    template=view.template("memphis.form.widgets:select_hidden.pt"))

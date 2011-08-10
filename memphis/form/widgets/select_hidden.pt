@@ -1,6 +1,3 @@
-<div xmlns="http://www.w3.org/1999/xhtml"
-     xmlns:tal="http://xml.zope.org/namespaces/tal"
-     tal:omit-tag="">  
 <tal:block define="id context.id;
                    name string:${context.name}:list"
            repeat="item context.items">
@@ -10,4 +7,3 @@
 </tal:block>
 <input name="field-empty-marker" type="hidden" value="1"
        tal:attributes="name string:${context.name}-empty-marker" />
-</div>

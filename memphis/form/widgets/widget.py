@@ -1,26 +1,13 @@
-##############################################################################
-#
-# Copyright (c) 2007 Zope Foundation and Contributors.
-# All Rights Reserved.
-#
-# This software is subject to the provisions of the Zope Public License,
-# Version 2.1 (ZPL).  A copy of the ZPL should accompany this distribution.
-# THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
-# WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-# WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE.
-#
-##############################################################################
 """Widget Framework Implementation"""
-import zope.interface
+from zope import interface
 from memphis.form.interfaces import IWidget
-from memphis.form.browser.interfaces import \
+from memphis.form.widgets.interfaces import \
     IHTMLFormElement, IHTMLInputWidget, IHTMLSelectWidget, \
     IHTMLTextInputWidget, IHTMLTextAreaWidget
 
 
 class HTMLFormElement(object):
-    zope.interface.implements(IHTMLFormElement)
+    interface.implements(IHTMLFormElement)
 
     id = None
     klass = None
@@ -63,7 +50,7 @@ class HTMLFormElement(object):
 
 
 class HTMLInputWidget(HTMLFormElement):
-    zope.interface.implements(IHTMLInputWidget)
+    interface.implements(IHTMLInputWidget)
 
     readonly = None
     alt = None
@@ -72,14 +59,14 @@ class HTMLInputWidget(HTMLFormElement):
 
 
 class HTMLTextInputWidget(HTMLInputWidget):
-    zope.interface.implements(IHTMLTextInputWidget)
+    interface.implements(IHTMLTextInputWidget)
 
     size = None
     maxlength = None
 
 
 class HTMLTextAreaWidget(HTMLFormElement):
-    zope.interface.implements(IHTMLTextAreaWidget)
+    interface.implements(IHTMLTextAreaWidget)
 
     rows = None
     cols = None
@@ -89,7 +76,7 @@ class HTMLTextAreaWidget(HTMLFormElement):
 
 
 class HTMLSelectWidget(HTMLFormElement):
-    zope.interface.implements(IHTMLSelectWidget)
+    interface.implements(IHTMLSelectWidget)
 
     multiple = None
     size = 1

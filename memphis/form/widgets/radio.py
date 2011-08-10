@@ -1,31 +1,18 @@
-##############################################################################
-#
-# Copyright (c) 2007 Zope Foundation and Contributors.
-# All Rights Reserved.
-#
-# This software is subject to the provisions of the Zope Public License,
-# Version 2.1 (ZPL).  A copy of the ZPL should accompany this distribution.
-# THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
-# WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-# WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE.
-#
-##############################################################################
-"""Text Widget Implementation"""
+"""Radio widget implementation"""
 from zope import interface, schema
-from zope.i18n import translate
 
+import colander
 from memphis import config, view
 from memphis.form import pagelets
 from memphis.form.widget import SequenceWidget
-from memphis.form.browser import widget
+from memphis.form.widgets import widget
 from memphis.form.interfaces import _, IRadioWidget
 
 
 class RadioWidget(widget.HTMLInputWidget, SequenceWidget):
     """Input type radio widget implementation."""
     interface.implementsOnly(IRadioWidget)
-    config.adapts(schema.interfaces.IBool, None, name='radio')
+    config.adapts(colander.SchemaNode, colander.Bool, None, name='radio')
     config.adapts(schema.interfaces.IChoice, None, name='radio')
 
     klass = u'radio-widget'
@@ -41,6 +28,7 @@ class RadioWidget(widget.HTMLInputWidget, SequenceWidget):
     def update(self):
         """See memphis.form.interfaces.IWidget."""
         super(RadioWidget, self).update()
+
         widget.addFieldClass(self)
         self.items = []
         for count, term in enumerate(self.terms):
@@ -48,7 +36,7 @@ class RadioWidget(widget.HTMLInputWidget, SequenceWidget):
             id = '%s-%i' % (self.id, count)
             label = term.token
             if schema.interfaces.ITitledTokenizedTerm.providedBy(term):
-                label = translate(
+                label = view.translate(
                     term.title, context=self.request, default=term.title)
             self.items.append(
                 {'id':id, 'name':self.name, 'value':term.token,
@@ -56,7 +44,7 @@ class RadioWidget(widget.HTMLInputWidget, SequenceWidget):
 
 
 class HorizontalRadioWidget(RadioWidget):
-    config.adapts(schema.interfaces.IBool, None)
+    config.adapts(colander.SchemaNode, colander.Bool, None)
     config.adapts(schema.interfaces.IBool, None, name='radio-horizontal')
 
     __fname__ = 'radio-horizontal'
@@ -66,16 +54,16 @@ class HorizontalRadioWidget(RadioWidget):
 
 view.registerPagelet(
     pagelets.IWidgetDisplayView, IRadioWidget,
-    template=view.template("memphis.form.browser:radio_display.pt"))
+    template=view.template("memphis.form.widgets:radio_display.pt"))
 
 view.registerPagelet(
     pagelets.IWidgetInputView, IRadioWidget,
-    template=view.template("memphis.form.browser:radio_input.pt"))
+    template=view.template("memphis.form.widgets:radio_input.pt"))
 
 view.registerPagelet(
     pagelets.IWidgetInputView, HorizontalRadioWidget,
-    template=view.template("memphis.form.browser:radiohoriz_input.pt"))
+    template=view.template("memphis.form.widgets:radiohoriz_input.pt"))
 
 view.registerPagelet(
     pagelets.IWidgetHiddenView, IRadioWidget,
-    template=view.template("memphis.form.browser:radio_hidden.pt"))
+    template=view.template("memphis.form.widgets:radio_hidden.pt"))

@@ -16,11 +16,7 @@
 import os
 import zope.component
 import zope.interface
-import zope.schema
-
 from doctest import register_optionflag
-from zope.schema.fieldproperty import FieldProperty
-
 from pyramid.testing import DummyRequest as TestRequest
 
 from memphis.form import browser, button, converter, datamanager, error, field
@@ -32,30 +28,6 @@ import lxml.doctestcompare
 
 # register lxml doctest option flags
 lxml.doctestcompare.NOPARSE_MARKUP = register_optionflag('NOPARSE_MARKUP')
-
-
-class TestingFileUploadDataConverter(converter.FileUploadDataConverter):
-    """A special file upload data converter that works with testing."""
-    zope.component.adapts(
-        zope.schema.interfaces.IBytes, interfaces.IFileWidget)
-
-    def toFieldValue(self, value):
-        if value is None or value == '':
-            value = self.widget.request.get(self.widget.name+'.testing', '')
-            encoding = self.widget.request.get(
-                self.widget.name+'.encoding', 'plain')
-
-            # allow for the case where the file contents are base64 encoded.
-            if encoding!='plain':
-                value = value.decode(encoding)
-            self.widget.request.form[self.widget.name] = value
-
-        return super(TestingFileUploadDataConverter, self).toFieldValue(value)
-
-
-def getPath(filename):
-    return os.path.join(os.path.dirname(browser.__file__), filename)
-
 
 ##########################
 def render(view, xpath='.'):

@@ -1,7 +1,5 @@
 """ Form and Widget Framework Interfaces """
 from zope import interface
-import zope.interface
-import zope.schema
 from zope.interface.common import mapping
 from memphis.view import TranslationStringFactory
 
@@ -73,7 +71,7 @@ class ISelectionManager(IManager):
 
 # ----[ Validators ]---------------------------------------------------------
 
-class IFormValidator(zope.interface.Interface):
+class IFormValidator(interface.Interface):
     """A validator for a form."""
 
     def validate(data, errors):
@@ -82,7 +80,7 @@ class IFormValidator(zope.interface.Interface):
 
 # ----[ Errors ]--------------------------------------------------------------
 
-class IErrors(zope.interface.Interface):
+class IErrors(interface.Interface):
     """ list """
 
     def append(error):
@@ -95,7 +93,7 @@ class IErrors(zope.interface.Interface):
         """ return widget error """
 
 
-class IWidgetError(zope.interface.Interface):
+class IWidgetError(interface.Interface):
     """ A special error, for can return additional errors and explicitly 
     set to which widget this error should be appied. """
 
@@ -104,18 +102,12 @@ class IWidgetError(zope.interface.Interface):
     error = interface.Attribute('Error instance')
 
 
-class IErrorViewSnippet(zope.interface.Interface):
+class IErrorViewSnippet(interface.Interface):
     """A view providing a view for an error"""
 
-    widget = zope.schema.Field(
-        title = _("Widget"),
-        description = _("The widget that the view is on"),
-        required = True)
+    widget = interface.Attribute('Widget')
 
-    error = zope.schema.Field(
-        title=_('Error'),
-        description=_('Error the view is for.'),
-        required=True)
+    error = interface.Attribute('Error')
 
     def update():
         """Update view."""
@@ -124,48 +116,22 @@ class IErrorViewSnippet(zope.interface.Interface):
         """Render view."""
 
 
-class IMultipleErrors(zope.interface.Interface):
+class IMultipleErrors(interface.Interface):
     """An error that contains many errors"""
 
-    errors = zope.interface.Attribute("List of errors")
+    errors = interface.Attribute("List of errors")
 
 
 # ----[ Fields ]--------------------------------------------------------------
 
-class IField(zope.interface.Interface):
+class IField(interface.Interface):
     """Field wrapping a schema field used in the form."""
 
-    __name__ = zope.schema.TextLine(
-        title=_('Title'),
-        description=_('The name of the field within the form.'),
-        required=True)
-
-    field = zope.schema.Field(
-        title=_('Schema Field'),
-        description=_('The schema field that is to be rendered.'),
-        required=True)
-
-    prefix = zope.schema.Field(
-        title=_('Prefix'),
-        description=_('The prefix of the field used to avoid name clashes.'),
-        required=True)
-
-    mode = zope.schema.Field(
-        title=_('Mode'),
-        description=_('The mode in which to render the widget for the field.'),
-        required=True)
-
-    interface = zope.schema.Field(
-        title=_('Interface'),
-        description=_('The interface from which the field is coming.'),
-        required=True)
-
-    widgetFactory = zope.schema.Field(
-        title=_('Widget Factory'),
-        description=_('The widget factory.'),
-        required=False,
-        default=None,
-        missing_value=None)
+    name = interface.Attribute('Title')
+    field = interface.Attribute('Schema Field')
+    prefix = interface.Attribute('Prefix')
+    mode = interface.Attribute('Mode')
+    widgetFactory = interface.Attribute('Widget Factory')
 
 
 class IFields(ISelectionManager):
@@ -190,7 +156,7 @@ class IFields(ISelectionManager):
 
 # ----[ Data Managers ]------------------------------------------------------
 
-class IDataManager(zope.interface.Interface):
+class IDataManager(interface.Interface):
     """Data manager."""
 
     def get():
@@ -210,38 +176,14 @@ class IDataManager(zope.interface.Interface):
         """Set the value"""
 
 
-# ----[ Data Converters ]----------------------------------------------------
-
-class IDataConverter(zope.interface.Interface):
-    """A data converter from field to widget values and vice versa."""
-
-    def toWidgetValue(value):
-        """Convert the field value to a widget output value.
-
-        If conversion fails or is not possible, a ``ValueError`` *must* be
-        raised. However, this method should effectively never fail, because
-        incoming value is well-defined.
-        """
-
-    def toFieldValue(value):
-        """Convert an input value to a field/system internal value.
-
-        This methods *must* also validate the converted value against the
-        field.
-
-        If the conversion fails, a ``ValueError`` *must* be raised. If
-        the validation fails, a ``ValidationError`` *must* be raised.
-        """
-
 # term interfaces
-class ITerms(zope.interface.Interface):
-    """ """
+class ITerms(interface.Interface):
+    """ terms """
 
-    context = zope.schema.Field()
-    request = zope.schema.Field()
-    form = zope.schema.Field()
-    field = zope.schema.Field()
-    widget = zope.schema.Field()
+    context = interface.Attribute('context')
+    field = interface.Attribute('Schema node')
+    typ = interface.Attribute('Schem type')
+    widget = interface.Attribute('Widget')
 
     def getTerm(value):
         """Return an ITitledTokenizedTerm object for the given value
@@ -275,87 +217,36 @@ class ITerms(zope.interface.Interface):
 class IBoolTerms(ITerms):
     """A specialization that handles boolean choices."""
 
-    trueLabel = zope.schema.TextLine(
-        title=_('True-value Label'),
-        description=_('The label for a true value of the Bool field.'),
-        required=True)
+    trueLabel = interface.Attribute('True-value Label')
 
-    falseLabel = zope.schema.TextLine(
-        title=_('False-value Label'),
-        description=_('The label for a false value of the Bool field.'),
-        required=False)
+    falseLabel = interface.Attribute('False-value Label')
 
 
 # ----[ Widgets ]------------------------------------------------------------
 
-class IDefaultWidget(zope.interface.Interface):
+class IDefaultWidget(interface.Interface):
     """ default widget, third party components
     can override this adapter and return different widget """
 
 
-class IWidget(zope.interface.Interface):
+class IWidget(interface.Interface):
     """A widget within a form"""
 
-    __fname__ = zope.interface.Attribute('Factory name')
-    __title__ = zope.interface.Attribute('Widget factory title')
-    __description__ = zope.interface.Attribute('Widget factory description')
+    __fname__ = interface.Attribute('Factory name')
+    __title__ = interface.Attribute('Widget factory title')
+    __description__ = interface.Attribute('Widget factory description')
 
-    name = zope.schema.BytesLine(
-        title=_('Name'),
-        description=_('The name the widget is known under.'),
-        required=True)
-
-    label = zope.schema.TextLine(
-        title=_('Label'),
-        description=_('''
-        The widget label.
-
-        Label may be translated for the request.
-
-        The attribute may be implemented as either a read-write or read-only
-        property, depending on the requirements for a specific implementation.
-        '''),
-        required=True)
-
-    mode = zope.schema.Choice(
-        title=_('Mode'),
-        description=_('A widget mode.'),
-        default=INPUT_MODE,
-        values=(INPUT_MODE, DISPLAY_MODE, HIDDEN_MODE),
-        required=True)
-
-    required = zope.schema.Bool(
-        title=_('Required'),
-        description=_('If true the widget should be displayed as required '
-                      'input.'),
-        default=False,
-        required=True)
-
-    error = zope.schema.Field(
-        title=_('Error'),
-        description=_('If an error occurred during any step, the error view '
-                      'stored here.'),
-        required=False)
-
-    value = zope.schema.Field(
-        title=_('Value'),
-        description=_('The value that the widget represents.'),
-        required=False)
-
+    name = interface.Attribute('Name')
+    label = interface.Attribute('Label')
+    mode = interface.Attribute('Mode')
+    required = interface.Attribute('Required')
+    error = interface.Attribute('Error')
+    value = interface.Attribute('Value')
     template = zope.interface.Attribute('''The widget template''')
-
-    params = zope.schema.Bool(
-        title=_('Request params'),
-        default=False,
-        required=False)
+    params = interface.Attribute('Request params')
 
     #ugly thing to remove setErrors parameter from extract
-    setErrors = zope.schema.Bool(
-        title=_('Set errors'),
-        description=_('A flag, when set, the widget sets error messages '
-                      'on calling extract().'),
-        default=True,
-        required=False)
+    setErrors = interface.Attribute('Set errors')
 
     def extract(default=NO_VALUE):
         """Extract the string value(s) of the widget from the form.
@@ -396,14 +287,8 @@ class ISequenceWidget(IWidget):
     based values. e.g. IList of ITextLine
     """
 
-    noValueToken = zope.schema.ASCIILine(
-        title=_('NO_VALUE Token'),
-        description=_('The token to be used, if no value has been selected.'))
-
-    terms = zope.schema.Object(
-        title=_('Terms'),
-        description=_('A component that provides the options for selection.'),
-        schema=ITerms)
+    noValueToken = interface.Attribute('NO_VALUE Token')
+    terms = interface.Attribute('Terms')
 
     def updateTerms():
         """Update the widget's ``terms`` attribute and return the terms.
@@ -412,30 +297,9 @@ class ISequenceWidget(IWidget):
         without having to worry whether they are already created or not.
         """
 
+
 class ISelectWidget(ISequenceWidget):
     """Select widget with ITerms option."""
-
-    prompt = zope.schema.Bool(
-        title=_('Prompt'),
-        description=_('A flag, when set, enables a choice explicitely '
-                      'requesting the user to choose a value.'),
-        default=False)
-
-    items = zope.schema.Tuple(
-        title=_('Items'),
-        description=_('A collection of dictionaries containing all pieces of '
-                      'information for rendering. The following keys must '
-                      'be in each dictionary: id, value, content, selected'))
-
-    noValueMessage = zope.schema.Text(
-        title=_('No-Value Message'),
-        description=_('A human-readable text that is displayed to refer the '
-                      'missing value.'))
-
-    promptMessage = zope.schema.Text(
-        title=_('Prompt Message'),
-        description=_('A human-readable text that is displayed to refer the '
-                      'missing value.'))
 
 
 class IOrderedSelectWidget(ISequenceWidget):
@@ -489,46 +353,13 @@ class IPasswordWidget(ITextWidget):
 class IWidgets(IManager):
     """A widget manager"""
 
-    prefix = zope.schema.BytesLine(
-        title=_('Prefix'),
-        description=_('The prefix of the widgets.'),
-        default='widgets.',
-        required=True)
-
-    mode = zope.schema.Choice(
-        title=_('Mode'),
-        description=_('A widget mode.'),
-        default=INPUT_MODE,
-        values=(INPUT_MODE, DISPLAY_MODE, HIDDEN_MODE),
-        required=True)
-
-    errors = zope.schema.Field(
-        title=_('Errors'),
-        description=_('The collection of errors that occured during '
-                      'validation.'),
-        default=(),
-        required=True)
-
-    ignoreReadonly = zope.schema.Bool(
-        title=_('Ignore Readonly'),
-        description=_('If set then readonly fields will also be shown.'),
-        default=False,
-        required=True)
-
-    hasRequiredFields = zope.schema.Bool(
-        title=_('Has required fields'),
-        description=_('A flag set when at least one field is marked as '
-                      'required'),
-        default=False,
-        required=False)
+    prefix = interface.Attribute('Prefix')
+    mode = interface.Attribute('Mode')
+    errors = interface.Attribute('Errors')
+    hasRequiredFields = interface.Attribute('Has required fields')
 
     #ugly thing to remove setErrors parameter from extract
-    setErrors = zope.schema.Bool(
-        title=_('Set errors'),
-        description=_('A flag, when set, the contained widgets set error '
-                      'messages on calling extract().'),
-        default=True,
-        required=False)
+    setErrors = interface.Attribute('Set errors')
 
     def update():
         """Setup widgets."""
@@ -540,22 +371,10 @@ class IWidgets(IManager):
 
 # ----[ Buttons ]------------------------------------------------------------
 
-class IButton(zope.schema.interfaces.IField):
+class IButton(interface.Interface):
     """A button in a form."""
 
-    accessKey = zope.schema.TextLine(
-        title=_('Access Key'),
-        description=_('The key when pressed causes the button to be pressed.'),
-        min_length=1,
-        max_length=1,
-        required=False)
-
-    actionFactory = zope.schema.Field(
-        title=_('Action Factory'),
-        description=_('The action factory.'),
-        required=False,
-        default=None,
-        missing_value=None)
+    accessKey = interface.Attribute('Access Key')
 
 
 class IButtons(ISelectionManager):
@@ -564,12 +383,8 @@ class IButtons(ISelectionManager):
 
 class IActions(IManager):
     """A button widgets manager"""
-
-    prefix = zope.schema.BytesLine(
-        title=_('Prefix'),
-        description=_('The prefix of the widgets.'),
-        default='buttons.',
-        required=True)
+              
+    prefix = interface.Attribute('Prefix')
 
     def update():
         """Setup button widgets."""
@@ -580,48 +395,15 @@ class IActions(IManager):
 
 # ----[ Forms ]--------------------------------------------------------------
 
-class IForm(zope.interface.Interface):
+class IForm(interface.Interface):
     """Form"""
 
-    mode = zope.schema.Field(
-        title=_('Mode'),
-        description=_('The mode in which to render the widgets.'),
-        required=True)
-
-    ignoreReadonly = zope.schema.Bool(
-        title=_('Ignore Readonly'),
-        description=_('If set then readonly fields will also be shown.'),
-        default=False,
-        required=True)
-
-    widgets = zope.schema.Object(
-        title=_('Widgets'),
-        description=_('A widget manager containing the widgets to be used in '
-                      'the form.'),
-        schema=IWidgets)
-
-    label = zope.schema.TextLine(
-        title=_('Label'),
-        description=_('A human readable text describing the form that can be '
-                      'used in the UI.'),
-        required=False)
-
-    prefix = zope.schema.BytesLine(
-        title=_('Prefix'),
-        description=_('The prefix of the form used to uniquely identify it.'),
-        default='form.')
-
-    fields = zope.schema.Object(
-        title=_('Fields'),
-        description=_('A field manager describing the fields to be used for '
-                      'the form.'),
-        schema=IFields)
-
-    buttons = zope.schema.Object(
-        title=_('Buttons'),
-        description=_('A button manager describing the buttons to be used for '
-                      'the form.'),
-        schema=IButtons)
+    mode = interface.Attribute('Mode')
+    widgets = interface.Attribute('Widgets')
+    label = interface.Attribute('Label')
+    prefix = interface.Attribute('Prefix')
+    fields = interface.Attribute('Fields')
+    buttons = interface.Attribute('Buttons')
 
     def getRequestParams():
         '''Return the request params.'''
@@ -677,46 +459,13 @@ class IDisplayForm(IForm):
 class IInputForm(zope.interface.Interface):
     """A form that is meant to process the input of the form controls."""
 
-    action = zope.schema.URI(
-        title=_('Action'),
-        description=_('The action defines the URI to which the form data are '
-                      'sent.'),
-        required=True)
-
-    name = zope.schema.TextLine(
-        title=_('Name'),
-        description=_('The name of the form used to identify it.'),
-        required=False)
-
-    id = zope.schema.TextLine(
-        title=_('Id'),
-        description=_('The id of the form used to identify it.'),
-        required=False)
-
-    method = zope.schema.Choice(
-        title=_('Method'),
-        description=_('The HTTP method used to submit the form.'),
-        values=('get', 'post'),
-        default='post',
-        required=False)
-
-    enctype = zope.schema.ASCIILine(
-        title=_('Encoding Type'),
-        description=_('The data encoding used to submit the data safely.'),
-        default='multipart/form-data',
-        required=False)
-
-    acceptCharset = zope.schema.ASCIILine(
-        title=_('Accepted Character Sets'),
-        description=_('This is a list of character sets the server accepts. '
-                      'By default this is unknown.'),
-        required=False)
-
-    accept = zope.schema.ASCIILine(
-        title=_('Accepted Content Types'),
-        description=_('This is a list of content types the server can '
-                      'safely handle.'),
-        required=False)
+    action = interface.Attribute('Action')
+    name = interface.Attribute('Name')
+    id = interface.Attribute('Id')
+    method = interface.Attribute('Method')
+    enctype = interface.Attribute('Encoding Type')
+    acceptCharset = interface.Attribute('Accepted Character Sets')
+    accept = interface.Attribute('Accepted Content Types')
 
 
 class IEditForm(IForm):
@@ -733,7 +482,6 @@ class IEditForm(IForm):
 
     def applyChanges(data):
         """Apply the changes to the content component."""
-
 
 
 class IGroup(IInlineForm):

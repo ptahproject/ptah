@@ -16,13 +16,12 @@ import zope.component
 import zope.interface
 import zope.schema
 import zope.schema.interfaces
-from zope.i18n import translate
 
 from memphis import config, view
 
 from memphis.form import interfaces, pagelets
 from memphis.form.widget import SequenceWidget
-from memphis.form.browser import widget
+from memphis.form.widgets import widget
 
 
 class OrderedSelectWidget(widget.HTMLSelectWidget, SequenceWidget):
@@ -39,7 +38,7 @@ class OrderedSelectWidget(widget.HTMLSelectWidget, SequenceWidget):
         id = '%s-%i' % (self.id, count)
         content = term.value
         if zope.schema.interfaces.ITitledTokenizedTerm.providedBy(term):
-            content = translate(
+            content = view.translate(
                 term.title, context=self.request, default=term.title)
         return {'id':id, 'value':term.token, 'content':content}
 
@@ -93,9 +92,9 @@ def SequenceChoiceSelectFieldWidget(field, value_type, request):
 
 view.registerPagelet(
     pagelets.IWidgetDisplayView, interfaces.IOrderedSelectWidget,
-    template=view.template("memphis.form.browser:orderedselect_display.pt"))
+    template=view.template("memphis.form.widgets:orderedselect_display.pt"))
 
 
 view.registerPagelet(
     pagelets.IWidgetInputView, interfaces.IOrderedSelectWidget,
-    template=view.template("memphis.form.browser:orderedselect_input.pt"))
+    template=view.template("memphis.form.widgets:orderedselect_input.pt"))

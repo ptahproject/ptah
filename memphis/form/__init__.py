@@ -3,7 +3,7 @@
 # forms
 from memphis.form.form import applyChanges
 from memphis.form.form import extends
-from memphis.form.form import Form, EditForm, SubForm, Group, DisplayForm
+from memphis.form.form import Form, EditForm, DisplayForm
 
 from memphis.form.interfaces import IForm, ISubForm, IGroup, IDisplayForm
 from memphis.form.interfaces import INPUT_MODE, DISPLAY_MODE, HIDDEN_MODE
@@ -11,6 +11,9 @@ from memphis.form.interfaces import INPUT_MODE, DISPLAY_MODE, HIDDEN_MODE
 # widget
 from memphis.form.widget import Widget
 from memphis.form.interfaces import IWidget, IDefaultWidget
+
+# widgets
+from memphis.form import widgets
 
 # fields
 from memphis.form.field import Fields

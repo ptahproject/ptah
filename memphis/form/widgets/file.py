@@ -21,7 +21,7 @@ import zope.interface
 import zope.schema.interfaces
 
 from memphis.form import interfaces, widget
-from memphis.form.browser import text
+from memphis.form.widgets import text
 
 
 class FileWidget(text.TextWidget):

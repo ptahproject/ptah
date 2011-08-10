@@ -1,6 +1,3 @@
-<html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:tal="http://xml.zope.org/namespaces/tal"
-      tal:omit-tag="">
 <span id="" class=""
       tal:attributes="id context.id;
                       class context.klass;
@@ -16,11 +13,9 @@
                       onmouseout context.onmouseout;
                       onkeypress context.onkeypress;
                       onkeydown context.onkeydown;
-                      onkeyup context.onkeyup"><tal:block
-    repeat="value context.displayValue"
-    ><span class="selected-option"
-           tal:content="value"
-    /><tal:block condition="not repeat['value'].end">, </tal:block
-  ></tal:block
-></span>
-</html>
+                      onkeyup context.onkeyup">
+  <tal:block repeat="value context.displayValue">
+    <span class="selected-option" tal:content="value" />
+    <tal:block condition="not repeat['value'].end">, </tal:block>
+  </tal:block>
+</span>

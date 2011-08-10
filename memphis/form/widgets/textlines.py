@@ -17,7 +17,7 @@ from zope.schema.interfaces import ISequence
 
 from memphis import config, view
 from memphis.form import pagelets
-from memphis.form.browser import textarea
+from memphis.form.widgets import textarea
 from memphis.form.interfaces import _, ITextLinesWidget
 
 
@@ -35,8 +35,8 @@ class TextLinesWidget(textarea.TextAreaWidget):
 
 view.registerPagelet(
     pagelets.IWidgetDisplayView, ITextLinesWidget,
-    template=view.template("memphis.form.browser:textlines_display.pt"))
+    template=view.template("memphis.form.widgets:textlines_display.pt"))
 
 view.registerPagelet(
     pagelets.IWidgetInputView, ITextLinesWidget,
-    template=view.template("memphis.form.browser:textlines_input.pt"))
+    template=view.template("memphis.form.widgets:textlines_input.pt"))

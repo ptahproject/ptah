@@ -1,5 +1,6 @@
 """ Button and Button Manager implementation """
 import sys, re
+import colander
 from zope import interface
 from zope.component import getSiteManager
 from memphis import config
@@ -21,6 +22,8 @@ class Button(Field):
             value = name
 
         self.name = name
+        self.typ = colander.Str()
+
         self.__name__ = name
 
         self.title = title
@@ -102,13 +105,13 @@ class Actions(util.Manager):
             factory = field.widgetFactory
             if isinstance(factory, basestring):
                 widget = sm.queryMultiAdapter(
-                    (field, request), IWidget, name=factory)
+                    (field, field.typ, request), IWidget, name=factory)
             elif callable(factory):
                 widget = factory(field.field, request)
 
             if widget is None:
                 widget = sm.getMultiAdapter(
-                    (field.field, request), interfaces.IDefaultWidget)
+                    (field.field, request),interfaces.IDefaultWidget)
 
             # Step 3: Set the prefix for the widget
             widget.name = str(prefix + shortName)

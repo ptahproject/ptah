@@ -1,7 +1,5 @@
 """Field Implementation"""
-import zope.component
-import zope.interface
-import zope.schema.interfaces
+import colander
 from zope import interface
 from zope.component import getSiteManager
 
@@ -17,19 +15,17 @@ class Field(object):
 
     widgetFactory = ''
 
-    def __init__(self, field, name=None, prefix='', mode=None, interface=None):
+    def __init__(self, field, name=None, prefix='', mode=None):
+        self.typ = field.typ
         self.field = field
         if name is None:
-            name = field.__name__
-        self.__name__ = util.expandPrefix(prefix) + name
+            name = field.name
+        self.name = util.expandPrefix(prefix) + name
         self.prefix = prefix
         self.mode = mode
-        if interface is None:
-            interface = field.interface
-        self.interface = interface
 
     def __repr__(self):
-        return '<%s %r>' % (self.__class__.__name__, self.__name__)
+        return '<%s %r>' % (self.__class__.__name__, self.name)
 
 
 def _initkw(keepReadOnly=(), omitReadOnly=False, **defaults):
@@ -46,23 +42,19 @@ class Fields(util.SelectionManager):
 
         fields = []
         for arg in args:
-            if isinstance(arg, interface.interface.InterfaceClass):
-                for name, field in zope.schema.getFieldsInOrder(arg):
-                    fields.append((name, field, arg))
+            if issubclass(arg, colander.Schema):
+                arg = arg()
 
-            elif zope.schema.interfaces.IField.providedBy(arg):
-                name = arg.__name__
-                if not name:
-                    raise ValueError("Field has no name")
-                fields.append((name, arg, arg.interface))
+            if isinstance(arg, colander.SchemaNode):
+                for field in arg.children:
+                    fields.append((field.name, field))
 
-            elif self.managerInterface.providedBy(arg):
+            elif isinstance(arg, Fields):
                 for form_field in arg.values():
-                    fields.append(
-                        (form_field.__name__, form_field, form_field.interface))
+                    fields.append((form_field.__name__, form_field))
 
             elif isinstance(arg, Field):
-                fields.append((arg.__name__, arg, arg.interface))
+                fields.append((arg.__name__, arg))
 
             else:
                 raise TypeError("Unrecognized argument type", arg)
@@ -71,18 +63,18 @@ class Fields(util.SelectionManager):
         self._data_values = []
         self._data = {}
 
-        for name, field, iface in fields:
+        for name, field in fields:
             if isinstance(field, Field):
                 form_field = field
             else:
-                if field.readonly:
-                    if omitReadOnly and (name not in keepReadOnly):
-                        continue
+                #if field.readonly:
+                #    if omitReadOnly and (name not in keepReadOnly):
+                #        continue
                 customDefaults = defaults.copy()
-                if iface is not None:
-                    customDefaults['interface'] = iface
+                #if iface is not None:
+                #    customDefaults['interface'] = iface
                 form_field = Field(field, **customDefaults)
-                name = form_field.__name__
+                name = form_field.name
 
             if name in self._data:
                 raise ValueError("Duplicate name", name)
@@ -100,7 +92,7 @@ class Fields(util.SelectionManager):
             names = [util.expandPrefix(prefix) + name for name in names]
         mapping = self
         if interface is not None:
-            mapping = dict([(field.field.__name__, field)
+            mapping = dict([(field.field.name, field)
                             for field in self.values()
                             if field.field.interface is interface])
         return self.__class__(*[mapping[name] for name in names])
@@ -116,13 +108,12 @@ class Fields(util.SelectionManager):
             *[field for name, field in self.items()
               if not ((name in names and interface is None) or
                       (field.field.interface is interface and
-                       field.field.__name__ in names)) ])
+                       field.field.name in names)) ])
 
 
 class FieldWidgets(util.Manager):
     """Widget manager for IWidget."""
-    config.adapts(
-        interfaces.IFieldsForm, interface.Interface)
+    config.adapts(interfaces.IForm, interface.Interface)
     interface.implementsOnly(interfaces.IWidgets)
 
     prefix = 'widgets.'
@@ -159,19 +150,20 @@ class FieldWidgets(util.Manager):
             mode = self.mode
             if field.mode is not None:
                 mode = field.mode
-            elif field.field.readonly and not self.ignoreReadonly:
-                mode = interfaces.DISPLAY_MODE
+            #elif field.field.readonly and not self.ignoreReadonly:
+            #    mode = interfaces.DISPLAY_MODE
 
             # Step 2: Get the widget for the given field.
-            shortName = field.__name__
+            shortName = field.name
 
             widget = None
             factory = field.widgetFactory
             if isinstance(factory, basestring):
                 widget = sm.queryMultiAdapter(
-                    (field.field, request), interfaces.IWidget, name=factory)
+                    (field.field, field.typ, request),
+                    interfaces.IWidget, name=factory)
             elif callable(factory):
-                widget = factory(field.field, request)
+                widget = factory(field.field, field.typ, request)
 
             if widget is None:
                 widget = sm.getMultiAdapter(
@@ -196,7 +188,6 @@ class FieldWidgets(util.Manager):
 
             # Step 8: Update the widget
             widget.update()
-            #zope.event.notify(AfterWidgetUpdateEvent(widget))
 
             # Step 9: Add the widget to the manager
             if widget.required:
@@ -224,29 +215,19 @@ class FieldWidgets(util.Manager):
             if widget.mode == interfaces.DISPLAY_MODE:
                 continue
 
-            value = widget.field.missing_value
+            value = widget.field.missing
             try:
                 widget.setErrors = self.setErrors
                 raw = widget.extract()
                 if raw is not interfaces.NO_VALUE:
-                    value = sm.getMultiAdapter(
-                        (widget.field, widget), 
-                        interfaces.IDataConverter).toFieldValue(raw)
+                    value = widget.field.deserialize(raw)
 
                 if value is interfaces.NOT_CHANGED:
                     value = sm.getMultiAdapter(
                         (self.context, field), interfaces.IDataManager).query()
 
-                # validate value
-                field = getattr(widget, 'field', None)
-                if field is not None:
-                    if context is not None:
-                        field = field.bind(context)
-
-                    if value is not interfaces.NOT_CHANGED:
-                        field.validate(value)
-
-            except (interface.Invalid, ValueError, MultipleErrors), error:
+            except (interface.Invalid, ValueError, MultipleErrors,
+                    colander.Invalid), error:
                 errors.append(WidgetError(name, error))
 
             data[widget.__name__] = value

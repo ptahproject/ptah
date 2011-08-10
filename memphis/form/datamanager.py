@@ -1,22 +1,6 @@
-##############################################################################
-#
-# Copyright (c) 2007 Zope Foundation and Contributors.
-# All Rights Reserved.
-#
-# This software is subject to the provisions of the Zope Public License,
-# Version 2.1 (ZPL).  A copy of the ZPL should accompany this distribution.
-# THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
-# WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-# WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE.
-#
-##############################################################################
 """Widget Framework Implementation"""
-import zope.interface
-import zope.schema
+import colander
 from zope import interface
-from zope.interface.common import mapping
-
 from memphis import config
 from memphis.form import interfaces
 
@@ -26,22 +10,14 @@ _marker = []
 class AttributeField(object):
     """Attribute field."""
     interface.implements(interfaces.IDataManager)
-    config.adapts(interface.Interface, zope.schema.interfaces.IField)
+    config.adapts(interface.Interface, colander.SchemaNode)
 
     def __init__(self, context, field):
         self.context = context
         self.field = field
 
-    @property
-    def adapted_context(self):
-        # get the right adapter or context
-        context = self.context
-        if self.field.interface is not None:
-            context = self.field.interface(context)
-        return context
-
     def get(self):
-        return self.field.get(self.adapted_context)
+        return self.field.get(self.context)
 
     def query(self, default=interfaces.NO_VALUE):
         try:
@@ -65,7 +41,7 @@ class DictionaryField(object):
     your application.
     """
     interface.implements(interfaces.IDataManager)
-    config.adapts(dict, zope.schema.interfaces.IField)
+    config.adapts(dict, colander.SchemaNode)
 
     _allowed_data_classes = (dict,)
 
@@ -77,16 +53,16 @@ class DictionaryField(object):
         self.field = field
 
     def get(self):
-        value = self.data.get(self.field.__name__, _marker)
+        value = self.data.get(self.field.name, _marker)
         if value is _marker:
             raise AttributeError
         return value
 
     def query(self, default=interfaces.NO_VALUE):
-        return self.data.get(self.field.__name__, default)
+        return self.data.get(self.field.name, default)
 
     def set(self, value):
         if self.field.readonly:
             raise TypeError("Can't set values on read-only fields name=%s"
                             % self.field.__name__)
-        self.data[self.field.__name__] = value
+        self.data[self.field.name] = value

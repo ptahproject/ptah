@@ -15,12 +15,11 @@
 import zope.interface
 import zope.schema
 from zope.schema import vocabulary
-from zope.i18n import translate
 
 from memphis import config, view
 from memphis.form import term, pagelets
 from memphis.form.widget import SequenceWidget
-from memphis.form.browser import widget
+from memphis.form.widgets import widget
 from memphis.form.interfaces import _, ICheckBoxWidget, ISingleCheckBoxWidget
 
 
@@ -49,7 +48,7 @@ class CheckBoxWidget(widget.HTMLInputWidget, SequenceWidget):
             id = '%s-%i' % (self.id, count)
             label = term.token
             if zope.schema.interfaces.ITitledTokenizedTerm.providedBy(term):
-                label = translate(term.title, context=self.request,
+                label = view.translate(term.title, context=self.request,
                                   default=term.title)
             self.items.append(
                 {'id':id, 'name':self.name, 'value':term.token,
@@ -80,12 +79,12 @@ class SingleCheckBoxWidget(CheckBoxWidget):
 
 view.registerPagelet(
     pagelets.IWidgetDisplayView, ICheckBoxWidget,
-    template=view.template("memphis.form.browser:checkbox_display.pt"))
+    template=view.template("memphis.form.widgets:checkbox_display.pt"))
 
 view.registerPagelet(
     pagelets.IWidgetInputView, ICheckBoxWidget,
-    template=view.template("memphis.form.browser:checkbox_input.pt"))
+    template=view.template("memphis.form.widgets:checkbox_input.pt"))
 
 view.registerPagelet(
     pagelets.IWidgetHiddenView, ICheckBoxWidget,
-    template=view.template("memphis.form.browser:checkbox_hidden.pt"))
+    template=view.template("memphis.form.widgets:checkbox_hidden.pt"))

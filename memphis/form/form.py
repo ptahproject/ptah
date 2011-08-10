@@ -1,9 +1,8 @@
-"""Form Implementation"""
+"""Form implementation"""
 import sys
 from zope import interface, event
 from zope.component import getAdapters, getMultiAdapter
 from zope.lifecycleevent import Attributes, ObjectModifiedEvent
-from zope.schema.fieldproperty import FieldProperty
 
 from webob.exc import HTTPFound
 from webob.multidict import UnicodeMultiDict, MultiDict
@@ -53,9 +52,7 @@ def extends(*args, **kwargs):
 
 class Form(object):
     """A base form."""
-    interface.implements(interfaces.IForm, interfaces.IFieldsForm,
-                         interfaces.IInputForm, interfaces.IButtonForm,
-                         interfaces.IHandlerForm, interfaces.IActionForm)
+    interface.implements(interfaces.IForm, interfaces.IInputForm)
 
     fields = field.Fields()
     buttons = button.Buttons()

@@ -17,7 +17,7 @@ import zope.interface
 from memphis import view
 from memphis.form import interfaces, pagelets
 from memphis.form.widget import Widget
-from memphis.form.browser import widget
+from memphis.form.widgets import widget
 
 
 class ButtonWidget(widget.HTMLInputWidget, Widget):
@@ -36,8 +36,8 @@ class ButtonWidget(widget.HTMLInputWidget, Widget):
 
 view.registerPagelet(
     pagelets.IWidgetDisplayView, interfaces.IButtonWidget,
-    template=view.template("memphis.form.browser:button_display.pt"))
+    template=view.template("memphis.form.widgets:button_display.pt"))
 
 view.registerPagelet(
     pagelets.IWidgetInputView, interfaces.IButtonWidget,
-    template=view.template("memphis.form.browser:button_input.pt"))
+    template=view.template("memphis.form.widgets:button_input.pt"))

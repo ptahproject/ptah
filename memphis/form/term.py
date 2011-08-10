@@ -15,6 +15,7 @@
 
 $Id: term.py 11790 2011-01-31 00:41:45Z fafhrd91 $
 """
+import colander
 import zope.component
 import zope.schema
 from zope.schema import vocabulary
@@ -52,15 +53,13 @@ class Terms(object):
 @zope.interface.implementer(interfaces.ITerms)
 @config.adapter(
     zope.interface.Interface,
-    zope.interface.Interface,
-    zope.interface.Interface,
-    zope.schema.interfaces.IChoice,
+    colander.SchemaNode,
+    colander.SchemaType,
     interfaces.IWidget)
-def ChoiceTerms(context, request, form, field, widget):
-    field = field.bind(context or widget.context)
-    terms = field.vocabulary
+def ChoiceTerms(context, field, typ, widget):
+    terms = getattr(field, 'vocabulary', None)
     return zope.component.queryMultiAdapter(
-        (context, request, form, field, terms, widget), interfaces.ITerms)
+        (context, field, terms, widget), interfaces.ITerms)
 
 
 class ChoiceTermsVocabulary(Terms):
@@ -68,18 +67,14 @@ class ChoiceTermsVocabulary(Terms):
     vocabulary."""
     config.adapts(
         zope.interface.Interface,
-        zope.interface.Interface,
-        zope.interface.Interface,
-        zope.schema.interfaces.IChoice,
+        colander.SchemaNode,
         zope.schema.interfaces.IBaseVocabulary,
         interfaces.IWidget)
 
     zope.interface.implements(interfaces.ITerms)
 
-    def __init__(self, context, request, form, field, vocabulary, widget):
+    def __init__(self, context, field, vocabulary, widget):
         self.context = context
-        self.request = request
-        self.form = form
         self.field = field
         self.widget = widget
         self.terms = vocabulary
@@ -89,9 +84,8 @@ class BoolTerms(Terms):
     """Default yes and no terms are used by default for IBool fields."""
     config.adapts(
         zope.interface.Interface,
-        zope.interface.Interface,
-        zope.interface.Interface,
-        zope.schema.interfaces.IBool,
+        colander.SchemaNode,
+        colander.Bool,
         interfaces.IWidget)
 
     zope.interface.implementsOnly(interfaces.IBoolTerms)
@@ -99,11 +93,10 @@ class BoolTerms(Terms):
     trueLabel = _('yes')
     falseLabel = _('no')
 
-    def __init__(self, context, request, form, field, widget):
+    def __init__(self, context, field, typ, widget):
         self.context = context
-        self.request = request
-        self.form = form
         self.field = field
+        self.typ = typ
         self.widget = widget
         terms = [vocabulary.SimpleTerm(*args)
                  for args in [(True, 'true', self.trueLabel),
