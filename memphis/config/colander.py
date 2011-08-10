@@ -544,9 +544,10 @@ class Mapping(SchemaType):
 
         for subnode in node.children:
             name = subnode.name
-            substruct = appstruct.get(name, null)
-            result.update(subnode.typ.flatten(
-                    subnode, substruct, prefix=selfprefix))
+            if name in appstruct:
+                substruct = appstruct[name]
+                result.update(subnode.typ.flatten(
+                        subnode, substruct, prefix=selfprefix))
         return result
 
     def unflatten(self, node, paths, fstruct):
