@@ -146,6 +146,7 @@ class SchemaNode(colander.SchemaNode):
 
         if self.validator is not None:
             self.validator(self, appstruct)
+
         return appstruct
 
 
