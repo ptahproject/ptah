@@ -10,7 +10,7 @@ from zope.publisher.interfaces import IDefaultViewName
 from zope.publisher.interfaces.browser import IDefaultBrowserLayer
 
 from memphis import config
-from memphis.view.view import View
+from memphis.view.view import View, SimpleView
 from memphis.view.layout import Layout
 from memphis.view.directives import zopeView, getInfo
 from memphis.view.interfaces import IStatusMessage
@@ -88,7 +88,7 @@ def cleanUp():
 
 
 class ZopeViewGrokker(martian.ClassGrokker):
-    martian.component(View)
+    martian.component(SimpleView)
     martian.directive(zopeView)
 
     _marker = object()
@@ -154,7 +154,7 @@ def registerViewImpl(
     if context is None:
         context = interface.Interface
 
-    if klass is not None and issubclass(klass, View):
+    if klass is not None and issubclass(klass, SimpleView):
         registered.append(klass)
         view_class = klass
         del cdict['__name__']

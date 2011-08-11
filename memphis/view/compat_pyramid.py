@@ -11,7 +11,7 @@ from pyramid.interfaces import IRequest, INewResponse
 from pyramid.interfaces import IAuthenticationPolicy
 
 from memphis import config
-from memphis.view.view import View, subpathWrapper
+from memphis.view.view import View, SimpleView, subpathWrapper
 from memphis.view.directives import pyramidView, getInfo
 
 from memphis.view.message import MessageService
@@ -64,7 +64,7 @@ class SecuredPyramidView(PyramidView):
 
 
 class PyramidViewGrokker(martian.ClassGrokker):
-    martian.component(View)
+    martian.component(SimpleView)
     martian.directive(pyramidView)
 
     _marker = object()
@@ -120,7 +120,7 @@ def registerViewImpl(
     if context is None:
         context = interface.Interface
 
-    if klass is not None and issubclass(klass, View):
+    if klass is not None and issubclass(klass, SimpleView):
         registered.append(klass)
         view_class = klass
         for attr, value in cdict.items():

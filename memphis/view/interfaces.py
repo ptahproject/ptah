@@ -6,29 +6,34 @@ class LayoutNotFound(LookupError):
     """ Layout not found exception """
 
 
-class IView(interface.Interface):
-    """ view """
+class ISimpleView(interface.Interface):
+    """ simple view """
 
     __name__ = interface.Attribute('Name')
     __parent__ = interface.Attribute('Parent')
 
     context = interface.Attribute('Context')
     request = interface.Attribute('Request')
-    template = interface.Attribute('Template')
-    layout = interface.Attribute('Layout name')
 
     content_type = interface.Attribute('Content type')
     response_headers = interface.Attribute('Response headers')
     response_status = interface.Attribute('Response status')
+
+    def __call__():
+        """ render view """
+
+
+class IView(ISimpleView):
+    """ view with layout support """
+
+    template = interface.Attribute('Template')
+    layout = interface.Attribute('Layout name')
 
     def update():
         """Update the pagelet data."""
 
     def render():
         """Render the pagelet content w/o o-wrap."""
-
-    def __call__():
-        """Update and render pagelet"""
 
 
 class IPagelet(interface.Interface):

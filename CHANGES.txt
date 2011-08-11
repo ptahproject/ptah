@@ -7,6 +7,9 @@ CHANGES
 
 - Fixed Chameleon 2.2 compatibility
 
+- Added 'SimpleView' class, base class for View
+  without layout,update/render support.
+
 - Added 'response_headers' to View class (list of headers)
 
 - Added 'view.subpath' decorator for view methods.

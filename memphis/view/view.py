@@ -2,30 +2,43 @@
 import simplejson, sys
 from zope import interface
 from webob import Response
-from webob.exc import HTTPException
+from webob.exc import HTTPException, HTTPNotFound
 
-from memphis.view.compat import IView
 from memphis.view.formatter import format
 from memphis.view.layout import queryLayout
 from memphis.view.interfaces import IRenderer
+from memphis.view.compat import IView, ISimpleView
 
 
-class View(object):
-    interface.implements(IView)
+class SimpleView(object):
+    interface.implements(ISimpleView)
 
     __name__ = ''
-    template = None
-    layout = ''
-
     content_type = 'text/html'
     response_status = 200
     
-    _params = None
-
     def __init__(self, context, request):
         self.context = context
         self.request = request
         self.__parent__ = context
+
+    @property
+    def response_headers(self):
+        value = []
+        self.__dict__['response_headers'] = value
+        return value
+
+    def __call__(self, *args, **kw):
+        raise HTTPNotFound()
+
+
+class View(SimpleView):
+    interface.implements(IView)
+
+    layout = ''    
+    template = None
+
+    _params = None
 
     def update(self):
         pass
@@ -39,12 +52,6 @@ class View(object):
                        'nothing': None})
 
         return self.template(**kwargs)
-
-    @property
-    def response_headers(self):
-        value = []
-        self.__dict__['response_headers'] = value
-        return value
 
     def __call__(self, *args, **kw):
         try:

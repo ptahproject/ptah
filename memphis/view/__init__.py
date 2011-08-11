@@ -1,8 +1,9 @@
 # memphis.view public API
 
 # interfaces
-from memphis.view.interfaces import IView
 from memphis.view.interfaces import IRenderer
+from memphis.view.interfaces import ISimpleView
+from memphis.view.interfaces import IView
 
 # path/template
 from memphis.view.path import path
@@ -20,6 +21,7 @@ from memphis.view.layout import registerLayout
 
 # view
 from memphis.view.view import View
+from memphis.view.view import SimpleView
 from memphis.view.view import subpath
 from memphis.view.view import json
 

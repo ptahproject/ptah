@@ -31,7 +31,11 @@ except:
         pass
 
 
-from interfaces import IView
+from interfaces import IView, ISimpleView
+
+
+class ISimpleView(ISimpleView, IZopeView, IPyramidView):
+    """ view """
 
 
 class IView(IView, IZopeView, IPyramidView):
