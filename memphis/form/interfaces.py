@@ -1,6 +1,5 @@
 """ Form and Widget Framework Interfaces """
 from zope import interface
-import zope.i18nmessageid
 import zope.interface
 import zope.schema
 from zope.interface.common import mapping
@@ -32,6 +31,7 @@ NOT_CHANGED = NOT_CHANGED()
 class NO_VALUE(object):
     def __repr__(self):
         return '<NO_VALUE>'
+
 NO_VALUE = NO_VALUE()
 
 
@@ -530,11 +530,6 @@ class IWidgets(IManager):
         default=True,
         required=False)
 
-    field = zope.schema.Field(
-        title=_('Field'),
-        description=_('The schema field which the widget is representing.'),
-        required=True)
-
     def update():
         """Setup widgets."""
 
@@ -543,85 +538,7 @@ class IWidgets(IManager):
         """
 
 
-# ----[ Actions ]------------------------------------------------------------
-
-class ActionExecutionError(Exception):
-    """An error that occurs during the execution of an action handler."""
-
-    def __init__(self, error):
-        self.error = error
-
-    def __repr__(self):
-        return '<%s wrapping %r>' %(self.__class__.__name__, self.error)
-
-
-class WidgetActionExecutionError(ActionExecutionError):
-    """An action execution error that occurred due to a widget value being
-    incorrect."""
-
-    def __init__(self, widgetName, error):
-        ActionExecutionError.__init__(self, error)
-        self.widgetName = widgetName
-
-
-class IAction(zope.interface.Interface):
-    """Action"""
-
-    __name__ = zope.schema.TextLine(
-        title=_('Name'),
-        description=_('The object name.'),
-        required=False,
-        default=None)
-
-    title = zope.schema.TextLine(
-        title=_('Title'),
-        description=_('The action title.'),
-        required=True)
-
-    def isExecuted():
-        """Determine whether the action has been executed."""
-
-
-class IActionHandler(zope.interface.Interface):
-    """Action handler."""
-
-
-class IActionEvent(zope.interface.Interface):
-    """An event specific for an action."""
-
-    action = zope.schema.Object(
-        title=_('Action'),
-        description=_('The action for which the event is created.'),
-        schema=IAction,
-        required=True)
-
-
-class IActionErrorEvent(IActionEvent):
-    """An action event that is created when an error occurred."""
-
-    error = zope.schema.Field(
-        title=_('Error'),
-        description=_('The error that occurred during the action.'),
-        required=True)
-
-
-class IActions(IManager):
-    """A action manager"""
-
-    executedActions = zope.interface.Attribute(
-        '''An iterable of all executed actions (usually just one).''')
-
-    def update():
-        """Setup actions."""
-
-    def execute():
-        """Exceute actions.
-
-        If an action execution error is raised, the system is notified using
-        the action occurred error; on the other hand, if successful, the
-        action successfull event is sent to the system.
-        """
-
+# ----[ Buttons ]------------------------------------------------------------
 
 class IButton(zope.schema.interfaces.IField):
     """A button in a form."""
@@ -642,69 +559,26 @@ class IButton(zope.schema.interfaces.IField):
 
 
 class IButtons(ISelectionManager):
-    """Button manager."""
+    """Buttons manager."""
 
 
-class IButtonAction(IAction, IWidget):
-    """Button action."""
+class IActions(IManager):
+    """A button widgets manager"""
 
+    prefix = zope.schema.BytesLine(
+        title=_('Prefix'),
+        description=_('The prefix of the widgets.'),
+        default='buttons.',
+        required=True)
 
-class IButtonHandlers(zope.interface.Interface):
-    """A collection of handlers for buttons."""
+    def update():
+        """Setup button widgets."""
 
-    def addHandler(button, handler):
-        """Add a new handler for a button."""
-
-    def getHandler(button):
-        """Get the handler for the button."""
-
-    def copy():
-        """Copy this object and return the copy."""
-
-    def __add__(other):
-        """Add another handlers object.
-
-        During the process a copy of the current handlers object should be
-        created and the other one is added to the copy. The return value is
-        the copy.
-        """
-
-
-class IButtonHandler(zope.interface.Interface):
-    """A handler managed by the button handlers."""
-
-    def __call__(form, action):
-        """Execute the handler."""
+    def execute():
+        """Execute selected button action."""
 
 
 # ----[ Forms ]--------------------------------------------------------------
-
-class IHandlerForm(zope.interface.Interface):
-    """A form that stores the handlers locally."""
-
-    handlers = zope.schema.Object(
-        title=_('Handlers'),
-        description=_('A list of action handlers defined on the form.'),
-        schema=IButtonHandlers,
-        required=True)
-
-
-class IActionForm(zope.interface.Interface):
-    """A form that stores executable actions"""
-
-    actions = zope.schema.Object(
-        title=_('Actions'),
-        description=_('A list of actions defined on the form'),
-        schema=IActions,
-        required=True)
-
-    refreshActions = zope.schema.Bool(
-        title=_('Refresh actions'),
-        description=_('A flag, when set, causes form actions to be '
-                      'updated again after their execution.'),
-        default=False,
-        required=True)
-
 
 class IForm(zope.interface.Interface):
     """Form"""
@@ -736,6 +610,18 @@ class IForm(zope.interface.Interface):
         title=_('Prefix'),
         description=_('The prefix of the form used to uniquely identify it.'),
         default='form.')
+
+    fields = zope.schema.Object(
+        title=_('Fields'),
+        description=_('A field manager describing the fields to be used for '
+                      'the form.'),
+        schema=IFields)
+
+    buttons = zope.schema.Object(
+        title=_('Buttons'),
+        description=_('A button manager describing the buttons to be used for '
+                      'the form.'),
+        schema=IButtons)
 
     def getRequestParams():
         '''Return the request params.'''
@@ -848,25 +734,6 @@ class IEditForm(IForm):
     def applyChanges(data):
         """Apply the changes to the content component."""
 
-
-class IFieldsForm(IForm):
-    """A form that is based upon defined fields."""
-
-    fields = zope.schema.Object(
-        title=_('Fields'),
-        description=_('A field manager describing the fields to be used for '
-                      'the form.'),
-        schema=IFields)
-
-
-class IButtonForm(IForm):
-    """A form that is based upon defined buttons."""
-
-    buttons = zope.schema.Object(
-        title=_('Buttons'),
-        description=_('A button manager describing the buttons to be used for '
-                      'the form.'),
-        schema=IButtons)
 
 
 class IGroup(IInlineForm):

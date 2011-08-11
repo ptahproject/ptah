@@ -49,53 +49,39 @@ def extends(*args, **kwargs):
         f_locals['buttons'] = button.Buttons()
         for arg in args:
             f_locals['buttons'] += getattr(arg, 'buttons', button.Buttons())
-    if not kwargs.get('ignoreHandlers', False):
-        f_locals['handlers'] = button.Handlers()
-        for arg in args:
-            f_locals['handlers'] += getattr(arg, 'handlers', button.Handlers())
 
 
-@config.handler(interfaces.IActionErrorEvent)
-def handleActionError(event):
-    # Only react to the event, if the form is a standard form.
-    form = getattr(event.action, 'form', None)
-    if not interfaces.IForm.providedBy(form):
-        return
-    # If the error was widget-specific, look up the widget.
-    widget = None
-    if isinstance(event.error, interfaces.WidgetActionExecutionError):
-        widget = event.action.form.widgets[event.error.widgetName]
-    # Create an error view for the error.
-    action = event.action
-    form = action.form
-    errorView = getMultiAdapter(
-        (event.error.error, action.request), interfaces.IErrorViewSnippet)
-    errorView.update(widget)
-    # Assign the error view to all necessary places.
-    if widget:
-        widget.error = errorView
-    form.widgets.errors += (errorView,)
-    # If the form supports the ``formErrorsMessage`` attribute, then set the
-    # status to it.
-    if hasattr(form, 'formErrorsMessage'):
-        view.addMessage(form.request, form.formErrorsMessage, 'error')
-
-
-class BaseForm(object):
+class Form(object):
     """A base form."""
-    interface.implements(interfaces.IForm, interfaces.IFieldsForm)
+    interface.implements(interfaces.IForm, interfaces.IFieldsForm,
+                         interfaces.IInputForm, interfaces.IButtonForm,
+                         interfaces.IHandlerForm, interfaces.IActionForm)
 
     fields = field.Fields()
+    buttons = button.Buttons()
 
     label = None
     description = ''
+
     prefix = 'form.'
     template = None
+
+    actions = None
     widgets  = None
+
     content = None
 
     mode = interfaces.INPUT_MODE
     ignoreReadonly = False
+
+    method = 'post'
+    enctype = 'multipart/form-data'
+    acceptCharset = None
+    accept = None
+    refreshActions = False
+
+    # common string for use in validation status messages
+    formErrorsMessage = _('There were some errors.')
 
     subforms = ()
 
@@ -103,81 +89,6 @@ class BaseForm(object):
         self.context = context
         self.request = request
         self.__parent__ = context
-
-    def getContext(self):
-        return self.context
-
-    def getContent(self):
-        return self.content
-
-    def getRequestParams(self):
-        try:
-            return self.request.params
-        except:
-            return UnicodeMultiDict(self.request.form, 'utf-8')
-
-    def updateWidgets(self):
-        '''See interfaces.IForm'''
-        self.widgets = getMultiAdapter(
-            (self, self.request), interfaces.IWidgets)
-        self.widgets.mode = self.mode
-        self.widgets.ignoreReadonly = self.ignoreReadonly
-        self.widgets.update()
-
-    def validate(self, data, errors):
-        for name, validator in getAdapters((self,), interfaces.IFormValidator):
-            errors.extend(validator.validate(data))
-
-    def extractData(self, setErrors=True):
-        '''See interfaces.IForm'''
-        self.widgets.setErrors = setErrors
-        return self.widgets.extract()
-
-    def update(self):
-        '''See interfaces.IForm'''
-        self.updateWidgets()
-
-    def render(self):
-        '''See interfaces.IForm'''
-        # render content template
-        if self.template is None:
-            return view.renderPagelet(pagelets.IFormView, self, self.request)
-
-        kwargs = {'view': self,
-                  'context': self.context,
-                  'request': self.request,
-                  'template': self.template,
-                  'nothing': None}
-
-        return self.template(**kwargs)
-
-
-class DisplayForm(BaseForm):
-    interface.implements(interfaces.IDisplayForm)
-
-    mode = interfaces.DISPLAY_MODE
-
-    def getRequestParams(self):
-        return empty_params
-
-
-class Form(BaseForm):
-    """The Form."""
-    interface.implements(
-        interfaces.IInputForm, interfaces.IButtonForm,
-        interfaces.IHandlerForm, interfaces.IActionForm)
-
-    buttons = button.Buttons()
-
-    method = 'post'
-    enctype = 'multipart/form-data'
-    acceptCharset = None
-    accept = None
-    actions = None
-    refreshActions = False
-
-    # common string for use in validation status messages
-    formErrorsMessage = _('There were some errors.')
 
     @property
     def action(self):
@@ -194,19 +105,66 @@ class Form(BaseForm):
     def id(self):
         return self.name.replace('.', '-')
 
+    def getContext(self):
+        return self.context
+
+    def getContent(self):
+        return self.content
+
+    def getRequestParams(self):
+        try:
+            return self.request.params
+        except:
+            return UnicodeMultiDict(self.request.form, 'utf-8')
+
+    def updateWidgets(self):
+        self.widgets = getMultiAdapter(
+            (self, self.request), interfaces.IWidgets)
+        self.widgets.mode = self.mode
+        self.widgets.ignoreReadonly = self.ignoreReadonly
+        self.widgets.update()
+
     def updateActions(self):
-        params = self.getRequestParams()
-        self.actions = getMultiAdapter(
-            (self, self.request, self.getContent()), interfaces.IActions)
-        self.actions.update(params)
+        self.actions = button.Actions(self, self.request)
+        self.actions.update()
+
+    def validate(self, data, errors):
+        for name, validator in getAdapters((self,), interfaces.IFormValidator):
+            errors.extend(validator.validate(data))
+
+    def extractData(self, setErrors=True):
+        self.widgets.setErrors = setErrors
+        return self.widgets.extract()
 
     def update(self):
-        super(Form, self).update()
-
+        self.updateWidgets()
         self.updateActions()
+
         self.actions.execute()
         if self.refreshActions:
             self.updateActions()
+
+    def render(self):
+        # render content template
+        if self.template is None:
+            return view.renderPagelet(pagelets.IFormView, self, self.request)
+
+        kwargs = {'view': self,
+                  'context': self.context,
+                  'request': self.request,
+                  'template': self.template,
+                  'nothing': None}
+
+        return self.template(**kwargs)
+
+
+class DisplayForm(Form):
+    interface.implements(interfaces.IDisplayForm)
+
+    mode = interfaces.DISPLAY_MODE
+
+    def getRequestParams(self):
+        return empty_params
 
 
 class EditForm(Form):
@@ -297,7 +255,7 @@ class EditForm(Form):
         if self.refreshActions:
             self.updateActions()
 
-    @button.buttonAndHandler(_('Save'), name='save')
+    @button.button(_('Save'), name='save')
     def handleSave(self, action):
         data, errors = self.extractData()
         if errors:
@@ -316,77 +274,13 @@ class EditForm(Form):
         if nextURL:
             raise HTTPFound(location=nextURL)
 
-    @button.buttonAndHandler(_('Cancel'), name='cancel')
+    @button.button(_('Cancel'), name='cancel')
     def handleCancel(self, action):
         data, errors = self.extractData()
         raise HTTPFound(location=self.cancelURL())
-
+    
     def nextURL(self):
         pass
 
     def cancelURL(self):
         return '../'
-
-
-class SubForm(BaseForm):
-    interface.implements(interfaces.ISubForm, interfaces.IHandlerForm)
-
-    weight = 0
-
-    def __init__(self, context, request, parentForm):
-        self.context = context
-        self.request = request
-        self.parentForm = self.__parent__ = parentForm
-        self.mode = parentForm.mode
-
-    def getContent(self):
-        return self.context
-
-    def isAvailable(self):
-        return True
-
-    def _applyChanges(self, content, data):
-        return applyChanges(self, content, data)
-
-    def applyChanges(self, data):
-        content = self.getContent()
-        changed = self._applyChanges(content, data)
-
-        if changed:
-            descriptions = []
-            for interface, names in changed.items():
-                descriptions.append(Attributes(interface, *names))
-            # Send out a detailed object-modified event
-            event.notify(ObjectModifiedEvent(content, *descriptions))
-
-        return changed
-
-
-class Group(BaseForm):
-    interface.implements(interfaces.IGroup)
-
-    weight = 0
-
-    def __init__(self, context, request, parentForm):
-        self.context = context
-        self.request = request
-        self.parentForm = self.__parent__ = parentForm
-        self.mode = parentForm.mode
-
-    def isAvailable(self):
-        return True
-
-    def updateWidgets(self):
-        '''See interfaces.IForm'''
-        self.widgets = getMultiAdapter(
-            (self, self.request, self.getContent()), interfaces.IWidgets)
-        for attrName in ('mode', 'ignoreReadonly'):
-            value = getattr(self.parentForm.widgets, attrName)
-            setattr(self.widgets, attrName, value)
-        self.widgets.update()
-
-    def _applyChanges(self, content, data):
-        return applyChanges(self, content, data)
-
-    def applyChanges(self, data):
-        return self._applyChanges(self.getContent(), data)

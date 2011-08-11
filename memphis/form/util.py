@@ -38,45 +38,6 @@ def createCSSId(name):
                         for char in name))
 
 
-classTypes = type, types.ClassType
-
-
-def getSpecification(spec, force=False):
-    """Get the specification of the given object.
-
-    If the given object is already a specification acceptable to the component
-    architecture, it is simply returned. This is true for classes
-    and specification objects (which includes interfaces).
-
-    In case of instances, an interface is generated on the fly and tagged onto
-    the object. Then the interface is returned as the specification.
-    """
-    # If the specification is an instance, then we do some magic.
-    if (force or
-        (spec is not None and
-         not zope.interface.interfaces.ISpecification.providedBy(spec)
-         and not isinstance(spec, classTypes)) ):
-
-        # Step 1: Calculate an interface name
-        ifaceName = 'IGeneratedForObject_%i' %hash(spec)
-
-        # Step 2: Find out if we already have such an interface
-        existingInterfaces = [
-                i for i in zope.interface.directlyProvidedBy(spec)
-                    if i.__name__ == ifaceName
-            ]
-
-        # Step 3a: Return an existing interface if there is one
-        if len(existingInterfaces) > 0:
-            spec = existingInterfaces[0]
-        # Step 3b: Create a new interface if not
-        else:
-            iface = zope.interface.interface.InterfaceClass(ifaceName)
-            zope.interface.alsoProvides(spec, iface)
-            spec = iface
-    return spec
-
-
 def expandPrefix(prefix):
     """Expand prefix string by adding a trailing period if needed.
 
@@ -215,11 +176,7 @@ class SelectionManager(Manager):
     """Non-persisents ISelectionManager implementation."""
     zope.interface.implements(interfaces.ISelectionManager)
 
-    managerInterface = None
-
     def __add__(self, other):
-        if not self.managerInterface.providedBy(other):
-            return NotImplemented
         return self.__class__(self, other)
 
     def select(self, *names):

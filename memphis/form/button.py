@@ -1,80 +1,57 @@
-##############################################################################
-#
-# Copyright (c) 2007 Zope Foundation and Contributors.
-# All Rights Reserved.
-#
-# This software is subject to the provisions of the Zope Public License,
-# Version 2.1 (ZPL).  A copy of the ZPL should accompany this distribution.
-# THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
-# WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-# WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE.
-#
-##############################################################################
-"""Button and Button Manager implementation"""
-import sys
-import zope.event
-import zope.interface
-import zope.schema
-import zope.component
-
-from zope.interface import adapter
-from zope.schema.fieldproperty import FieldProperty
-
+""" Button and Button Manager implementation """
+import sys, re
+from zope import interface
+from zope.component import getSiteManager
 from memphis import config
-from memphis.form import action, interfaces, util
+from memphis.form import util
+from memphis.form.field import Field
+from memphis.form.interfaces import IForm, IButton, IActions, IWidget, NO_VALUE
 
-from memphis.form.browser import submit
 
-
-class Button(zope.schema.Field):
+class Button(Field):
     """A simple button in a form."""
-    zope.interface.implements(interfaces.IButton)
+    interface.implements(IButton)
 
-    accessKey = None
-    actionFactory = None
+    def __init__(self, name='submit', title=None, type='submit', value=None,
+                 disabled=False, accessKey = None, action=None):
+        if title is None:
+            title = name.capitalize()
+        name = re.sub(r'\s', '_', name)
+        if value is None:
+            value = name
 
-    def __init__(self, *args, **kwargs):
-        # Provide some shortcut ways to specify the name
-        if args:
-            kwargs['__name__'] = args[0]
-            args = args[1:]
-        if 'name' in kwargs:
-            kwargs['__name__'] = kwargs['name']
-            del kwargs['name']
-        # Extract button-specific arguments
-        self.accessKey = kwargs.pop('accessKey', None)
-        self.condition = kwargs.pop('condition', None)
-        # Initialize the button
-        super(Button, self).__init__(*args, **kwargs)
+        self.name = name
+        self.__name__ = name
+
+        self.title = title
+        self.type = type
+        self.value = value
+        self.disabled = disabled
+        self.accessKey = accessKey
+        self.action = action
+        self.required = False
 
     def __repr__(self):
         return '<%s %r %r>' %(
-            self.__class__.__name__, self.__name__, self.title)
+            self.__class__.__name__, self.name, self.title)
+
+    def __call__(self, form):
+        return self.action(form)
 
 
 class Buttons(util.SelectionManager):
     """Button manager."""
-    zope.interface.implements(interfaces.IButtons)
 
-    managerInterface = interfaces.IButtons
     prefix = 'buttons'
 
     def __init__(self, *args):
         buttons = []
         for arg in args:
-            if zope.interface.interfaces.IInterface.providedBy(arg):
-                for name, button in zope.schema.getFieldsInOrder(arg):
-                    if interfaces.IButton.providedBy(button):
-                        buttons.append((name, button))
-            elif self.managerInterface.providedBy(arg):
+            if isinstance(arg, Buttons):
                 buttons += arg.items()
-            elif interfaces.IButton.providedBy(arg):
-                if not arg.__name__:
-                    arg.__name__ = util.createId(arg.title)
-                buttons.append((arg.__name__, arg))
             else:
-                raise TypeError("Unrecognized argument type", arg)
+                buttons.append((arg.name, arg))
+
         keys = []
         seq = []
         byname = {}
@@ -88,169 +65,106 @@ class Buttons(util.SelectionManager):
         self._data = byname
 
 
-class Handlers(object):
-    """Action Handlers for a Button-based form."""
-    zope.interface.implements(interfaces.IButtonHandlers)
+class Actions(util.Manager):
+    """ Widget manager for Buttons """
+    config.adapts(IForm, interface.Interface)
+    interface.implementsOnly(IActions)
 
-    def __init__(self):
-        self._registry = adapter.AdapterRegistry()
-        self._handlers = ()
+    prefix = 'buttons.'
 
-    def addHandler(self, button, handler):
-        """See interfaces.IButtonHandlers"""
-        # Create a specification for the button
-        buttonSpec = util.getSpecification(button)
-        if isinstance(buttonSpec, util.classTypes):
-            buttonSpec = zope.interface.implementedBy(buttonSpec)
-        # Register the handler
-        self._registry.register(
-            (buttonSpec,), interfaces.IButtonHandler, '', handler)
-        self._handlers += ((button, handler),)
+    def __init__(self, form, request):
+        super(Actions, self).__init__()
+        self.form = form
+        self.request = request
 
-    def getHandler(self, button):
-        """See interfaces.IButtonHandlers"""
-        buttonProvided = zope.interface.providedBy(button)
-        return self._registry.lookup1(buttonProvided, interfaces.IButtonHandler)
+    def update(self):
+        self._data = {}
+        self._data_values = []
+        content = self.content = self.form.getContent()
 
-    def copy(self):
-        """See interfaces.IButtonHandlers"""
-        handlers = Handlers()
-        for button, handler in self._handlers:
-            handlers.addHandler(button, handler)
-        return handlers
+        # Create a unique prefix.
+        prefix = util.expandPrefix(self.form.prefix)
+        prefix += util.expandPrefix(self.prefix)
+        request = self.request
+        params = self.form.getRequestParams()
+        context = self.form.getContext()
 
-    def __add__(self, other):
-        """See interfaces.IButtonHandlers"""
-        if not isinstance(other, Handlers):
-            raise NotImplementedError
-        handlers = self.copy()
-        for button, handler in other._handlers:
-            handlers.addHandler(button, handler)
-        return handlers
+        sm = getSiteManager()
 
-    def __repr__(self):
-        return '<Handlers %r>' %[handler for button, handler in self._handlers]
+        # Walk through each field, making a widget out of it.
+        uniqueOrderedKeys = []
+        for field in self.form.buttons.values():
+
+            # Step 2: Get the widget for the given field.
+            shortName = field.name
+
+            widget = None
+            factory = field.widgetFactory
+            if isinstance(factory, basestring):
+                widget = sm.queryMultiAdapter(
+                    (field, request), IWidget, name=factory)
+            elif callable(factory):
+                widget = factory(field.field, request)
+
+            if widget is None:
+                widget = sm.getMultiAdapter(
+                    (field.field, request), interfaces.IDefaultWidget)
+
+            # Step 3: Set the prefix for the widget
+            widget.name = str(prefix + shortName)
+            widget.id = str(prefix + shortName).replace('.', '-')
+
+            # Step 4: Set the content
+            widget.context = context
+            widget.content = content
+
+            # Step 5: Set the form
+            widget.form = self.form
+
+            # Step 6: Set some variables
+            widget.params = params
+
+            # Step 8: Update the widget
+            widget.update()
+
+            # Step 9: Add the widget to the manager
+            uniqueOrderedKeys.append(shortName)
+
+            widget.__parent__ = self
+            widget.__name__ = shortName
+
+            self._data_values.append(widget)
+            self._data[shortName] = widget
+            self._data_keys = uniqueOrderedKeys
+
+    def execute(self):
+        for action in self.values():
+            val = action.extract()
+            if val is not NO_VALUE:
+                action.field(self.form)
 
 
-class Handler(object):
-    zope.interface.implements(interfaces.IButtonHandler)
-
-    def __init__(self, button, func):
-        self.button = button
-        self.func = func
-
-    def __call__(self, form, action):
-        return self.func(form, action)
-
-    def __repr__(self):
-        return '<%s for %r>' %(self.__class__.__name__, self.button)
-
-
-def handler(button):
-    """A decorator for defining a success handler."""
-    def createHandler(func):
-        handler = Handler(button, func)
-        frame = sys._getframe(1)
-        f_locals = frame.f_locals
-        handlers = f_locals.setdefault('handlers', Handlers())
-        handlers.addHandler(button, handler)
-        return handler
-    return createHandler
-
-
-def buttonAndHandler(title, **kwargs):
+def button(title, **kwargs):
     # Add the title to button constructor keyword arguments
     kwargs['title'] = title
+    if 'name' not in kwargs:
+        kwargs['name'] = util.createId(title)
+
     # Extract directly provided interfaces:
     provides = kwargs.pop('provides', ())
+
     # Create button and add it to the button manager
     button = Button(**kwargs)
-    zope.interface.alsoProvides(button, provides)
+    interface.alsoProvides(button, provides)
+
+    # install buttons manager
     frame = sys._getframe(1)
     f_locals = frame.f_locals
     buttons = f_locals.setdefault('buttons', Buttons())
     f_locals['buttons'] += Buttons(button)
-    # Return the handler decorator
-    return handler(button)
 
+    def createHandler(func):
+        button.action = func
+        return func
 
-class ButtonAction(action.Action, submit.SubmitWidget):
-    zope.interface.implements(interfaces.IButtonAction)
-    config.adapts(None, interfaces.IButton)
-
-    def __init__(self, request, field):
-        action.Action.__init__(self, request, field.title, field.__name__)
-        submit.SubmitWidget.__init__(self, field, request)
-
-    @property
-    def accesskey(self):
-        return self.field.accessKey
-
-
-class ButtonActions(action.Actions):
-    config.adapts(
-        interfaces.IButtonForm,
-        zope.interface.Interface,
-        zope.interface.Interface)
-
-    def update(self, params):
-        self.params = params
-
-        # Create a unique prefix.
-        prefix = util.expandPrefix(self.form.prefix)
-        prefix += util.expandPrefix(self.form.buttons.prefix)
-
-        # Walk through each field, making an action out of it.
-        uniqueOrderedKeys = []
-        for name, button in self.form.buttons.items():
-            # Step 1: Only create an action for the button, if the condition is
-            #         fulfilled.
-            if button.condition is not None and not button.condition(self.form):
-                continue
-
-            # Step 2: Get the action for the given button.
-            newButton = True
-            if name in self._data:
-                buttonAction = self._data[name]
-                newButton = False
-            elif button.actionFactory is not None:
-                buttonAction = button.actionFactory(self.request, button)
-            else:
-                buttonAction = zope.component.getMultiAdapter(
-                    (self.request, button), interfaces.IButtonAction)
-
-            # Step 3: Set the name on the button
-            buttonAction.name = prefix + name
-            buttonAction.id = buttonAction.name.replace('.', '-')
-
-            # Step 5: Set the form
-            buttonAction.form = self.form
-
-            # Step 6: Update the new action
-            buttonAction.update()
-
-            # Step 7: Add the widget to the manager
-            uniqueOrderedKeys.append(name)
-            if newButton:
-                self._data_values.append(buttonAction)
-                self._data[name] = buttonAction
-                buttonAction.__parent__ = self
-                buttonAction.__name__ = name
-            # allways ensure that we add all keys and keep the order given from
-            # button items
-            self._data_keys = uniqueOrderedKeys
-
-
-class ButtonActionHandler(action.ActionHandlerBase):
-    config.adapts(
-        interfaces.IHandlerForm,
-        zope.interface.Interface,
-        zope.interface.Interface,
-        ButtonAction)
-
-    def __call__(self):
-        handler = self.form.handlers.getHandler(self.action.field)
-        # If no handler is found, then that's okay too.
-        if handler is None:
-            return
-        return handler(self.form, self.action)
+    return createHandler

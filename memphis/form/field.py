@@ -11,10 +11,6 @@ from memphis.form.error import \
     Errors, WidgetError, MultipleErrors, ErrorViewSnippet
 
 
-def _initkw(keepReadOnly=(), omitReadOnly=False, **defaults):
-    return keepReadOnly, omitReadOnly, defaults
-
-
 class Field(object):
     """Field implementation."""
     interface.implements(interfaces.IField)
@@ -36,8 +32,12 @@ class Field(object):
         return '<%s %r>' % (self.__class__.__name__, self.__name__)
 
 
+def _initkw(keepReadOnly=(), omitReadOnly=False, **defaults):
+    return keepReadOnly, omitReadOnly, defaults
+
+
 class Fields(util.SelectionManager):
-    """Field manager."""
+    """Fields manager."""
     interface.implements(interfaces.IFields)
     managerInterface = interfaces.IFields
 
