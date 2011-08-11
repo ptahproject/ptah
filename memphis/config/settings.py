@@ -74,7 +74,7 @@ def initSettings(settings,
     event.notify(SettingsInitialized(config))
 
 
-def registerSettings(name, *args, **kw):
+def registerSettings(name, *nodes, **kw):
     title = kw.get('title', '')
     description = kw.get('description', '')
     validator = kw.get('validator', None)
@@ -82,7 +82,12 @@ def registerSettings(name, *args, **kw):
 
     group = Settings.register(name, title, description)
 
-    for node in args:
+    for node in nodes:
+        if not isinstance(node, schema.SchemaNode):
+            raise RuntimeError(
+                "Node '%s' has to be instance of "
+                "memphis.config.SchemaNode"%node.name)
+
         action(
             registerSettingsImpl,
             name, title, description, validator, category, node, 
@@ -133,6 +138,9 @@ class SettingsImpl(dict):
         try:
             data = self.schema.deserialize(data)
         except colander.Invalid, e:
+            if setdefaults:
+                raise
+
             errs = e.asdict()
             log.error('Error loading settings, reloading with defaults: \n%s'%(
                     '\n'.join('%s: %s'%(k, v) for k, v in errs.items())))

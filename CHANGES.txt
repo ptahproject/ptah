@@ -8,10 +8,9 @@ CHANGES
 - Added simple settings management api
 
 - Added 'settings' paste command.
+  -a list all settings
   -l all settings descriptions
   -p dump all default settings
-
-- Use forked version of colander for schema
 
 
 0.6 (2011-06-29)
