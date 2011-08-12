@@ -47,9 +47,9 @@ def initSettings(settings,
                  section=ConfigParser.DEFAULTSECT):
     global _settings_initialized
     if _settings_initialized:
-        raise RuntimeError("'initSettings' is been called two times.")
+        raise RuntimeError("'initSettings' is been called more than once.")
 
-    log.info('Initializing memphis settings api')
+    log.info('Initializing memphis settings')
 
     _settings_initialized = True
 

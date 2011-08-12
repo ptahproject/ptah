@@ -37,6 +37,8 @@ from memphis.config.settings import SettingsInitialized
 from memphis.config.settings import SettingsInitializing
 from memphis.config.settings import SettingsGroupModified
 
+from memphis.config.shutdown import shutdownHandler
+
 from memphis.config.schema import SchemaNode
 from memphis.config.schema import Mapping
 from memphis.config.schema import Sequence
