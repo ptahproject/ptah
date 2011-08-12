@@ -49,6 +49,8 @@ def initSettings(settings,
     if _settings_initialized:
         raise RuntimeError("'initSettings' is been called two times.")
 
+    log.info('Initializing memphis settings api')
+
     _settings_initialized = True
 
     here = settings.get('here', '')
@@ -159,7 +161,8 @@ class SettingsImpl(dict):
                 group.update(data[name])
                 if setdefaults:
                     for k, v in data[name].items():
-                        group.schema[k].default = v
+                        if v is not colander.null:
+                            group.schema[k].default = v
 
     def init(self, loader, defaults=None):
         self.loader = loader
