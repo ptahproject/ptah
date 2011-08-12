@@ -17,6 +17,8 @@ from memphis.config.api import registerAdapter
 from memphis.config.api import registerUtility
 from memphis.config.api import registerHandler
 
+from memphis.config.api import notify
+
 from memphis.config.zca import registry
 from memphis.config.zca import getRegistry
 
@@ -30,9 +32,8 @@ from memphis.config.directives import registerIn
 
 from memphis.config.settings import Settings
 from memphis.config.settings import FileStorage
-from memphis.config.settings import SimpleWatcher
-from memphis.config.settings import initSettings
 from memphis.config.settings import registerSettings
+from memphis.config.settings import initializeSettings
 from memphis.config.settings import SettingsInitialized
 from memphis.config.settings import SettingsInitializing
 from memphis.config.settings import SettingsGroupModified

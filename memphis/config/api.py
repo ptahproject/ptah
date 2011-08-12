@@ -302,6 +302,10 @@ def loadPackages():
             seen.add(pkg)
 
 
+def notify(*event):
+    getSiteManager().subscribers(event, None)
+
+
 def cleanup(handler):
     registerCleanup(handler)
     return handler

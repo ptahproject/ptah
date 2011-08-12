@@ -2,19 +2,24 @@
 import sys, time, logging
 import os.path, ConfigParser
 import colander
+import pyinotify
 from ordereddict import OrderedDict
 from datetime import datetime, timedelta
-from zope import interface, event
+from zope import interface
+from zope.component import getSiteManager
 from zope.component.interfaces import ObjectEvent
+from zope.interface.interface import InterfaceClass
 
 try:
     import transaction
 except ImportError:
     transaction = None
 
-import api, schema
+import api, schema, shutdown
 from directives import action, getInfo
 
+
+CONFIG = None
 log = logging.getLogger('memphis.config')
 
 
@@ -40,12 +45,14 @@ class SettingsGroupModified(ObjectEvent):
     """ settings group has been modified event """
 
 
+_marker = object()
 _settings_initialized = False
 
-def initSettings(settings, 
-                 config=None, loader=None, 
-                 section=ConfigParser.DEFAULTSECT):
-    global _settings_initialized
+
+def initializeSettings(settings, 
+                       config=None, loader=None, watcherFactory=_marker,
+                       section=ConfigParser.DEFAULTSECT):
+    global _settings_initialized, CONFIG
     if _settings_initialized:
         raise RuntimeError("'initSettings' is been called more than once.")
 
@@ -53,15 +60,17 @@ def initSettings(settings,
 
     _settings_initialized = True
 
+    CONFIG = config
+
+    if watcherFactory is _marker:
+        watcherFactory = iNotifyWatcher
+
     here = settings.get('here', '')
     if loader is None:
         loader = FileStorage(
             settings.get('settings',''),
             settings.get('defaultsettings', ''),
-            here)
-        section = loader.section
-    else:
-        section = ConfigParser.DEFAULTSECT
+            here, section, watcherFactory)
 
     include = settings.get('include', '')
     for f in include.split('\n'):
@@ -72,17 +81,25 @@ def initSettings(settings,
             settings.update(dict(parser.items(section, vars={'here': here})))
 
     Settings.init(loader, settings)
-    event.notify(SettingsInitializing(config))
-    event.notify(SettingsInitialized(config))
+    api.notify(SettingsInitializing(config))
+    api.notify(SettingsInitialized(config))
 
 
 def registerSettings(name, *nodes, **kw):
     title = kw.get('title', '')
     description = kw.get('description', '')
     validator = kw.get('validator', None)
-    category = kw.get('category', None)
 
-    group = Settings.register(name, title, description)
+    iname = name
+    for ch in ('.', '-'):
+        iname = iname.replace(ch, '_')
+
+    category = InterfaceClass(
+        '_group_%s'%iname, (),
+        __doc__='Settings group: %s' %name,
+        __module__='memphis.config.settings')
+
+    group = Settings.register(name, title, description, category)
 
     for node in nodes:
         if not isinstance(node, schema.SchemaNode):
@@ -92,7 +109,7 @@ def registerSettings(name, *nodes, **kw):
 
         action(
             registerSettingsImpl,
-            name, title, description, validator, category, node, 
+            name, title, description, validator, node, category,
             __discriminator = ('memphis:registerSettings', node.name, name),
             __info = getInfo(2),
             __frame = sys._getframe(1))
@@ -100,11 +117,8 @@ def registerSettings(name, *nodes, **kw):
     return group
 
 
-def registerSettingsImpl(name, title, description, validator, category, node):
-    group = Settings.register(name, title, description)
-
-    if category is not None and not category.providedBy(group):
-        interface.directlyProvides(group, category)
+def registerSettingsImpl(name, title, description, validator, node, category):
+    group = Settings.register(name, title, description, category)
 
     if validator is not None:
         if type(validator) not in (list, tuple):
@@ -133,7 +147,7 @@ class SettingsImpl(dict):
             data.update(attrs)
             transaction.get().addAfterCommitHook(self.save)
 
-    def _load(self, rawdata, setdefaults=False):
+    def _load(self, rawdata, setdefaults=False, suppressevents=True):
         rawdata = dict((k.lower(), v) for k, v in rawdata.items())
         data = self.schema.unflatten(rawdata)
 
@@ -158,7 +172,16 @@ class SettingsImpl(dict):
 
         for name, group in self.items():
             if name in data and data[name]:
-                group.update(data[name])
+                if not suppressevents:
+                    modified = data[name] == dict(group)
+                    group.update(data[name])
+                    if modified:
+                        getSiteManager().subscribers(
+                            (group, SettingsGroupModified(group)), None)
+
+                else:
+                    group.update(data[name])
+
                 if setdefaults:
                     for k, v in data[name].items():
                         if v is not colander.null:
@@ -178,12 +201,16 @@ class SettingsImpl(dict):
 
     def load(self):
         if self.loader is not None:
-            self._load(self.loader.load())
+            self._load(self.loader.load(), suppressevents=False)
 
     def save(self, *args):
         if self._changed is not None:
             for grp, attrs in self._changed.items():
-                event.notify(self[grp])
+                try:
+                    api.notify(SettingsGroupModified(self[grp]))
+                except:
+                    log.exception("Exception while processing "
+                                  "group modified events")
 
             self._changed = None
 
@@ -209,9 +236,9 @@ class SettingsImpl(dict):
 
         return self.schema.flatten(result)
 
-    def register(self, name, title, description):
+    def register(self, name, title, description, category):
         if name not in self:
-            group = Group(name, self, title, description)
+            group = Group(name, self, title, description, category)
             self.schema.add(group.schema)
             self[name] = group
         return self[name]
@@ -250,20 +277,21 @@ class GroupValidator(object):
             raise error
 
 
-_marker = object()
-
 class Group(dict):
 
-    def __init__(self, name, settings, title, description):
+    def __init__(self, name, settings, title, description, category):
         self.name = name
         self.title = title
         self.description = description
         self.settings = settings
+        self.category = category
         self.schema = schema.SchemaNode(
             schema.Mapping(), 
             name=name,
             required=False,
             validator=GroupValidator())
+
+        interface.directlyProvides(self, category)
 
     def register(self, node):
         super(Group, self).__setitem__(node.name, node.default)
@@ -291,20 +319,38 @@ class FileStorage(object):
     """ Simple ConfigParser file storage """
 
     def __init__(self, cfg, cfgdefaults='', here = '',
-                 section=ConfigParser.DEFAULTSECT, watcher=False):
+                 section=ConfigParser.DEFAULTSECT, watcherFactory=None):
         self.cfg = cfg
         self.cfgdefaults = cfgdefaults
         self.here = here
         self.section = section
+        self.watcher = None
+        self.watcherFactory = watcherFactory
+
+    def _startWatcher(self, fn):
+        if self.watcher is None and self.watcherFactory is not None:
+            self.watcher = self.watcherFactory(Settings.load)
+
+        self.watcher.start(fn)
+
+    def close(self):
+        if self.watcher is not None:
+            self.watcher.stop()
 
     def load(self):
-        if os.path.exists(self.cfg):
-            log.info("Loading settings: %s"%self.cfg)
-            parser = ConfigParser.SafeConfigParser()
-            parser.read(self.cfg)
-            return dict(parser.items(self.section, vars={'here': self.here}))
+        if not self.cfg:
+            return
 
-        return {}
+        if not os.path.exists(self.cfg):
+            f = open(self.cfg, 'wb')
+            f.write('[%s]\n'%self.section)
+            f.close()
+
+        log.info("Loading settings: %s"%self.cfg)
+        parser = ConfigParser.SafeConfigParser()
+        parser.read(self.cfg)
+        self._startWatcher(self.cfg)
+        return dict(parser.items(self.section, vars={'here': self.here}))
 
     def loadDefaults(self):
         if os.path.exists(self.cfgdefaults):
@@ -327,9 +373,6 @@ class FileStorage(object):
         return {}
 
     def save(self, data):
-        if not os.path.exists(self.cfg):
-            pass
-
         log.info("Loading settings: %s"%self.cfg)
 
         parser = ConfigParser.ConfigParser(dict_type=OrderedDict)
@@ -350,26 +393,60 @@ class FileStorage(object):
         finally:
             fp.close()
 
+        self._startWatcher(self.cfg)
+
 
 Settings = SettingsImpl()
 
 
-class SimpleWatcher(object):
+class iNotifyWatcher(object):
 
-    def __init__(self, settings, timeout=5):
-        self.settings = settings
-        self.timeout = timedelta(seconds=timeout)
-        self.checked = datetime.now()
-        self.mtime = time.time()
+    mask = pyinotify.IN_MODIFY|pyinotify.IN_DELETE_SELF
 
-    def check(self, *args):
-        now = datetime.now()
-        if (self.checked + self.timeout) < now:
-            self.checked = now
+    started = False
+    filename = ''
 
-            cfg = self.settings.loader.cfg
-            if os.path.exists(cfg):
-                t = os.path.getmtime(cfg)
-                if t > self.mtime:
-                    self.mtime = t
-                    self.settings.load()
+    def __init__(self, handler):
+        self._handler = handler
+        self._wd = None
+        self._wm = pyinotify.WatchManager()
+        self._notifier = pyinotify.ThreadedNotifier(self._wm)
+
+    def _process_ev(self, ev):
+        if ev.mask & pyinotify.IN_DELETE_SELF:
+            self.stop()
+            return
+
+        if ev.mask & pyinotify.IN_MODIFY:
+            if CONFIG is not None:
+                CONFIG.begin()
+                self._handler()
+                CONFIG.end()
+
+    def start(self, filename):
+        if self.started:
+            if self.filename != filename:
+                self.stop()
+            else:
+                return
+        
+        self._wd = self._wm.add_watch(
+            filename, self.mask, self._process_ev, False, False)
+
+        self._notifier.start()
+        self.started = True
+        self.filename = filename
+
+    def stop(self):
+        if self.started:
+            self._notifier.stop()
+            if self._wd:
+                self._wm.rm_watch(self._wd[self.filename])
+            self.started = False
+            self.filename = ''
+
+
+@shutdown.shutdownHandler
+def shutdown():
+    if Settings.loader is not None:
+        Settings.loader.close()
