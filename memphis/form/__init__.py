@@ -18,11 +18,8 @@ from memphis.form import widgets
 # fields
 from memphis.form.field import Fields
 
-# validators
+# validator
 from memphis.form.interfaces import IFormValidator
-
-# converter
-from memphis.form.interfaces import IDataConverter
 
 # buttons
 from memphis.form.button import button

@@ -5,9 +5,9 @@
 	tal:attributes="autocomplete getattr(context, 'autocomplete', None)">
 
     <h1 class="documentFirstHeading" i18n:translate=""
-	tal:content="context.label">Do something</h1>
+        tal:condition="context.label">${context.label}</h1>
     <div class="form-description" i18n:translate=""
-	 tal:content="context.description"></div>
+        tal:condition="context.description">${context.description}</div>
 
     <fieldset class="formPanel" tal:condition="context.widgets">
       <tal:block tal:repeat="context context.widgets.values()"

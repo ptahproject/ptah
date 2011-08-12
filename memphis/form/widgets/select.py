@@ -1,5 +1,6 @@
 """ Select/Multi select widget implementation """
 from zope import interface, schema
+from zope.schema.interfaces import ITitledTokenizedTerm
 
 from memphis import config, view
 from memphis.form import pagelets
@@ -49,7 +50,7 @@ class SelectWidget(widget.HTMLSelectWidget, SequenceWidget):
             selected = self.isSelected(term)
             id = '%s-%i' % (self.id, count)
             content = term.token
-            if zope.schema.interfaces.ITitledTokenizedTerm.providedBy(term):
+            if ITitledTokenizedTerm.providedBy(term):
                 content = view.translate(
                     term.title, context=self.request, default=term.title)
             items.append(
@@ -70,12 +71,15 @@ class MultiSelectWidget(SelectWidget):
 
 view.registerPagelet(
     pagelets.IWidgetDisplayView, ISelectWidget,
-    template=view.template("memphis.form.widgets:select_display.pt"))
+    template=view.template("memphis.form.widgets:select_display.pt",
+                           "HTML Select: display template"))
 
 view.registerPagelet(
     pagelets.IWidgetInputView, ISelectWidget,
-    template=view.template("memphis.form.widgets:select_input.pt"))
+    template=view.template("memphis.form.widgets:select_input.pt",
+                           "HTML Select: input template"))
 
 view.registerPagelet(
     pagelets.IWidgetHiddenView, ISelectWidget,
-    template=view.template("memphis.form.widgets:select_hidden.pt"))
+    template=view.template("memphis.form.widgets:select_hidden.pt",
+                           "HTML Select: hidden input template"))

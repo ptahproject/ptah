@@ -242,7 +242,7 @@ class IWidget(interface.Interface):
     required = interface.Attribute('Required')
     error = interface.Attribute('Error')
     value = interface.Attribute('Value')
-    template = zope.interface.Attribute('''The widget template''')
+    template = interface.Attribute('''The widget template''')
     params = interface.Attribute('Request params')
 
     #ugly thing to remove setErrors parameter from extract
@@ -456,7 +456,7 @@ class IDisplayForm(IForm):
     """Mark a form as display form, used for templates."""
 
 
-class IInputForm(zope.interface.Interface):
+class IInputForm(interface.Interface):
     """A form that is meant to process the input of the form controls."""
 
     action = interface.Attribute('Action')

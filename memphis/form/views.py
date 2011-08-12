@@ -1,7 +1,4 @@
-"""
-
-$Id: views.py 11797 2011-01-31 04:13:41Z fafhrd91 $
-"""
+""" form pagelets """
 from memphis import view
 from memphis.form import interfaces, pagelets
 

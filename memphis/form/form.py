@@ -1,6 +1,6 @@
 """Form implementation"""
 import sys
-from zope import interface, event
+from zope import interface
 from zope.component import getAdapters, getMultiAdapter
 from zope.lifecycleevent import Attributes, ObjectModifiedEvent
 
@@ -214,7 +214,7 @@ class EditForm(Form):
                 descriptions.append(Attributes(interface, *names))
 
             # Send out a detailed object-modified event
-            event.notify(ObjectModifiedEvent(content, *descriptions))
+            config.notify(ObjectModifiedEvent(content, *descriptions))
 
         return changed
 

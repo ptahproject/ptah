@@ -4,11 +4,11 @@ from setuptools import setup, find_packages
 def read(*rnames):
     return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
 
-version='0.4'
+version='0.10'
 
 setup(name='memphis.form',
       version=version,
-      description="Fork of z3c.form library.",
+      description="Form generation library for memphis.",
       long_description=(
           'Detailed Documentation\n' +
           '======================\n'
@@ -35,7 +35,6 @@ setup(name='memphis.form',
                           'chameleon',
                           'memphis.view',
                           'memphis.config',
-                          'zope.event',
                           'zope.schema',
                           'zope.component',
                           'zope.interface',
