@@ -35,6 +35,7 @@ setup(name='memphis.view',
       namespace_packages=['memphis'],
       install_requires = ['setuptools',
                           'pytz',
+                          'pyinotify',
                           'webob',
                           'chameleon',
                           'simplejson',
@@ -57,6 +58,9 @@ setup(name='memphis.view',
       zip_safe = False,
       entry_points = {
         'memphis': ['grokker = memphis.view.meta',
-                    'package = memphis.view']
-        }
+                    'package = memphis.view'],
+        'paste.global_paster_command': [
+            'templates = memphis.view.commands:TemplatesCommand',
+            ],
+        },
       )

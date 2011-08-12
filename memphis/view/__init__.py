@@ -6,8 +6,8 @@ from memphis.view.interfaces import ISimpleView
 from memphis.view.interfaces import IView
 
 # path/template
-from memphis.view.path import path
-from memphis.view.path import template
+from memphis.view.tmpl import path
+from memphis.view.tmpl import template
 
 # pagelet
 from memphis.view.pagelet import Pagelet

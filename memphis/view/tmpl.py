@@ -2,6 +2,49 @@ import os, sys, imp, pkg_resources
 from chameleon.zpt.template import PageTemplateFile
 from memphis.view.formatter import format
 
+registry = {}
+
+class _Template(object):
+
+    def __init__(self, default, custom=None):
+        self.default = default
+        self.custom = custom
+
+        self.tmpl = default
+
+    def setCustom(self, custom):
+        if custom is None:
+            self.custom = None
+            self.tmpl = self.default
+        else:
+            self.custom = custom
+            self.tmpl = custom
+
+    def __call__(self, *args, **kw):
+        return self.tmpl(*args, **kw)
+
+
+def template(spec, title=None, description=None):
+    abspath, package_name = path(spec, False, caller_package(2).__name__)
+    if not abspath:
+        raise ValueError('Missing template asset: %s' % spec)
+
+    data = registry.setdefault(package_name, {})
+    filename = os.path.split(abspath)[1]
+    if filename in data:
+        raise ValueError(
+            'Template with this name already has been registered: %s' % filename)
+
+    tmpl = _Template(getRenderer(abspath))
+
+    data[filename] = [abspath,title,description,tmpl]
+
+    return tmpl
+
+
+def getRenderer(path):
+    return PageTemplateFile(path, extra_builtins={'format': format})
+
 
 def path(spec, abs=False, package_name=None):
     try:
@@ -15,19 +58,11 @@ def path(spec, abs=False, package_name=None):
     if not abs:
         abspath = pkg_resources.resource_filename(package_name, filename)
         if not pkg_resources.resource_exists(package_name, filename):
-            return None
+            return None, package_name
     else:
         abspath = spec
 
-    return abspath
-
-
-def template(spec, abs=False):
-    abspath = path(spec, abs, caller_package(2).__name__)
-    if not abspath:
-        raise ValueError('Missing template asset: %s' % spec)
-
-    return PageTemplateFile(abspath, extra_builtins={'format': format})
+    return abspath, package_name
 
 
 ignore_types = [ imp.C_EXTENSION, imp.C_BUILTIN ]

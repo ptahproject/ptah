@@ -24,6 +24,10 @@ CHANGES
 
 - Added size formatter
 
+- Added template customization
+
+- Added 'template' paste command
+
 - Use simplejson instead of standard json for renderer
 
 - Check if render method return Response object
