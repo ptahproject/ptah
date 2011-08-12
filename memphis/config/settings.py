@@ -252,11 +252,11 @@ _marker = object()
 class Group(dict):
 
     def __init__(self, name, settings, title, description):
-        self.__dict__['name'] = name
-        self.__dict__['title'] = title
-        self.__dict__['description'] = description
-        self.__dict__['settings'] = settings
-        self.__dict__['schema'] = schema.SchemaNode(
+        self.name = name
+        self.title = title
+        self.description = description
+        self.settings = settings
+        self.schema = schema.SchemaNode(
             schema.Mapping(), 
             name=name,
             required=False,
