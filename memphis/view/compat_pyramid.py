@@ -97,7 +97,8 @@ def registerView(
     config.action(
         registerViewImpl,
         name, context, klass, template, 
-        layer, layout, permission, default, decorator, configContext, getInfo(),
+        layer, layout, permission, default, decorator, configContext, 
+        __info = getInfo(2),
         __frame = sys._getframe(1))
 
 
@@ -149,8 +150,7 @@ def registerViewImpl(
 
     config.registerAdapter(
         view,
-        (IViewClassifier, layer, context), IView, name,
-        configContext, info)
+        (IViewClassifier, layer, context), IView, name, configContext, info)
 
     if default:
         registerDefaultViewImpl(name, context, layer, configContext, info)
@@ -161,7 +161,8 @@ def registerDefaultView(name, context=interface.Interface,
 
     config.action(
         registerDefaultViewImpl, name, context, layer, 
-        configContext, getInfo(),
+        configContext, 
+        __info = getInfo(2),
         __frame = sys._getframe(1))
 
 

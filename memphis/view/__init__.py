@@ -25,6 +25,9 @@ from memphis.view.view import SimpleView
 from memphis.view.view import subpath
 from memphis.view.view import json
 
+# resource
+from memphis.view.resources import registerStatic
+
 # pyramid view
 try:
     from memphis.view.compat_pyramid import renderView

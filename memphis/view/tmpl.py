@@ -33,7 +33,7 @@ def template(spec, title=None, description=None):
     filename = os.path.split(abspath)[1]
     if filename in data:
         raise ValueError(
-            'Template with this name already has been registered: %s' % filename)
+            'Template with this name already has been registered: %s'%filename)
 
     tmpl = _Template(getRenderer(abspath))
 

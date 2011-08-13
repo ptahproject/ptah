@@ -3,7 +3,6 @@ import os
 import logging
 import colander
 import pyinotify
-from zope import interface
 from memphis import config
 from memphis.view import tmpl
 
@@ -52,25 +51,28 @@ class TemplatesManager(object):
             return
 
         for dir in subdirs:
-            pkg_data = tmpl.registry.get(dir, None)
-            if pkg_data is None:
+            if dir not in tmpl.registry:
                 continue
 
             path = os.path.join(self.directory, dir)
+
             if os.path.isdir(path):
+                pkg_data = tmpl.registry[dir]
                 for item in os.listdir(path):
                     if item in pkg_data:
                         pkg_data[item][3].setCustom(
                             tmpl.getRenderer(os.path.join(path, item)))
 
     def reloadPackage(self, pkg):
-        pkg_data = tmpl.registry.get(pkg, None)
-        if pkg_data is None:
+        if pkg not in tmpl.registry:
             return
-            
+           
         path = os.path.join(self.directory, pkg)
+
         if os.path.isdir(path):
+            pkg_data = tmpl.registry[pkg]
             items = dict((f, 1) for f in os.listdir(path))
+
             for fn, (p,t,d,t) in pkg_data.items():
                 if fn in items and t.custom is None:
                     t.setCustom(tmpl.getRenderer(os.path.join(path, fn)))

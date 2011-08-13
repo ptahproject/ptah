@@ -28,6 +28,8 @@ CHANGES
 
 - Added 'template' paste command
 
+- Added static resource management
+
 - Use simplejson instead of standard json for renderer
 
 - Check if render method return Response object
