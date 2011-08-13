@@ -40,7 +40,6 @@ class RequiredWidthDependency(object):
 
                 val = appstruct.get(self.key, default)
                 if val == default:
-                    print node.name, val, node.default, self.key in appstruct
                     raise Required(node)
 
 
