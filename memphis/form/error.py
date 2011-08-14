@@ -1,26 +1,7 @@
-##############################################################################
-#
-# Copyright (c) 2007 Zope Foundation and Contributors.
-# All Rights Reserved.
-#
-# This software is subject to the provisions of the Zope Public License,
-# Version 2.1 (ZPL).  A copy of the ZPL should accompany this distribution.
-# THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
-# WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-# WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE.
-#
-##############################################################################
-"""Error Views Implementation
-
-$Id: error.py 11790 2011-01-31 00:41:45Z fafhrd91 $
-"""
-__docformat__ = "reStructuredText"
+"""Error Views Implementation"""
 import os
-import zope.component
-import zope.interface
-import zope.schema
-
+import colander
+from zope import interface
 from memphis import config, view
 from memphis.form import interfaces, util, pagelets
 
@@ -28,7 +9,7 @@ _ = interfaces.MessageFactory
 
 
 class Errors(list):
-    zope.interface.implements(interfaces.IErrors)
+    interface.implements(interfaces.IErrors)
     
     def __init__(self, *args):
         super(Errors, self).__init__(*args)
@@ -50,7 +31,7 @@ class Errors(list):
 
 
 class WidgetError(object):
-    zope.interface.implements(interfaces.IWidgetError)
+    interface.implements(interfaces.IWidgetError)
 
     def __init__(self, name, error):
         self.name = name
@@ -59,7 +40,7 @@ class WidgetError(object):
 
 class ErrorViewSnippet(object):
     """Error view snippet."""
-    zope.interface.implements(interfaces.IErrorViewSnippet)
+    interface.implements(interfaces.IErrorViewSnippet)
 
     def __init__(self, error, request):
         self.error = self.context = error
@@ -80,18 +61,7 @@ class ErrorViewSnippet(object):
         return '<%s for %s>' %(self.__class__.__name__, self.error)
 
 
-class ValidationErrorViewSnippet(ErrorViewSnippet):
-    config.adapts(zope.schema.ValidationError, None)
-
-    def createMessage(self):
-        return self.error.doc()
-
-    def __repr__(self):
-        return '<%s for %s>' %(
-            self.__class__.__name__, self.error.__class__.__name__)
-
-
-class ValueErrorViewSnippet(ValidationErrorViewSnippet):
+class ValueErrorViewSnippet(ErrorViewSnippet):
     """An error view for ValueError."""
     config.adapts(ValueError, None)
 
@@ -101,15 +71,15 @@ class ValueErrorViewSnippet(ValidationErrorViewSnippet):
         return self.defaultMessage
 
 
-class InvalidErrorViewSnippet(ValidationErrorViewSnippet):
+class InvalidErrorViewSnippet(ErrorViewSnippet):
     """Error view snippet."""
-    config.adapts(zope.interface.Invalid, None)
+    config.adapts(colander.Invalid, None)
 
     def createMessage(self):
-        return self.error.args[0]
+        return self.error.msg
 
 
-class MultipleErrorViewSnippet(ValidationErrorViewSnippet):
+class MultipleErrorViewSnippet(ErrorViewSnippet):
     """Error view snippet for multiple errors."""
     config.adapts(interfaces.IMultipleErrors, None)
 
@@ -122,7 +92,7 @@ class MultipleErrorViewSnippet(ValidationErrorViewSnippet):
 
 class MultipleErrors(Exception):
     """An error that contains many errors"""
-    zope.interface.implements(interfaces.IMultipleErrors)
+    interface.implements(interfaces.IMultipleErrors)
 
     def __init__(self, errors):
         self.errors = errors

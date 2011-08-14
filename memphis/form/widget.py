@@ -72,6 +72,9 @@ class Widget(object):
             #              content is to be used to extract a value, get
             #              it now via a data manager.
             if self.content is not None:
+                dm = getMultiAdapter(
+                    (self.content, self.field), interfaces.IDataManager)
+
                 value = getMultiAdapter(
                     (self.content, self.field), interfaces.IDataManager).query()
 

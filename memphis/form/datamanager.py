@@ -17,7 +17,7 @@ class AttributeField(object):
         self.field = field
 
     def get(self):
-        return self.field.get(self.context)
+        return getattr(self.context, self.field.name)
 
     def query(self, default=interfaces.NO_VALUE):
         try:

@@ -13,6 +13,10 @@ class TextWidget(widget.HTMLTextInputWidget, Widget):
     """Input type text widget implementation."""
     interface.implementsOnly(ITextWidget)
     config.adapts(colander.SchemaNode, colander.Str, None)
+    config.adapts(colander.SchemaNode, colander.Int, None)
+    config.adapts(colander.SchemaNode, colander.Float, None)
+    config.adapts(colander.SchemaNode, colander.Date, None)
+    config.adapts(colander.SchemaNode, colander.DateTime, None)
 
     klass = u'text-widget'
     value = u''

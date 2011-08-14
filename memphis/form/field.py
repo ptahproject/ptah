@@ -1,5 +1,6 @@
 """Field Implementation"""
 import colander
+from types import ClassType
 from zope import interface
 from zope.component import getSiteManager
 
@@ -13,6 +14,7 @@ class Field(object):
     """Field implementation."""
     interface.implements(interfaces.IField)
 
+    css = ''
     widgetFactory = ''
 
     def __init__(self, field, name=None, prefix='', mode=None):
@@ -42,7 +44,7 @@ class Fields(util.SelectionManager):
 
         fields = []
         for arg in args:
-            if issubclass(arg, colander.Schema):
+            if arg is ClassType and issubclass(arg, colander.Schema):
                 arg = arg()
 
             if isinstance(arg, colander.SchemaNode):
@@ -51,10 +53,10 @@ class Fields(util.SelectionManager):
 
             elif isinstance(arg, Fields):
                 for form_field in arg.values():
-                    fields.append((form_field.__name__, form_field))
+                    fields.append((form_field.name, form_field))
 
             elif isinstance(arg, Field):
-                fields.append((arg.__name__, arg))
+                fields.append((arg.name, arg))
 
             else:
                 raise TypeError("Unrecognized argument type", arg)
@@ -105,10 +107,7 @@ class Fields(util.SelectionManager):
         if prefix:
             names = [util.expandPrefix(prefix) + name for name in names]
         return self.__class__(
-            *[field for name, field in self.items()
-              if not ((name in names and interface is None) or
-                      (field.field.interface is interface and
-                       field.field.name in names)) ])
+            *[field for name, field in self.items() if name not in names])
 
 
 class FieldWidgets(util.Manager):
@@ -192,6 +191,10 @@ class FieldWidgets(util.Manager):
             # Step 9: Add the widget to the manager
             if widget.required:
                 self.hasRequiredFields = True
+
+            # Step 10:
+            widget.addClass(field.css)
+
             uniqueOrderedKeys.append(shortName)
 
             self._data_values.append(widget)
