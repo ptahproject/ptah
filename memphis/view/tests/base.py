@@ -26,8 +26,6 @@ class Base(unittest.TestCase):
         return environ
 
     def _setup_pyramid(self):
-        testing.cleanUp()
-
         self.request = request = testing.DummyRequest()
         request.params = {}
         self.p_config = testing.setUp(request=request)

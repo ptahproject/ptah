@@ -2,6 +2,7 @@ import os, sys, imp, pkg_resources
 from pyramid.path import caller_package
 from chameleon.zpt.template import PageTemplateFile
 from chameleon.zpt.template import PageTextTemplateFile
+from memphis import config
 from memphis.view.formatter import format
 
 registry = {}
@@ -73,3 +74,8 @@ def path(spec, abs=False, package_name=None):
         abspath = spec
 
     return abspath, package_name
+
+
+@config.cleanup
+def cleanup():
+    registry.clear()

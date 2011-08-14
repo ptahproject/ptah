@@ -3,7 +3,8 @@ import os
 import logging
 import colander
 import pyinotify
-from pprint import pprint
+from chameleon import template as chameleon_template
+
 from memphis import config
 from memphis.view import tmpl
 
@@ -58,17 +59,12 @@ class _LayerManager(object):
                 continue
 
             for fn, (p,t,d,t) in pkg_data.items():
-                found = False
 
                 for pkgname, abspath, path in layers[pkg]:
                     tpath = os.path.join(abspath, fn)
                     if os.path.isfile(tpath):
-                        found = True
                         t.setCustom(tmpl.getRenderer(tpath))
                         break
-
-                if found:
-                    break
 
 
 _Manager = _LayerManager()
@@ -82,12 +78,7 @@ class _GlobalLayerManager(object):
         self.directory = directory
 
     def load(self):
-        try:
-            subdirs = os.listdir(self.directory)
-        except:
-            return
-
-        for dir in subdirs:
+        for dir in os.listdir(self.directory):
             if dir not in tmpl.registry:
                 continue
 
@@ -135,6 +126,7 @@ class iNotifyWatcher(object):
         self.manager = manager
         self.directory = manager.directory
 
+        self._started = False
         self._wm = pyinotify.WatchManager()
         self._notifier = pyinotify.ThreadedNotifier(self._wm)
         self._wm.add_watch(
@@ -151,9 +143,12 @@ class iNotifyWatcher(object):
 
     def start(self):
         self._notifier.start()
+        self._started = True
 
     def stop(self):
-        self._notifier.stop()
+        if self._started:
+            self._started = False
+            self._notifier.stop()
 
 
 @config.handler(config.SettingsInitializing)
@@ -176,7 +171,6 @@ def initialize(*args):
                 TEMPLATE._watcher = None
                 log.info('Filesystem watcher has been disabled')
 
-        dir = TEMPLATE.custom
         if dir and TEMPLATE._manager is None:
             if not os.path.exists(dir):
                 os.mkdir(dir)
@@ -190,7 +184,7 @@ def initialize(*args):
             TEMPLATE._manager = _GlobalLayerManager(dir)
             TEMPLATE._manager.load()
 
-        if dir and TEMPLATE._watcher is None:
+        if dir and TEMPLATE._watcher is None and TEMPLATE._manager is not None:
             if TEMPLATE.watcher == 'inotify':
                 TEMPLATE._watcher = iNotifyWatcher(TEMPLATE._manager)
                 TEMPLATE._watcher.start()
@@ -201,13 +195,8 @@ def initialize(*args):
     except Exception, e:
         log.warning("Error during view customization initializations: %s", e)
 
-    try:
-        from chameleon import template
-        template.AUTO_RELOAD = TEMPLATE.chameleon_reload
-        template.BaseTemplateFile.auto_reload = \
-            TEMPLATE.chameleon_reload
-    except ImportError:
-        pass
+    chameleon_template.AUTO_RELOAD = TEMPLATE.chameleon_reload
+    chameleon_template.BaseTemplateFile.auto_reload = TEMPLATE.chameleon_reload
 
 
 @config.shutdownHandler
@@ -215,3 +204,8 @@ def shutdown():
     if TEMPLATE._watcher is not None:
         TEMPLATE._watcher.stop()
         TEMPLATE._watcher = None
+
+
+@config.cleanup
+def cleanup():
+    _Manager.layers.clear()

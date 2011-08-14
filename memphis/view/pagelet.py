@@ -9,14 +9,14 @@ from zope.interface.interface import InterfaceClass
 from memphis import config
 from memphis.config.directives import getInfo
 
-from memphis.view.base import Base
+from memphis.view.base import BaseView
 from memphis.view.formatter import format
 from memphis.view.interfaces import IPagelet, IPageletType
 
 log = logging.getLogger('memphis.view')
 
 
-class Pagelet(Base):
+class Pagelet(BaseView):
     interface.implements(IPagelet)
 
     template = None
@@ -99,6 +99,7 @@ def registerPagelet(
 
     info = config.getInfo(2)
     frame = sys._getframe(1)
+    mlocals = config.getModule(frame)
 
     config.action(
         registerPageletImpl,
@@ -106,7 +107,7 @@ def registerPagelet(
         __info = info,
         __frame = frame,
         __discriminator = ('memphis.view:pagelet', pageletType, context, layer),
-        __order = (config.moduleNum(frame.f_locals['__name__']), 300),
+        __order = (config.moduleNum(mlocals['__name__']), 300),
         **kw)
 
 

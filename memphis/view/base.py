@@ -1,6 +1,6 @@
 """ base view class with access to various api's """
 import logging
-from zope.component import getUtility
+from zope.component import getUtility, getSiteManager
 from memphis.view.formatter import format
 from memphis.view.resources import static_url
 from memphis.view.library import library, include, renderIncludes
@@ -9,7 +9,7 @@ from memphis.view.interfaces import IPageletType
 log = logging.getLogger('memphis.view')
 
 
-class Base(object):
+class BaseView(object):
 
     request = None
     format = format
@@ -24,9 +24,11 @@ class Base(object):
         return static_url(name, path, self.request)
     
     def pagelet(self, context, ptype):
+        sm = getSiteManager()
+
         if isinstance(ptype, basestring):
             try:
-                pt = getUtility(IPageletType, ptype)
+                pt = sm.getUtility(IPageletType, ptype)
             except:
                 log.warning("Can't find pagelet type: %s"%ptype)
                 return u''
@@ -34,7 +36,7 @@ class Base(object):
             pt = ptype.getTaggedValue('memphis.view.pageletType')
 
         try:
-            pagelet = queryMultiAdapter((context, self.request), pt.type)
+            pagelet = sm.queryMultiAdapter((context, self.request), pt.type)
             if pagelet is not None:
                 return pagelet()
         except Exception, e:

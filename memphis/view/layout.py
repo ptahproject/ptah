@@ -4,7 +4,7 @@ from zope import interface
 from zope.component import getSiteManager
 
 from memphis import config
-from memphis.view.base import Base
+from memphis.view.base import BaseView
 from memphis.view.formatter import format
 from memphis.view.interfaces import ILayout, LayoutNotFound
 
@@ -23,7 +23,7 @@ def queryLayout(view, request, context, name=''):
     return None
 
 
-class Layout(Base):
+class Layout(BaseView):
     interface.implements(ILayout)
 
     __name__ = ''

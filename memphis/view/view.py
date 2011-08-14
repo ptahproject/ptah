@@ -4,13 +4,13 @@ from zope import interface
 from webob import Response
 from webob.exc import HTTPException, HTTPNotFound
 
-from memphis.view.base import Base
+from memphis.view.base import BaseView
 from memphis.view.formatter import format
 from memphis.view.layout import queryLayout
 from memphis.view.interfaces import IRenderer, IView, ISimpleView
 
 
-class SimpleView(Base):
+class SimpleView(BaseView):
     interface.implements(ISimpleView)
 
     __name__ = ''

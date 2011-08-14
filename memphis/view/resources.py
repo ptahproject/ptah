@@ -30,6 +30,8 @@ registry = {}
 
 def static(name, path):
     abspath, pkg = tmpl.path(path)
+    data = registry.setdefault(name, [])
+    data.append((abspath, pkg))
 
     if not abspath:
         raise ValueError("Can't find path to static resource")
@@ -46,7 +48,8 @@ def static(name, path):
 
 def staticImpl(name, abspath, pkg):
     data = registry.setdefault(name, [])
-    data.append((abspath, pkg))
+    if (abspath, pkg) not in data:
+        data.append((abspath, pkg))
 
 
 def static_url(name, path, request, **kw):

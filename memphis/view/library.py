@@ -1,15 +1,35 @@
 """ resource library """
 from urlparse import urlparse
-from memphis.view.resources import static_url
+from memphis import config
+from memphis.view.resources import static_url, registry
 
 _libraries = {}
 
 
 def library(name, 
             path='', resource='', type='', 
-            require='', prefix='',postfix=''):
+            require='', prefix='', postfix='', extra=''):
+
+    if not path:
+        raise ValueError("path is required")
+
+    if resource and resource not in registry:
+        raise ValueError("Resource is not found '%s'"%resource)       
+
     if type not in ('js', 'css'):
         raise ValueError("Uknown type '%s'"%type)
+
+    if isinstance(path, basestring):
+        path = (path,)
+
+    if require and isinstance(require, basestring):
+        require = (require,)
+
+    if not resource:
+        for p in path:
+            if not urlparse(p)[0]:
+                raise ValueError("If resource is not defined "
+                                 "path has to be absolute url")
 
     lib = _libraries.get(name)
     if lib is None:
@@ -17,7 +37,9 @@ def library(name,
         _libraries[name] = lib
 
     if path:
-        lib.add(path, resource, type, require, prefix, postfix)
+        lib.add(path, resource, type, require, prefix, postfix, extra)
+
+    return lib
 
 
 def include(name, request):
@@ -38,25 +60,21 @@ def renderIncludes(request):
         return u''
 
     def _process(l_id):
-        if l_id in seen:
-            return
-
         lib = _libraries.get(l_id)
         if lib is None:
             seen.add(l_id)
             return
 
         for require in lib.require:
-            _process(require)
-
-            if l_id in seen:
-                return
+            if require not in seen:
+                _process(require)
 
         seen.add(l_id)
         libraries.append(lib)
 
-    for l_id in libs:
-        _process(l_id)
+    for id in libs:
+        if id not in seen:
+            _process(id)
 
     return u'\n'.join(lib.render(request) for lib in libraries)
 
@@ -71,9 +89,6 @@ class Entry(object):
         self.postfix = postfix
         self.extra = extra
 
-        if isinstance(path, basestring):
-            path = (path,)
-
         self.urls = urls = []
         self.paths = paths = []
         for p in path:
@@ -86,7 +101,7 @@ class Entry(object):
         result = [self.prefix]
         
         urls = list(self.urls)
-        
+
         for path in self.paths:
             urls.append(static_url(self.resource, path, request))
 
@@ -95,7 +110,9 @@ class Entry(object):
         else:
             s = '<script %s src="%s"> </script>'
 
-        return '\n\t'.join(s%(self.extra, url) for url in urls)
+        return '%s%s%s'%(
+            self.prefix, '\n\n\t'.join(s%(self.extra, url) for url in urls),
+            self.postfix)
 
 
 class Library(object):
@@ -105,20 +122,20 @@ class Library(object):
         self.require = []
         self.entries = []
 
-    def add(self, path, resource='', type='', 
-            require='', prefix='', postfix='', extra=''):
+    def add(self, path, resource, type, require, prefix, postfix, extra):
         self.entries.append(Entry(path, resource, type, prefix, postfix, extra))
 
-        if require:
-            if isinstance(require, basestring):
-                require = (require,)
-
-            for req in require:
-                if req not in self.require:
-                    self.require.append(req)
+        for req in require:
+            if req not in self.require:
+                self.require.append(req)
 
     def render(self, request):
         return '\n'.join(entry.render(request) for entry in self.entries)
 
     def __repr__(self):
         return '<memphis.view.library.Library "%s">'%self.name
+
+
+@config.cleanup
+def cleanup():
+    _libraries.clear()

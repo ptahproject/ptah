@@ -4,6 +4,7 @@
 from memphis.view.interfaces import IRenderer
 from memphis.view.interfaces import ISimpleView
 from memphis.view.interfaces import IView
+from memphis.view.interfaces import IPageletType
 
 # path/template
 from memphis.view.tmpl import path

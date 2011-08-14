@@ -1,6 +1,7 @@
 """ test for static assets api """
 import unittest
 from memphis import config, view
+from memphis.view.base import BaseView
 
 from base import Base
 
@@ -31,6 +32,7 @@ class TestStaticManagement(Base):
         self._init_memphis()
 
         request = self._makeRequest()
+        self._setRequest(request)
 
         self.assertEquals(
             view.static_url('tests', 'styles.css', request),
@@ -70,6 +72,18 @@ class TestStaticManagement(Base):
                           'dir1/text2.txt': 1,
                           'dir2/style.css': 1,
                           'dir2/text.txt': 1})
+    def test_base_static_url(self):
+        view.static('tests2', 'memphis.view.tests:static/dir1')
+        self._init_memphis()
+
+        request = self._makeRequest()
+
+        base = BaseView()
+        base.request = request
+
+        self.assertEquals(
+            base.static_url('tests2', 'styles.css'),
+            'http://localhost:8080/static/tests2/styles.css')
 
 
 class TestStaticView(Base):
