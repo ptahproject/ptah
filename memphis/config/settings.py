@@ -151,7 +151,11 @@ class SettingsImpl(dict):
 
     def _load(self, rawdata, setdefaults=False, suppressevents=True):
         rawdata = dict((k.lower(), v) for k, v in rawdata.items())
-        data = self.schema.unflatten(rawdata)
+        try:
+            data = self.schema.unflatten(rawdata)
+        except:
+            log.error('Error loading settings')
+            return
 
         try:
             data = self.schema.deserialize(data)
