@@ -12,6 +12,7 @@ from memphis.config.api import action as addAction
 from memphis.config.api import cleanup
 from memphis.config.api import registerCleanup
 from memphis.config.api import moduleNum
+from memphis.config.api import cleanUp
 
 from memphis.config.api import registerAdapter
 from memphis.config.api import registerUtility

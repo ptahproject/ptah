@@ -35,10 +35,19 @@ class action(Directive):
         else:
             self.frame = frame = sys._getframe(1)
 
+        _locals = None
+
         if not self.scope.check(frame):
-            raise GrokImportError("The '%s' directive can only be used on "
-                                  "%s level." %
-                                  (self.name, self.scope.description))
+            if 'self' in frame.f_locals:
+                mod = frame.f_locals['self'].__module__
+                if mod in sys.modules:
+                    _locals = sys.modules[mod].__dict__
+            if _locals is None:
+                raise GrokImportError("The '%s' directive can only be used on "
+                                      "%s level." %
+                                      (self.name, self.scope.description))
+        else:
+            _locals = frame.f_locals
 
         self.check_factory_signature(*args, **kw)
 
@@ -49,7 +58,7 @@ class action(Directive):
                     del value[2][key]
             value[0](*value[1], **value[2])
         else:
-            self.store.set(frame.f_locals, self, value)
+            self.store.set(_locals, self, value)
 
     def factory(self, callable, *args, **kw):
         if '__info' in kw:

@@ -143,9 +143,11 @@ class SettingsImpl(dict):
         if not self._changed:
             if self._changed is None:
                 self._changed = {}
-            data = self._changed.setdefault(group, set())
-            data.update(attrs)
-            transaction.get().addAfterCommitHook(self.save)
+            if transaction is not None:
+                transaction.get().addAfterCommitHook(self.save)
+            
+        data = self._changed.setdefault(group, set())
+        data.update(attrs)
 
     def _load(self, rawdata, setdefaults=False, suppressevents=True):
         rawdata = dict((k.lower(), v) for k, v in rawdata.items())
@@ -339,7 +341,7 @@ class FileStorage(object):
 
     def load(self):
         if not self.cfg:
-            return
+            return {}
 
         if not os.path.exists(self.cfg):
             f = open(self.cfg, 'wb')
@@ -448,5 +450,16 @@ class iNotifyWatcher(object):
 
 @shutdown.shutdownHandler
 def shutdown():
+    if Settings.loader is not None:
+        Settings.loader.close()
+
+
+@api.cleanup
+def cleanup():
+    global Settings, CONFIG, _settings_initialized
+
+    CONFIG = None
+    _settings_initialized = False
+    
     if Settings.loader is not None:
         Settings.loader.close()

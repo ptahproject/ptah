@@ -14,6 +14,8 @@ CHANGES
 
 - Added process shutdown support `memphis.config.shutdownHandler`
 
+- Allow execute 'action' directive withing method declaration.
+
 
 0.6 (2011-06-29)
 ----------------
