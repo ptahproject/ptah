@@ -15,6 +15,7 @@
 import zope.interface
 import zope.schema
 from zope.schema import vocabulary
+from pyramid.i18n import get_localizer
 
 from memphis import config, view
 from memphis.form import term, pagelets
@@ -42,14 +43,15 @@ class CheckBoxWidget(widget.HTMLInputWidget, SequenceWidget):
         super(CheckBoxWidget, self).update()
         widget.addFieldClass(self)
 
+        localizer = get_localizer(self.request)
+
         self.items = []
         for count, term in enumerate(self.terms):
             checked = self.isChecked(term)
             id = '%s-%i' % (self.id, count)
             label = term.token
             if zope.schema.interfaces.ITitledTokenizedTerm.providedBy(term):
-                label = view.translate(term.title, context=self.request,
-                                  default=term.title)
+                label = localizer.translate(term.title)
             self.items.append(
                 {'id':id, 'name':self.name, 'value':term.token,
                  'label':label, 'checked':checked})

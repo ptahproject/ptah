@@ -4,6 +4,7 @@ from zope import interface
 from zope.component import getMultiAdapter
 from zope.schema.interfaces import IField, ITitledTokenizedTerm
 
+from pyramid.i18n import get_localizer
 from webob.multidict import MultiDict
 
 from memphis import view, config
@@ -124,15 +125,15 @@ class SequenceWidget(Widget):
     @property
     def displayValue(self):
         value = []
+        localizer = get_localizer(self.request)
+
         for token in self.value:
             # Ignore no value entries. They are in the request only.
             if token == self.noValueToken:
                 continue
             term = self.terms.getTermByToken(token)
             if ITitledTokenizedTerm.providedBy(term):
-                value.append(
-                    view.translate(
-                        term.title, context=self.request, default=term.title))
+                value.append(localizer.translate(term.title))
             else:
                 value.append(term.value)
         return value
