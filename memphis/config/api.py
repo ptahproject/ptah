@@ -122,9 +122,6 @@ def begin(packages=None):
     if configContext is not None:
         commit()
 
-    for h in cleanups:
-        h()
-
     grokkerRegistry.clear()
     configContext = ConfigurationMachine()
     registerCommonDirectives(configContext)

@@ -24,6 +24,7 @@ from memphis.config.zca import registry
 from memphis.config.zca import getRegistry
 
 from memphis.config.directives import getInfo
+from memphis.config.directives import getModule
 from memphis.config.directives import adapts
 from memphis.config.directives import adapter
 from memphis.config.directives import handler

@@ -54,7 +54,7 @@ def initializeSettings(settings,
                        section=ConfigParser.DEFAULTSECT):
     global _settings_initialized, CONFIG
     if _settings_initialized:
-        raise RuntimeError("'initSettings' is been called more than once.")
+        raise RuntimeError("initializeSettings has been called more than once.")
 
     log.info('Initializing memphis settings')
 
@@ -82,7 +82,7 @@ def initializeSettings(settings,
 
     Settings.init(loader, settings)
     api.notify(SettingsInitializing(config))
-    api.notify(SettingsInitialized(config))
+    api.notify(SettingsInitialized(config))   
 
 
 def registerSettings(name, *nodes, **kw):
@@ -108,7 +108,7 @@ def registerSettings(name, *nodes, **kw):
                 "memphis.config.SchemaNode"%node.name)
 
         action(
-            registerSettingsImpl,
+            _registerSettingsImpl,
             name, title, description, validator, node, category,
             __discriminator = ('memphis:registerSettings', node.name, name),
             __info = getInfo(2),
@@ -117,7 +117,7 @@ def registerSettings(name, *nodes, **kw):
     return group
 
 
-def registerSettingsImpl(name, title, description, validator, node, category):
+def _registerSettingsImpl(name, title, description, validator, node, category):
     group = Settings.register(name, title, description, category)
 
     if validator is not None:
@@ -180,7 +180,6 @@ class SettingsImpl(dict):
                     if modified:
                         getSiteManager().subscribers(
                             (group, SettingsGroupModified(group)), None)
-
                 else:
                     group.update(data[name])
 
@@ -190,13 +189,12 @@ class SettingsImpl(dict):
                             group.schema[k].default = v
 
     def init(self, loader, defaults=None):
-        self.loader = loader
-
-        if loader is None:
-            return
-
         if defaults:
             self._load(defaults, True)
+
+        self.loader = loader
+        if loader is None:
+            return
 
         self._load(loader.loadDefaults(), True)
         self._load(loader.load())

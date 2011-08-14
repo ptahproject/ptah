@@ -221,6 +221,12 @@ class RegisterInGrokker(martian.GlobalGrokker):
 def cleanUp():
     global _adapters, _modules, _rmodules, _utilities
 
+    names = (action.dotted_name(), registerIn.dotted_name())
+    for n, mod in _modules + _rmodules:
+        for name in names:
+            if hasattr(mod, name):
+                delattr(mod, name)
+
     _modules = []
     _rmodules = []
     _adapters = []
