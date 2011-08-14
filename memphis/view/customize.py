@@ -3,6 +3,7 @@ import os
 import logging
 import colander
 import pyinotify
+from pprint import pprint
 from memphis import config
 from memphis.view import tmpl
 
@@ -33,14 +34,50 @@ TEMPLATE = config.registerSettings(
         title = 'Auto reload',
         description = 'Enable chameleon templates auto reload.'),
 
-    title = 'Template related settings',
+    title = 'Templates settings',
     )
 TEMPLATE._manager = None
 TEMPLATE._watcher = None
 
 
-class TemplatesManager(object):
-    
+class _LayerManager(object):
+
+    def __init__(self):
+        self.layers = {}
+
+    def custom(self, pkg, path):
+        abspath, pkgname = tmpl.path(path)
+        layer = self.layers.setdefault(pkg, [])
+        layer.insert(0, (pkgname, abspath, path))
+
+    def initialize(self):
+        layers = self.layers
+
+        for pkg, pkg_data in tmpl.registry.items():
+            if pkg not in layers:
+                continue
+
+            for fn, (p,t,d,t) in pkg_data.items():
+                found = False
+
+                for pkgname, abspath, path in layers[pkg]:
+                    tpath = os.path.join(abspath, fn)
+                    if os.path.isfile(tpath):
+                        found = True
+                        t.setCustom(tmpl.getRenderer(tpath))
+                        break
+
+                if found:
+                    break
+
+
+_Manager = _LayerManager()
+
+custom = _Manager.custom
+
+
+class _GlobalLayerManager(object):
+
     def __init__(self, directory):
         self.directory = directory
 
@@ -122,6 +159,8 @@ class iNotifyWatcher(object):
 @config.handler(config.SettingsInitializing)
 @config.handler(TEMPLATE.category, config.SettingsGroupModified)
 def initialize(*args):
+    _Manager.initialize()
+
     try:
         dir = TEMPLATE.custom
 
@@ -147,7 +186,8 @@ def initialize(*args):
 
             log.info('Initializing templates customization support')
 
-            TEMPLATE._manager = TemplatesManager(dir)
+            _Manager.initialize()
+            TEMPLATE._manager = _GlobalLayerManager(dir)
             TEMPLATE._manager.load()
 
         if dir and TEMPLATE._watcher is None:
@@ -158,16 +198,16 @@ def initialize(*args):
             else:
                 log.info('Filesystem watcher is disabled')
 
-        try:
-            from chameleon import template
-            template.AUTO_RELOAD = TEMPLATE.chameleon_reload
-            template.BaseTemplateFile.auto_reload = \
-                TEMPLATE.chameleon_reload
-        except ImportError:
-            pass
-
     except Exception, e:
         log.warning("Error during view customization initializations: %s", e)
+
+    try:
+        from chameleon import template
+        template.AUTO_RELOAD = TEMPLATE.chameleon_reload
+        template.BaseTemplateFile.auto_reload = \
+            TEMPLATE.chameleon_reload
+    except ImportError:
+        pass
 
 
 @config.shutdownHandler

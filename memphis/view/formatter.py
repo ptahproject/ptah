@@ -3,9 +3,10 @@ import pytz
 import colander
 import translationstring
 from datetime import date, datetime, timedelta
+from pyramid.i18n import get_localizer
+from pyramid.threadlocal import get_current_request
 
 from memphis import config
-from memphis.view.compat import translate
 
 _ = translationstring.TranslationStringFactory('memphis.view')
 
@@ -14,7 +15,7 @@ class FormatImpl(dict):
 
     def __setitem__(self, name, formatter):
         if name in self:
-            raise ValueError('Formatter "%s" arelady redirected.'%name)
+            raise ValueError('Formatter "%s" arelady registered.'%name)
 
         super(FormatImpl, self).__setitem__(name, formatter)
 
@@ -63,7 +64,7 @@ FORMAT = config.registerSettings(
     config.SchemaNode(
         Timezone(),
         name = 'timezone',
-        default = pytz.timezone('US/Pacific'),
+        default = pytz.timezone('US/Central'),
         title = _('Timezone'),
         description = _('Site wide timezone.')),
 
@@ -147,6 +148,9 @@ def timedeltaFormatter(value, type='short', request=None):
     if not isinstance(value, timedelta):
         return value
 
+    if request is None:
+        request = get_current_request()
+
     if type == 'full':
         hours = value.seconds/3600
         hs = hours*3600
@@ -154,20 +158,25 @@ def timedeltaFormatter(value, type='short', request=None):
         ms = mins*60
         secs = value.seconds - hs - ms
         frm = []
+        translate = get_localizer(request).translate
+
         if hours:
             frm.append(translate(
-                    '${hours} hour(s)', mapping={'hours': hours}))
+                    '${hours} hour(s)', 'memphis.view', {'hours': hours}))
         if mins:
             frm.append(translate(
-                    '${mins} min(s)', mapping={'mins': mins}))
+                    '${mins} min(s)', 'memphis.view', {'mins': mins}))
         if secs:
             frm.append(translate(
-                    '${secs} sec(s)', mapping={'secs': secs}))
+                    '${secs} sec(s)', 'memphis.view', {'secs': secs}))
 
         return ' '.join(frm)
 
     elif type == 'medium':
         return str(value)
+    elif type == 'seconds':
+        s = value.seconds + value.microseconds/1000000.0
+        return '%2.4f'%s
     else:
         return str(value).split('.')[0]
 
@@ -180,10 +189,13 @@ _size_types = {
 
 def sizeFormatter(value, type='k', request=None):
     """ size formatter """
-    if not isinstance(value, int):
+    if not isinstance(value, (int, float)):
         return value
 
     f,t = _size_types.get(type, (1024.0, 'Kb'))
+
+    if t == 'B':
+        return '%.0f %s'%(value/f, t)
 
     return '%.2f %s'%(value/f, t)
 

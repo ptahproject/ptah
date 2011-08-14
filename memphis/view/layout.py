@@ -4,8 +4,8 @@ from zope import interface
 from zope.component import getSiteManager
 
 from memphis import config
+from memphis.view.base import Base
 from memphis.view.formatter import format
-from memphis.config.directives import getInfo
 from memphis.view.interfaces import ILayout, LayoutNotFound
 
 
@@ -23,7 +23,7 @@ def queryLayout(view, request, context, name=''):
     return None
 
 
-class Layout(object):
+class Layout(Base):
     interface.implements(ILayout)
 
     __name__ = ''
@@ -109,14 +109,16 @@ def registerLayout(
     skipParent=False, configContext=config.UNSET, **kwargs):
 
     frame = sys._getframe(1)
+    info = config.getInfo(2)
 
     config.action(
         registerLayoutImpl,
         name, context, view, template, parent,
-        klass, layer, skipParent, configContext, getInfo(2),
+        klass, layer, skipParent, configContext, info,
         __frame = frame,
-        discriminator = ('memphis.view:layout', name, context, view, layer),
-        actionOrder = (config.moduleNum(frame.f_locals['__name__']), 300),
+        __info = info,
+        __discriminator = ('memphis.view:layout', name, context, view, layer),
+        __order = (config.moduleNum(frame.f_locals['__name__']), 300),
         **kwargs)
 
 

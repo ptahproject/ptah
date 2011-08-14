@@ -2,10 +2,11 @@
 import cgi
 from zope import interface
 from zope.component import getAdapter, queryUtility
+from pyramid.i18n import get_localizer
+from pyramid.interfaces import IRequest
 
 from memphis import config
 from memphis.view.interfaces import IMessage, IStatusMessage
-from memphis.view.compat import translate, IZopeRequest, IPyramidRequest
 
 
 def addMessage(request, msg, type='info'):
@@ -60,26 +61,25 @@ class Message(object):
 
 
 class InformationMessage(Message):
-    config.adapts(IZopeRequest, 'info')
-    config.adapts(IPyramidRequest, 'info')
+    config.adapts(IRequest, 'info')
 
     cssClass = 'statusMessage'
 
     def render(self, message):
+        translate = get_localizer(request).translate
+
         return '<div class="%s">%s</div>'%(
             self.cssClass, cgi.escape(translate(message, self.request), True))
 
 
 class WarningMessage(InformationMessage):
-    config.adapts(IZopeRequest, 'warning')
-    config.adapts(IPyramidRequest, 'warning')
+    config.adapts(IRequest, 'warning')
 
     cssClass = 'statusWarningMessage'
 
 
 class ErrorMessage(InformationMessage):
-    config.adapts(IZopeRequest, 'error')
-    config.adapts(IPyramidRequest, 'error')
+    config.adapts(IRequest, 'error')
 
     cssClass = 'statusStopMessage'
 

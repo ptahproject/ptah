@@ -1,12 +1,13 @@
 """ memphis.view interfaces """
 from zope import interface
+from pyramid.interfaces import IView as IPyramidView
 
 
 class LayoutNotFound(LookupError):
     """ Layout not found exception """
 
 
-class ISimpleView(interface.Interface):
+class ISimpleView(IPyramidView):
     """ simple view """
 
     __name__ = interface.Attribute('Name')

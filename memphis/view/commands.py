@@ -1,33 +1,37 @@
 """ paste commands """
-import os.path
-import textwrap
-import pkg_resources
+import os.path, shutil, textwrap, pkg_resources
 from paste.script.command import Command
 
 from memphis import config
-from memphis.view import tmpl
+from memphis.view import tmpl, resources
+from memphis.view.customize import _Manager
 
 
 grpTitleWrap = textwrap.TextWrapper(
     initial_indent='* ',
-    subsequent_indent='  ')
+    subsequent_indent='  ', 
+    width = 80)
 
 grpDescriptionWrap = textwrap.TextWrapper(
     initial_indent='    ',
-    subsequent_indent='    ')
+    subsequent_indent='    ', width = 80)
 
 
 nameWrap = textwrap.TextWrapper(
     initial_indent='  - ',
-    subsequent_indent='    ')
+    subsequent_indent='    ', width = 80)
+
+overWrap = textwrap.TextWrapper(
+    initial_indent='      ',
+    subsequent_indent='      ', width = 80)
 
 nameTitleWrap = textwrap.TextWrapper(
     initial_indent='       ',
-    subsequent_indent='       ')
+    subsequent_indent='       ', width = 80)
 
 nameDescriptionWrap = textwrap.TextWrapper(
     initial_indent=' * ',
-    subsequent_indent='')
+    subsequent_indent='', width = 80)
 
 
 class TemplatesCommand(Command):
@@ -118,6 +122,13 @@ class TemplatesCommand(Command):
                     print nameTitleWrap.fill(title)
                 if desc:
                     print nameTitleWrap.fill(desc)
+
+                data = _Manager.layers.get(name)
+                if data:
+                    for pkgname, abspath, path in data:
+                        if os.path.exists(os.path.join(abspath, filename)):
+                            print overWrap.fill(
+                                'overriden by: %s (%s)'%(pkgname, path))
                 print
 
     def print_template(self, filename):
@@ -191,3 +202,77 @@ class TemplatesCommand(Command):
         s.close()
 
         print "Template '%s' has been customized.\nPath: %s"%(fn, custfile)
+
+
+class StaticCommand(Command):
+    """ 'static' paste command"""
+
+    summary = "Memphis static assets management"
+    usage = ""
+    group_name = "Memphis"
+    parser = Command.standard_parser(verbose=False)
+    parser.add_option('-l', '--list', dest='section',
+                      action="store_true",
+                      help = 'List registered static sections')
+    parser.add_option('-d', '--dump', dest='dump',
+                      help = 'Dump static assets')
+
+    def command(self):
+        # load all memphis packages
+        config.begin()
+        config.loadPackages()
+        config.commit()
+
+        from pprint import pprint
+
+        if self.options.dump:
+            base = self.options.dump
+            basepath = os.path.abspath(self.options.dump)
+            if not os.path.exists(basepath):
+                os.makedirs(basepath)
+
+            if not os.path.isdir(basepath):
+                print "Output path is not directory."
+                return
+
+            items = resources.registry.items()
+            items.sort()
+            for name, data in items:
+                for path, pkg in data:
+                    print "* Coping from '%s' %s"%(pkg, path)
+
+                    d = resources.buildTree(path)
+                    di = d.items()
+                    di.sort()
+
+                    for p, _t in di:
+                        bp = os.path.join(basepath, name, p)
+                        dest_dir = os.path.split(bp)[0]
+                        if not os.path.exists(dest_dir):
+                            os.makedirs(dest_dir)
+
+                        forp = '%s/%s'%(pkg, p.split(pkg, 1)[-1])
+                        if os.path.exists(bp):
+                            print '   skipping ../%s'%forp
+                        else:
+                            print '   coping ../%s'%forp
+                            shutil.copyfile(os.path.join(path, p), bp)
+
+                    print
+
+            print basepath
+            return      
+
+        # list static sections
+        if self.options.section:
+            items = resources.registry.items()
+            items.sort()
+
+            for name, data in items:
+                print grpTitleWrap.fill(name)
+                for path, pkg in data:
+                    print nameWrap.fill('by: %s'%pkg)
+                    p = path.split(pkg, 1)[-1]
+                    print nameTitleWrap.fill(' ../%s%s'%(pkg, p))
+                print
+

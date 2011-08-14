@@ -362,6 +362,7 @@ And same for folder1_1_1
 
 use decorator style layout definition::
 
+  >>> unregisterTmpl('memphis:layoutcontent1_1_1.pt')
 
   >>> class MyPagelet(api.Layout):
   ...     api.layout('', IFolder1_1_1, parent='.')

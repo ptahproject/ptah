@@ -30,6 +30,8 @@ CHANGES
 
 - Added static resource management
 
+- Added resource library
+
 - Use simplejson instead of standard json for renderer
 
 - Check if render method return Response object

@@ -14,3 +14,6 @@ var/*
 *.pt.pyc
 *.bak
 .DS_Store
+.coverage
+.noseids
+htmlcov

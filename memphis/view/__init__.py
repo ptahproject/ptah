@@ -25,34 +25,27 @@ from memphis.view.view import SimpleView
 from memphis.view.view import subpath
 from memphis.view.view import json
 
+# custom
+from memphis.view.customize import custom
+
 # resource
-from memphis.view.resources import registerStatic
+from memphis.view.resources import static
+from memphis.view.resources import static_url
+
+# resource library
+from memphis.view.library import library
+from memphis.view.library import include
+from memphis.view.library import renderIncludes
 
 # pyramid view
-try:
-    from memphis.view.compat_pyramid import renderView
-    from memphis.view.compat_pyramid import registerView
-    from memphis.view.compat_pyramid import registerDefaultView
-except ImportError:
-    import sys, types
-    compat_pyramid = types.ModuleType('memphis.view.compat_pyramid')
-    sys.modules['memphis.view.compat_pyramid'] = compat_pyramid
-
-# zope view
-try:
-    from memphis.view.compat_zope import ZopeLayout
-    from memphis.view.compat_zope import registerZopeView
-    from memphis.view.compat_zope import registerZopeDefaultView
-except ImportError:
-    import sys, types
-    compat_zope = types.ModuleType('memphis.view.compat_zope')
-    sys.modules['memphis.view.compat_zope'] = compat_zope
+from memphis.view.compat_pyramid import renderView
+from memphis.view.compat_pyramid import registerView
+from memphis.view.compat_pyramid import registerDefaultView
 
 # directives
 from memphis.view.directives import layout
 from memphis.view.directives import pagelet
 from memphis.view.directives import pageletType
-from memphis.view.directives import zopeView
 from memphis.view.directives import pyramidView
 
 # status message
@@ -60,11 +53,6 @@ from memphis.view.message import addMessage
 
 # format
 from memphis.view.formatter import format
-
-# compat api
-from memphis.view.compat import getLocale
-from memphis.view.compat import translate
-from memphis.view.compat import TranslationStringFactory
 
 # navigation root
 import zope.interface

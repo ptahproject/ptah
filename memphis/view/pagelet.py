@@ -7,14 +7,16 @@ from zope.component import queryUtility, queryMultiAdapter
 from zope.interface.interface import InterfaceClass
 
 from memphis import config
-from memphis.view.formatter import format
 from memphis.config.directives import getInfo
+
+from memphis.view.base import Base
+from memphis.view.formatter import format
 from memphis.view.interfaces import IPagelet, IPageletType
 
 log = logging.getLogger('memphis.view')
 
 
-class Pagelet(object):
+class Pagelet(Base):
     interface.implements(IPagelet)
 
     template = None
@@ -65,11 +67,15 @@ def renderPagelet(ptype, context, request):
 
 
 def registerPageletType(name, iface, context, configContext=config.UNSET):
+    info = config.getInfo(2)
 
     config.action(
         registerPageletTypeImpl,
-        name, iface, context, configContext, getInfo(),
-        __frame = sys._getframe(1))
+        name, iface, context, configContext, info,
+        __info = info,
+        __frame = sys._getframe(1),
+        __discriminator = ('memphis:registerPageletType', name, iface),
+        )
 
 
 def registerPageletTypeImpl(name, iface, context, 
@@ -91,12 +97,13 @@ def registerPagelet(
     pageletType, context=None, klass=None,
     template=None, layer=interface.Interface, configContext=config.UNSET, **kw):
 
+    info = config.getInfo(2)
     frame = sys._getframe(1)
 
     config.action(
         registerPageletImpl,
-        pageletType, context, klass,
-        template, layer, configContext, getInfo(2), 
+        pageletType, context, klass, template, layer, configContext, info, 
+        __info = info,
         __frame = frame,
         __discriminator = ('memphis.view:pagelet', pageletType, context, layer),
         __order = (config.moduleNum(frame.f_locals['__name__']), 300),

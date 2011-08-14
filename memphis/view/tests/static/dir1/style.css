@@ -1,0 +1,38 @@
+/* CSS styles file 1 */
+/* Page-wide styles */
+html, body, h1, h2, h3, p, td, th {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    outline: 0;
+    font-weight: inherit;
+    font-style: inherit;
+    font-size: 100%;
+    font-family: inherit;
+    vertical-align: baseline;
+    }
+
+/* Set baseline grid to 16 pt. */
+body {
+    font-family: georgia, serif;
+    font-size: 1em;
+    }
+
+/* Set base font size to 12/16 */
+p {
+    font-size: .75em;        /* 12/16 */
+    line-height: 1.3333em;   /* 16/12 */
+    }
+
+table {
+    border-collapse: collapse;
+    }
+
+a.nav {
+    text-decoration: none;
+    color: inherit;
+    }
+a.nav:hover {
+    text-decoration: underline;
+    color: inherit;
+    }

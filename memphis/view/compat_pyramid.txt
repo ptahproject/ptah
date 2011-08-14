@@ -74,6 +74,8 @@ pyramid. Like '<<package_name>>:template.pt'
   >>> class TestView(object):
   ...     pass
 
+  >>> unregisterTmpl('memphis.view:test.pt')
+
   >>> api.registerView(
   ...     name="template.html",
   ...     klass=TestView,
@@ -146,6 +148,7 @@ location::
   >>> getPyramidView(request, object(), 'redirect.html', True)
   <HTTPFound at ... 302 Found>
 
+  >>> unregisterTmpl('memphis.view:test.pt')
 
 pyramidView directive
 ---------------------
@@ -179,6 +182,8 @@ subpath decorator
 -----------------
 
 Its possible to publish method of view.
+
+  >>> unregisterTmpl('memphis.view:test.pt')
 
   >>> class ViewWithSubpath(api.View):
   ...     updated = False

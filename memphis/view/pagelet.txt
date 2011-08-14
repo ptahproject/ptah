@@ -147,6 +147,7 @@ used more than once::
   >>> from memphis import view
   >>> class TestPagelet(view.Pagelet):
   ...     pass
+  >>> unregisterTmpl('memphis.view:test.pt')
 
   >>> api.registerPagelet(
   ...     IMyPagelet, klass = TestPagelet,
@@ -154,6 +155,8 @@ used more than once::
 
   >>> api.renderPagelet(IMyPagelet, Content(IContent), request)
   u'<div>My pagelet</div>'
+
+  >>> unregisterTmpl('memphis.view:test.pt')
 
   >>> api.registerPagelet(
   ...     IMyPagelet, klass = TestPagelet,
