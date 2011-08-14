@@ -66,7 +66,7 @@ class InformationMessage(Message):
     cssClass = 'statusMessage'
 
     def render(self, message):
-        translate = get_localizer(request).translate
+        translate = get_localizer(self.request).translate
 
         return '<div class="%s">%s</div>'%(
             self.cssClass, cgi.escape(translate(message, self.request), True))
