@@ -1,7 +1,7 @@
 """ Form and Widget Framework Interfaces """
 from zope import interface
 from zope.interface.common import mapping
-from memphis.view import TranslationStringFactory
+from translationstring import TranslationStringFactory
 
 MessageFactory = _ = TranslationStringFactory('memphis.form')
 

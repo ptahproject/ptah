@@ -14,6 +14,7 @@
 """Browser Widget Framework Interfaces"""
 import zope.interface
 import zope.schema
+from memphis.form.interfaces import _, IWidget
 
 
 class IHTMLCoreAttributes(zope.interface.Interface):
@@ -277,3 +278,7 @@ class IHTMLSelectWidget(IHTMLFormElement):
                      u'same time.'),
         default=1,
         required=False)
+
+
+class ITinymceWidget(IWidget):
+    """ TinyMCE widget """

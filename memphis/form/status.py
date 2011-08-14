@@ -1,15 +1,14 @@
 """ formError status message type """
 from zope import interface
+from pyramid.interfaces import IRequest
 
 from memphis import view, config
-from memphis.view.compat import IPyramidRequest, IZopeRequest
 from memphis.view.message import Message
 from memphis.form.interfaces import IErrorViewSnippet
 
 
 class FormErrorStatusMessage(Message):
-    config.adapts(IZopeRequest, 'formError')
-    config.adapts(IPyramidRequest, 'formError')
+    config.adapts(IRequest, 'formError')
 
     template = view.template('memphis.form:templates/message.pt')
 

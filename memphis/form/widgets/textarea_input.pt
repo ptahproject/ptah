@@ -1,6 +1,3 @@
-<html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:tal="http://xml.zope.org/namespaces/tal"
-      tal:omit-tag="">
 <textarea
    id="" name="" class="" cols="" rows=""
    tabindex="" disabled="" readonly="" accesskey=""
@@ -31,4 +28,3 @@
                    accesskey context.accesskey;
                    onselect context.onselect"
    tal:content="context.value" />
-</html>

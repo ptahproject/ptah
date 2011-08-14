@@ -1,6 +1,16 @@
-""" form pagelets """
+""" form views """
 from memphis import view
 from memphis.form import interfaces, pagelets
+
+view.static(
+    'tiny_mce', 'memphis.form:static/tiny_mce')
+
+view.library(
+    "tiny_mce",
+    resource="tiny_mce",
+    path=('tiny_mce.js', 'jquery.tinymce.js'),
+    type="js",
+    require='jquery-ui')
 
 
 view.registerPagelet(
