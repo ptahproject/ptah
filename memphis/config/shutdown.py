@@ -1,6 +1,6 @@
 """ process shutdown """
 import sys, signal, logging
-
+from signal import SIGINT, SIGTERM
 
 handlers = []
 
@@ -10,8 +10,8 @@ def shutdownHandler(handler):
 
 
 _shutdown = False
-_handler_int = signal.getsignal(signal.SIGINT)
-
+_handler_int = signal.getsignal(SIGINT)
+_handler_term = signal.getsignal(SIGTERM)
 log = logging.getLogger('memphis.config')
 
 
@@ -26,8 +26,18 @@ def processShutdown(sig, frame):
             except:
                 log.exception("Showndown handler: %s"%handler)
 
-    if sig == signal.SIGINT and callable(_handler_int):
+    if sig == SIGINT and callable(_handler_int):
         _handler_int()
 
+    if sig == SIGTERM and callable(_handler_term):
+        _handler_term()
 
-signal.signal(signal.SIGINT, processShutdown)
+    if sig == SIGTERM:
+        raise sys.exit()
+
+
+try:
+    import mod_wsgi
+except ImportError:
+    signal.signal(SIGINT, processShutdown)
+    signal.signal(SIGTERM, processShutdown)
