@@ -153,6 +153,10 @@ class TestGlobalCustomizeManagement(Base):
 
         customize.iNotifyWatcher.start = orig
 
+    # fixme: implement
+    def test_customize_global_and_layers(self):
+        pass
+
     def test_customize_layers(self):
         self.dir3 = tempfile.mkdtemp()
 

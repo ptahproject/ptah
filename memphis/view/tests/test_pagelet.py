@@ -106,8 +106,6 @@ class TestPagelet(Base):
             'test pagelet')
 
     def test_pagelet_register_declarative(self):
-        config.cleanUp()
-
         class ITestPagelet(interface.Interface):
             pass
 

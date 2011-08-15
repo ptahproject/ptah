@@ -124,7 +124,7 @@ FORMAT = config.registerSettings(
         title = _(u'Time'),
         description = _(u'Time full format')),
 
-    title = 'Varios formats',
+    title = 'Site formats',
     )
 
 

@@ -35,6 +35,6 @@ class layout(Directive):
     scope = CLASS
     store = ONCE_NOBASE
 
-    def factory(self, name='', context=None, view=None, parent='',
-                layer=None, skipParent=False, **kwargs):
-        return name, context, view, parent, layer, skipParent, kwargs, getInfo()
+    def factory(self, name='', context=None, 
+                view=None, parent='', layer=None, **kw):
+        return name, context, view, parent, layer, kw, getInfo()

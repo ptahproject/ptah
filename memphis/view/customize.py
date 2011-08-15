@@ -51,11 +51,14 @@ class _LayerManager(object):
         layer = self.layers.setdefault(pkg, [])
         layer.insert(0, (pkgname, abspath, path))
 
-    def initialize(self):
+    def initialize(self, filter=None):
         layers = self.layers
 
         for pkg, pkg_data in tmpl.registry.items():
             if pkg not in layers:
+                continue
+
+            if filter is not None and filter != pkg:
                 continue
 
             for fn, (p,t,d,t) in pkg_data.items():
@@ -94,7 +97,17 @@ class _GlobalLayerManager(object):
     def reloadPackage(self, pkg):
         if pkg not in tmpl.registry:
             return
-           
+
+        # unload
+        pkg_data = tmpl.registry[pkg]
+        for fn, (p,t,d,t) in pkg_data.items():
+            if t.custom is not None:
+                t.setCustom(None)
+
+        # re-initialize layers
+        _Manager.initialize(pkg)
+
+        # load global custom
         path = os.path.join(self.directory, pkg)
 
         if os.path.isdir(path):

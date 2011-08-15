@@ -1,5 +1,5 @@
 """ layout implementation """
-import sys
+import sys, logging
 from zope import interface
 from zope.component import getSiteManager
 
@@ -7,6 +7,8 @@ from memphis import config
 from memphis.view.base import BaseView
 from memphis.view.formatter import format
 from memphis.view.interfaces import ILayout, LayoutNotFound
+
+log = logging.getLogger('memphis.view')
 
 
 def queryLayout(view, request, context, name=''):
@@ -26,12 +28,10 @@ def queryLayout(view, request, context, name=''):
 class Layout(BaseView):
     interface.implements(ILayout)
 
-    __name__ = ''
-
+    name = ''
     template = None
     mainview = None
     maincontext = None
-    skipParent = False
 
     _params = None
 
@@ -42,12 +42,16 @@ class Layout(BaseView):
 
         self.__parent__ = view.__parent__
 
+    @property
+    def __name__(self):
+        return self.name
+
     def update(self):
         pass
 
     def render(self):
         if self.template is None:
-            raise RuntimeError("Can't render layout: %s"%self.__name__)
+            raise RuntimeError("Can't render layout: %s"%self.name)
 
         kwargs = self._params or {}
         kwargs.update({'view': self.view,
@@ -78,7 +82,7 @@ class Layout(BaseView):
         if self.layout is None:
             return self.render()
 
-        if self.__name__ != self.layout:
+        if self.name != self.layout:
             layout = queryLayout(
                 view, self.request, view.__parent__, name=self.layout)
             if layout is not None:
@@ -97,35 +101,37 @@ class Layout(BaseView):
             if layout is not None:
                 return layout(view=view, *args, **kw)
 
-        if not self.skipParent:
-            raise LayoutNotFound(self.layout)
-
+        log.warning("Can't find parent layout: '%s'"%self.layout)
         return self.render()
 
 
 def registerLayout(
     name='', context=None, view=None, template=None, parent='',
-    klass=None, layer=interface.Interface, 
-    skipParent=False, configContext=config.UNSET, **kwargs):
+    klass=Layout, layer=interface.Interface, configContext=config.UNSET, **kw):
+
+    if not klass or not issubclass(klass, Layout):
+        raise ValueError("klass has to inherit from Layout class")
 
     frame = sys._getframe(1)
     info = config.getInfo(2)
+    _locals = config.getModule(frame)
 
     config.action(
         registerLayoutImpl,
-        name, context, view, template, parent,
-        klass, layer, skipParent, configContext, info,
+        name, context, view, template, parent, klass, layer, configContext, info,
         __frame = frame,
         __info = info,
         __discriminator = ('memphis.view:layout', name, context, view, layer),
-        __order = (config.moduleNum(frame.f_locals['__name__']), 300),
-        **kwargs)
+        __order = (config.moduleNum(_locals['__name__']), 300),
+        **kw)
 
 
 def registerLayoutImpl(
-    name='', context=None, view=None, template=None, parent='',
-    klass=None, layer=interface.Interface, 
-    skipParent=False, configContext=config.UNSET, info='', **kwargs):
+    name, context, view, template, parent,
+    klass, layer, configContext, info, **kwargs):
+
+    if klass in _registered:
+        raise ValueError("Class can't be reused for different layouts")
 
     if not parent:
         layout = None
@@ -134,28 +140,32 @@ def registerLayoutImpl(
     else:
         layout = parent
 
-    # Build a new class
-    cdict = {'__name__': name,
-             'layout': layout,
-             'skipParent': skipParent}
+    # class attributes
+    cdict = {'name': name,
+             'layout': layout}
+
     if template is not None:
         cdict['template'] = template
 
     cdict.update(kwargs)
 
-    if klass is not None and issubclass(klass, Layout):
+    if issubclass(klass, Layout) and klass is not Layout:
         layout_class = klass
+        _registered.append(klass)
         for attr, value in cdict.items():
             setattr(layout_class, attr, value)
     else:
-        if klass is None:
-            bases = (Layout,)
-        else:
-            bases = (klass, Layout)
-
-        layout_class = type(str('Layout<%s>'%name), bases, cdict)
+        layout_class = type(str('Layout<%s>'%name), (Layout,), cdict)
 
     # register layout adapter
     config.registerAdapter(
         layout_class, 
         (view, context, layer), ILayout, name, configContext, info)
+
+
+_registered = []
+
+@config.cleanup
+def cleanUp():
+    _registered[:] = []
+

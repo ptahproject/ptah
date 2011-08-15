@@ -84,7 +84,7 @@ class LayoutGrokker(martian.ClassGrokker):
         if value is _marker:
             return False
 
-        name, context, view, parent, layer, skipParent, kwargs, info = value
+        name, context, view, parent, layer, kwargs, info = value
         if layer is None:
             layer = interface.Interface
 
@@ -92,8 +92,8 @@ class LayoutGrokker(martian.ClassGrokker):
             configContext,
             discriminator = ('memphis.view:layout', name, context, view, layer),
             callable = registerLayoutImpl,
-            args = (name, context, view, None, parent,
-                    klass, layer, skipParent),
+            args = (name, context, view, None, 
+                    parent, klass, layer, configContext, info),
             order = (config.moduleNum(klass.__module__), 300),
             info = info,
             **kwargs)
