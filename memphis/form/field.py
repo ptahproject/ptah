@@ -44,7 +44,7 @@ class Fields(util.SelectionManager):
 
         fields = []
         for arg in args:
-            if arg is ClassType and issubclass(arg, colander.Schema):
+            if isinstance(arg, colander._SchemaMeta):
                 arg = arg()
 
             if isinstance(arg, colander.SchemaNode):
