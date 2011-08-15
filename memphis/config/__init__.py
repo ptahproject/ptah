@@ -47,26 +47,3 @@ from memphis.config.schema import Mapping
 from memphis.config.schema import Sequence
 from memphis.config.schema import Str, String
 from memphis.config.schema import RequiredWidthDependency
-
-
-commitOnDatabaseOpened = True
-try:
-    from zope.processlifetime import IDatabaseOpenedWithRoot
-
-    import pkg_resources
-    from zope.component import getSiteManager
-
-    def commitConfig(ev):
-        if commitOnDatabaseOpened:
-            for dist in pkg_resources.working_set:
-                distmap = pkg_resources.get_entry_map(dist, 'memphis')
-                if distmap:
-                    loadPackage(dist.project_name)
-
-            begin()
-            commit()
-
-    getSiteManager().registerHandler(commitConfig, (IDatabaseOpenedWithRoot,))
-
-except ImportError:
-    pass
