@@ -166,7 +166,7 @@ class FieldWidgets(util.Manager):
 
             if widget is None:
                 widget = sm.getMultiAdapter(
-                    (field.field, request), interfaces.IDefaultWidget)
+                    (field.field, field.typ, request), interfaces.IDefaultWidget)
 
             # Step 3: Set the prefix for the widget
             widget.name = str(prefix + shortName)
