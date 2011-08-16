@@ -11,7 +11,7 @@ class Required(colander.Invalid):
         super(Required, self).__init__(node, msg, value)
 
 
-class RequiredWidthDependency(object):
+class RequiredWithDependency(object):
     """ Validator which fails only if other key is set. """
 
     def __init__(self, key, depkey, 
@@ -85,19 +85,6 @@ class Sequence(colander.Sequence):
 
         return result
 
-    def unflatten(self, node, paths, fstruct):
-        only_child = node.children[0]
-        child_name = only_child.name
-        def get_child(name):
-            return only_child
-        def rewrite_subpath(subpath):
-            if '.' in subpath:
-                suffix = subpath.split('.', 1)[1]
-                return '%s.%s' % (child_name, suffix)
-            return child_name
-        mapstruct = _unflatten_mapping(node, paths, fstruct,
-                                       get_child, rewrite_subpath)
-        return [mapstruct[str(index)] for index in xrange(len(mapstruct))]
 
 Seq = Sequence
 
@@ -136,7 +123,7 @@ class SchemaNode(colander.SchemaNode):
         if self.preparer is not None:
             appstruct = self.preparer(appstruct)
 
-        if self.required and appstruct is self.default:
+        if self.required and appstruct == self.default:
             raise Required(self)
 
         if self.validator is not None:

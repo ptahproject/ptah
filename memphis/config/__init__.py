@@ -46,4 +46,4 @@ from memphis.config.schema import SchemaNode
 from memphis.config.schema import Mapping
 from memphis.config.schema import Sequence
 from memphis.config.schema import Str, String
-from memphis.config.schema import RequiredWidthDependency
+from memphis.config.schema import RequiredWithDependency

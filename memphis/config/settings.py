@@ -247,12 +247,6 @@ class SettingsImpl(dict):
             self[name] = group
         return self[name]
 
-    def validate(self, name, value):
-        pass
-
-    def validateAll(self, values):
-        pass
-
 
 class GroupValidator(object):
 
@@ -311,12 +305,6 @@ class Group(dict):
         if attr in self.schema and value != self[attr]:
             self.settings.changed(self.name, (attr,))
         super(Group, self).__setitem__(attr, value)
-
-    def validate(self, name, value):
-        pass
-
-    def validateAll(self, values):
-        pass
 
 
 class FileStorage(object):
@@ -465,3 +453,6 @@ def cleanup():
     
     if Settings.loader is not None:
         Settings.loader.close()
+
+    Settings.clear()    
+    Settings.schema = schema.SchemaNode(schema.Mapping())
