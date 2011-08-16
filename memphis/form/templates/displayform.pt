@@ -7,11 +7,11 @@
        tal:content="context.description"></div>
 
   <fieldset class="formPanel" tal:condition="context.widgets">
-    <tal:block tal:repeat="context context.widgets.values()"
-               tal:content="structure pagelet:form-display-widget" />
+    <tal:block tal:repeat="widget context.widgets.values()"
+               tal:content="structure 
+			    view.pagelet('form-display-widget',widget)" />
   </fieldset>
 
-  <tal:block tal:condition="context.subforms"
-             tal:repeat="context context.subforms"
-             tal:content="structure pagelet:form-view" />
+  <tal:block tal:repeat="subform context.subforms"
+             tal:content="structure view.pagelet('form-view', subform)" />
 </div>

@@ -10,15 +10,15 @@
 
     <div tal:omit-tag="not (context.groups or context.subforms)">
       <fieldset class="formPanel" tal:condition="context.widgets">
-	<tal:block tal:repeat="context context.widgets.values()"
-		   tal:content="structure pagelet:form-widget" />
+	<tal:block tal:repeat="widget context.widgets.values()"
+		   tal:content="structure view.pagelet('form-widget',widget)" />
       </fieldset>
    
       <tal:block tal:condition="context.subforms"
-		 tal:repeat="context context.subforms"
-		 tal:content="structure pagelet:form-view" />
+		 tal:repeat="subform context.subforms"
+		 tal:content="structure view.pagelet('form-view',subform)" />
     </div>
 
-    <tal:block content="structure pagelet:form-actions" />
+    <tal:block content="structure view.pagelet('form-actions')" />
   </form>
 </div>

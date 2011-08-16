@@ -50,7 +50,7 @@ def extends(*args, **kwargs):
             f_locals['buttons'] += getattr(arg, 'buttons', button.Buttons())
 
 
-class Form(object):
+class Form(view.BaseMixin):
     """A base form."""
     interface.implements(interfaces.IForm, interfaces.IInputForm)
 
