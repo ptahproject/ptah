@@ -454,5 +454,6 @@ def cleanup():
     if Settings.loader is not None:
         Settings.loader.close()
 
-    Settings.clear()    
-    Settings.schema = schema.SchemaNode(schema.Mapping())
+    # fixme: doenst work but should!
+    #Settings.clear()
+    #Settings.schema = schema.SchemaNode(schema.Mapping())

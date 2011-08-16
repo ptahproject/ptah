@@ -34,12 +34,12 @@ class TestSettings(unittest.TestCase):
                 default = 'test')
 
         group = config.registerSettings(
-            'section', node,
+            'group1', node,
             title = 'Section title',
             description = 'Section description',
             )
 
-        self.assertEqual(group.name, 'section')
+        self.assertEqual(group.name, 'group1')
         self.assertEqual(group.title, 'Section title')
         self.assertEqual(group.description, 'Section description')
         self.assertEqual(len(group.schema.children), 0)
@@ -64,6 +64,6 @@ class TestSettings(unittest.TestCase):
         self.assertFalse(group.node == group['node'])
 
         group['node'] =  'test2'
-        self.assertTrue('section' in config.Settings._changed)
-        self.assertTrue('node' in config.Settings._changed['section'])
+        self.assertTrue('group1' in config.Settings._changed)
+        self.assertTrue('node' in config.Settings._changed['group1'])
 
