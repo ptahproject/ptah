@@ -19,9 +19,9 @@ class PageletTypeGrokker(martian.InstanceGrokker):
     martian.directive(pageletType)
 
     def grok(self, name, interface, configContext=config.UNSET, **kw):
-        if interface in typesExecuted:
+        if interface in _typesExecuted:
             return False
-        typesExecuted.append(interface)
+        _typesExecuted.append(interface)
 
         value = pageletType.bind(default=_marker).get(interface)
         if value is _marker:
@@ -39,9 +39,9 @@ class PageletGrokker(martian.ClassGrokker):
     martian.directive(pagelet)
 
     def execute(self, klass, configContext=config.UNSET, **kw):
-        if klass in pageletsExecuted:
+        if klass in _pageletsExecuted:
             return False
-        pageletsExecuted.append(klass)
+        _pageletsExecuted.append(klass)
 
         value = pagelet.bind(default=_marker).get(klass)
         if value is _marker:
@@ -66,9 +66,9 @@ class LayoutGrokker(martian.ClassGrokker):
     martian.directive(layout)
 
     def execute(self, klass, configContext=config.UNSET, **kw):
-        if klass in layoutsExecuted:
+        if klass in _layoutsExecuted:
             return False
-        layoutsExecuted.append(klass)
+        _layoutsExecuted.append(klass)
 
         value = layout.bind(default=_marker).get(klass)
         if value is _marker:
@@ -106,26 +106,31 @@ class PyramidViewGrokker(martian.ClassGrokker):
 
         name, context, layer, template, \
             layout, permission, default, decorator, info = value
+
         if layer is None:
             layer = IRequest
 
-        registerViewImpl(
-            name, klass, context, template, layer, layout, permission,
-            default, decorator, config.UNSET, info)
+        config.addAction(
+            configContext, 
+            discriminator = (
+                'memphis.view:pyramidView', name, context, layer), 
+            callable = registerViewImpl, 
+            args = (name, klass, context, template, layer, layout, permission,
+                    default, decorator, config.UNSET, info),
+            info = info)
+
         return True
 
 
-typesExecuted = []
-pageletsExecuted = []
-layoutsExecuted = []
+_typesExecuted = []
+_pageletsExecuted = []
+_layoutsExecuted = []
 _viewsExecuted = []
 
 @config.cleanup
 def cleanUp():
-    global typesExecuted, viewsExecuted, pageletsExecuted, layoutsExecutes
-
-    typesExecuted = []
-    pageletsExecuted = []
-    layoutsExecutes = []
+    _pageletsExecuted[:] = []
+    _layoutsExecuted[:] = []
+    _typesExecuted[:] = []
     _viewsExecuted[:] = []
 

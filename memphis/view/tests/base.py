@@ -25,6 +25,15 @@ class Base(unittest.TestCase):
         environ.update(extras)
         return environ
 
+    def _init_memphis(self, settings={}, handler=None, *args, **kw):
+        config.begin()
+        config.loadPackage('memphis.view')
+        config.addPackage(self.__class__.__module__)
+        if handler is not None:
+            handler(*args, **kw)
+        config.commit()
+        config.initializeSettings(settings, self.p_config)
+
     def _setup_pyramid(self):
         self.request = request = testing.DummyRequest()
         request.params = {}
@@ -49,3 +58,10 @@ class Base(unittest.TestCase):
         config.cleanUp()
         testing.tearDown()
         testing.cleanUp()
+
+
+class Context(object):
+
+    def __init__(self, parent=None, name=''):
+        self.__name__ = name
+        self.__parent__ = parent

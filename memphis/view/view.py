@@ -1,11 +1,12 @@
 """ view implementation """
-import simplejson, sys
+import sys, inspect
 from zope import interface
 from zope.interface import providedBy
-from zope.component import getSiteManager
+from zope.component import queryUtility, getSiteManager
 
-from webob import Response
-from webob.exc import HTTPException, HTTPNotFound, HTTPForbidden
+from webob.exc import HTTPForbidden
+
+from pyramid.config import requestonly
 from pyramid.interfaces import IView
 from pyramid.interfaces import IRequest
 from pyramid.interfaces import IViewClassifier
@@ -14,9 +15,7 @@ from pyramid.interfaces import IAuthenticationPolicy
 from memphis import config
 from memphis.view.base import View
 from memphis.view.directives import pyramidView
-from memphis.view.tmpl import path
-from memphis.view.layout import queryLayout
-from memphis.view.interfaces import IRenderer
+from memphis.view.renderers import Renderer, SimpleRenderer
 
 
 def renderView(name, context, request):
@@ -29,90 +28,67 @@ def renderView(name, context, request):
     return view_callable(context, request)
 
 
-class SimpleRenderer(object):
-    interface.implements(IRenderer)
+def subpathWrapper(factory, renderer, subpaths):
 
-    layout = ''
-    content_type = 'text/html'
+    def wrapper(context, request):
+        if request.subpath:
+            item = request.subpath[0]
+            if item in subpaths:
+                render, meth = subpaths[item]
 
-    def __init__(self, layout='', content_type='text/html'):
-        self.content_type = content_type
-        self.layout = layout
+                def viewFactory(context, request):
+                    view = factory(context, request)
+                    return view, meth(view)
+                
+                request.subpath = tuple(request.subpath[1:])
+                return render(context, request, viewFactory)
 
-    def __call__(self, context, request, view=None, result=''):
-        response = request.response
-        response.content_type = self.content_type
+        return renderer(context, request)
 
-        if self.layout is not None:
-            layout = queryLayout(
-                view, request, context, self.layout)
-            if layout is not None:
-                result = layout(result)
+    return wrapper
 
-        if type(result) is unicode:
-            response.unicode_body = result
+
+class subpath(object):
+
+    def __init__(self, meth=None, name='', renderer=None):
+        self.name = name
+        self.renderer = renderer
+        if meth is not None:
+            frame = sys._getframe(1)
+            try:
+                self(meth, frame)
+                frame.f_locals[meth.__name__] = meth
+            finally:
+                del frame
+
+    def __call__(self, method, frame=None):
+        if frame is None:
+            frame = sys._getframe(1)
+
+        if '__module__' not in frame.f_locals:
+            del frame
+            raise ValueError(
+                "Can apply 'subpath' decorator only to class methods")
+
+        subpaths = frame.f_locals.get('__subpath_traverse__', None)
+        if subpaths is None:
+            subpaths = {}
+            frame.f_locals['__subpath_traverse__'] = subpaths
+        del frame
+
+        renderer = self.renderer
+        if renderer:
+            render = renderer
         else:
-            response.body = result
+            def render(context, request, factory):
+                return factory(context, request)[1]
 
-        return response
-
-
-class Renderer(object):
-    interface.implements(IRenderer)
-
-    layout = ''
-    content_type = 'text/html'
-    template = None
-
-    def __init__(self, template=None, layout='', content_type='text/html'):
-        if template is None:
-            raise ValueError("template is required")
-
-        self.template = template
-        self.content_type = content_type
-        self.layout = layout
-
-    def __call__(self, context, request, view=None, params=None):
-        response = request.response
-        response.content_type = self.content_type
-
-        kwargs = {'view': view,
-                  'context': context,
-                  'request': request,
-                  'format': format}
-        if params:
-            kwargs.update(params)
-
-        result = self.template(**kwargs)
-
-        if self.layout is not None:
-            layout = queryLayout(
-                view, request, context, self.layout)
-            if layout is not None:
-                result = layout(result)
-
-        if type(result) is unicode:
-            response.unicode_body = result
+        if self.name:
+            subpaths[self.name] = render, method
         else:
-            response.body = result
+            subpaths[method.__name__] = render, method
 
-        return response
-
-
-class JSONRenderer(object):
-    interface.implements(IRenderer)
-
-    content_type = 'text/json'
-
-    @classmethod
-    def render(cls, context, request, view, result, dumps=simplejson.dumps):
-        response = request.response
-        response.content_type = cls.content_type
-        response.body = dumps(result)
-        return response
-
-
-json = JSONRenderer.render
+        return method
 
 
 def registerView(
@@ -138,38 +114,19 @@ def registerViewImpl(
     name, factory, context, template, layer, layout, permission, 
     default, decorator, configContext=config.UNSET, info=''):
 
-    renderer = factory
-
     if template is not None:
-        tmpl_renderer = Renderer(template, layout=layout)
-        if type(factory) is type:
-            def renderer(context, request):
-                view = factory(context, request)
-                view.__name__ = name
-                view.__parent__ = context
-                return tmpl_renderer(context, request, view, view.update())
-        else:
-            def renderer(context, request):
-                result = factory(context, request)
-                return tmpl_renderer(context, request, None, result)
+        renderer = Renderer(template, layout=layout).bind(
+            viewMapper(factory, 'update'))
     else:
-        render = SimpleRenderer(layout=layout)
-        if type(factory) is type:
-            def renderer(context, request):
-                view = factory(context, request)
-                view.__name__ = name
-                view.__parent__ = context
-                view.update()
-                return render(context, request, view, view.render())
-        else:
-            def renderer(context, request):
-                result = factory(context, request)
-                return render(context, request, None, result)
+        renderer = SimpleRenderer(layout=layout).bind(
+            viewMapper(factory, 'render'))
 
     # add 'subpath' support
-    subpath_traverse = getattr(factory, '__subpath_traverse__', None)
-    if subpath_traverse is not None:
-        renderer = subpathWrapper(factory, renderer, subpath_traverse)
+    if inspect.isclass(factory):
+        subpath_traverse = getattr(factory, '__subpath_traverse__', None)
+        if subpath_traverse is not None:
+            renderer = subpathWrapper(
+                viewInstanceMapper(factory), renderer, subpath_traverse)
 
     # decorate renderer
     if decorator:
@@ -179,24 +136,18 @@ def registerViewImpl(
     if permission == '__no_permission_required__':
         permission = None
 
-    auth = getSiteManager().queryUtility(IAuthenticationPolicy)
+    auth = queryUtility(IAuthenticationPolicy)
     if auth and permission:
         def pyramidView(context, request):
             principals = auth.effective_principals(request)
             if auth.permits(context, principals, permission):
-                try:
-                    return renderer(context, request)
-                except HTTPException, exc:
-                    return exc
+                return renderer(context, request)
+
             msg = getattr(request, 'authdebug_message',
                           'Unauthorized: %s failed permission check'%factory)
             raise HTTPForbidden(msg)
     else:
-        def pyramidView(context, request):
-            try:
-                return renderer(context, request)
-            except HTTPException, exc:
-                return exc
+        pyramidView = renderer
 
     # register view
     if context is None:
@@ -216,7 +167,7 @@ def registerDefaultView(name, context=interface.Interface,
     config.action(
         registerDefaultViewImpl, name, context, layer, 
         configContext, 
-        __info = getInfo(2),
+        __info = config.getInfo(2),
         __frame = sys._getframe(1))
 
 
@@ -232,58 +183,39 @@ def registerDefaultViewImpl(
         (IViewClassifier, layer, context), IView, '', configContext, info)
 
 
-def subpathWrapper(factory, renderer, subpaths):
-
-    def wrapper(context, request):
-        if request.subpath:
-            item = request.subpath[0]
-            if item in subpaths:
-                meth = subpaths[item]
-                request.subpath = tuple(request.subpath[1:])
-                return meth(factory(context, request))
-
-        return renderer(context, request)
-
-    return wrapper
-
-
-class subpath:
-
-    def __init__(self, name='', renderer=None, decorator=None):
-        self.name = name
-        self.renderer = renderer
-        self.decorator = decorator
-
-    def __call__(self, ob):
-        frame = sys._getframe(1)
-        if '__module__' not in frame.f_locals:
-            del frame
-            raise ValueError(
-                "Can apply 'subpath' decorator only to class methods")
-
-        subpaths = frame.f_locals.get('__subpath_traverse__', None)
-        if subpaths is None:
-            subpaths = {}
-            frame.f_locals['__subpath_traverse__'] = subpaths
-
-        del frame
-
-        if self.decorator:
-            method = decorator(ob)
+def viewMapper(view, attr=None):
+    if inspect.isclass(view):
+        ronly = requestonly(view, attr)
+        meth = getattr(view, attr or '__call__')
+        if ronly:
+            def _class_request_view(context, request):
+                inst = view(request)
+                return inst, meth(inst)
+            return _class_request_view
         else:
-            method = ob
-
-        if self.renderer:
-            def renderSubpath(view):
-                return self.renderer(
-                    view.context, view.request, view, method(view))
+            def _class_view(context, request):
+                inst = view(context, request)
+                return inst, meth(inst)
+            return _class_view
+    else:
+        ronly = requestonly(view)
+        if ronly:
+            def _request_view(context, request):
+                return None, view(request)
+            return _request_view
         else:
-            def renderSubpath(view):
-                return method(view)
+            def _view(context, request):
+                return None, view(context, request)
+            return _view
 
-        if self.name:
-            subpaths[self.name] = renderSubpath
-        else:
-            subpaths[ob.__name__] = renderSubpath
 
-        return ob
+def viewInstanceMapper(view):
+    ronly = requestonly(view)
+    if ronly:
+        def _class_requestonly_view(context, request):
+            return view(request)
+        return _class_requestonly_view
+    else:
+        def _class_view(context, request):
+            return view(context, request)
+        return _class_view

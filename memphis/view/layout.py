@@ -38,7 +38,7 @@ class Layout(View):
         self.view = view
         self.context = context
         self.request = request
-        self.__parent__ = view.__parent__
+        self.__parent__ = getattr(view, '__parent__', context)
 
     @property
     def __name__(self):
@@ -60,8 +60,9 @@ class Layout(View):
     def __call__(self, content, layout=None, view=None, *args, **kw):
         if view is None:
             view = self.view
-        self.mainview = view
-        self.maincontext = view.context
+        if view is not None:
+            self.mainview = view
+            self.maincontext = view.context
 
         layoutview = self.view
         if layout is not None:

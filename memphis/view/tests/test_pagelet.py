@@ -16,17 +16,6 @@ class TestPagelet(Base):
     def _setup_memphis(self):
         pass
 
-    def _init_memphis(self, settings={}, handler=None, *args, **kw):
-        config.begin()
-        config.loadPackage('memphis.view')
-        config.addPackage('memphis.view.tests.test_pagelet')
-        api.grokkerRegistry.grok('memphis.view.tests.test_pagelet',
-                                 sys.modules['memphis.view.tests.test_pagelet'])
-        if handler is not None:
-            handler(*args, **kw)
-        config.commit()
-        config.initializeSettings(settings, self.p_config)
-
     def test_pagelettype_register(self):
         class ITestPagelet(interface.Interface):
             pass

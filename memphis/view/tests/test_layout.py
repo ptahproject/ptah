@@ -7,8 +7,9 @@ from zope.configuration.config import ConfigurationExecutionError
 from memphis import config, view
 
 from memphis.view import meta
-from memphis.view.view import View, Renderer, SimpleRenderer
+from memphis.view.view import View, viewMapper
 from memphis.view.layout import Layout, queryLayout
+from memphis.view.renderers import Renderer, SimpleRenderer
 
 from base import Base
 
@@ -163,14 +164,15 @@ class LayoutPagelet(Base):
         self._init_memphis()
     
         root = Root()
-        v = View(Context(root), self.request)
+        context = Context(root)
+        v = View(context, self.request)
 
         # find layout for view
-        layout = queryLayout(v, self.request, v.context, '')
+        layout = queryLayout(v, self.request, context, '')
         self.assertTrue(isinstance(layout, Layout))
 
         renderer = SimpleRenderer(layout='')
-        res = renderer(v.context, self.request, v, v())
+        res = renderer(context, self.request, viewMapper(View))
 
         self.assertTrue('<html>View: test</html>' in res.body)
 
@@ -189,8 +191,8 @@ class LayoutPagelet(Base):
 
         renderer = SimpleRenderer(layout='test')
         
-        v = View(Context(), self.request)
-        res = renderer(v.context, self.request, v, v())
+        context = Context()
+        res = renderer(context, self.request, viewMapper(View))
 
         self.assertTrue('<html>View: test</html>' in res.body)
 
@@ -211,9 +213,9 @@ class LayoutPagelet(Base):
         view.registerLayout('test', klass=LayoutTest, view=View, parent='.')
         self._init_memphis()
 
-        v = View(Context(), self.request)
+        context = Context()
         renderer = SimpleRenderer('test')
-        res = renderer(v.context, self.request, v, v.render())
+        res = renderer(context, self.request, viewMapper(View,'render'))
 
         self.assertTrue('<html><div>View: test</div></html>' in res.body)
 
@@ -236,17 +238,17 @@ class LayoutPagelet(Base):
 
         root = Root()
         context = Context(root)
-
         v = View(context, self.request)
+
         renderer = SimpleRenderer('test')
-        res = renderer(v.context, self.request, v, v.render())
+        res = renderer(context, self.request, viewMapper(View,'render'))
 
         self.assertTrue('<html><div>View: test</div></html>' in res.body)
 
         layout = queryLayout(v, self.request, v.context, 'test')
         self.assertTrue(isinstance(layout, LayoutTest))
 
-        rootlayout = queryLayout(v, self.request, v.context, '')
+        rootlayout = queryLayout(v, self.request, context, '')
         self.assertTrue(isinstance(rootlayout, LayoutPage))
 
         rootlayout = queryLayout(v, self.request, root, '')
@@ -276,10 +278,8 @@ class LayoutPagelet(Base):
         context1 = Context2(root)
         context2 = Context(context1)
 
-        v = View(context2, self.request)
-
         renderer = SimpleRenderer()
-        res = renderer(context2, self.request, v, v.render())
+        res = renderer(context2, self.request, viewMapper(View,'render'))
 
         self.assertTrue('<html><div>View: test</div></html>' in res.body)
 
@@ -298,9 +298,8 @@ class LayoutPagelet(Base):
         root = Root()
         context = Context(root)
 
-        v = View(context, self.request)
         renderer = SimpleRenderer(layout='')
-        res = renderer(context, self.request, v, v())
+        res = renderer(context, self.request, viewMapper(View))
 
         self.assertTrue('<div>View: test</div>' in res.body)
 

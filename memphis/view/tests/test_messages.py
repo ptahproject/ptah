@@ -132,3 +132,19 @@ class TestStatusMessages(Base):
         msg = view.renderMessages(self.request)
         self.assertEqual(msg, '')
 
+    def test_messages_View(self):
+        self._init_memphis()
+
+        v = view.View(None, self.request)
+        
+        v.message('message')
+
+        service = IStatusMessage(self.request)
+
+        self.assertEqual(
+            service.messages(),
+            [u'<div class="statusMessage">message</div>'])
+        self.assertEqual(
+            v.renderMessages(),
+            '<div class="statusMessage">message</div>')
+        self.assertEqual(service.messages(), ())

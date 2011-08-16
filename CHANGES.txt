@@ -7,10 +7,7 @@ CHANGES
 
 - Pyramid view registration refactored
 
-- Added 'SimpleView' class, base class for View
-  without layout,update/render support.
-
-- Added 'response_headers' to View class (list of headers)
+- Allow to use pyramidView to decorate functions
 
 - Added 'view.subpath' decorator for view methods.
   It's possible to call method as subpath of view,
@@ -34,9 +31,7 @@ CHANGES
 
 - Removed 'pagelet' chameleon expression
 
-- Use simplejson instead of standard json for renderer
-
-- Check if render method return Response object
+- Use simplejson instead of standard json
 
 
 0.8 (2011-07-08)

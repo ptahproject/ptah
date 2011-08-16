@@ -22,11 +22,15 @@ from memphis.view.layout import Layout
 from memphis.view.layout import registerLayout
 
 # view
-from memphis.view.view import json
 from memphis.view.view import subpath
 from memphis.view.view import renderView
 from memphis.view.view import registerView
 from memphis.view.view import registerDefaultView
+
+# renderers
+from memphis.view.renderers import Renderer
+from memphis.view.renderers import SimpleRenderer
+from memphis.view.renderers import json, JSONRenderer
 
 # custom
 from memphis.view.customize import custom
