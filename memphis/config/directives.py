@@ -91,14 +91,7 @@ class adapts(Directive):
     store = MULTIPLE_NOBASE
 
     def factory(self, *args, **kw):
-        name = kw.get('name', '')
-        required = []
-        for val in args:
-            if isinstance(val, basestring):
-                name = val
-            else:
-                required.append(val)
-        return tuple(required), name, getInfo()
+        return tuple(args), kw.get('name', ''), getInfo()
 
 
 class utility(Directive):

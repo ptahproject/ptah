@@ -69,7 +69,7 @@ def initializeSettings(settings,
     if loader is None:
         loader = FileStorage(
             settings.get('settings',''),
-            settings.get('defaultsettings', ''),
+            settings.get('defaults', ''),
             here, section, watcherFactory)
 
     include = settings.get('include', '')
@@ -78,7 +78,9 @@ def initializeSettings(settings,
         if f and os.path.exists(f):
             parser = ConfigParser.SafeConfigParser()
             parser.read(f)
-            settings.update(dict(parser.items(section, vars={'here': here})))
+            if section == ConfigParser.DEFAULTSECT or \
+                    parser.has_section(section):
+                settings.update(parser.items(section, vars={'here': here}))
 
     Settings.init(loader, settings)
     api.notify(SettingsInitializing(config))
@@ -346,6 +348,11 @@ class FileStorage(object):
         parser = ConfigParser.SafeConfigParser()
         parser.read(self.cfg)
         self._startWatcher(self.cfg)
+
+        if self.section != ConfigParser.DEFAULTSECT and \
+                not parser.has_section(self.section):
+            return {}
+
         return dict(parser.items(self.section, vars={'here': self.here}))
 
     def loadDefaults(self):
@@ -353,7 +360,11 @@ class FileStorage(object):
             log.info("Loading default settings: %s"%self.cfgdefaults)
             parser = ConfigParser.SafeConfigParser()
             parser.read(self.cfgdefaults)
-            data = dict(parser.items(self.section, vars={'here': self.here}))
+            data = {}
+            if self.section == ConfigParser.DEFAULTSECT or \
+                    parser.has_section(self.section):
+                data.update(
+                    dict(parser.items(self.section, vars={'here': self.here})))
 
             include = data.get('include', '')
             for f in include.split('\n'):
@@ -361,9 +372,11 @@ class FileStorage(object):
                 if f and os.path.exists(f):
                     parser = ConfigParser.SafeConfigParser()
                     parser.read(f)
-                    data.update(
-                        dict(parser.items(
-                                self.section, vars={'here': self.here})))
+                    if self.section == ConfigParser.DEFAULTSECT or \
+                            parser.has_section(self.section):
+                        data.update(
+                            dict(parser.items(
+                                    self.section, vars={'here': self.here})))
             return data
         elif not os.path.exists(self.cfgdefaults):
             log.info("Default settings file is not found: %s"%self.cfgdefaults)
@@ -371,6 +384,9 @@ class FileStorage(object):
         return {}
 
     def save(self, data):
+        if not self.cfg:
+            return
+
         log.info("Saving settings: %s"%self.cfg)
 
         parser = ConfigParser.ConfigParser(dict_type=OrderedDict)
@@ -418,7 +434,10 @@ class iNotifyWatcher(object):
         if ev.mask & pyinotify.IN_MODIFY:
             if CONFIG is not None:
                 CONFIG.begin()
-                self._handler()
+
+            self._handler()
+
+            if CONFIG is not None:
                 CONFIG.end()
 
     def start(self, filename):
@@ -439,7 +458,7 @@ class iNotifyWatcher(object):
         if self.started:
             self._notifier.stop()
             if self._wd:
-                self._wm.rm_watch(self._wd[self.filename])
+                self._wm.rm_watch(self._wd.values(), rec=True)
             self.started = False
             self.filename = ''
 

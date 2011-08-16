@@ -1,9 +1,11 @@
 """ """
+import time
 import unittest, os, shutil, tempfile, colander
-from memphis import config
-from memphis.config.settings import FileStorage
 from zope.component import getSiteManager
 from zope.interface.interface import InterfaceClass
+
+from memphis import config
+from memphis.config.settings import FileStorage, iNotifyWatcher , shutdown
 
 
 class BaseTesting(unittest.TestCase):
@@ -479,3 +481,213 @@ class TestFileStorage(BaseTesting):
         self.assertEqual(fs.load(), {'here': ''})
         self.assertTrue(os.path.exists(path))
 
+    def test_settings_fs_save_nosettings_file(self):
+        fs = FileStorage(None)
+        self.assertEqual(fs.save({'group.node1': 'test'}), None)
+
+    def test_settings_fs_save(self):
+        path = os.path.join(self.dir, 'settings.cfg')
+        
+        fs = FileStorage(path)
+        self.assertEqual(fs.load(), {'here': ''})
+
+        fs.save({'group.node1': 'value'})
+        self.assertEqual(fs.load(), {'group.node1': 'value', 'here': ''})
+        self.assertEqual(open(path).read(), 
+                         '[DEFAULT]\ngroup.node1 = value\n\n')
+
+    def test_settings_fs_save_to_existing(self):
+        path = os.path.join(self.dir, 'settings.cfg')
+        f = open(path, 'wb')
+        f.write('[TEST]\ngroup.node1 = value\n\n')
+        f.close()
+
+        fs = FileStorage(path)
+        self.assertEqual(fs.load(), {'here': ''})
+
+        fs.save({'group.node1': 'value'})
+        self.assertEqual(fs.load(), {'group.node1': 'value', 'here': ''})
+        self.assertEqual(
+            open(path).read(), 
+            '[DEFAULT]\ngroup.node1 = value\n\n[TEST]\ngroup.node1 = value\n\n')
+
+    def test_settings_fs_save_to_existing_diff_sect(self):
+        path = os.path.join(self.dir, 'settings.cfg')
+        f = open(path, 'wb')
+        f.write('[DEFAULT]\ngroup.node = value\n\n')
+        f.close()
+
+        fs = FileStorage(path, section='TEST')
+        self.assertEqual(fs.load(), {})
+
+        fs.save({'group.node3': 'value'})
+
+        #self.assertEqual(fs.load(), {'group.node3': 'value', 'here': ''})
+        self.assertEqual(
+            open(path).read(), 
+            '[DEFAULT]\ngroup.node = value\n\n[TEST]\ngroup.node3 = value\n\n')
+
+
+class TestSettingsInitialization(BaseTesting):
+
+    def setUp(self):
+        self.dir = tempfile.mkdtemp()
+        
+    def tearDown(self):
+        shutil.rmtree(self.dir)
+        config.cleanUp()
+
+    def test_settings_initialize_events(self):
+        sm = getSiteManager()
+        
+        events = []
+        def h1(ev):
+            events.append(ev)
+        def h2(ev):
+            events.append(ev)
+
+        sm.registerHandler(h1, (config.SettingsInitializing,))
+        sm.registerHandler(h2, (config.SettingsInitialized,))
+
+        self.assertTrue(config.Settings.loader is None)
+
+        conf = object()
+        config.initializeSettings({}, conf)
+
+        self.assertTrue(isinstance(events[0], config.SettingsInitializing))
+        self.assertTrue(isinstance(events[1], config.SettingsInitialized))
+
+        self.assertTrue(events[0].config is conf)
+        self.assertTrue(events[1].config is conf)
+
+        self.assertTrue(isinstance(config.Settings.loader, FileStorage))
+
+    def test_settings_initialize_only_once(self):
+        config.initializeSettings({})
+
+        self.assertRaises(
+            RuntimeError,
+            config.initializeSettings, {})
+
+    def test_settings_initialize_load_default(self):
+        node1 = config.SchemaNode(
+                colander.Str(),
+                name = 'node1',
+                default = 'default1')
+
+        node2 = config.SchemaNode(
+                colander.Int(),
+                name = 'node2',
+                default = 10)
+
+        group = config.registerSettings('group', node1, node2)
+        self._init_memphis()
+
+        config.initializeSettings({'group.node1': 'setting from ini'})
+
+        self.assertEqual(group['node1'], 'setting from ini')
+        self.assertEqual(group['node2'], 10)
+
+    def test_settings_initialize_load_defaults_from_file(self):
+        path = os.path.join(self.dir, 'settings.cfg')
+        f = open(path, 'wb')
+        f.write('[DEFAULT]\ngroup.node1 = value\n\n')
+        f.close()
+
+        node1 = config.SchemaNode(
+                colander.Str(),
+                name = 'node1',
+                default = 'default1')
+
+        node2 = config.SchemaNode(
+                colander.Int(),
+                name = 'node2',
+                default = 10)
+
+        group = config.registerSettings('group', node1, node2)
+        self._init_memphis()
+
+        config.initializeSettings({'defaults': path})
+
+        self.assertEqual(group['node1'], 'value')
+        self.assertEqual(group['node2'], 10)
+        self.assertEqual(group.schema['node1'].default, 'value')
+
+    def test_settings_initialize_load_settings_from_file(self):
+        path = os.path.join(self.dir, 'settings.cfg')
+        f = open(path, 'wb')
+        f.write('[DEFAULT]\ngroup.node1 = value\n\n')
+        f.close()
+
+        node1 = config.SchemaNode(
+                colander.Str(),
+                name = 'node1',
+                default = 'default1')
+
+        node2 = config.SchemaNode(
+                colander.Int(),
+                name = 'node2',
+                default = 10)
+
+        group = config.registerSettings('group', node1, node2)
+        self._init_memphis()
+
+        config.initializeSettings({'settings': path})
+
+        self.assertEqual(group['node1'], 'value')
+        self.assertEqual(group['node2'], 10)
+
+    def test_settings_initialize_load_settings_include(self):
+        path = os.path.join(self.dir, 'settings.cfg')
+        f = open(path, 'wb')
+        f.write('[DEFAULT]\ngroup.node1 = value\n\n')
+        f.close()
+
+        node1 = config.SchemaNode(
+                colander.Str(),
+                name = 'node1',
+                default = 'default1')
+
+        node2 = config.SchemaNode(
+                colander.Int(),
+                name = 'node2',
+                default = 10)
+
+        group = config.registerSettings('group', node1, node2)
+        self._init_memphis()
+
+        config.initializeSettings({'include': path})
+
+        self.assertEqual(group['node1'], 'value')
+        self.assertEqual(group['node2'], 10)
+
+    def test_settings_fs_watcher(self):
+        path = os.path.join(self.dir, 'settings.cfg')
+        f = open(path, 'wb')
+        f.write('[DEFAULT]\ngroup.node1 = value\n\n')
+        f.close()
+
+        node1 = config.SchemaNode(
+                colander.Str(),
+                name = 'node1',
+                default = 'default1')
+
+        group = config.registerSettings('group', node1)
+        self._init_memphis()
+
+        config.initializeSettings({'settings': path})
+
+        self.assertTrue(
+            isinstance(config.Settings.loader.watcher, iNotifyWatcher))
+        self.assertEqual(group['node1'], 'value')
+
+        f = open(path, 'wb')
+        f.write('[DEFAULT]\ngroup.node1 = new_value\n\n')
+        f.close()
+        time.sleep(0.2)
+
+        self.assertEqual(group['node1'], 'new_value')
+        self.assertTrue(config.Settings.loader.watcher.started)
+
+        shutdown()
+        self.assertFalse(config.Settings.loader.watcher.started)
