@@ -152,6 +152,25 @@ class LayoutPagelet(Base):
         self.assertEqual(layout.render(),
                          '<html>View: test</html>')
 
+    def test_layout_simple_multilevel(self):
+        class View(view.View):
+            def render(self):
+                return 'View: test'
+        class Layout(view.Layout):
+            def render(self):
+                return '<html>%s</html>'%self.view.render()
+
+        view.registerLayout('', klass=Layout, context=Root)
+        self._init_memphis()
+        
+        root = Root()
+        v = View(Context(root), self.request)
+
+        # find layout for view
+        layout = queryLayout(v, self.request, v.context, '')
+        self.assertTrue(isinstance(layout, Layout))
+        self.assertTrue('<html>View: test</html>' in v().body)
+
     def test_layout_simple_view_with_template(self):
         class View(view.View):
             layout = 'test'
@@ -236,9 +255,60 @@ class LayoutPagelet(Base):
         rootlayout = queryLayout(context, self.request, root, '')
         self.assertTrue(isinstance(rootlayout, LayoutPage))
 
+    def test_layout_chain_same_layer_id_on_different_levels(self):
+        class View(view.View):
+            layout = ''
+            def render(self):
+                return 'View: test'
+
+        class Layout1(view.Layout):
+            def render(self):
+                return '<div>%s</div>'%self.view.render()
+
+        class Layout2(view.Layout):
+            def render(self):
+                return '<html>%s</html>'%self.view.render()
+
+        view.registerLayout('', klass=Layout1, context=Context, parent='.')
+        view.registerLayout('', klass=Layout2, context=Root, parent=None)
+        self._init_memphis()
+
+        root = Root()
+        context1 = Context2(root)
+        context2 = Context(context1)
+
+        v = View(context2, self.request)
+        self.assertTrue('<html><div>View: test</div></html>' in v().body)
+
+
+    def test_layout_chain_parent_notfound(self):
+        class View(view.View):
+            layout = ''
+            def render(self):
+                return 'View: test'
+
+        class Layout(view.Layout):
+            def render(self):
+                return '<div>%s</div>'%self.view.render()
+
+        view.registerLayout('', klass=Layout, context=Context, parent='page')
+        self._init_memphis()
+
+        root = Root()
+        context = Context(root)
+
+        v = View(context, self.request)
+        self.assertTrue('<div>View: test</div>' in v().body)
+
 
 class Context(object):
     
+    def __init__(self, parent=None):
+        self.__parent__ = parent
+
+
+class Context2(object):
+
     def __init__(self, parent=None):
         self.__parent__ = parent
 

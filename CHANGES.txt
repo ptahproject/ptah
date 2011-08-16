@@ -32,6 +32,8 @@ CHANGES
 
 - Added resource library
 
+- Removed 'pagelet' chameleon expression
+
 - Use simplejson instead of standard json for renderer
 
 - Check if render method return Response object

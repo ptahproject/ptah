@@ -3,25 +3,17 @@ import martian
 from zope import interface
 from zope.interface.interface import InterfaceClass
 
+from pyramid.interfaces import IRequest
+
 from memphis import config
-from memphis.view import pageletType, Pagelet, pagelet, layout
+from memphis.view import pageletType, Pagelet, pagelet, layout, pyramidView
 from memphis.view.pagelet import registerPageletImpl
 from memphis.view.pagelet import registerPageletTypeImpl
+from memphis.view.view import View, SimpleView
 from memphis.view.layout import Layout, registerLayoutImpl
+from memphis.view.compat_pyramid import registerViewImpl
 
 _marker = object()
-
-typesExecuted = []
-pageletsExecuted = []
-layoutsExecuted = []
-
-
-@config.cleanup
-def cleanUp():
-    global typesExecuted, viewsExecuted, pageletsExecuted, layoutsExecutes
-    typesExecuted = []
-    pageletsExecuted = []
-    layoutsExecutes = []
 
 
 class PageletTypeGrokker(martian.InstanceGrokker):
@@ -93,9 +85,49 @@ class LayoutGrokker(martian.ClassGrokker):
             discriminator = ('memphis.view:layout', name, context, view, layer),
             callable = registerLayoutImpl,
             args = (name, context, view, None, 
-                    parent, klass, layer, configContext, info),
+                    parent, klass, layer, config.UNSET, info),
             order = (config.moduleNum(klass.__module__), 300),
             info = info,
             **kwargs)
 
         return True
+
+
+class PyramidViewGrokker(martian.ClassGrokker):
+    martian.component(SimpleView)
+    martian.directive(pyramidView)
+
+    def execute(self, klass, configContext=config.UNSET, **kw):
+        if klass in _viewsExecuted:
+            return False
+        _viewsExecuted.append(klass)
+
+        value = pyramidView.bind(default=_marker).get(klass)
+        if value is _marker:
+            return False
+
+        name, context, layer, template, \
+            layout, permission, default, decorator, info = value
+        if layer is None:
+            layer = IRequest
+
+        registerViewImpl(
+            name, klass, context, template, layer, layout, permission,
+            default, decorator, config.UNSET, info)
+        return True
+
+
+typesExecuted = []
+pageletsExecuted = []
+layoutsExecuted = []
+_viewsExecuted = []
+
+@config.cleanup
+def cleanUp():
+    global typesExecuted, viewsExecuted, pageletsExecuted, layoutsExecutes
+
+    typesExecuted = []
+    pageletsExecuted = []
+    layoutsExecutes = []
+    _viewsExecuted[:] = []
+

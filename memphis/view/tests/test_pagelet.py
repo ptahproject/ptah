@@ -6,7 +6,7 @@ from zope.configuration.config import ConfigurationExecutionError
 from memphis import config, view
 from memphis.config import api
 from memphis.view import meta
-from memphis.view.base import BaseView
+from memphis.view.base import BaseMixin
 from memphis.view.pagelet import Pagelet, PageletType, renderPagelet
 
 from base import Base
@@ -223,7 +223,7 @@ class TestPagelet(Base):
             'param1|param2|' in 
             renderPagelet(ITestPagelet, Context(), self.request))
 
-    def test_pagelet_BaseView_pagelet(self):
+    def test_pagelet_BaseMixing_pagelet(self):
         class ITestPagelet(interface.Interface):
             pass
 
@@ -235,17 +235,22 @@ class TestPagelet(Base):
         view.registerPagelet(ITestPagelet, Context, TestPagelet)
         self._init_memphis()
 
-        base = BaseView()
+        base = BaseMixin()
         base.request = self.request
 
         # pageletType is string
-        self.assertEqual(base.pagelet(Context(), 'unknown'), '')
-        self.assertEqual(base.pagelet(Context(), 'test'), 'test pagelet')
+        self.assertEqual(base.pagelet('unknown', Context()), '')
+        self.assertEqual(base.pagelet('test', Context()), 'test pagelet')
 
         # pageletType is interface
-        self.assertEqual(base.pagelet(Context(), ITestPagelet), 'test pagelet')
+        self.assertEqual(base.pagelet(ITestPagelet, Context()), 'test pagelet')
 
-    def test_pagelet_BaseView_pagelet_with_error(self):
+        # by default use view context
+        base.context = Context()
+        self.assertEqual(base.pagelet(ITestPagelet), 'test pagelet')
+        
+
+    def test_pagelet_BaseMixin_pagelet_with_error(self):
         class ITestPagelet(interface.Interface):
             pass
 
@@ -257,10 +262,10 @@ class TestPagelet(Base):
         view.registerPagelet(ITestPagelet, Context, TestPagelet)
         self._init_memphis()
 
-        base = BaseView()
+        base = BaseMixin()
         base.request = self.request
 
-        self.assertEqual(base.pagelet(Context(), ITestPagelet), '')
+        self.assertEqual(base.pagelet(ITestPagelet, Context()), '')
 
 
 class Context(object):

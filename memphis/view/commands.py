@@ -143,7 +143,7 @@ class TemplatesCommand(Command):
 
         data = tmpl.registry[package]
         if filename not in data:
-            print "Can't find template '%s'"%package
+            print "Can't find template '%s'"%filename
             return
 
         path, t, d, _tmpl = data[filename]
@@ -172,28 +172,31 @@ class TemplatesCommand(Command):
 
         data = tmpl.registry[package]
         if filename not in data:
-            print "Can't find template '%s'"%package
+            print "Can't find template '%s'"%filename
             return
 
         if not custom:
-            print "-o CUSTOMDIR is requird"
+            print "Output directory is required, use -o CUSTOMDIR"
             return
 
         path, t, d, _tmpl = data[filename]
+
+        if not os.path.isdir(custom):
+            print "Custom path is not a directory: %s"%custom
+            return
 
         dest = os.path.join(custom, package)
         if not os.path.exists(dest):
             os.makedirs(dest)
 
-        if not os.path.isdir(dest):
-            print "Custom directory is not a directory: %s"%dest
-            return
-
         custfile = os.path.join(dest, filename)
-        if os.path.exists(custfile) and not force:
-            print "Custom template '%s' already exists. "\
-                "Use '--force' to override."%filename
-            return
+        if os.path.exists(custfile):
+            if not force:
+                print "Custom file '%s' already exists. "\
+                    "Use '--force' to override."%filename
+                return
+            else:
+                print 'Overrids:',
 
         d = open(custfile, 'wb')
         s = open(path, 'rb')
@@ -223,11 +226,8 @@ class StaticCommand(Command):
         config.loadPackages()
         config.commit()
 
-        from pprint import pprint
-
         if self.options.dump:
-            base = self.options.dump
-            basepath = os.path.abspath(self.options.dump)
+            basepath = self.options.dump.strip()
             if not os.path.exists(basepath):
                 os.makedirs(basepath)
 

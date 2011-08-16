@@ -3,7 +3,7 @@ import cgi
 from zope import interface
 from zope.component import getAdapter, queryUtility
 from pyramid.i18n import get_localizer
-from pyramid.interfaces import IRequest
+from pyramid.interfaces import IRequest, INewResponse
 
 from memphis import config
 from memphis.view.interfaces import IMessage, IStatusMessage
@@ -90,3 +90,22 @@ class ErrorMessage(InformationMessage):
             message = e
 
         return super(ErrorMessage, self).render(message)
+
+
+@config.adapter(IRequest)
+@interface.implementer(IStatusMessage)
+def getMessageService(request):
+    service = queryUtility(IStatusMessage)
+    if service is None:
+        service = MessageService(request)
+    return service
+
+
+def renderMessages(request):
+    service = IStatusMessage(request, None)
+    if service is not None:
+        messages = service.clear()
+        if messages:
+            return u'\n'.join(messages)
+
+    return u''

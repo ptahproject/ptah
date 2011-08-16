@@ -31,7 +31,7 @@ class _Template(object):
 
 
 def template(spec, title=None, description=None):
-    abspath, package_name = path(spec, False, caller_package(2).__name__)
+    abspath, package_name = path(spec, caller_package(2).__name__)
     if not abspath:
         raise ValueError('Missing template asset: %s' % spec)
 
@@ -55,7 +55,7 @@ def getRenderer(path):
     return PageTemplateFile(path, extra_builtins={'format': format})
 
 
-def path(spec, abs=False, package_name=None):
+def path(spec, package_name=None):
     try:
         package_name, filename = spec.split(':', 1)
     except ValueError:
@@ -64,14 +64,11 @@ def path(spec, abs=False, package_name=None):
             package_name = caller_package(2).__name__
         filename = spec
 
-    if not abs:
-        abspath = pkg_resources.resource_filename(package_name, filename)
-        if not pkg_resources.resource_exists(package_name, filename):
-            if os.path.exists(spec):
-                return spec, package_name
-            return None, package_name
-    else:
-        abspath = spec
+    abspath = pkg_resources.resource_filename(package_name, filename)
+    if not pkg_resources.resource_exists(package_name, filename):
+        if os.path.exists(spec):
+            return spec, package_name
+        return None, package_name
 
     return abspath, package_name
 

@@ -1,7 +1,7 @@
 """ """
 import unittest
 from memphis import config, view
-from memphis.view.base import BaseView
+from memphis.view.base import BaseMixin
 
 from base import Base
 
@@ -146,7 +146,7 @@ class TestLibraryManagement(Base):
         lib = view.library(
             'test-lib', path='http://memphis.org/test.js', type='js')
 
-        base = BaseView()
+        base = BaseMixin()
         base.request = self.request
 
         base.include('test-lib')

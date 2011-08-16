@@ -9,14 +9,14 @@ from zope.interface.interface import InterfaceClass
 from memphis import config
 from memphis.config.directives import getInfo
 
-from memphis.view.base import BaseView
+from memphis.view.base import BaseMixin
 from memphis.view.formatter import format
 from memphis.view.interfaces import IPagelet, IPageletType
 
 log = logging.getLogger('memphis.view')
 
 
-class Pagelet(BaseView):
+class Pagelet(BaseMixin):
     interface.implements(IPagelet)
 
     template = None

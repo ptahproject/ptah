@@ -4,7 +4,7 @@ from zope import interface
 from zope.component import getSiteManager
 
 from memphis import config
-from memphis.view.base import BaseView
+from memphis.view.base import BaseMixin
 from memphis.view.formatter import format
 from memphis.view.interfaces import ILayout, LayoutNotFound
 
@@ -16,7 +16,6 @@ def queryLayout(view, request, context, name=''):
 
     while context is not None:
         layout = sm.queryMultiAdapter((view, context, request), ILayout, name)
-
         if layout is not None:
             return layout
 
@@ -25,7 +24,7 @@ def queryLayout(view, request, context, name=''):
     return None
 
 
-class Layout(BaseView):
+class Layout(BaseMixin):
     interface.implements(ILayout)
 
     name = ''
@@ -84,7 +83,7 @@ class Layout(BaseView):
 
         if self.name != self.layout:
             layout = queryLayout(
-                view, self.request, view.__parent__, name=self.layout)
+                view, self.request, view.__parent__, self.layout)
             if layout is not None:
                 return layout(layout=self, view=view, *args, **kw)
         else:
@@ -97,7 +96,7 @@ class Layout(BaseView):
             #if context is None:
             #    context = getRoot(self.context)
 
-            layout = queryLayout(self, self.request, context, name=self.layout)
+            layout = queryLayout(self, self.request, context, self.layout)
             if layout is not None:
                 return layout(view=view, *args, **kw)
 
@@ -118,7 +117,7 @@ def registerLayout(
 
     config.action(
         registerLayoutImpl,
-        name, context, view, template, parent, klass, layer, configContext, info,
+        name,context,view,template,parent,klass,layer,configContext,info,
         __frame = frame,
         __info = info,
         __discriminator = ('memphis.view:layout', name, context, view, layer),

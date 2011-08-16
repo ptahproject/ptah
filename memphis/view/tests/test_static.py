@@ -1,7 +1,7 @@
 """ test for static assets api """
 import unittest
 from memphis import config, view
-from memphis.view.base import BaseView
+from memphis.view.base import BaseMixin
 
 from base import Base
 
@@ -78,7 +78,7 @@ class TestStaticManagement(Base):
 
         request = self._makeRequest()
 
-        base = BaseView()
+        base = BaseMixin()
         base.request = request
 
         self.assertEquals(
