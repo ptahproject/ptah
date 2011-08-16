@@ -50,7 +50,7 @@ def extends(*args, **kwargs):
             f_locals['buttons'] += getattr(arg, 'buttons', button.Buttons())
 
 
-class Form(view.BaseMixin):
+class Form(view.View):
     """A base form."""
     interface.implements(interfaces.IForm, interfaces.IInputForm)
 
@@ -81,11 +81,6 @@ class Form(view.BaseMixin):
     formErrorsMessage = _('There were some errors.')
 
     subforms = ()
-
-    def __init__(self, context, request):
-        self.context = context
-        self.request = request
-        self.__parent__ = context
 
     @property
     def action(self):
@@ -148,9 +143,7 @@ class Form(view.BaseMixin):
 
         kwargs = {'view': self,
                   'context': self.context,
-                  'request': self.request,
-                  'template': self.template,
-                  'nothing': None}
+                  'request': self.request}
 
         return self.template(**kwargs)
 
