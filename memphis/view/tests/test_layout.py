@@ -7,7 +7,7 @@ from zope.configuration.config import ConfigurationExecutionError
 from memphis import config, view
 
 from memphis.view import meta
-from memphis.view.view import View
+from memphis.view.view import View, Renderer, SimpleRenderer
 from memphis.view.layout import Layout, queryLayout
 
 from base import Base
@@ -83,11 +83,11 @@ class LayoutPagelet(Base):
 
     def test_layout_simple_view(self):
         class View(view.View):
-            def render(self):
+            def __call__(self):
                 return 'View: test'
         class Layout(view.Layout):
-            def render(self):
-                return '<html>%s</html>'%self.view.render()
+            def render(self, rendered):
+                return '<html>%s</html>'%rendered
 
         view.registerLayout('test', klass=Layout, view=View)
         self._init_memphis()
@@ -99,18 +99,17 @@ class LayoutPagelet(Base):
         self.assertTrue(isinstance(layout, Layout))
 
         layout.update()
-        self.assertEqual(layout.render(),
+        self.assertEqual(layout.render(v()),
                          '<html>View: test</html>')
 
     def test_layout_simple_declarative(self):
         class View(view.View):
-            layout = 'test'
-            def render(self):
+            def __call__(self):
                 return 'View: test'
         class Layout(view.Layout):
             view.layout('test', context=Context)
-            def render(self):
-                return '<html>%s</html>'%self.view.render()
+            def render(self, rendered):
+                return '<html>%s</html>'%rendered
 
         self._init_memphis(
             {}, meta.LayoutGrokker().grok,  *('Layout', Layout))
@@ -122,7 +121,7 @@ class LayoutPagelet(Base):
         self.assertTrue(isinstance(layout, Layout))
 
         layout.update()
-        self.assertEqual(layout.render(),
+        self.assertEqual(layout.render(v()),
                          '<html>View: test</html>')
 
     def test_layout_simple_notfound(self):
@@ -154,84 +153,82 @@ class LayoutPagelet(Base):
 
     def test_layout_simple_multilevel(self):
         class View(view.View):
-            def render(self):
+            def __call__(self):
                 return 'View: test'
         class Layout(view.Layout):
-            def render(self):
-                return '<html>%s</html>'%self.view.render()
+            def render(self, content):
+                return '<html>%s</html>'%content
 
         view.registerLayout('', klass=Layout, context=Root)
         self._init_memphis()
-        
+    
         root = Root()
         v = View(Context(root), self.request)
 
         # find layout for view
         layout = queryLayout(v, self.request, v.context, '')
         self.assertTrue(isinstance(layout, Layout))
-        self.assertTrue('<html>View: test</html>' in v().body)
+
+        renderer = SimpleRenderer(layout='')
+        res = renderer(v.context, self.request, v, v())
+
+        self.assertTrue('<html>View: test</html>' in res.body)
 
     def test_layout_simple_view_with_template(self):
         class View(view.View):
-            layout = 'test'
-            def render(self):
+            def __call__(self):
                 return 'View: test'
 
         fn = os.path.join(self.dir, 'test.pt')
         tmpl = open(fn, 'wb')
-        tmpl.write('<html>${view.render()}</html>')
+        tmpl.write('<html>${content}</html>')
         tmpl.close()
 
         view.registerLayout('test', view=View, template = view.template(fn))
         self._init_memphis()
 
+        renderer = SimpleRenderer(layout='test')
+        
         v = View(Context(), self.request)
-        self.assertTrue('<html>View: test</html>' in v().body)
+        res = renderer(v.context, self.request, v, v())
 
-    def test_layout_simple_view_without_template(self):
-        class View(view.View):
-            layout = 'test'
-
-        view.registerLayout('test', view=View)
-        self._init_memphis()
-
-        v = View(Context(), self.request)
-        self.assertRaises(RuntimeError, v)
+        self.assertTrue('<html>View: test</html>' in res.body)
 
     def test_layout_simple_chain_one_level(self):
         class View(view.View):
-            layout = 'test'
             def render(self):
                 return 'View: test'
 
         class LayoutTest(view.Layout):
-            def render(self):
-                return '<div>%s</div>'%self.view.render()
+            def render(self,content):
+                return '<div>%s</div>'%content
 
         class LayoutPage(view.Layout):
-            def render(self):
-                return '<html>%s</html>'%self.view.render()
+            def render(self, content):
+                return '<html>%s</html>'%content
 
         view.registerLayout('', klass=LayoutPage, view=View, parent=None)
         view.registerLayout('test', klass=LayoutTest, view=View, parent='.')
         self._init_memphis()
 
         v = View(Context(), self.request)
-        self.assertTrue('<html><div>View: test</div></html>' in v().body)
+        renderer = SimpleRenderer('test')
+        res = renderer(v.context, self.request, v, v.render())
+
+        self.assertTrue('<html><div>View: test</div></html>' in res.body)
 
     def test_layout_simple_chain_multi_level(self):
         class View(view.View):
-            layout = 'test'
             def render(self):
                 return 'View: test'
 
         class LayoutTest(view.Layout):
-            def render(self):
-                return '<div>%s</div>'%self.view.render()
+            def render(self, content):
+                return '<div>%s</div>'%content
 
         class LayoutPage(view.Layout):
-            def render(self):
-                return '<html>%s</html>'%self.view.render()
+            def render(self, content):
+                return '<html>%s</html>'%content
 
         view.registerLayout('', klass=LayoutPage, context=Root, parent=None)
         view.registerLayout('test', klass=LayoutTest, view=View, parent='.')
@@ -241,7 +238,10 @@ class LayoutPagelet(Base):
         context = Context(root)
 
         v = View(context, self.request)
-        self.assertTrue('<html><div>View: test</div></html>' in v().body)
+        renderer = SimpleRenderer('test')
+        res = renderer(v.context, self.request, v, v.render())
+
+        self.assertTrue('<html><div>View: test</div></html>' in res.body)
 
         layout = queryLayout(v, self.request, v.context, 'test')
         self.assertTrue(isinstance(layout, LayoutTest))
@@ -257,17 +257,16 @@ class LayoutPagelet(Base):
 
     def test_layout_chain_same_layer_id_on_different_levels(self):
         class View(view.View):
-            layout = ''
             def render(self):
                 return 'View: test'
 
         class Layout1(view.Layout):
-            def render(self):
-                return '<div>%s</div>'%self.view.render()
+            def render(self, content):
+                return '<div>%s</div>'%content
 
         class Layout2(view.Layout):
-            def render(self):
-                return '<html>%s</html>'%self.view.render()
+            def render(self, content):
+                return '<html>%s</html>'%content
 
         view.registerLayout('', klass=Layout1, context=Context, parent='.')
         view.registerLayout('', klass=Layout2, context=Root, parent=None)
@@ -278,18 +277,20 @@ class LayoutPagelet(Base):
         context2 = Context(context1)
 
         v = View(context2, self.request)
-        self.assertTrue('<html><div>View: test</div></html>' in v().body)
 
+        renderer = SimpleRenderer()
+        res = renderer(context2, self.request, v, v.render())
+
+        self.assertTrue('<html><div>View: test</div></html>' in res.body)
 
     def test_layout_chain_parent_notfound(self):
         class View(view.View):
-            layout = ''
-            def render(self):
+            def __call__(self):
                 return 'View: test'
 
         class Layout(view.Layout):
-            def render(self):
-                return '<div>%s</div>'%self.view.render()
+            def render(self, content):
+                return '<div>%s</div>'%content
 
         view.registerLayout('', klass=Layout, context=Context, parent='page')
         self._init_memphis()
@@ -298,7 +299,24 @@ class LayoutPagelet(Base):
         context = Context(root)
 
         v = View(context, self.request)
-        self.assertTrue('<div>View: test</div>' in v().body)
+        renderer = SimpleRenderer(layout='')
+        res = renderer(context, self.request, v, v())
+
+        self.assertTrue('<div>View: test</div>' in res.body)
+
+    def test_layout_simple_view_without_template(self):
+        class View(view.View):
+            def render(self):
+                return 'test'
+
+        view.registerLayout('test', view=View)
+        self._init_memphis()
+
+        v = View(Context(), self.request)
+
+        layout = queryLayout(v, self.request, v.context, 'test')
+        layout.update()
+        self.assertTrue('test' == layout.render(v.render()))
 
 
 class Context(object):

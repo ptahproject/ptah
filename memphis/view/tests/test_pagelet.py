@@ -6,7 +6,6 @@ from zope.configuration.config import ConfigurationExecutionError
 from memphis import config, view
 from memphis.config import api
 from memphis.view import meta
-from memphis.view.base import BaseMixin
 from memphis.view.pagelet import Pagelet, PageletType, renderPagelet
 
 from base import Base
@@ -223,7 +222,7 @@ class TestPagelet(Base):
             'param1|param2|' in 
             renderPagelet(ITestPagelet, Context(), self.request))
 
-    def test_pagelet_BaseMixing_pagelet(self):
+    def test_pagelet_View_pagelet(self):
         class ITestPagelet(interface.Interface):
             pass
 
@@ -235,8 +234,7 @@ class TestPagelet(Base):
         view.registerPagelet(ITestPagelet, Context, TestPagelet)
         self._init_memphis()
 
-        base = BaseMixin()
-        base.request = self.request
+        base = view.View(None, self.request)
 
         # pageletType is string
         self.assertEqual(base.pagelet('unknown', Context()), '')
@@ -250,7 +248,7 @@ class TestPagelet(Base):
         self.assertEqual(base.pagelet(ITestPagelet), 'test pagelet')
         
 
-    def test_pagelet_BaseMixin_pagelet_with_error(self):
+    def test_pagelet_View_pagelet_with_error(self):
         class ITestPagelet(interface.Interface):
             pass
 
@@ -262,9 +260,7 @@ class TestPagelet(Base):
         view.registerPagelet(ITestPagelet, Context, TestPagelet)
         self._init_memphis()
 
-        base = BaseMixin()
-        base.request = self.request
-
+        base = view.View(None, self.request)
         self.assertEqual(base.pagelet(ITestPagelet, Context()), '')
 
 

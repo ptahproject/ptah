@@ -1,7 +1,6 @@
 """ """
 import unittest
 from memphis import config, view
-from memphis.view.base import BaseMixin
 
 from base import Base
 
@@ -142,13 +141,11 @@ class TestLibraryManagement(Base):
             view.renderIncludes(request),
             '<link rel="stylesheet"  href="http://localhost:8080/static/tests2/style.css" type="text/css" />')
 
-    def test_base_include(self):
+    def test_library_View_include(self):
         lib = view.library(
             'test-lib', path='http://memphis.org/test.js', type='js')
 
-        base = BaseMixin()
-        base.request = self.request
-
+        base = view.View(None, self.request)
         base.include('test-lib')
 
         self.assertEqual(

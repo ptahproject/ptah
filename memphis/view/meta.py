@@ -7,11 +7,9 @@ from pyramid.interfaces import IRequest
 
 from memphis import config
 from memphis.view import pageletType, Pagelet, pagelet, layout, pyramidView
-from memphis.view.pagelet import registerPageletImpl
-from memphis.view.pagelet import registerPageletTypeImpl
-from memphis.view.view import View, SimpleView
+from memphis.view.view import View, registerViewImpl
 from memphis.view.layout import Layout, registerLayoutImpl
-from memphis.view.compat_pyramid import registerViewImpl
+from memphis.view.pagelet import registerPageletImpl, registerPageletTypeImpl
 
 _marker = object()
 
@@ -94,7 +92,7 @@ class LayoutGrokker(martian.ClassGrokker):
 
 
 class PyramidViewGrokker(martian.ClassGrokker):
-    martian.component(SimpleView)
+    martian.component(View)
     martian.directive(pyramidView)
 
     def execute(self, klass, configContext=config.UNSET, **kw):

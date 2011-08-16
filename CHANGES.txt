@@ -5,7 +5,7 @@ CHANGES
 0.9 (Unreleased)
 ----------------
 
-- Fixed Chameleon 2.2 compatibility
+- Pyramid view registration refactored
 
 - Added 'SimpleView' class, base class for View
   without layout,update/render support.

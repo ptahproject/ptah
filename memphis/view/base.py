@@ -1,26 +1,46 @@
 """ base view class with access to various api's """
 import logging
+from zope import interface
 from zope.component import getUtility, getSiteManager
 from memphis.view.formatter import format
 from memphis.view.resources import static_url
-from memphis.view.message import renderMessages
+from memphis.view.message import addMessage, renderMessages
 from memphis.view.library import library, include, renderIncludes
-from memphis.view.interfaces import IPageletType
+from memphis.view.interfaces import IPageletType, IMemphisView
 
 log = logging.getLogger('memphis.view')
 
 
-class BaseMixin(object):
+class View(object):
+    interface.implements(IMemphisView)
 
-    request = None
-    context = None
+    __name__ = ''
+    __parent__ = None
+
     format = format
+
+    def __init__(self, context, request):
+        self.context = context
+        self.request = request
+        self.__parent__ = context
+
+    def update(self):
+        pass
+
+    def render(self):
+        return u''
 
     def include(self, name):
         include(name, self.request)
 
     def renderIncludes(self):
         return renderIncludes(self.request)
+
+    def message(self, msg, type='info'):
+        return addMessage(self.request, msg, type)
+
+    def renderMessages(self):
+        return renderMessages(self.request)
 
     def static_url(self, name, path=''):
         return static_url(name, path, self.request)

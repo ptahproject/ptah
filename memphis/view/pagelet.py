@@ -4,30 +4,20 @@ from webob.exc import HTTPNotFound
 
 from zope import interface, component
 from zope.component import queryUtility, queryMultiAdapter
-from zope.interface.interface import InterfaceClass
 
 from memphis import config
-from memphis.config.directives import getInfo
-
-from memphis.view.base import BaseMixin
+from memphis.view.base import View
 from memphis.view.formatter import format
 from memphis.view.interfaces import IPagelet, IPageletType
 
 log = logging.getLogger('memphis.view')
 
 
-class Pagelet(BaseMixin):
+class Pagelet(View):
     interface.implements(IPagelet)
 
     template = None
     _params = None
-
-    def __init__(self, context, request):
-        self.context = context
-        self.request = request
-
-    def update(self):
-        pass
 
     def render(self):
         kwargs = self._params or {}

@@ -4,9 +4,9 @@ from zope import interface
 from zope.component import getSiteManager
 
 from memphis import config
-from memphis.view.base import BaseMixin
+from memphis.view.base import View
 from memphis.view.formatter import format
-from memphis.view.interfaces import ILayout, LayoutNotFound
+from memphis.view.interfaces import ILayout
 
 log = logging.getLogger('memphis.view')
 
@@ -24,7 +24,7 @@ def queryLayout(view, request, context, name=''):
     return None
 
 
-class Layout(BaseMixin):
+class Layout(View):
     interface.implements(ILayout)
 
     name = ''
@@ -38,35 +38,26 @@ class Layout(BaseMixin):
         self.view = view
         self.context = context
         self.request = request
-
         self.__parent__ = view.__parent__
 
     @property
     def __name__(self):
         return self.name
 
-    def update(self):
-        pass
-
-    def render(self):
+    def render(self, content):
         if self.template is None:
-            raise RuntimeError("Can't render layout: %s"%self.name)
+            return content
 
         kwargs = self._params or {}
-        kwargs.update({'view': self.view,
-                       'context': self.view.context,
-                       'layout': self,
-                       'layoutcontext': self.context,
-                       'mainview': self.mainview,
-                       'maincontext': self.maincontext,
+        kwargs.update({'view': self,
+                       'content': content,
+                       'context': self.context,
                        'request': self.request,
-                       'template': self.template,
-                       'format': format,
-                       'nothing': None})
+                       'format': format})
 
         return self.template(**kwargs)
 
-    def __call__(self, layout=None, view=None, *args, **kw):
+    def __call__(self, content, layout=None, view=None, *args, **kw):
         if view is None:
             view = self.view
         self.mainview = view
@@ -78,14 +69,16 @@ class Layout(BaseMixin):
 
         self._params = self.update()
 
+        result = self.render(content)
+
         if self.layout is None:
-            return self.render()
+            return result
 
         if self.name != self.layout:
             layout = queryLayout(
                 view, self.request, view.__parent__, self.layout)
             if layout is not None:
-                return layout(layout=self, view=view, *args, **kw)
+                return layout(result, layout=self, view=view, *args, **kw)
         else:
             context = self.context
             if layoutview.context is not context.__parent__:
@@ -98,10 +91,10 @@ class Layout(BaseMixin):
 
             layout = queryLayout(self, self.request, context, self.layout)
             if layout is not None:
-                return layout(view=view, *args, **kw)
+                return layout(result, view=view, *args, **kw)
 
         log.warning("Can't find parent layout: '%s'"%self.layout)
-        return self.render()
+        return self.render(result)
 
 
 def registerLayout(

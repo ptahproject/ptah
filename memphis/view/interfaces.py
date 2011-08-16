@@ -3,12 +3,8 @@ from zope import interface
 from pyramid.interfaces import IView as IPyramidView
 
 
-class LayoutNotFound(LookupError):
-    """ Layout not found exception """
-
-
-class ISimpleView(IPyramidView):
-    """ simple view """
+class IMemphisView(IPyramidView):
+    """ memphis view """
 
     __name__ = interface.Attribute('Name')
     __parent__ = interface.Attribute('Parent')
@@ -16,25 +12,11 @@ class ISimpleView(IPyramidView):
     context = interface.Attribute('Context')
     request = interface.Attribute('Request')
 
-    content_type = interface.Attribute('Content type')
-    response_headers = interface.Attribute('Response headers')
-    response_status = interface.Attribute('Response status')
-
-    def __call__():
-        """ render view """
-
-
-class IView(ISimpleView):
-    """ view with layout support """
-
-    template = interface.Attribute('Template')
-    layout = interface.Attribute('Layout name')
-
     def update():
         """Update the pagelet data."""
 
-    def render():
-        """Render the pagelet content w/o o-wrap."""
+    def __call__():
+        """ render view """
 
 
 class IPagelet(interface.Interface):
