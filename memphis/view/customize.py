@@ -46,7 +46,7 @@ class _LayerManager(object):
     def __init__(self):
         self.layers = {}
 
-    def custom(self, pkg, path):
+    def layer(self, pkg, path):
         abspath, pkgname = tmpl.path(path)
         layer = self.layers.setdefault(pkg, [])
         layer.insert(0, (pkgname, abspath, path))
@@ -72,7 +72,7 @@ class _LayerManager(object):
 
 _Manager = _LayerManager()
 
-custom = _Manager.custom
+layer = _Manager.layer
 
 
 class _GlobalLayerManager(object):

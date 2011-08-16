@@ -171,8 +171,8 @@ class TestGlobalCustomizeManagement(Base):
         self.assertEqual(tmpl2(), '<div>Test template 2</div>')
 
         # layers
-        view.custom('memphis.view.tests', self.dir2)
-        view.custom('memphis.view.tests', self.dir3)
+        view.layer('memphis.view.tests', self.dir2)
+        view.layer('memphis.view.tests', self.dir3)
 
         # override file.pt
         f = open(os.path.join(self.dir2, 'file.pt'), 'wb')
