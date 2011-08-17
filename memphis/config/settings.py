@@ -1,8 +1,7 @@
 """ settings api """
-import sys, time, logging
-import os.path, ConfigParser
 import colander
 import pyinotify
+import logging, os.path, ConfigParser
 from ordereddict import OrderedDict
 from datetime import datetime, timedelta
 from zope import interface
@@ -18,8 +17,6 @@ except ImportError:
 import api, schema, shutdown
 from directives import DirectiveInfo, Action
 
-
-CONFIG = None
 log = logging.getLogger('memphis.config')
 
 
@@ -46,21 +43,17 @@ class SettingsGroupModified(ObjectEvent):
 
 
 _marker = object()
-_settings_initialized = False
-
 
 def initializeSettings(settings, 
                        config=None, loader=None, watcherFactory=_marker,
                        section=ConfigParser.DEFAULTSECT):
-    global _settings_initialized, CONFIG
-    if _settings_initialized:
+    if Settings.initialized:
         raise RuntimeError("initializeSettings has been called more than once.")
 
     log.info('Initializing memphis settings')
 
-    _settings_initialized = True
-
-    CONFIG = config
+    Settings.config = config
+    Settings.initialized = True
 
     if watcherFactory is _marker:
         watcherFactory = iNotifyWatcher
@@ -101,7 +94,19 @@ def registerSettings(name, *nodes, **kw):
         __doc__='Settings group: %s' %name,
         __module__='memphis.config.settings')
 
-    group = Settings.register(name, title, description, category)
+    if name in Settings:
+        group = Settings[name]
+    else:
+        group = Group(name, Settings, title, description, category)
+
+    Settings.register(group)
+
+    if validator is not None:
+        if type(validator) not in (list, tuple):
+            validator = validator,
+
+        for v in validator:
+            group.schema.validator.add(v)
 
     info = DirectiveInfo()
 
@@ -113,31 +118,24 @@ def registerSettings(name, *nodes, **kw):
 
         info.attach(
             Action(
-                _registerSettingsImpl,
-                (name, title, description, validator, node, category),
+                _registerSettingsImpl, (group, node),
                 discriminator = ('memphis:registerSettings', node.name, name)))
 
     return group
 
 
-def _registerSettingsImpl(name, title, description, validator, node, category):
-    group = Settings.register(name, title, description, category)
-
-    if validator is not None:
-        if type(validator) not in (list, tuple):
-            validator = validator,
-
-        for v in validator:
-            group.schema.validator.add(v)
-
+def _registerSettingsImpl(group, node):
+    Settings.register(group)
     group.register(node)
 
 
 class SettingsImpl(dict):
     """ simple settings management system """
 
+    config = None
     loader = None
     _changed = None
+    _initialized = False
 
     def __init__(self):
         self.schema = schema.SchemaNode(schema.Mapping())
@@ -251,12 +249,10 @@ class SettingsImpl(dict):
 
         return self.schema.flatten(result)
 
-    def register(self, name, title, description, category):
-        if name not in self:
-            group = Group(name, self, title, description, category)
+    def register(self, group):
+        if group.name not in self:
             self.schema.add(group.schema)
-            self[name] = group
-        return self[name]
+            self[group.name] = group
 
 
 class GroupValidator(object):
@@ -303,8 +299,9 @@ class Group(dict):
         interface.directlyProvides(self, category)
 
     def register(self, node):
-        super(Group, self).__setitem__(node.name, node.default)
-        self.schema.add(node)
+        if node not in self.schema.children:
+            super(Group, self).__setitem__(node.name, node.default)
+            self.schema.add(node)
 
     def __getattr__(self, attr, default=_marker):
         res = self.get(attr, default)
@@ -431,13 +428,13 @@ class iNotifyWatcher(object):
 
     def _process_ev(self, ev):
         if ev.mask & pyinotify.IN_MODIFY:
-            if CONFIG is not None: # pragma: no cover
-                CONFIG.begin()
+            if Settings.config is not None: # pragma: no cover
+                Settings.config.begin()
 
             self._handler()
 
-            if CONFIG is not None: # pragma: no cover
-                CONFIG.end()
+            if Settings.config is not None: # pragma: no cover
+                Settings.config.end()
 
     def start(self, filename):
         if self.started:
@@ -471,17 +468,19 @@ def shutdown():
 
 @api.addCleanup
 def cleanup():
-    global Settings, CONFIG, _settings_initialized
-
-    CONFIG = None
-    _settings_initialized = False
-
     if Settings.loader is not None:
         Settings.loader.close()
         Settings.loader = None
 
+    for name, group in Settings.items():
+        for node in group.schema.children:
+            node.default = node._origin_default
+            group.update({node.name: node.default})
+
     Settings.clear()
     Settings.schema.children[:] = []
+    Settings.config = None
+    Settings.initialized = False
 
     if '_changed' in Settings.__dict__:
         del Settings._changed

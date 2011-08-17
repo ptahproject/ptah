@@ -48,9 +48,7 @@ class SettingsCommand(Command):
 
     def command(self):
         # load all memphis packages
-        config.begin()
-        config.loadPackages()
-        config.commit()
+        config.initialize()
 
         # print defaults
         if self.options.printcfg:
