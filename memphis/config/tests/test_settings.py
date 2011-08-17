@@ -17,6 +17,11 @@ class BaseTesting(unittest.TestCase):
         config.addPackage(self.__class__.__module__)
         config.commit()
 
+    def setUp(self):
+        config.Settings.reset()
+        config.Settings.clear()
+        config.Settings.schema.children[:] = []
+
     def tearDown(self):
         config.cleanUp()
         sm = getSiteManager()
@@ -169,7 +174,6 @@ class TestSettings(BaseTesting):
         self._init_memphis()
 
         group.clear()
-
         return group
 
     def test_settings_load_rawdata(self):
@@ -234,6 +238,8 @@ class TestSettings(BaseTesting):
 
     def test_settings_init_with_no_loader(self):
         group = self._create_default_group()
+        group.clear()
+
         self.assertEqual(group, {})
 
         config.Settings.init(None)
@@ -268,7 +274,7 @@ class TestSettings(BaseTesting):
 
         group = self._create_default_group()
         config.Settings.init(Loader())
-        
+
         self.assertEqual(group['node1'], 'new-default')
         self.assertEqual(group['node2'], 50)
 
@@ -525,11 +531,12 @@ class TestFileStorage(BaseTesting):
 class TestSettingsInitialization(BaseTesting):
 
     def setUp(self):
+        BaseTesting.setUp(self)
         self.dir = tempfile.mkdtemp()
         
     def tearDown(self):
+        BaseTesting.tearDown(self)
         shutil.rmtree(self.dir)
-        config.cleanUp()
 
     def test_settings_initialize_events(self):
         sm = getSiteManager()

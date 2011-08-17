@@ -106,6 +106,7 @@ class SchemaNode(colander.SchemaNode):
         super(SchemaNode, self).__init__(typ, *children, **kw)
 
         self.required = kw.pop('required', self.default is colander.null)
+        self._origin_default = self.default
 
     def __get_required(self):
         return self.__dict__.get('required')

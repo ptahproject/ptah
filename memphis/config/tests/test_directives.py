@@ -12,8 +12,8 @@ from memphis import config
 class BaseTesting(unittest.TestCase):
 
     def _init_memphis(self, settings={}, *args, **kw):
-        config.begin()
         config.loadPackage('memphis.config')
+        config.begin()
         config.addPackage(self.__class__.__module__)
         config.commit()
 

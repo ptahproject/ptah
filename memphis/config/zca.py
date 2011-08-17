@@ -138,13 +138,14 @@ def registry(name, title=u'', description=u'', addon=False):
         registries[name] = sm
 
     frame = sys._getframe(1)
+    _locals = directives.getModule(frame)
 
     action(
         complete,
         __frame = frame,
         __info = directives.getInfo(2),
         __discriminator = ('memphis.config:registry', name),
-        __order = (api.moduleNum(frame.f_locals['__name__']), 0))
+        __order = (api.moduleNum(_locals['__name__']), 0))
 
     return sm
 

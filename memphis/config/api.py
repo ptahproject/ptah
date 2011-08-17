@@ -1,98 +1,3 @@
-"""
-Test for `registerUtility`, later registration on `config.commit`::
-
-    >>> begin()
-
-    >>> from zope import interface, component
-    >>> from zope.component import getSiteManager
-    >>> class ITest1(interface.Interface):
-    ...     pass
-    >>> class ITest2(interface.Interface):
-    ...     pass
-
-    >>> @interface.implementer(ITest2)
-    ... def testAdapter(ob):
-    ...     return ob
-
-    >>> registerAdapter(testAdapter, (ITest1,))
-
-    >>> class Ob(object):
-    ...     def __init__(self, iface):
-    ...         interface.directlyProvides(self, iface)
-
-    >>> sm = getSiteManager()
-
-    >>> sm.getAdapter(Ob(ITest1), ITest2)
-    Traceback (most recent call last):
-    ...
-    ComponentLookupError: ...
-
-    >>> commit()
-
-    >>> sm.getAdapter(Ob(ITest1), ITest2)
-    <memphis.config.TESTS.Ob object at ...>
-
-Now config context is None, so action should be executed immedietly::
-
-    >>> registerAdapter(testAdapter, (ITest2,), ITest1)
-    >>> sm.getAdapter(Ob(ITest2), ITest1)
-    <memphis.config.TESTS.Ob object at ...>
-
-Callable instance as adapter::
-
-    >>> begin()
-    >>> commit()
-
-    >>> class Adapter(object):
-    ...     component.adapts(ITest1)
-    ...     interface.implements(ITest2)
-    ...
-    ...     def __init__(self, ob):
-    ...         self.ob = ob
-    ...     def __call__(self, ad):
-    ...         return self.ob
-
-    >>> adOb = Adapter(Ob(ITest2))
-    >>> registerAdapter(adOb)
-
-    >>> sm.getAdapter(Ob(ITest1), ITest2) is adOb.ob
-    True
-
-    >>> registerAdapter(Adapter)
-
-    >>> sm.getAdapter(Ob(ITest1), ITest2)
-    <memphis.config.TESTS.Adapter ...>
-
-Test for `registerHanlder`, later registration on `config.commit`::
-
-    >>> begin()
-
-    >>> def testHandler(ob):
-    ...     print 'test handler'
-
-    >>> registerHandler(testHandler, (ITest1,))
-    >>> s = sm.subscribers((Ob(ITest1),), None)
-
-    >>> commit()
-
-    >>> s = sm.subscribers((Ob(ITest1),), None)
-    test handler
-
-Registration without configuration context::
-
-    >>> registerHandler(testHandler, (ITest2,))
-    >>> s = sm.subscribers((Ob(ITest2),), None)
-    test handler
-
-loadPackage
-
-    >>> from memphis.config import api
-    >>> api.grokkerPackages = []
-    >>> loadPackage('memphis.config')
-    >>> api.grokkerPackages
-    ['memphis.config.meta', 'memphis.config']
-
-"""
 import types
 import martian
 import pkg_resources
@@ -203,16 +108,14 @@ def registerAdapter(factory, required=None, provides=None, name=u'',
 
     if required is None:
         required = component.adaptedBy(factory)
+        if required is None:
+            raise ValueError("Adapter required is not defined")
 
     if provides is None:
-        if type(factory) is type:
+        try:
             provides = list(interface.implementedBy(factory))[0]
-        elif hasattr(factory, 'func_name'):
-            provides = list(interface.implementedBy(factory))[0]
-        elif isinstance(type(factory), object):
-            provides = list(interface.providedBy(factory))[0]
-            if required is None:
-                required = factory.__class__.__component_adapts__
+        except IndexError:
+            raise TypeError('Provides is required')
 
     if configContext is UNSET:
         configContext = getContext()

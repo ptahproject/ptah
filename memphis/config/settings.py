@@ -84,7 +84,7 @@ def initializeSettings(settings,
 
     Settings.init(loader, settings)
     api.notify(SettingsInitializing(config))
-    api.notify(SettingsInitialized(config))   
+    api.notify(SettingsInitialized(config))
 
 
 def registerSettings(name, *nodes, **kw):
@@ -181,25 +181,38 @@ class SettingsImpl(dict):
 
         for name, group in self.items():
             if name in data and data[name]:
-                if not suppressevents:
-                    modified = data[name] != dict(group)
-                    group.update(data[name])
-                    if modified:
-                        getSiteManager().subscribers(
-                            (group, SettingsGroupModified(group)), None)
-                else:
-                    group.update(data[name])
-
                 if setdefaults:
                     for k, v in data[name].items():
                         if v is not colander.null:
                             group.schema[k].default = v
 
+                    group.update(data[name])
+                else:
+                    if not suppressevents:
+                        modified = data[name] != dict(group)
+                        group.update(data[name])
+                        if modified:
+                            getSiteManager().subscribers(
+                                (group, SettingsGroupModified(group)), None)
+                    else:
+                        group.update(data[name])
+
+    def reset(self):
+        for name, group in self.items():
+            for node in group.schema.children:
+                node.default = node._origin_default
+                group.update({node.name: node.default})
+
+        self.init(self.loader)
+
     def init(self, loader, defaults=None):
         for group in self.values():
-            data = dict((node.name, node.default) for node in 
-                        group.schema.children 
-                        if node.default is not colander.null)
+            data = {}
+            for node in group.schema.children:
+                node.default = node._origin_default
+                if node.default is not colander.null:
+                    data[node.name] = node.default
+
             group.update(data)
 
         if defaults:
@@ -484,9 +497,8 @@ def cleanup():
         Settings.loader.close()
         Settings.loader = None
 
-    # fixme: doenst work but should!
-    Settings.clear()
-    Settings.schema = schema.SchemaNode(schema.Mapping())
+    for name, group in Settings.items():
+        group.clear()
 
     if '_changed' in Settings.__dict__:
         del Settings._changed
