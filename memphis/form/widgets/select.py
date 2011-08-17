@@ -75,14 +75,14 @@ class MultiSelectWidget(SelectWidget):
 view.registerPagelet(
     pagelets.IWidgetDisplayView, ISelectWidget,
     template=view.template("memphis.form.widgets:select_display.pt",
-                           "HTML Select: display template"))
+                           title="HTML Select: display template"))
 
 view.registerPagelet(
     pagelets.IWidgetInputView, ISelectWidget,
     template=view.template("memphis.form.widgets:select_input.pt",
-                           "HTML Select: input template"))
+                           title="HTML Select: input template"))
 
 view.registerPagelet(
     pagelets.IWidgetHiddenView, ISelectWidget,
     template=view.template("memphis.form.widgets:select_hidden.pt",
-                           "HTML Select: hidden input template"))
+                           title="HTML Select: hidden input template"))
