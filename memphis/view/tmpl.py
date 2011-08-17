@@ -30,20 +30,26 @@ class _Template(object):
         return repr(self.tmpl)
 
 
-def template(spec, title=None, description=None):
+def template(spec, layer=None, title=None, description=None, nolayer=False):
     abspath, package_name = path(spec, caller_package(2).__name__)
     if not abspath:
         raise ValueError('Missing template asset: %s' % spec)
 
-    data = registry.setdefault(package_name, {})
-    filename = os.path.split(abspath)[1]
-    if filename in data:
-        raise ValueError(
-            'Template with this name already has been registered: %s'%filename)
-
     tmpl = _Template(getRenderer(abspath))
 
-    data[filename] = [abspath,title,description,tmpl]
+    if not nolayer:
+        if layer is None:
+            layer = package_name
+
+        data = registry.setdefault(layer, {})
+
+        filename = os.path.split(abspath)[1]
+        if filename in data:
+            raise ValueError(
+                'Template "%s" with this name already has '
+                'been registered in "%s" layer'%(filename, layer))
+
+        data[filename] = [abspath,title,description,tmpl]
 
     return tmpl
 
