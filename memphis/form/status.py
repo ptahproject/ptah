@@ -8,7 +8,7 @@ from memphis.form.interfaces import IErrorViewSnippet
 
 
 class FormErrorStatusMessage(Message):
-    config.adapts(IRequest, 'formError')
+    config.adapts(IRequest, name='formError')
 
     template = view.template('memphis.form:templates/message.pt')
 

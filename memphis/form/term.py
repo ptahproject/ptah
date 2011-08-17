@@ -50,12 +50,12 @@ class Terms(object):
         return self.terms.__contains__(value)
 
 
-@zope.interface.implementer(interfaces.ITerms)
 @config.adapter(
     zope.interface.Interface,
     colander.SchemaNode,
     colander.SchemaType,
     interfaces.IWidget)
+@zope.interface.implementer(interfaces.ITerms)
 def ChoiceTerms(context, field, typ, widget):
     terms = getattr(field, 'vocabulary', None)
     return zope.component.queryMultiAdapter(
@@ -104,13 +104,13 @@ class BoolTerms(Terms):
         self.terms = vocabulary.SimpleVocabulary(terms)
 
 
-@zope.interface.implementer(interfaces.ITerms)
 @config.adapter(
     zope.interface.Interface,
     zope.interface.Interface,
     zope.interface.Interface,
     zope.schema.interfaces.ICollection,
     interfaces.IWidget)
+@zope.interface.implementer(interfaces.ITerms)
 def CollectionTerms(context, request, form, field, widget):
     terms = field.value_type.bind(context or widget.context).vocabulary
     return zope.component.queryMultiAdapter(
