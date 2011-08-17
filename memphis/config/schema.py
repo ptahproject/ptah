@@ -52,8 +52,6 @@ class Mapping(colander.Mapping):
             selfprefix = prefix
         elif node.name:
             selfprefix = '%s%s.' % (prefix, node.name)
-        elif prefix:
-            selfprefix = '%s.' % prefix
 
         for subnode in node.children:
             name = subnode.name
@@ -76,8 +74,6 @@ class Sequence(colander.Sequence):
             selfprefix = prefix
         elif node.name:
             selfprefix = '%s%s.' % (prefix, node.name)
-        elif prefix:
-            selfprefix = '%s.' % prefix
 
         childnode = node.children[0]
 
