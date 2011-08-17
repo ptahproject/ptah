@@ -154,6 +154,19 @@ class TestTemplatesCommand(unittest.TestCase):
         self.assertTrue('Test template title' in val)
         self.assertTrue('Test template description' in val)
 
+    # fixme: doesnt work
+    def test_commands_template_custom_layer_name(self):
+        tmpl = view.template('memphis.view:/tests/templates/test.pt',
+                             layer = 'test-unknown')
+
+        sys.argv[:] = ['paste', 'templates', '-l', 'test-unknown']
+
+        val = self._run()
+
+        #self.assertTrue('* test-unknown' in val)
+        #self.assertTrue(
+        #    '- test.pt: ../memphis/view/tests/templates/test.pt' in val)
+
     # fixme: implement
     def test_commands_template_list_with_ovveriden(self):
         pass

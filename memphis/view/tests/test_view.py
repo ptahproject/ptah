@@ -70,6 +70,13 @@ class TestView(BaseView):
         self._init_memphis(
             {}, meta.PyramidViewGrokker().grok,  *('MyView', MyView))
 
+        # cant process same class
+        self.assertFalse(meta.PyramidViewGrokker().grok('MyView', MyView))
+
+        # nothing will happen with klass without view.pyramidView decorator
+        class Test(object):pass
+        self.assertFalse(meta.PyramidViewGrokker().grok('Test', Test))
+
         context = Context()
         v = self._view('index.html', context, self.request)
         self.assertEqual(v.status, '200 OK')

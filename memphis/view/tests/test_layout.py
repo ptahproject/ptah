@@ -115,6 +115,13 @@ class LayoutPagelet(Base):
         self._init_memphis(
             {}, meta.LayoutGrokker().grok,  *('Layout', Layout))
 
+        # cant process same class
+        self.assertFalse(meta.LayoutGrokker().grok('Layout', Layout))
+
+        # nothing will happen with klass without view.layout decorator
+        class Test(object):pass
+        self.assertFalse(meta.LayoutGrokker().grok('Test', Test))
+
 
         v = View(Context(), self.request)
 

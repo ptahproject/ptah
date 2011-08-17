@@ -1,6 +1,7 @@
 """ test for static assets api """
 import unittest
 from memphis import config, view
+from memphis.view import resources
 from memphis.view.base import View
 
 from base import Base
@@ -72,6 +73,7 @@ class TestStaticManagement(Base):
                           'dir1/text2.txt': 1,
                           'dir2/style.css': 1,
                           'dir2/text.txt': 1})
+
     def test_base_static_url(self):
         view.static('tests2', 'memphis.view.tests:static/dir1')
         self._init_memphis()
@@ -83,6 +85,18 @@ class TestStaticManagement(Base):
         self.assertEquals(
             base.static_url('tests2', 'styles.css'),
             'http://localhost:8080/static/tests2/styles.css')
+
+    def test_static_wired(self):
+        # something strange can happen, info can be removed 
+        # from registry before memphis init (tests for example)
+        view.static('tests', 'memphis.view.tests:static/dir1')
+        
+        self.assertTrue('tests' in resources.registry)
+
+        del resources.registry['tests']
+        self._init_memphis()
+
+        self.assertTrue('tests' in resources.registry)
 
 
 class TestStaticView(Base):

@@ -108,6 +108,14 @@ class TestPagelet(Base):
         self._init_memphis(
             {}, meta.PageletGrokker().grok,  *('TestPagelet', TestPagelet))
 
+        # cant process same class
+        self.assertFalse(meta.PageletGrokker().grok('TestPagelet', TestPagelet))
+
+        # nothing will happen with klass without view.layout decorator
+        class Test(object):pass
+        self.assertFalse(meta.PageletGrokker().grok('Test', Test))
+
+
         self.assertEqual(
             renderPagelet(ITestPagelet, Context(), self.request),
             'test')
