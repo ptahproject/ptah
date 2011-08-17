@@ -2,11 +2,8 @@
 import os, unittest, tempfile, shutil
 from webob.exc import HTTPNotFound
 from zope import interface, component
-from zope.configuration.config import ConfigurationExecutionError
 
 from memphis import config, view
-
-from memphis.view import meta
 from memphis.view.view import View, viewMapper
 from memphis.view.layout import Layout, queryLayout
 from memphis.view.renderers import Renderer, SimpleRenderer
@@ -26,15 +23,6 @@ class LayoutPagelet(Base):
 
     def _setup_memphis(self):
         pass
-
-    def _init_memphis(self, settings={}, handler=None, *args, **kw):
-        config.begin()
-        config.loadPackage('memphis.view')
-        config.addPackage('memphis.view.tests.test_layout')
-        if handler is not None:
-            handler(*args, **kw)
-        config.commit()
-        config.initializeSettings(settings, self.p_config)
 
     def test_layout_register_class_errors(self):
         self.assertRaises(ValueError, view.registerLayout, 'test', klass=None)
@@ -79,7 +67,7 @@ class LayoutPagelet(Base):
         view.registerLayout('test2', klass=MyLayout)
 
         self.assertRaises(
-            ConfigurationExecutionError,
+            ValueError,
             self._init_memphis)
 
     def test_layout_simple_view(self):
@@ -104,6 +92,8 @@ class LayoutPagelet(Base):
                          '<html>View: test</html>')
 
     def test_layout_simple_declarative(self):
+        global Layout
+
         class View(view.View):
             def __call__(self):
                 return 'View: test'
@@ -112,16 +102,7 @@ class LayoutPagelet(Base):
             def render(self, rendered):
                 return '<html>%s</html>'%rendered
 
-        self._init_memphis(
-            {}, meta.LayoutGrokker().grok,  *('Layout', Layout))
-
-        # cant process same class
-        self.assertFalse(meta.LayoutGrokker().grok('Layout', Layout))
-
-        # nothing will happen with klass without view.layout decorator
-        class Test(object):pass
-        self.assertFalse(meta.LayoutGrokker().grok('Test', Test))
-
+        self._init_memphis()
 
         v = View(Context(), self.request)
 

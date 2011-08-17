@@ -27,11 +27,10 @@ class BaseLayerTest(Base):
         f.close()
 
     def setUp(self):
-        Base.setUp(self)
-        
         self.dir1 = tempfile.mkdtemp()
         self.dir2 = tempfile.mkdtemp()
         os.makedirs(os.path.join(self.dir2, 'memphis.view.tests'))
+        Base.setUp(self)
         
     def tearDown(self):
         Base.tearDown(self)

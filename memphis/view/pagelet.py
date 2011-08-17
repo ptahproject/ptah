@@ -2,8 +2,8 @@
 import sys, logging
 from webob.exc import HTTPNotFound
 
-from zope import interface, component
-from zope.component import queryUtility, queryMultiAdapter
+from zope import interface
+from zope.component import getSiteManager
 
 from memphis import config
 from memphis.view.base import View
@@ -45,7 +45,7 @@ class PageletType(object):
 
 
 def renderPagelet(ptype, context, request):
-    pagelet = queryMultiAdapter((context, request), ptype)
+    pagelet = getSiteManager().queryMultiAdapter((context, request), ptype)
     if pagelet is None:
         raise HTTPNotFound
 
@@ -56,60 +56,47 @@ def renderPagelet(ptype, context, request):
         raise
 
 
-def registerPageletType(name, iface, context, configContext=config.UNSET):
-    info = config.getInfo(2)
-
-    config.action(
-        registerPageletTypeImpl,
-        name, iface, context, configContext, info,
-        __info = info,
-        __frame = sys._getframe(1),
-        __discriminator = ('memphis:registerPageletType', name, iface),
-        )
+def registerPageletType(name, iface, context):
+    info = config.DirectiveInfo()
+    info.attach(
+        config.Action(
+            registerPageletTypeImpl,
+            (iface, name, context),
+            discriminator = ('memphis.view:pageletType', name, iface)))
 
 
-def registerPageletTypeImpl(name, iface, context, 
-                            configContext=config.UNSET, info=''):
+def registerPageletTypeImpl(iface, name, context):
     pt = PageletType(name, iface, context)
 
     iface.setTaggedValue('memphis.view.pageletType', pt)
-    config.registerUtility(pt, IPageletType, name, configContext, info)
+    getSiteManager().registerUtility(pt, IPageletType, name)
 
 
 _registered = []
 
-@config.cleanup
+@config.addCleanup
 def cleanUp():
     _registered[:] = []
 
 
 def registerPagelet(
-    pageletType, context=None, klass=None,
-    template=None, layer=interface.Interface, configContext=config.UNSET, **kw):
+    pageletType, context=None, 
+    klass=None, template=None, layer=interface.Interface):
 
-    info = config.getInfo(2)
-    frame = sys._getframe(1)
-    mlocals = config.getModule(frame)
+    info = config.DirectiveInfo()
 
-    config.action(
-        registerPageletImpl,
-        pageletType, context, klass, template, layer, configContext, info, 
-        __info = info,
-        __frame = frame,
-        __discriminator = ('memphis.view:pagelet', pageletType, context, layer),
-        __order = (config.moduleNum(mlocals['__name__']), 300),
-        **kw)
+    info.attach(
+        config.Action(
+            registerPageletImpl,
+            (klass, pageletType, context, template, layer), 
+            discriminator = ('memphis.view:pagelet',pageletType,context,layer)))
 
 
-def registerPageletImpl(
-    pageletType, context=None, klass=None,
-    template=None, layer=interface.Interface, 
-    configContext=config.UNSET, info='', **kw):
-
+def registerPageletImpl(klass, pageletType, context, template, layer):
     if klass is not None and klass in _registered:
         raise ValueError("Class can be used for pagelet only once.")
 
-    cdict = dict(kw)
+    cdict = {}
     if template is not None:
         cdict['template'] = template
 
@@ -143,4 +130,4 @@ def registerPageletImpl(
         interface.classImplements(pagelet_class, pt.type)
 
     # register pagelet
-    component.getSiteManager().registerAdapter(pagelet_class, requires, pt.type)
+    getSiteManager().registerAdapter(pagelet_class, requires, pt.type)

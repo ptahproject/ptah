@@ -219,6 +219,6 @@ def shutdown():
         TEMPLATE._watcher = None
 
 
-@config.cleanup
+@config.addCleanup
 def cleanup():
     _Manager.layers.clear()

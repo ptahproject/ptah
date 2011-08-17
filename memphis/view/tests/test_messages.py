@@ -15,13 +15,6 @@ class TestStatusMessages(Base):
     def _setup_memphis(self):
         pass
 
-    def _init_memphis(self, settings={}, handler=None, *args, **kw):
-        config.begin()
-        config.loadPackage('memphis.view')
-        config.addPackage('memphis.view.tests.test_messages')
-        config.commit()
-        config.initializeSettings(settings, self.p_config)
-
     def test_messages_service(self, skip=False):
         if not skip:
             self._init_memphis()

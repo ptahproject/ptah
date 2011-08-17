@@ -8,14 +8,7 @@ from base import Base, Context
 
 
 class RendererBase(Base):
-
-    def setUp(self):
-        config.action.immediately = True
-        Base.setUp(self)
-
-    def tearDown(self):
-        Base.tearDown(self)
-        config.action.immediately = False
+    pass
 
 
 class TestSimpleRenderer(RendererBase):
@@ -50,6 +43,7 @@ class TestSimpleRenderer(RendererBase):
                 return '<html>%s</html>'%content
 
         view.registerLayout('test', klass=Layout)
+        self._init_memphis()
 
         def viewFactory(context, request):
             return None, 'test'
@@ -162,6 +156,7 @@ class TestTmplRenderer(RendererBase):
                 return '<html>%s</html>'%content
 
         view.registerLayout('test', klass=Layout)
+        self._init_memphis()
 
         def viewFactory(context, request):
             return None, {}

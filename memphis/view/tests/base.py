@@ -26,13 +26,7 @@ class Base(unittest.TestCase):
         return environ
 
     def _init_memphis(self, settings={}, handler=None, *args, **kw):
-        config.Settings.reset()
-        config.begin()
-        config.loadPackage('memphis.view')
-        config.addPackage(self.__class__.__module__)
-        if handler is not None:
-            handler(*args, **kw)
-        config.commit()
+        config.initialize(('memphis.view', self.__class__.__module__))
         config.initializeSettings(settings, self.p_config)
 
     def _setup_pyramid(self):
@@ -42,10 +36,7 @@ class Base(unittest.TestCase):
         self.p_config.get_routes_mapper()
 
     def _setup_memphis(self):
-        config.Settings.reset()
-        config.begin()
-        config.loadPackage('memphis.view')
-        config.commit()
+        config.initialize(('memphis.view', self.__class__.__module__))
 
     def _setRequest(self, request):
         self.request = request
@@ -57,9 +48,10 @@ class Base(unittest.TestCase):
         self._setup_memphis()
 
     def tearDown(self):
-        config.cleanUp()
+        config.cleanUp(self.__class__.__module__)
+        sm = self.p_config
+        sm.__init__('base')
         testing.tearDown()
-        testing.cleanUp()
 
 
 class Context(object):

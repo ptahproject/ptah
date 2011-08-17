@@ -85,11 +85,6 @@ class Layout(View):
             if layoutview.context is not context.__parent__:
                 context = context.__parent__
 
-            #else:
-            #    context = getattr(context.__parent__, '__parent__', None)
-            #if context is None:
-            #    context = getRoot(self.context)
-
             layout = queryLayout(self, self.request, context, self.layout)
             if layout is not None:
                 return layout(result, view=view, *args, **kw)
@@ -99,29 +94,22 @@ class Layout(View):
 
 
 def registerLayout(
-    name='', context=None, view=None, template=None, parent='',
-    klass=Layout, layer=interface.Interface, configContext=config.UNSET, **kw):
+    name='', context=None, view=None, 
+    parent='', klass=Layout, template = None, layer=interface.Interface):
 
     if not klass or not issubclass(klass, Layout):
         raise ValueError("klass has to inherit from Layout class")
 
-    frame = sys._getframe(1)
-    info = config.getInfo(2)
-    _locals = config.getModule(frame)
-
-    config.action(
-        registerLayoutImpl,
-        name,context,view,template,parent,klass,layer,configContext,info,
-        __frame = frame,
-        __info = info,
-        __discriminator = ('memphis.view:layout', name, context, view, layer),
-        __order = (config.moduleNum(_locals['__name__']), 300),
-        **kw)
+    info = config.DirectiveInfo()
+    info.attach(
+        config.Action(
+            registerLayoutImpl,
+            (klass, name, context, view, template, parent, layer),
+            discriminator = ('memphis.view:layout', name, context, view, layer))
+        )
 
 
-def registerLayoutImpl(
-    name, context, view, template, parent,
-    klass, layer, configContext, info, **kwargs):
+def registerLayoutImpl(klass, name, context, view, template, parent, layer):
 
     if klass in _registered:
         raise ValueError("Class can't be reused for different layouts")
@@ -140,8 +128,6 @@ def registerLayoutImpl(
     if template is not None:
         cdict['template'] = template
 
-    cdict.update(kwargs)
-
     if issubclass(klass, Layout) and klass is not Layout:
         layout_class = klass
         _registered.append(klass)
@@ -151,14 +137,13 @@ def registerLayoutImpl(
         layout_class = type(str('Layout<%s>'%name), (Layout,), cdict)
 
     # register layout adapter
-    config.registerAdapter(
-        layout_class, 
-        (view, context, layer), ILayout, name, configContext, info)
+    getSiteManager().registerAdapter(
+        layout_class, (view, context, layer), ILayout, name)
 
 
 _registered = []
 
-@config.cleanup
+@config.addCleanup
 def cleanUp():
     _registered[:] = []
 

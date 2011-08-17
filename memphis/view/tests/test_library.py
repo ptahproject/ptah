@@ -10,13 +10,6 @@ class TestLibraryManagement(Base):
     def _setup_memphis(self):
         pass
 
-    def _init_memphis(self, settings={}):
-        config.begin()
-        config.loadPackage('memphis.view')
-        config.addPackage('memphis.view.tests.test_library')
-        config.commit()
-        config.initializeSettings(settings, self.p_config)
-
     def test_library_register_fail(self):
         # path resuired
         self.assertRaises(ValueError, view.library, 'test')

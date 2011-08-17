@@ -1,9 +1,6 @@
 """ view tests """
 import sys, unittest
-from martian.error import GrokImportError
 from zope import interface, component
-from zope.configuration.config import ConfigurationExecutionError
-
 from webob.exc import HTTPForbidden, HTTPNotFound, HTTPFound
 from webob.response import Response
 from pyramid.interfaces import IView, IRequest
@@ -12,7 +9,6 @@ from pyramid.interfaces import IAuthenticationPolicy
 
 from memphis import config, view
 from memphis.config import api
-from memphis.view import meta
 from memphis.view.base import View
 from memphis.view.renderers import Renderer
 
@@ -60,22 +56,15 @@ class TestView(BaseView):
         self.assertEqual(v.body, '<html>view</html>')
 
     def test_view_register_declarative(self):
+        global MyView
+
         class MyView(view.View):
             view.pyramidView('index.html')
 
             def render(self):
                 return '<html>view</html>'
 
-        view.registerView('index.html', MyView)
-        self._init_memphis(
-            {}, meta.PyramidViewGrokker().grok,  *('MyView', MyView))
-
-        # cant process same class
-        self.assertFalse(meta.PyramidViewGrokker().grok('MyView', MyView))
-
-        # nothing will happen with klass without view.pyramidView decorator
-        class Test(object):pass
-        self.assertFalse(meta.PyramidViewGrokker().grok('Test', Test))
+        self._init_memphis()
 
         context = Context()
         v = self._view('index.html', context, self.request)
@@ -320,30 +309,15 @@ class TestView(BaseView):
         self.assertEqual(v.body, '<html>content</html>')
 
     def test_view_function(self):
-        self._init_memphis()
-
-        config.action.immediately = True
-
-        class f(object):
-            def __init__(self):
-                d = {}
-                self.f_locals = d
-                self.f_globals = d
-
-        @view.pyramidView('index.html', frame=f())
+        @view.pyramidView('index.html')
         def render(request):
             return '<html>content</html>'
+
+        self._init_memphis()
 
         context = Context()
         v = self._view('index.html', context, self.request)
         self.assertEqual(v.body, '<html>content</html>')
-
-        config.action.immediately = False
-
-    def test_view_function_err(self):
-        self.assertRaises(
-            GrokImportError,
-            view.pyramidView, 'index.html')
 
 
 class TestSubpathView(BaseView):

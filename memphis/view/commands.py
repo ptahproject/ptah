@@ -60,9 +60,7 @@ class TemplatesCommand(Command):
 
     def command(self):
         # load all memphis packages
-        config.begin()
-        config.loadPackages()
-        config.commit()
+        config.initialize()
         
         if self.options.filename:
             self.print_template(self.options.filename)
@@ -222,9 +220,7 @@ class StaticCommand(Command):
 
     def command(self):
         # load all memphis packages
-        config.begin()
-        config.loadPackages()
-        config.commit()
+        config.initialize()
 
         if self.options.dump:
             basepath = self.options.dump.strip()

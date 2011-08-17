@@ -14,7 +14,6 @@ from pyramid.interfaces import IAuthenticationPolicy
 
 from memphis import config
 from memphis.view.base import View
-from memphis.view.directives import pyramidView
 from memphis.view.renderers import Renderer, SimpleRenderer
 
 
@@ -93,26 +92,24 @@ class subpath(object):
 
 def registerView(
     name, factory=View, context=None, template=None,
-    layer = IRequest, layout='', permission='__no_permission_required__',
-    default=False, decorator=None, configContext=config.UNSET):
+    layer=IRequest, layout='', permission='__no_permission_required__',
+    default=False, decorator=None):
 
     if factory is None or not callable(factory):
         raise ValueError('view factory is required')
 
-    info = config.getInfo(2)
-
-    config.action(
-        registerViewImpl,
-        name, factory, context, template,
-        layer, layout, permission, default, decorator, configContext, info,
-        __info = info,
-        __frame = sys._getframe(1),
-        __discriminator = ('memphis.view:view', name, context, layer))
+    info = config.DirectiveInfo()
+    info.attach(
+        config.Action(
+            registerViewImpl,
+            (factory, name, context, template,
+             layer, layout, permission, default, decorator),
+            discriminator = ('memphis.view:view', name, context, layer)))
 
 
 def registerViewImpl(
-    name, factory, context, template, layer, layout, permission, 
-    default, decorator, configContext=config.UNSET, info=''):
+    factory, name, context, template, layer, layout, 
+    permission, default, decorator):
 
     if template is not None:
         renderer = Renderer(template, layout=layout).bind(
@@ -136,7 +133,9 @@ def registerViewImpl(
     if permission == '__no_permission_required__':
         permission = None
 
-    auth = queryUtility(IAuthenticationPolicy)
+    sm = getSiteManager()
+
+    auth = sm.queryUtility(IAuthenticationPolicy)
     if auth and permission:
         def pyramidView(context, request):
             principals = auth.effective_principals(request)
@@ -153,34 +152,28 @@ def registerViewImpl(
     if context is None:
         context = interface.Interface
 
-    config.registerAdapter(
-        pyramidView,
-        (IViewClassifier, layer, context), IView, name, configContext, info)
+    sm.registerAdapter(
+        pyramidView, (IViewClassifier, layer, context), IView, name)
 
     if default:
-        registerDefaultViewImpl(name, context, layer, configContext, info)
+        registerDefaultViewImpl(name, context, layer)
 
 
-def registerDefaultView(name, context=interface.Interface,
-                        layer=IRequest, configContext = config.UNSET):
+def registerDefaultView(name, context=interface.Interface, layer=IRequest):
+    info = config.DirectiveInfo()
+    info.attach(
+        config.Action(
+            registerDefaultViewImpl,
+            (name, context, layer),
+            discriminator = ('memphis.view:defaultView', name, context, layer)))
 
-    config.action(
-        registerDefaultViewImpl, name, context, layer, 
-        configContext, 
-        __info = config.getInfo(2),
-        __frame = sys._getframe(1))
 
-
-def registerDefaultViewImpl(
-    name, context=interface.Interface,
-    layer=IRequest, configContext = config.UNSET, info=''):
-
+def registerDefaultViewImpl(name, context=interface.Interface, layer=IRequest):
     def view(context, request):
         return renderView(name, context, request)
 
-    config.registerAdapter(
-        view,
-        (IViewClassifier, layer, context), IView, '', configContext, info)
+    getSiteManager().registerAdapter(
+        view, (IViewClassifier, layer, context), IView, '')
 
 
 def viewMapper(view, attr=None):

@@ -39,11 +39,12 @@ def static(name, path):
     if not os.path.isdir(abspath):
         raise ValueError("path is not directory")
 
-    config.action(
-        staticImpl, name, abspath, pkg,
-        __info = config.getInfo(2),
-        __frame = sys._getframe(1),
-        __discriminator = ('memphis:static', name, path))
+    info = config.DirectiveInfo()
+    info.attach(
+        config.Action(
+            staticImpl,
+            (name, abspath, pkg),
+            discriminator = ('memphis.view:static', name, path)))
 
 
 def staticImpl(name, abspath, pkg):
@@ -150,6 +151,6 @@ class StaticView(object):
         return exc.wsgi_application(environ, start_response)
 
 
-@config.cleanup
+@config.addCleanup
 def cleanup():
     registry.clear()

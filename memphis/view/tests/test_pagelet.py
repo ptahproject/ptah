@@ -2,10 +2,8 @@
 import sys, unittest
 from webob.exc import HTTPNotFound
 from zope import interface, component
-from zope.configuration.config import ConfigurationExecutionError
 from memphis import config, view
 from memphis.config import api
-from memphis.view import meta
 from memphis.view.pagelet import Pagelet, PageletType, renderPagelet
 
 from base import Base
@@ -32,20 +30,18 @@ class TestPagelet(Base):
             ITestPagelet.getTaggedValue('memphis.view.pageletType'), pt)
 
     def test_pagelettype_register_declarative(self):
+        global ITestPage
+
         class ITestPagelet(interface.Interface):
             view.pageletType('test2', Context)
 
-        self._init_memphis(
-            {}, meta.PageletTypeGrokker().grok, 
-            *('ITestPagelet', ITestPagelet))
+        self._init_memphis()
                     
         pt = component.getUtility(view.IPageletType, 'test2')
         self.assertTrue(isinstance(pt, PageletType))
         self.assertEqual(pt.name, 'test2')
         self.assertEqual(pt.type, ITestPagelet)
         self.assertEqual(pt.context, Context)
-        self.assertEqual(
-            ITestPagelet.getTaggedValue('memphis.view.pageletType'), pt)
 
     def test_pagelet_register_errors(self):
         class ITestPagelet1(interface.Interface):
@@ -62,8 +58,7 @@ class TestPagelet(Base):
         view.registerPagelet(ITestPagelet1, Context, TestPagelet)
         view.registerPagelet(ITestPagelet2, Context, TestPagelet)
 
-        self.assertRaises(
-            ConfigurationExecutionError, self._init_memphis)
+        self.assertRaises(ValueError, self._init_memphis)
  
     def test_pagelet_register_nopt(self):
         class ITestPagelet(interface.Interface):
@@ -74,8 +69,7 @@ class TestPagelet(Base):
 
         view.registerPagelet(ITestPagelet, Context, TestPagelet)
 
-        self.assertRaises(
-            ConfigurationExecutionError, self._init_memphis)
+        self.assertRaises(LookupError, self._init_memphis)
 
     def test_pagelet_register(self):
         class ITestPagelet(interface.Interface):
@@ -94,8 +88,10 @@ class TestPagelet(Base):
             'test pagelet')
 
     def test_pagelet_register_declarative(self):
+        global ITestPagelet, TestPagelet
+
         class ITestPagelet(interface.Interface):
-            pass
+            view.pageletType('test', Context)
 
         class TestPagelet(view.Pagelet):
             view.pagelet(ITestPagelet)
@@ -103,22 +99,10 @@ class TestPagelet(Base):
             def render(self):
                 return 'test'
 
-        view.registerPageletType('test', ITestPagelet, Context)
-
-        self._init_memphis(
-            {}, meta.PageletGrokker().grok,  *('TestPagelet', TestPagelet))
-
-        # cant process same class
-        self.assertFalse(meta.PageletGrokker().grok('TestPagelet', TestPagelet))
-
-        # nothing will happen with klass without view.layout decorator
-        class Test(object):pass
-        self.assertFalse(meta.PageletGrokker().grok('Test', Test))
-
+        self._init_memphis()
 
         self.assertEqual(
-            renderPagelet(ITestPagelet, Context(), self.request),
-            'test')
+            renderPagelet(ITestPagelet, Context(), self.request), 'test')
 
     def test_pagelet_register_with_template(self):
         class ITestPagelet(interface.Interface):

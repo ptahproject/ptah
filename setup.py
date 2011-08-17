@@ -47,8 +47,7 @@ setup(name='memphis.view',
       include_package_data = True,
       zip_safe = False,
       entry_points = {
-        'memphis': ['grokker = memphis.view.meta',
-                    'package = memphis.view'],
+        'memphis': ['package = memphis.view'],
         'paste.global_paster_command': [
             'static = memphis.view.commands:StaticCommand',
             'templates = memphis.view.commands:TemplatesCommand',

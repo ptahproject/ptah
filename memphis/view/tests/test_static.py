@@ -12,13 +12,6 @@ class TestStaticManagement(Base):
     def _setup_memphis(self):
         pass
 
-    def _init_memphis(self, settings={}):
-        config.begin()
-        config.loadPackage('memphis.view')
-        config.addPackage('memphis.view.tests.test_static')
-        config.commit()
-        config.initializeSettings(settings, self.p_config)
-
     def test_static_registration_errors(self):
         self.assertRaises(
             ValueError, view.static,
