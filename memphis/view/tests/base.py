@@ -26,6 +26,7 @@ class Base(unittest.TestCase):
         return environ
 
     def _init_memphis(self, settings={}, handler=None, *args, **kw):
+        config.Settings.reset()
         config.begin()
         config.loadPackage('memphis.view')
         config.addPackage(self.__class__.__module__)
@@ -41,6 +42,7 @@ class Base(unittest.TestCase):
         self.p_config.get_routes_mapper()
 
     def _setup_memphis(self):
+        config.Settings.reset()
         config.begin()
         config.loadPackage('memphis.view')
         config.commit()

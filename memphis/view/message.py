@@ -61,7 +61,7 @@ class Message(object):
 
 
 class InformationMessage(Message):
-    config.adapts(IRequest, 'info')
+    config.adapts(IRequest, name='info')
 
     cssClass = 'statusMessage'
 
@@ -73,13 +73,13 @@ class InformationMessage(Message):
 
 
 class WarningMessage(InformationMessage):
-    config.adapts(IRequest, 'warning')
+    config.adapts(IRequest, name='warning')
 
     cssClass = 'statusWarningMessage'
 
 
 class ErrorMessage(InformationMessage):
-    config.adapts(IRequest, 'error')
+    config.adapts(IRequest, name='error')
 
     cssClass = 'statusStopMessage'
 
