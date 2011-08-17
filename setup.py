@@ -34,6 +34,7 @@ setup(name='memphis.config',
       packages = find_packages(),
       namespace_packages = ['memphis'],
       install_requires = [
+        'setuptools',
         'PasteScript',
         'colander',
         'ordereddict',
