@@ -1,229 +1,108 @@
-import types
-import martian
-import pkg_resources
-from zope import interface, component
+import sys, pkg_resources
+from memphis.config import directives
 from zope.component import getSiteManager
-from zope.configuration.config import GroupingContextDecorator
-from zope.configuration.config import ConfigurationMachine
-from zope.configuration.xmlconfig import registerCommonDirectives
 
 
-UNSET = object()
-configContext = None
-grokkerRegistry = martian.GrokkerRegistry()
-grokkerPackages = []
-grokkerPackagesExcludes = {}
-cleanups = []
-modulenum = {}
-modulenext = 0
+def initialize(packages=None, excludes=()):
+    # list all packages
+    if packages is None:
+        packages = loadPackages()
+    else:
+        packages = loadPackages(packages)
 
+    # scan packages and load all actions
+    seen = set()
+    actions = []
 
-def getContext():
-    return configContext
-
-
-def begin(packages=None):
-    global configContext, grokkerPackages
-    if configContext is not None:
-        commit()
-
-    grokkerRegistry.clear()
-    configContext = ConfigurationMachine()
-    registerCommonDirectives(configContext)
-    configContext.registry = getSiteManager()
-    configContext.autocommit = False
-
-    for name in packages or grokkerPackages:
-        excludes = grokkerPackagesExcludes.get(name, ())
-
-        def exclude(modname):
-            if not modname.endswith('.pt'):
-                if modname not in ('tests','testing','ftests') and \
-                        modname not in excludes:
-                    return False
+    def exclude(modname):
+        if modname in packages:
             return True
 
-        martian.grok_dotted_name(
-            name, grokkerRegistry, exclude_filter=exclude,
-            configContext=configContext)
+        for n in ('.test','.ftest'):
+            if n in modname:
+                return False
+
+        if modname in excludes:
+            return False
+        return True
+
+    for pkg in packages:
+        actions.extend(directives.scan(pkg, seen, exclude))
+
+    # execute actions
+    actions = directives.resolveConflicts(actions)
+    for action in actions:
+        action()
 
 
-def commit():
-    global configContext, modulenext
+def loadPackage(name, seen, first=True):
+    packages = []
 
-    if configContext is not None:
-        config = configContext
-        configContext = None
-        config.execute_actions()
-        modulenum.clear()
-        modulenext = 1
+    if name in seen:
+        return packages
 
-
-def moduleNum(name):
-    global modulenext
-
-    if name in modulenum:
-        return modulenum[name]
-
-    modulenext += 1
-    modulenum[name] = modulenext
-    return modulenext
-
-
-def addPackage(name, excludes=()):
-    if name not in grokkerPackages:
-        grokkerPackages.append(name)
-        if excludes:
-            grokkerPackagesExcludes[name] = excludes
-
-        if configContext is not None:
-            # seems configuration system already initialized
-            def exclude(modname):
-                if not modname.endswith('.pt'):
-                    if modname not in ('tests','testing','ftests') and \
-                            modname not in excludes:
-                        return False
-                return True
-
-            martian.grok_dotted_name(
-                name, grokkerRegistry, exclude_filter=exclude,
-                configContext=configContext)
-
-
-def action(context=UNSET, discriminator=None,
-           callable=None, args=(), kw={}, order=0, info=''):
-    if context is None or context is UNSET:
-        context = getContext()
-
-    if context is None:
-        callable(*args, **kw)
-    else:
-        context.action(discriminator, callable, args, kw, order, info=info)
-
-
-def registerAdapter(factory, required=None, provides=None, name=u'',
-                    configContext=UNSET, order=0, info=''):
-    def _register():
-        getSiteManager().registerAdapter(factory, required, provides, name)
-
-    if required is None:
-        required = component.adaptedBy(factory)
-        if required is None:
-            raise ValueError("Adapter required is not defined")
-
-    if provides is None:
-        try:
-            provides = list(interface.implementedBy(factory))[0]
-        except IndexError:
-            raise TypeError('Provides is required')
-
-    if configContext is UNSET:
-        configContext = getContext()
-
-    if configContext is None:
-        _register()
-    else:
-        action(
-            configContext, ('adapter', required, provides, name),
-            callable = _register, order = order, info=info)
-
-
-def registerUtility(comp, provides=None, name='', 
-                    configContext=UNSET, order = 0, info=''):
-    def _register():
-        getSiteManager().registerUtility(comp, provides, name)
-
-    if configContext is UNSET:
-        configContext = getContext()
-
-    if configContext is None:
-        _register()
-    else:
-        action(
-            configContext, ('utility', provides, name),
-            callable = _register, order = order, info=info)
-
-
-def registerHandler(handler, requires=None, 
-                    configContext=UNSET, order = 0, info=''):
-    def _register():
-        getSiteManager().registerHandler(handler, requires)
-
-    if configContext is UNSET:
-        configContext = getContext()
-
-    if configContext is None:
-        _register()
-    else:
-        action(configContext, None,
-               callable = _register, args=(), order = order, info='')
-
-
-def loadPackage(name, seen=None, first=True):
-    if seen is None:
-        seen = set()
     seen.add(name)
 
-    dist = pkg_resources.get_distribution(name)
+    try:
+        dist = pkg_resources.get_distribution(name)
 
-    for req in dist.requires():
-        pkg = req.project_name
-        if pkg in seen:
-            continue
-        loadPackage(pkg, seen, False)
-
-    distmap = pkg_resources.get_entry_map(dist, 'memphis')
-
-    ep = distmap.get('grokker')
-    if ep is not None:
-        addPackage(ep.module_name)
-
-    ep = distmap.get('package')
-    if ep is not None:
-        addPackage(ep.module_name)
-
-    if first:
-        addPackage(name)
-
-
-def loadPackages():
-    seen = set()
-
-    for dist in pkg_resources.working_set:
-        pkg = dist.project_name
-        if pkg in seen:
-            continue
+        for req in dist.requires():
+            pkg = req.project_name
+            if pkg in seen:
+                continue
+            packages.extend(loadPackage(pkg, seen, False))
 
         distmap = pkg_resources.get_entry_map(dist, 'memphis')
+        ep = distmap.get('package')
+        if ep is not None:
+            packages.append(ep.module_name)
+    except pkg_resources.DistributionNotFound:
+        pass
 
-        if 'grokker' in distmap or 'package' in distmap:
-            loadPackage(pkg, seen)
-        else:
-            seen.add(pkg)
+    if first and name not in packages:
+        packages.append(name)
+
+    return packages
+
+
+def loadPackages(include_packages=None):
+    seen = set()
+    packages = []
+
+    if include_packages is not None:
+        for pkg in include_packages:
+            packages.extend(loadPackage(pkg, seen))
+    else:
+        for dist in pkg_resources.working_set:
+            pkg = dist.project_name
+            if pkg in seen:
+                continue
+
+            distmap = pkg_resources.get_entry_map(dist, 'memphis')
+            if 'package' in distmap:
+                packages.extend(loadPackage(pkg, seen))
+            else:
+                seen.add(pkg)
+
+    return packages
 
 
 def notify(*event):
     getSiteManager().subscribers(event, None)
 
 
-def cleanup(handler):
-    registerCleanup(handler)
+_cleanups = set()
+
+def addCleanup(handler):
+    _cleanups.add(handler)
     return handler
 
 
-def registerCleanup(handler):
-    if handler not in cleanups:
-        cleanups.append(handler)
-
-
-def cleanUp():
-    global grokkerPackages, grokkerPackagesExcludes, modulenext
-
-    grokkerRegistry.clear()
-    grokkerPackages = []
-    grokkerPackagesExcludes = {}
-    modulenum.clear()
-    modulenext = 1
-
-    for h in cleanups:
+def cleanUp(modId=None):
+    for h in _cleanups:
         h()
+
+    if modId in sys.modules:
+        mod = sys.modules[modId]
+        if hasattr(mod, directives.ATTACH_ATTR):
+            delattr(mod, directives.ATTACH_ATTR)

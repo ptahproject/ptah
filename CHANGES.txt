@@ -2,8 +2,12 @@
 CHANGES
 =======
 
-0.7 (Unreleased)
+1.0 (Unreleased)
 ----------------
+
+- Inistialization api has been refactored
+
+- Directives implementation has been refactored
 
 - Added simple settings management api
 

@@ -1,21 +1,17 @@
 """ directives tests """
-import unittest
+import sys, unittest
 from zope import interface
 from zope.component import getSiteManager
-from zope.configuration.config import ConfigurationConflictError
 from zope.component.event import objectEventNotify
-from martian.error import GrokImportError
 
 from memphis import config
+from memphis.config import directives
 
 
 class BaseTesting(unittest.TestCase):
 
     def _init_memphis(self, settings={}, *args, **kw):
-        config.loadPackage('memphis.config')
-        config.begin()
-        config.addPackage(self.__class__.__module__)
-        config.commit()
+        config.initialize(('memphis.config', self.__class__.__module__))
 
     def setUp(self):
         sm = getSiteManager()
@@ -25,7 +21,7 @@ class BaseTesting(unittest.TestCase):
         sm = getSiteManager()
         sm.__init__('base')
 
-        config.cleanUp()
+        config.cleanUp(self.__class__.__module__)
         
         global TestClass, testAdapter, testHandler
         try:
@@ -59,11 +55,28 @@ class Context(object):
 
 class TestAdaptsDirective(BaseTesting):
 
-    def test_adapts(self):
+    def test_adapts_err(self):
         global TestClass
 
         class TestClass(object):
             config.adapts(IContext)
+            config.adapts(IContext)
+            interface.implements(IAdapter)
+
+        try:
+            self._init_memphis()
+        except Exception, e:
+            pass
+
+        s = str(e)
+        self.assertTrue(isinstance(e, config.ConflictError))
+        self.assertTrue('memphis.view:adapter' in s)
+        self.assertTrue('test_directives.py' in s)
+
+    def test_adapts(self):
+        global TestClass
+
+        class TestClass(object):
             config.adapts(IContext)
             interface.implements(IAdapter)
 
@@ -155,9 +168,8 @@ class TestAdapterDirective(BaseTesting):
         @config.adapter(IContext)
         @config.adapter(IContext2)
         @interface.implementer(IAdapter)
-        def testAdapter(context):
+        def testAdapter(context): # pragma: no cover
             pass
-        testAdapter(None) # coverage
 
         self._init_memphis()
 
@@ -177,8 +189,8 @@ class TestAdapterDirective(BaseTesting):
 
         @config.adapter(IContext, name='test')
         @interface.implementer(IAdapter)
-        def testAdapter(context): pass
-        testAdapter(None) # coverage
+        def testAdapter(context): # pragma: no cover
+            pass
 
         self._init_memphis()
 
@@ -194,8 +206,8 @@ class TestAdapterDirective(BaseTesting):
 
         @config.adapter(IContext, IContext2, name='test')
         @interface.implementer(IAdapter)
-        def testAdapter(context): pass
-        testAdapter(None) # coverage
+        def testAdapter(context): # pragma: no cover
+            pass
 
         self._init_memphis()
 
@@ -209,11 +221,14 @@ class TestAdapterDirective(BaseTesting):
     def test_adapter_errs1(self):
         global testAdapter
 
-        @config.adapter(IContext, name='test')
-        def testAdapter(context): pass
-        testAdapter(None) # coverage
+        try:
+            @config.adapter(IContext, name='test')
+            def testAdapter(context): # pragma: no cover
+                pass
+        except Exception, e:
+            pass
 
-        self.assertRaises(ValueError, self._init_memphis)
+        self.assertTrue(isinstance(e, TypeError))
 
     def test_adapter_errs2(self):
         global testAdapter
@@ -221,10 +236,10 @@ class TestAdapterDirective(BaseTesting):
         @config.adapter(IContext)
         @config.adapter(IContext)
         @interface.implementer(IAdapter)
-        def testAdapter(context): pass
-        testAdapter(None) # coverage
+        def testAdapter(context):  # pragma: no cover
+            pass
 
-        self.assertRaises(ConfigurationConflictError, self._init_memphis)
+        self.assertRaises(config.ConflictError, self._init_memphis)
 
     def test_adapter_reinitialize(self):
         global testAdapter
@@ -232,8 +247,8 @@ class TestAdapterDirective(BaseTesting):
         @config.adapter(IContext)
         @config.adapter(IContext2)
         @interface.implementer(IAdapter)
-        def testAdapter(context): pass
-        testAdapter(None) # coverage
+        def testAdapter(context): # pragma: no cover
+            pass
 
         self._init_memphis()
 
@@ -258,17 +273,18 @@ class TestAdapterDirective(BaseTesting):
 
 class TestUtilityDirective(BaseTesting):
 
+    def test_utility_err(self):
+        global TestClass
+
+        class TestClass(object):
+            config.utility(IContext)
+            config.utility(IContext)
+
+        self.assertRaises(
+            config.ConflictError, self._init_memphis)
+
     def test_utility(self):
         global TestClass
-        try:
-            e = None
-            class TestClass(object):
-                config.utility(IContext)
-                config.utility(IContext)
-        except Exception, e:
-            pass
-
-        self.assertTrue(isinstance(e, GrokImportError))
 
         class TestClass(object):
             config.utility(IContext)
@@ -393,3 +409,68 @@ class TestHandlerDirective(BaseTesting):
         sm = getSiteManager()
         sm.subscribers((Context(IContext),), None)
         self.assertTrue(len(events) == 1)
+
+
+class TestExtraDirective(BaseTesting):
+
+    def test_scan_unknown(self):
+        self.assertEqual(
+            directives.scan('unknown', []), ())
+
+    def test_scan_package(self):
+        global testHandler
+
+        @config.action
+        def testHandler(*args): # pragma: no cover
+            pass
+
+        seen = set()
+        actions = directives.scan(self.__class__.__module__, seen)
+        
+        self.assertTrue(len(actions) == 1)
+        self.assertTrue(self.__class__.__module__ in seen)
+
+        # already seen
+        actions = directives.scan(self.__class__.__module__, seen)
+        self.assertTrue(len(actions) == 0)
+
+    def test_directive_info_limit_scope(self):
+        self.assertRaises(
+            TypeError, 
+            directives.DirectiveInfo, 2, allowed_scope=('class',))
+
+    def test_directive_info_context(self):
+        info = directives.DirectiveInfo(0)
+        info.scope = 'module'
+
+        self.assertEqual(info.module, 
+                         sys.modules[self.__class__.__module__])
+        self.assertEqual(info.context, 
+                         sys.modules[self.__class__.__module__])
+
+    def test_api_init(self):
+        global testHandler
+
+        processed = []
+
+        @config.action
+        def testHandler(*args): # pragma: no cover
+            processed.append(1)
+
+        config.initialize()
+        
+        self.assertTrue(len(processed) == 0)
+
+        config.initialize((self.__class__.__module__,))
+
+        self.assertTrue(len(processed) == 1)
+
+    def test_api_loadpackage(self):
+        from memphis.config import api
+
+        seen = set()
+        packages = api.loadPackage('memphis.config', seen)
+        self.assertEqual(packages, ['memphis.config'])
+
+        packages = api.loadPackage('memphis.config', seen)
+        self.assertEqual(packages, [])

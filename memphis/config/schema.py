@@ -1,13 +1,10 @@
 """ custom SchemaNode, Mapping, Sequence class """
 import colander
-import translationstring
-
-_ = translationstring.TranslationStringFactory('memphis.config')
 
 
 class Required(colander.Invalid):
 
-    def __init__(self, node, msg=_('Required'), value=None):
+    def __init__(self, node, msg='Required', value=None):
         super(Required, self).__init__(node, msg, value)
 
 

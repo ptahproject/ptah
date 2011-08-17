@@ -12,18 +12,10 @@ from memphis.config.settings import FileStorage, iNotifyWatcher , shutdown
 class BaseTesting(unittest.TestCase):
 
     def _init_memphis(self, settings={}, *args, **kw):
-        config.begin()
-        config.loadPackage('memphis.config')
-        config.addPackage(self.__class__.__module__)
-        config.commit()
-
-    def setUp(self):
-        config.Settings.reset()
-        config.Settings.clear()
-        config.Settings.schema.children[:] = []
+        config.initialize(('memphis.config', self.__class__.__module__))
 
     def tearDown(self):
-        config.cleanUp()
+        config.cleanUp(self.__class__.__module__)
         sm = getSiteManager()
         sm.__init__('base')
 
@@ -531,6 +523,7 @@ class TestFileStorage(BaseTesting):
 class TestSettingsInitialization(BaseTesting):
 
     def setUp(self):
+        config.cleanUp()
         BaseTesting.setUp(self)
         self.dir = tempfile.mkdtemp()
         

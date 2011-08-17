@@ -29,7 +29,7 @@ def processShutdown(sig, frame):
     if sig == SIGINT and callable(_handler_int):
         _handler_int()
 
-    if sig == SIGTERM and callable(_handler_term):
+    if sig == SIGTERM and callable(_handler_term): # pragma: no cover
         _handler_term()
 
     if sig == SIGTERM:

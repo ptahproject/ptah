@@ -1,36 +1,21 @@
 # memphis.config package public API
 
-from memphis.config.api import begin
-from memphis.config.api import commit
-
-from memphis.config.api import UNSET
-from memphis.config.api import getContext
-from memphis.config.api import addPackage
-from memphis.config.api import loadPackage
-from memphis.config.api import loadPackages
-from memphis.config.api import action as addAction
-from memphis.config.api import cleanup
-from memphis.config.api import registerCleanup
-from memphis.config.api import moduleNum
-from memphis.config.api import cleanUp
-
-from memphis.config.api import registerAdapter
-from memphis.config.api import registerUtility
-from memphis.config.api import registerHandler
+from memphis.config.api import initialize
 
 from memphis.config.api import notify
+from memphis.config.api import cleanUp
+from memphis.config.api import addCleanup
 
-from memphis.config.zca import registry
-from memphis.config.zca import getRegistry
-
-from memphis.config.directives import getInfo
-from memphis.config.directives import getModule
+from memphis.config.directives import action
 from memphis.config.directives import adapts
 from memphis.config.directives import adapter
 from memphis.config.directives import handler
-from memphis.config.directives import action
 from memphis.config.directives import utility
-from memphis.config.directives import registerIn
+
+from memphis.config.directives import Action
+from memphis.config.directives import ClassAction
+from memphis.config.directives import DirectiveInfo
+from memphis.config.directives import ConflictError
 
 from memphis.config.settings import Settings
 from memphis.config.settings import FileStorage
@@ -45,5 +30,4 @@ from memphis.config.shutdown import shutdownHandler
 from memphis.config.schema import SchemaNode
 from memphis.config.schema import Mapping
 from memphis.config.schema import Sequence
-from memphis.config.schema import Str, String
 from memphis.config.schema import RequiredWithDependency

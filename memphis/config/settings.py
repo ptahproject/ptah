@@ -16,7 +16,7 @@ except ImportError:
     transaction = None
 
 import api, schema, shutdown
-from directives import action, getInfo
+from directives import DirectiveInfo, Action
 
 
 CONFIG = None
@@ -103,18 +103,19 @@ def registerSettings(name, *nodes, **kw):
 
     group = Settings.register(name, title, description, category)
 
+    info = DirectiveInfo()
+
     for node in nodes:
         if not isinstance(node, schema.SchemaNode):
             raise RuntimeError(
                 "Node '%s' has to be instance of "
                 "memphis.config.SchemaNode"%node.name)
 
-        action(
-            _registerSettingsImpl,
-            name, title, description, validator, node, category,
-            __discriminator = ('memphis:registerSettings', node.name, name),
-            __info = getInfo(2),
-            __frame = sys._getframe(1))
+        info.attach(
+            Action(
+                _registerSettingsImpl,
+                (name, title, description, validator, node, category),
+                discriminator = ('memphis:registerSettings', node.name, name)))
 
     return group
 
@@ -145,9 +146,9 @@ class SettingsImpl(dict):
         if not self._changed:
             if self._changed is None:
                 self._changed = {}
-            if transaction is not None:
+            if transaction is not None: # pragma: no cover
                 transaction.get().addAfterCommitHook(self.save)
-            
+
         data = self._changed.setdefault(group, set())
         data.update(attrs)
 
@@ -196,14 +197,6 @@ class SettingsImpl(dict):
                                 (group, SettingsGroupModified(group)), None)
                     else:
                         group.update(data[name])
-
-    def reset(self):
-        for name, group in self.items():
-            for node in group.schema.children:
-                node.default = node._origin_default
-                group.update({node.name: node.default})
-
-        self.init(self.loader)
 
     def init(self, loader, defaults=None):
         for group in self.values():
@@ -428,56 +421,46 @@ Settings = SettingsImpl()
 
 class iNotifyWatcher(object):
 
-    mask = pyinotify.IN_MODIFY|pyinotify.IN_DELETE_SELF
+    mask = pyinotify.IN_MODIFY
 
     started = False
     filename = ''
 
     def __init__(self, handler):
         self._handler = handler
-        self._wd = None
-        self._wm = pyinotify.WatchManager()
-        self._notifier = pyinotify.ThreadedNotifier(self._wm)
 
     def _process_ev(self, ev):
-        if ev.mask & pyinotify.IN_DELETE_SELF:
-            self.stop()
-            return
-
         if ev.mask & pyinotify.IN_MODIFY:
-            if CONFIG is not None:
+            if CONFIG is not None: # pragma: no cover
                 CONFIG.begin()
 
             self._handler()
 
-            if CONFIG is not None:
+            if CONFIG is not None: # pragma: no cover
                 CONFIG.end()
 
     def start(self, filename):
         if self.started:
-            if self.filename != filename:
+            if self.filename != filename: # pragma: no cover
                 self.stop()
             else:
                 return
-        
-        self._wd = self._wm.add_watch(
-            filename, self.mask, self._process_ev, False, False)
 
-        self._notifier.start()
+        wm = pyinotify.WatchManager()
+        wm.add_watch(filename, self.mask, self._process_ev, False, False)
+        self.notifier = notifier = pyinotify.ThreadedNotifier(wm)
+        self.notifier.start()
+
         self.started = True
         self.filename = filename
 
     def stop(self):
         if self.started:
-            try:
-                self._notifier.stop()
-                if self._wd:
-                    self._wm.rm_watch(self._wd.values(), rec=True)
-            except:
-                pass
-
             self.filename = ''
             self.started = False
+
+            self.notifier.stop()
+            del self.notifier
 
 
 @shutdown.shutdownHandler
@@ -486,19 +469,19 @@ def shutdown():
         Settings.loader.close()
 
 
-@api.cleanup
+@api.addCleanup
 def cleanup():
     global Settings, CONFIG, _settings_initialized
 
     CONFIG = None
     _settings_initialized = False
-    
+
     if Settings.loader is not None:
         Settings.loader.close()
         Settings.loader = None
 
-    for name, group in Settings.items():
-        group.clear()
+    Settings.clear()
+    Settings.schema.children[:] = []
 
     if '_changed' in Settings.__dict__:
         del Settings._changed

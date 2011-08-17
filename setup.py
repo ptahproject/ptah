@@ -6,7 +6,7 @@ def read(*rnames):
     return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
 
 
-version='0.7dev'
+version='1.0dev'
 
 setup(name='memphis.config',
       version=version,
@@ -34,27 +34,17 @@ setup(name='memphis.config',
       packages = find_packages(),
       namespace_packages = ['memphis'],
       install_requires = [
-        'setuptools',
-        'pyinotify',
-        'Paste',
-        'PasteDeploy',
         'PasteScript',
         'colander',
         'ordereddict',
-        'martian >= 0.14',
+        'pyinotify',
         'zope.component',
-        'zope.configuration',
-        'translationstring',
+        'zope.interface',
         ],
-      extras_require = dict(
-        test=['zope.configuration']),
       include_package_data = True,
       zip_safe = False,
       entry_points = {
-        'memphis': ['grokker = memphis.config.meta',
-                    'package = memphis.config'],
-        'z3c.autoinclude.plugin':
-            ['target = plone'],
+        'memphis': ['package = memphis.config'],
         'paste.global_paster_command': [
             'settings = memphis.config.commands:SettingsCommand',
             ],
