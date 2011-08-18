@@ -7,21 +7,14 @@ from memphis.config import shutdown
 
 from base import Base
 
-      
-class TestGlobalCustomizeManagement(Base):
+
+class BaseLayerTest(Base):
 
     file1 = "<div>Test template 1</div>"
     file2 = "<div>Test template 2</div>"
 
     def _setup_memphis(self):
         pass
-
-    def _init_memphis(self, settings={}):
-        config.begin()
-        config.loadPackage('memphis.view')
-        config.addPackage('memphis.view.tests.test_customize')
-        config.commit()
-        config.initializeSettings(settings, self.p_config)
 
     def _mkfile1(self, content):
         f = open(os.path.join(self.dir1, 'file.pt'), 'wb')
@@ -49,6 +42,9 @@ class TestGlobalCustomizeManagement(Base):
         for handler in shutdown.handlers:
             handler()
 
+      
+class TestGlobalCustomizeManagement(BaseLayerTest):
+
     def test_customize_global_disabled(self):
         self._init_memphis()
 
@@ -60,6 +56,23 @@ class TestGlobalCustomizeManagement(Base):
 
         tmpl = view.template(os.path.join(self.dir1, 'file.pt'))
         self.assertEqual(tmpl(), '<div>Test template 1</div>')
+
+        # enable custom folder
+        self._init_memphis({'template.custom': self.dir2})
+
+        self.assertEqual(tmpl(), '<div>Test template 2</div>')
+
+    def test_customize_global_custom_layer_name(self):
+        self._mkfile1(self.file1)
+
+        tmpl = view.template(os.path.join(self.dir1, 'file.pt'),
+                             layer='layer')
+        self.assertEqual(tmpl(), '<div>Test template 1</div>')
+
+        os.makedirs(os.path.join(self.dir2, 'layer'))
+        f = open(os.path.join(self.dir2, 'layer', 'file.pt'), 'wb')
+        f.write(self.file2)
+        f.close()
 
         # enable custom folder
         self._init_memphis({'template.custom': self.dir2})
@@ -157,6 +170,9 @@ class TestGlobalCustomizeManagement(Base):
     def test_customize_global_and_layers(self):
         pass
 
+
+class TestTemplateLayer(BaseLayerTest):
+
     def test_customize_layers(self):
         self.dir3 = tempfile.mkdtemp()
 
@@ -173,6 +189,41 @@ class TestGlobalCustomizeManagement(Base):
         # layers
         view.layer('memphis.view.tests', self.dir2)
         view.layer('memphis.view.tests', self.dir3)
+
+        # override file.pt
+        f = open(os.path.join(self.dir2, 'file.pt'), 'wb')
+        f.write(self.file2)
+        f.close()
+               
+        # override file2.pt
+        f = open(os.path.join(self.dir3, 'file2.pt'), 'wb')
+        f.write(self.file1)
+        f.close()
+
+        # initialize layers
+        customize._Manager.initialize()
+
+        self.assertEqual(tmpl1(), '<div>Test template 2</div>')
+        self.assertEqual(tmpl2(), '<div>Test template 1</div>')
+
+    def test_customize_layers_with_custom_name(self):
+        self.dir3 = tempfile.mkdtemp()
+
+        self._mkfile1(self.file1)
+        f = open(os.path.join(self.dir1, 'file2.pt'), 'wb')
+        f.write(self.file2)
+        f.close()
+
+        tmpl1 = view.template(os.path.join(self.dir1, 'file.pt'),
+                              layer = 'layer')
+        tmpl2 = view.template(os.path.join(self.dir1, 'file2.pt'),
+                              layer = 'layer')
+        self.assertEqual(tmpl1(), '<div>Test template 1</div>')
+        self.assertEqual(tmpl2(), '<div>Test template 2</div>')
+
+        # layers
+        view.layer('layer', self.dir2)
+        view.layer('layer', self.dir3)
 
         # override file.pt
         f = open(os.path.join(self.dir2, 'file.pt'), 'wb')

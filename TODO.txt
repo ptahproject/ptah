@@ -3,4 +3,6 @@ TODO
 
 * Skin (gouped layers)
 
+* Custom layer filesystem watcher (global is implemented)
+
 * fixme: Customize/Listing for templates in custom named layers
