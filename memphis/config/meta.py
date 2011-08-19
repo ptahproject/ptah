@@ -1,64 +1,3 @@
-"""
-handler
--------
-  >>> api.begin()
-
-  >>> from zope import interface
-  >>> from zope.component import getSiteManager
-  >>> class ITest(interface.Interface):
-  ...     pass
-  >>> class Ob(object):
-  ...     def __init__(self, iface):
-  ...         interface.directlyProvides(self, iface)
-
-  >>> @directives.handler(ITest)
-  ... def testHandler(ob):
-  ...     print 'test handler'
-  ...
-  >>> reGrok()
-
-  >>> sm = getSiteManager()
-  >>> s = sm.subscribers((Ob(ITest),), None)
-
-  >>> api.commit()
-  >>> s = sm.subscribers((Ob(ITest),), None)
-  test handler
-
-action
-------
-
-  >>> api.begin()
-  >>> def actionMeth():
-  ...     print 'actionMeth'
-
-  >>> def wrongScope():
-  ...     action(actionMeth)
-
-  >>> wrongScope()
-  Traceback (most recent call last):
-  ...
-  GrokImportError: The 'action' directive can only be used on module level.
-
-  >>> action(actionMeth)
-  <memphis.config.directives.action ...>
-
-  >>> action.immediately = True
-  >>> action(actionMeth)
-  actionMeth
-  <memphis.config.directives.action ...>
-
-  >>> import sys
-  >>> frame = sys._getframe(0)
-
-  >>> def differentScope():
-  ...     action(actionMeth, __frame=frame)
-
-  >>> differentScope()
-  actionMeth
-
-  >>> action.immediately = False
-
-"""
 import martian, sys, types, random
 from zope import interface, component
 from zope.interface.interface import InterfaceClass
@@ -70,10 +9,6 @@ from memphis.config.directives import action
 from memphis.config.directives import registerIn
 
 _marker = object()
-_adapters = []
-_modules = []
-_rmodules = []
-_utilities = []
 
 
 class AdaptsGrokker(martian.ClassGrokker):
@@ -112,10 +47,6 @@ class UtilityGrokker(martian.ClassGrokker):
 
         provides, name, info = value
 
-        if (factory, provides, name) in _utilities:
-            return False
-        _utilities.append((factory, provides, name))
-
         if not provides.implementedBy(factory):
             interface.classImplements(factory, provides)
 
@@ -130,11 +61,10 @@ class AdapterGrokker(martian.InstanceGrokker):
 
     def grok(self, name, obj, configContext=api.UNSET, **kw):
         if getattr(obj, '_register_adapter', False):
-            if (name, obj) in _adapters:
-                return False
-            _adapters.append((name, obj))
-
-            provides = list(interface.implementedBy(obj))[0]
+            try:
+                provides = list(interface.implementedBy(obj))[0]
+            except IndexError:
+                raise ValueError("Can't find provided interfaec")
 
             for required, kwargs, info in obj._register_adapter:
                 api.registerAdapter(
@@ -217,6 +147,10 @@ class RegisterInGrokker(martian.GlobalGrokker):
         return True
 
 
+_adapters = []
+_modules = []
+_rmodules = []
+
 @api.cleanup
 def cleanUp():
     global _adapters, _modules, _rmodules, _utilities
@@ -230,4 +164,3 @@ def cleanUp():
     _modules = []
     _rmodules = []
     _adapters = []
-    _utilities = []

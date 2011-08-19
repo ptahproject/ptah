@@ -456,11 +456,15 @@ class iNotifyWatcher(object):
 
     def stop(self):
         if self.started:
-            self._notifier.stop()
-            if self._wd:
-                self._wm.rm_watch(self._wd.values(), rec=True)
-            self.started = False
+            try:
+                self._notifier.stop()
+                if self._wd:
+                    self._wm.rm_watch(self._wd.values(), rec=True)
+            except:
+                pass
+
             self.filename = ''
+            self.started = False
 
 
 @shutdown.shutdownHandler

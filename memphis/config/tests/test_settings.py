@@ -2,6 +2,7 @@
 import time
 import unittest, os, shutil, tempfile, colander
 from zope.component import getSiteManager
+from zope.component.event import objectEventNotify
 from zope.interface.interface import InterfaceClass
 
 from memphis import config
@@ -18,6 +19,8 @@ class BaseTesting(unittest.TestCase):
 
     def tearDown(self):
         config.cleanUp()
+        sm = getSiteManager()
+        sm.__init__('base')
 
 
 class TestSettings(BaseTesting):
@@ -386,15 +389,18 @@ class TestSettings(BaseTesting):
         sm = getSiteManager()
         
         events = []
+
         def h(grp, ev):
             events.append((grp is group, ev))
 
         sm.registerHandler(h, (group.category, config.SettingsGroupModified))
+        sm.registerHandler(objectEventNotify)
 
         group['node1'] = 'val'
         group['node2'] = 90
 
         config.Settings.save()
+
         self.assertEqual(saved, {'group.node1': 'val', 'group.node2': '90'})
         self.assertTrue(len(events) == 1)
 
@@ -419,18 +425,6 @@ class TestFileStorage(BaseTesting):
         fs = FileStorage(None, os.path.join(self.dir, 'defaults.cfg'))
 
         self.assertEqual(fs.loadDefaults(), {})
-
-    def test_settings_fs_defaults(self):
-        path = os.path.join(self.dir, 'defaults.cfg')
-        f = open(path, 'wb')
-        f.write("""[DEFAULT]\ngroup.node1 = test\ngroup.node2 = 40""")
-        f.close()
-
-        fs = FileStorage(None, os.path.join(self.dir, 'defaults.cfg'))
-
-        self.assertEqual(fs.loadDefaults(), 
-                         {'group.node1': 'test',
-                          'group.node2': '40', 'here': ''})
 
     def test_settings_fs_defaults(self):
         path = os.path.join(self.dir, 'defaults.cfg')
