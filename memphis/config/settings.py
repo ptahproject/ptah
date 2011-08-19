@@ -150,8 +150,8 @@ class SettingsImpl(dict):
         data.update(attrs)
 
     def _load(self, rawdata, setdefaults=False, suppressevents=True):
-        rawdata = dict((k.lower(), v) for k, v in rawdata.items())
         try:
+            rawdata = dict((k.lower(), v) for k, v in rawdata.items())
             data = self.schema.unflatten(rawdata)
         except:
             log.error('Error loading settings')
@@ -160,26 +160,27 @@ class SettingsImpl(dict):
         try:
             data = self.schema.deserialize(data)
         except colander.Invalid, e:
-            if setdefaults:
-                raise
-
             errs = e.asdict()
+            if setdefaults:
+                log.error('Error loading default settings: \n%s'%(
+                        '\n'.join('%s: %s'%(k, v) for k, v in errs.items())))
+                return
+
             log.error('Error loading settings, reloading with defaults: \n%s'%(
                     '\n'.join('%s: %s'%(k, v) for k, v in errs.items())))
 
-            [rawdata.pop(k) for k in errs.keys()]
+            defaults = self.schema.flatten(self.schema.serialize())
 
-            data = self.schema.unflatten(rawdata)
-            try:
-                data = self.schema.deserialize(data)
-            except colander.Invalid, e:
-                log.error('Error loading settings')
-                return
+            for k in errs.keys():
+                rawdata.pop(k)
+                rawdata[k] = defaults[k]
+
+            data = self.schema.deserialize(self.schema.unflatten(rawdata))
 
         for name, group in self.items():
             if name in data and data[name]:
                 if not suppressevents:
-                    modified = data[name] == dict(group)
+                    modified = data[name] != dict(group)
                     group.update(data[name])
                     if modified:
                         getSiteManager().subscribers(
@@ -193,6 +194,12 @@ class SettingsImpl(dict):
                             group.schema[k].default = v
 
     def init(self, loader, defaults=None):
+        for group in self.values():
+            data = dict((node.name, node.default) for node in 
+                        group.schema.children 
+                        if node.default is not colander.null)
+            group.update(data)
+
         if defaults:
             self._load(defaults, True)
 
@@ -210,11 +217,7 @@ class SettingsImpl(dict):
     def save(self, *args):
         if self._changed is not None:
             for grp, attrs in self._changed.items():
-                try:
-                    api.notify(SettingsGroupModified(self[grp]))
-                except:
-                    log.exception("Exception while processing "
-                                  "group modified events")
+                api.notify(SettingsGroupModified(self[grp]))
 
             self._changed = None
 
@@ -267,7 +270,7 @@ class GroupValidator(object):
                     error = colander.Invalid(node)
 
                 if e.node is node:
-                    error.add(e, node)
+                    error.add(e)
                 else:
                     error.add(e, node.children.index(e.node))
 
@@ -323,7 +326,8 @@ class FileStorage(object):
         if self.watcher is None and self.watcherFactory is not None:
             self.watcher = self.watcherFactory(Settings.load)
 
-        self.watcher.start(fn)
+        if self.watcher is not None:
+            self.watcher.start(fn)
 
     def close(self):
         if self.watcher is not None:
@@ -346,7 +350,7 @@ class FileStorage(object):
 
     def loadDefaults(self):
         if os.path.exists(self.cfgdefaults):
-            log.info("Loading default settings: %s"%self.cfg)
+            log.info("Loading default settings: %s"%self.cfgdefaults)
             parser = ConfigParser.SafeConfigParser()
             parser.read(self.cfgdefaults)
             data = dict(parser.items(self.section, vars={'here': self.here}))
@@ -361,11 +365,13 @@ class FileStorage(object):
                         dict(parser.items(
                                 self.section, vars={'here': self.here})))
             return data
+        elif not os.path.exists(self.cfgdefaults):
+            log.info("Default settings file is not found: %s"%self.cfgdefaults)
 
         return {}
 
     def save(self, data):
-        log.info("Loading settings: %s"%self.cfg)
+        log.info("Saving settings: %s"%self.cfg)
 
         parser = ConfigParser.ConfigParser(dict_type=OrderedDict)
         parser.read(self.cfg)
@@ -453,7 +459,11 @@ def cleanup():
     
     if Settings.loader is not None:
         Settings.loader.close()
+        Settings.loader = None
 
     # fixme: doenst work but should!
-    #Settings.clear()
-    #Settings.schema = schema.SchemaNode(schema.Mapping())
+    Settings.clear()
+    Settings.schema = schema.SchemaNode(schema.Mapping())
+
+    if '_changed' in Settings.__dict__:
+        del Settings._changed
