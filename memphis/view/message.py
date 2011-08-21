@@ -2,10 +2,10 @@
 import cgi
 from zope import interface
 from zope.component import getAdapter, queryUtility
-from pyramid.i18n import get_localizer
-from pyramid.interfaces import IRequest, INewResponse
+from pyramid.interfaces import IRequest
 
 from memphis import config
+from memphis.view.tmpl import template as get_template
 from memphis.view.interfaces import IMessage, IStatusMessage
 
 
@@ -56,40 +56,46 @@ class MessageService(object):
 class Message(object):
     interface.implements(IMessage)
 
+    template = None
+
     def __init__(self, request):
         self.request = request
+
+    def render(self, message):
+        return self.template(message = message, request = self.request)
 
 
 class InformationMessage(Message):
     config.adapts(IRequest, name='info')
 
-    cssClass = 'statusMessage'
-
-    def render(self, message):
-        translate = get_localizer(self.request).translate
-
-        return '<div class="%s">%s</div>'%(
-            self.cssClass, cgi.escape(translate(message, self.request), True))
+    template = get_template('memphis.view:templates/msg-info.pt')
 
 
-class WarningMessage(InformationMessage):
+class SuccessMessage(Message):
+    config.adapts(IRequest, name='success')
+
+    template = get_template('memphis.view:templates/msg-success.pt')
+
+
+class WarningMessage(Message):
     config.adapts(IRequest, name='warning')
 
-    cssClass = 'statusWarningMessage'
+    template = get_template('memphis.view:templates/msg-warning.pt')
 
 
-class ErrorMessage(InformationMessage):
+class ErrorMessage(Message):
     config.adapts(IRequest, name='error')
 
-    cssClass = 'statusStopMessage'
+    template = get_template('memphis.view:templates/msg-error.pt')
 
     def render(self, e):
         if isinstance(e, Exception):
-            message = '%s: %s'%(e.__class__.__name__, cgi.escape(str(e), True))
+            message = '%s: %s'%(e.__class__.__name__, 
+                                cgi.escape(str(e), True))
         else:
             message = e
 
-        return super(ErrorMessage, self).render(message)
+        super(ErrorMessage, self).render(message)
 
 
 @config.adapter(IRequest)

@@ -8,7 +8,7 @@ _libraries = {}
 
 def library(name, 
             path='', resource='', type='', 
-            require='', prefix='', postfix='', extra=''):
+            require='', prefix='', postfix='', extra=None):
 
     if not path:
         raise ValueError("path is required")
@@ -35,6 +35,9 @@ def library(name,
     if lib is None:
         lib = Library(name)
         _libraries[name] = lib
+
+    if extra is None:
+        extra = {}
 
     if path:
         lib.add(path, resource, type, require, prefix, postfix, extra)
@@ -82,11 +85,18 @@ def renderIncludes(request):
 class Entry(object):
 
     def __init__(self, path, resource='', 
-                 type='', prefix='', postfix='', extra=''):
+                 type='', prefix='', postfix='', extra={}):
         self.resource = resource
         self.type = type
         self.prefix = prefix
         self.postfix = postfix
+
+        if type == 'css':
+            if 'rel' not in extra:
+                extra['rel'] = 'stylesheet'
+            if 'type' not in extra:
+                extra['type'] = 'text/css'
+
         self.extra = extra
 
         self.urls = urls = []
@@ -106,12 +116,16 @@ class Entry(object):
             urls.append(static_url(self.resource, path, request))
 
         if self.type == 'css':
-            s = '<link rel="stylesheet" %s href="%s" type="text/css" />'
+            s = '<link %shref="%s" />'
         else:
-            s = '<script %s src="%s"> </script>'
+            s = '<script %ssrc="%s"> </script>'
+
+        extra = ' '.join('%s="%s"'%(k,v) for k, v in self.extra.items())
+        if extra:
+            extra = '%s '%extra
 
         return '%s%s%s'%(
-            self.prefix, '\n\n\t'.join(s%(self.extra, url) for url in urls),
+            self.prefix, '\n\n\t'.join(s%(extra, url) for url in urls),
             self.postfix)
 
 
@@ -123,7 +137,7 @@ class Library(object):
         self.entries = []
 
     def add(self, path, resource, type, require, prefix, postfix, extra):
-        self.entries.append(Entry(path, resource, type, prefix, postfix, extra))
+        self.entries.append(Entry(path,resource,type,prefix,postfix,extra))
 
         for req in require:
             if req not in self.require:

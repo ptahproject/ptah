@@ -27,6 +27,8 @@ def renderView(name, context, request):
     return view_callable(context, request)
 
 
+chained = object()
+
 def subpathWrapper(factory, renderer, subpaths):
 
     def wrapper(context, request):
@@ -40,7 +42,9 @@ def subpathWrapper(factory, renderer, subpaths):
                     return view, meth(view)
                 
                 request.subpath = tuple(request.subpath[1:])
-                return render(context, request, viewFactory)
+                result = render(context, request, viewFactory)
+                if result is not chained:
+                    return result
 
         return renderer(context, request)
 
@@ -179,15 +183,26 @@ def registerDefaultViewImpl(name, context=interface.Interface, layer=IRequest):
 def viewMapper(view, attr=None):
     if inspect.isclass(view):
         ronly = requestonly(view, attr)
-        meth = getattr(view, attr or '__call__')
+        attr = attr or '__call__'
+        meth = getattr(view, attr)
+        if attr != 'update':
+            update = getattr(view, 'update')
+        else:
+            update = None
+        updateClass = callable(update)
+
         if ronly:
             def _class_request_view(context, request):
                 inst = view(request)
+                if updateClass:
+                    update(inst)
                 return inst, meth(inst)
             return _class_request_view
         else:
             def _class_view(context, request):
                 inst = view(context, request)
+                if updateClass:
+                    update(inst)
                 return inst, meth(inst)
             return _class_view
     else:

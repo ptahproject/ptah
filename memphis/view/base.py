@@ -3,7 +3,7 @@ import logging
 from zope import interface
 from zope.component import getUtility, getSiteManager
 from memphis.view.formatter import format
-from memphis.view.resources import static_url
+from memphis.view.resources import static, static_url
 from memphis.view.message import addMessage, renderMessages
 from memphis.view.library import library, include, renderIncludes
 from memphis.view.interfaces import IPageletType, IMemphisView
@@ -80,3 +80,25 @@ library(
     path="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.15/jquery-ui.js",
     type="js",
     require="jquery")
+
+
+static('bootstrap', 'memphis.view:bootstrap')
+
+library(
+    'lesscss',
+    path="less-1.1.3.min.js",
+    resource="bootstrap",
+    type="js")
+
+library(
+    'bootstrap',
+    path="bootstrap-1.0.0.min.css",
+    resource="bootstrap",
+    type="css")
+
+library(
+    'bootstrap-less',
+    path="lib/bootstrap.less",
+    resource="bootstrap",
+    type="css",
+    extra={'rel': 'stylesheet/less'})

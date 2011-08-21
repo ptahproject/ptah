@@ -31,6 +31,8 @@ class SimpleRenderer(BaseRenderer):
             factory = self.factory
 
         view, result = factory(context, request)
+        if result is response:
+            return response
 
         if self.layout is not None:
             layout = queryLayout(

@@ -22,6 +22,7 @@ from memphis.view.layout import Layout
 from memphis.view.layout import registerLayout
 
 # view
+from memphis.view.view import chained
 from memphis.view.view import subpath
 from memphis.view.view import renderView
 from memphis.view.view import registerView
