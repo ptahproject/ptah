@@ -134,8 +134,8 @@ class SettingsImpl(dict):
 
     config = None
     loader = None
+    initialized = False
     _changed = None
-    _initialized = False
 
     def __init__(self):
         self.schema = schema.SchemaNode(schema.Mapping())
