@@ -1,19 +1,17 @@
-<div>
+<div class="span12 columns">
+  <h2 tal:condition="context.label">${context.label}</h2>
+  <p tal:condition="context.description">${context.description}</p>
+
   <form action="${context.action}" name="${context.name}" id="${context.id}"
 	method="${context.method}" enctype="${context.enctype}"
 	accept="${context.accept}" acceptCharset="${context.acceptCharset}"
 	tal:attributes="autocomplete getattr(context, 'autocomplete', None)">
 
-    <h1 class="documentFirstHeading" i18n:translate=""
-        tal:condition="context.label">${context.label}</h1>
-    <div class="form-description" i18n:translate=""
-        tal:condition="context.description">${context.description}</div>
-
-    <fieldset class="formPanel" tal:condition="context.widgets">
+    <fieldset tal:condition="context.widgets">
       <tal:block tal:repeat="widget context.widgets.values()"
-		 tal:content="structure view.pagelet('form-widget', widget)" />
+		 tal:content="structure view.pagelet('form-widget',widget)" />
     </fieldset>
-   
+
     <tal:block tal:condition="context.subforms"
 	       tal:repeat="subform context.subforms"
 	       tal:content="structure view.pagelet('form-view', subform)" />

@@ -80,13 +80,3 @@ class HTMLSelectWidget(HTMLFormElement):
 
     multiple = None
     size = 1
-
-
-def addFieldClass(widget):
-    """Add a class to the widget that is based on the field type name.
-
-    If the widget does not have field, then nothing is done.
-    """
-    if IWidget.providedBy(widget):
-        klass = unicode(widget.field.__class__.__name__.lower() + '-field')
-        widget.addClass(klass)

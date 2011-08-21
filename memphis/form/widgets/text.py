@@ -25,10 +25,6 @@ class TextWidget(widget.HTMLTextInputWidget, Widget):
     __title__ = _(u'Text widget')
     __description__ = _(u'HTML Text input widget')
 
-    def update(self):
-        super(TextWidget, self).update()
-        widget.addFieldClass(self)
-
 
 view.registerPagelet(
     pagelets.IWidgetDisplayView, ITextWidget,

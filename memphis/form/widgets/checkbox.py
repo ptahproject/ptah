@@ -41,7 +41,6 @@ class CheckBoxWidget(widget.HTMLInputWidget, SequenceWidget):
     def update(self):
         """See z3c.form.interfaces.IWidget."""
         super(CheckBoxWidget, self).update()
-        widget.addFieldClass(self)
 
         localizer = get_localizer(self.request)
 

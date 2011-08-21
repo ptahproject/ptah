@@ -27,11 +27,6 @@ class SelectWidget(widget.HTMLSelectWidget, SequenceWidget):
     def isSelected(self, term):
         return term.token in self.value
 
-    def update(self):
-        super(SelectWidget, self).update()
-
-        widget.addFieldClass(self)
-
     @property
     def items(self):
         if self.terms is None:  # update() has not been called yet

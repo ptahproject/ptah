@@ -17,4 +17,7 @@ class FormErrorStatusMessage(Message):
         self.errors = [
             err for err in message[1:]
             if IErrorViewSnippet.providedBy(err) and err.widget is None]
-        return self.template(view = self)
+        return self.template(
+            message = self.message,
+            errors = self.errors,
+            request = self.request)

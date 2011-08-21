@@ -45,7 +45,7 @@ class OrderedSelectWidget(widget.HTMLSelectWidget, SequenceWidget):
     def update(self):
         """See memphis.form.interfaces.IWidget."""
         super(OrderedSelectWidget, self).update()
-        widget.addFieldClass(self)
+
         self.items = [
             self.getItem(term, count)
             for count, term in enumerate(self.terms)]

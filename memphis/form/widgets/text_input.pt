@@ -4,9 +4,9 @@
        tal:attributes="id context.id;
                        name context.name;
                        class context.klass;
-                       style context.style;
                        title context.title;
                        lang context.lang;
+		       style context.style;
                        onclick context.onclick;
                        ondblclick context.ondblclick;
                        onmousedown context.onmousedown;

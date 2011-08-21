@@ -1,22 +1,16 @@
-<div class="field"
-     tal:define="error context.error|nothing"
-     tal:attributes="class error and 'field error' or 'field'">
-  <label class="formQuestion" 
-	 tal:attributes="for context.id;
+<div class="${'clearfix error' if error else 'clearfix'}"
+     tal:define="error context.error">
+  <label tal:attributes="for context.id;
 			 title context.field.description">
     ${context.label}
-    <span class="required" title="Required" style="color: #f00;"
-	  tal:condition="context.required">
-      &#x25a0;
-    </span>
   </label>
-  <div tal:condition="error" tal:replace="structure error.render()">
-    The Error
-  </div>
-  <div class="formHelp" 
-       tal:condition="context.field.description"
-       tal:content="structure context.field.description"></div>
-  <div tal:content="structure context.render()">
-    <input type="text" style="width:100%" />
+  <div class="input">
+    <tal:block tal:content="structure context.render()" />
+    <span class="help-inline"
+	  tal:condition="error"
+	  tal:content="structure error.message"></span>
+    <span class="help-block"
+	  tal:condition="not error and context.field.description"
+	  tal:content="structure context.field.description"></span>
   </div>
 </div>

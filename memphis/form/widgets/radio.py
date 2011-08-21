@@ -29,7 +29,6 @@ class RadioWidget(widget.HTMLInputWidget, SequenceWidget):
     def update(self):
         """See memphis.form.interfaces.IWidget."""
         super(RadioWidget, self).update()
-        widget.addFieldClass(self)
 
         localizer = get_localizer(self.request)
 

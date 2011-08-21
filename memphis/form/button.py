@@ -14,7 +14,8 @@ class Button(Field):
     interface.implements(IButton)
 
     def __init__(self, name='submit', title=None, type='submit', value=None,
-                 disabled=False, accessKey = None, action=None):
+                 disabled=False, accessKey = None, 
+                 action=None, primary=False):
         if title is None:
             title = name.capitalize()
         name = re.sub(r'\s', '_', name)
@@ -33,6 +34,7 @@ class Button(Field):
         self.accessKey = accessKey
         self.action = action
         self.required = False
+        self.primary = primary
 
     def __repr__(self):
         return '<%s %r %r>' %(
@@ -97,7 +99,6 @@ class Actions(util.Manager):
         # Walk through each field, making a widget out of it.
         uniqueOrderedKeys = []
         for field in self.form.buttons.values():
-
             # Step 2: Get the widget for the given field.
             shortName = field.name
 
