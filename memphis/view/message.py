@@ -95,7 +95,7 @@ class ErrorMessage(Message):
         else:
             message = e
 
-        super(ErrorMessage, self).render(message)
+        return super(ErrorMessage, self).render(message)
 
 
 @config.adapter(IRequest)

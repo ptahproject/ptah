@@ -62,7 +62,7 @@ class Layout(View):
             view = self.view
         if view is not None:
             self.mainview = view
-            self.maincontext = view.context
+            self.maincontext = getattr(view, 'context', self.context)
 
         layoutview = self.view
         if layout is not None:
@@ -75,9 +75,11 @@ class Layout(View):
         if self.layout is None:
             return result
 
+        parent = getattr(view, '__parent__', self.context)
+
         if self.name != self.layout:
             layout = queryLayout(
-                view, self.request, view.__parent__, self.layout)
+                view, self.request, parent, self.layout)
             if layout is not None:
                 return layout(result, layout=self, view=view, *args, **kw)
         else:

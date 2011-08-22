@@ -68,14 +68,13 @@ class Renderer(BaseRenderer):
                   'context': context,
                   'request': request,
                   'format': format}
-        if params:
+        if type(params) is dict:
             kwargs.update(params)
 
         result = self.template(**kwargs)
 
         if self.layout is not None:
-            layout = queryLayout(
-                view, request, context, self.layout)
+            layout = queryLayout(view, request, context, self.layout)
             if layout is not None:
                 result = layout(result)
 

@@ -18,6 +18,7 @@ class View(object):
     __parent__ = None
 
     format = format
+    template = None
 
     def __init__(self, context, request):
         self.context = context
@@ -25,9 +26,13 @@ class View(object):
         self.__parent__ = context
 
     def update(self):
-        pass
+        return {}
 
     def render(self):
+        params = self.update()
+        if self.template is not None:
+            return self.template(**params)
+
         return u''
 
     def include(self, name):
@@ -92,7 +97,7 @@ library(
 
 library(
     'bootstrap',
-    path="bootstrap-1.0.0.min.css",
+    path="bootstrap-1.0.0.css",
     resource="bootstrap",
     type="css")
 
