@@ -48,7 +48,7 @@ def adapts(*required, **kw):
         )
 
 
-def utility(provides, name=''):
+def utility(provides=None, name=''):
     info = DirectiveInfo(allowed_scope=('class',))
 
     info.attach(
@@ -97,6 +97,7 @@ def _getProvides(factory):
 
 
 ATTACH_ATTR = '__memphis_callbacks__'
+DISCRIMINATORS = {}
 
 
 class Action(object):

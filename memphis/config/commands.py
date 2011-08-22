@@ -119,15 +119,20 @@ class IntrospectCommand(Command):
 
     def command(self):
         config.initialize()
-
         packages = api.loadPackages()
         
         # scan packages and load all actions
         seen = set()
 
+        DISCRIMINATORS = directives.DISCRIMINATORS
+
         for pkg in packages:
-            print '================== %s ==============='%pkg
             actions = directives.scan(pkg, seen, api.exclude)
+            print '================== %s ==============='%pkg
 
             for action in actions:
-                print action.discriminator, action
+                #print action.discriminator, action
+                d = DISCRIMINATORS.get(action.discriminator[0])
+                if d is not None:
+                    d.info(action)
+                    
