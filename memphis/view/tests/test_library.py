@@ -47,7 +47,7 @@ class TestLibraryManagement(Base):
 
         self.assertEqual(
             lib.render(self.request),
-            '<script  src="http://memphis.org/test.js"> </script>')
+            '<script src="http://memphis.org/test.js"> </script>')
 
     def test_library_render_absurls(self):
         lib = view.library(
@@ -55,8 +55,7 @@ class TestLibraryManagement(Base):
     
         self.assertEqual(
             lib.render(self.request),
-            '<link rel="stylesheet"  href="http://memphis.org/style.css" '
-            'type="text/css" />')
+            '<link type="text/css" rel="stylesheet" href="http://memphis.org/style.css" />')
 
     def test_library_render_with_prefix_postfix(self):
         lib = view.library(
@@ -65,12 +64,12 @@ class TestLibraryManagement(Base):
 
         self.assertEqual(
             lib.render(self.request),
-            '<!--[if lt IE 7 ]><link rel="stylesheet"  href="http://memphis.org/style.css" type="text/css" /><![endif]-->')
+            '<!--[if lt IE 7 ]><link type="text/css" rel="stylesheet" href="http://memphis.org/style.css" /><![endif]-->')
 
     def test_library_render_with_extra(self):
         lib = view.library(
             'test-lib', path='http://memphis.org/test.js', type='js',
-            extra='test="extra"')
+            extra={'test': "extra"})
 
         self.assertEqual(
             lib.render(self.request),
@@ -83,7 +82,7 @@ class TestLibraryManagement(Base):
         view.include('test-lib', self.request)
         self.assertEqual(
             view.renderIncludes(self.request),
-            '<link rel="stylesheet"  href="http://memphis.org/style.css" type="text/css" />')
+            '<link type="text/css" rel="stylesheet" href="http://memphis.org/style.css" />')
 
     def test_library_include_errors(self):
         # render not included
@@ -114,10 +113,10 @@ class TestLibraryManagement(Base):
 
         self.assertEqual(
             view.renderIncludes(self.request),
-"""<link rel="stylesheet"  href="http://memphis.org/style1.css" type="text/css" />
-<link rel="stylesheet"  href="http://memphis.org/style2.css" type="text/css" />
-<link rel="stylesheet"  href="http://memphis.org/style3.css" type="text/css" />
-<link rel="stylesheet"  href="http://memphis.org/style4.css" type="text/css" />""")
+"""<link type="text/css" rel="stylesheet" href="http://memphis.org/style1.css" />
+<link type="text/css" rel="stylesheet" href="http://memphis.org/style2.css" />
+<link type="text/css" rel="stylesheet" href="http://memphis.org/style3.css" />
+<link type="text/css" rel="stylesheet" href="http://memphis.org/style4.css" />""")
 
     def test_library_include_resource(self):
         view.static('tests2', 'memphis.view.tests:static/dir1')
@@ -132,7 +131,7 @@ class TestLibraryManagement(Base):
 
         self.assertEqual(
             view.renderIncludes(request),
-            '<link rel="stylesheet"  href="http://localhost:8080/static/tests2/style.css" type="text/css" />')
+            '<link type="text/css" rel="stylesheet" href="http://localhost:8080/static/tests2/style.css" />')
 
     def test_library_View_include(self):
         lib = view.library(
@@ -143,4 +142,4 @@ class TestLibraryManagement(Base):
 
         self.assertEqual(
             base.renderIncludes(),
-            '<script  src="http://memphis.org/test.js"> </script>')
+            '<script src="http://memphis.org/test.js"> </script>')

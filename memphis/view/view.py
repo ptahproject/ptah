@@ -186,7 +186,7 @@ def viewMapper(view, attr=None):
         attr = attr or '__call__'
         meth = getattr(view, attr)
         if attr != 'update':
-            update = getattr(view, 'update')
+            update = getattr(view, 'update', None)
         else:
             update = None
         updateClass = callable(update)

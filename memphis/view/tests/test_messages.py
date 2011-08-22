@@ -27,7 +27,7 @@ class TestStatusMessages(Base):
         service.add('Test')
         msgs = service.messages()
         self.assertTrue(len(msgs) == 1)
-        self.assertTrue(u'<div class="statusMessage">Test</div>' in msgs)
+        self.assertTrue(u'Test' in msgs[0])
 
         # only one message
         service.add('Test')
@@ -37,7 +37,7 @@ class TestStatusMessages(Base):
         # clear
         msgs = service.clear()
         self.assertTrue(len(msgs) == 1)
-        self.assertTrue(u'<div class="statusMessage">Test</div>' in msgs)
+        self.assertTrue(u'Test' in msgs[0])
         self.assertEqual(service.messages(), ())
 
         self.assertEqual(service.clear(), ())
@@ -51,7 +51,7 @@ class TestStatusMessages(Base):
         view.addMessage(self.request, 'message')
         
         self.assertEqual(service.clear(), 
-                         [u'<div class="statusMessage">message</div>'])
+                         [u'<div class="alert-message info">\n  <a class="close" href="#">\xd7</a>\n  <p>message</p>\n</div>\n'])
         self.assertEqual(service.clear(), ())
 
     def test_messages_service_no_session(self):
@@ -70,7 +70,7 @@ class TestStatusMessages(Base):
         # add simple msg
         service.add('warning', 'warning')
         self.assertEqual(service.clear(), 
-                         [u'<div class="statusWarningMessage">warning</div>'])
+                         [u'<div class="alert-message warning">\n  <a class="close" href="#">\xd7</a>\n  <p>warning</p>\n</div>\n'])
 
     def test_messages_error_msg(self):
         self._init_memphis()
@@ -85,12 +85,12 @@ class TestStatusMessages(Base):
         service.add('error', 'error')
         self.assertEqual(
             service.clear(), 
-            [u'<div class="statusStopMessage">error</div>'])
+            [u'<div class="alert-message error">\n  <a class="close" href="#">\xd7</a>\n  <p>error</p>\n</div>\n'])
 
         service.add(ValueError('Error'), 'error')
         self.assertEqual(
             service.clear(), 
-            [u'<div class="statusStopMessage">ValueError: Error</div>'])
+            [u'<div class="alert-message error">\n  <a class="close" href="#">\xd7</a>\n  <p>ValueError: Error</p>\n</div>\n'])
 
     def test_messages_custom_msg(self):
         class CustomMessage(object):
@@ -119,7 +119,7 @@ class TestStatusMessages(Base):
 
         view.addMessage(self.request, 'message')
         msg = view.renderMessages(self.request)
-        self.assertEqual(msg, '<div class="statusMessage">message</div>')
+        self.assertEqual(msg, u'<div class="alert-message info">\n  <a class="close" href="#">\xd7</a>\n  <p>message</p>\n</div>\n')
         self.assertEqual(type(msg), unicode)
 
         msg = view.renderMessages(self.request)
@@ -136,8 +136,8 @@ class TestStatusMessages(Base):
 
         self.assertEqual(
             service.messages(),
-            [u'<div class="statusMessage">message</div>'])
+            [u'<div class="alert-message info">\n  <a class="close" href="#">\xd7</a>\n  <p>message</p>\n</div>\n'])
         self.assertEqual(
             v.renderMessages(),
-            '<div class="statusMessage">message</div>')
+            u'<div class="alert-message info">\n  <a class="close" href="#">\xd7</a>\n  <p>message</p>\n</div>\n')
         self.assertEqual(service.messages(), ())

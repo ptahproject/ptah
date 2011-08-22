@@ -101,8 +101,6 @@ def initialize(ev):
                     dirinfo.insert(0, (abspath, buildTree(abspath)))
 
                 prefix = '%s/%s'%(url, name)
-                registry[name] = (1, prefix)
-
                 rname = '%s-%s'%(url, name)
                 pattern = '%s/*subpath'%prefix
 

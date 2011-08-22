@@ -11,7 +11,7 @@ class RendererBase(Base):
     pass
 
 
-class TestSimpleRenderer(RendererBase):
+class TestSimpleRenderer(Base):
 
     def test_renderer_simple(self):
         def viewFactory(context, request):
@@ -146,9 +146,7 @@ class TestTmplRenderer(RendererBase):
             return None, [1,2]
 
         r = Renderer(template=view.template('templates/test.pt'))
-        self.assertRaises(
-            TypeError,
-            r, Context(), self.request, viewFactory)
+        r(Context(), self.request, viewFactory)
 
     def test_renderer_tmpl_with_layout(self):
         class Layout(view.Layout):
