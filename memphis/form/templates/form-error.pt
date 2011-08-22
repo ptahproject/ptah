@@ -7,10 +7,11 @@
 <div tal:condition="errors"
      class="alert-message block-message error">
   <a class="close" href="#">×</a>
-  <p>${message}</p>
-  <ul>
-    <li tal:repeat="err errors"
-	tal:content="structure err.render()">
-    </li>
-  </ul>
+  <p><strong>${message}</strong>
+    <ul>
+      <li tal:repeat="err errors"
+	  tal:content="structure err.message">
+      </li>
+    </ul>
+  </p>
 </div>

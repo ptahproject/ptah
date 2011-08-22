@@ -3,9 +3,10 @@ import sys, re
 import colander
 from zope import interface
 from zope.component import getSiteManager
+
 from memphis import config
 from memphis.form.field import Field
-from memphis.form.util import createId, expandPrefix, Manager, SelectionManager
+from memphis.form.util import createId, expandPrefix, OrderedDict
 from memphis.form.interfaces import IForm, IButton, IActions, IWidget
 
 
@@ -44,12 +45,14 @@ class Button(Field):
         return self.action(form)
 
 
-class Buttons(SelectionManager):
+class Buttons(OrderedDict):
     """Button manager."""
 
     prefix = 'buttons'
 
     def __init__(self, *args):
+        super(Buttons, self).__init__()
+
         buttons = []
         for arg in args:
             if isinstance(arg, Buttons):
@@ -57,20 +60,11 @@ class Buttons(SelectionManager):
             else:
                 buttons.append((arg.name, arg))
 
-        keys = []
-        seq = []
-        byname = {}
         for name, button in buttons:
-            keys.append(name)
-            seq.append(button)
-            byname[name] = button
-
-        self._data_keys = keys
-        self._data_values = seq
-        self._data = byname
+            self[name] = button
 
 
-class Actions(Manager):
+class Actions(OrderedDict):
     """ Widget manager for Buttons """
     config.adapts(IForm, interface.Interface)
     interface.implementsOnly(IActions)
@@ -79,12 +73,11 @@ class Actions(Manager):
 
     def __init__(self, form, request):
         super(Actions, self).__init__()
+
         self.form = form
         self.request = request
 
     def update(self):
-        self._data = {}
-        self._data_values = []
         content = self.content = self.form.getContent()
 
         # Create a unique prefix.
@@ -97,7 +90,6 @@ class Actions(Manager):
         sm = getSiteManager()
 
         # Walk through each field, making a widget out of it.
-        uniqueOrderedKeys = []
         for field in self.form.buttons.values():
             # Step 2: Get the widget for the given field.
             shortName = field.name
@@ -132,14 +124,9 @@ class Actions(Manager):
             widget.update()
 
             # Step 9: Add the widget to the manager
-            uniqueOrderedKeys.append(shortName)
-
             widget.__parent__ = self
             widget.__name__ = shortName
-
-            self._data_values.append(widget)
-            self._data[shortName] = widget
-            self._data_keys = uniqueOrderedKeys
+            self[shortName] = widget
 
     def execute(self):
         for action in self.values():

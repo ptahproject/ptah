@@ -1,7 +1,7 @@
 from zope import interface
 from memphis import view
-from memphis.form import interfaces
-from memphis.form.interfaces import IForm, IWidget
+from memphis.form.interfaces import IForm, IInputForm, IDisplayForm, IWidget
+from memphis.form.interfaces import INPUT_MODE, DISPLAY_MODE, HIDDEN_MODE
 
 
 class IFormView(interface.Interface):
@@ -20,20 +20,57 @@ class IFormWidgetView(interface.Interface):
 
 
 class IFormDisplayWidgetView(interface.Interface):
-    """ widget view """
+    """ display widget view """
     view.pageletType('form-display-widget', IWidget)
 
 
-class IWidgetInputView(interfaces.INPUT_MODE):
-    """ pagelet type """
+class IWidgetInputView(INPUT_MODE):
+    """ input widget renderer """
     view.pageletType('form-widget-input', IWidget)
 
 
-class IWidgetDisplayView(interfaces.DISPLAY_MODE):
-    """ pagelet type """
+class IWidgetDisplayView(DISPLAY_MODE):
+    """ display widget renderer """
     view.pageletType('form-widget-display', IWidget)
 
 
-class IWidgetHiddenView(interfaces.HIDDEN_MODE):
-    """ pagelet type """
+class IWidgetHiddenView(HIDDEN_MODE):
+    """ hidden widget renderer """
     view.pageletType('form-widget-hidden', IWidget)
+
+
+view.registerPagelet(
+    IFormView, IInputForm,
+    template = view.template('memphis.form:templates/form.pt'))
+
+
+view.registerPagelet(
+    IFormView, IDisplayForm,
+    template = view.template('memphis.form:templates/displayform.pt'))
+
+
+view.registerPagelet(
+    IFormActionsView, IInputForm,
+    template = view.template('memphis.form:templates/form-actions.pt'))
+
+
+view.registerPagelet(
+    IFormWidgetView, IWidget,
+    template = view.template('memphis.form:templates/widget.pt'))
+
+
+view.registerPagelet(
+    IFormDisplayWidgetView, IWidget,
+    template = view.template('memphis.form:templates/widget-display.pt'))
+
+
+view.static(
+    'tiny_mce', 'memphis.form:static/tiny_mce')
+
+
+view.library(
+    "tiny_mce",
+    resource="tiny_mce",
+    path=('tiny_mce.js', 'jquery.tinymce.js'),
+    type="js",
+    require='jquery')

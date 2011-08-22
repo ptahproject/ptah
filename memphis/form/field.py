@@ -1,13 +1,11 @@
-"""Field Implementation"""
 import colander
 from zope import interface
 from zope.component import getSiteManager
 
 from memphis import config
-from memphis.form.util import expandPrefix, Manager, SelectionManager
-from memphis.form.error import Errors, WidgetError, ErrorViewSnippet
-from memphis.form.interfaces import IField, IFields, IWidget, IWidgets
-from memphis.form.interfaces import IForm, IDefaultWidget, IErrorViewSnippet
+from memphis.form.util import expandPrefix, OrderedDict
+from memphis.form.error import Error, WidgetError
+from memphis.form.interfaces import IForm, IField, IFields, IWidget, IWidgets
 from memphis.form.interfaces import INPUT_MODE, DISPLAY_MODE, NOT_CHANGED
 
 
@@ -31,16 +29,12 @@ class Field(object):
         return '<%s %r>' % (self.__class__.__name__, self.name)
 
 
-def _initkw(keepReadOnly=(), omitReadOnly=False, **defaults):
-    return keepReadOnly, omitReadOnly, defaults
-
-
-class Fields(SelectionManager):
-    """Fields manager."""
+class Fields(OrderedDict):
+    """Fields manager"""
     interface.implements(IFields)
 
-    def __init__(self, *args, **kw):
-        keepReadOnly, omitReadOnly, defaults = _initkw(**kw)
+    def __init__(self, *args, **defaults):
+        super(Fields, self).__init__()
 
         self.schemas = schemas = []
 
@@ -65,77 +59,41 @@ class Fields(SelectionManager):
             else:
                 raise TypeError("Unrecognized argument type", arg)
 
-        self._data_keys = []
-        self._data_values = []
-        self._data = {}
-
         for name, field in fields:
             if isinstance(field, Field):
                 form_field = field
             else:
-                #if field.readonly:
-                #    if omitReadOnly and (name not in keepReadOnly):
-                #        continue
                 customDefaults = defaults.copy()
                 #if iface is not None:
                 #    customDefaults['interface'] = iface
                 form_field = Field(field, **customDefaults)
                 name = form_field.name
 
-            if name in self._data:
+            if name in self:
                 raise ValueError("Duplicate name", name)
 
-            self._data_values.append(form_field)
-            self._data_keys.append(name)
-            self._data[name] = form_field
-
-    def select(self, *names, **kwargs):
-        """See interfaces.IFields"""
-        prefix = kwargs.pop('prefix', None)
-        interface = kwargs.pop('interface', None)
-        assert len(kwargs) == 0
-        if prefix:
-            names = [expandPrefix(prefix) + name for name in names]
-        mapping = self
-        if interface is not None:
-            mapping = dict([(field.field.name, field)
-                            for field in self.values()
-                            if field.field.interface is interface])
-        return self.__class__(*[mapping[name] for name in names])
-
-    def omit(self, *names, **kwargs):
-        """See interfaces.IFields"""
-        prefix = kwargs.pop('prefix', None)
-        interface = kwargs.pop('interface', None)
-        assert len(kwargs) == 0
-        if prefix:
-            names = [expandPrefix(prefix) + name for name in names]
-        return self.__class__(
-            *[field for name, field in self.items() if name not in names])
+            self[name] = form_field
 
 
-class FieldWidgets(Manager):
+class FieldWidgets(OrderedDict):
     """Widget manager for IWidget."""
     config.adapts(IForm, interface.Interface)
-    interface.implementsOnly(IWidgets)
+    interface.implements(IWidgets)
 
     prefix = 'widgets.'
     mode = INPUT_MODE
     errors = ()
     hasRequiredFields = False
-    ignoreReadonly = False
     setErrors = True
 
     def __init__(self, form, request):
         super(FieldWidgets, self).__init__()
+
         self.form = form
         self.request = request
 
     def update(self):
         content = self.content = self.form.getContent()
-
-        self._data = {}
-        self._data_values = []
 
         # Create a unique prefix.
         prefix = expandPrefix(self.form.prefix)
@@ -147,14 +105,11 @@ class FieldWidgets(Manager):
         sm = getSiteManager()
 
         # Walk through each field, making a widget out of it.
-        uniqueOrderedKeys = []
         for field in self.form.fields.values():
             # Step 1: Determine the mode of the widget.
             mode = self.mode
             if field.mode is not None:
                 mode = field.mode
-            #elif field.field.readonly and not self.ignoreReadonly:
-            #    mode = interfaces.DISPLAY_MODE
 
             # Step 2: Get the widget for the given field.
             shortName = field.name
@@ -168,8 +123,7 @@ class FieldWidgets(Manager):
                 widget = factory(field.field, field.typ, request)
 
             if widget is None:
-                widget = sm.getMultiAdapter(
-                    (field.field, field.typ, request), IDefaultWidget)
+                raise TypeError("Can't find widget for %s"%field)
 
             # Step 3: Set the prefix for the widget
             widget.name = str(prefix + shortName)
@@ -198,22 +152,14 @@ class FieldWidgets(Manager):
             # Step 10:
             widget.addClass(field.css)
 
-            uniqueOrderedKeys.append(shortName)
-
-            self._data_values.append(widget)
-            self._data[shortName] = widget
             widget.__parent__ = self
             widget.__name__ = shortName
-
-            # allways ensure that we add all keys and keep the order given from
-            # button items
-            self._data_keys = uniqueOrderedKeys
+            self[shortName] = widget
 
     def extract(self):
-        """See interfaces.IWidgets"""
         data = {}
         sm = getSiteManager()
-        errors = Errors()
+        errors = []
         errorViews = []
         context = self.form.getContext()
 
@@ -230,10 +176,10 @@ class FieldWidgets(Manager):
 
                 if value is NOT_CHANGED:
                     value = sm.getMultiAdapter(
-                        (self.context, field), IDataManager).query()
+                        (context, field), IDataManager).query()
 
-            except (ValueError, colander.Invalid), error:
-                errors.append(WidgetError(name, error))
+            except colander.Invalid, error:
+                errors.append(error)
 
             data[widget.__name__] = value
 
@@ -241,29 +187,32 @@ class FieldWidgets(Manager):
         for node in self.form.fields.schemas:
             try:
                 node.deserialize(data)
-            except colander.Invalid, e:
-                errors.append(e)
+            except colander.Invalid, error:
+                for err in error.children:
+                    errors.append(err)
+
+                if error.msg is not None:
+                    errors.append(error)
 
         # call form validation
         self.form.validate(data, errors)
 
-        # prepare errors for viewing
+        # prepare errors
         for error in errors:
-            if IWidgetError.providedBy(error):
-                widget = self.get(error.name)
-                error = error.error
-            else:
-                widget = None
+            widget = self.get(error.node.name)
 
-            view = sm.queryMultiAdapter(
-                (error, self.request), IErrorViewSnippet)
-            if view is None:
-                view = ErrorViewSnippet(error, self.request)
-            view.update(widget)
-            errorViews.append(view)
-            
+            if widget is None:
+                err = Error(error, error.msg)
+            else:
+                err = WidgetError(error, error.msg, widget)
+
+            if widget is not None and widget.error is not None:
+                continue
+
+            errorViews.append(err)
+
             if self.setErrors and widget is not None:
-                widget.error = view
+                widget.error = err
 
         if self.setErrors:
             self.errors = errorViews

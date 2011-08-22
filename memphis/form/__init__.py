@@ -1,4 +1,4 @@
-# python package
+# memphis.form public api
 
 # forms
 from memphis.form.form import Form, DisplayForm
@@ -8,7 +8,6 @@ from memphis.form.interfaces import INPUT_MODE, DISPLAY_MODE, HIDDEN_MODE
 
 # widget
 from memphis.form.widget import Widget
-from memphis.form.interfaces import IWidget, IDefaultWidget
 
 # fields
 from memphis.form.field import Fields
@@ -17,9 +16,6 @@ from memphis.form.field import Fields
 from memphis.form.button import button
 from memphis.form.button import Button
 from memphis.form.button import Buttons
-
-# errors
-from memphis.form.error import WidgetError
 
 # pagelets
 from memphis.form.pagelets import IFormView

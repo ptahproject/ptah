@@ -1,39 +1,33 @@
 """Form implementation"""
-import sys
 from zope import interface
 from zope.component import getMultiAdapter
-
-from webob.exc import HTTPFound
 from webob.multidict import UnicodeMultiDict, MultiDict
 
-from memphis import view, config
-from memphis.form import button, field, interfaces, pagelets
-
-_ = interfaces.MessageFactory
-
-empty_params = UnicodeMultiDict(MultiDict({}), 'utf-8')
+from memphis import view
+from memphis.form.field import Fields
+from memphis.form.button import Buttons, Actions
+from memphis.form.pagelets import IFormView
+from memphis.form.interfaces import INPUT_MODE, DISPLAY_MODE
+from memphis.form.interfaces import IForm, IInputForm, IDisplayForm, IWidgets
 
 
 class Form(view.View):
     """A base form."""
-    interface.implements(interfaces.IForm, interfaces.IInputForm)
+    interface.implements(IForm, IInputForm)
 
-    fields = field.Fields()
-    buttons = button.Buttons()
+    fields = Fields()
+    buttons = Buttons()
 
     label = None
     description = ''
 
     prefix = 'form.'
-    template = None
 
     actions = None
     widgets  = None
-
     content = None
 
-    mode = interfaces.INPUT_MODE
-    ignoreReadonly = False
+    mode = INPUT_MODE
 
     method = 'post'
     enctype = 'multipart/form-data'
@@ -43,10 +37,7 @@ class Form(view.View):
 
     @property
     def action(self):
-        try:
-            self.request.getURL()
-        except:
-            return self.request.url
+        return self.request.url
 
     @property
     def name(self):
@@ -63,20 +54,20 @@ class Form(view.View):
         return self.content
 
     def getRequestParams(self):
-        try:
-            return self.request.params
-        except:
-            return UnicodeMultiDict(self.request.form, 'utf-8')
+        if self.method == 'post':
+            return self.request.POST
+        elif self.method == 'get':
+            return self.request.GET
+        else:
+            return {}
 
     def updateWidgets(self):
-        self.widgets = getMultiAdapter(
-            (self, self.request), interfaces.IWidgets)
+        self.widgets = getMultiAdapter((self, self.request), IWidgets)
         self.widgets.mode = self.mode
-        self.widgets.ignoreReadonly = self.ignoreReadonly
         self.widgets.update()
 
     def updateActions(self):
-        self.actions = button.Actions(self, self.request)
+        self.actions = Actions(self, self.request)
         self.actions.update()
 
     def validate(self, data, errors):
@@ -95,9 +86,8 @@ class Form(view.View):
             self.updateActions()
 
     def render(self):
-        # render content template
         if self.template is None:
-            return view.renderPagelet(pagelets.IFormView, self, self.request)
+            return self.pagelet(IFormView, self)
 
         kwargs = {'view': self,
                   'context': self.context,
@@ -107,9 +97,10 @@ class Form(view.View):
 
 
 class DisplayForm(Form):
-    interface.implements(interfaces.IDisplayForm)
+    interface.implements(IDisplayForm)
 
-    mode = interfaces.DISPLAY_MODE
+    mode = DISPLAY_MODE
+    empty = UnicodeMultiDict(MultiDict({}), 'utf-8')
 
     def getRequestParams(self):
-        return empty_params
+        return self.empty

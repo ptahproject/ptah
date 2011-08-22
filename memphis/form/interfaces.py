@@ -27,77 +27,21 @@ class NOT_CHANGED(object):
 NOT_CHANGED = NOT_CHANGED()
 
 
-# ----[ Generic Manager Interfaces ]-----------------------------------------
-
-class IManager(mapping.IEnumerableMapping):
-    """A manager of some kind of items.
-
-    *Important*: While managers are mappings, the order of the items is
-     assumed to be important! Effectively a manager is an ordered mapping.
-
-    In general, managers do not have to support a manipulation
-    API. Oftentimes, managers are populated during initialization or while
-    updating.
-    """
-
-class ISelectionManager(IManager):
-    """Managers that support item selection and management.
-
-    This manager allows one to more carefully specify the contained items.
-
-    *Important*: The API is chosen in a way, that the manager is still
-    immutable. All methods in this interface must return *new* instances of
-    the manager.
-    """
-
-    def __add__(other):
-        """Used for merge two managers."""
-
-    def select(*names):
-        """Return a modified instance with an ordered subset of items."""
-
-    def omit(*names):
-        """Return a modified instance omitting given items."""
-
-    def copy():
-        """Copy all items to a new instance and return it."""
-
-
 # ----[ Errors ]--------------------------------------------------------------
 
-class IErrors(interface.Interface):
-    """ list """
+class IError(interface.Interface):
+    """ for widget error """
 
-    def append(error):
-        """ append error """
-
-    def extend(errors):
-        """ extend with errors """
-
-    def getWidgetError(name, default=None):
-        """ return widget error """
-
-
-class IWidgetError(interface.Interface):
-    """ A special error, for can return additional errors and explicitly 
-    set to which widget this error should be appied. """
-
-    name = interface.Attribute('Widget name')
-
-    error = interface.Attribute('Error instance')
-
-
-class IErrorViewSnippet(interface.Interface):
-    """A view providing a view for an error"""
-
-    widget = interface.Attribute('Widget')
-
-    error = interface.Attribute('Original error')
+    error = interface.Attribute('Origin error')
 
     message = interface.Attribute('Error message')
 
-    def update():
-        """Update view."""
+
+class IWidgetError(IError):
+    """ A special error, for can return additional errors and explicitly 
+    set to which widget this error should be appied. """
+
+    widget = interface.Attribute('Widget')
 
 
 # ----[ Fields ]--------------------------------------------------------------
@@ -112,24 +56,8 @@ class IField(interface.Interface):
     widgetFactory = interface.Attribute('Widget Factory')
 
 
-class IFields(ISelectionManager):
+class IFields(mapping.IEnumerableMapping):
     """IField manager."""
-
-    def select(prefix=None, interface=None, *names):
-        """Return a modified instance with an ordered subset of items.
-
-        This extension to the ``ISelectionManager`` allows for handling cases
-        with name-conflicts better by separating field selection and prefix
-        specification.
-        """
-
-    def omit(prefix=None, interface=None, *names):
-        """Return a modified instance omitting given items.
-
-        This extension to the ``ISelectionManager`` allows for handling cases
-        with name-conflicts better by separating field selection and prefix
-        specification.
-        """
 
 
 # ----[ Data Managers ]------------------------------------------------------
@@ -149,9 +77,6 @@ class IDataManager(interface.Interface):
         If no value can be found, return the default value.
         If access is forbidden, raise an error.
         """
-
-    def set(value):
-        """Set the value"""
 
 
 # term interfaces
@@ -201,11 +126,6 @@ class IBoolTerms(ITerms):
 
 
 # ----[ Widgets ]------------------------------------------------------------
-
-class IDefaultWidget(interface.Interface):
-    """ default widget, third party components
-    can override this adapter and return different widget """
-
 
 class IWidget(interface.Interface):
     """A widget within a form"""
@@ -328,7 +248,7 @@ class IPasswordWidget(ITextWidget):
     """Password widget."""
 
 
-class IWidgets(IManager):
+class IWidgets(mapping.IEnumerableMapping):
     """A widget manager"""
 
     prefix = interface.Attribute('Prefix')
@@ -355,11 +275,11 @@ class IButton(interface.Interface):
     accessKey = interface.Attribute('Access Key')
 
 
-class IButtons(ISelectionManager):
+class IButtons(mapping.IEnumerableMapping):
     """Buttons manager."""
 
 
-class IActions(IManager):
+class IActions(mapping.IEnumerableMapping):
     """A button widgets manager"""
               
     prefix = interface.Attribute('Prefix')
@@ -398,7 +318,7 @@ class IForm(interface.Interface):
 
     def validate(data, errors):
         ''' Do form level validation, like schema invariants, etc.
-        
+
         Add errors to errors (IErrors) object.
         '''
 

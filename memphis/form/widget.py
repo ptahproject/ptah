@@ -1,32 +1,26 @@
-""" Widget Framework Implementation """
+""" Widget implementation """
 import colander
 from zope import interface
 from zope.component import getMultiAdapter
-from zope.schema.interfaces import IField, ITitledTokenizedTerm
+from zope.schema.interfaces import ITitledTokenizedTerm
 
 from pyramid.i18n import get_localizer
 from webob.multidict import MultiDict
 
-from memphis import view, config
-from memphis.form import interfaces, util
+from memphis.form.interfaces import \
+    IWidget, IDataManager, ISequenceWidget, ITerms, INPUT_MODE
 
 
 PLACEHOLDER = object()
 
-@config.adapter(IField, None)
-@interface.implementer(interfaces.IDefaultWidget)
-def getDefaultWidget(field, request):
-    return getMultiAdapter((field, request), interfaces.IWidget)
-
 
 class Widget(object):
     """Widget base class."""
-    interface.implements(interfaces.IWidget)
+    interface.implements(IWidget)
 
-    # widget specific attributes
     name = '' 
     label = u''
-    mode = interfaces.INPUT_MODE
+    mode = INPUT_MODE
     required = False 
     error = None 
     value = None 
@@ -35,12 +29,12 @@ class Widget(object):
     form = None
     content = None
     context = None
+    params = MultiDict({})
 
     def __init__(self, field, typ, request):
         self.field = field
         self.typ = typ
         self.request = request
-        self.params = MultiDict({})
 
         self.name = field.name
         self.id = field.name.replace('.', '-')
@@ -72,19 +66,15 @@ class Widget(object):
             #              content is to be used to extract a value, get
             #              it now via a data manager.
             if self.content is not None:
-                dm = getMultiAdapter(
-                    (self.content, self.field), interfaces.IDataManager)
-
                 value = getMultiAdapter(
-                    (self.content, self.field), interfaces.IDataManager).query()
+                    (self.content, self.field), IDataManager).query()
 
             # Step 1.2.2: If we still do not have a value, we can always use
             #             the default value of the field, id set
             # NOTE: It should check field.default is not missing_value, but
             # that requires fixing zope.schema first
-            if ((value is self.field.missing or
-                 value is colander.null) and
-                self.field.default is not None):
+            if ((value is self.field.missing or value is colander.null) and
+                self.field.default is not colander.null):
                 value = self.field.default
                 lookForDefault = True
 
@@ -118,7 +108,7 @@ class SequenceWidget(Widget):
     See also the MultiWidget for build sequence values based on none collection
     based values. e.g. IList of ITextLine
     """
-    interface.implements(interfaces.ISequenceWidget)
+    interface.implements(ISequenceWidget)
 
     value = ()
     terms = None
@@ -144,8 +134,7 @@ class SequenceWidget(Widget):
     def updateTerms(self):
         if self.terms is None:
             self.terms = getMultiAdapter(
-                (self.content, self.field, self.field.typ, self), 
-                interfaces.ITerms)
+                (self.content, self.field, self.field.typ, self), ITerms)
         return self.terms
 
     def update(self):

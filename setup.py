@@ -4,11 +4,11 @@ from setuptools import setup, find_packages
 def read(*rnames):
     return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
 
-version='0.10'
+version='1.0dev'
 
 setup(name='memphis.form',
       version=version,
-      description="Form generation library for memphis.",
+      description="Form generation library for memphis",
       long_description=(
           'Detailed Documentation\n' +
           '======================\n'
@@ -33,19 +33,13 @@ setup(name='memphis.form',
       namespace_packages=['memphis'],
       install_requires = ['setuptools',
                           'chameleon',
+                          'ordereddict',
                           'memphis.view',
                           'memphis.config',
                           'zope.schema',
                           'zope.component',
                           'zope.interface',
-                          'zope.configuration',
-                          'zope.contenttype',
-                          'zope.lifecycleevent',
                           ],
-      extras_require = dict(
-          test=['lxml',
-                'pyramid',
-                'memphis.view [test]',]),
       include_package_data = True,
       zip_safe = False,
       entry_points = {
