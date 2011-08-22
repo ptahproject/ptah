@@ -97,7 +97,7 @@ class subpath(object):
 
 def registerView(
     name='', factory=View, context=None, template=None,
-    route_name=None, layout='', permission='__no_permission_required__',
+    route=None, layout='', permission='__no_permission_required__',
     default=False, decorator=None):
 
     if factory is None or not callable(factory):
@@ -108,8 +108,8 @@ def registerView(
         config.Action(
             registerViewImpl,
             (factory, name, context, template,
-             route_name, layout, permission, default, decorator),
-            discriminator = ('memphis.view:view', name, context, route_name)))
+             route, layout, permission, default, decorator),
+            discriminator = ('memphis.view:view', name, context, route)))
 
 
 def registerViewImpl(

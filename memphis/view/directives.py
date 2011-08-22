@@ -32,13 +32,13 @@ def pyramidView(*args, **kw):
     info = config.DirectiveInfo(
         allowed_scope=('class', 'module', 'function call'))
 
-    def initargs(name='', context=None, template=None, route_name=None, 
+    def initargs(name='', context=None, template=None, route=None, 
                  layout='', permission='__no_permission_required__',
                  default=False, decorator=None):
-        return name, context, route_name, template, \
+        return name, context, route, template, \
             layout, permission, default, decorator
 
-    name, context, route_name, template, \
+    name, context, route, template, \
         layout, permission, default, decorator = initargs(*args, **kw)
 
     if info.scope in ('module', 'function call'): # function decorator
@@ -47,9 +47,8 @@ def pyramidView(*args, **kw):
                 config.Action(
                     registerViewImpl,
                     (factory, name, context, template,
-                     route_name, layout, permission, default, decorator),
-                    discriminator = (
-                        'memphis.view:view', name, context, route_name))
+                     route, layout, permission, default, decorator),
+                    discriminator = ('memphis.view:view',name,context,route))
                 )
             return factory
         return wrapper
@@ -58,9 +57,8 @@ def pyramidView(*args, **kw):
             config.ClassAction(
                 registerViewImpl,
                 (name, context, template,
-                 route_name, layout, permission, default, decorator),
-                discriminator = (
-                    'memphis.view:view', name, context, route_name))
+                 route, layout, permission, default, decorator),
+                discriminator = ('memphis.view:view', name, context, route))
             )
 
 
@@ -68,15 +66,15 @@ def layout(*args, **kw):
     info = config.DirectiveInfo(allowed_scope=('class',))
 
     def initargs(name='', context=INavigationRoot, 
-                 view=None, parent='', route_name=None):
-        return name, context, view, parent, route_name
+                 view=None, parent='', route=None):
+        return name, context, view, parent, route
 
-    name, context, view, parent, route_name = initargs(*args, **kw)
+    name, context, view, parent, route = initargs(*args, **kw)
 
     info.attach(
         config.ClassAction(
             registerLayoutImpl,
-            (name, context, view, None, parent, route_name),
+            (name, context, view, None, parent, route),
             discriminator = (
-                'memphis.view:layout', name, context, view, route_name))
+                'memphis.view:layout', name, context, view, route))
         )

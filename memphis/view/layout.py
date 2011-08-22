@@ -98,7 +98,7 @@ class Layout(View):
 
 def registerLayout(
     name='', context=INavigationRoot, view=None, 
-    parent='', klass=Layout, template = None, route_name=None):
+    parent='', klass=Layout, template = None, route=None):
 
     if not klass or not issubclass(klass, Layout):
         raise ValueError("klass has to inherit from Layout class")
@@ -107,9 +107,9 @@ def registerLayout(
     info.attach(
         config.Action(
             registerLayoutImpl,
-            (klass, name, context, view, template, parent, route_name),
+            (klass, name, context, view, template, parent, route),
             discriminator = (
-                'memphis.view:layout', name, context, view, route_name))
+                'memphis.view:layout', name, context, view, route))
         )
 
 
