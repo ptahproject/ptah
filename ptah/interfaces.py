@@ -99,3 +99,7 @@ class IPasswordReset(interface.Interface):
     #passcode = schema.TextLine(
     #    title = u'Reset password code',
     #    required = True)
+
+
+class IPtahRoute(interface.Interface):
+    """ ptah route """
