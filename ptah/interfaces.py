@@ -1,6 +1,7 @@
 """ interfaces """
 import translationstring
 from zope import interface
+from memphis import view
 
 _ = translationstring.TranslationStringFactory('ptah')
 
@@ -23,26 +24,6 @@ class IAuthentication(interface.Interface):
 
 class IUser(interface.Interface):
     """ user behavior """
-
-
-class IUserInfo(interface.Interface):
-    pass
-
-    #fullname = schema.TextLine(
-    #    title = u'Fullname',
-    #    required = True)
-
-    #login = schema.TextLine(
-    #    title = u'Login',
-    #    required = True)
-
-    #password = schema.TextLine(
-    #    title = u'Password',
-    #    required = True)
-
-    #confirmed = schema.Bool(
-    #    title = u'Confirmed',
-    #    required = False)
 
 
 class IPasswordTool(interface.Interface):
@@ -91,15 +72,44 @@ class IPasswordTool(interface.Interface):
         """ reset password """
 
 
-class IPasswordReset(interface.Interface):
-    pass
-
-    #storage.schema('memphis.user:resetpassword')
-
-    #passcode = schema.TextLine(
-    #    title = u'Reset password code',
-    #    required = True)
-
-
 class IPtahRoute(interface.Interface):
     """ ptah route """
+
+
+class IPtahManageRoute(view.INavigationRoot):
+    """ user management route """
+
+
+class IPtahUser(interface.Interface):
+    """ wrapper for actual user """
+
+    user = interface.Attribute('Wrapped user object')
+
+
+class IAction(interface.Interface):
+    """ ptah action """
+
+    title = interface.Attribute('User friendly title')
+    
+    action = interface.Attribute('Action')
+
+
+class IManageAction(IAction):
+    """ management action """
+
+    def available():
+        """ check if action is availble for principal """
+
+
+class IUserAction(IAction):
+
+    def available(principal):
+        """ check if action is availble for principal """
+
+
+class IManageUserAction(IUserAction):
+    """ user management action """
+
+
+class IPersonalAction(IUserAction):
+    """ user preferences action """

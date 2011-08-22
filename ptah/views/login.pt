@@ -11,7 +11,7 @@
   <p>
     <tal:block i18n:translate="">If you have forgotten your password,</tal:block>
     <a i18n:translate=""
-       href="${app_url}/resetpassword.html?login=${request.params.get('form.widgets.login','')}">
+       href="${app_url}/ptah/resetpassword.html?login=${request.params.get('form.widgets.login','')}">
       click here to retrieve it
     </a>.
   </p>

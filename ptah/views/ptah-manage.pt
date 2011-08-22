@@ -1,0 +1,31 @@
+<div class="page-header">
+  <h1><a href="${request.application_url}/ptah-manage/">
+      Ptah management</a> 
+    <small tal:condition="view.user">
+      for <a href="${view.url}">${view.user}</a></small></h1>
+</div>
+
+<div class="row">
+  <div class="span4 columns">
+    <h6>Actions</h6>
+
+    <tal:block condition="nothing">
+    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+    </p>
+    </tal:block>
+
+    <table class="zebra-striped">
+      <tr tal:repeat="a view.actions">
+	<td>
+	  <a href="${view.url}${a.action}">${a.title}</a>
+	</td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="span12 columns">
+    <tal:block content="structure view.renderMessages()" />
+
+    <tal:block content="structure content" />
+  </div>
+</div>

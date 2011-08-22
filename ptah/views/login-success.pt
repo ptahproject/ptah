@@ -15,6 +15,6 @@
 
   <div class="actions">
     <a class="btn primary" href="${request.application_url}"
-       i18n:translate="">Continue to the to the main page.</a>
+       i18n:translate="">Continue to the main page.</a>
   </div>
 </tal:block>

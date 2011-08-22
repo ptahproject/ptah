@@ -4,6 +4,7 @@ from zope.component import getUtility
 from ptah.interfaces import _, IPasswordTool
 from ptah.models import User
 
+
 def lower(s):
     if isinstance(s, basestring):
         return s.lower()
@@ -12,6 +13,23 @@ def lower(s):
 def checkLogin(node, login):
     if login and User.get(login) is not None:
         raise colander.Invalid(node, _('Login already is in use.'))
+
+
+def passwordValidator(node, appstruct):
+    err = getUtility(IPasswordTool).validatePassword(appstruct)
+    if err is not None:
+        raise colander.Invalid(node, err)
+
+
+def passwordSchemaValidator(node, appstruct):
+    if appstruct['password'] and appstruct['confirm_password']:
+        if appstruct['password'] != appstruct['confirm_password']:
+            raise colander.Invalid(
+                node, _("Password and Confirm Password should be the same."))
+
+        err = getUtility(IPasswordTool).validatePassword(appstruct['password'])
+        if err is not None:
+            raise colander.Invalid(node, err)
 
 
 class RegistrationSchema(colander.Schema):
@@ -64,18 +82,6 @@ class ResetPasswordSchema(colander.Schema):
         default = u'')
 
 
-
-def passwordSchemaValidator(node, appstruct):
-    if appstruct['password'] and appstruct['confirm_password']:
-        if appstruct['password'] != appstruct['confirm_password']:
-            raise colander.Invalid(
-                node, _("Password and Confirm Password should be the same."))
-
-        err = getUtility(IPasswordTool).validatePassword(appstruct['password'])
-        if err is not None:
-            raise colander.Invalid(node, err)
-
-
 PasswordSchema = colander.SchemaNode(
     colander.Mapping(),
     
@@ -100,12 +106,53 @@ PasswordSchema = colander.SchemaNode(
 )
 
 
-"""
-class SChangePasswordForm(interface.Interface):
+class CreateUserSchema(colander.Schema):
 
-    current_password = CurrentPassword(
-        title = _(u'Current password'),
-        description = _(u'Enter your current password.'),
-        missing_value = u'',
-        required = True)
-"""
+    fullname = colander.SchemaNode(
+        colander.Str(),
+        title=_('Full Name'),
+        description=_(u"e.g. John Smith. This is how users "
+                      u"on the site will identify you."),
+        )
+
+    login = colander.SchemaNode(
+        colander.Str(),
+        title = _(u'E-mail/Login'),
+        description = _(u'This is the username you will use to log in. '
+                        'It must be an email address. <br /> Your email address '
+                        'will not be displayed to any user or be shared with '
+                        'anyone else.'),
+        preparer = lower,
+        validator = colander.All(colander.Email(), checkLogin),
+        )
+
+    password = colander.SchemaNode(
+        colander.Str(),
+        title = _(u'New password'),
+        description = _(u'Enter new password. '\
+                        u'No spaces or special characters, should contain '\
+                        u'digits and letters in mixed case.'),
+        validator = passwordValidator)
+
+    suspend = colander.SchemaNode(
+        colander.Bool(),
+        title = _(u'Suspend'),
+        description = _(u'Suspend account immediately after creation.'),
+        default = False)
+
+    validate = colander.SchemaNode(
+        colander.Bool(),
+        title = _(u'Validate'),
+        description = _(u'Initiate email validation process for new account.'),
+        default = False)
+
+
+class ManagerChangePasswordSchema(colander.Schema):
+
+    password = colander.SchemaNode(
+        colander.Str(),
+        title = _(u'New password'),
+        description = _(u'Enter new password. '\
+                        u'No spaces or special characters, should contain '\
+                        u'digits and letters in mixed case.'),
+        validator = passwordValidator)

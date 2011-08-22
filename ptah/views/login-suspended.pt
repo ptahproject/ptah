@@ -1,0 +1,18 @@
+<tal:block i18n:domain="memphis.users">
+  <div class="page-header">
+    <h1 i18n:translate="">Your account has been suspended</h1>
+  </div>
+
+  <p>
+    Contact with admin 
+    <a href="mailto:${view.from_address}">${view.from_name}</a>
+  </p>
+
+  <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+  </p>
+  
+  <div class="actions">
+    <a class="btn primary" href="${request.application_url}"
+       i18n:translate="">Continue to the main page.</a>
+  </div>
+</tal:block>

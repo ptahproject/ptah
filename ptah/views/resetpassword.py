@@ -15,15 +15,9 @@ from schemas import ResetPasswordSchema, PasswordSchema
 MAIL = mail.MAIL
 
 
-view.registerRoute('ptah-resetpwd', '/resetpassword.html',
-                   lambda request: ptahRoute)
-view.registerRoute('ptah-resetpwdform', '/resetpasswordform.html',
-                   lambda request: ptahRoute)
-
-
 class ResetPassword(form.Form):
     view.pyramidView(
-        route = 'ptah-resetpwd', layout = 'ptah',
+        'resetpassword.html', route = 'ptah',
         template = view.template('ptah.views:resetpassword.pt'))
 
     fields = form.Fields(ResetPasswordSchema)
@@ -59,10 +53,14 @@ class ResetPassword(form.Form):
 
         self.message(_(u"System can't restore password for this user."))
 
+    @form.button(_('Cancel'))
+    def cancel(self):
+        raise HTTPFound(location=self.request.application_url)
+        
 
 class ResetPasswordForm(form.Form):
     view.pyramidView(
-        route = 'ptah-resetpwdform', layout = 'ptah',
+        'resetpasswordform.html', route = 'ptah',
         template = view.template('ptah.views:resetpasswordform.pt'))
 
     fields = form.Fields(PasswordSchema)
@@ -82,7 +80,7 @@ class ResetPasswordForm(form.Form):
         else:
             self.message(_("Passcode is invalid."), 'warning')
             raise HTTPFound(
-                location='%s/resetpassword.html'%request.application_url)
+                location='%s/ptah/resetpassword.html'%request.application_url)
 
         super(ResetPasswordForm, self).update()
 
@@ -126,7 +124,7 @@ class ResetPasswordTemplate(mail.MailTemplate):
         self.from_ip = (forwardedFor and '%s/%s' %
                         (remoteAddr, forwardedFor) or remoteAddr)
 
-        self.url = '%s/resetpasswordform.html?passcode=%s'%(
+        self.url = '%s/ptah/resetpasswordform.html?passcode=%s'%(
             request.application_url, self.passcode)
 
         info = self.context

@@ -23,6 +23,7 @@ class User(Base):
     password = sa.Column(sa.Unicode(255))
     joined = sa.Column(sa.DateTime)
     validated = sa.Column(sa.Boolean)
+    suspended = sa.Column(sa.Boolean)
 
     def __init__(self, name, login, email, password=u''):
         super(Base, self).__init__()
@@ -33,6 +34,7 @@ class User(Base):
         self.password = password
         self.joined = datetime.datetime.now()
         self.validated = False
+        self.suspended = False
 
     @classmethod
     def get(cls, login):

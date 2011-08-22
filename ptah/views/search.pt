@@ -1,0 +1,46 @@
+<div class="row" tal:condition="view.users">
+  <div class="page-header">
+    <h2>Users</h2>
+  </div>
+
+  <div class="content">
+    <form method="post" action="${request.url}">
+      <table class="common-table zebra-striped"
+	     tal:define="uids request.params.getall('uid')">
+	<tr>
+	  <th>&nbsp; </th>
+	  <th>#</th>
+	  <th>Name</th>
+	  <th>Login/Email</th>
+	  <th>Validated</th>
+	  <th>Suspended</th>
+	  <th>Joined</th>
+	</tr>
+	<tr tal:repeat="user view.users">
+	  <td><input type="checkbox" name="uid" value="${user.id}" 
+		     tal:attributes="checked str(user.id) in uids" /></td>
+	  <td>${user.id}</td>
+	  <td><a href="${user.id}/index.html">${user.name}</a></td>
+	  <td>${user.login}</td>
+	  <td>${user.validated}</td>
+	  <td>${user.suspended}</td>
+	  <td>${view.format.datetime(user.joined, 'medium')}</td>
+	</tr>
+      </table>
+      <div class="actions">
+	<input type="submit" class="btn" value="Activate" name="activate" />
+	<input type="submit" class="btn" value="Suspend" name="suspend" />
+	<input type="submit" class="btn" value="Validate" name="validate" />
+	<input type="submit" class="btn danger" value="Remove" />
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="row">
+  <div class="page-header">
+    <h3>Search users</h3>
+  </div>
+
+  <tal:block content="structure view.pagelet('form-view', view)" />
+</div>
