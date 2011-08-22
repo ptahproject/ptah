@@ -1,4 +1,5 @@
 """ directives """
+import inspect
 from pyramid.interfaces import IRequest
 
 from memphis import config
@@ -70,3 +71,49 @@ def layout(name='',context=None,view=None,parent='',route=None,template=None):
             discriminator = (
                 'memphis.view:layout', name, context, view, route))
         )
+
+
+class ViewDiscriminator(object):
+
+    type = 'memphis.view:view'
+
+    title = 'View'
+
+    def info(self, action):
+        print 'View:',
+        info = action.info
+        factory = action.info.context
+
+        if inspect.isclass(factory):
+            isclass = True
+            name, context, template,\
+                route, layout, permission, default, decorator = action.args
+        else:
+            isclass = False
+            factory, name, context, template, route, layout, \
+                permission, default, decorator = action.args
+
+        if route:
+            if name:
+                print '"%s" route: "%s" context: "%s"'%(
+                    name, route, context or 'unset')
+            else:
+                print 'route: "%s" context: "%s"'%(
+                    route, context or 'unset')
+        else:
+            print '"%s"'%name
+        
+        if isclass:
+            print '   class: %s.%s'%(info.module.__name__, factory.__name__)
+        else:
+            print '   func:  %s.%s'%(info.module.__name__, factory.__name__)
+
+        if template:
+            print '   template: %s'%template.spec
+
+        print
+
+
+from memphis.config.directives import DISCRIMINATORS
+
+DISCRIMINATORS['memphis.view:view'] = ViewDiscriminator()

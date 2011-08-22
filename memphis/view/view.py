@@ -6,11 +6,12 @@ from zope.component import queryUtility, getSiteManager
 
 from webob.exc import HTTPForbidden
 
-from pyramid.config import requestonly
+from pyramid.config import requestonly, isexception
 from pyramid.interfaces import IView
 from pyramid.interfaces import IRequest
 from pyramid.interfaces import IRouteRequest
 from pyramid.interfaces import IViewClassifier
+from pyramid.interfaces import IExceptionViewClassifier
 from pyramid.interfaces import IAuthenticationPolicy
 
 from memphis import config
@@ -156,16 +157,21 @@ def registerViewImpl(
     # register view
     if context is None:
         context = interface.Interface
+    
+    if isexception(context):
+        view_classifier = IExceptionViewClassifier
+    else:
+        view_classifier = IViewClassifier
 
     request_iface = IRequest
     if route_name is not None:
         request_iface = sm.getUtility(IRouteRequest, name=route_name)
 
     sm.registerAdapter(
-        pyramidView, (IViewClassifier, request_iface, context), IView, name)
+        pyramidView, (view_classifier, request_iface, context), IView, name)
 
     if default:
-        registerDefaultViewImpl(name, context, request_iface)
+        registerDefaultViewImpl(name, context, request_iface, pyramidView)
 
 
 def registerDefaultView(name, context=interface.Interface, layer=IRequest):
@@ -177,9 +183,11 @@ def registerDefaultView(name, context=interface.Interface, layer=IRequest):
             discriminator = ('memphis.view:defaultView',name,context,layer)))
 
 
-def registerDefaultViewImpl(name, context=interface.Interface, layer=IRequest):
-    def view(context, request):
-        return renderView(name, context, request)
+def registerDefaultViewImpl(name, context=interface.Interface, 
+                            layer=IRequest, view=None):
+    if view is None:
+        def view(context, request):
+            return renderView(name, context, request)
 
     getSiteManager().registerAdapter(
         view, (IViewClassifier, layer, context), IView, '')

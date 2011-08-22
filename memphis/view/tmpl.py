@@ -9,9 +9,10 @@ registry = {}
 
 class _Template(object):
 
-    def __init__(self, default, custom=None):
+    def __init__(self, default, custom=None, spec=''):
         self.default = default
         self.custom = custom
+        self.spec = spec
 
         self.tmpl = default
 
@@ -35,7 +36,7 @@ def template(spec, layer=None, title=None, description=None, nolayer=False):
     if not abspath:
         raise ValueError('Missing template asset: %s' % spec)
 
-    tmpl = _Template(getRenderer(abspath))
+    tmpl = _Template(getRenderer(abspath), spec=spec)
 
     if not nolayer:
         if layer is None:

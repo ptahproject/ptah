@@ -31,6 +31,8 @@ CHANGES
 
 - Added resource library
 
+- Allow to register view for exception
+
 - Removed 'pagelet' chameleon expression
 
 - Use simplejson instead of standard json

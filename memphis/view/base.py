@@ -6,9 +6,16 @@ from memphis.view.formatter import format
 from memphis.view.resources import static, static_url
 from memphis.view.message import addMessage, renderMessages
 from memphis.view.library import library, include, renderIncludes
-from memphis.view.interfaces import IPageletType, IMemphisView
+from memphis.view.interfaces import IPageletType, IMemphisView, INavigationRoot
 
 log = logging.getLogger('memphis.view')
+
+
+class DefaultRoot(object):
+    interface.implements(INavigationRoot)
+
+    __name__ = None
+    __parent__ = None
 
 
 class View(object):

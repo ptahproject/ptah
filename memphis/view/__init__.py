@@ -10,6 +10,7 @@ from memphis.view.tmpl import path, template
 
 # base view
 from memphis.view.base import View
+from memphis.view.base import DefaultRoot
 
 # pagelet
 from memphis.view.pagelet import Pagelet
