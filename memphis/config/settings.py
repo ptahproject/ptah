@@ -41,6 +41,10 @@ class SettingsInitialized(object):
 class SettingsGroupModified(ObjectEvent):
     """ settings group has been modified event """
 
+    def __init__(self, group, config):
+        self.object = group
+        self.config = config
+
 
 _marker = object()
 
@@ -76,8 +80,15 @@ def initializeSettings(settings,
                 settings.update(parser.items(section, vars={'here': here}))
 
     Settings.init(loader, settings)
-    api.notify(SettingsInitializing(config))
-    api.notify(SettingsInitialized(config))
+    try:
+        api.notify(SettingsInitializing(config))
+    except Exception, e:
+        log.exception("Exception during settings initializing")
+
+    try:
+        api.notify(SettingsInitialized(config))
+    except Exception, e:
+        log.exception("Exception after settings initialized")
 
 
 def registerSettings(name, *nodes, **kw):
@@ -192,7 +203,8 @@ class SettingsImpl(dict):
                         group.update(data[name])
                         if modified:
                             getSiteManager().subscribers(
-                                (group, SettingsGroupModified(group)), None)
+                                (group, 
+                                 SettingsGroupModified(group, self.config)), None)
                     else:
                         group.update(data[name])
 
@@ -223,7 +235,7 @@ class SettingsImpl(dict):
     def save(self, *args):
         if self._changed is not None:
             for grp, attrs in self._changed.items():
-                api.notify(SettingsGroupModified(self[grp]))
+                api.notify(SettingsGroupModified(self[grp], self.config))
 
             self._changed = None
 
@@ -437,6 +449,9 @@ class iNotifyWatcher(object):
                 Settings.config.end()
 
     def start(self, filename):
+        if Settings.config is None:
+            return
+
         if self.started:
             if self.filename != filename: # pragma: no cover
                 self.stop()
@@ -452,6 +467,9 @@ class iNotifyWatcher(object):
         self.filename = filename
 
     def stop(self):
+        if Settings.config is None:
+            return
+
         if self.started:
             self.filename = ''
             self.started = False
