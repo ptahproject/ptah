@@ -2,7 +2,7 @@
 import translationstring
 from zope import interface
 
-_ = translationstring.TranslationStringFactory('colander')
+_ = translationstring.TranslationStringFactory('ptah')
 
 
 AUTH_RESETPWD = 1

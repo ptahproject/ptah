@@ -1,7 +1,7 @@
 """ schemas """
 import colander
 from zope.component import getUtility
-from memphis.users.interfaces import _, IPasswordTool
+from ptah.interfaces import _, IPasswordTool
 
 
 class RegistrationSchema(colander.Schema):

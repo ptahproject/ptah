@@ -9,8 +9,8 @@ from zope import interface
 from zope.component import getUtility, queryUtility
 
 from memphis import config
-from memphis.users.models import AuthToken, User, Session
-from memphis.users.interfaces import \
+from ptah.models import AuthToken, User, Session
+from ptah.interfaces import \
     _, IAuthentication, IPasswordTool, AUTH_RESETPWD
 
 _encoder = getencoder("utf-8")

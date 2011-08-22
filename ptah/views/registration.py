@@ -1,13 +1,14 @@
 """ site registration form """
 from zope import event, interface
 from zope.component import getUtility
-from zope.lifecycleevent import ObjectCreatedEvent
+#from zope.lifecycleevent import ObjectCreatedEvent
 
+from memphis import view, form
 from pyramid import security
 from webob.exc import HTTPFound
 
-from memphis import view, form
-from memphis.users.interfaces import _, IPasswordTool, IAuthentication
+from ptah import models
+from ptah.interfaces import _, IPasswordTool, IAuthentication
 
 from schemas import RegistrationSchema, PasswordSchema
 
@@ -20,34 +21,29 @@ class Registration(form.Form):
 
     def create(self, data):
         # create user
-        item = storage.insertItem('memphis.user')
-
-        datasheet = IUserInfo(item)
-        datasheet.login = data['login']
-        datasheet.fullname = u'%s %s'%(data['firstname'], data['lastname'])
-        datasheet.confirmed = True
+        user = models.User(data['fullname'], data['login'], data['login'])
 
         # set password
         passwordtool = getUtility(IPasswordTool)
-        datasheet.password = passwordtool.encodePassword(data['password'])
+        user.password = passwordtool.encodePassword(data['password'])
+        models.Session.add(user)
+        models.Session.flush()
 
-        event.notify(ObjectCreatedEvent(item))
-        return item
+        #event.notify(ObjectCreatedEvent(item))
+        return user
 
     @form.button(_(u"Register"), primary=True)
-    def handle_register(self):
-        request = self.request
-
+    def handleRegister(self):
         data, errors = self.extractData()
         if errors:
             self.message(errors, 'form-error')
             return
 
-        self.setPrincipal(self.create(data))
+        user = self.create(data)
 
         user = getUtility(IAuthentication).getUserByLogin(data['login'])
-        headers = security.remember(request, user.id)
+        headers = security.remember(self.request, user.id)
 
         raise HTTPFound(
-            location='%s/login-success.html'%request.application_url,
+            location='%s/login-success.html'%self.request.application_url,
             headers = headers)

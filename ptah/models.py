@@ -13,43 +13,42 @@ Session = psa.get_session()
 
 class User(Base):
 
-    __tablename__ = 'memphis_users'
+    __tablename__ = 'ptah_users'
 
     id = sa.Column(sa.Integer, 
-                   sa.Sequence('memphis_users_seq'), primary_key=True)
+                   sa.Sequence('ptah_users_seq'), primary_key=True)
+    name = sa.Column(sa.Unicode(255))
     login = sa.Column(sa.Unicode(255), unique=True)
     email = sa.Column(sa.Unicode(255), unique=True)
     password = sa.Column(sa.Unicode(255))
-    title = sa.Column(sa.Unicode(255))
     joined = sa.Column(sa.DateTime)
     validated = sa.Column(sa.Boolean)
 
-    def __init__(self, login, email, password):
+    def __init__(self, name, login, email, password=u''):
         super(Base, self).__init__()
 
+        self.name = name
         self.login = login
         self.email = email
         self.password = password
         self.joined = datetime.datetime.now()
         self.validated = False
 
-        self.token = str(uuid.uuid4())
+    @classmethod
+    def get(cls, login):
+        return Session.query(User).filter(cls.login==login).first()
 
     @classmethod
-    def get(self, login):
-        return Session.query(User).filter_by(login=login).first()
-
-    @classmethod
-    def getById(self, id):
-        return Session.query(User).filter_by(id=id).first()
+    def getById(cls, id):
+        return Session.query(User).filter(cls.id==id).first()
 
 
 class AuthToken(Base):
 
-    __tablename__ = 'memphis_authtokens'
+    __tablename__ = 'ptah_authtokens'
 
-    id = sa.Column(sa.Integer, 
-                   sa.Sequence('memphis_authtokens_seq'), primary_key=True)
+    id = sa.Column(
+        sa.Integer, sa.Sequence('ptah_authtokens_seq'), primary_key=True)
     type = sa.Column(sa.Integer)
     time = sa.Column(sa.DateTime)
     token = sa.Column(sa.Unicode(48))
@@ -64,9 +63,9 @@ class AuthToken(Base):
         self.token = str(uuid.uuid4())
 
     @classmethod
-    def get(self, token, type):
-        return Session.query(AuthToken).filter_by(
-            token=token, type=type).first()
+    def get(cls, token, type):
+        return Session.query(AuthToken) \
+            .filter_by(token=token, type=type).first()
 
 
 @config.handler(config.SettingsInitialized)

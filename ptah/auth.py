@@ -7,15 +7,15 @@ from pyramid.threadlocal import get_current_request
 
 from memphis import config
 #from memphis.users.interfaces import IUser, IUserInfo
-from memphis.users.interfaces import IPasswordTool, IAuthentication
-from memphis.users.models import User
+from ptah.interfaces import IPasswordTool, IAuthentication
+from ptah.models import User
 
 
 class Principal(object):
 
-    def __init__(self, id, title, login):
+    def __init__(self, id, name, login):
         self.id = id
-        self.title = title
+        self.name = name
         self.login = login
 
 
@@ -28,7 +28,7 @@ class Authentication(object):
         if user is not None:
             pwtool = getUtility(IPasswordTool)
             if pwtool.checkPassword(user.password, password):
-                return Principal(user.id, user.title, user.login)
+                return Principal(user.id, user.name, user.login)
 
     def getUser(self, id):
         if id and id.startswith('memphis-'):
@@ -42,7 +42,7 @@ class Authentication(object):
     def getUserByLogin(self, login):
         user = User.get(login)
         if user is not None:
-            return Principal(user.id, user.title, user.login)
+            return Principal(user.id, user.name, user.login)
 
     def getCurrentUser(self):
         id = security.authenticated_userid(get_current_request())

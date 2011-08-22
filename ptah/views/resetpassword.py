@@ -7,7 +7,7 @@ from zope import interface, schema
 from zope.component import getUtility
 
 from memphis import config, form, view, mail
-from memphis.users.interfaces import _, IPasswordTool, IAuthentication
+from ptah.interfaces import _, IPasswordTool, IAuthentication
 
 from schemas import ResetPasswordSchema, PasswordSchema
 
@@ -18,7 +18,7 @@ class ResetPassword(view.View):
     view.pyramidView(
         'resetpassword.html', view.INavigationRoot,
         layout = 'login',
-        template = view.template('memphis.users.views:resetpassword.pt'))
+        template = view.template('ptah.views:resetpassword.pt'))
 
     fields = form.Fields(ResetPasswordSchema)
 
@@ -53,7 +53,7 @@ class ResetPasswordForm(form.Form):
     view.pyramidView(
         'resetpasswordform.html', view.INavigationRoot,
         layout = 'login',
-        template = view.template('memphis.users.views:resetpasswordform.pt'))
+        template = view.template('ptah.views:resetpasswordform.pt'))
 
     fields = form.Fields(PasswordSchema)
     fields['password'].widgetFactory = form.widgets.PasswordWidget
@@ -68,7 +68,7 @@ class ResetPasswordForm(form.Form):
 
         if principal is not None:
             self.passcode = passcode
-            self.title = principal.title or principal.login
+            self.title = principal.name or principal.login
         else:
             self.message(_("Passcode is invalid."), 'warning')
             raise HTTPFound(
@@ -101,7 +101,7 @@ class ResetPasswordForm(form.Form):
 class ResetPasswordTemplate(mail.MailTemplate):
 
     subject = 'Password Reset Confirmation'
-    template = view.template('memphis.users.views:resetpasswordmail.pt')
+    template = view.template('ptah.views:resetpasswordmail.pt')
 
     def update(self):
         super(ResetPasswordTemplate, self).update()
@@ -121,4 +121,4 @@ class ResetPasswordTemplate(mail.MailTemplate):
 
         info = self.context
 
-        self.to_address = mail.formataddr((info.title, info.login))
+        self.to_address = mail.formataddr((info.name, info.login))

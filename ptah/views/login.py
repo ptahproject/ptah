@@ -6,21 +6,21 @@ from pyramid import security
 from webob.exc import HTTPFound
 
 from memphis import view, form
-from memphis.users.interfaces import _, IAuthentication
+from ptah.interfaces import _, IAuthentication
 
 from schemas import LoginSchema
 
 
 view.registerLayout(
     'login', view.INavigationRoot, parent='.',
-    template = view.template('memphis.users.views:login-layout.pt'))
+    template = view.template('ptah.views:login-layout.pt'))
 
 
 class LoginForm(form.Form):
     view.pyramidView(
         'login.html', view.INavigationRoot,
         layout = 'login',
-        template=view.template("memphis.users.views:login.pt"))
+        template=view.template("ptah.views:login.pt"))
 
     id = 'login-form'
     bane = 'login-form'
@@ -63,7 +63,7 @@ class LoginSuccess(object):
     view.pyramidView(
         'login-success.html', view.INavigationRoot,
         layout = 'login',
-        template = view.template("memphis.users.views:login-success.pt"))
+        template = view.template("ptah.views:login-success.pt"))
 
     def __init__(self, request):
         self.request = request
@@ -76,7 +76,7 @@ class LoginSuccess(object):
             raise HTTPFound(
                 location = '%s/login.html'%self.request.application_url)
         else:
-            self.user = user.title or user.login
+            self.user = user.name or user.login
 
 
 @view.pyramidView('logout.html', view.INavigationRoot)
