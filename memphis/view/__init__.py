@@ -52,6 +52,7 @@ from memphis.view.directives import pageletType
 from memphis.view.directives import pyramidView
 
 # status message
+from memphis.view.message import Message
 from memphis.view.message import addMessage
 from memphis.view.message import renderMessages
 

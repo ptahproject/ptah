@@ -169,6 +169,7 @@ class iNotifyWatcher(object):
 def initialize(*args):
     _Manager.initialize()
 
+    config = args[-1].config
     try:
         dir = TEMPLATE.custom
 
@@ -197,7 +198,8 @@ def initialize(*args):
             TEMPLATE._manager = _GlobalLayerManager(dir)
             TEMPLATE._manager.load()
 
-        if dir and TEMPLATE._watcher is None and TEMPLATE._manager is not None:
+        if config is not None and dir and \
+                TEMPLATE._watcher is None and TEMPLATE._manager is not None:
             if TEMPLATE.watcher == 'inotify':
                 TEMPLATE._watcher = iNotifyWatcher(TEMPLATE._manager)
                 TEMPLATE._watcher.start()
