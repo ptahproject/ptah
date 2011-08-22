@@ -4,9 +4,9 @@ import colander
 from zope import interface
 from zope.component import getSiteManager
 from memphis import config
-from memphis.form import util
 from memphis.form.field import Field
-from memphis.form.interfaces import IForm, IButton, IActions, IWidget, NO_VALUE
+from memphis.form.util import createId, expandPrefix, Manager, SelectionManager
+from memphis.form.interfaces import IForm, IButton, IActions, IWidget
 
 
 class Button(Field):
@@ -44,7 +44,7 @@ class Button(Field):
         return self.action(form)
 
 
-class Buttons(util.SelectionManager):
+class Buttons(SelectionManager):
     """Button manager."""
 
     prefix = 'buttons'
@@ -70,7 +70,7 @@ class Buttons(util.SelectionManager):
         self._data = byname
 
 
-class Actions(util.Manager):
+class Actions(Manager):
     """ Widget manager for Buttons """
     config.adapts(IForm, interface.Interface)
     interface.implementsOnly(IActions)
@@ -88,8 +88,8 @@ class Actions(util.Manager):
         content = self.content = self.form.getContent()
 
         # Create a unique prefix.
-        prefix = util.expandPrefix(self.form.prefix)
-        prefix += util.expandPrefix(self.prefix)
+        prefix = expandPrefix(self.form.prefix)
+        prefix += expandPrefix(self.prefix)
         request = self.request
         params = self.form.getRequestParams()
         context = self.form.getContext()
@@ -144,7 +144,7 @@ class Actions(util.Manager):
     def execute(self):
         for action in self.values():
             val = action.extract()
-            if val is not NO_VALUE:
+            if val is not colander.null:
                 action.field(self.form)
 
 
@@ -152,7 +152,7 @@ def button(title, **kwargs):
     # Add the title to button constructor keyword arguments
     kwargs['title'] = title
     if 'name' not in kwargs:
-        kwargs['name'] = util.createId(title)
+        kwargs['name'] = createId(title)
 
     # Extract directly provided interfaces:
     provides = kwargs.pop('provides', ())

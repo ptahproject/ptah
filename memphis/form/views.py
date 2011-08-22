@@ -10,7 +10,7 @@ view.library(
     resource="tiny_mce",
     path=('tiny_mce.js', 'jquery.tinymce.js'),
     type="js",
-    require='jquery-ui')
+    require='jquery')
 
 
 view.registerPagelet(
@@ -23,7 +23,7 @@ view.registerPagelet(
 
 view.registerPagelet(
     pagelets.IFormActionsView, interfaces.IInputForm,
-    template = view.template('memphis.form:templates/formactions.pt'))
+    template = view.template('memphis.form:templates/form-actions.pt'))
 
 view.registerPagelet(
     pagelets.IFormWidgetView, interfaces.IWidget,
@@ -31,8 +31,4 @@ view.registerPagelet(
 
 view.registerPagelet(
     pagelets.IFormDisplayWidgetView, interfaces.IWidget,
-    template = view.template('memphis.form:templates/widget_display.pt'))
-
-view.registerPagelet(
-    pagelets.IErrorViewSnippetView,
-    template = view.template("memphis.form:templates/error.pt"))
+    template = view.template('memphis.form:templates/widget-display.pt'))

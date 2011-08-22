@@ -3,13 +3,31 @@ import os
 import colander
 from zope import interface
 from memphis import config, view
-from memphis.form import interfaces, util, pagelets
+from memphis.form import interfaces, pagelets
+from memphis.form.interfaces import _, IErrorViewSnippet
+from memphis.form.interfaces import IErrors, IWidgetError
 
-_ = interfaces.MessageFactory
+
+class FormErrorMessage(view.Message):
+    config.adapts(None, name='form-error')
+
+    template = view.template('memphis.form:templates/form-error.pt')
+
+    formErrorsMessage = _(u'Please fix indicated errors.')
+
+    def render(self, message):
+        self.errors = [
+            err for err in message
+            if IErrorViewSnippet.providedBy(err) and err.widget is None]
+
+        return self.template(
+            message = self.formErrorsMessage,
+            errors = self.errors,
+            request = self.request)
 
 
 class Errors(list):
-    interface.implements(interfaces.IErrors)
+    interface.implements(IErrors)
     
     def __init__(self, *args):
         super(Errors, self).__init__(*args)
@@ -17,7 +35,7 @@ class Errors(list):
         self.widgetErrors = {}
 
     def append(self, error):
-        if interfaces.IWidgetError.providedBy(error):
+        if IWidgetError.providedBy(error):
             self.widgetErrors[error.name] = error
 
         super(Errors, self).append(error)
@@ -31,7 +49,7 @@ class Errors(list):
 
 
 class WidgetError(object):
-    interface.implements(interfaces.IWidgetError)
+    interface.implements(IWidgetError)
 
     def __init__(self, name, error):
         self.name = name
@@ -40,7 +58,7 @@ class WidgetError(object):
 
 class ErrorViewSnippet(object):
     """Error view snippet."""
-    interface.implements(interfaces.IErrorViewSnippet)
+    interface.implements(IErrorViewSnippet)
 
     def __init__(self, error, request):
         self.error = self.context = error
@@ -52,10 +70,6 @@ class ErrorViewSnippet(object):
     def update(self, widget=None):
         self.widget = widget
         self.message = self.createMessage()
-
-    def render(self):
-        return view.renderPagelet(
-            pagelets.IErrorViewSnippetView, self, self.request)
 
     def __repr__(self):
         return '<%s for %s>' %(self.__class__.__name__, self.error)
@@ -77,22 +91,3 @@ class InvalidErrorViewSnippet(ErrorViewSnippet):
 
     def createMessage(self):
         return self.error.msg
-
-
-class MultipleErrorViewSnippet(ErrorViewSnippet):
-    """Error view snippet for multiple errors."""
-    config.adapts(interfaces.IMultipleErrors, None)
-
-    def update(self):
-        pass
-
-    def render(self):
-        return u''.join(view.render() for view in self.error.errors)
-
-
-class MultipleErrors(Exception):
-    """An error that contains many errors"""
-    interface.implements(interfaces.IMultipleErrors)
-
-    def __init__(self, errors):
-        self.errors = errors

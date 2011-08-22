@@ -1,4 +1,5 @@
 """ Form and Widget Framework Interfaces """
+import colander
 from zope import interface
 from zope.interface.common import mapping
 from translationstring import TranslationStringFactory
@@ -24,13 +25,6 @@ class NOT_CHANGED(object):
         return '<NOT_CHANGED>'
 
 NOT_CHANGED = NOT_CHANGED()
-
-
-class NO_VALUE(object):
-    def __repr__(self):
-        return '<NO_VALUE>'
-
-NO_VALUE = NO_VALUE()
 
 
 # ----[ Generic Manager Interfaces ]-----------------------------------------
@@ -69,15 +63,6 @@ class ISelectionManager(IManager):
         """Copy all items to a new instance and return it."""
 
 
-# ----[ Validators ]---------------------------------------------------------
-
-class IFormValidator(interface.Interface):
-    """A validator for a form."""
-
-    def validate(data, errors):
-        """ validate data, errors is IErrors object """
-
-
 # ----[ Errors ]--------------------------------------------------------------
 
 class IErrors(interface.Interface):
@@ -107,19 +92,12 @@ class IErrorViewSnippet(interface.Interface):
 
     widget = interface.Attribute('Widget')
 
-    error = interface.Attribute('Error')
+    error = interface.Attribute('Original error')
+
+    message = interface.Attribute('Error message')
 
     def update():
         """Update view."""
-
-    def render():
-        """Render view."""
-
-
-class IMultipleErrors(interface.Interface):
-    """An error that contains many errors"""
-
-    errors = interface.Attribute("List of errors")
 
 
 # ----[ Fields ]--------------------------------------------------------------
@@ -165,7 +143,7 @@ class IDataManager(interface.Interface):
         If no value can be found, raise an error
         """
 
-    def query(default=NO_VALUE):
+    def query(default=colander.null):
         """Get the value.
 
         If no value can be found, return the default value.
@@ -248,7 +226,7 @@ class IWidget(interface.Interface):
     #ugly thing to remove setErrors parameter from extract
     setErrors = interface.Attribute('Set errors')
 
-    def extract(default=NO_VALUE):
+    def extract(default=colander.null):
         """Extract the string value(s) of the widget from the form.
 
         The return value may be any Python construct, but is typically a
@@ -436,22 +414,6 @@ class IForm(interface.Interface):
         '''Render the form.'''
 
 
-class IInlineForm(IForm):
-    """ """
-
-    weight = interface.Attribute('Sort weight')
-
-    def isAvailable():
-        """ post construction check """
-
-    def applyChanges(data):
-        """ apply changes """
-
-
-class ISubForm(IInlineForm):
-    """A subform."""
-
-
 class IDisplayForm(IForm):
     """Mark a form as display form, used for templates."""
 
@@ -466,23 +428,3 @@ class IInputForm(interface.Interface):
     enctype = interface.Attribute('Encoding Type')
     acceptCharset = interface.Attribute('Accepted Character Sets')
     accept = interface.Attribute('Accepted Content Types')
-
-
-class IEditForm(IForm):
-    """A form to edit data of a component."""
-
-    groups = interface.Attribute('Groups')
-    subforms = interface.Attribute('Subforms')
-
-    def listWrappedForms():
-        """ list wrapped forms """
-
-    def updateForms():
-        """ load and initialize subforms and groups """
-
-    def applyChanges(data):
-        """Apply the changes to the content component."""
-
-
-class IGroup(IInlineForm):
-    """A group of fields/widgets within a form."""

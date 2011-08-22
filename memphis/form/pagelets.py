@@ -1,7 +1,7 @@
 from zope import interface
 from memphis import view
-from memphis.form.interfaces import IForm, IWidget, IErrorViewSnippet
 from memphis.form import interfaces
+from memphis.form.interfaces import IForm, IWidget
 
 
 class IFormView(interface.Interface):
@@ -37,8 +37,3 @@ class IWidgetDisplayView(interfaces.DISPLAY_MODE):
 class IWidgetHiddenView(interfaces.HIDDEN_MODE):
     """ pagelet type """
     view.pageletType('form-widget-hidden', IWidget)
-
-
-class IErrorViewSnippetView(interface.Interface):
-    """ error view pagelet """
-    view.pageletType('form-error-view', IErrorViewSnippet)

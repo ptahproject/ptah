@@ -53,13 +53,13 @@ class Widget(object):
 
     def update(self):
         # Step 1: Determine the value.
-        value = interfaces.NO_VALUE
+        value = colander.null
         lookForDefault = False
 
         # Step 1.1: If possible, get a value from the request
         self.setErrors = False
         widget_value = self.extract()
-        if widget_value is not interfaces.NO_VALUE:
+        if widget_value is not colander.null:
             # Once we found the value in the request, it takes precendence
             # over everything and nothing else has to be done.
             self.value = widget_value
@@ -67,7 +67,7 @@ class Widget(object):
 
         # Step 1.2: If we have a widget with a field and we have no value yet,
         #           we have some more possible locations to get the value
-        if value is interfaces.NO_VALUE and value is not PLACEHOLDER:
+        if value is colander.null and value is not PLACEHOLDER:
             # Step 1.2.1: If the widget knows about its content and the
             #              content is to be used to extract a value, get
             #              it now via a data manager.
@@ -83,20 +83,20 @@ class Widget(object):
             # NOTE: It should check field.default is not missing_value, but
             # that requires fixing zope.schema first
             if ((value is self.field.missing or
-                 value is interfaces.NO_VALUE) and
+                 value is colander.null) and
                 self.field.default is not None):
                 value = self.field.default
                 lookForDefault = True
 
         # Step 1.4: Convert the value to one that the widget can understand
-        if value not in (interfaces.NO_VALUE, PLACEHOLDER):
+        if value not in (PLACEHOLDER, colander.null):
             self.value = self.field.serialize(value)
 
     def render(self):
         # render pagelet, check memphis/form/pagelets.py
         return getMultiAdapter((self, self.request), self.mode)()
 
-    def extract(self, default=interfaces.NO_VALUE):
+    def extract(self, default=colander.null):
         return self.params.get(self.name, default)
 
     def __repr__(self):
@@ -153,7 +153,7 @@ class SequenceWidget(Widget):
         self.updateTerms()
         super(SequenceWidget, self).update()
 
-    def extract(self, default=interfaces.NO_VALUE):
+    def extract(self, default = colander.null):
         if (self.name not in self.params and
             self.name+'-empty-marker' in self.params):
             return default

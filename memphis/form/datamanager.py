@@ -19,7 +19,7 @@ class AttributeField(object):
     def get(self):
         return getattr(self.context, self.field.name)
 
-    def query(self, default=interfaces.NO_VALUE):
+    def query(self, default=colander.null):
         try:
             return self.get()
         except AttributeError:
@@ -58,7 +58,7 @@ class DictionaryField(object):
             raise AttributeError
         return value
 
-    def query(self, default=interfaces.NO_VALUE):
+    def query(self, default=colander.null):
         return self.data.get(self.field.name, default)
 
     def set(self, value):

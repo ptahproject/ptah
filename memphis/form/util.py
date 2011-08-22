@@ -16,7 +16,7 @@ import re
 import types
 import string
 import zope.interface
-import zope.contenttype
+#import zope.contenttype
 
 from memphis.form import interfaces
 from memphis.form.interfaces import MessageFactory as _
