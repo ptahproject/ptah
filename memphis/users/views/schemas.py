@@ -1,32 +1,27 @@
 """ schemas """
 import colander
-from memphis.users.interfaces import _
+from zope.component import getUtility
+from memphis.users.interfaces import _, IPasswordTool
 
 
-class RegistrationSchema(colander.SchemaNode):
-    pass
+class RegistrationSchema(colander.Schema):
 
-"""
-    firstname = schema.TextLine(
-    title=_('First Name'),
-    description=_(u"e.g. John. This is how users "
+    fullname = colander.SchemaNode(
+        colander.Str(),
+        title=_('Full Name'),
+        description=_(u"e.g. John Smith. This is how users "
                       u"on the site will identify you."),
-        required = True,
         )
 
-    lastname = schema.TextLine(
-        title=_('Last Name'),
-        description=_(u"e.g. Smith. This is how users "
-                      u"on the site will identify you."),
-        required = True)
-
-    #login = NewLoginField(
-    #    title = _(u'E-mail/Login'),
-    #    description = _(u'This is the username you will use to log in. '\
-    #        'It must be an email address. <br /> Your email address will not '\
-    #'be displayed to any user or be shared with anyone else.'),
-    #    required = True)
-"""
+    login = colander.SchemaNode(
+        colander.Str(),
+        title = _(u'E-mail/Login'),
+        description = _(u'This is the username you will use to log in. '
+                        'It must be an email address. <br /> Your email address '
+                        'will not be displayed to any user or be shared with '
+                        'anyone else.'),
+        validator = colander.Email(),
+        )
 
 
 class LoginSchema(colander.Schema):
@@ -58,23 +53,40 @@ class ResetPasswordSchema(colander.Schema):
         default = u'')
 
 
-class PasswordSchema(colander.Schema):
+
+def passwordSchemaValidator(node, appstruct):
+    if appstruct['password'] and appstruct['confirm_password']:
+        if appstruct['password'] != appstruct['confirm_password']:
+            raise colander.Invalid(
+                node, _("Password and Confirm Password should be the same."))
+
+        err = getUtility(IPasswordTool).validatePassword(appstruct['password'])
+        if err is not None:
+            raise colander.Invalid(node, err)
+
+
+PasswordSchema = colander.SchemaNode(
+    colander.Mapping(),
     
-    password = colander.SchemaNode(
+    colander.SchemaNode(
         colander.Str(),
+        name = 'password',
         title = _(u'New password'),
         description = _(u'Enter new password. '\
                         u'No spaces or special characters, should contain '\
                         u'digits and letters in mixed case.'),
-        default = u'')
+        default = u''),
 
-    confirm_password = colander.SchemaNode(
+    colander.SchemaNode(
         colander.Str(),
+        name = 'confirm_password',
         title = _(u'Confirm password'),
         description = _(u'Re-enter the password. '
                         u'Make sure the passwords are identical.'),
-        default = u'')
+        default = u''),
 
+    validator = passwordSchemaValidator
+)
 
 """
 class SChangePasswordForm(interface.Interface):

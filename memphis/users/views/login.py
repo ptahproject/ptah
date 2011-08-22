@@ -34,7 +34,7 @@ class LoginForm(form.Form):
 
         data, errors = self.extractData()
         if errors:
-            self.message(self.formErrorsMessage, 'error')
+            self.message(errors, 'form-error')
             return
 
         user = getUtility(IAuthentication).authenticate(

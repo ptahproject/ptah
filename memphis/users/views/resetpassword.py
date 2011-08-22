@@ -59,16 +59,6 @@ class ResetPasswordForm(form.Form):
     fields['password'].widgetFactory = form.widgets.PasswordWidget
     fields['confirm_password'].widgetFactory = form.widgets.PasswordWidget
 
-    def validate(self, data, errors):
-        if not errors:
-            if data['password'] != data['confirm_password']:
-                errors.append(
-                    _("Password and Confirm Password should be the same."))
-            else:
-                err = self.ptool.validatePassword(data['password'])
-                if err is not None:
-                    errors.append(err)
-
     def update(self):
         request = self.request
         ptool = self.ptool = getUtility(IPasswordTool)
@@ -91,7 +81,7 @@ class ResetPasswordForm(form.Form):
         data, errors = self.extractData()
 
         if errors:
-            self.message(errors, 'formError')
+            self.message(errors, 'form-error')
         else:
             try:
                 self.ptool.resetPassword(self.passcode, data['password'])
