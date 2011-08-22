@@ -1,4 +1,4 @@
-<span tal:attributes="class context.klass">
+<div class="inline-inputs">
   <tal:block tal:repeat="item context.items">
     <input type="radio"
            tal:define="checked item['checked']"
@@ -29,10 +29,8 @@
                            accesskey context.accesskey;
                            onselect context.onselect;
                            checked python: checked and 'checked' or None" />
-    <label for="" tal:attributes="for item['id']">
-      <span class="label" tal:content="item['label']">Label</span>
-    </label>
+    ${item['label']}
   </tal:block>
-</span>
-<input name="field-empty-marker" type="hidden" value="1"
-       tal:attributes="name string:${context.name}-empty-marker" />
+  <input name="field-empty-marker" type="hidden" value="1"
+	 tal:attributes="name string:${context.name}-empty-marker" />
+</div>
