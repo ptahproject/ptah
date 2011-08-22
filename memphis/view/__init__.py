@@ -17,6 +17,9 @@ from memphis.view.pagelet import renderPagelet
 from memphis.view.pagelet import registerPagelet
 from memphis.view.pagelet import registerPageletType
 
+# route
+from memphis.view.route import registerRoute
+
 # layout
 from memphis.view.layout import Layout
 from memphis.view.layout import registerLayout
@@ -60,14 +63,4 @@ from memphis.view.message import renderMessages
 from memphis.view.formatter import format
 
 # navigation root
-import zope.interface
 from memphis.view.interfaces import INavigationRoot
-
-
-class Root(object):
-    zope.interface.implements(INavigationRoot)
-
-    __name__ = ''
-    __parent__ = None
-
-Root = Root()

@@ -2,6 +2,7 @@
 from pyramid.interfaces import IRequest
 
 from memphis import config
+from memphis.view.interfaces import INavigationRoot
 from memphis.view.view import registerViewImpl
 from memphis.view.layout import registerLayoutImpl
 from memphis.view.pagelet import registerPageletImpl, registerPageletTypeImpl
@@ -13,7 +14,7 @@ def pagelet(pageletType, context=None, template=None, layer=None):
     info.attach(
         config.ClassAction(
             registerPageletImpl, (pageletType, context, template, layer),
-            discriminator = ('memphis.view:pagelet', pageletType,context,layer))
+            discriminator=('memphis.view:pagelet', pageletType,context,layer))
         )
 
 
@@ -31,13 +32,13 @@ def pyramidView(*args, **kw):
     info = config.DirectiveInfo(
         allowed_scope=('class', 'module', 'function call'))
 
-    def initargs(name, context=None, template=None, layer=IRequest, 
+    def initargs(name='', context=None, template=None, route_name=None, 
                  layout='', permission='__no_permission_required__',
                  default=False, decorator=None):
-        return name, context, layer, template, \
+        return name, context, route_name, template, \
             layout, permission, default, decorator
 
-    name, context, layer, template, \
+    name, context, route_name, template, \
         layout, permission, default, decorator = initargs(*args, **kw)
 
     if info.scope in ('module', 'function call'): # function decorator
@@ -46,8 +47,9 @@ def pyramidView(*args, **kw):
                 config.Action(
                     registerViewImpl,
                     (factory, name, context, template,
-                     layer, layout, permission, default, decorator),
-                    discriminator = ('memphis.view:view', name, context, layer))
+                     route_name, layout, permission, default, decorator),
+                    discriminator = (
+                        'memphis.view:view', name, context, route_name))
                 )
             return factory
         return wrapper
@@ -56,23 +58,25 @@ def pyramidView(*args, **kw):
             config.ClassAction(
                 registerViewImpl,
                 (name, context, template,
-                 layer, layout, permission, default, decorator),
-                discriminator = ('memphis.view:view', name, context, layer))
+                 route_name, layout, permission, default, decorator),
+                discriminator = (
+                    'memphis.view:view', name, context, route_name))
             )
 
 
 def layout(*args, **kw):
     info = config.DirectiveInfo(allowed_scope=('class',))
 
-    def initargs(name='', context=None, 
-                 view=None, parent='', layer=None):
-        return name, context, view, parent, layer
+    def initargs(name='', context=INavigationRoot, 
+                 view=None, parent='', route_name=None):
+        return name, context, view, parent, route_name
 
-    name, context, view, parent, layer = initargs(*args, **kw)
+    name, context, view, parent, route_name = initargs(*args, **kw)
 
     info.attach(
         config.ClassAction(
             registerLayoutImpl,
-            (name, context, view, None, parent, layer),
-            discriminator = ('memphis.view:layout', name, context, view, layer))
+            (name, context, view, None, parent, route_name),
+            discriminator = (
+                'memphis.view:layout', name, context, view, route_name))
         )

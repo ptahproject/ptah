@@ -2,12 +2,14 @@
 CHANGES
 =======
 
-0.9 (Unreleased)
+1.0 (Unreleased)
 ----------------
 
 - Pyramid view registration refactored
 
 - Allow to use pyramidView to decorate functions
+
+- Added route support, 'registerRoute'
 
 - Added 'view.subpath' decorator for view methods.
   It's possible to call method as subpath of view,

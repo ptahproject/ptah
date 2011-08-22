@@ -9,6 +9,7 @@ from webob.exc import HTTPForbidden
 from pyramid.config import requestonly
 from pyramid.interfaces import IView
 from pyramid.interfaces import IRequest
+from pyramid.interfaces import IRouteRequest
 from pyramid.interfaces import IViewClassifier
 from pyramid.interfaces import IAuthenticationPolicy
 
@@ -95,8 +96,8 @@ class subpath(object):
 
 
 def registerView(
-    name, factory=View, context=None, template=None,
-    layer=IRequest, layout='', permission='__no_permission_required__',
+    name='', factory=View, context=None, template=None,
+    route_name=None, layout='', permission='__no_permission_required__',
     default=False, decorator=None):
 
     if factory is None or not callable(factory):
@@ -107,12 +108,12 @@ def registerView(
         config.Action(
             registerViewImpl,
             (factory, name, context, template,
-             layer, layout, permission, default, decorator),
-            discriminator = ('memphis.view:view', name, context, layer)))
+             route_name, layout, permission, default, decorator),
+            discriminator = ('memphis.view:view', name, context, route_name)))
 
 
 def registerViewImpl(
-    factory, name, context, template, layer, layout, 
+    factory, name, context, template, route_name, layout, 
     permission, default, decorator):
 
     if template is not None:
@@ -156,11 +157,15 @@ def registerViewImpl(
     if context is None:
         context = interface.Interface
 
+    request_iface = IRequest
+    if route_name is not None:
+        request_iface = sm.getUtility(IRouteRequest, name=route_name)
+
     sm.registerAdapter(
-        pyramidView, (IViewClassifier, layer, context), IView, name)
+        pyramidView, (IViewClassifier, request_iface, context), IView, name)
 
     if default:
-        registerDefaultViewImpl(name, context, layer)
+        registerDefaultViewImpl(name, context, request_iface)
 
 
 def registerDefaultView(name, context=interface.Interface, layer=IRequest):
@@ -169,7 +174,7 @@ def registerDefaultView(name, context=interface.Interface, layer=IRequest):
         config.Action(
             registerDefaultViewImpl,
             (name, context, layer),
-            discriminator = ('memphis.view:defaultView', name, context, layer)))
+            discriminator = ('memphis.view:defaultView',name,context,layer)))
 
 
 def registerDefaultViewImpl(name, context=interface.Interface, layer=IRequest):

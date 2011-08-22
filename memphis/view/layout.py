@@ -2,11 +2,12 @@
 import sys, logging
 from zope import interface
 from zope.component import getSiteManager
+from pyramid.interfaces import IRequest, IRouteRequest
 
 from memphis import config
 from memphis.view.base import View
 from memphis.view.formatter import format
-from memphis.view.interfaces import ILayout
+from memphis.view.interfaces import ILayout, INavigationRoot
 
 log = logging.getLogger('memphis.view')
 
@@ -96,8 +97,8 @@ class Layout(View):
 
 
 def registerLayout(
-    name='', context=None, view=None, 
-    parent='', klass=Layout, template = None, layer=interface.Interface):
+    name='', context=INavigationRoot, view=None, 
+    parent='', klass=Layout, template = None, route_name=None):
 
     if not klass or not issubclass(klass, Layout):
         raise ValueError("klass has to inherit from Layout class")
@@ -106,12 +107,14 @@ def registerLayout(
     info.attach(
         config.Action(
             registerLayoutImpl,
-            (klass, name, context, view, template, parent, layer),
-            discriminator = ('memphis.view:layout', name, context, view, layer))
+            (klass, name, context, view, template, parent, route_name),
+            discriminator = (
+                'memphis.view:layout', name, context, view, route_name))
         )
 
 
-def registerLayoutImpl(klass, name, context, view, template, parent, layer):
+def registerLayoutImpl(klass, name, context, 
+                       view, template, parent, route_name):
 
     if klass in _registered:
         raise ValueError("Class can't be reused for different layouts")
@@ -138,9 +141,15 @@ def registerLayoutImpl(klass, name, context, view, template, parent, layer):
     else:
         layout_class = type(str('Layout<%s>'%name), (Layout,), cdict)
 
-    # register layout adapter
-    getSiteManager().registerAdapter(
-        layout_class, (view, context, layer), ILayout, name)
+    # register layout
+    sm = getSiteManager()    
+    
+    request_iface = IRequest
+    if route_name is not None:
+        request_iface = sm.getUtility(IRouteRequest, name=route_name)
+
+    sm.registerAdapter(
+        layout_class, (view, context, request_iface), ILayout, name)
 
 
 _registered = []
@@ -148,4 +157,3 @@ _registered = []
 @config.addCleanup
 def cleanUp():
     _registered[:] = []
-
