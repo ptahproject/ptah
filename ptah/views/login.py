@@ -7,19 +7,18 @@ from webob.exc import HTTPFound
 
 from memphis import view, form
 from ptah.interfaces import _, IAuthentication
+from ptah.layout import ptahRoute
 
 from schemas import LoginSchema
 
 
-view.registerLayout(
-    'login', view.INavigationRoot, parent='.',
-    template = view.template('ptah.views:login-layout.pt'))
+view.registerRoute('ptah-login', '/login.html',
+                   lambda request: ptahRoute)
 
 
 class LoginForm(form.Form):
     view.pyramidView(
-        'login.html', view.INavigationRoot,
-        layout = 'login',
+        route = 'ptah-login', layout = 'ptah',
         template=view.template("ptah.views:login.pt"))
 
     id = 'login-form'

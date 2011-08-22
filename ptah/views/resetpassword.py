@@ -8,16 +8,22 @@ from zope.component import getUtility
 
 from memphis import config, form, view, mail
 from ptah.interfaces import _, IPasswordTool, IAuthentication
+from ptah.layout import ptahRoute
 
 from schemas import ResetPasswordSchema, PasswordSchema
 
 MAIL = mail.MAIL
 
 
+view.registerRoute('ptah-resetpwd', '/resetpassword.html',
+                   lambda request: ptahRoute)
+view.registerRoute('ptah-resetpwdform', '/resetpasswordform.html',
+                   lambda request: ptahRoute)
+
+
 class ResetPassword(view.View):
     view.pyramidView(
-        'resetpassword.html', view.INavigationRoot,
-        layout = 'login',
+        route = 'ptah-resetpwd', layout = 'ptah',
         template = view.template('ptah.views:resetpassword.pt'))
 
     fields = form.Fields(ResetPasswordSchema)
@@ -51,8 +57,7 @@ class ResetPassword(view.View):
 
 class ResetPasswordForm(form.Form):
     view.pyramidView(
-        'resetpasswordform.html', view.INavigationRoot,
-        layout = 'login',
+        route = 'ptah-resetpwdform', layout = 'ptah',
         template = view.template('ptah.views:resetpasswordform.pt'))
 
     fields = form.Fields(PasswordSchema)

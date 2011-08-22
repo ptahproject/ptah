@@ -2,6 +2,16 @@
 import colander
 from zope.component import getUtility
 from ptah.interfaces import _, IPasswordTool
+from ptah.models import User
+
+def lower(s):
+    if isinstance(s, basestring):
+        return s.lower()
+    return s
+
+def checkLogin(node, login):
+    if login and User.get(login) is not None:
+        raise colander.Invalid(node, _('Login already is in use.'))
 
 
 class RegistrationSchema(colander.Schema):
@@ -20,7 +30,8 @@ class RegistrationSchema(colander.Schema):
                         'It must be an email address. <br /> Your email address '
                         'will not be displayed to any user or be shared with '
                         'anyone else.'),
-        validator = colander.Email(),
+        preparer = lower,
+        validator = colander.All(colander.Email(), checkLogin),
         )
 
 

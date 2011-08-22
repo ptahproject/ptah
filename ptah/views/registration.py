@@ -8,13 +8,17 @@ from pyramid import security
 from webob.exc import HTTPFound
 
 from ptah import models
+from ptah.layout import ptahRoute
 from ptah.interfaces import _, IPasswordTool, IAuthentication
 
 from schemas import RegistrationSchema, PasswordSchema
 
 
+view.registerRoute('ptah-join', '/join.html',
+                   lambda request: ptahRoute)
+
 class Registration(form.Form):
-    view.pyramidView('join.html', view.INavigationRoot, layout='login')
+    view.pyramidView(route = 'ptah-join', layout='ptah')
 
     label = _("Registration form")
     fields = form.Fields(RegistrationSchema, PasswordSchema)
