@@ -58,7 +58,7 @@ def initializeSettings(settings,
     if watcherFactory is _marker:
         watcherFactory = iNotifyWatcher
 
-    here = settings.get('here', '')
+    here = settings.get('here', './')
     if loader is None:
         loader = FileStorage(
             settings.get('settings',''),
