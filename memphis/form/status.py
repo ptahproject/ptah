@@ -14,9 +14,13 @@ class FormErrorStatusMessage(Message):
 
     def render(self, message):
         self.message = message[0]
+        if IErrorViewSnippet.providedBy(self.message):
+            self.message = self.message.render()
+
         self.errors = [
             err for err in message[1:]
             if IErrorViewSnippet.providedBy(err) and err.widget is None]
+
         return self.template(
             message = self.message,
             errors = self.errors,

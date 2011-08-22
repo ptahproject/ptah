@@ -78,9 +78,7 @@ class Form(view.View):
     refreshActions = False
 
     # common string for use in validation status messages
-    formErrorsMessage = _('There were some errors.')
-
-    subforms = ()
+    formErrorsMessage = _(u'Please fix indicated errors.')
 
     @property
     def action(self):
@@ -166,7 +164,6 @@ class EditForm(Form):
     formErrorsMessage = _(u'Please fix indicated errors.')
 
     groups = ()
-    subforms = ()
 
     def extractData(self, setErrors=True):
         data, errors = super(EditForm, self).extractData(setErrors)

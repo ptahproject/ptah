@@ -1,4 +1,4 @@
-"""Password Widget Implementation"""
+"""Password widget implementation"""
 import colander
 from zope import interface
 from memphis import config, view

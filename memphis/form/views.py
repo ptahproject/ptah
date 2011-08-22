@@ -18,14 +18,6 @@ view.registerPagelet(
     template = view.template('memphis.form:templates/form.pt'))
 
 view.registerPagelet(
-    pagelets.IFormView, interfaces.IEditForm,
-    template = view.template('memphis.form:templates/editform.pt'))
-
-view.registerPagelet(
-    pagelets.IFormView, interfaces.ISubForm,
-    template = view.template('memphis.form:templates/subform.pt'))
-
-view.registerPagelet(
     pagelets.IFormView, interfaces.IDisplayForm,
     template = view.template('memphis.form:templates/displayform.pt'))
 

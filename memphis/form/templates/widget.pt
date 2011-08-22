@@ -10,7 +10,7 @@
 	  tal:condition="error"
 	  tal:content="structure error.message"></span>
     <span class="help-block"
-	  tal:condition="not error and context.field.description"
+	  tal:condition="context.field.description"
 	  tal:content="structure context.field.description"></span>
   </div>
 </div>
