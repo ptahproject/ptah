@@ -47,11 +47,13 @@ def registerRoute(name, pattern=None, factory=None, header=None,
     info.attach(
         config.Action(
             registerRouteImpl,
-            (name, pattern, factory, predicates, pregenerator),
-            discriminator = ('memphis.view:route', name)))
+            (name,pattern,factory,predicates,pregenerator,use_global_views),
+            discriminator = ('memphis.view:route', name),
+            order = 1))
 
 
-def registerRouteImpl(name, pattern, factory, predicates, pregenerator):
+def registerRouteImpl(name, pattern, factory, 
+                      predicates, pregenerator, use_global_views):
     registry = getSiteManager()
 
     request_iface = registry.queryUtility(IRouteRequest, name=name)

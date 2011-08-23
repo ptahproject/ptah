@@ -17,6 +17,9 @@ class DefaultRoot(object):
     __name__ = None
     __parent__ = None
 
+    def __init__(self, request=None):
+        self.request = request
+
 
 class View(object):
     interface.implements(IMemphisView)

@@ -107,10 +107,10 @@ def registerPageletImpl(klass, pageletType, context, template,
         cdict['template'] = template
 
     # find PageletType info
-    pt = pageletType.queryTaggedValue('memphis.view.pageletType', None)
-    if pt is None:
-        raise LookupError(
-            "Can't find pagelet type: '%s'"%pageletType)
+    if isinstance(pageletType, basestring):
+        pt = getSiteManager().getUtility(IPageletType, pageletType)
+    else:
+        pt = pageletType.getTaggedValue('memphis.view.pageletType')
 
     if context is None:
         requires = [pt.context, interface.Interface]

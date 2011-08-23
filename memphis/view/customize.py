@@ -118,7 +118,7 @@ class _GlobalLayerManager(object):
 
         # unload
         pkg_data = tmpl.registry[pkg]
-        for fn, (p,t,d,t) in pkg_data.items():
+        for fn, (p,t,d,t,pkg) in pkg_data.items():
             if t.custom is not None:
                 t.setCustom(None)
 
@@ -132,7 +132,7 @@ class _GlobalLayerManager(object):
             pkg_data = tmpl.registry[pkg]
             items = dict((f, 1) for f in os.listdir(path))
 
-            for fn, (p,t,d,t) in pkg_data.items():
+            for fn, (p,t,d,t,pkg) in pkg_data.items():
                 if fn in items and t.custom is None:
                     t.setCustom(tmpl.getRenderer(os.path.join(path, fn)))
                 else:
@@ -141,7 +141,7 @@ class _GlobalLayerManager(object):
 
     def unload(self):
         for n, pkg_data in tmpl.registry.items():
-            for fn, (p,t,d, t) in pkg_data.items():
+            for fn, (p,t,d,t,pkg) in pkg_data.items():
                 if t.custom is not None:
                     t.setCustom(None)
 

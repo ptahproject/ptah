@@ -111,7 +111,7 @@ class TemplatesCommand(Command):
             print
             templates = data.items()
             templates.sort()
-            for filename, (path,title,desc,_tmpl) in templates:
+            for filename, (path,title,desc,_tmpl,pkg_name) in templates:
                 if path.startswith(dist.location):
                     path = '..%s'%path[dist_loc_len:]
 
@@ -177,7 +177,7 @@ class TemplatesCommand(Command):
             print "Output directory is required, use -o CUSTOMDIR"
             return
 
-        path, t, d, _tmpl = data[filename]
+        path, t, d, _tmpl, pkg_name = data[filename]
 
         if not os.path.isdir(custom):
             print "Custom path is not a directory: %s"%custom

@@ -50,7 +50,7 @@ def template(spec, layer=None, title=None, description=None, nolayer=False):
                 'Template "%s" with this name already has '
                 'been registered in "%s" layer'%(filename, layer))
 
-        data[filename] = [abspath,title,description,tmpl]
+        data[filename] = [abspath,title,description,tmpl,package_name]
 
     return tmpl
 
