@@ -4,17 +4,29 @@
 
 <div class="row">
   <div class="span16 columns">
-    <table class="zebra-striped">
-      <tr>
-	<th tal:repeat="c view.table.columns">
-	  ${c.name}
-	</th>
-      </tr>
-      <tr tal:repeat="row view.data">
-	<td tal:repeat="val row"
-	    tal:content="val">
-	</td>
-      </tr>
-    </table>
+    <form method="post" action="${request.url}">
+      <table class="zebra-striped">
+	<tr>
+	  <th>&nbsp;</th>
+	  <th tal:repeat="c view.table.columns">
+	    ${c.name}
+	  </th>
+	  <th>&nbsp;</th>
+	</tr>
+	<tr tal:repeat="row view.data">
+	  <td>
+	    <input type="checkbox" name="rowid" 
+		   value="${getattr(row, view.primary)}" />
+	  </td>
+	  <td tal:repeat="val row" tal:content="val"></td>
+	  <td>
+	    <a class="btn info"
+	       href="${getattr(row, view.primary)}/index.html">Edit</a>
+	  </td>
+	</tr>
+      </table>
+      
+      ${view.pagelet('form-actions', view)}
+    </form>
   </div>
 </div>

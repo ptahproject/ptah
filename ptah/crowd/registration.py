@@ -34,7 +34,7 @@ class Registration(form.Form):
         #config.notify(ObjectCreatedEvent(item))
         return user
 
-    @form.button(_(u"Register"), primary=True)
+    @form.button(_(u"Register"), actype=form.AC_PRIMARY)
     def handleRegister(self):
         data, errors = self.extractData()
         if errors:

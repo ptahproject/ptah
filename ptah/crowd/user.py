@@ -14,7 +14,7 @@ class CreateUserForm(form.Form):
     label = _('Create new user')
     fields = form.Fields(UserSchema).omit('id', 'joined')
 
-    @form.button(_('Create'), primary=True)
+    @form.button(_('Create'), actype=form.AC_PRIMARY)
     def create(self):
         data, errors = self.extractData()
 
@@ -112,7 +112,7 @@ class ChangePassword(form.Form):
     label = _('Change password')
     description = _('Please specify password for this users.')
     
-    @form.button(_('Change'), primary=True)
+    @form.button(_('Change'), actype=form.AC_PRIMARY)
     def change(self):
         data, errors = self.extractData()
 

@@ -31,7 +31,7 @@ class LoginForm(form.Form):
     fields = form.Fields(LoginSchema)
     fields['password'].widgetFactory = form.widgets.PasswordWidget
 
-    @form.button(_(u"Log in"), primary=True)
+    @form.button(_(u"Log in"), actype=form.AC_PRIMARY)
     def handleLogin(self):
         request = self.request
 

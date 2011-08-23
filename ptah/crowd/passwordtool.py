@@ -23,7 +23,7 @@ class PlainPasswordManager(object):
         return '{PLAIN}%s'%password
 
     def check(self, encoded, password):
-        return encoded_password == password
+        return encoded == password
 
 
 class SSHAPasswordManager(object):

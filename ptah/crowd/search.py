@@ -65,7 +65,7 @@ class SearchUsers(form.Form):
                 .filter(User.email.contains('%%%s%%'%term))\
                 .order_by(asc('name')).all()
 
-    @form.button(_('Search'), primary=True)
+    @form.button(_('Search'), actype=form.AC_PRIMARY)
     def search(self):
         data, error = self.extractData()
 

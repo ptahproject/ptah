@@ -3,8 +3,9 @@ import ptah
 import pyramid_sqla as psa
 from memphis import config
 from zope import interface
-from interfaces import ISQLAModule, ITable
+from interfaces import ISQLAModule, ITable, IRecord
 
+Session = psa.get_session()
 metadata = psa.get_base().metadata
 
 
@@ -30,3 +31,35 @@ class Table(object):
 
         self.table = table
         self.request = request
+
+    def __getitem__(self, key):
+        try:
+            return Record(key, self.table, self, self.request)
+        except:
+            import traceback
+            traceback.print_exc()
+
+            raise KeyError(key)
+
+
+class Record(object):
+    interface.implements(IRecord)
+
+    def __init__(self, pid, table, parent, request):
+        self.pid = pid
+        self.table = table
+        self.request = request
+
+        self.__name__ = str(pid)
+        self.__parent__ = parent
+
+        self.pname = None
+        self.pcolumn = None
+        for cl in table.columns:
+            if cl.primary_key:
+                self.pname = cl.name
+                self.pcolumn = cl
+
+        self.data = Session.query(table).filter(
+            self.pcolumn == pid).one()
+

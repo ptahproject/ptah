@@ -14,8 +14,7 @@ class User(Base):
 
     __tablename__ = 'ptah_crowd'
 
-    id = sa.Column(sa.Integer, 
-                   sa.Sequence('ptah_crowd_seq'), primary_key=True)
+    id = sa.Column(sa.Integer, primary_key=True)
     name = sa.Column(sa.Unicode(255))
     login = sa.Column(sa.Unicode(255), unique=True)
     email = sa.Column(sa.Unicode(255), unique=True)

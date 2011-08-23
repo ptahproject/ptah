@@ -32,7 +32,7 @@ class ResetPassword(form.Form):
         self.from_name = MAIL.from_name
         self.from_address = MAIL.from_address
 
-    @form.button(_('Start password reset'), primary=True)
+    @form.button(_('Start password reset'), actype=form.AC_PRIMARY)
     def reset(self):
         request = self.request
         registry = request.registry
@@ -88,7 +88,7 @@ class ResetPasswordForm(form.Form):
 
         super(ResetPasswordForm, self).update()
 
-    @form.button(_("Change password and login"), primary=True)
+    @form.button(_("Change password and login"), actype=form.AC_PRIMARY)
     def changePassword(self):
         data, errors = self.extractData()
 

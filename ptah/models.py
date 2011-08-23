@@ -16,8 +16,7 @@ class AuthToken(Base):
 
     __tablename__ = 'ptah_authtokens'
 
-    id = sa.Column(
-        sa.Integer, sa.Sequence('ptah_authtokens_seq'), primary_key=True)
+    id = sa.Column(sa.Integer, primary_key=True)
     type = sa.Column(sa.Integer)
     time = sa.Column(sa.DateTime)
     token = sa.Column(sa.Unicode(48))
