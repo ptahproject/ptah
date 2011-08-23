@@ -13,8 +13,6 @@ setup(name='memphis.form',
           'Detailed Documentation\n' +
           '======================\n'
           + '\n\n' +
-          read('memphis', 'form', 'README.txt')
-          + '\n\n' +
           read('CHANGES.txt')
           ),
       classifiers=[
