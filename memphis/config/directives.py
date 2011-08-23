@@ -1,7 +1,7 @@
 """ directives """
 import sys, inspect, imp, logging
 from pkgutil import walk_packages
-from zope.interface import implementedBy
+from zope import interface
 from zope.component import getSiteManager
 
 log = logging.getLogger('memphis.config')
@@ -29,6 +29,46 @@ def adapter(*required, **kw):
             )
         return func
     return wrapper
+
+
+class IEventDescriptor(interface.Interface):
+    """ event descriptor """
+
+    name = interface.Attribute('Name')
+
+    title = interface.Attribute('Event title')
+
+    instance = interface.Attribute('Event class or interface')
+
+
+class EventDescriptor(object):
+    interface.implements(IEventDescriptor)
+
+    def __init__(self, inst, title):
+        self.instance = inst
+        self.title = title
+        self.description = inst.__doc__
+        self.name = '%s.%s'%(inst.__module__, inst.__name__)
+
+
+events = {}
+
+def event(title=''):
+    info = DirectiveInfo(allowed_scope=('class',))
+
+    def descriminator(action):
+        return ('memphis.config:event', action.info.context)
+
+    info.attach(
+        ClassAction(
+            _event, (title,),
+            discriminator = descriminator)
+        )
+
+def _event(klass, title):
+    ev = EventDescriptor(klass, title)
+    events[klass] = ev
+    events[ev.name] = ev
 
 
 def adapts(*required, **kw):
@@ -87,7 +127,7 @@ def _adapts(factory, required, name):
 
 def _getProvides(factory):
     provides = None
-    p = list(implementedBy(factory))
+    p = list(interface.implementedBy(factory))
     if len(p) == 1:
         return p[0]
     else:

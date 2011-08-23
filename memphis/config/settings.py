@@ -15,13 +15,14 @@ except ImportError:
     transaction = None
 
 import api, schema, shutdown
-from directives import DirectiveInfo, Action
+from directives import event, DirectiveInfo, Action
 
 log = logging.getLogger('memphis.config')
 
 
 class SettingsInitializing(object):
-    """ settings are initializing event """
+    """ settings initializing event """
+    event('Settings initializing event')
 
     config = None
 
@@ -30,7 +31,8 @@ class SettingsInitializing(object):
 
 
 class SettingsInitialized(object):
-    """ settings has been initialized event """
+    """ Memphis sends this event when settings initialization is completed. """
+    event('Settings initialized event')
 
     config = None
 
@@ -39,7 +41,8 @@ class SettingsInitialized(object):
 
 
 class SettingsGroupModified(ObjectEvent):
-    """ settings group has been modified event """
+    """ Memphis sends this event when settings group is modified. """
+    event('Settings group modified event')
 
     def __init__(self, group, config):
         self.object = group
@@ -82,12 +85,12 @@ def initializeSettings(settings,
     Settings.init(loader, settings)
     try:
         api.notify(SettingsInitializing(config))
-    except Exception, e:
+    except Exception, e: # pragma: no cover
         log.exception("Exception during settings initializing")
 
     try:
         api.notify(SettingsInitialized(config))
-    except Exception, e:
+    except Exception, e: # pragma: no cover
         log.exception("Exception after settings initialized")
 
 
@@ -440,12 +443,12 @@ class iNotifyWatcher(object):
 
     def _process_ev(self, ev):
         if ev.mask & pyinotify.IN_MODIFY:
-            if Settings.config is not None: # pragma: no cover
+            if Settings.config is not None:
                 Settings.config.begin()
 
             self._handler()
 
-            if Settings.config is not None: # pragma: no cover
+            if Settings.config is not None:
                 Settings.config.end()
 
     def start(self, filename):

@@ -669,7 +669,13 @@ class TestSettingsInitialization(BaseTesting):
         group = config.registerSettings('group', node1)
         self._init_memphis()
 
-        config.initializeSettings({'settings': path})
+        class Config(object):
+            def begin(self):
+                pass
+            def end(self):
+                pass
+
+        config.initializeSettings({'settings': path}, config=Config())
 
         self.assertTrue(
             isinstance(config.Settings.loader.watcher, iNotifyWatcher))

@@ -9,6 +9,8 @@ CHANGES
 
 - Directives implementation has been refactored
 
+- Added event directive, description for event interface (introspection)
+
 - Added simple settings management api
 
 - Added 'settings' paste command.

@@ -70,7 +70,7 @@ class TestAdaptsDirective(BaseTesting):
 
         s = str(e)
         self.assertTrue(isinstance(e, config.ConflictError))
-        self.assertTrue('memphis.view:adapter' in s)
+        self.assertTrue('memphis.config:adapter' in s)
         self.assertTrue('test_directives.py' in s)
 
     def test_adapts(self):
