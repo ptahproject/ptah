@@ -107,7 +107,7 @@ library(
 
 library(
     'bootstrap',
-    path="bootstrap-1.1.0.css",
+    path="bootstrap-1.1.1.css",
     resource="bootstrap",
     type="css")
 

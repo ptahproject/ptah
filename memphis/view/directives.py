@@ -35,7 +35,7 @@ def pageletType(name, context=None):
         )
 
 
-def pyramidView(name='', context=None, template=None, route=None, 
+def pyramidView(name='', context=None, route=None, template=None,
                 layout='', permission='__no_permission_required__',
                 default=False, decorator=None, layer=''):
 

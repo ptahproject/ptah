@@ -43,7 +43,7 @@ def subpathWrapper(factory, renderer, subpaths):
                 def viewFactory(context, request):
                     view = factory(context, request)
                     return view, meth(view)
-                
+
                 request.subpath = tuple(request.subpath[1:])
                 result = render(context, request, viewFactory)
                 if result is not chained:
