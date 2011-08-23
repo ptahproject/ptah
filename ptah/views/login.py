@@ -1,18 +1,21 @@
 """ login form """
-from urllib import quote, unquote
-from zope import interface
-from zope.component import getUtility
+from memphis import view, form
 from pyramid import security
 from webob.exc import HTTPFound
+from zope.component import getUtility
 
-from memphis import view, form
 from ptah.interfaces import _, IAuthentication
 from ptah.layout import ptahRoute
-
-from schemas import LoginSchema
+from ptah.views.schemas import LoginSchema
 
 
 view.registerRoute('ptah-login', '/login.html',
+                   lambda request: ptahRoute)
+
+view.registerRoute('ptah-loginsuccess', '/login-success.html',
+                   lambda request: ptahRoute)
+
+view.registerRoute('ptah-logout', '/logout.html',
                    lambda request: ptahRoute)
 
 
@@ -60,8 +63,7 @@ class LoginForm(form.Form):
 
 class LoginSuccess(object):
     view.pyramidView(
-        'login-success.html', view.INavigationRoot,
-        layout = 'login',
+        route = 'ptah-loginsuccess', layout = 'ptah',
         template = view.template("ptah.views:login-success.pt"))
 
     def __init__(self, request):
@@ -78,7 +80,7 @@ class LoginSuccess(object):
             self.user = user.name or user.login
 
 
-@view.pyramidView('logout.html', view.INavigationRoot)
+@view.pyramidView(route='ptah-logout')
 def logout(request):
     uid = security.authenticated_userid(request)
 

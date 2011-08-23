@@ -21,12 +21,15 @@ view.registerRoute('ptah-resetpwdform', '/resetpasswordform.html',
                    lambda request: ptahRoute)
 
 
-class ResetPassword(view.View):
+class ResetPassword(form.Form):
     view.pyramidView(
         route = 'ptah-resetpwd', layout = 'ptah',
         template = view.template('ptah.views:resetpassword.pt'))
 
     fields = form.Fields(ResetPasswordSchema)
+
+    def getContent(self):
+        return {'login': self.request.params.get('login', '')}
 
     def update(self):
         super(ResetPassword, self).update()
@@ -34,11 +37,13 @@ class ResetPassword(view.View):
         self.from_name = MAIL.from_name
         self.from_address = MAIL.from_address
 
+    @form.button(_('Start password reset'), primary=True)
+    def reset(self):
         request = self.request
+        data, errors = self.extractData()
 
-        if request.params.has_key('button.send'):
-            login = request.params.get('login', '')
-
+        login = data.get('login')
+        if login:
             principal = getUtility(IAuthentication).getUserByLogin(login)
             if principal is not None:
                 passcode = getUtility(
@@ -52,7 +57,7 @@ class ResetPassword(view.View):
                                'reset and is being emailed to you.'))
                 raise HTTPFound(location=request.application_url)
 
-            self.message(_(u"System can't restore password for this user."))
+        self.message(_(u"System can't restore password for this user."))
 
 
 class ResetPasswordForm(form.Form):

@@ -15,5 +15,4 @@ ptahRoute = PtahRoute()
 
 view.registerLayout(
     'ptah', PtahRoute, parent='.',
-    template = view.template('ptah.views:login-layout.pt'))
-
+    template = view.template('ptah.views:ptah-layout.pt'))

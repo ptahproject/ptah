@@ -54,13 +54,13 @@ class LoginSchema(colander.Schema):
 
 
 class ResetPasswordSchema(colander.Schema):
-    """ reset password form """
+    """ reset password """
 
     login = colander.SchemaNode(
         colander.Str(),
         title = _(u'Login Name'),
-        description = _('Login names are case sensitive, '\
-                            'make sure the caps lock key is not enabled.'),
+        description = _('Login names are not case sensitive.'),
+        missing = u'',
         default = u'')
 
 
@@ -98,6 +98,7 @@ PasswordSchema = colander.SchemaNode(
 
     validator = passwordSchemaValidator
 )
+
 
 """
 class SChangePasswordForm(interface.Interface):
