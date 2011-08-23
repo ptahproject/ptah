@@ -101,10 +101,10 @@ def registerSettings(name, *nodes, **kw):
         iname = iname.replace(ch, '_')
 
     category = InterfaceClass(
-        '_group_%s'%iname, (),
+        'SettingsGroup:%s'%iname.upper(), (),
         __doc__='Settings group: %s' %name,
         __module__='memphis.config.settings')
-
+    
     if name in Settings:
         group = Settings[name]
     else:
