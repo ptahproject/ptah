@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head tal:define="static view.static_url('ptah')">
+    <title>Ptah</title>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+    <link rel="shortcut icon" href="${static}/favicon.ico" />
+
+    ${view.include('jquery')}
+    ${view.include('bootstrap')}
+    <tal:block content="structure view.renderIncludes()" />
+  </head>
+  <body>
+    <div class="topbar" tal:define="app_url request.application_url">
+      <div class="fill">
+	<div class="container">
+	  <h3><a href="${app_url}/ptah-manage/">Ptah</a></h3>
+	  <tal:block 
+	     condition="view.module"
+	     content="structure 
+		      view.pagelet('ptah-module-actions',view.module)" />
+	    
+	  <ul class="nav secondary-nav">
+	    <li>
+	      <h5 class="active">
+		<a href="${app_url}">
+		  ${view.user.name or view.user.login}:
+		</a>
+	      </h5>
+	    </li>
+	    <li class="active">
+	      <a href="${app_url}/logout.html">Logout</a>
+	    </li>
+	  </ul>
+	</div>
+      </div>
+    </div>
+
+    <div style="margin-top: 60px;">
+      <div class="inner">
+	<div class="container">
+	  <tal:block tal:content="structure content" />
+	</div>
+      </div>
+    </div>
+  </body>
+</html>

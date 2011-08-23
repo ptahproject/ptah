@@ -1,23 +1,27 @@
 """ forbidden view """
 import urllib
 from webob.exc import HTTPFound, HTTPForbidden
-from zope.component import getUtility
 
 from memphis import view
 from ptah.interfaces import IAuthentication
 
 
+view.registerLayout(
+    'ptah-exception', parent='.',
+    template = view.template('ptah:templates/ptah-exception.pt'))
+
+
 class Forbidden(view.View):
     view.pyramidView(context = HTTPForbidden, 
                      layout='ptah-exception',
-                     template = view.template('ptah.views:forbidden.pt'))
+                     template = view.template('ptah:templates/forbidden.pt'))
 
     def update(self):
         self.__parent__ = view.DefaultRoot()
 
-        auth = getUtility(IAuthentication)
-
         request = self.request
+        auth = request.registry.getUtility(IAuthentication)
+
         user = auth.getCurrentLogin(request)
         if user is None:
             request.response.status = HTTPFound.code

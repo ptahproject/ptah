@@ -1,22 +1,30 @@
-""" user management """
-from zope import interface
-from zope.component import getUtility, getUtilitiesFor
-from webob.exc import HTTPForbidden
 from memphis import view
-from ptah.models import User
+from zope import interface
+from webob.exc import HTTPForbidden
+
 from ptah.settings import PTAH
-from ptah.interfaces import IAuthentication
-from ptah.interfaces import IPtahUser, IPtahManageRoute
-from ptah.interfaces import IManageUserAction, IManageAction
+from ptah.interfaces import IAuthentication, IPtahManageRoute, IPtahModule
 
 
-class PtahUser(object):
-    interface.implements(IPtahUser)
+class PtahModule(object):
+    interface.implements(IPtahModule)
 
-    def __init__(self, user, parent):
-        self.user = user
-        self.__name__ = str(user.id)
-        self.__parent__ = parent
+    name = ''
+    title = ''
+    description = ''
+
+    def url(self, request):
+        return '%s/'%self.name
+
+    def bind(self, manager, request):
+        clone = self.__class__.__new__(self.__class__)
+        clone.__dict__.update(self.__dict__)
+        clone.__name__ = self.name
+        clone.__parent__ = manager
+        return clone
+
+    def available(self, request):
+        return True
 
 
 class PtahManageRoute(object):
@@ -27,54 +35,67 @@ class PtahManageRoute(object):
 
     def __init__(self, request):
         self.request = request
-        
-        login = getUtility(IAuthentication).getCurrentLogin()
+        self.registry = request.registry
+
+        login = self.registry.getUtility(IAuthentication).getCurrentLogin()
         if login and login in PTAH.managers:
             pass
 
         #raise HTTPForbidden()
 
     def __getitem__(self, key):
-        try:
-            uid = int(key)
-        except:
-            raise KeyError(key)
+        mod = self.registry.queryUtility(IPtahModule, key)
 
-        user = User.getById(uid)
-        if user is None:
-            raise KeyError(key)
+        if mod is not None:
+            return mod.bind(self, self.request)
 
-        return PtahUser(user, self)
+        raise KeyError(key)
 
 
 view.registerRoute(
     'ptah-manage', '/ptah-manage/*traverse', PtahManageRoute)
 
+view.static('ptah', 'ptah:templates/static')
 
-class PtahManageLayout(view.Layout):
-    view.layout(
-        '', IPtahManageRoute, parent='.',
-        template = view.template('ptah.views:ptah-manage.pt'))
+view.registerLayout(
+    '', IPtahManageRoute, parent='page',
+    template=view.template("ptah:templates/ptah-layout.pt"))
 
-    actions = ()
-    user = None
+view.registerPagelet(
+    'ptah-module-actions',
+    template = view.template('ptah:templates/moduleactions.pt'))
+
+
+class LayoutPage(view.Layout):
+    view.layout('page', IPtahManageRoute,
+                template=view.template("ptah:templates/ptah-page.pt"))
 
     def update(self):
-        self.url = self.request.route_url('ptah-manage', traverse='')
+        request = self.request
+        registry = request.registry
 
-        actions = []
+        self.user = registry.getUtility(IAuthentication).getCurrentUser()
 
-        if IPtahManageRoute.providedBy(self.view.context):
-            for name, util in getUtilitiesFor(IManageAction):
-                if util.available():
-                    actions.append((util.title, util))
+        mod = self.maincontext
+        while not IPtahModule.providedBy(mod):
+            mod = getattr(mod, '__parent__', None)
+            if mod is None:
+                break
 
-        elif IPtahUser.providedBy(self.view.context):
-            self.url = '%s%s/'%(self.url, self.view.context.__name__)
-            self.user = self.view.context.user.name
-            for name, util in getUtilitiesFor(IManageUserAction):
-                if util.available(self.view.context.user):
-                    actions.append((util.title, util))
+        self.module = mod
 
-        actions.sort()
-        self.actions = [a for t, a in actions]
+
+class ManageView(view.View):
+    view.pyramidView('index.html', IPtahManageRoute,
+                     route = 'ptah-manage', default = True, layout='page',
+                     template = view.template('ptah:templates/manage.pt'))
+
+    def update(self):
+        reg = self.request.registry
+
+        mods = []
+        for name, mod in reg.getUtilitiesFor(IPtahModule):
+            mods.append((mod.title, mod))
+
+        mods.sort()
+        self.modules = [mod for _t, mod in mods]

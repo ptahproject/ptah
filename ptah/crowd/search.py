@@ -5,8 +5,8 @@ from webob.exc import HTTPFound
 from memphis import view, form, config
 from sqlalchemy.sql.expression import asc
 
-from ptah.models import Session, User
-from ptah.interfaces import _, IPtahManageRoute, IManageAction
+from models import Session, User
+from interfaces import _, ICrowdModule, IManageAction
 
 
 class SearchUsersAction(object):
@@ -33,10 +33,10 @@ class SearchSchema(colander.Schema):
 
 class SearchUsers(form.Form):
     view.pyramidView(
-        'search.html', default = True,
-        context = IPtahManageRoute,
-        route = 'ptah-manage',
-        template = view.template('ptah.views:search.pt'))
+        'search.html',
+        context = ICrowdModule,
+        route = 'ptah-manage', default = True,
+        template = view.template('ptah.crowd:templates/search.pt'))
 
     fields = form.Fields(SearchSchema)
 

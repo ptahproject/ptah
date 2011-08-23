@@ -1,15 +1,12 @@
 """ add/edit user """
 from zope import interface
-from zope.component import getUtility
-
 from webob.exc import HTTPFound
 from memphis import config, view, form
 
-from ptah.models import User, Session
-from ptah.interfaces import _, IPtahUser, IPasswordTool
-from ptah.interfaces import IManageAction, IManageUserAction
-
+from models import User, Session
 from schemas import CreateUserSchema, ManagerChangePasswordSchema
+from interfaces import _, IPasswordTool
+from interfaces import ICrowdUser, IManageAction, IManageUserAction
 
 
 class CreateUserAction(object):
@@ -47,7 +44,7 @@ class CreateUserForm(form.Form):
             user.suspended = True
 
         # set password
-        passwordtool = getUtility(IPasswordTool)
+        passwordtool = self.request.registry.getUtility(IPasswordTool)
         user.password = passwordtool.encodePassword(data['password'])
         Session.add(user)
         Session.flush()
@@ -70,9 +67,9 @@ class Info(object):
 
 
 class UserInfo(view.View):
-    view.pyramidView('index.html', IPtahUser,
+    view.pyramidView('index.html', ICrowdUser,
                      route = 'ptah-manage', default = True,
-                     template = view.template('ptah.views:user.pt'))
+                     template = view.template('ptah.crowd:templates/user.pt'))
 
     def update(self):
         request = self.request
@@ -104,7 +101,7 @@ class ChangePasswordAction(object):
 
 
 class ChangePassword(form.Form):
-    view.pyramidView('change-password.html', IPtahUser, route = 'ptah-manage')
+    view.pyramidView('change-password.html', ICrowdUser, route = 'ptah-manage')
 
     fields = form.Fields(ManagerChangePasswordSchema)
 

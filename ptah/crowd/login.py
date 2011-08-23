@@ -5,23 +5,25 @@ from webob.exc import HTTPFound
 from zope.component import getUtility
 
 from memphis.mail import MAIL
+from ptah.interfaces import IAuthentication
 
-from ptah.interfaces import _, IAuthentication, IPtahRoute
-from ptah.layout import ptahRoute
-from ptah.views.schemas import LoginSchema
+from interfaces import _
+from schemas import LoginSchema
 
-
-view.registerRoute('ptah-login', '/login.html',
-                   lambda request: ptahRoute)
-
-view.registerRoute('ptah-logout', '/logout.html',
-                   lambda request: ptahRoute)
+view.registerRoute(
+    'ptah-login', '/login.html', view.DefaultRoot)
+view.registerRoute(
+    'ptah-logout', '/logout.html', view.DefaultRoot)
+view.registerRoute(
+    'ptah-login-success', '/login-success.html', view.DefaultRoot)
+view.registerRoute(
+    'ptah-login-suspended', '/login-suspended.html',view.DefaultRoot)
 
 
 class LoginForm(form.Form):
     view.pyramidView(
-        route = 'ptah-login',
-        template=view.template("ptah.views:login.pt"))
+        route = 'ptah-login', layout='ptah-crowd',
+        template=view.template("ptah.crowd:templates/login.pt"))
 
     id = 'login-form'
     bane = 'login-form'
@@ -44,12 +46,12 @@ class LoginForm(form.Form):
         if user is not None:
             if user.suspended:
                 raise HTTPFound(
-                    location='%s/ptah/suspended.html'%request.application_url)
+                    location='%s/login-suspended.html'%request.application_url)
                 
             headers = security.remember(request, user.login)
             raise HTTPFound(
                 headers = headers,
-                location = '%s/ptah/success.html'%request.application_url)
+                location = '%s/login-success.html'%request.application_url)
 
         self.message(_('You enter wrong login or password.'), 'error')
 
@@ -61,13 +63,13 @@ class LoginForm(form.Form):
 
         if auth.getCurrentUser() is not None:
             app_url = request.application_url
-            raise HTTPFound(location = '%s/ptah/success.html'%app_url)
+            raise HTTPFound(location = '%s/login-success.html'%app_url)
 
 
 class LoginSuccess(view.View):
     view.pyramidView(
-        'success.html', IPtahRoute, route = 'ptah',
-        template = view.template("ptah.views:login-success.pt"))
+        route = 'ptah-login-success', layout='ptah-crowd',
+        template = view.template("ptah.crowd:templates/login-success.pt"))
 
     def update(self):
         auth = getUtility(IAuthentication)
@@ -82,8 +84,8 @@ class LoginSuccess(view.View):
 
 class LoginSuspended(view.View):
     view.pyramidView(
-        'suspended.html', IPtahRoute, route = 'ptah',
-        template = view.template("ptah.views:login-suspended.pt"))
+        route = 'ptah-login-suspended', layout='ptah-crowd',
+        template = view.template("ptah.crowd:templates/login-suspended.pt"))
 
     def update(self):
         self.from_name = MAIL.from_name

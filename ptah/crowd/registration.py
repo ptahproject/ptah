@@ -1,39 +1,37 @@
 """ site registration form """
-from zope import event, interface
-from zope.component import getUtility
+from zope import interface
 #from zope.lifecycleevent import ObjectCreatedEvent
 
 from memphis import view, form
 from pyramid import security
 from webob.exc import HTTPFound
+from ptah.interfaces import IAuthentication
 
-from ptah import models
-from ptah.layout import ptahRoute
-from ptah.interfaces import _, IPasswordTool, IAuthentication
-
+from interfaces import _, IPasswordTool
+from models import Session, User
 from schemas import RegistrationSchema, PasswordSchema
 
 
-view.registerRoute('ptah-join', '/join.html',
-                   lambda request: ptahRoute)
+view.registerRoute('ptah-join', '/join.html', view.DefaultRoot)
+
 
 class Registration(form.Form):
-    view.pyramidView(route = 'ptah-join')
+    view.pyramidView(route = 'ptah-join', layout='ptah-crowd')
 
     label = _("Registration form")
     fields = form.Fields(RegistrationSchema, PasswordSchema)
 
     def create(self, data):
         # create user
-        user = models.User(data['fullname'], data['login'], data['login'])
+        user = User(data['fullname'], data['login'], data['login'])
 
         # set password
-        passwordtool = getUtility(IPasswordTool)
+        passwordtool = self.request.registry.getUtility(IPasswordTool)
         user.password = passwordtool.encodePassword(data['password'])
-        models.Session.add(user)
-        models.Session.flush()
+        Session.add(user)
+        Session.flush()
 
-        #event.notify(ObjectCreatedEvent(item))
+        #config.notify(ObjectCreatedEvent(item))
         return user
 
     @form.button(_(u"Register"), primary=True)

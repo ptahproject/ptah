@@ -1,0 +1,4 @@
+<ul>
+  <li><a href="${request.application_url}/ptah-manage/${context.url(request)}">${context.title}</a></li>
+  <li><a href="${request.application_url}/ptah-manage/templates/customized.html">Customized templates</a></li>
+</ul>

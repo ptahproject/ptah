@@ -2,23 +2,24 @@
 from datetime import datetime
 from pyramid import security
 from webob.exc import HTTPFound
-
-from zope import interface, schema
-from zope.component import getUtility
-
 from memphis import config, form, view, mail
-from ptah.interfaces import _, IPasswordTool, IAuthentication
-from ptah.layout import ptahRoute
+from ptah.interfaces import IAuthentication
 
+from interfaces import _, IPasswordTool
 from schemas import ResetPasswordSchema, PasswordSchema
 
 MAIL = mail.MAIL
 
+view.registerRoute(
+    'ptah-resetpassword', '/resetpassword.html', view.DefaultRoot)
+view.registerRoute(
+    'ptah-resetpassword-form', '/resetpasswordform.html', view.DefaultRoot)
+
 
 class ResetPassword(form.Form):
     view.pyramidView(
-        'resetpassword.html', route = 'ptah',
-        template = view.template('ptah.views:resetpassword.pt'))
+        route = 'ptah-resetpassword', layout='ptah-crowd',
+        template = view.template('ptah.crowd:templates/resetpassword.pt'))
 
     fields = form.Fields(ResetPasswordSchema)
 
@@ -34,14 +35,17 @@ class ResetPassword(form.Form):
     @form.button(_('Start password reset'), primary=True)
     def reset(self):
         request = self.request
+        registry = request.registry
         data, errors = self.extractData()
 
         login = data.get('login')
         if login:
-            principal = getUtility(IAuthentication).getUserByLogin(login)
+            principal = registry.getUtility(IAuthentication)\
+                .getUserByLogin(login)
+
             if principal is not None:
-                passcode = getUtility(
-                    IPasswordTool).generatePasscode(principal)
+                passcode = registry.getUtility(IPasswordTool)\
+                    .generatePasscode(principal)
 
                 template = ResetPasswordTemplate(principal, request)
                 template.passcode = passcode
@@ -60,8 +64,8 @@ class ResetPassword(form.Form):
 
 class ResetPasswordForm(form.Form):
     view.pyramidView(
-        'resetpasswordform.html', route = 'ptah',
-        template = view.template('ptah.views:resetpasswordform.pt'))
+        route = 'ptah-resetpassword-form', layout='ptah-crowd',
+        template = view.template('ptah.crowd:templates/resetpasswordform.pt'))
 
     fields = form.Fields(PasswordSchema)
     fields['password'].widgetFactory = form.widgets.PasswordWidget
@@ -69,7 +73,7 @@ class ResetPasswordForm(form.Form):
 
     def update(self):
         request = self.request
-        ptool = self.ptool = getUtility(IPasswordTool)
+        ptool = self.ptool = request.registry.getUtility(IPasswordTool)
 
         passcode = request.params.get('passcode')
         self.principal = principal = self.ptool.getPrincipal(passcode)
@@ -109,7 +113,7 @@ class ResetPasswordForm(form.Form):
 class ResetPasswordTemplate(mail.MailTemplate):
 
     subject = 'Password Reset Confirmation'
-    template = view.template('ptah.views:resetpasswordmail.pt')
+    template = view.template('ptah.crowd:templates/resetpasswordmail.pt')
 
     def update(self):
         super(ResetPasswordTemplate, self).update()

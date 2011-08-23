@@ -1,9 +1,9 @@
 """ schemas """
 import colander
 from zope.component import getUtility
-from ptah.interfaces import _, IPasswordTool
-from ptah.models import User
 
+from models import User
+from interfaces import _, IPasswordTool
 
 def lower(s):
     if isinstance(s, basestring):

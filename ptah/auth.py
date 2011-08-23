@@ -6,9 +6,9 @@ from pyramid import security
 from pyramid.threadlocal import get_current_request
 
 from memphis import config
-#from memphis.users.interfaces import IUser, IUserInfo
-from ptah.interfaces import IPasswordTool, IAuthentication
-from ptah.models import User
+from ptah.interfaces import IAuthentication
+from ptah.crowd.models import User
+from ptah.crowd.interfaces import IPasswordTool
 
 
 class Principal(object):
