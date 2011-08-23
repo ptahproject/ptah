@@ -28,7 +28,7 @@ def initialize(packages=None, excludes=()):
         action()
 
 
-def exclude(modname, excludes):
+def exclude(modname, excludes=()):
     for n in ('.test','.ftest'):
         if n in modname:
             return False
