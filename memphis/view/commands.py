@@ -144,7 +144,7 @@ class TemplatesCommand(Command):
             print "Can't find template '%s'"%filename
             return
 
-        path, t, d, _tmpl = data[filename]
+        path, t, d, _tmpl, pkg = data[filename]
         
         if t:
             print t

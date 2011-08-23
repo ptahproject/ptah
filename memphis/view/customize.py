@@ -79,7 +79,7 @@ class _TemplateLayersManager(object):
             if filter is not None and filter != pkg:
                 continue
 
-            for fn, (p,t,d,t) in pkg_data.items():
+            for fn, (p,t,d,t,_pkg) in pkg_data.items():
 
                 for pkgname, abspath, path in layers[pkg]:
                     tpath = os.path.join(abspath, fn)
