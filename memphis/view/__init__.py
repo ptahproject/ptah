@@ -23,6 +23,7 @@ from memphis.view.route import registerRoute
 
 # layout
 from memphis.view.layout import Layout
+from memphis.view.layout import queryLayout
 from memphis.view.layout import registerLayout
 
 # view
