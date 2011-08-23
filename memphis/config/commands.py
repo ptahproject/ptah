@@ -6,6 +6,7 @@ from ordereddict import OrderedDict
 from paste.script.command import Command
 
 from memphis import config
+from memphis.config import api, directives
 
 
 grpTitleWrap = textwrap.TextWrapper(
@@ -99,3 +100,34 @@ class SettingsCommand(Command):
 
                 print nameTitleWrap.fill(node.description)
                 print
+
+
+class IntrospectCommand(Command):
+    """ 'introspect' paste command"""
+
+    summary = "Memphis introspection"
+    usage = ""
+    group_name = "Memphis"
+    parser = Command.standard_parser(verbose=False)
+    parser.add_option('-l', '--list', dest='list',
+                      action="store_true",
+                      help = 'List available types of introspection')
+    parser.add_option('-p', '--package', dest='package', 
+                      help = 'Introspect only specified packages')
+    parser.add_option('-t', '--type', dest='type', 
+                      help = 'Use specific introspection type')
+
+    def command(self):
+        config.initialize()
+
+        packages = api.loadPackages()
+        
+        # scan packages and load all actions
+        seen = set()
+
+        for pkg in packages:
+            print '================== %s ==============='%pkg
+            actions = directives.scan(pkg, seen, api.exclude)
+
+            for action in actions:
+                print action.discriminator, action

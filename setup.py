@@ -48,6 +48,7 @@ setup(name='memphis.config',
         'memphis': ['package = memphis.config'],
         'paste.global_paster_command': [
             'settings = memphis.config.commands:SettingsCommand',
+            'introspect = memphis.config.commands:IntrospectCommand',
             ],
         },
       )

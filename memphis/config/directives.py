@@ -24,7 +24,7 @@ def adapter(*required, **kw):
             Action(
                 _register,
                 ('registerAdapter', func, required), {'name': name},
-                discriminator = ('memphis.view:adapter', 
+                discriminator = ('memphis.config:adapter', 
                                  required, _getProvides(func), name))
             )
         return func
@@ -38,7 +38,7 @@ def adapts(*required, **kw):
     name = kw.get('name', '')
 
     def descriminator(action):
-        return ('memphis.view:adapter', 
+        return ('memphis.config:adapter', 
                 required, _getProvides(action.info.context), name)
 
     info.attach(
@@ -55,7 +55,7 @@ def utility(provides, name=''):
         ClassAction(
             _utility,
             (provides, name),
-            discriminator = ('memphis.view:utility', provides, name))
+            discriminator = ('memphis.config:utility', provides, name))
         )
 
 
@@ -218,6 +218,7 @@ def scan(package, seen, exclude_filter=None):
 
     actions = []
     
+    pkgname = package.__name__
     if package.__name__ in seen:
         return actions
 
@@ -238,7 +239,7 @@ def scan(package, seen, exclude_filter=None):
                 module_type = loader.etc[2]
                 if module_type in (imp.PY_SOURCE, imp.PKG_DIRECTORY):
                     seen.add(modname)
-                    if exclude_filter is not None:
+                    if exclude_filter is not None and modname != pkgname:
                         if not exclude_filter(modname):
                             continue
 

@@ -130,7 +130,7 @@ def registerSettings(name, *nodes, **kw):
         info.attach(
             Action(
                 _registerSettingsImpl, (group, node),
-                discriminator = ('memphis:registerSettings', node.name, name)))
+                discriminator = ('memphis.config:setting', node.name, name)))
 
     return group
 

@@ -14,18 +14,6 @@ def initialize(packages=None, excludes=()):
     seen = set()
     actions = []
 
-    def exclude(modname):
-        if modname in packages:
-            return True
-
-        for n in ('.test','.ftest'):
-            if n in modname:
-                return False
-
-        if modname in excludes:
-            return False
-        return True
-
     for pkg in packages:
         actions.extend(directives.scan(pkg, seen, exclude))
 
@@ -33,6 +21,16 @@ def initialize(packages=None, excludes=()):
     actions = directives.resolveConflicts(actions)
     for action in actions:
         action()
+
+
+def exclude(modname):
+    for n in ('.test','.ftest'):
+        if n in modname:
+            return False
+
+    #if modname in excludes:
+    #    return False
+    return True
 
 
 def loadPackage(name, seen, first=True):
