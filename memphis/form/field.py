@@ -16,11 +16,11 @@ class Field(object):
     css = ''
     widgetFactory = ''
 
-    def __init__(self, field, name=None, prefix='', mode=None, readonly=False):
-        self.typ = field.typ
-        self.field = field
+    def __init__(self, node, name=None, prefix='', mode=None, readonly=False):
+        self.typ = node.typ
+        self.node = node
         if name is None:
-            name = field.name
+            name = node.name
         self.name = expandPrefix(prefix) + name
         self.prefix = prefix
         self.mode = mode
@@ -118,7 +118,7 @@ class FieldWidgets(OrderedDict):
             mode = self.mode
             if field.mode is not None:
                 mode = field.mode
-            elif field.readonly:
+            elif field.readonly or getattr(field.node, 'readonly', False):
                 mode = DISPLAY_MODE
 
             # Step 2: Get the widget for the given field.
@@ -128,9 +128,9 @@ class FieldWidgets(OrderedDict):
             factory = field.widgetFactory
             if isinstance(factory, basestring):
                 widget = sm.queryMultiAdapter(
-                    (field.field, field.typ, request), IWidget, name=factory)
+                    (field.node, field.typ, request), IWidget, name=factory)
             elif callable(factory):
-                widget = factory(field.field, field.typ, request)
+                widget = factory(field.node, field.typ, request)
 
             if widget is None:
                 raise TypeError("Can't find widget for %s"%field)
@@ -196,7 +196,8 @@ class FieldWidgets(OrderedDict):
         # validate agains top level SchemaNode
         for node in self.form.fields.schemas:
             try:
-                node.deserialize(data)
+                if node.validator:
+                    node.validate(node, data)
             except colander.Invalid, error:
                 for err in error.children:
                     errors.append(err)

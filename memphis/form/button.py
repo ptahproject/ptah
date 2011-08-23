@@ -9,6 +9,12 @@ from memphis.form.field import Field
 from memphis.form.util import createId, expandPrefix, OrderedDict
 from memphis.form.interfaces import IForm, IButton, IActions, IWidget
 
+AC_DEFAULT = 0
+AC_PRIMARY = 1
+AC_DANGER = 2
+AC_SUCCESS = 3
+AC_INFO = 4
+
 
 class Button(Field):
     """A simple button in a form."""
@@ -16,7 +22,7 @@ class Button(Field):
 
     def __init__(self, name='submit', title=None, type='submit', value=None,
                  disabled=False, accessKey = None, 
-                 action=None, primary=False):
+                 action=None, actype=AC_DEFAULT):
         if title is None:
             title = name.capitalize()
         name = re.sub(r'\s', '_', name)
@@ -35,7 +41,7 @@ class Button(Field):
         self.accessKey = accessKey
         self.action = action
         self.required = False
-        self.primary = primary
+        self.actype = actype
 
     def __repr__(self):
         return '<%s %r %r>' %(
@@ -100,11 +106,11 @@ class Actions(OrderedDict):
                 widget = sm.queryMultiAdapter(
                     (field, field.typ, request), IWidget, name=factory)
             elif callable(factory):
-                widget = factory(field.field, request)
+                widget = factory(field.node, request)
 
             if widget is None:
                 widget = sm.getMultiAdapter(
-                    (field.field, request),interfaces.IDefaultWidget)
+                    (field.node, request),interfaces.IDefaultWidget)
 
             # Step 3: Set the prefix for the widget
             widget.name = str(prefix + shortName)
