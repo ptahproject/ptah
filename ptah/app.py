@@ -108,14 +108,6 @@ SQLA = config.registerSettings(
 
 @config.handler(config.SettingsInitializing)
 def initializing(ev):
-    if pyramid_sqla is not None:
-        url = SQLA.url
-        if url:
-            pyramid_sqla.add_engine({'sqlalchemy.url': url})
-
-
-@config.handler(config.SettingsInitializing)
-def initializing(ev):
     config = ev.config
 
     if config is not None:

@@ -1,0 +1,9 @@
+<h5>${event.title}</h5>
+<p>
+  <a href="../source.html?pkg=${event.instance.__module__}#sl-${lineno(event.instance)}" tal:content="event.instance" />
+  <tal:block condition="event.__doc__">
+    <br />
+    <br />
+    <em tal:content="event.__doc__" />
+  </tal:block>
+</p>

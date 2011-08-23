@@ -1,11 +1,17 @@
-<h5>${factoryInfo}</h5>
+<h5>
+  <a href="../source.html?pkg=${factory.__module__}#sl-${lineno(factory)}">
+    ${factoryInfo}
+  </a>
+</h5>
 <p>
   listen to:
   <div class="span10">
-    <tal:block tal:repeat="iface ifaces">
-      <tal:block tal:content="iface or 'zope.interface.Interface'" /><br/>
+    <tal:block condition="obj">
+      <tal:block tal:content="obj" /><br />
     </tal:block>
-    <br />
+
+    <a href="../events.html?ev=${event.name}">
+      ${event.title}</a><br/>
   </div>
 
   <tal:block condition="factory.__doc__">

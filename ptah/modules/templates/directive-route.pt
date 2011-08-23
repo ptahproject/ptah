@@ -1,4 +1,4 @@
 <h5>${name}: ${pattern}</h5>
 <p>
-  Factory: <strong tal:content="factory"/>
+  Factory: <a href="../source.html?pkg=${factory.__module__}#sl-${lineno(factory)}" tal:content="factory"/>
 </p>

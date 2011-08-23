@@ -1,15 +1,23 @@
 <div class="page-header">
-  <h2>Packages</h2>
+  <h2>Introspect</h2>
 </div>
 
 <div class="row">
-  <div class="span3 column">
+  <div class="span4 column">
+    <h3>Packages</h3>
     <ul>
       <li tal:repeat="pkg view.packages">
 	<a href="${pkg.project_name}/">${pkg}</a>
       </li>
     </ul>
   </div>
-  <div class="span12 column">
+
+  <div class="span4 column">
+    <h3>Types</h3>
+    <ul>
+      <li>
+	<a href="events.html">Events</a>
+      </li>
+    </ul>
   </div>
 </div>

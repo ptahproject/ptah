@@ -1,6 +1,7 @@
 <h5>${iface.__module__}.${iface.__name__}  name=${name or ''}</h5>
 <p>
-  <strong tal:content="context" /><br />
+  <a href="../source.html?pkg=${context.__module__}#sl-${lineno(context)}"
+     tal:content="context" /><br />
   adapts:
   <div class="span10">
     <tal:block tal:repeat="iface requires">

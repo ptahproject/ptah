@@ -19,10 +19,6 @@ class SettingsModule(ptah.PtahModule):
     name = 'settings'
     title = 'Settings'
 
-    def __getitem__(self, key):
-        #return Package(self.packagesDict[key], self, self.request)
-        raise KeyError(key)
-
 
 class MainView(view.View):
     view.pyramidView(
@@ -41,7 +37,6 @@ class MainView(view.View):
 
             schema = []
             for node in group.schema:
-                #default = '<required>' if node.required else node.default
                 value = node.serialize(group[node.name])
 
                 schema.append(

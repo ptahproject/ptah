@@ -1,6 +1,9 @@
 <h5 tal:content="view"></h5>
 <p>
-  ${isclass and 'Class: ' or 'Function: '} <strong tal:content="factoryInfo"/><br/>
+  ${isclass and 'Class: ' or 'Function: '} 
+  <a href="../source.html?pkg=${factory.__module__}#sl-${lineno(factory)}"
+     tal:content="factoryInfo"/><br/>
+
   <tal:block condition="context">
     Context: <strong tal:content="context"/><br /></tal:block>
   <tal:block condition="template">

@@ -1,6 +1,6 @@
 """ introspect module """
 import ptah
-import pkg_resources, inspect
+import pkg_resources, inspect, os
 from zope import interface
 from memphis import config, view
 from memphis.config import directives
@@ -64,8 +64,14 @@ class MainView(view.View):
         self.packages = self.context.packages
 
 
+def lineno(ob):
+    if ob is not None:
+        return inspect.getsourcelines(ob)[-1]
+
+
 def viewDirective(
     action, request,
+    lineno = lineno,
     renderer = view.template(
         'ptah.modules:templates/directive-view.pt', nolayer=True)):
     info = action.info
@@ -103,6 +109,7 @@ def viewDirective(
 
 def routeDirective(
     action, request,
+    lineno = lineno,
     template = view.template(
         'ptah.modules:templates/directive-route.pt', nolayer=True)):
 
@@ -116,6 +123,7 @@ def routeDirective(
 
 def utilityDirective(
     action, request,
+    lineno = lineno,
     template=view.template(
         'ptah.modules:templates/directive-utility.pt',nolayer=True)):
 
@@ -132,6 +140,7 @@ def utilityDirective(
 
 def adapterDirective(
     action, request,
+    lineno = lineno,
     template=view.template(
         'ptah.modules:templates/directive-adapter.pt',nolayer=True)):
 
@@ -156,11 +165,30 @@ def adapterDirective(
 
 def handlerDirective(
     action, request,
+    lineno = lineno,
     template=view.template(
         'ptah.modules:templates/directive-handler.pt',nolayer=True)):
 
     factory, ifaces = action.args[1:]
     factoryInfo = '%s.%s'%(action.info.module.__name__, factory.__name__)
+    
+    if len(action.args[2]) > 1:
+        obj = action.args[2][0]
+        event = directives.events[action.args[2][-1]]
+    else:
+        obj = None
+        event = directives.events[action.args[2][0]]
+
+    return template(**locals())
+
+
+def eventDirective(
+    action, request,
+    lineno = lineno,
+    template=view.template(
+        'ptah.modules:templates/directive-event.pt',nolayer=True)):
+
+    event = directives.events[action.info.context]
 
     return template(**locals())
 
@@ -171,6 +199,7 @@ renderers = {
     'memphis.config:utility': utilityDirective,
     'memphis.config:adapter': adapterDirective,
     'memphis.config:handler': handlerDirective,
+    'memphis.config:event': eventDirective,
     }
 
 types = {
@@ -179,6 +208,7 @@ types = {
     'memphis.view:layout': ('Layout', 'Memphis layouts'),
     'memphis.view:pagelet': ('Pagelet', 'Memphis pagelets'),
     'memphis.view:pageletType': ('Pagelet Type', 'Memphis pagelet types'),
+    'memphis.config:event': ('Events', 'event declarations'),
     'memphis.config:utility': ('Utility', 'zca utility registrations'),
     'memphis.config:adapter': ('Adapters','zca adapter registrations'),
     'memphis.config:handler': ('Event listeners',
@@ -198,3 +228,103 @@ class PackageView(view.View):
 
     def update(self):
         self.data = self.context.actions()
+
+
+class EventsView(view.View):
+    view.pyramidView(
+        'events.html', IIntrospectModule,
+        route = 'ptah-manage',
+        template = view.template(
+            'ptah.modules:templates/introspect-events.pt', nolayer=True))
+
+    events = None
+    actions = None
+
+    def lineno(self, ob):
+        return inspect.getsourcelines(ob)[-1]
+
+    def update(self):
+        ev = self.request.params.get('ev')
+        self.event = event = directives.events.get(ev)
+
+        if event is None:
+            events = []
+            for n, ev in directives.events.items():
+                if isinstance(n, basestring):
+                    events.append((ev.title, ev))
+
+            events.sort()
+            self.events = [ev for _t, ev in events]
+        else:
+            pkgs = loadPackages()
+            evinst = event.instance
+
+            seen = set()
+            actions = []
+            for pkg in pkgs:
+                for action in directives.scan(pkg, seen, exclude):
+                    if action.discriminator[0] == 'memphis.config:handler':
+                        required = action.args[2]
+                        if len(required) == 2 and required[1] == evinst:
+                            actions.append(action)
+                        elif required[0] == evinst:
+                            actions.append(action)
+
+            self.actions = actions
+
+
+class SourceView(view.View):
+    view.pyramidView(
+        'source.html', IIntrospectModule,
+        route = 'ptah-manage',
+        template = view.template(
+            'ptah.modules:templates/introspect-source.pt', nolayer=True))
+
+    source = None
+    format = None
+
+    def update(self):
+        name = self.request.params.get('pkg')
+
+        pkg_name = name
+        while 1:
+            try:
+                dist = pkg_resources.get_distribution(pkg_name)
+                if dist is not None:
+                    break
+            except pkg_resources.DistributionNotFound:
+                if '.' not in pkg_name:
+                    break
+                pkg_name = pkg_name.rsplit('.',1)[0]
+            
+        if dist is None:
+            self.source = None
+
+        names = name[len(pkg_name)+1:].split('.')
+        path = '%s.py'%os.path.join(*names)
+        abspath = pkg_resources.resource_filename(pkg_name, path)
+
+        if os.path.isfile(abspath):
+            self.file = abspath
+            self.name = '%s.py'%names[-1]
+            self.pkg_name = pkg_name
+            source = open(abspath, 'rb').read()
+
+            if not self.format:
+                from pygments import highlight
+                from pygments.lexers import PythonLexer
+                from pygments.formatters import HtmlFormatter
+
+                html = HtmlFormatter(
+                    linenos='inline', 
+                    lineanchors='sl',
+                    anchorlinenos=True,
+                    noclasses = True,
+                    cssclass="ptah-source")
+
+                def format(code, highlight=highlight,
+                           lexer = PythonLexer()):
+                    return highlight(code, lexer, html)
+                self.format = format
+
+            self.source = self.format(source)
