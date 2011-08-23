@@ -104,6 +104,8 @@ class SSHAPasswordManager(object):
 
 
 class PasswordTool(object):
+    """ Password management utilities. """
+
     interface.implements(IPasswordTool)
     config.utility(IPasswordTool)
 

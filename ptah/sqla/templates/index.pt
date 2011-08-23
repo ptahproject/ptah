@@ -1,5 +1,5 @@
 <div class="page-header">
-  <h2>SQL Alchemny models</h2>
+  <h2>SQL Tables</h2>
 </div>
 
 <div class="row">
@@ -8,12 +8,12 @@
       <tr tal:repeat="tb view.tables">
 	<td>
 	  <h4>
-	    <a href="view.html?name=${tb[0]}">${tb[0]}</a>
+	    <a href="${tb[0]}/">${tb[0]}</a>
 	  </h4>
 	  <p>
-	    <div tal:repeat="rec tb[1][1]">
-	      ${rec}
-	    </div>
+	    <tal:block tal:repeat="rec tb[1][1]">
+	      ${rec}<br />
+	    </tal:block>
 	  </p>
 	</td>
       </tr>

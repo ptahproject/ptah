@@ -9,6 +9,8 @@ from interfaces import ITemplatesModule
 
 
 class TemplatesModule(ptah.PtahModule):
+    """ Templates management ptah module. """
+
     config.utility(name='templates')
     interface.implementsOnly(ITemplatesModule)
 
@@ -20,7 +22,7 @@ class TemplatesModule(ptah.PtahModule):
 view.registerPagelet(
     'ptah-module-actions', ITemplatesModule,
     template = view.template(
-        'ptah.introspect:templates/customize-actions.pt', nolayer = True))
+        'ptah.modules:templates/customize-actions.pt', nolayer = True))
 
 
 class TemplatesManagement(view.View):
@@ -28,7 +30,7 @@ class TemplatesManagement(view.View):
         'index.html', ITemplatesModule,
         route = 'ptah-manage', default='True',
         template = view.template(
-            'ptah.introspect:templates/customize.pt', nolayer=True))
+            'ptah.modules:templates/customize.pt', nolayer=True))
 
     pkg_data = None
 
@@ -62,7 +64,7 @@ class ViewTemplate(view.View):
         'view.html', ITemplatesModule,
         route = 'ptah-manage',
         template = view.template(
-            'ptah.introspect:templates/template.pt', nolayer=True))
+            'ptah.modules:templates/template.pt', nolayer=True))
    
     def update(self):
         reg = tmpl.registry
@@ -114,7 +116,7 @@ class CustomTemplate(view.View):
         'customized.html', ITemplatesModule,
         route = 'ptah-manage',
         template = view.template(
-            'ptah.introspect:templates/customized.pt', nolayer=True))
+            'ptah.modules:templates/customized.pt', nolayer=True))
 
     pkg = None
     template = None

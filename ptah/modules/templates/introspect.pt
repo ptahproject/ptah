@@ -1,0 +1,15 @@
+<div class="page-header">
+  <h2>Packages</h2>
+</div>
+
+<div class="row">
+  <div class="span3 column">
+    <ul>
+      <li tal:repeat="pkg view.packages">
+	<a href="${pkg.project_name}/">${pkg}</a>
+      </li>
+    </ul>
+  </div>
+  <div class="span12 column">
+  </div>
+</div>

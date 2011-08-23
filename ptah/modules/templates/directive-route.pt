@@ -1,0 +1,4 @@
+<h5>${name}: ${pattern}</h5>
+<p>
+  Factory: <strong tal:content="factory"/>
+</p>

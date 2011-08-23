@@ -4,9 +4,7 @@ import uuid, transaction
 import pyramid_sqla as psa
 import sqlalchemy as sa
 import sqlalchemy.orm as orm
-
 from memphis import config
-
 from ptah.crowd.models import User
 
 

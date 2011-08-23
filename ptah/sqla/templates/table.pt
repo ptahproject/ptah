@@ -1,0 +1,20 @@
+<div class="page-header">
+  <h1>${context.__name__} <small>size: ${view.size}</small></h1>
+</div>
+
+<div class="row">
+  <div class="span16 columns">
+    <table class="zebra-striped">
+      <tr>
+	<th tal:repeat="c view.table.columns">
+	  ${c.name}
+	</th>
+      </tr>
+      <tr tal:repeat="row view.data">
+	<td tal:repeat="val row"
+	    tal:content="val">
+	</td>
+      </tr>
+    </table>
+  </div>
+</div>

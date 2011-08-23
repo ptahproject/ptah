@@ -21,6 +21,7 @@ class PtahModule(object):
         clone.__dict__.update(self.__dict__)
         clone.__name__ = self.name
         clone.__parent__ = manager
+        clone.request = request
         return clone
 
     def available(self, request):

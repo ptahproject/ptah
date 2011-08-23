@@ -1,0 +1,9 @@
+<h5>${iface.__module__}.${iface.__name__} name=${name}</h5>
+<p>
+  <strong tal:content="context" />
+  <tal:block condition="context.__doc__">
+    <br />
+    <br />
+    <em tal:content="context.__doc__" />
+  </tal:block>
+</p>

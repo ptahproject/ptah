@@ -1,0 +1,15 @@
+<h5>${factoryInfo}</h5>
+<p>
+  listen to:
+  <div class="span10">
+    <tal:block tal:repeat="iface ifaces">
+      <tal:block tal:content="iface or 'zope.interface.Interface'" /><br/>
+    </tal:block>
+    <br />
+  </div>
+
+  <tal:block condition="factory.__doc__">
+    <br />
+    <em tal:content="factory.__doc__" />
+  </tal:block>
+</p>

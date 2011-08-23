@@ -1,0 +1,13 @@
+<h5 tal:content="view"></h5>
+<p>
+  ${isclass and 'Class: ' or 'Function: '} <strong tal:content="factoryInfo"/><br/>
+  <tal:block condition="context">
+    Context: <strong tal:content="context"/><br /></tal:block>
+  <tal:block condition="template">
+    Template: <strong>${template}</strong>
+  </tal:block>
+  <tal:block condition="factory.__doc__">
+    <br />
+    <em tal:content="factory.__doc__" />
+  </tal:block>
+</p>
