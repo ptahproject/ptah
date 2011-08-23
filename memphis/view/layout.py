@@ -7,7 +7,7 @@ from pyramid.interfaces import IRequest, IRouteRequest
 from memphis import config
 from memphis.view.base import View
 from memphis.view.formatter import format
-from memphis.view.interfaces import ILayout, INavigationRoot
+from memphis.view.interfaces import ILayout
 
 log = logging.getLogger('memphis.view')
 
@@ -97,7 +97,7 @@ class Layout(View):
 
 
 def registerLayout(
-    name='', context=INavigationRoot, view=None, 
+    name='', context=None, view=None, 
     parent='', klass=Layout, template = None, route=None):
 
     if not klass or not issubclass(klass, Layout):

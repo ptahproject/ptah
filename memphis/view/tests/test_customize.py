@@ -99,7 +99,7 @@ class TestGlobalCustomizeManagement(BaseLayerTest):
         # reinitialize
         customize.TEMPLATE['custom'] = self.dir2
         customize.TEMPLATE['watcher'] = ''
-        customize.initialize(None)
+        customize.initialize(config.SettingsInitializing(object()))
 
         self.assertTrue(customize.TEMPLATE._manager is not None)
         self.assertTrue(customize.TEMPLATE._watcher is None)
@@ -118,7 +118,7 @@ class TestGlobalCustomizeManagement(BaseLayerTest):
         self.assertEqual(tmpl(), '<div>Test template 2</div>')
 
         customize.TEMPLATE['custom'] = ''
-        customize.initialize(None)
+        customize.initialize(config.SettingsInitializing(None))
 
         self.assertTrue(customize.TEMPLATE._manager is None)
         self.assertTrue(customize.TEMPLATE._watcher is None)

@@ -2,7 +2,6 @@
 from pyramid.interfaces import IRequest
 
 from memphis import config
-from memphis.view.interfaces import INavigationRoot
 from memphis.view.view import registerViewImpl
 from memphis.view.layout import registerLayoutImpl
 from memphis.view.pagelet import registerPageletImpl, registerPageletTypeImpl
@@ -62,19 +61,12 @@ def pyramidView(*args, **kw):
             )
 
 
-def layout(*args, **kw):
+def layout(name='',context=None,view=None,parent='',route=None,template=None):
     info = config.DirectiveInfo(allowed_scope=('class',))
-
-    def initargs(name='', context=INavigationRoot, 
-                 view=None, parent='', route=None):
-        return name, context, view, parent, route
-
-    name, context, view, parent, route = initargs(*args, **kw)
-
     info.attach(
         config.ClassAction(
             registerLayoutImpl,
-            (name, context, view, None, parent, route),
+            (name, context, view, template, parent, route),
             discriminator = (
                 'memphis.view:layout', name, context, view, route))
         )
