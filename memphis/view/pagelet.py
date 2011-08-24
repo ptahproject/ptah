@@ -7,6 +7,7 @@ from zope.component import getSiteManager
 
 from memphis import config
 from memphis.view.base import View
+from memphis.view.customize import layersManager
 from memphis.view.formatter import format
 from memphis.view.interfaces import IPagelet, IPageletType
 
@@ -24,9 +25,7 @@ class Pagelet(View):
         kwargs.update({'view': self,
                        'context': self.context,
                        'request': self.request,
-                       'nothing': None,
-                       'format': format,
-                       'template': self.template})
+                       'format': format})
 
         return self.template(**kwargs)
 
@@ -80,19 +79,26 @@ def cleanUp():
 
 
 def registerPagelet(
-    pageletType, context=None, 
-    klass=None, template=None, layer=interface.Interface):
+    pageletType, context=None, klass=None, template=None, layer=''):
 
     info = config.DirectiveInfo()
+
+    discriminator = ('memphis.view:pagelet', pageletType, context)
+    layersManager.register(layer, discriminator)
 
     info.attach(
         config.Action(
             registerPageletImpl,
-            (klass, pageletType, context, template, layer), 
-            discriminator = ('memphis.view:pagelet',pageletType,context,layer)))
+            (klass, pageletType, context, template, layer, discriminator),
+            discriminator = discriminator + (layer,)))
 
 
-def registerPageletImpl(klass, pageletType, context, template, layer):
+def registerPageletImpl(klass, pageletType, context, template, 
+                        layer, discriminator):
+
+    if not layersManager.enabled(layer, discriminator):
+        return
+
     if klass is not None and klass in _registered:
         raise ValueError("Class can be used for pagelet only once.")
 
@@ -107,9 +113,9 @@ def registerPageletImpl(klass, pageletType, context, template, layer):
             "Can't find pagelet type: '%s'"%pageletType)
 
     if context is None:
-        requires = [pt.context, layer]
+        requires = [pt.context, interface.Interface]
     else:
-        requires = [context, layer]
+        requires = [context, interface.Interface]
 
     # Build a new class
     if klass is not None and issubclass(klass, Pagelet):

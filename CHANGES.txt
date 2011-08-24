@@ -9,6 +9,8 @@ CHANGES
 
 - Allow to use pyramidView to decorate functions
 
+- Added concept of view layers
+
 - Added route support, 'registerRoute'
 
 - Added 'view.subpath' decorator for view methods.

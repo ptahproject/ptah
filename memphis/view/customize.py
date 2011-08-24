@@ -41,7 +41,25 @@ TEMPLATE._manager = None
 TEMPLATE._watcher = None
 
 
-class _LayerManager(object):
+class _ViewLayersManager(object):
+
+    def __init__(self):
+        self.layers = {}
+
+    def register(self, layer, discriminator):
+        data = self.layers.setdefault(discriminator, [])
+        data.append(layer)
+
+    def enabled(self, layer, discriminator):
+        data = self.layers.get(discriminator)
+        if data:
+            return data[-1] == layer
+        return False
+
+layersManager = _ViewLayersManager()
+
+
+class _TemplateLayersManager(object):
 
     def __init__(self):
         self.layers = {}
@@ -70,7 +88,7 @@ class _LayerManager(object):
                         break
 
 
-_Manager = _LayerManager()
+_Manager = _TemplateLayersManager()
 
 layer = _Manager.layer
 
@@ -224,3 +242,4 @@ def shutdown():
 @config.addCleanup
 def cleanup():
     _Manager.layers.clear()
+    layersManager.layers.clear()

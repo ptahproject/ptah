@@ -8,6 +8,7 @@ from memphis import config
 from memphis.view.base import View
 from memphis.view.formatter import format
 from memphis.view.interfaces import ILayout
+from memphis.view.customize import layersManager
 
 log = logging.getLogger('memphis.view')
 
@@ -97,24 +98,30 @@ class Layout(View):
 
 
 def registerLayout(
-    name='', context=None, view=None, 
-    parent='', klass=Layout, template = None, route=None):
+    name='', context=None, view=None, parent='', 
+    klass=Layout, template = None, route=None, layer=''):
 
     if not klass or not issubclass(klass, Layout):
         raise ValueError("klass has to inherit from Layout class")
+
+    discriminator = ('memphis.view:layout', name, context, view, route)
+    layersManager.register(layer, discriminator)
 
     info = config.DirectiveInfo()
     info.attach(
         config.Action(
             registerLayoutImpl,
-            (klass, name, context, view, template, parent, route),
-            discriminator = (
-                'memphis.view:layout', name, context, view, route))
+            (klass, name, context, view, 
+             template, parent, route, layer, discriminator),
+            discriminator = discriminator+(layer,))
         )
 
 
-def registerLayoutImpl(klass, name, context, 
-                       view, template, parent, route_name):
+def registerLayoutImpl(klass, name, context, view, 
+                       template, parent, route_name, layer, discriminator):
+
+    if not layersManager.enabled(layer, discriminator):
+        return
 
     if klass in _registered:
         raise ValueError("Class can't be reused for different layouts")

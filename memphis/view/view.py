@@ -16,6 +16,7 @@ from pyramid.interfaces import IAuthenticationPolicy
 
 from memphis import config
 from memphis.view.base import View
+from memphis.view.customize import layersManager
 from memphis.view.renderers import Renderer, SimpleRenderer
 
 
@@ -99,23 +100,30 @@ class subpath(object):
 def registerView(
     name='', factory=View, context=None, template=None,
     route=None, layout='', permission='__no_permission_required__',
-    default=False, decorator=None):
+    default=False, decorator=None, layer=''):
 
     if factory is None or not callable(factory):
         raise ValueError('view factory is required')
+
+    discriminator = ('memphis.view:view', name, context, route)
+    layersManager.register(layer, discriminator)
 
     info = config.DirectiveInfo()
     info.attach(
         config.Action(
             registerViewImpl,
             (factory, name, context, template,
-             route, layout, permission, default, decorator),
-            discriminator = ('memphis.view:view', name, context, route)))
+             route, layout, permission, default, decorator, layer, discriminator),
+            discriminator = discriminator+(layer,)))
 
 
 def registerViewImpl(
     factory, name, context, template, route_name, layout, 
-    permission, default, decorator):
+    permission, default, decorator, layer='', discriminator=None):
+
+    if not layersManager.enabled(layer, discriminator):
+        print "skipping view registration because of layer:", name, route_name
+        return
 
     if template is not None:
         renderer = Renderer(template, layout=layout).bind(

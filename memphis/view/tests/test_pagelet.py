@@ -123,7 +123,7 @@ class TestPagelet(Base):
 
         self.assertEqual(
             renderPagelet(ITestPagelet, Context(), self.request),
-            'context|format|nothing|request|template|view')
+            'context|format|request|view')
 
     def test_pagelet_register_without_class(self):
         class ITestPagelet(interface.Interface):
