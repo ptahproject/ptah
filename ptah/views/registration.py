@@ -49,5 +49,5 @@ class Registration(form.Form):
         headers = security.remember(self.request, user.id)
 
         raise HTTPFound(
-            location='%s/login-success.html'%self.request.application_url,
+            location='%s/ptah/success.html'%self.request.application_url,
             headers = headers)

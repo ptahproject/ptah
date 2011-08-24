@@ -32,7 +32,7 @@ class PtahManageRoute(object):
         if login and login in PTAH.managers:
             pass
 
-        raise HTTPForbidden()
+        #raise HTTPForbidden()
 
     def __getitem__(self, key):
         try:
