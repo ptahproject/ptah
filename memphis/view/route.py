@@ -1,7 +1,7 @@
 """ routes """
 from zope import interface
 from zope.component import getSiteManager
-from pyramid.config import _make_predicates
+from pyramid.config.util import make_predicates
 from pyramid.request import route_request_iface
 from pyramid.traversal import DefaultRootFactory
 from pyramid.urldispatch import RoutesMapper
@@ -22,7 +22,7 @@ def registerRoute(name, pattern=None, factory=None, header=None,
 
     # these are route predicates; if they do not match, the next route
     # in the routelist will be tried
-    ignored, predicates, ignored = _make_predicates(
+    ignored, predicates, ignored = make_predicates(
         xhr=xhr,
         request_method=request_method,
         path_info=path_info,

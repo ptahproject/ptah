@@ -6,7 +6,7 @@ from zope.component import queryUtility, getSiteManager
 
 from webob.exc import HTTPForbidden
 
-from pyramid.config import requestonly, isexception
+from pyramid.config.views import requestonly, isexception
 from pyramid.interfaces import IView
 from pyramid.interfaces import IRequest
 from pyramid.interfaces import IRouteRequest
