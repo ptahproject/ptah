@@ -14,7 +14,7 @@ class CreateUserAction(object):
     interface.implements(IManageAction)
 
     title = _('Create user')
-    action = 'create-user.html'
+    action = 'crowd/create-user.html'
 
     def available(self):
         return True

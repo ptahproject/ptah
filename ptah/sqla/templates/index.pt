@@ -1,0 +1,22 @@
+<div class="page-header">
+  <h2>SQL Alchemny models</h2>
+</div>
+
+<div class="row">
+  <div class="span16 column">
+    <table class="zebra-striped">
+      <tr tal:repeat="tb view.tables">
+	<td>
+	  <h4>
+	    <a href="view.html?name=${tb[0]}">${tb[0]}</a>
+	  </h4>
+	  <p>
+	    <div tal:repeat="rec tb[1][1]">
+	      ${rec}
+	    </div>
+	  </p>
+	</td>
+      </tr>
+    </table>
+  </div>
+</div>
