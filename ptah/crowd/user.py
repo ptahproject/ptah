@@ -4,27 +4,15 @@ from webob.exc import HTTPFound
 from memphis import config, view, form
 
 from models import User, Session
-from schemas import CreateUserSchema, ManagerChangePasswordSchema
-from interfaces import _, IPasswordTool
-from interfaces import ICrowdUser, IManageAction, IManageUserAction
-
-
-class CreateUserAction(object):
-    config.utility(name='create-user')
-    interface.implements(IManageAction)
-
-    title = _('Create user')
-    action = 'crowd/create-user.html'
-
-    def available(self):
-        return True
+from schemas import UserSchema, ManagerChangePasswordSchema
+from interfaces import _, IPasswordTool, ICrowdUser, IManageUserAction
 
 
 class CreateUserForm(form.Form):
     view.pyramidView('create-user.html', route='ptah-manage')
 
     label = _('Create new user')
-    fields = form.Fields(CreateUserSchema)
+    fields = form.Fields(UserSchema).omit('id', 'joined')
 
     @form.button(_('Create'), primary=True)
     def create(self):
@@ -66,27 +54,43 @@ class Info(object):
         return True
 
 
-class UserInfo(view.View):
+class UserInfo(form.Form):
     view.pyramidView('index.html', ICrowdUser,
-                     route = 'ptah-manage', default = True,
-                     template = view.template('ptah.crowd:templates/user.pt'))
+                     route = 'ptah-manage', default = True)
 
-    def update(self):
-        request = self.request
+    label = 'Create user'
 
-        user = self.context.user
+    fields = form.Fields(UserSchema)
+    fields['id'].readonly = True
+    fields['joined'].readonly = True
 
-        if 'activate' in request.POST:
-            user.suspended = False
-            self.message("Account has been activated.", 'info')
+    def getContent(self):
+        return self.context.user
+    
+    @form.button(_('Activate'),)
+    def activate(self):
+        #user.suspended = False
+        #self.message("Account has been activated.", 'info')
+        pass
 
-        if 'suspend' in request.POST:
-            user.suspended = True
-            self.message("Account has been suspended.", 'info')
-            
-        if 'validate' in request.POST:
-            user.validated = True
-            self.message("Account  has been validated.", 'info')
+    @form.button(_('Suspend'),)
+    def suspend(self):
+        #    user.suspended = True
+        #    self.message("Account has been suspended.", 'info')
+        pass
+
+    @form.button(_('Validate'),)
+    def validate(self):
+        #user.validated = True
+        #self.message("Account  has been validated.", 'info')
+        pass
+
+    @form.button(_('Remove'),)
+    def remove(self):
+        #<input type="submit" class="btn danger" value="Remove" />
+        #user.validated = True
+        #self.message("Account  has been validated.", 'info')
+        pass
 
 
 class ChangePasswordAction(object):

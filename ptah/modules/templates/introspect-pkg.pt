@@ -4,7 +4,9 @@
 
 <div class="row" tal:define="items view.data.items();dummy items.sort()"
      tal:repeat="d items">
-  <h3>${d[0].capitalize()}</h3>
+  <h3 tal:define="info view.types.get(d[0], (d[0],''))">
+    ${info[0]} <small>${info[1]}</small>
+  </h3>
   <div class="span10" tal:define="infos d[1].items(); dummy infos.sort()"
        tal:repeat="info infos">
     <h4>${info[0]}</h4>

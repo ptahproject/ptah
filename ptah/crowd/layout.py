@@ -1,5 +1,5 @@
 from memphis import view
-from interfaces import ICrowdUser, ICrowdModule, IManageUserAction, IManageAction
+from interfaces import ICrowdUser, ICrowdModule, IManageUserAction
 
 
 view.registerLayout(

@@ -23,25 +23,15 @@ class IAction(interface.Interface):
     
     action = interface.Attribute('Action')
 
-
-class IManageAction(IAction):
-    """ management action """
-
-    def available():
-        """ check if action is availble for principal """
-
-
-class IUserAction(IAction):
-
     def available(principal):
         """ check if action is availble for principal """
 
 
-class IManageUserAction(IUserAction):
+class IManageUserAction(IAction):
     """ user management action """
 
 
-class IPersonalAction(IUserAction):
+class IPersonalAction(IAction):
     """ user preferences action """
 
 

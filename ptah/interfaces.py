@@ -35,7 +35,6 @@ class IPtahModule(interface.Interface):
 
     name = interface.Attribute('Module name')
     title = interface.Attribute('Module title')
-    description = interface.Attribute('Module description')
 
     def url(request):
         """ return url to this module """

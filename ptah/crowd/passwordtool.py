@@ -10,90 +10,35 @@ from zope.component import getUtility, queryUtility
 
 from memphis import config
 from ptah.models import AuthToken
-from ptah.interfaces import _, IAuthentication, AUTH_RESETPWD
+from ptah.interfaces import IAuthentication, AUTH_RESETPWD
 
 from models import User, Session
 from interfaces import _, IPasswordTool
 
 
-_encoder = getencoder("utf-8")
-
-
 class PlainPasswordManager(object):
+    """PLAIN password manager."""
 
-    def encodePassword(self, password, salt=None):
-        return password
+    def encode(self, password, salt=None):
+        return '{PLAIN}%s'%password
 
-    def checkPassword(self, encoded_password, password):
+    def check(self, encoded, password):
         return encoded_password == password
 
 
 class SSHAPasswordManager(object):
-    """SSHA password manager.
+    """SSHA password manager."""
 
-    SSHA is basically SHA1-encoding which also incorporates a salt
-    into the encoded string. This way, stored passwords are more
-    robust against dictionary attacks of attackers that could get
-    access to lists of encoded passwords.
+    _encoder = getencoder("utf-8")
 
-    SSHA is regularly used in LDAP databases and we should be
-    compatible with passwords used there.
-
-    >>> from zope.interface.verify import verifyObject
-
-    >>> manager = SSHAPasswordManager()
-    >>> verifyObject(IPasswordManager, manager)
-    True
-
-    >>> password = u"right \N{CYRILLIC CAPITAL LETTER A}"
-    >>> encoded = manager.encodePassword(password, salt="")
-    >>> encoded
-    '{SSHA}BLTuxxVMXzouxtKVb7gLgNxzdAI='
-
-    >>> manager.checkPassword(encoded, password)
-    True
-    >>> manager.checkPassword(encoded, password + u"wrong")
-    False
-
-    Using the `slappasswd` utility to encode ``secret``, we get
-    ``{SSHA}J4mrr3NQHXzLVaT0h9TuEWoJOrxeQ5lv`` as seeded hash.
-
-    Our password manager generates the same value when seeded with the
-    same salt, so we can be sure, our output is compatible with
-    standard LDAP tools that also use SSHA::
-
-    >>> from base64 import urlsafe_b64decode
-    >>> salt = urlsafe_b64decode('XkOZbw==')
-    >>> encoded = manager.encodePassword('secret', salt)
-    >>> encoded
-    '{SSHA}J4mrr3NQHXzLVaT0h9TuEWoJOrxeQ5lv'
-
-    >>> encoded = manager.encodePassword(password)
-    >>> manager.checkPassword(encoded, password)
-    True
-    >>> manager.checkPassword(encoded, password + u"wrong")
-    False
-
-    >>> manager.encodePassword(password) != manager.encodePassword(password)
-    True
-
-    The password manager should be able to cope with unicode strings for input::
-
-    >>> passwd = u'foobar\u2211' # sigma-sign.
-    >>> manager.checkPassword(manager.encodePassword(passwd), passwd)
-    True
-    >>> manager.checkPassword(unicode(manager.encodePassword(passwd)), passwd)
-    True
-
-    """
-    def encodePassword(self, password, salt=None):
+    def encode(self, password, salt=None):
         if salt is None:
             salt = urandom(4)
-        hash = sha1(_encoder(password)[0])
+        hash = sha1(self._encoder(password)[0])
         hash.update(salt)
-        return '{SSHA}' + urlsafe_b64encode(hash.digest() + salt)
+        return '{ssha}' + urlsafe_b64encode(hash.digest() + salt)
 
-    def checkPassword(self, encoded_password, password):
+    def check(self, encoded_password, password):
         # urlsafe_b64decode() cannot handle unicode input string. We
         # encode to ascii. This is safe as the encoded_password string
         # should not contain non-ascii characters anyway.
@@ -104,23 +49,26 @@ class SSHAPasswordManager(object):
 
 
 class PasswordTool(object):
-    """ Password management utilities. """
-
+    """ Password management utility. """
+    config.utility()
     interface.implements(IPasswordTool)
-    config.utility(IPasswordTool)
 
     min_length = 5
     letters_digits = False
     letters_mixed_case = False
 
+    pm = {'{plain}': PlainPasswordManager(),
+          '{ssha}': SSHAPasswordManager(),
+          }
+
     #passwordManager = SSHAPasswordManager()
     passwordManager = PlainPasswordManager()
 
     def checkPassword(self, encodedPassword, password):
-        return self.passwordManager.checkPassword(encodedPassword, password)
+        return self.passwordManager.check(encodedPassword, password)
 
     def encodePassword(self, password, salt=None):
-        return self.passwordManager.encodePassword(password, salt)
+        return self.passwordManager.encode(password, salt)
 
     def getPrincipal(self, passcode):
         at = AuthToken.get(passcode, AUTH_RESETPWD)

@@ -106,9 +106,13 @@ PasswordSchema = colander.SchemaNode(
 )
 
 
-class CreateUserSchema(colander.Schema):
+class UserSchema(colander.Schema):
 
-    fullname = colander.SchemaNode(
+    id = colander.SchemaNode(
+        colander.Int(),
+        title=_('Id'))
+
+    name = colander.SchemaNode(
         colander.Str(),
         title=_('Full Name'),
         description=_(u"e.g. John Smith. This is how users "
@@ -145,6 +149,10 @@ class CreateUserSchema(colander.Schema):
         title = _(u'Validate'),
         description = _(u'Initiate email validation process for new account.'),
         default = False)
+
+    joined = colander.SchemaNode(
+        colander.DateTime(),
+        title = _(u'Joined'))
 
 
 class ManagerChangePasswordSchema(colander.Schema):

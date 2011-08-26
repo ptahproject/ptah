@@ -45,7 +45,7 @@ class Package(object):
         info = {}
 
         for action in actions:
-            d = action.discriminator[0].split(':',1)[-1]
+            d = action.discriminator[0]
             d_data = info.setdefault(d, {})
             mod_data = d_data.setdefault(action.info.module.__name__, [])
             mod_data.append(action)
@@ -166,11 +166,23 @@ def handlerDirective(
 
 
 renderers = {
-    'view': viewDirective,
-    'route': routeDirective,
-    'utility': utilityDirective,
-    'adapter': adapterDirective,
-    'handler': handlerDirective,
+    'memphis.view:view': viewDirective,
+    'memphis.view:route': routeDirective,
+    'memphis.config:utility': utilityDirective,
+    'memphis.config:adapter': adapterDirective,
+    'memphis.config:handler': handlerDirective,
+    }
+
+types = {
+    'memphis.view:view': ('View', 'Pyramid views'),
+    'memphis.view:route': ('Route', 'Pyramid routes'),
+    'memphis.view:layout': ('Layout', 'Memphis layouts'),
+    'memphis.view:pagelet': ('Pagelet', 'Memphis pagelets'),
+    'memphis.view:pageletType': ('Pagelet Type', 'Memphis pagelet types'),
+    'memphis.config:utility': ('Utility', 'zca utility registrations'),
+    'memphis.config:adapter': ('Adapters','zca adapter registrations'),
+    'memphis.config:handler': ('Event listeners',
+                               'zca event handler registrations'),
     }
 
 
@@ -182,7 +194,7 @@ class PackageView(view.View):
             'ptah.modules:templates/introspect-pkg.pt', nolayer=True))
 
     renderers = renderers
-    
+    types = types
+
     def update(self):
         self.data = self.context.actions()
-

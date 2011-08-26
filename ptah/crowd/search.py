@@ -6,18 +6,7 @@ from memphis import view, form, config
 from sqlalchemy.sql.expression import asc
 
 from models import Session, User
-from interfaces import _, ICrowdModule, IManageAction
-
-
-class SearchUsersAction(object):
-    config.utility(name='search-users')
-    interface.implements(IManageAction)
-
-    title = _('Search')
-    action = 'search.html'
-
-    def available(self):
-        return True
+from interfaces import _, ICrowdModule
 
 
 class SearchSchema(colander.Schema):
