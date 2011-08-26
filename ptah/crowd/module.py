@@ -1,12 +1,15 @@
 """ introspect module """
 import ptah
-from memphis import config
 from zope import interface
-
+from memphis import config, view
 from interfaces import ICrowdModule, ICrowdUser
+
+from models import User
 
 
 class CrowdModule(ptah.PtahModule):
+    """ Basic user management module. """
+
     config.utility(name='crowd')
     interface.implementsOnly(ICrowdModule)
 
@@ -14,11 +17,24 @@ class CrowdModule(ptah.PtahModule):
     title = 'Crowd'
     description = 'Basic user management module.'
 
+    def __getitem__(self, key):
+        if key:
+            user = User.getById(key)
+            if user is not None:
+                return CrowdUser(user, self)
 
-class User(object):
+        raise KeyError(key)
+
+
+class CrowdUser(object):
     interface.implements(ICrowdUser)
 
     def __init__(self, user, parent):
         self.user = user
         self.__name__ = str(user.id)
         self.__parent__ = parent
+
+
+view.registerPagelet(
+    'ptah-module-actions', ICrowdModule,
+    template = view.template('ptah.crowd:templates/actions.pt'))

@@ -17,4 +17,3 @@ class TableView(view.View):
 
         self.size = Session.query(table).count()
         self.data = Session.query(table).limit(10).all()
-

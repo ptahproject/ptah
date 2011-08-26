@@ -16,18 +16,11 @@ class LayoutMain(view.Layout):
     user = None
 
     def update(self):
-        registry = self.request.registry
-        self.url = self.request.route_url('ptah-manage', traverse='')
-
         actions = []
-
-        if ICrowdModule.providedBy(self.view.context):
-            for name, util in registry.getUtilitiesFor(IManageAction):
-                if util.available():
-                    actions.append((util.title, util))
-
-        elif ICrowdUser.providedBy(self.view.context):
-            self.url = '%s%s/'%(self.url, self.view.context.__name__)
+        if ICrowdUser.providedBy(self.view.context):
+            registry = self.request.registry
+            url = self.request.route_url('ptah-manage', traverse='crowd/')
+            self.url = '%s%s/'%(url, self.view.context.__name__)
             self.user = self.view.context.user.name
             for name, util in registry.getUtilitiesFor(IManageUserAction):
                 if util.available(self.view.context.user):

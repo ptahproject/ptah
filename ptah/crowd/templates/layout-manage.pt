@@ -1,12 +1,11 @@
-<div class="page-header">
-  <h1><a href="${request.application_url}/ptah-manage/">
-      Ptah management</a> 
-    <small tal:condition="view.user">
-      for <a href="${view.url}">${view.user}</a></small></h1>
+<div class="page-header" tal:condition="view.user">
+  <h2>
+    <a href="${request.application_url}ptah-manage/crowd/${view.url}">${view.user}</a>
+  </h2>
 </div>
 
 <div class="row">
-  <div class="span4 columns">
+  <div class="span4 columns" tal:condition="view.actions">
     <h6>Actions</h6>
 
     <tal:block condition="nothing">
@@ -23,7 +22,9 @@
     </table>
   </div>
 
-  <div class="span12 columns">
+  <div class="span12 columns"
+       tal:attributes="class 'span12 columns' if view.actions 
+		       else 'span14 offset2 columns'">
     <tal:block content="structure view.renderMessages()" />
 
     <tal:block content="structure content" />

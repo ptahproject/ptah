@@ -41,11 +41,13 @@ class Registration(form.Form):
             self.message(errors, 'form-error')
             return
 
+        reg = self.request.registry
+
         user = self.create(data)
 
-        user = getUtility(IAuthentication).getUserByLogin(data['login'])
+        user = reg.getUtility(IAuthentication).getUserByLogin(data['login'])
         headers = security.remember(self.request, user.id)
 
         raise HTTPFound(
-            location='%s/ptah/success.html'%self.request.application_url,
+            location='%s/login-success.html'%self.request.application_url,
             headers = headers)
