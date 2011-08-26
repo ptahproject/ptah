@@ -30,7 +30,8 @@ def pageletType(name, context=None):
     info.attach(
         config.ClassAction(
             registerPageletTypeImpl, (name, context),
-            discriminator = ('memphis.view:pageletType', name, context))
+            discriminator = ('memphis.view:pageletType', name, context),
+            order = 1)
         )
 
 

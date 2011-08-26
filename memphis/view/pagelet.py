@@ -61,7 +61,8 @@ def registerPageletType(name, iface, context):
         config.Action(
             registerPageletTypeImpl,
             (iface, name, context),
-            discriminator = ('memphis.view:pageletType', name, iface)))
+            discriminator = ('memphis.view:pageletType', name, iface),
+            order = 1))
 
 
 def registerPageletTypeImpl(iface, name, context):
