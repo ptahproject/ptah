@@ -16,7 +16,7 @@ class Field(object):
     css = ''
     widgetFactory = ''
 
-    def __init__(self, field, name=None, prefix='', mode=None):
+    def __init__(self, field, name=None, prefix='', mode=None, readonly=False):
         self.typ = field.typ
         self.field = field
         if name is None:
@@ -24,6 +24,7 @@ class Field(object):
         self.name = expandPrefix(prefix) + name
         self.prefix = prefix
         self.mode = mode
+        self.readonly = readonly
 
     def __repr__(self):
         return '<%s %r>' % (self.__class__.__name__, self.name)
@@ -74,6 +75,13 @@ class Fields(OrderedDict):
 
             self[name] = form_field
 
+    def select(self, *names):
+        return self.__class__(*[self[name] for name in names])
+
+    def omit(self, *names):
+        return self.__class__(
+            *[item for name, item in self.items() if name not in names])
+
 
 class FieldWidgets(OrderedDict):
     """Widget manager for IWidget."""
@@ -110,6 +118,8 @@ class FieldWidgets(OrderedDict):
             mode = self.mode
             if field.mode is not None:
                 mode = field.mode
+            elif field.readonly:
+                mode = DISPLAY_MODE
 
             # Step 2: Get the widget for the given field.
             shortName = field.name
