@@ -1,0 +1,9 @@
+<h5>${ptype.title or ptype.name}</h5>
+<p>
+  Context: <tal:block content="ptype.context" />
+  <tal:block condition="ptype.description">
+    <br />
+    <br />
+    <em tal:content="ptype.description" />
+  </tal:block>
+</p>

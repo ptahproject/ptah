@@ -1,6 +1,6 @@
 """ introspect module """
 import ptah
-import pkg_resources, inspect, os
+import pkg_resources, inspect, os, sys
 from zope import interface
 from memphis import config, view
 from memphis.config import directives
@@ -193,9 +193,22 @@ def eventDirective(
     return template(**locals())
 
 
+def pageletTypeDirective(
+    action, request,
+    lineno = lineno,
+    template=view.template(
+        'ptah.modules:templates/directive-ptype.pt',nolayer=True)):
+
+    name = action.args[0]
+    ptype = sys.modules['memphis.view.pagelet'].ptypes[name]
+
+    return template(**locals())
+
+
 renderers = {
     'memphis.view:view': viewDirective,
     'memphis.view:route': routeDirective,
+    'memphis.view:pageletType': pageletTypeDirective,
     'memphis.config:utility': utilityDirective,
     'memphis.config:adapter': adapterDirective,
     'memphis.config:handler': handlerDirective,
