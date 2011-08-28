@@ -47,7 +47,7 @@ class LoginForm(form.Form):
             if user.suspended:
                 raise HTTPFound(
                     location='%s/login-suspended.html'%request.application_url)
-                
+
             headers = security.remember(request, user.login)
             raise HTTPFound(
                 headers = headers,

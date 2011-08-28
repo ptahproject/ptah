@@ -62,4 +62,3 @@ class Record(object):
 
         self.data = Session.query(table).filter(
             self.pcolumn == pid).one()
-

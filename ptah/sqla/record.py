@@ -94,4 +94,3 @@ class AddRecord(form.Form):
     @form.button('Back')
     def cancel(self):
         raise HTTPFound(location='./')
-        

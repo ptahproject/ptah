@@ -30,7 +30,7 @@ class SearchUsers(form.Form):
     fields = form.Fields(SearchSchema)
 
     users = None
-    
+
     def getContent(self):
         return {'term': self.request.session.get('ptah-search-term', '')}
 
@@ -53,7 +53,7 @@ class SearchUsers(form.Form):
             Session.query(User).filter(
                 User.id.in_(uids)).update({'suspended': True}, False)
             self.message("Selected accounts have been suspended.", 'info')
-            
+
         if 'validate' in request.POST and uids:
             Session.query(User).filter(
                 User.id.in_(uids)).update({'validated': True}, False)
@@ -75,4 +75,3 @@ class SearchUsers(form.Form):
 
         self.request.session['ptah-search-term'] = data['term']
         raise HTTPFound(location = self.request.url)
-        

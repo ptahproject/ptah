@@ -46,9 +46,9 @@ class MainView(view.View):
 
     def update(self):
         Base = psa.get_base()
-        
+
         tables = []
-        
+
         for name, table in Base.metadata.tables.items():
             tables.append((name, self.printTable(table)))
 

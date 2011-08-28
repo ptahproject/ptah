@@ -29,7 +29,7 @@ class Authentication(object):
         if user is not None:
             pwtool = getUtility(IPasswordTool)
             if pwtool.checkPassword(user.password, password):
-                return Principal(user.id, user.name, 
+                return Principal(user.id, user.name,
                                  user.login, user.suspended)
 
     def getUser(self, id):

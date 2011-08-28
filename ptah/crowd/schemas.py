@@ -84,7 +84,7 @@ class ResetPasswordSchema(colander.Schema):
 
 PasswordSchema = colander.SchemaNode(
     colander.Mapping(),
-    
+
     colander.SchemaNode(
         colander.Str(),
         name = 'password',

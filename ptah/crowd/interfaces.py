@@ -20,7 +20,7 @@ class IAction(interface.Interface):
     """ ptah action """
 
     title = interface.Attribute('User friendly title')
-    
+
     action = interface.Attribute('Action')
 
     def available(principal):

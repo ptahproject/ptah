@@ -84,7 +84,7 @@ SESSION = config.registerSettings(
         title = _('Secret'),
         default = '',
         description = _('Used with the HMAC to ensure session integrity. This value should ideally be a randomly generated string.')),
-    
+
     title = _('Pyramid session'),
     description = _('Beaker session configuration settings'),
     validator = (config.RequiredWithDependency('key', 'type', default=''),
@@ -100,7 +100,7 @@ SQLA = config.registerSettings(
         default = '',
         title = 'Engine URL',
         description = 'SQLAlchemy database engine URL'),
-    
+
     title = 'SQLAlchemy settings',
     description = 'Configuration settings for a SQLAlchemy database engine.'
     )

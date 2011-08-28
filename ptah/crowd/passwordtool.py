@@ -72,7 +72,7 @@ class PasswordTool(object):
 
     def getPrincipal(self, passcode):
         at = AuthToken.get(passcode, AUTH_RESETPWD)
-        
+
         if at is not None:
             return getUtility(IAuthentication).getUserByLogin(at.data)
 
@@ -83,7 +83,7 @@ class PasswordTool(object):
 
     def resetPassword(self, passcode, password):
         at = AuthToken.get(passcode, AUTH_RESETPWD)
-        
+
         if at is not None:
             principal = getUtility(IAuthentication).getUserByLogin(at.data)
             user = User.get(principal.login)

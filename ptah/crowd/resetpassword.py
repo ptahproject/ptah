@@ -60,7 +60,7 @@ class ResetPassword(form.Form):
     @form.button(_('Cancel'))
     def cancel(self):
         raise HTTPFound(location=self.request.application_url)
-        
+
 
 class ResetPasswordForm(form.Form):
     view.pyramidView(

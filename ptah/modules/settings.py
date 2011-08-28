@@ -40,9 +40,9 @@ class MainView(view.View):
                 value = node.serialize(group[node.name])
 
                 schema.append(
-                    ({'name': '%s.%s'%(name, node.name), 
+                    ({'name': '%s.%s'%(name, node.name),
                       'value': '%s: %s'%(node.typ.__class__.__name__, value),
-                      'title': node.title, 
+                      'title': node.title,
                       'description': node.description}))
 
             data.append(

@@ -42,7 +42,7 @@ class TemplatesManagement(view.View):
         self.packages.sort()
 
         request = self.request
-        
+
         self.selected = request.params.get('pkg')
         if self.selected in self.packages:
             self.pkg_data = self.load(self.selected)
@@ -65,7 +65,7 @@ class ViewTemplate(view.View):
         route = 'ptah-manage',
         template = view.template(
             'ptah.modules:templates/template.pt', nolayer=True))
-   
+
     def update(self):
         reg = tmpl.registry
         request = self.request
@@ -74,7 +74,7 @@ class ViewTemplate(view.View):
         items.sort()
         self.packages = [name for name, data in items]
         self.packages.sort()
-        
+
         self.pkg = request.params.get('pkg')
         if self.pkg not in reg:
             raise HTTPFound(location = 'index.html')
@@ -125,7 +125,7 @@ class CustomTemplate(view.View):
 
     def update(self):
         dir = TEMPLATE.custom
-        
+
         if not dir:
             self.message("There are no any customizations", 'warning')
             raise HTTPFound(location='index.html')
@@ -148,7 +148,7 @@ class CustomTemplate(view.View):
             template = self.request.params.get('template')
             if template in reg[pkg]:
                 custfile = os.path.join(dir, pkg, template)
-                
+
                 self.template = template
 
                 if 'save' in self.request.POST:
@@ -165,7 +165,7 @@ class CustomTemplate(view.View):
             else:
                 data = reg[pkg]
                 pkgdir = os.path.join(dir, pkg)
-                
+
                 templates = []
                 for name in os.listdir(pkgdir):
                     if name in data:

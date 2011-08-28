@@ -85,5 +85,3 @@ class TableView(form.Form):
 
         self.table.delete(self.pcolumn.in_(ids)).execute()
         self.message('Select records have been removed')
-
-        

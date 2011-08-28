@@ -24,7 +24,7 @@ class CreateUserForm(form.Form):
 
         # create user
         user = User(data['fullname'], data['login'], data['login'])
-        
+
         if not data['validate']:
             user.validated = True
 
@@ -98,7 +98,7 @@ class ChangePassword(form.Form):
 
     label = _('Change password')
     description = _('Please specify password for this users.')
-    
+
     @form.button(_('Change'), actype=form.AC_PRIMARY)
     def change(self):
         data, errors = self.extractData()

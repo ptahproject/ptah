@@ -93,7 +93,7 @@ def viewDirective(
             view = 'route: "%s"'%route
     else:
         view = '"%s"'%name
-        
+
     if isclass:
         factoryInfo = '%s.%s'%(factory.__module__, factory.__name__)
     else:
@@ -171,7 +171,7 @@ def handlerDirective(
 
     factory, ifaces = action.args[1:]
     factoryInfo = '%s.%s'%(action.info.module.__name__, factory.__name__)
-    
+
     if len(action.args[2]) > 1:
         obj = action.args[2][0]
         event = directives.events[action.args[2][-1]]
@@ -309,7 +309,7 @@ class SourceView(view.View):
                 if '.' not in pkg_name:
                     break
                 pkg_name = pkg_name.rsplit('.',1)[0]
-            
+
         if dist is None:
             self.source = None
 
@@ -329,7 +329,7 @@ class SourceView(view.View):
                 from pygments.formatters import HtmlFormatter
 
                 html = HtmlFormatter(
-                    linenos='inline', 
+                    linenos='inline',
                     lineanchors='sl',
                     anchorlinenos=True,
                     noclasses = True,

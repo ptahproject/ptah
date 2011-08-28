@@ -47,7 +47,7 @@ def buildSchema(table):
             typ = colander.Str()
 
         node = colander.SchemaNode(
-            typ, 
+            typ,
             name = cl.name)
 
         if cl.primary_key and isinstance(node.typ, colander.Int):
