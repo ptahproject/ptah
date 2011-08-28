@@ -6,8 +6,7 @@ from webob.multidict import UnicodeMultiDict, MultiDict
 from memphis import view
 from memphis.form.field import Fields
 from memphis.form.button import Buttons, Actions
-from memphis.form.pagelets import IFormView
-from memphis.form.interfaces import INPUT_MODE, DISPLAY_MODE
+from memphis.form.pagelets import FORM_VIEW, FORM_INPUT, FORM_DISPLAY
 from memphis.form.interfaces import IForm, IInputForm, IDisplayForm, IWidgets
 
 
@@ -27,7 +26,7 @@ class Form(view.View):
     widgets  = None
     content = None
 
-    mode = INPUT_MODE
+    mode = FORM_INPUT
 
     method = 'post'
     enctype = 'multipart/form-data'
@@ -87,7 +86,7 @@ class Form(view.View):
 
     def render(self):
         if self.template is None:
-            return self.pagelet(IFormView, self)
+            return self.pagelet(FORM_VIEW, self)
 
         kwargs = {'view': self,
                   'context': self.context,
@@ -99,7 +98,7 @@ class Form(view.View):
 class DisplayForm(Form):
     interface.implements(IDisplayForm)
 
-    mode = DISPLAY_MODE
+    mode = FORM_DISPLAY
     empty = UnicodeMultiDict(MultiDict({}), 'utf-8')
 
     def getRequestParams(self):

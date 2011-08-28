@@ -11,21 +11,9 @@ class HTMLFormElement(object):
 
     id = None
     klass = None
-    style = None
     title = None
 
     lang = None
-
-    onclick = None
-    ondblclick = None
-    onmousedown = None
-    onmouseup = None
-    onmouseover = None
-    onmousemove = None
-    onmouseout = None
-    onkeypress = None
-    onkeydown = None
-    onkeyup = None
 
     disabled = None
     tabindex = None
@@ -43,7 +31,6 @@ class HTMLFormElement(object):
                 self.klass = u'%s %s'%(self.klass, klass)
 
     def update(self):
-        """See memphis.form.interfaces.IWidget"""
         super(HTMLFormElement, self).update()
         if self.required:
             self.addClass('required')
@@ -55,7 +42,6 @@ class HTMLInputWidget(HTMLFormElement):
     readonly = None
     alt = None
     accesskey = None
-    onselect = None
 
 
 class HTMLTextInputWidget(HTMLInputWidget):
@@ -72,7 +58,6 @@ class HTMLTextAreaWidget(HTMLFormElement):
     cols = None
     readonly = None
     accesskey = None
-    onselect = None
 
 
 class HTMLSelectWidget(HTMLFormElement):

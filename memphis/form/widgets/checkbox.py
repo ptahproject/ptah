@@ -1,27 +1,14 @@
-##############################################################################
-#
-# Copyright (c) 2007 Zope Foundation and Contributors.
-# All Rights Reserved.
-#
-# This software is subject to the provisions of the Zope Public License,
-# Version 2.1 (ZPL).  A copy of the ZPL should accompany this distribution.
-# THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
-# WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-# WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE.
-#
-##############################################################################
 """Check Widget Implementation"""
 import zope.interface
 import zope.schema
 from zope.schema import vocabulary
-from pyramid.i18n import get_localizer
 
 from memphis import config, view
 from memphis.form import term, pagelets
 from memphis.form.widget import SequenceWidget
 from memphis.form.widgets import widget
-from memphis.form.interfaces import _, ICheckBoxWidget, ISingleCheckBoxWidget
+
+from interfaces import _, ICheckBoxWidget, ISingleCheckBoxWidget
 
 
 class CheckBoxWidget(widget.HTMLInputWidget, SequenceWidget):
@@ -42,15 +29,13 @@ class CheckBoxWidget(widget.HTMLInputWidget, SequenceWidget):
         """See z3c.form.interfaces.IWidget."""
         super(CheckBoxWidget, self).update()
 
-        localizer = get_localizer(self.request)
-
         self.items = []
         for count, term in enumerate(self.terms):
             checked = self.isChecked(term)
             id = '%s-%i' % (self.id, count)
             label = term.token
             if zope.schema.interfaces.ITitledTokenizedTerm.providedBy(term):
-                label = localizer.translate(term.title)
+                label = self.localizer.translate(term.title)
             self.items.append(
                 {'id':id, 'name':self.name, 'value':term.token,
                  'label':label, 'checked':checked})
@@ -59,7 +44,7 @@ class CheckBoxWidget(widget.HTMLInputWidget, SequenceWidget):
 class SingleCheckBoxWidget(CheckBoxWidget):
     """Single Input type checkbox widget implementation."""
     zope.interface.implementsOnly(ISingleCheckBoxWidget)
-    config.adapts(zope.schema.interfaces.IBool, None, name='singlecheckbox')
+    config.adapts(zope.schema.interfaces.IBool, name='singlecheckbox')
 
     klass = u'single-checkbox-widget'
 
@@ -79,13 +64,13 @@ class SingleCheckBoxWidget(CheckBoxWidget):
 
 
 view.registerPagelet(
-    pagelets.IWidgetDisplayView, ICheckBoxWidget,
+    'form-display', ICheckBoxWidget,
     template=view.template("memphis.form.widgets:checkbox_display.pt"))
 
 view.registerPagelet(
-    pagelets.IWidgetInputView, ICheckBoxWidget,
+    'form-input', ICheckBoxWidget,
     template=view.template("memphis.form.widgets:checkbox_input.pt"))
 
 view.registerPagelet(
-    pagelets.IWidgetHiddenView, ICheckBoxWidget,
+    'form-hidden', ICheckBoxWidget,
     template=view.template("memphis.form.widgets:checkbox_hidden.pt"))

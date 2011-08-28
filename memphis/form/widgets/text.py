@@ -1,39 +1,37 @@
 """Text widget implementation"""
 import colander
 from zope import interface
-
 from memphis import config, view
 from memphis.form import pagelets
 from memphis.form.widget import Widget
 from memphis.form.widgets import widget
-from memphis.form.interfaces import _, ITextWidget
+
+from interfaces import _, ITextWidget
 
 
 class TextWidget(widget.HTMLTextInputWidget, Widget):
-    """Input type text widget implementation."""
+    __doc__ = _(u'HTML Text input widget')
+
     interface.implementsOnly(ITextWidget)
-    config.adapts(colander.SchemaNode, colander.Str, None)
-    config.adapts(colander.SchemaNode, colander.Int, None)
-    config.adapts(colander.SchemaNode, colander.Float, None)
-    config.adapts(colander.SchemaNode, colander.Date, None)
-    config.adapts(colander.SchemaNode, colander.DateTime, None)
+    config.adapts(colander.SchemaNode, colander.Str)
+    config.adapts(colander.SchemaNode, colander.Int)
+    config.adapts(colander.SchemaNode, colander.Float)
 
     klass = u'text-widget'
     value = u''
 
     __fname__ = 'text'
     __title__ = _(u'Text widget')
-    __description__ = _(u'HTML Text input widget')
 
 
 view.registerPagelet(
-    pagelets.IWidgetDisplayView, ITextWidget,
+    'form-display', ITextWidget,
     template=view.template("memphis.form.widgets:text_display.pt"))
 
 view.registerPagelet(
-    pagelets.IWidgetInputView, ITextWidget,
+    'form-input', ITextWidget,
     template=view.template("memphis.form.widgets:text_input.pt"))
 
 view.registerPagelet(
-    pagelets.IWidgetHiddenView, ITextWidget,
+    'form-hidden', ITextWidget,
     template=view.template("memphis.form.widgets:text_hidden.pt"))

@@ -20,6 +20,8 @@ class Button(Field):
     """A simple button in a form."""
     interface.implements(IButton)
 
+    description = ''
+
     def __init__(self, name='submit', title=None, type='submit', value=None,
                  disabled=False, accessKey = None, 
                  action=None, actype=AC_DEFAULT):
@@ -95,7 +97,7 @@ class Actions(OrderedDict):
 
         sm = getSiteManager()
 
-        # Walk through each field, making a widget out of it.
+        # Walk through each node, making a widget out of it.
         for field in self.form.buttons.values():
             # Step 2: Get the widget for the given field.
             shortName = field.name
@@ -104,9 +106,9 @@ class Actions(OrderedDict):
             factory = field.widgetFactory
             if isinstance(factory, basestring):
                 widget = sm.queryMultiAdapter(
-                    (field, field.typ, request), IWidget, name=factory)
+                    (field, field.typ), IWidget, name=factory)
             elif callable(factory):
-                widget = factory(field.node, request)
+                widget = factory(field, field.node)
 
             if widget is None:
                 widget = sm.getMultiAdapter(
@@ -138,7 +140,7 @@ class Actions(OrderedDict):
         for action in self.values():
             val = action.extract()
             if val is not colander.null:
-                action.field(self.form)
+                action.node(self.form)
 
 
 def button(title, **kwargs):

@@ -1,22 +1,9 @@
-<html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:tal="http://xml.zope.org/namespaces/tal"
-      tal:omit-tag="">
 <span id="" class=""
       tal:attributes="id context.id;
                       class context.klass;
-                      style context.style;
                       title context.title;
-                      lang context.lang;
-                      onclick context.onclick;
-                      ondblclick context.ondblclick;
-                      onmousedown context.onmousedown;
-                      onmouseup context.onmouseup;
-                      onmouseover context.onmouseover;
-                      onmousemove context.onmousemove;
-                      onmouseout context.onmouseout;
-                      onkeypress context.onkeypress;
-                      onkeydown context.onkeydown;
-                      onkeyup context.onkeyup"><tal:block
+                      lang context.lang;">
+  <tal:block
       condition="context.value" content="context.value"
 /></span>
 </html>

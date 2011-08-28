@@ -4,11 +4,10 @@ from zope import interface
 from zope.component import getMultiAdapter
 from zope.schema.interfaces import ITitledTokenizedTerm
 
-from pyramid.i18n import get_localizer
 from webob.multidict import MultiDict
 
-from memphis.form.interfaces import \
-    IWidget, IDataManager, ISequenceWidget, ITerms, INPUT_MODE
+from pagelets import FORM_INPUT
+from interfaces import IWidget, IDataManager, ISequenceWidget, ITerms
 
 
 PLACEHOLDER = object()
@@ -20,26 +19,28 @@ class Widget(object):
 
     name = '' 
     label = u''
-    mode = INPUT_MODE
+    description = u''
+    mode = FORM_INPUT
     required = False 
     error = None 
-    value = None 
+    value = None
     setErrors = True
 
     form = None
     content = None
     context = None
     params = MultiDict({})
+    localizer = None
 
-    def __init__(self, field, typ, request):
-        self.field = field
+    def __init__(self, node, typ):
+        self.node = node
         self.typ = typ
-        self.request = request
 
-        self.name = field.name
-        self.id = field.name.replace('.', '-')
-        self.label = field.title
-        self.required = field.required
+        self.name = node.name
+        self.id = node.name.replace('.', '-')
+        self.label = node.title
+        self.description = node.description
+        self.required = node.required
 
     @property
     def __title__(self):
@@ -50,11 +51,11 @@ class Widget(object):
         value = colander.null
         lookForDefault = False
 
-        # Step 1.1: If possible, get a value from the request
+        # Step 1.1: If possible, get a value from the params
         self.setErrors = False
         widget_value = self.extract()
         if widget_value is not colander.null:
-            # Once we found the value in the request, it takes precendence
+            # Once we found the value in the params, it takes precendence
             # over everything and nothing else has to be done.
             self.value = widget_value
             value = PLACEHOLDER
@@ -67,24 +68,18 @@ class Widget(object):
             #              it now via a data manager.
             if self.content is not None:
                 value = getMultiAdapter(
-                    (self.content, self.field), IDataManager).query()
+                    (self.content, self.node), IDataManager).query()
 
             # Step 1.2.2: If we still do not have a value, we can always use
-            #             the default value of the field, id set
-            # NOTE: It should check field.default is not missing_value, but
-            # that requires fixing zope.schema first
-            if ((value is self.field.missing or value is colander.null) and
-                self.field.default is not colander.null):
-                value = self.field.default
+            #             the default value of the node, id set
+            if ((value is self.node.missing or value is colander.null) and
+                self.node.default is not colander.null):
+                value = self.node.default
                 lookForDefault = True
 
         # Step 1.4: Convert the value to one that the widget can understand
         if value not in (PLACEHOLDER, colander.null):
-            self.value = self.field.serialize(value)
-
-    def render(self):
-        # render pagelet, check memphis/form/pagelets.py
-        return getMultiAdapter((self, self.request), self.mode)()
+            self.value = self.node.serialize(value)
 
     def extract(self, default=colander.null):
         return self.params.get(self.name, default)
@@ -112,21 +107,20 @@ class SequenceWidget(Widget):
 
     value = ()
     terms = None
+    empty_marker = ''
 
     noValueToken = '--NOVALUE--'
 
     @property
     def displayValue(self):
         value = []
-        localizer = get_localizer(self.request)
-
         for token in self.value:
             # Ignore no value entries. They are in the request only.
             if token == self.noValueToken:
                 continue
             term = self.terms.getTermByToken(token)
             if ITitledTokenizedTerm.providedBy(term):
-                value.append(localizer.translate(term.title))
+                value.append(self.localizer.translate(term.title))
             else:
                 value.append(term.value)
         return value
@@ -134,17 +128,19 @@ class SequenceWidget(Widget):
     def updateTerms(self):
         if self.terms is None:
             self.terms = getMultiAdapter(
-                (self.content, self.field, self.field.typ, self), ITerms)
+                (self.content, self.node, self.node.typ, self), ITerms)
         return self.terms
 
     def update(self):
+        self.empty_marker = '%s-empty-marker'%self.name
+
         # Create terms first, since we need them for the generic update.
         self.updateTerms()
         super(SequenceWidget, self).update()
 
-    def extract(self, default = colander.null):
+    def extract(self, default=colander.null):
         if (self.name not in self.params and
-            self.name+'-empty-marker' in self.params):
+            self.empty_marker in self.params):
             return default
 
         value = self.params.getall(self.name) or default
@@ -159,7 +155,7 @@ class SequenceWidget(Widget):
                     return default
 
         if value is not default and \
-                not isinstance(self.field.typ, colander.Positional):
+                not isinstance(self.node.typ, colander.Positional):
             if value:
                 return value[0]
             else:

@@ -4,13 +4,14 @@ from zope import interface
 from memphis import config, view
 from memphis.form import pagelets
 from memphis.form.widgets import text
-from memphis.form.interfaces import _, IPasswordWidget
+
+from interfaces import _, IPasswordWidget
 
 
 class PasswordWidget(text.TextWidget):
     """Input type password widget implementation."""
     interface.implementsOnly(IPasswordWidget)
-    config.adapts(colander.SchemaNode, colander.Str, None, name='password')
+    config.adapts(colander.SchemaNode, colander.Str, name='password')
 
     klass = u'password-widget'
 
@@ -20,9 +21,9 @@ class PasswordWidget(text.TextWidget):
 
 
 view.registerPagelet(
-    pagelets.IWidgetDisplayView, IPasswordWidget,
+    'form-display', IPasswordWidget,
     template=view.template("memphis.form.widgets:password_display.pt"))
 
 view.registerPagelet(
-    pagelets.IWidgetInputView, IPasswordWidget,
+    'form-input', IPasswordWidget,
     template=view.template("memphis.form.widgets:password_input.pt"))

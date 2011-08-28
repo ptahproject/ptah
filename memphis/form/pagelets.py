@@ -1,66 +1,47 @@
 from zope import interface
 from memphis import view
 from memphis.form.interfaces import IForm, IInputForm, IDisplayForm, IWidget
-from memphis.form.interfaces import INPUT_MODE, DISPLAY_MODE, HIDDEN_MODE
 
+FORM_VIEW = 'form-view'
+FORM_ACTIONS = 'form-actions'
+FORM_WIDGET = 'form-widget'
+FORM_DISPLAY_WIDGET = 'form-display-widget'
 
-class IFormView(interface.Interface):
-    """ pagelet type """
-    view.pageletType('form-view', IForm)
+FORM_INPUT = 'form-input'
+FORM_DISPLAY = 'form-display'
+FORM_HIDDEN = 'form-hidden'
 
-
-class IFormActionsView(interface.Interface):
-    """ form actions view """
-    view.pageletType('form-actions', IForm)
-
-
-class IFormWidgetView(interface.Interface):
-    """ widget view """
-    view.pageletType('form-widget', IWidget)
-
-
-class IFormDisplayWidgetView(interface.Interface):
-    """ display widget view """
-    view.pageletType('form-display-widget', IWidget)
-
-
-class IWidgetInputView(INPUT_MODE):
-    """ input widget renderer """
-    view.pageletType('form-widget-input', IWidget)
-
-
-class IWidgetDisplayView(DISPLAY_MODE):
-    """ display widget renderer """
-    view.pageletType('form-widget-display', IWidget)
-
-
-class IWidgetHiddenView(HIDDEN_MODE):
-    """ hidden widget renderer """
-    view.pageletType('form-widget-hidden', IWidget)
+view.pageletType(FORM_VIEW, IForm, 'Form view')
+view.pageletType(FORM_ACTIONS, IForm, 'Form actions')
+view.pageletType(FORM_WIDGET, IWidget, 'Form widget')
+view.pageletType(FORM_DISPLAY_WIDGET, 'Form display widget')
+view.pageletType(FORM_INPUT, IWidget, 'Input widget rendere')
+view.pageletType(FORM_DISPLAY, IWidget, 'Display widget renderer')
+view.pageletType(FORM_HIDDEN, IWidget, 'Hidden widget renderer')
 
 
 view.registerPagelet(
-    IFormView, IInputForm,
+    'form-view', IInputForm,
     template = view.template('memphis.form:templates/form.pt'))
 
 
 view.registerPagelet(
-    IFormView, IDisplayForm,
+    'form-view', IDisplayForm,
     template = view.template('memphis.form:templates/displayform.pt'))
 
 
 view.registerPagelet(
-    IFormActionsView, IInputForm,
+    'form-actions', IInputForm,
     template = view.template('memphis.form:templates/form-actions.pt'))
 
 
 view.registerPagelet(
-    IFormWidgetView, IWidget,
+    'form-widget', IWidget,
     template = view.template('memphis.form:templates/widget.pt'))
 
 
 view.registerPagelet(
-    IFormDisplayWidgetView, IWidget,
+    'form-display-widget', IWidget,
     template = view.template('memphis.form:templates/widget-display.pt'))
 
 

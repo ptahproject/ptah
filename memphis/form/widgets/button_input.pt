@@ -2,25 +2,10 @@
        tal:attributes="id context.id;
                        name context.name;
                        class context.klass;
-                       style context.style;
                        lang context.lang;
-                       onclick context.onclick;
-                       ondblclick context.ondblclick;
-                       onmousedown context.onmousedown;
-                       onmouseup context.onmouseup;
-                       onmouseover context.onmouseover;
-                       onmousemove context.onmousemove;
-                       onmouseout context.onmouseout;
-                       onkeypress context.onkeypress;
-                       onkeydown context.onkeydown;
-                       onkeyup context.onkeyup;
                        value context.value;
                        disabled context.disabled;
                        tabindex context.tabindex;
-                       onfocus context.onfocus;
-                       onblur context.onblur;
-                       onchange context.onchange;
                        readonly context.readonly;
                        alt context.alt;
-                       accesskey context.accesskey;
-                       onselect context.onselect" />
+                       accesskey context.accesskey;" />

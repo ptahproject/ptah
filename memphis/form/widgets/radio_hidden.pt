@@ -1,6 +1,3 @@
-<div xmlns="http://www.w3.org/1999/xhtml"
-     xmlns:tal="http://xml.zope.org/namespaces/tal"
-     tal:omit-tag="">
 <tal:block tal:repeat="item context.items">
   <input id="" name="" value="" class="hidden-widget" title=""
          tabindex="" accesskey=""

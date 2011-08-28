@@ -9,7 +9,11 @@ CHANGES
 
 - Added TinyMCE widget
 
+- Added Date and DateTime widgets with jquery datepicker support
+
 - Use resource library api
+
+- Widget refactoring
 
 
 0.4 (2011-06-20)

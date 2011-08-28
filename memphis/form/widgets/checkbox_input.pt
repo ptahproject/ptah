@@ -7,55 +7,25 @@
                              name item.name;
                              class context.klass;
                              value item.value;
-                             style context.style;
                              title context.title;
                              lang context.lang;
-                             onclick context.onclick;
-                             ondblclick context.ondblclick;
-                             onmousedown context.onmousedown;
-                             onmouseup context.onmouseup;
-                             onmouseover context.onmouseover;
-                             onmousemove context.onmousemove;
-                             onmouseout context.onmouseout;
-                             onkeypress context.onkeypress;
-                             onkeydown context.onkeydown;
-                             onkeyup context.onkeyup;
                              disabled context.disabled;
                              tabindex context.tabindex;
-                             onfocus context.onfocus;
-                             onblur context.onblur;
-                             onchange context.onchange;
                              readonly context.readonly;
                              alt context.alt;
-                             accesskey context.accesskey;
-                             onselect context.onselect" />
+                             accesskey context.accesskey;" />
       <input type="checkbox" tal:condition="not item.checked"
              tal:attributes="id item.id;
                              name item.name;
                              class context.klass;
                              value item.value;
-                             style context.style;
                              title context.title;
                              lang context.lang;
-                             onclick context.onclick;
-                             ondblclick context.ondblclick;
-                             onmousedown context.onmousedown;
-                             onmouseup context.onmouseup;
-                             onmouseover context.onmouseover;
-                             onmousemove context.onmousemove;
-                             onmouseout context.onmouseout;
-                             onkeypress context.onkeypress;
-                             onkeydown context.onkeydown;
-                             onkeyup context.onkeyup;
                              disabled context.disabled;
                              tabindex context.tabindex;
-                             onfocus context.onfocus;
-                             onblur context.onblur;
-                             onchange context.onchange;
                              readonly context.readonly;
                              alt context.alt;
-                             accesskey context.accesskey;
-                             onselect context.onselect" />
+                             accesskey context.accesskey;" />
       <label for="" tal:attributes="for item.id">
 	<tal:block tal:content="item.label">Label</tal:block>
       </label>

@@ -1,3 +1,10 @@
+${view.include('jquery-ui')}
+<script>
+  $(function() {
+     $("#${context.id}" ).datepicker();
+  });
+</script>
+
 <input id="" name="" class="" title="" lang="" disabled=""
        readonly="" alt="" tabindex="" accesskey="" size="" maxlength=""
        style="" value="" type="text"

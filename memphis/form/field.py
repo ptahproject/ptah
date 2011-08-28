@@ -1,12 +1,12 @@
 import colander
 from zope import interface
-from zope.component import getSiteManager
+from pyramid.i18n import get_localizer
 
 from memphis import config
 from memphis.form.util import expandPrefix, OrderedDict
 from memphis.form.error import Error, WidgetError
-from memphis.form.interfaces import IForm, IField, IFields, IWidget, IWidgets
-from memphis.form.interfaces import INPUT_MODE, DISPLAY_MODE, NOT_CHANGED
+from memphis.form.pagelets import FORM_INPUT, FORM_DISPLAY
+from memphis.form.interfaces import IForm, IField, IWidget, IWidgets,NOT_CHANGED
 
 
 class Field(object):
@@ -31,8 +31,6 @@ class Field(object):
 
 
 class Fields(OrderedDict):
-    """Fields manager"""
-    interface.implements(IFields)
 
     def __init__(self, *args, **defaults):
         super(Fields, self).__init__()
@@ -65,8 +63,6 @@ class Fields(OrderedDict):
                 form_field = field
             else:
                 customDefaults = defaults.copy()
-                #if iface is not None:
-                #    customDefaults['interface'] = iface
                 form_field = Field(field, **customDefaults)
                 name = form_field.name
 
@@ -84,12 +80,11 @@ class Fields(OrderedDict):
 
 
 class FieldWidgets(OrderedDict):
-    """Widget manager for IWidget."""
-    config.adapts(IForm, interface.Interface)
     interface.implements(IWidgets)
+    config.adapts(IForm, interface.Interface)
 
     prefix = 'widgets.'
-    mode = INPUT_MODE
+    mode = FORM_INPUT
     errors = ()
     hasRequiredFields = False
     setErrors = True
@@ -99,6 +94,7 @@ class FieldWidgets(OrderedDict):
 
         self.form = form
         self.request = request
+        self.localizer = get_localizer(request)
 
     def update(self):
         content = self.content = self.form.getContent()
@@ -110,7 +106,7 @@ class FieldWidgets(OrderedDict):
         params = self.form.getRequestParams()
         context = self.form.getContext()
 
-        sm = getSiteManager()
+        sm = self.request.registry
 
         # Walk through each field, making a widget out of it.
         for field in self.form.fields.values():
@@ -119,7 +115,7 @@ class FieldWidgets(OrderedDict):
             if field.mode is not None:
                 mode = field.mode
             elif field.readonly or getattr(field.node, 'readonly', False):
-                mode = DISPLAY_MODE
+                mode = FORM_DISPLAY
 
             # Step 2: Get the widget for the given field.
             shortName = field.name
@@ -128,9 +124,9 @@ class FieldWidgets(OrderedDict):
             factory = field.widgetFactory
             if isinstance(factory, basestring):
                 widget = sm.queryMultiAdapter(
-                    (field.node, field.typ, request), IWidget, name=factory)
+                    (field.node, field.typ), IWidget, name=factory)
             elif callable(factory):
-                widget = factory(field.node, field.typ, request)
+                widget = factory(field.node, field.typ)
 
             if widget is None:
                 raise TypeError("Can't find widget for %s"%field)
@@ -148,6 +144,8 @@ class FieldWidgets(OrderedDict):
 
             # Step 6: Set some variables
             widget.params = params
+            widget.request = self.request
+            widget.localizer = self.localizer
 
             # Step 7: Set the mode of the widget
             widget.mode = mode
@@ -168,25 +166,23 @@ class FieldWidgets(OrderedDict):
 
     def extract(self):
         data = {}
-        sm = getSiteManager()
+        sm = self.request.registry
         errors = []
         errorViews = []
         context = self.form.getContext()
 
         for name, widget in self.items():
-            if widget.mode == DISPLAY_MODE:
+            if widget.mode == FORM_DISPLAY:
                 continue
 
-            value = widget.field.missing
+            value = widget.node.missing
             try:
                 widget.setErrors = self.setErrors
-                raw = widget.extract()
-                if raw is not colander.null:
-                    value = widget.field.deserialize(raw)
+                value = widget.node.deserialize(widget.extract())
 
                 if value is NOT_CHANGED:
                     value = sm.getMultiAdapter(
-                        (context, field), IDataManager).query()
+                        (context, widget.node), IDataManager).query()
 
             except colander.Invalid, error:
                 errors.append(error)

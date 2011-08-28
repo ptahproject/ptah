@@ -7,29 +7,31 @@ from memphis.form.widget import Widget
 from memphis.form.widgets import widget
 from memphis.form import AC_PRIMARY, AC_DANGER, AC_SUCCESS, AC_INFO
 
+from interfaces import IButtonWidget
+
 
 class ButtonWidget(widget.HTMLInputWidget, Widget):
     """A simple button of a form."""
-    zope.interface.implementsOnly(interfaces.IButtonWidget)
+    zope.interface.implementsOnly(IButtonWidget)
 
     klass = u'btn button-widget'
 
     def update(self):
-        self.value = self.field.title
-        if self.field.actype == AC_PRIMARY:
+        self.value = self.node.title
+        if self.node.actype == AC_PRIMARY:
             self.addClass('primary')
-        elif self.field.actype == AC_DANGER:
+        elif self.node.actype == AC_DANGER:
             self.addClass('danger')
-        elif self.field.actype == AC_SUCCESS:
+        elif self.node.actype == AC_SUCCESS:
             self.addClass('success')
-        elif self.field.actype == AC_INFO:
+        elif self.node.actype == AC_INFO:
             self.addClass('info')
 
 
 view.registerPagelet(
-    pagelets.IWidgetDisplayView, interfaces.IButtonWidget,
+    'form-display', IButtonWidget,
     template=view.template("memphis.form.widgets:button_display.pt"))
 
 view.registerPagelet(
-    pagelets.IWidgetInputView, interfaces.IButtonWidget,
+    'form-input', IButtonWidget,
     template=view.template("memphis.form.widgets:button_input.pt"))

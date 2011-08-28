@@ -1,6 +1,3 @@
-<div xmlns="http://www.w3.org/1999/xhtml"
-     xmlns:tal="http://xml.zope.org/namespaces/tal"
-     tal:omit-tag="">
 <input id="" name="" value="" class="hidden-widget" title=""
        tabindex="" accesskey=""
        type="hidden"
@@ -10,4 +7,3 @@
                        tabindex context.tabindex;
                        accesskey context.accesskey;
                        value context.value" />
-</div>

@@ -10,12 +10,12 @@ class AttributeField(object):
     interface.implements(IDataManager)
     config.adapts(interface.Interface, colander.SchemaNode)
 
-    def __init__(self, context, field):
+    def __init__(self, context, node):
         self.context = context
-        self.field = field
+        self.node = node
 
     def get(self):
-        return getattr(self.context, self.field.name)
+        return getattr(self.context, self.node.name)
 
     def query(self, default=colander.null):
         try:
@@ -31,17 +31,17 @@ class DictionaryField(object):
     interface.implements(IDataManager)
     config.adapts(dict, colander.SchemaNode)
 
-    def __init__(self, data, field):
+    def __init__(self, data, node):
         if not isinstance(data, dict):
             raise ValueError("Data are not a dictionary: %s" %type(data))
         self.data = data
-        self.field = field
+        self.node = node
 
     def get(self):
-        value = self.data.get(self.field.name, _marker)
+        value = self.data.get(self.node.name, _marker)
         if value is _marker:
             raise AttributeError
         return value
 
     def query(self, default=colander.null):
-        return self.data.get(self.field.name, default)
+        return self.data.get(self.node.name, default)

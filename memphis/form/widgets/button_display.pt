@@ -1,10 +1,5 @@
-<html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:tal="http://xml.zope.org/namespaces/tal"
-      tal:omit-tag="">
 <input id="" name="" class="" value="" disabled="disabled" type="button" 
        tal:attributes="id context.id;
                        name context.name;
                        class context.klass;
-                       style context.style;
                        value context.value" />
-</html>

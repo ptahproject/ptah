@@ -22,5 +22,5 @@ class TinymceWidget(TextAreaWidget):
 
 
 view.registerPagelet(
-    pagelets.IWidgetInputView, ITinymceWidget,
+    'form-input', ITinymceWidget,
     template=view.template("memphis.form.widgets:tinymce_input.pt"))

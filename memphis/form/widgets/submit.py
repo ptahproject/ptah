@@ -1,23 +1,25 @@
 """Submit Widget Implementation"""
-import zope.interface
+from zope import interface
 from memphis import config, view
 from memphis.form import interfaces, pagelets
 from memphis.form.widgets import button
 
+from interfaces import ISubmitWidget
+
 
 class SubmitWidget(button.ButtonWidget):
     """A submit button of a form."""
-    config.adapts(interfaces.IButton, None, None)
-    zope.interface.implementsOnly(interfaces.ISubmitWidget)
+    config.adapts(interfaces.IButton, None)
+    interface.implementsOnly(ISubmitWidget)
 
     klass = u'btn submit-widget'
 
 
 view.registerPagelet(
-    pagelets.IWidgetDisplayView, interfaces.ISubmitWidget,
+    'form-display', ISubmitWidget,
     template=view.template("memphis.form.widgets:submit_display.pt"))
 
 
 view.registerPagelet(
-    pagelets.IWidgetInputView, interfaces.ISubmitWidget,
+    'form-input', ISubmitWidget,
     template=view.template("memphis.form.widgets:submit_input.pt"))

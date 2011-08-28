@@ -1,4 +1,5 @@
 <div class="actions" tal:condition="context.actions.values()">
-  <input tal:repeat="action context.actions.values()"
-	 tal:replace="structure action.render()" />
+  <tal:block tal:repeat="action context.actions.values()">
+    ${view.pagelet(action.mode, action)}
+  </tal:block>
 </div>

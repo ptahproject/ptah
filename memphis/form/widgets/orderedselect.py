@@ -1,16 +1,3 @@
-##############################################################################
-#
-# Copyright (c) 2007 Zope Foundation and Contributors.
-# All Rights Reserved.
-#
-# This software is subject to the provisions of the Zope Public License,
-# Version 2.1 (ZPL).  A copy of the ZPL should accompany this distribution.
-# THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
-# WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-# WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE.
-#
-##############################################################################
 """Ordered-Selection Widget Implementation"""
 import zope.component
 import zope.interface
@@ -22,6 +9,8 @@ from memphis import config, view
 from memphis.form import interfaces, pagelets
 from memphis.form.widget import SequenceWidget
 from memphis.form.widgets import widget
+
+import interfaces
 
 
 class OrderedSelectWidget(widget.HTMLSelectWidget, SequenceWidget):
@@ -43,7 +32,6 @@ class OrderedSelectWidget(widget.HTMLSelectWidget, SequenceWidget):
         return {'id':id, 'value':term.token, 'content':content}
 
     def update(self):
-        """See memphis.form.interfaces.IWidget."""
         super(OrderedSelectWidget, self).update()
 
         self.items = [
@@ -90,11 +78,11 @@ def SequenceChoiceSelectFieldWidget(field, value_type, request):
     return OrderedSelectFieldWidget(field, request)
 
 
-view.registerPagelet(
-    pagelets.IWidgetDisplayView, interfaces.IOrderedSelectWidget,
-    template=view.template("memphis.form.widgets:orderedselect_display.pt"))
+#view.registerPagelet(
+#    pagelets.IWidgetDisplayView, interfaces.IOrderedSelectWidget,
+#    template=view.template("memphis.form.widgets:orderedselect_display.pt"))
 
 
-view.registerPagelet(
-    pagelets.IWidgetInputView, interfaces.IOrderedSelectWidget,
-    template=view.template("memphis.form.widgets:orderedselect_input.pt"))
+#view.registerPagelet(
+#    pagelets.IWidgetInputView, interfaces.IOrderedSelectWidget,
+#    template=view.template("memphis.form.widgets:orderedselect_input.pt"))

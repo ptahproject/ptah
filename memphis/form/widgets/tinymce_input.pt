@@ -4,29 +4,14 @@
    tal:attributes="id context.id;
                    name context.name;
                    class context.klass;
-                   style context.style;
                    title context.title;
                    lang context.lang;
-                   onclick context.onclick;
-                   ondblclick context.ondblclick;
-                   onmousedown context.onmousedown;
-                   onmouseup context.onmouseup;
-                   onmouseover context.onmouseover;
-                   onmousemove context.onmousemove;
-                   onmouseout context.onmouseout;
-                   onkeypress context.onkeypress;
-                   onkeydown context.onkeydown;
-                   onkeyup context.onkeyup;
                    disabled context.disabled;
                    tabindex context.tabindex;
-                   onfocus context.onfocus;
-                   onblur context.onblur;
-                   onchange context.onchange;
                    cols context.cols;
                    rows context.rows;
                    readonly context.readonly;
-                   accesskey context.accesskey;
-                   onselect context.onselect"
+                   accesskey context.accesskey;"
    tal:content="context.value" />
 
 ${view.include('tiny_mce')}

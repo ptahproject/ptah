@@ -2,5 +2,4 @@
        tal:attributes="id context.id;
                        name context.name;
                        class context.klass;
-                       style context.style;
                        value context.value" />

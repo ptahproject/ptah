@@ -4,7 +4,8 @@ from memphis import config, view
 from memphis.form import pagelets
 from memphis.form.widget import Widget
 from memphis.form.widgets import widget
-from memphis.form.interfaces import _, ITextAreaWidget
+
+from interfaces import _, ITextAreaWidget
 
 
 class TextAreaWidget(widget.HTMLTextAreaWidget, Widget):
@@ -23,13 +24,13 @@ class TextAreaWidget(widget.HTMLTextAreaWidget, Widget):
 
 
 view.registerPagelet(
-    pagelets.IWidgetDisplayView, ITextAreaWidget,
+    'form-display', ITextAreaWidget,
     template=view.template("memphis.form.widgets:textarea_display.pt"))
 
 view.registerPagelet(
-    pagelets.IWidgetInputView, ITextAreaWidget,
+    'form-input', ITextAreaWidget,
     template=view.template("memphis.form.widgets:textarea_input.pt"))
 
 view.registerPagelet(
-    pagelets.IWidgetHiddenView, ITextAreaWidget,
+    'form-hidden', ITextAreaWidget,
     template=view.template("memphis.form.widgets:textarea_hidden.pt"))

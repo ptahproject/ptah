@@ -1,13 +1,13 @@
 """ Select/Multi select widget implementation """
 from zope import interface, schema
 from zope.schema.interfaces import ITitledTokenizedTerm
-from pyramid.i18n import get_localizer
 
 from memphis import config, view
 from memphis.form import pagelets
 from memphis.form.widget import SequenceWidget
 from memphis.form.widgets import widget
-from memphis.form.interfaces import _, ISelectWidget
+
+from interfaces import _, ISelectWidget
 
 
 class SelectWidget(widget.HTMLSelectWidget, SequenceWidget):
@@ -43,14 +43,12 @@ class SelectWidget(widget.HTMLSelectWidget, SequenceWidget):
                 'selected': self.value == []
                 })
 
-        localizer = get_localizer(self.request)
-
         for count, term in enumerate(self.terms):
             selected = self.isSelected(term)
             id = '%s-%i' % (self.id, count)
             content = term.token
             if ITitledTokenizedTerm.providedBy(term):
-                content = localizer.translate(term.title)
+                content = self.localizer.translate(term.title)
             items.append(
                 {'id':id, 'value':term.token, 'content':content,
                  'selected':selected})
@@ -68,16 +66,16 @@ class MultiSelectWidget(SelectWidget):
 
 
 view.registerPagelet(
-    pagelets.IWidgetDisplayView, ISelectWidget,
+    'form-display', ISelectWidget,
     template=view.template("memphis.form.widgets:select_display.pt",
                            title="HTML Select: display template"))
 
 view.registerPagelet(
-    pagelets.IWidgetInputView, ISelectWidget,
+    'form-input', ISelectWidget,
     template=view.template("memphis.form.widgets:select_input.pt",
                            title="HTML Select: input template"))
 
 view.registerPagelet(
-    pagelets.IWidgetHiddenView, ISelectWidget,
+    'form-hidden', ISelectWidget,
     template=view.template("memphis.form.widgets:select_hidden.pt",
                            title="HTML Select: hidden input template"))

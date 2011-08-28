@@ -7,18 +7,6 @@ from translationstring import TranslationStringFactory
 MessageFactory = _ = TranslationStringFactory('memphis.form')
 
 
-class INPUT_MODE(interface.Interface):
-    """ Input mode """
-
-
-class DISPLAY_MODE(interface.Interface):
-    """ display mode """
-
-
-class HIDDEN_MODE(interface.Interface):
-    """ hidden mode """
-
-
 class NOT_CHANGED(object):
 
     def __repr__(self):
@@ -50,14 +38,11 @@ class IField(interface.Interface):
     """Field wrapping a schema field used in the form."""
 
     name = interface.Attribute('Title')
-    field = interface.Attribute('Schema Field')
+    node = interface.Attribute('Schema node')
+    typ = interface.Attribute('Schema type')
     prefix = interface.Attribute('Prefix')
     mode = interface.Attribute('Mode')
     widgetFactory = interface.Attribute('Widget Factory')
-
-
-class IFields(mapping.IEnumerableMapping):
-    """IField manager."""
 
 
 # ----[ Data Managers ]------------------------------------------------------
@@ -136,6 +121,7 @@ class IWidget(interface.Interface):
 
     name = interface.Attribute('Name')
     label = interface.Attribute('Label')
+    description = interface.Attribute('Description')
     mode = interface.Attribute('Mode')
     required = interface.Attribute('Required')
     error = interface.Attribute('Error')
@@ -194,59 +180,6 @@ class ISequenceWidget(IWidget):
         This method can be used by external components to get the terms
         without having to worry whether they are already created or not.
         """
-
-
-class ISelectWidget(ISequenceWidget):
-    """Select widget with ITerms option."""
-
-
-class IOrderedSelectWidget(ISequenceWidget):
-    """Ordered Select widget with ITerms option."""
-
-
-class ICheckBoxWidget(ISequenceWidget):
-    """Checbox widget."""
-
-
-class ISingleCheckBoxWidget(ICheckBoxWidget):
-    """Single Checbox widget."""
-
-
-class IRadioWidget(ISequenceWidget):
-    """Radio widget."""
-
-
-class ISubmitWidget(IWidget):
-    """Submit widget."""
-
-
-class IImageWidget(IWidget):
-    """Submit widget."""
-
-
-class IButtonWidget(IWidget):
-    """Button widget."""
-
-
-class ITextAreaWidget(IWidget):
-    """Text widget."""
-
-
-class ITextLinesWidget(IWidget):
-    """Text lines widget."""
-
-
-class ITextWidget(IWidget):
-    """Text widget."""
-
-
-class IFileWidget(ITextWidget):
-    """File widget."""
-
-
-class IPasswordWidget(ITextWidget):
-    """Password widget."""
-
 
 class IWidgets(mapping.IEnumerableMapping):
     """A widget manager"""
