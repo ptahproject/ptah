@@ -9,9 +9,11 @@ from memphis import config
 from memphis.view.base import View
 from memphis.view.customize import layersManager
 from memphis.view.formatter import format
-from memphis.view.interfaces import IPagelet, IPageletType
+from memphis.view.interfaces import IPagelet
 
 log = logging.getLogger('memphis.view')
+
+ptypes = {}
 
 
 class Pagelet(View):
@@ -35,16 +37,17 @@ class Pagelet(View):
 
 
 class PageletType(object):
-    interface.implements(IPageletType)
 
-    def __init__(self, name, type, context):
+    def __init__(self, name, context, title, description):
         self.name = name
-        self.type = type
         self.context = context
+        self.title = title
+        self.description = description
 
 
 def renderPagelet(ptype, context, request):
-    pagelet = getSiteManager().queryMultiAdapter((context, request), ptype)
+    pagelet = getSiteManager().queryMultiAdapter(
+        (context, request), IPagelet, ptype)
     if pagelet is None:
         raise HTTPNotFound
 
@@ -55,21 +58,20 @@ def renderPagelet(ptype, context, request):
         raise
 
 
-def registerPageletType(name, iface, context):
+def pageletType(name, context, title='', description=''):
+    ptypes[name] = PageletType(name, context, title, description)
+
     info = config.DirectiveInfo()
     info.attach(
         config.Action(
-            registerPageletTypeImpl,
-            (iface, name, context),
-            discriminator = ('memphis.view:pageletType', name, iface),
+            pageletTypeImpl,
+            (name, context, title, description),
+            discriminator = ('memphis.view:pageletType', name),
             order = 1))
 
 
-def registerPageletTypeImpl(iface, name, context):
-    pt = PageletType(name, iface, context)
-
-    iface.setTaggedValue('memphis.view.pageletType', pt)
-    getSiteManager().registerUtility(pt, IPageletType, name)
+def pageletTypeImpl(name, context, title, description):
+    ptypes[name] = PageletType(name, context, title, description)
 
 
 _registered = []
@@ -79,22 +81,20 @@ def cleanUp():
     _registered[:] = []
 
 
-def registerPagelet(
-    pageletType, context=None, klass=None, template=None, layer=''):
-
+def registerPagelet(pt, context=None, klass=None, template=None, layer=''):
     info = config.DirectiveInfo()
 
-    discriminator = ('memphis.view:pagelet', pageletType, context)
+    discriminator = ('memphis.view:pagelet', pt, context)
     layersManager.register(layer, discriminator)
 
     info.attach(
         config.Action(
             registerPageletImpl,
-            (klass, pageletType, context, template, layer, discriminator),
+            (klass, pt, context, template, layer, discriminator),
             discriminator = discriminator + (layer,)))
 
 
-def registerPageletImpl(klass, pageletType, context, template, 
+def registerPageletImpl(klass, ptype, context, template, 
                         layer, discriminator):
 
     if not layersManager.enabled(layer, discriminator):
@@ -108,10 +108,10 @@ def registerPageletImpl(klass, pageletType, context, template,
         cdict['template'] = template
 
     # find PageletType info
-    if isinstance(pageletType, basestring):
-        pt = getSiteManager().getUtility(IPageletType, pageletType)
-    else:
-        pt = pageletType.getTaggedValue('memphis.view.pageletType')
+    if ptype not in ptypes:
+        raise KeyError("Can't find pageletType %s for %s"%(ptype,discriminator))
+
+    pt = ptypes[ptype]
 
     if context is None:
         requires = [pt.context, interface.Interface]
@@ -130,11 +130,9 @@ def registerPageletImpl(klass, pageletType, context, template,
             bases = (Pagelet,)
         else:
             bases = (klass, Pagelet)
-            
+
         pagelet_class = type('Pagelet %s'%klass, bases, cdict)
 
-    if not pt.type.implementedBy(pagelet_class):
-        interface.classImplements(pagelet_class, pt.type)
-
     # register pagelet
-    getSiteManager().registerAdapter(pagelet_class, requires, pt.type)
+    getSiteManager().registerAdapter(
+        pagelet_class, requires, IPagelet, name = pt.name)

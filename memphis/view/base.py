@@ -6,7 +6,7 @@ from memphis.view.formatter import format
 from memphis.view.resources import static, static_url
 from memphis.view.message import addMessage, renderMessages
 from memphis.view.library import library, include, renderIncludes
-from memphis.view.interfaces import IPageletType, IMemphisView, INavigationRoot
+from memphis.view.interfaces import IPagelet, IMemphisView, INavigationRoot
 
 log = logging.getLogger('memphis.view')
 
@@ -63,20 +63,12 @@ class View(object):
     def pagelet(self, ptype, context=None):
         sm = getSiteManager()
 
-        if isinstance(ptype, basestring):
-            try:
-                pt = sm.getUtility(IPageletType, ptype)
-            except:
-                log.warning("Can't find pagelet type: %s"%ptype)
-                return u''
-        else:
-            pt = ptype.getTaggedValue('memphis.view.pageletType')
-
         if context is None:
             context = self.context
 
         try:
-            pagelet = sm.queryMultiAdapter((context, self.request), pt.type)
+            pagelet = sm.queryMultiAdapter(
+                (context, self.request), IPagelet, ptype)
             if pagelet is not None:
                 return pagelet()
         except Exception, e:
@@ -92,9 +84,14 @@ library(
 
 library(
     'jquery-ui',
-    path="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.15/jquery-ui.js",
+    path="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.js",
     type="js",
     require="jquery")
+
+library(
+    'jquery-ui',
+    path="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/themes/ui-lightness/jquery-ui.css",
+    type='css')
 
 
 static('bootstrap', 'memphis.view:bootstrap')

@@ -6,7 +6,7 @@ from memphis import config
 from memphis.view.customize import layersManager
 from memphis.view.view import registerViewImpl
 from memphis.view.layout import registerLayoutImpl
-from memphis.view.pagelet import registerPageletImpl, registerPageletTypeImpl
+from memphis.view.pagelet import registerPageletImpl
 
 
 def pagelet(pageletType, context=None, template=None, layer=''):
@@ -21,17 +21,6 @@ def pagelet(pageletType, context=None, template=None, layer=''):
             registerPageletImpl, 
             (pageletType, context, template, layer, discriminator),
             discriminator = discriminator + (layer,))
-        )
-
-
-def pageletType(name, context=None):
-    info = config.DirectiveInfo(allowed_scope=('class',))
-
-    info.attach(
-        config.ClassAction(
-            registerPageletTypeImpl, (name, context),
-            discriminator = ('memphis.view:pageletType', name, context),
-            order = 1)
         )
 
 

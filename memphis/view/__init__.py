@@ -1,9 +1,8 @@
 # memphis.view public API
 
 # interfaces
-from memphis.view.interfaces import IRenderer
 from memphis.view.interfaces import ILayout
-from memphis.view.interfaces import IPageletType
+from memphis.view.interfaces import IRenderer
 
 # path/template
 from memphis.view.tmpl import path, template
@@ -16,7 +15,7 @@ from memphis.view.base import DefaultRoot
 from memphis.view.pagelet import Pagelet
 from memphis.view.pagelet import renderPagelet
 from memphis.view.pagelet import registerPagelet
-from memphis.view.pagelet import registerPageletType
+from memphis.view.pagelet import pageletType
 
 # route
 from memphis.view.route import registerRoute
@@ -53,7 +52,6 @@ from memphis.view.library import renderIncludes
 # directives
 from memphis.view.directives import layout
 from memphis.view.directives import pagelet
-from memphis.view.directives import pageletType
 from memphis.view.directives import pyramidView
 
 # status message

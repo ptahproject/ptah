@@ -38,10 +38,6 @@ class IPagelet(interface.Interface):
         """Update and render pagelet"""
 
 
-class IPageletType(interface.Interface):
-    """ pagelet interface type """
-
-
 class ILayout(interface.Interface):
     """ layout """
 
