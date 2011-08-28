@@ -161,7 +161,7 @@ class CustomTemplate(view.View):
                     os.unlink(custfile)
                     raise HTTPFound(location='customized.html?pkg=%s'%pkg)
 
-                self.text = open(custfile, 'rb').read()
+                self.text = unicode(open(custfile, 'rb').read(), 'utf-8')
             else:
                 data = reg[pkg]
                 pkgdir = os.path.join(dir, pkg)
