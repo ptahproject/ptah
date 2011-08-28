@@ -1,8 +1,6 @@
 """Ordered-Selection Widget Implementation"""
 import zope.component
 import zope.interface
-import zope.schema
-import zope.schema.interfaces
 
 from memphis import config, view
 

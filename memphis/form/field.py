@@ -193,7 +193,7 @@ class FieldWidgets(OrderedDict):
         for node in self.form.fields.schemas:
             try:
                 if node.validator:
-                    node.validate(node, data)
+                    node.validator(node, data)
             except colander.Invalid, error:
                 for err in error.children:
                     errors.append(err)

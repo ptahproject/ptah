@@ -12,7 +12,7 @@ class FormErrorMessage(view.Message):
     formErrorsMessage = _(u'Please fix indicated errors.')
 
     def render(self, message):
-        self.errors = [err for err in message 
+        self.errors = [err for err in message
                        if not IWidgetError.providedBy(err)]
 
         return self.template(
