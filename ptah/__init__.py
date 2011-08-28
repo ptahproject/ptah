@@ -6,7 +6,11 @@ from ptah.interfaces import IPtahModule
 
 from ptah.interfaces import IPtahManageRoute
 
+# batches
+from ptah.batch import Batch, Batches, first_neighbours_last
 
+
+# initialize memphis
 def initialize(package, pyramid_config, settings):
     from memphis import config
 

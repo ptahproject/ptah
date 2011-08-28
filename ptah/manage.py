@@ -6,6 +6,9 @@ from ptah.settings import PTAH
 from ptah.interfaces import IAuthentication, IPtahManageRoute, IPtahModule
 
 
+view.pageletType('ptah-module-actions', IPtahModule)
+
+
 class PtahModule(object):
     interface.implements(IPtahModule)
 

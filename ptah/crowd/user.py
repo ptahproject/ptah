@@ -58,7 +58,7 @@ class UserInfo(form.Form):
     view.pyramidView('index.html', ICrowdUser,
                      route = 'ptah-manage', default = True)
 
-    label = 'Create user'
+    label = 'Update user'
 
     fields = form.Fields(UserSchema)
     fields['id'].readonly = True
@@ -66,28 +66,15 @@ class UserInfo(form.Form):
 
     def getContent(self):
         return self.context.user
-    
-    @form.button(_('Activate'),)
-    def activate(self):
-        #user.suspended = False
-        #self.message("Account has been activated.", 'info')
-        pass
 
-    @form.button(_('Suspend'),)
-    def suspend(self):
-        #    user.suspended = True
-        #    self.message("Account has been suspended.", 'info')
-        pass
-
-    @form.button(_('Validate'),)
-    def validate(self):
+    @form.button(_('Modify'), actype=form.AC_PRIMARY)
+    def modify(self):
         #user.validated = True
         #self.message("Account  has been validated.", 'info')
         pass
 
-    @form.button(_('Remove'),)
+    @form.button(_('Remove'), actype=form.AC_DANGER)
     def remove(self):
-        #<input type="submit" class="btn danger" value="Remove" />
         #user.validated = True
         #self.message("Account  has been validated.", 'info')
         pass

@@ -44,7 +44,3 @@ class IPtahModule(interface.Interface):
 
     def available(request):
         """ is module available """
-
-
-class IPtahModuleActions(interface.Interface):
-    view.pageletType('ptah-module-actions', IPtahModule)

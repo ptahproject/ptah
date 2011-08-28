@@ -3,19 +3,21 @@
 </div>
 
 <div class="row" tal:repeat="group data">
-  <h3>${group['title']}</h3>
-  <small>${group['description']}</small>
+  <div class="span16 columns">
+    <h3>${group['title']}</h3>
+    <small>${group['description']}</small>
 
-  <p>
-    <table class="zebra-striped">
-      <tr tal:repeat="field group['schema']">
-	<td>${field['name']}</td>
-	<td>${field['value']}</td>
-	<td>${field['title']}</td>
-	<td>
-	  <em>${field['description']}</em>
-	</td>
-      </tr>
-    </table>
-  </p>
+    <p>
+      <table class="zebra-striped">
+	<tr tal:repeat="field group['schema']">
+	  <td>${field['name']}</td>
+	  <td>${field['value']}</td>
+	  <td>${field['title']}</td>
+	  <td>
+	    <em>${field['description']}</em>
+	  </td>
+	</tr>
+      </table>
+    </p>
+  </div>
 </div>
