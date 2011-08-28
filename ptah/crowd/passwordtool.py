@@ -20,10 +20,12 @@ class PlainPasswordManager(object):
     """PLAIN password manager."""
 
     def encode(self, password, salt=None):
-        return '{PLAIN}%s'%password
+        return '{plain}%s'%password
 
     def check(self, encoded, password):
-        return encoded == password
+        if encoded != password:
+            return encoded == '{plain}%s'%password
+        return True
 
 
 class SSHAPasswordManager(object):
@@ -65,6 +67,10 @@ class PasswordTool(object):
     passwordManager = PlainPasswordManager()
 
     def checkPassword(self, encodedPassword, password):
+        for prefix, pm in self.pm.items():
+            if encodedPassword.startswith(prefix):
+                return pm.check(encodedPassword, password)
+
         return self.passwordManager.check(encodedPassword, password)
 
     def encodePassword(self, password, salt=None):
