@@ -33,12 +33,12 @@ class Table(object):
         self.request = request
 
     def __getitem__(self, key):
+        if key == 'add.html':
+            raise KeyError(key)
+
         try:
             return Record(key, self.table, self, self.request)
         except:
-            import traceback
-            traceback.print_exc()
-
             raise KeyError(key)
 
 

@@ -4,7 +4,11 @@
 
 <div class="row">
   <div class="span16 columns">
-    <form method="post" action="${request.url}">
+    <tal:block tal:condition="not view.size">
+      Table is empty.
+    </tal:block>
+
+    <form method="post" action="${request.url}" tal:condition="view.size">
       <table class="zebra-striped">
 	<tr>
 	  <th>&nbsp;</th>
@@ -25,8 +29,31 @@
 	  </td>
 	</tr>
       </table>
-      
-      ${view.pagelet('form-actions', view)}
+
+      <div class="pagination" tal:condition="len(view.batches)>1">
+	<ul>
+	  <li class="${'prev' if view.hasPrev else 'prev disabled'}">
+	    <a href="?batch=${view.prevLink}">&larr; Previous</a>
+	  </li>
+
+	  <tal:block repeat="idx view.batches">
+	    <li tal:define="info view.pageInfo(idx)"
+		tal:attributes="class info[0]">
+	      <a href="?batch=${idx}">${info[1]}</a>
+	    </li>
+	  </tal:block>
+
+	  <li class="${'next' if view.hasNext else 'next disabled'}">
+	    <a href="?batch=${view.nextLink}">
+	      Next &rarr;
+	    </a>
+	  </li>
+	</ul>
+      </div>
+
+      <tal:block condition="view.size">
+	${view.pagelet('form-actions', view)}
+      </tal:block>
     </form>
   </div>
 </div>

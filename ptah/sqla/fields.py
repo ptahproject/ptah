@@ -17,6 +17,11 @@ def strNode(cl):
 def intNode(cl):
     return colander.Int()
 
+@config.adapter(sa.Float)
+@interface.implementer(IField)
+def intNode(cl):
+    return colander.Float()
+
 @config.adapter(sa.Date)
 @interface.implementer(IField)
 def dateNode(cl):
