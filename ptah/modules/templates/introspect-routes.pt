@@ -1,0 +1,52 @@
+<tal:block condition="view.routes">
+  <div class="page-header">
+    <h2>Routes <small>registered pyramid routes</h2>
+  </div>
+
+  <div class="row">
+    <table class="zebra-stripe">
+      <tr tal:repeat="r view.routes">
+	<td>
+	  <h4>
+	    <a href="routes.html?route=${r[1]}">${r[0]}</a>
+	    ${r[1]} <small tal:content="r[2]" />
+	  </h4>
+	  <p>
+	    <ul>
+	      <li tal:repeat="v r[3]">
+		<a href="source.html?pkg=${v[1]}#sl-${v[2]}">
+		  ${v[0] or 'Default route view'}
+		</a>
+		<tal:block content="v[3].__doc__" />
+	      </li>
+	    </ul>
+	  </p>
+	</td>
+      </tr>
+    </table>
+  </div>
+</tal:block>
+
+<tal:block condition="nothing"> view.routes">
+  <div class="page-header">
+    <h2>Event: <tal:block content="view.event.title" /></h2>
+  </div>
+  <p>${view.event.description}</p>
+
+  <div class="row">
+    <div class="span12 columns">
+      <table class="zebra-striped">
+	<tr tal:repeat="action view.actions">
+	  <td>
+	    <h4>
+	      <em>
+		<a href="source.html?pkg=${action.info.module.__name__}#sl-${view.lineno(action.args[1])}">
+		  ${action.info.module.__name__}:</a>
+	      </em>
+	      ${action.args[1].__name__}</h4>
+	  </td>
+	</tr>
+      </table>
+    </div>
+  </div>
+</tal:block>

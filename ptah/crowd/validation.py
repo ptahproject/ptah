@@ -42,6 +42,7 @@ view.registerRoute(
 
 @view.pyramidView(route='ptah-crowd-validate')
 def validate(request):
+    """Validate account"""
     t = request.GET.get('token')
 
     data = token.tokenService.get(TOKEN_TYPE, t)

@@ -90,9 +90,12 @@ class LayoutPage(view.Layout):
 
 
 class ManageView(view.View):
+    """List ptah modules"""
     view.pyramidView('index.html', IPtahManageRoute,
                      route = 'ptah-manage', default = True, layout='page',
                      template = view.template('ptah:templates/manage.pt'))
+
+    __intr_path__ = '/ptah-manage/index.html'
 
     def update(self):
         reg = self.request.registry

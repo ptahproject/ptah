@@ -12,6 +12,10 @@ class TableView(form.Form):
         'index.html', ITable, route='ptah-manage', default = True,
         template = view.template('ptah.sqla:templates/table.pt'))
 
+    __doc__ = "List table records."
+    __intr_path__ = '/ptah-manage/sqla/${table}/index.html'
+
+    csrf = True
     bsize = 15
 
     def update(self):
@@ -72,6 +76,8 @@ class TableView(form.Form):
 
     @form.button('Remove', actype=form.AC_DANGER)
     def remove(self):
+        self.validateToken()
+
         ids = []
         for id in self.request.POST.getall('rowid'):
             try:

@@ -66,6 +66,8 @@ class LoginForm(form.Form):
 
 
 class LoginSuccess(view.View):
+    """ Login successful information page. """
+
     view.pyramidView(
         route = 'ptah-login-success', layout='ptah-crowd',
         template = view.template("ptah.crowd:templates/login-success.pt"))
@@ -82,6 +84,8 @@ class LoginSuccess(view.View):
 
 
 class LoginSuspended(view.View):
+    """ Suspended account information page. """
+
     view.pyramidView(
         route = 'ptah-login-suspended', layout='ptah-crowd',
         template = view.template("ptah.crowd:templates/login-suspended.pt"))
@@ -94,6 +98,7 @@ class LoginSuspended(view.View):
 
 @view.pyramidView(route='ptah-logout')
 def logout(request):
+    """Logout action"""
     uid = security.authenticated_userid(request)
 
     if uid is not None:

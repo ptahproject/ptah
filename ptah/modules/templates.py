@@ -26,11 +26,14 @@ view.registerPagelet(
 
 
 class TemplatesManagement(view.View):
+    """List templates"""
     view.pyramidView(
         'index.html', ITemplatesModule,
         route = 'ptah-manage', default='True',
         template = view.template(
             'ptah.modules:templates/customize.pt', nolayer=True))
+
+    __intr_path__ = '/ptah-module/templates/index.html'
 
     pkg_data = None
 
@@ -60,11 +63,14 @@ class TemplatesManagement(view.View):
 
 
 class ViewTemplate(view.View):
+    """View template"""
     view.pyramidView(
         'view.html', ITemplatesModule,
         route = 'ptah-manage',
         template = view.template(
             'ptah.modules:templates/template.pt', nolayer=True))
+
+    __intr_path__ = '/ptah-module/templates/view.html'
 
     def update(self):
         reg = tmpl.registry
@@ -112,11 +118,14 @@ class ViewTemplate(view.View):
 
 
 class CustomTemplate(view.View):
+    """List customized templates"""
     view.pyramidView(
         'customized.html', ITemplatesModule,
         route = 'ptah-manage',
         template = view.template(
             'ptah.modules:templates/customized.pt', nolayer=True))
+
+    __intr_path__ = '/ptah-module/templates/customized.html'
 
     pkg = None
     template = None

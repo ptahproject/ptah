@@ -17,6 +17,9 @@ class MainView(view.View):
         template = view.template(
             'ptah.sqla:templates/index.pt', nolayer=True))
 
+    __doc__ = "sqlalchemy tables listing page."
+    __intr_path__ = '/ptah-manage/sqla/index.html'
+
     def printTable(self, table):
         columns = []
         for cl in table.columns:

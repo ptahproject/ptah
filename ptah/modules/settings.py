@@ -26,6 +26,9 @@ class MainView(view.View):
         template = view.template(
             'ptah.modules:templates/settings.pt', nolayer=True))
 
+    __doc__ = "Settings page."
+    __intr_path__ = '/ptah-manage/settings/index.html'
+
     def update(self):
         groups = config.Settings.items()
         groups.sort()

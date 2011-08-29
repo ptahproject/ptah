@@ -5,11 +5,14 @@ from memphis import config, view, form
 
 from models import User, Session
 from schemas import UserSchema, ManagerChangePasswordSchema
-from interfaces import _, IPasswordTool, ICrowdUser, IManageUserAction
+from interfaces import _, IPasswordTool, \
+    ICrowdModule, ICrowdUser, IManageUserAction
 
 
 class CreateUserForm(form.Form):
-    view.pyramidView('create-user.html', route='ptah-manage')
+    view.pyramidView('create.html', ICrowdModule, 'ptah-manage')
+
+    __intr_path__ = '/ptah-manage/crowd/create.html'
 
     csrf = True
     label = _('Create new user')
@@ -59,6 +62,8 @@ class UserInfo(form.Form):
     view.pyramidView('index.html', ICrowdUser,
                      route = 'ptah-manage', default = True)
 
+    __intr_path__ = '/ptah-manage/crowd/${user}/index.html'
+
     label = 'Update user'
 
     fields = form.Fields(UserSchema)
@@ -86,14 +91,16 @@ class ChangePasswordAction(object):
     interface.implements(IManageUserAction)
 
     title = _('Change password')
-    action = 'change-password.html'
+    action = 'password.html'
 
     def available(self, principal):
         return True
 
 
 class ChangePassword(form.Form):
-    view.pyramidView('change-password.html', ICrowdUser, route = 'ptah-manage')
+    view.pyramidView('password.html', ICrowdUser, route = 'ptah-manage')
+
+    __intr_path__ = '/ptah-manage/crowd/${user}/password.html'
 
     csrf = True
     fields = form.Fields(ManagerChangePasswordSchema)

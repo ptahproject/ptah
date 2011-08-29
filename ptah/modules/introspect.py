@@ -60,8 +60,16 @@ class MainView(view.View):
         template = view.template(
             'ptah.modules:templates/introspect.pt', nolayer=True))
 
+    __doc__ = 'Introspection module view.'
+    __intr_path__ = '/ptah-manage/introspect/index.html'
+
     def update(self):
         self.packages = self.context.packages
+
+
+view.registerPagelet(
+    'ptah-module-actions', IIntrospectModule,
+    template = view.template('ptah.modules:templates/introspect-actions.pt'))
 
 
 def lineno(ob):
@@ -236,6 +244,9 @@ class PackageView(view.View):
         template = view.template(
             'ptah.modules:templates/introspect-pkg.pt', nolayer=True))
 
+    __doc__ = 'Package introspection page.'
+    __intr_path__ = '/ptah-manage/introspect/${pkg}/index.html'
+
     renderers = renderers
     types = types
 
@@ -249,6 +260,9 @@ class EventsView(view.View):
         route = 'ptah-manage',
         template = view.template(
             'ptah.modules:templates/introspect-events.pt', nolayer=True))
+
+    __doc__ = 'Events introspection page.'
+    __intr_path__ = '/ptah-manage/introspect/events.html'
 
     events = None
     actions = None
@@ -286,12 +300,75 @@ class EventsView(view.View):
             self.actions = actions
 
 
+class RoutesView(view.View):
+    view.pyramidView(
+        'routes.html', IIntrospectModule,
+        route = 'ptah-manage',
+        template = view.template(
+            'ptah.modules:templates/introspect-routes.pt', nolayer=True))
+
+    __doc__ = 'Routes introspection page.'
+    __intr_path__ = '/ptah-manage/introspect/routes.html'
+
+    def update(self):
+        #ev = self.request.params.get('ev')
+        self.route = route = None #directives.events.get(ev)
+
+        if route is None:
+            packages = loadPackages()
+
+            viewactions = []
+
+            seen = set()
+            routes = {}
+            for pkg in packages:
+                actions = directives.scan(pkg, seen, exclude)
+
+                for action in actions:
+                    d = action.discriminator[0]
+                    if d == 'memphis.view:route':
+                        name, pattern, factory = action.args[:3]
+                        routes[name] = (pattern, name, factory, [])
+                    elif d == 'memphis.view:view':
+                        factory = action.info.context
+                        if inspect.isclass(factory):
+                            isclass = True
+                            name = action.args[0]
+                            context = action.args[1]
+                            route = action.args[3]
+                        else:
+                            isclass = False
+                            factory = action.args[0]
+                            name = action.args[1]
+                            context = action.args[2]
+                            route = action.args[4]
+                        if route:
+                            viewactions.append(
+                                (route, name, context, factory, action))
+
+            for route, name, context, factory, action in viewactions:
+                rdata = routes[route][3]
+                rdata.append([getattr(factory, '__intr_path__', name),
+                              action.info.module.__name__, lineno(factory),
+                              factory])
+                rdata.sort()
+
+            routes = routes.values()
+            routes.sort()
+            self.routes = routes
+        else:
+            pass
+
+
 class SourceView(view.View):
     view.pyramidView(
         'source.html', IIntrospectModule,
         route = 'ptah-manage',
         template = view.template(
             'ptah.modules:templates/introspect-source.pt', nolayer=True))
+
+    __doc__ = 'Source introspection page.'
+    __intr_path__ = '/ptah-manage/introspect/source.html'
 
     source = None
     format = None

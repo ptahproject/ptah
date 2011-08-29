@@ -2,8 +2,42 @@
 import ptah
 import translationstring
 from zope import interface
+from memphis import config
 
 _ = translationstring.TranslationStringFactory('ptah')
+
+
+class PrincipalEvent(object):
+
+    principal = interface.Attribute('Principal object')
+
+    def __init__(self, principal):
+        self.principal = principal
+
+
+class LoggedInEvent(PrincipalEvent):
+    """ User logged in to system."""
+    config.event('Logged in event')
+
+
+class LogingFailedEvent(object):
+    """ User loging failed."""
+    config.event('Loging failed event')
+
+    login = interface.Attribute('Login')
+
+    def __init__(self, login):
+        self.login = login
+
+
+class ResetPasswordInitiatedEvent(PrincipalEvent):
+    """ User has initiated password changeing."""
+    config.event('Reset password initiated event')
+
+
+class ValidatedEvent(PrincipalEvent):
+    """ User account has been validated."""
+    config.event('Account validation event')
 
 
 class IUserAddedEvent(object):

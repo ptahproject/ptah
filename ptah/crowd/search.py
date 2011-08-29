@@ -28,6 +28,9 @@ class SearchUsers(form.Form):
         route = 'ptah-manage', default = True,
         template = view.template('ptah.crowd:templates/search.pt'))
 
+    __doc__ = 'List/search users view'
+    __intr_path__ = '/ptah-manage/crowd/search.html'
+
     csrf = True
     fields = form.Fields(SearchSchema)
 
