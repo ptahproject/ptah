@@ -90,11 +90,11 @@ class FieldWidgets(OrderedDict):
     setErrors = True
 
     def __init__(self, form, request):
-        super(FieldWidgets, self).__init__()
-
         self.form = form
         self.request = request
         self.localizer = get_localizer(request)
+
+        super(FieldWidgets, self).__init__()
 
     def update(self):
         content = self.content = self.form.getContent()
