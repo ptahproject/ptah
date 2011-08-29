@@ -7,7 +7,7 @@ from zope.component import getSiteManager
 
 from memphis import config
 from memphis.view.base import View
-from memphis.view.customize import layersManager
+from memphis.view.customize import LayerWrapper
 from memphis.view.formatter import format
 from memphis.view.interfaces import IPagelet
 
@@ -84,21 +84,17 @@ def cleanUp():
 def registerPagelet(pt, context=None, klass=None, template=None, layer=''):
     info = config.DirectiveInfo()
 
-    discriminator = ('memphis.view:pagelet', pt, context)
-    layersManager.register(layer, discriminator)
+    discriminator = ('memphis.view:pagelet', pt, context, layer)
 
     info.attach(
         config.Action(
-            registerPageletImpl,
-            (klass, pt, context, template, layer, discriminator),
-            discriminator = discriminator + (layer,)))
+            LayerWrapper(registerPageletImpl, discriminator),
+            (klass, pt, context, template),
+            discriminator = discriminator)
+        )
 
 
-def registerPageletImpl(klass, ptype, context, template, 
-                        layer, discriminator):
-
-    if not layersManager.enabled(layer, discriminator):
-        return
+def registerPageletImpl(klass, ptype, context, template):
 
     if klass is not None and klass in _registered:
         raise ValueError("Class can be used for pagelet only once.")
@@ -109,7 +105,7 @@ def registerPageletImpl(klass, ptype, context, template,
 
     # find PageletType info
     if ptype not in ptypes:
-        raise KeyError("Can't find pageletType %s for %s"%(ptype,discriminator))
+        raise KeyError("Can't find pageletType %s for %s"%(ptype, klass))
 
     pt = ptypes[ptype]
 

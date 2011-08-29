@@ -3,7 +3,7 @@ import inspect
 from pyramid.interfaces import IRequest
 
 from memphis import config
-from memphis.view.customize import layersManager
+from memphis.view.customize import LayerWrapper
 from memphis.view.view import registerViewImpl
 from memphis.view.layout import registerLayoutImpl
 from memphis.view.pagelet import registerPageletImpl
@@ -13,14 +13,13 @@ def pagelet(pageletType, context=None, template=None, layer=''):
     info = config.DirectiveInfo(allowed_scope=('class',))
 
     # register view in layer
-    discriminator = ('memphis.view:pagelet', pageletType, context)
-    layersManager.register(layer, discriminator)
+    discriminator = ('memphis.view:pagelet', pageletType, context, layer)
 
     info.attach(
         config.ClassAction(
-            registerPageletImpl, 
-            (pageletType, context, template, layer, discriminator),
-            discriminator = discriminator + (layer,))
+            LayerWrapper(registerPageletImpl, discriminator),
+            (pageletType, context, template),
+            discriminator = discriminator)
         )
 
 
@@ -31,28 +30,27 @@ def pyramidView(name='', context=None, route=None, template=None,
     info = config.DirectiveInfo(
         allowed_scope=('class', 'module', 'function call'))
 
-    # register view in layer
-    discriminator = ('memphis.view:view', name, context, route)
-    layersManager.register(layer, discriminator)
+    discriminator = ('memphis.view:view', name, context, route, layer)
 
     if info.scope in ('module', 'function call'): # function decorator
         def wrapper(factory):
             info.attach(
                 config.Action(
-                    registerViewImpl,
+                    LayerWrapper(registerViewImpl, discriminator),
                     (factory, name, context, template, route, layout, 
-                     permission, default, decorator, layer, discriminator),
-                    discriminator = discriminator+(layer,))
+                     permission, default, decorator),
+                    discriminator = discriminator)
                 )
             return factory
         return wrapper
-    else:                     # class decorator
+    else: 
+        # class decorator
         info.attach(
             config.ClassAction(
-                registerViewImpl,
+                LayerWrapper(registerViewImpl, discriminator),
                 (name, context, template, route, layout, 
-                 permission, default, decorator, layer, discriminator),
-                discriminator = discriminator+(layer,))
+                 permission, default, decorator),
+                discriminator = discriminator)
             )
 
 
@@ -60,13 +58,11 @@ def layout(name='', context=None, view=None, parent='',
            route=None, template=None, layer=''):
     info = config.DirectiveInfo(allowed_scope=('class',))
 
-    # register view in layer
-    discriminator = ('memphis.view:layout', name, context, view, route)
-    layersManager.register(layer, discriminator)
+    discriminator = ('memphis.view:layout', name, context, view, route, layer)
 
     info.attach(
         config.ClassAction(
-            registerLayoutImpl,
-            (name, context, view, template, parent, route, layer, discriminator),
-            discriminator = discriminator + (layer,))
+            LayerWrapper(registerLayoutImpl, discriminator),
+            (name, context, view, template, parent, route),
+            discriminator = discriminator)
         )

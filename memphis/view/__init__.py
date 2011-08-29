@@ -39,6 +39,7 @@ from memphis.view.renderers import json, JSONRenderer
 
 # layer
 from memphis.view.customize import layer
+from memphis.view.customize import LayerWrapper
 
 # resource
 from memphis.view.resources import static

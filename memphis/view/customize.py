@@ -56,7 +56,22 @@ class _ViewLayersManager(object):
             return data[-1] == layer
         return False
 
-layersManager = _ViewLayersManager()
+_layersManager = _ViewLayersManager()
+
+
+class LayerWrapper(object):
+
+    def __init__(self, callable, discriminator):
+        self.callable = callable
+        self.layer = discriminator[-1]
+        self.discriminator = discriminator[:-1]
+        _layersManager.register(self.layer, self.discriminator)
+
+    def __call__(self, *args, **kw):
+        if not _layersManager.enabled(self.layer, self.discriminator):
+            return
+
+        self.callable(*args, **kw)
 
 
 class _TemplateLayersManager(object):

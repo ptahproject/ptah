@@ -16,7 +16,7 @@ from pyramid.interfaces import IAuthenticationPolicy
 
 from memphis import config
 from memphis.view.base import View
-from memphis.view.customize import layersManager
+from memphis.view.customize import LayerWrapper
 from memphis.view.renderers import Renderer, SimpleRenderer
 
 
@@ -105,25 +105,21 @@ def registerView(
     if factory is None or not callable(factory):
         raise ValueError('view factory is required')
 
-    discriminator = ('memphis.view:view', name, context, route)
-    layersManager.register(layer, discriminator)
+    discriminator = ('memphis.view:view', name, context, route, layer)
 
     info = config.DirectiveInfo()
     info.attach(
         config.Action(
-            registerViewImpl,
+            LayerWrapper(registerViewImpl, discriminator),
             (factory, name, context, template,
-             route, layout, permission, default, decorator, layer, discriminator),
-            discriminator = discriminator+(layer,)))
+             route, layout, permission, default, decorator),
+            discriminator = discriminator)
+        )
 
 
 def registerViewImpl(
     factory, name, context, template, route_name, layout, 
-    permission, default, decorator, layer='', discriminator=None):
-
-    if not layersManager.enabled(layer, discriminator):
-        print "skipping view registration because of layer:", name, route_name
-        return
+    permission, default, decorator):
 
     if template is not None:
         renderer = Renderer(template, layout=layout).bind(
@@ -179,26 +175,25 @@ def registerViewImpl(
         pyramidView, (view_classifier, request_iface, context), IView, name)
 
     if default:
-        registerDefaultViewImpl(name, context, request_iface, pyramidView)
+        registerDefaultViewImpl(name, context, pyramidView)
 
 
-def registerDefaultView(name, context=interface.Interface, layer=IRequest):
+def registerDefaultView(name, context=interface.Interface):
     info = config.DirectiveInfo()
     info.attach(
         config.Action(
             registerDefaultViewImpl,
             (name, context, layer),
-            discriminator = ('memphis.view:defaultView',name,context,layer)))
+            discriminator = ('memphis.view:defaultView', name, context)))
 
 
-def registerDefaultViewImpl(name, context=interface.Interface, 
-                            layer=IRequest, view=None):
+def registerDefaultViewImpl(name, context=interface.Interface, view=None):
     if view is None:
         def view(context, request):
             return renderView(name, context, request)
 
     getSiteManager().registerAdapter(
-        view, (IViewClassifier, layer, context), IView, '')
+        view, (IViewClassifier, None, context), IView, '')
 
 
 def viewMapper(view, attr=None):
