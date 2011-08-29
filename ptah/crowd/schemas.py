@@ -67,7 +67,8 @@ class LoginSchema(colander.Schema):
         colander.Str(),
         title = _(u'Password'),
         description = _('Case sensitive, make sure caps lock is not enabled.'),
-        default = u'')
+        default = u'',
+        widget = 'password')
 
 
 
@@ -92,7 +93,8 @@ PasswordSchema = colander.SchemaNode(
         description = _(u'Enter new password. '\
                         u'No spaces or special characters, should contain '\
                         u'digits and letters in mixed case.'),
-        default = u''),
+        default = u'',
+        widget = 'password'),
 
     colander.SchemaNode(
         colander.Str(),
@@ -100,7 +102,8 @@ PasswordSchema = colander.SchemaNode(
         title = _(u'Confirm password'),
         description = _(u'Re-enter the password. '
                         u'Make sure the passwords are identical.'),
-        default = u''),
+        default = u'',
+        widget = 'password'),
 
     validator = passwordSchemaValidator
 )

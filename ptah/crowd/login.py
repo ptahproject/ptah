@@ -29,7 +29,6 @@ class LoginForm(form.Form):
     bane = 'login-form'
     title = _('Login')
     fields = form.Fields(LoginSchema)
-    fields['password'].widgetFactory = form.widgets.PasswordWidget
 
     @form.button(_(u"Log in"), actype=form.AC_PRIMARY)
     def handleLogin(self):

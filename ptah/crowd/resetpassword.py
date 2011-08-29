@@ -68,8 +68,6 @@ class ResetPasswordForm(form.Form):
         template = view.template('ptah.crowd:templates/resetpasswordform.pt'))
 
     fields = form.Fields(PasswordSchema)
-    fields['password'].widgetFactory = form.widgets.PasswordWidget
-    fields['confirm_password'].widgetFactory = form.widgets.PasswordWidget
 
     def update(self):
         request = self.request
