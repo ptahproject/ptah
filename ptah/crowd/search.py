@@ -1,4 +1,5 @@
 """ user management """
+import ptah
 import colander
 from zope import interface
 from webob.exc import HTTPFound
@@ -30,6 +31,7 @@ class SearchUsers(form.Form):
     fields = form.Fields(SearchSchema)
 
     users = None
+    bsize = 15
 
     def getContent(self):
         return {'term': self.request.session.get('ptah-search-term', '')}
@@ -59,11 +61,45 @@ class SearchUsers(form.Form):
                 User.id.in_(uids)).update({'validated': True}, False)
             self.message("Selected accounts have been validated.", 'info')
 
-        term = self.request.session.get('ptah-search-term', '')
+        term = request.session.get('ptah-search-term', '')
         if term:
             self.users = Session.query(User) \
                 .filter(User.email.contains('%%%s%%'%term))\
                 .order_by(asc('name')).all()
+        else:
+            self.size = Session.query(User).count()
+                        
+            try:
+                current = int(request.params.get('batch', None))
+                if not current:
+                    current = request.session.get('crowd-current-batch')
+                    if not current:
+                        current = 1
+                    else:
+                        request.session['crowd-current-batch'] = current
+            except:
+                current = request.session.get('crowd-current-batch')
+                if not current:
+                    current = 1
+
+                total = int(round(self.size/float(self.bsize)+0.5))
+                batches = range(1, total+1)
+
+                self.total = total
+                self.current = current
+
+                self.hasNext = current != total
+                self.hasPrev = current > 1
+
+                self.prevLink = current if not self.hasPrev else current-1
+                self.nextLink = current if not self.hasNext else current+1
+
+                self.batches = ptah.first_neighbours_last(
+                    batches, current-1, 3, 3)
+
+                self.users = Session.query(User)\
+                    .offset((current-1)*self.bsize).limit(self.bsize).all()
+
 
     @form.button(_('Search'), actype=form.AC_PRIMARY)
     def search(self):
@@ -75,3 +111,8 @@ class SearchUsers(form.Form):
 
         self.request.session['ptah-search-term'] = data['term']
         raise HTTPFound(location = self.request.url)
+
+    @form.button(_('Clear term'))
+    def clear(self):
+        if 'ptah-search-term' in self.request.session:
+            del self.request.session['ptah-search-term']
