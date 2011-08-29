@@ -46,7 +46,7 @@ class Registration(form.Form):
         user = self.create(data)
 
         user = reg.getUtility(IAuthentication).getUserByLogin(data['login'])
-        headers = security.remember(self.request, user.id)
+        headers = security.remember(self.request, user.login)
 
         raise HTTPFound(
             location='%s/login-success.html'%self.request.application_url,

@@ -6,6 +6,16 @@ from zope import interface
 _ = translationstring.TranslationStringFactory('ptah')
 
 
+class IUserAddedEvent(object):
+    """ """
+
+    user = interface.Attribute('User object')
+
+
+class IUserRegisteredEvent(IUserAddedEvent):
+    """ """
+
+
 class ICrowdModule(ptah.IPtahModule):
     """ marker interface for crowd module """
 
