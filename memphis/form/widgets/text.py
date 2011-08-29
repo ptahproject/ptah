@@ -2,26 +2,21 @@
 import colander
 from zope import interface
 from memphis import config, view
-from memphis.form import pagelets
-from memphis.form.widget import Widget
-from memphis.form.widgets import widget
+from memphis.form import pagelets, widget, Widget
+from memphis.form.widgets.widget import HTMLTextInputWidget
 
 from interfaces import _, ITextWidget
 
 
-class TextWidget(widget.HTMLTextInputWidget, Widget):
+class TextWidget(HTMLTextInputWidget, Widget):
     __doc__ = _(u'HTML Text input widget')
 
     interface.implementsOnly(ITextWidget)
-    config.adapts(colander.SchemaNode, colander.Str)
-    config.adapts(colander.SchemaNode, colander.Int)
-    config.adapts(colander.SchemaNode, colander.Float)
+
+    widget('text', _(u'Text widget'))
 
     klass = u'text-widget'
     value = u''
-
-    __fname__ = 'text'
-    __title__ = _(u'Text widget')
 
 
 view.registerPagelet(

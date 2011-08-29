@@ -7,14 +7,6 @@ from translationstring import TranslationStringFactory
 MessageFactory = _ = TranslationStringFactory('memphis.form')
 
 
-class NOT_CHANGED(object):
-
-    def __repr__(self):
-        return '<NOT_CHANGED>'
-
-NOT_CHANGED = NOT_CHANGED()
-
-
 # ----[ Errors ]--------------------------------------------------------------
 
 class IError(interface.Interface):
@@ -42,7 +34,7 @@ class IField(interface.Interface):
     typ = interface.Attribute('Schema type')
     prefix = interface.Attribute('Prefix')
     mode = interface.Attribute('Mode')
-    widgetFactory = interface.Attribute('Widget Factory')
+    widget = interface.Attribute('Widget Factory')
 
 
 # ----[ Data Managers ]------------------------------------------------------
@@ -115,10 +107,10 @@ class IBoolTerms(ITerms):
 class IWidget(interface.Interface):
     """A widget within a form"""
 
-    __fname__ = interface.Attribute('Factory name')
-    __title__ = interface.Attribute('Widget factory title')
-    __description__ = interface.Attribute('Widget factory description')
+    node = interface.Attribute('Schema node')
+    typ = interface.Attribute('Schema type')
 
+    id = interface.Attribute('Id')
     name = interface.Attribute('Name')
     label = interface.Attribute('Label')
     description = interface.Attribute('Description')
@@ -126,11 +118,11 @@ class IWidget(interface.Interface):
     required = interface.Attribute('Required')
     error = interface.Attribute('Error')
     value = interface.Attribute('Value')
-    template = interface.Attribute('''The widget template''')
     params = interface.Attribute('Request params')
+    localizer = interface.Attribute('Localizer')
 
-    #ugly thing to remove setErrors parameter from extract
-    setErrors = interface.Attribute('Set errors')
+    content = interface.Attribute('Widget content')
+    context = interface.Attribute('Widget context')
 
     def extract(default=colander.null):
         """Extract the string value(s) of the widget from the form.
@@ -150,9 +142,6 @@ class IWidget(interface.Interface):
 
     def update():
         """Setup all of the widget information used for displaying."""
-
-    def render():
-        """Return the widget's text representation."""
 
 
 class ISequenceWidget(IWidget):
@@ -187,17 +176,12 @@ class IWidgets(mapping.IEnumerableMapping):
     prefix = interface.Attribute('Prefix')
     mode = interface.Attribute('Mode')
     errors = interface.Attribute('Errors')
-    hasRequiredFields = interface.Attribute('Has required fields')
-
-    #ugly thing to remove setErrors parameter from extract
-    setErrors = interface.Attribute('Set errors')
 
     def update():
         """Setup widgets."""
 
-    def extract():
-        """Extract the values from the widgets and validate them.
-        """
+    def extract(setErrors=True):
+        """Extract the values from the widgets and validate them."""
 
 
 # ----[ Buttons ]------------------------------------------------------------

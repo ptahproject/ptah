@@ -1,23 +1,19 @@
 """Password widget implementation"""
-import colander
 from zope import interface
-from memphis import config, view
-from memphis.form import pagelets
+from memphis import view
+from memphis.form import pagelets, widget
 from memphis.form.widgets import text
 
 from interfaces import _, IPasswordWidget
 
 
 class PasswordWidget(text.TextWidget):
-    """Input type password widget implementation."""
+    __doc__ = _('HTML Password input widget.')
+
+    widget('password', _('Password Widget'))
     interface.implementsOnly(IPasswordWidget)
-    config.adapts(colander.SchemaNode, colander.Str, name='password')
 
     klass = u'password-widget'
-
-    __fname__ = 'password'
-    __title__ = _('Password Widget')
-    __description__ = _('HTML Password input widget.')
 
 
 view.registerPagelet(

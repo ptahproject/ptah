@@ -73,8 +73,7 @@ class Form(view.View):
         pass
 
     def extractData(self, setErrors=True):
-        self.widgets.setErrors = setErrors
-        return self.widgets.extract()
+        return self.widgets.extract(setErrors)
 
     def update(self):
         self.updateWidgets()

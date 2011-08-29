@@ -103,16 +103,14 @@ class Actions(OrderedDict):
             shortName = field.name
 
             widget = None
-            factory = field.widgetFactory
+            factory = field.widget
             if isinstance(factory, basestring):
                 widget = sm.queryMultiAdapter(
                     (field, field.typ), IWidget, name=factory)
             elif callable(factory):
                 widget = factory(field, field.node)
-
-            if widget is None:
-                widget = sm.getMultiAdapter(
-                    (field.node, request),interfaces.IDefaultWidget)
+            else:
+                widget = sm.queryMultiAdapter((field, field.typ), IWidget)
 
             # Step 3: Set the prefix for the widget
             widget.name = str(prefix + shortName)

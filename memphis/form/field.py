@@ -6,7 +6,9 @@ from memphis import config
 from memphis.form.util import expandPrefix, OrderedDict
 from memphis.form.error import Error, WidgetError
 from memphis.form.pagelets import FORM_INPUT, FORM_DISPLAY
-from memphis.form.interfaces import IForm, IField, IWidget, IWidgets,NOT_CHANGED
+from memphis.form.interfaces import IForm, IField, IWidget, IWidgets
+
+from directive import getWidget, getDefaultWidget
 
 
 class Field(object):
@@ -14,7 +16,7 @@ class Field(object):
     interface.implements(IField)
 
     css = ''
-    widgetFactory = ''
+    widget = None
 
     def __init__(self, node, name=None, prefix='', mode=None, readonly=False):
         self.typ = node.typ
@@ -86,15 +88,13 @@ class FieldWidgets(OrderedDict):
     prefix = 'widgets.'
     mode = FORM_INPUT
     errors = ()
-    hasRequiredFields = False
-    setErrors = True
 
     def __init__(self, form, request):
+        super(FieldWidgets, self).__init__()
+
         self.form = form
         self.request = request
         self.localizer = get_localizer(request)
-
-        super(FieldWidgets, self).__init__()
 
     def update(self):
         content = self.content = self.form.getContent()
@@ -118,22 +118,27 @@ class FieldWidgets(OrderedDict):
                 mode = FORM_DISPLAY
 
             # Step 2: Get the widget for the given field.
-            shortName = field.name
-
             widget = None
-            factory = field.widgetFactory
+            factory = field.widget
+            if factory is None:
+                factory = field.node.widget
+
             if isinstance(factory, basestring):
-                widget = sm.queryMultiAdapter(
-                    (field.node, field.typ), IWidget, name=factory)
-            elif callable(factory):
+                factory = getWidget(factory)
+
+            if callable(factory):
                 widget = factory(field.node, field.typ)
+            else:
+                factory = getDefaultWidget(field.node)
+                if factory is not None:
+                    widget = factory(field.node, field.typ)
 
             if widget is None:
                 raise TypeError("Can't find widget for %s"%field)
 
             # Step 3: Set the prefix for the widget
-            widget.name = str(prefix + shortName)
-            widget.id = str(prefix + shortName).replace('.', '-')
+            widget.name = '%s%s'%(prefix, field.name)
+            widget.id = widget.name.replace('.', '-')
 
             # Step 4: Set the content
             widget.context = context
@@ -153,18 +158,15 @@ class FieldWidgets(OrderedDict):
             # Step 8: Update the widget
             widget.update()
 
-            # Step 9: Add the widget to the manager
-            if widget.required:
-                self.hasRequiredFields = True
-
-            # Step 10:
+            # Step 9:
             widget.addClass(field.css)
 
+            # Step 10: Add the widget to the manager
             widget.__parent__ = self
-            widget.__name__ = shortName
-            self[shortName] = widget
+            widget.__name__ = field.name
+            self[field.name] = widget
 
-    def extract(self):
+    def extract(self, setErrors=True):
         data = {}
         sm = self.request.registry
         errors = []
@@ -177,13 +179,7 @@ class FieldWidgets(OrderedDict):
 
             value = widget.node.missing
             try:
-                widget.setErrors = self.setErrors
                 value = widget.node.deserialize(widget.extract())
-
-                if value is NOT_CHANGED:
-                    value = sm.getMultiAdapter(
-                        (context, widget.node), IDataManager).query()
-
             except colander.Invalid, error:
                 errors.append(error)
 
@@ -218,10 +214,10 @@ class FieldWidgets(OrderedDict):
 
             errorViews.append(err)
 
-            if self.setErrors and widget is not None:
+            if setErrors and widget is not None:
                 widget.error = err
 
-        if self.setErrors:
+        if setErrors:
             self.errors = errorViews
 
         return data, errorViews

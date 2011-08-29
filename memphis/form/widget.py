@@ -10,9 +10,6 @@ from pagelets import FORM_INPUT
 from interfaces import IWidget, IDataManager, ISequenceWidget, ITerms
 
 
-PLACEHOLDER = object()
-
-
 class Widget(object):
     """Widget base class."""
     interface.implements(IWidget)
@@ -24,7 +21,6 @@ class Widget(object):
     required = False
     error = None
     value = None
-    setErrors = True
 
     form = None
     content = None
@@ -42,27 +38,18 @@ class Widget(object):
         self.description = node.description
         self.required = node.required
 
-    @property
-    def __title__(self):
-        return self.__class__.__name__
-
     def update(self):
-        # Step 1: Determine the value.
         value = colander.null
-        lookForDefault = False
 
         # Step 1.1: If possible, get a value from the params
-        self.setErrors = False
         widget_value = self.extract()
         if widget_value is not colander.null:
-            # Once we found the value in the params, it takes precendence
-            # over everything and nothing else has to be done.
             self.value = widget_value
-            value = PLACEHOLDER
+            return
 
         # Step 1.2: If we have a widget with a field and we have no value yet,
         #           we have some more possible locations to get the value
-        if value is colander.null and value is not PLACEHOLDER:
+        if value is colander.null:
             # Step 1.2.1: If the widget knows about its content and the
             #              content is to be used to extract a value, get
             #              it now via a data manager.
@@ -75,10 +62,9 @@ class Widget(object):
             if ((value is self.node.missing or value is colander.null) and
                 self.node.default is not colander.null):
                 value = self.node.default
-                lookForDefault = True
 
         # Step 1.4: Convert the value to one that the widget can understand
-        if value not in (PLACEHOLDER, colander.null):
+        if value is not colander.null:
             self.value = self.node.serialize(value)
             if type(self.value) is str:
                 self.value = unicode(self.value, 'utf-8')
@@ -101,9 +87,6 @@ class SequenceWidget(Widget):
     This widget base class is used for build single or sequence values based
     on a sequence which is in most use case a collection. e.g.
     IList of IChoice for sequence values or IChoice for single values.
-
-    See also the MultiWidget for build sequence values based on none collection
-    based values. e.g. IList of ITextLine
     """
     interface.implements(ISequenceWidget)
 

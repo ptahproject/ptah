@@ -7,13 +7,14 @@ from memphis.form.interfaces import _, IError, IWidgetError
 class FormErrorMessage(view.Message):
     config.adapts(None, name='form-error')
 
-    template = view.template('memphis.form:templates/form-error.pt')
-
     formErrorsMessage = _(u'Please fix indicated errors.')
 
+    template = view.template('memphis.form:templates/form-error.pt')
+
     def render(self, message):
-        self.errors = [err for err in message
-                       if not IWidgetError.providedBy(err)]
+        self.errors = [
+            err for err in message
+            if not IWidgetError.providedBy(err) or err.widget.error is None]
 
         return self.template(
             message = self.formErrorsMessage,

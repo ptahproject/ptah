@@ -5,16 +5,17 @@ from datetime import datetime
 
 from memphis import config, view
 from memphis.view import formatter
-from memphis.form import pagelets, Widget
+from memphis.form import pagelets, Widget, widget
 
-from widget import HTMLTextInputWidget
-from interfaces import _, IDateWidget, IDatetimeWidget
+from memphis.form.widgets.widget import HTMLTextInputWidget
+from memphis.form.widgets.interfaces import _, IDateWidget, IDatetimeWidget
 
 
 class DateWidget(HTMLTextInputWidget, Widget):
     __doc__ = _(u'Date input widget with JQuery Datepicker.')
+
+    widget('date', 'Date widget')
     interface.implementsOnly(IDateWidget)
-    config.adapts(colander.SchemaNode, colander.Date)
 
     klass = u'date-widget'
     value = u''
@@ -35,8 +36,9 @@ view.registerPagelet(
 
 class DatetimeWidget(HTMLTextInputWidget, Widget):
     __doc__ = _(u'DateTime input widget with JQuery Datepicker.')
+    
+    widget('datetime', 'DateTime widget')
     interface.implementsOnly(IDatetimeWidget)
-    config.adapts(colander.SchemaNode, colander.DateTime)
 
     klass = u'datetime-widget'
     value = u''

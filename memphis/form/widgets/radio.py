@@ -3,25 +3,24 @@ import colander
 from zope import interface, schema
 
 from memphis import config, view
-from memphis.form import pagelets
+from memphis.form import pagelets, widget
 from memphis.form.widget import SequenceWidget
-from memphis.form.widgets import widget
+from memphis.form.widgets.widget import HTMLInputWidget
 
 from interfaces import _, IRadioWidget
 
 
-class RadioWidget(widget.HTMLInputWidget, SequenceWidget):
-    """Input type radio widget implementation."""
+class RadioWidget(HTMLInputWidget, SequenceWidget):
+    __doc__ = _('HTML Radio input widget.')
+
+    widget('radio', _('Radio widget'))
     interface.implementsOnly(IRadioWidget)
-    config.adapts(colander.SchemaNode, colander.Bool, name='radio')
-    config.adapts(schema.interfaces.IChoice, name='radio')
+
+    #config.adapts(colander.SchemaNode, colander.Bool, name='radio')
+    #config.adapts(schema.interfaces.IChoice, name='radio')
 
     klass = u'radio-widget'
     items = ()
-
-    __fname__ = 'radio'
-    __title__ = _('Radio widget')
-    __description__ = _('HTML Radio input widget.')
 
     def isChecked(self, term):
         return term.token in self.value
@@ -42,12 +41,8 @@ class RadioWidget(widget.HTMLInputWidget, SequenceWidget):
 
 
 class HorizontalRadioWidget(RadioWidget):
-    config.adapts(colander.SchemaNode, colander.Bool)
-    config.adapts(colander.SchemaNode, colander.Bool, name='radio-horizontal')
-
-    __fname__ = 'radio-horizontal'
-    __title__ = _('Horizontal Radio widget')
-    __description__ = _('HTML Radio input widget.')
+    __doc__ = _('HTML Radio input widget.')
+    widget('radio-horizontal', _('Horizontal Radio widget'))
 
 
 view.registerPagelet(
