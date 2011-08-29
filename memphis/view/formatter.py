@@ -106,14 +106,14 @@ FORMAT = config.registerSettings(
     config.SchemaNode(
         colander.Str(),
         name = 'time_medium',
-        default = u'%I:%M:%S %p',
+        default = u'%I:%M %p',
         title = _(u'Time'),
         description = _(u'Time medium format')),
 
     config.SchemaNode(
         colander.Str(),
         name = 'time_long',
-        default = u'%I:%M:%S %p %z',
+        default = u'%I:%M %p %z',
         title = _(u'Time'),
         description = _(u'Time long format')),
 
