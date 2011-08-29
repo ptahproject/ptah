@@ -1,6 +1,8 @@
 """ introspect module """
 import ptah
 import pkg_resources, inspect, os, sys
+from pyramid.interfaces import IRoutesMapper
+
 from zope import interface
 from memphis import config, view
 from memphis.config import directives
@@ -346,6 +348,13 @@ class RoutesView(view.View):
                             viewactions.append(
                                 (route, name, context, factory, action))
 
+            # add pyramid routes
+            for route in self.request.\
+                    registry.getUtility(IRoutesMapper).get_routes():
+                if route.name not in routes:
+                    routes[name] = (route.pattern,route.name,route.factory,[])
+
+            # attach views to routes
             for route, name, context, factory, action in viewactions:
                 rdata = routes[route][3]
                 rdata.append([getattr(factory, '__intr_path__', name),
