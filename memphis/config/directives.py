@@ -137,7 +137,6 @@ def _getProvides(factory):
 
 
 ATTACH_ATTR = '__memphis_callbacks__'
-DISCRIMINATORS = {}
 
 
 class Action(object):
@@ -204,14 +203,15 @@ class DirectiveInfo(object):
 
 
 def getFrameInfo(frame):
-    """Return (kind,module,locals,globals) for a frame
-                 
+    """code from venusian package
+    Return (kind,module,locals,globals) for a frame
+
     'kind' is one of "exec", "module", "class", "function call", or "unknown".
     """
 
     f_locals = frame.f_locals
     f_globals = frame.f_globals
-    
+
     sameNamespace = f_locals is f_globals
     hasModule = '__module__' in f_locals
     hasName = '__name__' in f_globals

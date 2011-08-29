@@ -15,7 +15,7 @@ setup(name='memphis.config',
           'Detailed Documentation\n' +
           '======================\n'
           + '\n\n' +
-          read('memphis', 'config', 'README.txt')
+          read('README.txt')
           + '\n\n' +
           read('CHANGES.txt')
           ),
@@ -33,22 +33,18 @@ setup(name='memphis.config',
       license='BSD-derived (http://www.repoze.org/LICENSE.txt)',
       packages = find_packages(),
       namespace_packages = ['memphis'],
-      install_requires = [
-        'setuptools',
-        'PasteScript',
-        'colander',
-        'ordereddict',
-        'pyinotify',
-        'zope.component',
-        'zope.interface',
-        ],
+      install_requires = ['setuptools',
+                          'colander',
+                          'pyinotify',
+                          'zope.component',
+                          'zope.interface',
+                          ],
       include_package_data = True,
       zip_safe = False,
       entry_points = {
         'memphis': ['package = memphis.config'],
-        'paste.global_paster_command': [
-            'settings = memphis.config.commands:SettingsCommand',
-            'introspect = memphis.config.commands:IntrospectCommand',
+        'console_scripts': [
+            'settings = memphis.config.commands:settingsCommand',
             ],
         },
       )

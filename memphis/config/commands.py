@@ -1,9 +1,7 @@
 """ paste commands """
-import textwrap
-import StringIO
-import ConfigParser
-from ordereddict import OrderedDict
-from paste.script.command import Command
+import argparse, textwrap
+import StringIO, ConfigParser
+from collections import OrderedDict
 
 from memphis import config
 from memphis.config import api, directives
@@ -16,7 +14,6 @@ grpTitleWrap = textwrap.TextWrapper(
 grpDescriptionWrap = textwrap.TextWrapper(
     initial_indent='    ',
     subsequent_indent='    ')
-
 
 nameWrap = textwrap.TextWrapper(
     initial_indent='  - ',
@@ -31,23 +28,30 @@ nameDescriptionWrap = textwrap.TextWrapper(
     subsequent_indent='')
 
 
-class SettingsCommand(Command):
+def settingsCommand():
+    args = SettingsCommand.parser.parse_args()
+    cmd = SettingsCommand(args)
+    cmd.run()
+
+
+class SettingsCommand(object):
     """ 'settings' paste command"""
 
-    summary = "Memphis settings management"
-    usage = ""
-    group_name = "Memphis"
-    parser = Command.standard_parser(verbose=False)
-    parser.add_option('-a', '--all', dest='all',
-                      action="store_true",
-                      help = 'List all registered settings')
-    parser.add_option('-l', '--list', dest='section', default='',
-                      help = 'List registered settings')
-    parser.add_option('-p', '--print', dest='printcfg', 
-                      action="store_true",
-                      help = 'Print default settings in ConfigParser format')
+    parser = argparse.ArgumentParser(description="Memphis settings management")
+    parser.add_argument('-a', '--all', action="store_true",
+                        dest='all',
+                        help = 'List all registered settings')
+    parser.add_argument('-l', '--list', 
+                        dest='section', default='',
+                        help = 'List registered settings')
+    parser.add_argument('-p', '--print', action="store_true",
+                        dest='printcfg', 
+                        help = 'Print default settings in ConfigParser format')
 
-    def command(self):
+    def __init__(self, args):
+        self.options = args
+
+    def run(self):
         # load all memphis packages
         config.initialize()
 

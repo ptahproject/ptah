@@ -2,8 +2,8 @@
 import colander
 import pyinotify
 import logging, os.path, ConfigParser
-from ordereddict import OrderedDict
 from datetime import datetime, timedelta
+from collections import OrderedDict
 from zope import interface
 from zope.component import getSiteManager
 from zope.component.interfaces import ObjectEvent
