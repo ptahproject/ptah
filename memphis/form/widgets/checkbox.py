@@ -1,4 +1,5 @@
 """Check Widget Implementation"""
+import colander
 import zope.interface
 import zope.schema
 from zope.schema import vocabulary
@@ -44,7 +45,7 @@ class CheckBoxWidget(widget.HTMLInputWidget, SequenceWidget):
 class SingleCheckBoxWidget(CheckBoxWidget):
     """Single Input type checkbox widget implementation."""
     zope.interface.implementsOnly(ISingleCheckBoxWidget)
-    config.adapts(zope.schema.interfaces.IBool, name='singlecheckbox')
+    config.adapts(colander.SchemaNode, colander.Bool, name='singlecheckbox')
 
     klass = u'single-checkbox-widget'
 

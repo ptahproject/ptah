@@ -17,12 +17,12 @@ class Widget(object):
     """Widget base class."""
     interface.implements(IWidget)
 
-    name = '' 
+    name = ''
     label = u''
     description = u''
     mode = FORM_INPUT
-    required = False 
-    error = None 
+    required = False
+    error = None
     value = None
     setErrors = True
 

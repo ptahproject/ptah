@@ -90,11 +90,11 @@ class FieldWidgets(OrderedDict):
     setErrors = True
 
     def __init__(self, form, request):
-        super(FieldWidgets, self).__init__()
-
         self.form = form
         self.request = request
         self.localizer = get_localizer(request)
+
+        super(FieldWidgets, self).__init__()
 
     def update(self):
         content = self.content = self.form.getContent()
@@ -193,7 +193,7 @@ class FieldWidgets(OrderedDict):
         for node in self.form.fields.schemas:
             try:
                 if node.validator:
-                    node.validate(node, data)
+                    node.validator(node, data)
             except colander.Invalid, error:
                 for err in error.children:
                     errors.append(err)

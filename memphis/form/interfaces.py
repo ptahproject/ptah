@@ -26,7 +26,7 @@ class IError(interface.Interface):
 
 
 class IWidgetError(IError):
-    """ A special error, for can return additional errors and explicitly 
+    """ A special error, for can return additional errors and explicitly
     set to which widget this error should be appied. """
 
     widget = interface.Attribute('Widget')
@@ -214,7 +214,7 @@ class IButtons(mapping.IEnumerableMapping):
 
 class IActions(mapping.IEnumerableMapping):
     """A button widgets manager"""
-              
+
     prefix = interface.Attribute('Prefix')
 
     def update():

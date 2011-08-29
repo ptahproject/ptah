@@ -23,7 +23,7 @@ class Button(Field):
     description = ''
 
     def __init__(self, name='submit', title=None, type='submit', value=None,
-                 disabled=False, accessKey = None, 
+                 disabled=False, accessKey = None,
                  action=None, actype=AC_DEFAULT):
         if title is None:
             title = name.capitalize()

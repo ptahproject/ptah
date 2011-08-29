@@ -1,6 +1,6 @@
 """ Text Lines widget implementation """
+import colander
 from zope import interface
-from zope.schema.interfaces import ISequence
 
 from memphis import config, view
 from memphis.form import pagelets
@@ -11,8 +11,8 @@ from interfaces import _, ITextLinesWidget
 
 class TextLinesWidget(textarea.TextAreaWidget):
     """Input type sequence widget implementation."""
-    config.adapts(ISequence, None)
-    config.adapts(ISequence, None, name='textlines')
+    config.adapts(colander.SchemaNode, colander.Sequence)
+    config.adapts(colander.SchemaNode, colander.Sequence, name='textlines')
     interface.implementsOnly(ITextLinesWidget)
 
     __fname__ = 'textlines'

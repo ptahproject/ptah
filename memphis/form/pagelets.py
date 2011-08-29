@@ -14,8 +14,8 @@ FORM_HIDDEN = 'form-hidden'
 view.pageletType(FORM_VIEW, IForm, 'Form view')
 view.pageletType(FORM_ACTIONS, IForm, 'Form actions')
 view.pageletType(FORM_WIDGET, IWidget, 'Form widget')
-view.pageletType(FORM_DISPLAY_WIDGET, 'Form display widget')
-view.pageletType(FORM_INPUT, IWidget, 'Input widget rendere')
+view.pageletType(FORM_DISPLAY_WIDGET, IWidget, 'Form display widget')
+view.pageletType(FORM_INPUT, IWidget, 'Input widget renderer')
 view.pageletType(FORM_DISPLAY, IWidget, 'Display widget renderer')
 view.pageletType(FORM_HIDDEN, IWidget, 'Hidden widget renderer')
 
