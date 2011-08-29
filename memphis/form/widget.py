@@ -80,6 +80,8 @@ class Widget(object):
         # Step 1.4: Convert the value to one that the widget can understand
         if value not in (PLACEHOLDER, colander.null):
             self.value = self.node.serialize(value)
+            if type(self.value) is str:
+                self.value = unicode(self.value, 'utf-8')
 
     def extract(self, default=colander.null):
         return self.params.get(self.name, default)
