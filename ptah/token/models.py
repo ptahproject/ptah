@@ -5,25 +5,23 @@ import pyramid_sqla as psa
 import sqlalchemy as sa
 import sqlalchemy.orm as orm
 from memphis import config
-from ptah.crowd.models import User
-
 
 Base = psa.get_base()
 Session = psa.get_session()
 
 
-class AuthToken(Base):
+class Token(Base):
 
-    __tablename__ = 'ptah_authtokens'
+    __tablename__ = 'ptah_tokens'
 
     id = sa.Column(sa.Integer, primary_key=True)
-    type = sa.Column(sa.Integer)
+    type = sa.Column(sa.Unicode(48))
     time = sa.Column(sa.DateTime)
     token = sa.Column(sa.Unicode(48))
     data = sa.Column(sa.Unicode)
 
     def __init__(self, type, data):
-        super(AuthToken, self).__init__()
+        super(Token, self).__init__()
 
         self.type = type
         self.data = data
@@ -32,8 +30,7 @@ class AuthToken(Base):
 
     @classmethod
     def get(cls, token, type):
-        return Session.query(AuthToken) \
-            .filter_by(token=token, type=type).first()
+        return Session.query(cls).filter_by(token=token, type=type).first()
 
 
 @config.handler(config.SettingsInitialized)

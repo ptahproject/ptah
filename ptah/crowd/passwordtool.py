@@ -4,16 +4,22 @@ from random import randint
 from codecs import getencoder
 from hashlib import md5, sha1
 from base64 import urlsafe_b64encode, urlsafe_b64decode
+from datetime import timedelta
 
 from zope import interface
 from zope.component import getUtility, queryUtility
 
 from memphis import config
-from ptah.models import AuthToken
-from ptah.interfaces import IAuthentication, AUTH_RESETPWD
+
+from ptah import token
+from ptah.interfaces import IAuthentication
 
 from models import User, Session
 from interfaces import _, IPasswordTool
+
+
+TOKEN_TYPE = token.registerTokenType(
+    '2871cd61-8995-43d2-9b96-d841ec06b8de', timedelta(minutes=10))
 
 
 class PlainPasswordManager(object):
@@ -77,25 +83,24 @@ class PasswordTool(object):
         return self.passwordManager.encode(password, salt)
 
     def getPrincipal(self, passcode):
-        at = AuthToken.get(passcode, AUTH_RESETPWD)
+        data = token.tokenService().get(TOKEN_TYPE, passcode)
 
-        if at is not None:
-            return getUtility(IAuthentication).getUserByLogin(at.data)
+        if data is not None:
+            return getUtility(IAuthentication).getUserByLogin(data)
 
     def generatePasscode(self, principal):
-        at = AuthToken(AUTH_RESETPWD, principal.login)
-        Session.add(at)
-        return at.token
+        return token.tokenService().generate(TOKEN_TYPE, principal.login)
 
     def resetPassword(self, passcode, password):
-        at = AuthToken.get(passcode, AUTH_RESETPWD)
+        srv = token.tokenService()
+        data = srv.get(TOKEN_TYPE, passcode)
 
-        if at is not None:
-            principal = getUtility(IAuthentication).getUserByLogin(at.data)
+        if data is not None:
+            principal = getUtility(IAuthentication).getUserByLogin(data)
             user = User.get(principal.login)
             if user is not None:
                 user.password = self.encodePassword(password)
-                Session.delete(at)
+                srv.remove(passcode)
                 return principal
 
     def validatePassword(self, password):

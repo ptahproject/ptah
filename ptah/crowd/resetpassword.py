@@ -2,7 +2,9 @@
 from datetime import datetime
 from pyramid import security
 from webob.exc import HTTPFound
-from memphis import config, form, view, mail
+from memphis import config, form, view
+
+from ptah import mail
 from ptah.interfaces import IAuthentication
 
 from interfaces import _, IPasswordTool
@@ -82,7 +84,7 @@ class ResetPasswordForm(form.Form):
         else:
             self.message(_("Passcode is invalid."), 'warning')
             raise HTTPFound(
-                location='%s/ptah/resetpassword.html'%request.application_url)
+                location='%s/resetpassword.html'%request.application_url)
 
         super(ResetPasswordForm, self).update()
 
@@ -126,7 +128,7 @@ class ResetPasswordTemplate(mail.MailTemplate):
         self.from_ip = (forwardedFor and '%s/%s' %
                         (remoteAddr, forwardedFor) or remoteAddr)
 
-        self.url = '%s/ptah/resetpasswordform.html?passcode=%s'%(
+        self.url = '%s/resetpasswordform.html?passcode=%s'%(
             request.application_url, self.passcode)
 
         info = self.context

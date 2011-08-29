@@ -1,0 +1,8 @@
+Hi!
+
+You're close to completing the registration process.  Once you click this link,
+your login and password will be activated. 
+
+${view.url}
+
+Thanks

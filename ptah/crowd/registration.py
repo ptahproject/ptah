@@ -7,6 +7,7 @@ from pyramid import security
 from webob.exc import HTTPFound
 from ptah.interfaces import IAuthentication
 
+import validation
 from interfaces import _, IPasswordTool
 from models import Session, User
 from schemas import RegistrationSchema, PasswordSchema
@@ -47,6 +48,8 @@ class Registration(form.Form):
 
         user = reg.getUtility(IAuthentication).getUserByLogin(data['login'])
         headers = security.remember(self.request, user.login)
+
+        validation.initiateValidation(user, self.request)
 
         raise HTTPFound(
             location='%s/login-success.html'%self.request.application_url,

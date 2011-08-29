@@ -6,9 +6,6 @@ from memphis import view
 _ = translationstring.TranslationStringFactory('ptah')
 
 
-AUTH_RESETPWD = 1
-
-
 class IAuthentication(interface.Interface):
     """ authentication service """
 

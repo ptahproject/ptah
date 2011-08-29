@@ -4,7 +4,7 @@ from pyramid import security
 from webob.exc import HTTPFound
 from zope.component import getUtility
 
-from memphis.mail import MAIL
+from ptah.mail import MAIL
 from ptah.interfaces import IAuthentication
 
 from interfaces import _
