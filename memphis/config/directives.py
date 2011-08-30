@@ -91,11 +91,18 @@ def adapts(*required, **kw):
 def utility(provides=None, name=''):
     info = DirectiveInfo(allowed_scope=('class',))
 
+    def descriminator(action):
+        if provides is not None:
+            return ('memphis.config:utility', provides, name)
+        else:
+            return ('memphis.config:utility', 
+                    _getProvides(action.info.context), name)
+
     info.attach(
         ClassAction(
             _utility,
             (provides, name),
-            discriminator = ('memphis.config:utility', provides, name))
+            discriminator = descriminator)
         )
 
 
