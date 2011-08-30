@@ -80,11 +80,11 @@ def viewDirective(
     if inspect.isclass(factory):
         isclass = True
         name, context, template, route, layout, \
-            permission, default, decorator, layer, discriminator = action.args
+            permission, default, decorator = action.args
     else:
         isclass = False
         factory, name, context, template, route, layout, permission, \
-            default, decorator, layer, discriminator = action.args
+            default, decorator = action.args
 
     if route:
         if name:

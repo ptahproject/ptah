@@ -83,24 +83,23 @@ class PasswordTool(object):
         return self.passwordManager.encode(password, salt)
 
     def getPrincipal(self, passcode):
-        data = token.tokenService().get(TOKEN_TYPE, passcode)
+        data = token.tokenService.get(TOKEN_TYPE, passcode)
 
         if data is not None:
             return getUtility(IAuthentication).getUserByLogin(data)
 
     def generatePasscode(self, principal):
-        return token.tokenService().generate(TOKEN_TYPE, principal.login)
+        return token.tokenService.generate(TOKEN_TYPE, principal.login)
 
     def resetPassword(self, passcode, password):
-        srv = token.tokenService()
-        data = srv.get(TOKEN_TYPE, passcode)
+        data = token.tokenService.get(TOKEN_TYPE, passcode)
 
         if data is not None:
             principal = getUtility(IAuthentication).getUserByLogin(data)
             user = User.get(principal.login)
             if user is not None:
                 user.password = self.encodePassword(password)
-                srv.remove(passcode)
+                token.tokenService.remove(passcode)
                 return principal
 
     def validatePassword(self, password):

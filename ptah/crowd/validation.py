@@ -13,7 +13,7 @@ TOKEN_TYPE = token.registerTokenType(
 
 
 def initiateValidation(principal, request):
-    t = token.tokenService().generate(TOKEN_TYPE, principal.id)
+    t = token.tokenService.generate(TOKEN_TYPE, principal.id)
     template = ValidationTemplate(principal, request)
     template.token = token
     template.send()
@@ -44,13 +44,12 @@ view.registerRoute(
 def validate(request):
     t = request.GET.get('token')
 
-    srv = token.tokenService()
-    data = srv.get(TOKEN_TYPE, t)
+    data = token.tokenService.get(TOKEN_TYPE, t)
     if data is not None:
         user = User.getById(data)
         if user is not None:
             user.validated = True
-            srv.remove(t)
+            token.tokenService.remove(t)
 
             headers = remember(request, user.login)
             raise HTTPFound(location=request.application_url, headers=headers)
