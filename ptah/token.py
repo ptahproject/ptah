@@ -35,8 +35,11 @@ class ITokenService(interface.Interface):
 
         ``data`` token type specific data, it must be python string. """
 
-    def check(token, type, data=None):
-        """ Check token """
+    def get(token, type, data=None):
+        """ Get data for token """
+
+    def getToken(type, data):
+        """ Get token for data """
 
     def remove(token):
         """ Remove token """
@@ -72,7 +75,7 @@ def registerTokenTypeImpl(tt):
 
 class TokenService(object):
     interface.implements(ITokenService)
-    #config.utility(ITokenService)
+    config.utility(ITokenService)
 
     def generate(self, typ, data):
         t = Token(typ.id, data)
@@ -84,6 +87,11 @@ class TokenService(object):
         t = Token.get(token, typ.id)
         if t is not None:
             return t.data
+
+    def getToken(self, typ, data):
+        t = Token.getToken(data, typ.id)
+        if t is not None:
+            return t.token
 
     def remove(self, token):
         Session.query(Token).filter(Token.token == token).delete()
@@ -117,6 +125,10 @@ class Token(Base):
     @classmethod
     def get(cls, token, type):
         return Session.query(cls).filter_by(token=token, type=type).first()
+
+    @classmethod
+    def getToken(cls, data, type):
+        return Session.query(cls).filter_by(data=data, type=type).first()
 
 
 @config.handler(config.SettingsInitialized)
