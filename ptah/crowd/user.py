@@ -11,6 +11,7 @@ from interfaces import _, IPasswordTool, ICrowdUser, IManageUserAction
 class CreateUserForm(form.Form):
     view.pyramidView('create-user.html', route='ptah-manage')
 
+    csrf = True
     label = _('Create new user')
     fields = form.Fields(UserSchema).omit('id', 'joined')
 
@@ -94,6 +95,7 @@ class ChangePasswordAction(object):
 class ChangePassword(form.Form):
     view.pyramidView('change-password.html', ICrowdUser, route = 'ptah-manage')
 
+    csrf = True
     fields = form.Fields(ManagerChangePasswordSchema)
 
     label = _('Change password')

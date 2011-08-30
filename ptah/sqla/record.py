@@ -11,6 +11,8 @@ class EditRecord(form.Form):
     view.pyramidView(
         'index.html', IRecord, 'ptah-manage', default = True)
 
+    csrf = True
+
     @reify
     def label(self):
         return '%s: record %s'%(self.context.table.name, self.context.__name__)
@@ -41,6 +43,8 @@ class EditRecord(form.Form):
 
     @form.button('Remove', actype=form.AC_DANGER)
     def remove(self):
+        self.validateToken()
+
         self.context.table.delete(
             self.context.pcolumn == self.context.__name__).execute()
         self.message('Table record has been removed.')
@@ -49,6 +53,8 @@ class EditRecord(form.Form):
 
 class AddRecord(form.Form):
     view.pyramidView('add.html', ITable, 'ptah-manage')
+
+    csrf = True
 
     @reify
     def label(self):

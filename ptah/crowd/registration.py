@@ -19,6 +19,7 @@ view.registerRoute('ptah-join', '/join.html', view.DefaultRoot)
 class Registration(form.Form):
     view.pyramidView(route = 'ptah-join', layout='ptah-crowd')
 
+    csrf = True
     label = _("Registration")
     fields = form.Fields(RegistrationSchema, PasswordSchema)
 
