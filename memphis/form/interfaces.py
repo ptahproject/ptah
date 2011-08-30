@@ -220,8 +220,8 @@ class IForm(interface.Interface):
     fields = interface.Attribute('Fields')
     buttons = interface.Attribute('Buttons')
 
-    def getRequestParams():
-        '''Return the request params.'''
+    def getParams():
+        '''Return the request params dict.'''
 
     def getContent():
         '''Return the content to be displayed and/or edited.'''
@@ -265,3 +265,26 @@ class IInputForm(interface.Interface):
     enctype = interface.Attribute('Encoding Type')
     acceptCharset = interface.Attribute('Accepted Character Sets')
     accept = interface.Attribute('Accepted Content Types')
+
+    csrf = interface.Attribute('Enable csrf protection')
+    csrfname = interface.Attribute('csrf field name')
+    token = interface.Attribute('csrf token')
+
+    def removeToken():
+        """ remove current csrf token """
+
+
+# --- CSRF ---
+
+class ICSRFService(interface.Interface):
+    """ Form csrf protection """
+
+    def generate(data):
+        """ Generate csrf token. """
+
+    def get(token):
+        """ Get data for csrf token. This is form specific, 
+        but usually it is form id."""
+
+    def remove(token):
+        """ Remove token."""

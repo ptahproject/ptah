@@ -92,7 +92,7 @@ class Actions(OrderedDict):
         prefix = expandPrefix(self.form.prefix)
         prefix += expandPrefix(self.prefix)
         request = self.request
-        params = self.form.getRequestParams()
+        params = self.form.getParams()
         context = self.form.getContext()
 
         sm = getSiteManager()

@@ -11,6 +11,8 @@ CHANGES
 
 - Added Date and DateTime widgets with jquery datepicker support
 
+- Added csrf protection
+
 - Use resource library api
 
 - Widget refactoring

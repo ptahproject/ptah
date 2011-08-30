@@ -12,4 +12,7 @@
   </fieldset>
   
   <tal:block content="structure view.pagelet('form-actions')" />
+
+  <input type="hidden" tal:condition="context.csrf" 
+	 name="${context.csrfname}" value="${context.token}" />
 </form>

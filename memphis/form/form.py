@@ -1,13 +1,17 @@
 """Form implementation"""
 from zope import interface
-from zope.component import getMultiAdapter
+from zope.component import queryUtility, getMultiAdapter
+from pyramid import security
+from pyramid.decorator import reify
+from webob.exc import HTTPForbidden
 from webob.multidict import UnicodeMultiDict, MultiDict
 
 from memphis import view
 from memphis.form.field import Fields
 from memphis.form.button import Buttons, Actions
 from memphis.form.pagelets import FORM_VIEW, FORM_INPUT, FORM_DISPLAY
-from memphis.form.interfaces import IForm, IInputForm, IDisplayForm, IWidgets
+from memphis.form.interfaces import \
+    IForm, IInputForm, IDisplayForm, IWidgets, ICSRFService
 
 
 class Form(view.View):
@@ -34,6 +38,9 @@ class Form(view.View):
     accept = None
     refreshActions = False
 
+    csrf = False
+    csrfname = 'csrf-token'
+
     @property
     def action(self):
         return self.request.url
@@ -52,7 +59,7 @@ class Form(view.View):
     def getContent(self):
         return self.content
 
-    def getRequestParams(self):
+    def getParams(self):
         if self.method == 'post':
             return self.request.POST
         elif self.method == 'get':
@@ -69,8 +76,31 @@ class Form(view.View):
         self.actions = Actions(self, self.request)
         self.actions.update()
 
+    @property
+    def token(self):
+        srv = queryUtility(ICSRFService)
+        if srv is not None:
+            return srv.generate(self.tokenData)
+
+    @reify
+    def tokenData(self):
+        return '%s.%s:%s'%(self.__module__,self.__class__.__name__,
+                           security.authenticated_userid(self.request))
+
     def validate(self, data, errors):
-        pass
+        self.validateToken()
+
+    def validateToken(self):
+        # check csrf token
+        if self.csrf:
+            token = self.getParams().get(self.csrfname, None)
+            if token is not None:
+                srv = queryUtility(ICSRFService)
+                if srv is not None:
+                    if srv.get(token) == self.tokenData:
+                        return
+
+            raise HTTPForbidden("Form authenticator is not found.")
 
     def extractData(self, setErrors=True):
         return self.widgets.extract(setErrors)
@@ -100,5 +130,5 @@ class DisplayForm(Form):
     mode = FORM_DISPLAY
     empty = UnicodeMultiDict(MultiDict({}), 'utf-8')
 
-    def getRequestParams(self):
+    def getParams(self):
         return self.empty
