@@ -12,10 +12,8 @@ from schemas import ResetPasswordSchema, PasswordSchema
 
 MAIL = mail.MAIL
 
-view.registerRoute(
-    'ptah-resetpassword', '/resetpassword.html', view.DefaultRoot)
-view.registerRoute(
-    'ptah-resetpassword-form', '/resetpasswordform.html', view.DefaultRoot)
+view.registerRoute('ptah-resetpassword', '/resetpassword.html')
+view.registerRoute('ptah-resetpassword-form', '/resetpasswordform.html')
 
 
 class ResetPassword(form.Form):

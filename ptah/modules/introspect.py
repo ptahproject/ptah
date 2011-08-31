@@ -327,6 +327,7 @@ class RoutesView(view.View):
                 actions = directives.scan(pkg, seen, exclude)
 
                 for action in actions:
+                    
                     d = action.discriminator[0]
                     if d == 'memphis.view:route':
                         name, pattern, factory = action.args[:3]
@@ -359,7 +360,7 @@ class RoutesView(view.View):
                 rdata = routes[route][3]
                 rdata.append([getattr(factory, '__intr_path__', name),
                               action.info.module.__name__, lineno(factory),
-                              factory])
+                              factory, action.discriminator[-1]])
                 rdata.sort()
 
             routes = routes.values()

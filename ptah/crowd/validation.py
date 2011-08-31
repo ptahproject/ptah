@@ -38,7 +38,7 @@ class ValidationTemplate(mail.MailTemplate):
 
 
 view.registerRoute(
-    'ptah-crowd-validate', '/validateaccount.html', view.DefaultRoot)
+    'ptah-crowd-validate', '/validateaccount.html')
 
 @view.pyramidView(route='ptah-crowd-validate')
 def validate(request):

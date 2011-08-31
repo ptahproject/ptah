@@ -13,7 +13,7 @@ from models import Session, User
 from schemas import RegistrationSchema, PasswordSchema
 
 
-view.registerRoute('ptah-join', '/join.html', view.DefaultRoot)
+view.registerRoute('ptah-join', '/join.html')
 
 
 class Registration(form.Form):

@@ -10,14 +10,10 @@ from ptah.interfaces import IAuthentication
 from interfaces import _
 from schemas import LoginSchema
 
-view.registerRoute(
-    'ptah-login', '/login.html', view.DefaultRoot)
-view.registerRoute(
-    'ptah-logout', '/logout.html', view.DefaultRoot)
-view.registerRoute(
-    'ptah-login-success', '/login-success.html', view.DefaultRoot)
-view.registerRoute(
-    'ptah-login-suspended', '/login-suspended.html',view.DefaultRoot)
+view.registerRoute('ptah-login', '/login.html')
+view.registerRoute('ptah-logout', '/logout.html')
+view.registerRoute('ptah-login-success', '/login-success.html')
+view.registerRoute('ptah-login-suspended', '/login-suspended.html')
 
 
 class LoginForm(form.Form):

@@ -15,9 +15,12 @@
 	    <ul>
 	      <li tal:repeat="v r[3]">
 		<a href="source.html?pkg=${v[1]}#sl-${v[2]}">
-		  ${v[0] or 'Default route view'}
+		  ${v[0] or 'Route view'}
 		</a>
 		<tal:block content="v[3].__doc__" />
+		<tal:block tal:condition="v[4]">
+		  <br />Layer: ${v[4]}
+		</tal:block>
 	      </li>
 	    </ul>
 	  </p>
