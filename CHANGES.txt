@@ -11,6 +11,9 @@ CHANGES
 
 - Allow to use pyramidView to decorate functions
 
+- Simplified layout, its not possible to register layout 
+  for view anymore.
+
 - Added concept of view layers
 
 - Added route support, 'registerRoute'

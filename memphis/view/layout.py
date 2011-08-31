@@ -13,11 +13,11 @@ from memphis.view.customize import LayerWrapper
 log = logging.getLogger('memphis.view')
 
 
-def queryLayout(view, request, context, name=''):
+def queryLayout(request, context, name=''):
     sm = getSiteManager()
 
     while context is not None:
-        layout = sm.queryMultiAdapter((view, context, request), ILayout, name)
+        layout = sm.queryMultiAdapter((context, request), ILayout, name)
         if layout is not None:
             return layout
 
@@ -31,26 +31,17 @@ class Layout(View):
 
     name = ''
     template = None
-    mainview = None
-    maincontext = None
-
-    _params = None
-
-    def __init__(self, view, context, request):
-        self.view = view
-        self.context = context
-        self.request = request
-        self.__parent__ = getattr(view, '__parent__', context)
+    view = None
+    viewcontext = None
 
     @property
     def __name__(self):
         return self.name
 
-    def render(self, content):
+    def render(self, content, **kwargs):
         if self.template is None:
             return content
 
-        kwargs = self._params or {}
         kwargs.update({'view': self,
                        'content': content,
                        'context': self.context,
@@ -59,63 +50,58 @@ class Layout(View):
 
         return self.template(**kwargs)
 
-    def __call__(self, content, layout=None, view=None, *args, **kw):
-        if view is None:
-            view = self.view
+    def __call__(self, content, layout=None, view=None):
         if view is not None:
-            self.mainview = view
-            self.maincontext = getattr(view, 'context', self.context)
-
-        layoutview = self.view
+            self.view = view
+            self.viewcontext = getattr(view, 'context', self.context)
         if layout is not None:
-            self.view = layout
+            self.view = layout.view or self.view
+            self.viewcontext = layout.viewcontext or self.viewcontext
 
-        self._params = self.update()
-
-        result = self.render(content)
-
+        result = self.render(content, **(self.update() or {}))
         if self.layout is None:
             return result
 
         parent = getattr(view, '__parent__', self.context)
 
         if self.name != self.layout:
-            layout = queryLayout(
-                view, self.request, parent, self.layout)
+            layout = queryLayout(self.request, parent, self.layout)
             if layout is not None:
-                return layout(result, layout=self, view=view, *args, **kw)
+                return layout(result, layout=self, view=view)
         else:
-            context = self.context
-            if layoutview.context is not context.__parent__:
-                context = context.__parent__
-
-            layout = queryLayout(self, self.request, context, self.layout)
             if layout is not None:
-                return layout(result, view=view, *args, **kw)
+                context = layout.context
+            else:
+                context = self.context
+            parent = getattr(context, '__parent__', None)
+            if parent is not None:
+                layout = queryLayout(self.request, parent, self.layout)
+                if layout is not None:
+                    return layout(result, view=view)
 
         log.warning("Can't find parent layout: '%s'"%self.layout)
         return self.render(result)
 
 
 def registerLayout(
-    name='', context=None, view=None, parent='', 
+    name='', context=None, parent='', 
     klass=Layout, template = None, route=None, layer=''):
 
     if not klass or not issubclass(klass, Layout):
         raise ValueError("klass has to inherit from Layout class")
 
-    discriminator = ('memphis.view:layout', name, context, view, route, layer)
+    discriminator = ('memphis.view:layout', name, context, route, layer)
 
     info = config.DirectiveInfo()
     info.attach(
         config.Action(
             LayerWrapper(registerLayoutImpl, discriminator),
-            (klass, name, context, view, template, parent, route),
+            (klass, name, context, template, parent, route),
             discriminator = discriminator)
         )
 
 
-def registerLayoutImpl(klass,name,context,view,template,parent,route_name):
+def registerLayoutImpl(klass, name, context, template, parent, route_name):
     if klass in _registered:
         raise ValueError("Class can't be reused for different layouts")
 
@@ -149,7 +135,7 @@ def registerLayoutImpl(klass,name,context,view,template,parent,route_name):
         request_iface = sm.getUtility(IRouteRequest, name=route_name)
 
     sm.registerAdapter(
-        layout_class, (view, context, request_iface), ILayout, name)
+        layout_class, (context, request_iface), ILayout, name)
 
 
 _registered = []

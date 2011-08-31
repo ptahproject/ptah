@@ -98,9 +98,12 @@ class subpath(object):
 
 
 def registerView(
-    name='', factory=View, context=None, template=None,
-    route=None, layout='', permission='__no_permission_required__',
+    name='', factory=View, context=None, renderer=None, template=None,
+    route=None, layout=None, permission='__no_permission_required__',
     default=False, decorator=None, layer=''):
+
+    if renderer is not None and template is not None:
+        raise ValueError("renderer and template can't be used at the same time.")
 
     if factory is None or not callable(factory):
         raise ValueError('view factory is required')
@@ -111,22 +114,23 @@ def registerView(
     info.attach(
         config.Action(
             LayerWrapper(registerViewImpl, discriminator),
-            (factory, name, context, template,
+            (factory, name, context, renderer, template,
              route, layout, permission, default, decorator),
             discriminator = discriminator)
         )
 
 
 def registerViewImpl(
-    factory, name, context, template, route_name, layout, 
+    factory, name, context, renderer, template, route_name, layout, 
     permission, default, decorator):
 
-    if template is not None:
-        renderer = Renderer(template, layout=layout).bind(
-            viewMapper(factory, 'update'))
-    else:
-        renderer = SimpleRenderer(layout=layout).bind(
-            viewMapper(factory, 'render'))
+    if renderer is None:
+        if template is not None:
+            renderer = Renderer(template, layout=layout).bind(
+                viewMapper(factory, 'update'))
+        else:
+            renderer = SimpleRenderer(layout=layout).bind(
+                viewMapper(factory, 'render'))
 
     # add 'subpath' support
     if inspect.isclass(factory):

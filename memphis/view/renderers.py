@@ -35,10 +35,9 @@ class SimpleRenderer(BaseRenderer):
             return response
 
         if self.layout is not None:
-            layout = queryLayout(
-                view, request, context, self.layout)
+            layout = queryLayout(request, context, self.layout)
             if layout is not None:
-                result = layout(result)
+                result = layout(result, view=view)
 
         if type(result) is unicode:
             response.unicode_body = result
@@ -74,9 +73,9 @@ class Renderer(BaseRenderer):
         result = self.template(**kwargs)
 
         if self.layout is not None:
-            layout = queryLayout(view, request, context, self.layout)
+            layout = queryLayout(request, context, self.layout)
             if layout is not None:
-                result = layout(result)
+                result = layout(result, view=view)
 
         if type(result) is unicode:
             response.unicode_body = result

@@ -43,21 +43,18 @@ class ILayout(interface.Interface):
 
     template = interface.Attribute('Layout template')
 
-    view = interface.Attribute('Parent view')
-    context = interface.Attribute('Parent view context')
-
-    mainview = interface.Attribute('Initial view')
-    maincontext = interface.Attribute('Initial view context')
+    view = interface.Attribute('Initial view')
+    viewcontext = interface.Attribute('Initial view context')
 
     template = interface.Attribute('Layout template')
 
     def update():
         """Update the layout data """
 
-    def render():
+    def render(content, **kwargs):
         """Render the layout """
 
-    def __call__(layout=None, view=None, *args, **kw):
+    def __call__(content, layout=None, view=None, *args, **kw):
         """ build layout tree and render """
 
 

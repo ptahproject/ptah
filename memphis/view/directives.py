@@ -23,9 +23,12 @@ def pagelet(pageletType, context=None, template=None, layer=''):
         )
 
 
-def pyramidView(name='', context=None, route=None, template=None,
-                layout='', permission='__no_permission_required__',
+def pyramidView(name='', context=None, route=None, renderer=None, template=None,
+                layout=None, permission='__no_permission_required__',
                 default=False, decorator=None, layer=''):
+
+    if renderer is not None and template is not None:
+        raise ValueError("renderer and template can't be used at the same time.")
 
     info = config.DirectiveInfo(
         allowed_scope=('class', 'module', 'function call'))
@@ -37,7 +40,7 @@ def pyramidView(name='', context=None, route=None, template=None,
             info.attach(
                 config.Action(
                     LayerWrapper(registerViewImpl, discriminator),
-                    (factory, name, context, template, route, layout, 
+                    (factory, name, context, renderer, template, route, layout, 
                      permission, default, decorator),
                     discriminator = discriminator)
                 )
@@ -48,21 +51,20 @@ def pyramidView(name='', context=None, route=None, template=None,
         info.attach(
             config.ClassAction(
                 LayerWrapper(registerViewImpl, discriminator),
-                (name, context, template, route, layout, 
+                (name, context, renderer, template, route, layout, 
                  permission, default, decorator),
                 discriminator = discriminator)
             )
 
 
-def layout(name='', context=None, view=None, parent='',
-           route=None, template=None, layer=''):
+def layout(name='', context=None, parent='', route=None, template=None, layer=''):
     info = config.DirectiveInfo(allowed_scope=('class',))
 
-    discriminator = ('memphis.view:layout', name, context, view, route, layer)
+    discriminator = ('memphis.view:layout', name, context, route, layer)
 
     info.attach(
         config.ClassAction(
             LayerWrapper(registerLayoutImpl, discriminator),
-            (name, context, view, template, parent, route),
+            (name, context, template, parent, route),
             discriminator = discriminator)
         )
