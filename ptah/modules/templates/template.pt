@@ -10,7 +10,7 @@
   <div class="span12 column">
     <h3>${view.pkg}: ${view.template}</h3>
 
-    <pre tal:content="view.text"></pre>
+    ${view.text}
 
     <form method="post" action="${request.url}">
       <div class="actions">

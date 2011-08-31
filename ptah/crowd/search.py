@@ -23,9 +23,7 @@ class SearchSchema(colander.Schema):
 
 class SearchUsers(form.Form):
     view.pyramidView(
-        'search.html',
-        context = ICrowdModule,
-        route = 'ptah-manage', default = True,
+        'search.html', ICrowdModule, 'ptah-manage', default=True, layout='',
         template = view.template('ptah.crowd:templates/search.pt'))
 
     __doc__ = 'List/search users view'

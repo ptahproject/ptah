@@ -80,7 +80,7 @@ class LayoutPage(view.Layout):
 
         self.user = registry.getUtility(IAuthentication).getCurrentUser()
 
-        mod = self.maincontext
+        mod = self.viewcontext
         while not IPtahModule.providedBy(mod):
             mod = getattr(mod, '__parent__', None)
             if mod is None:
@@ -91,9 +91,10 @@ class LayoutPage(view.Layout):
 
 class ManageView(view.View):
     """List ptah modules"""
-    view.pyramidView('index.html', IPtahManageRoute,
-                     route = 'ptah-manage', default = True, layout='page',
-                     template = view.template('ptah:templates/manage.pt'))
+    view.pyramidView(
+        'index.html', IPtahManageRoute,
+        route = 'ptah-manage', default=True, layout='page',
+        template = view.template('ptah:templates/manage.pt'))
 
     __intr_path__ = '/ptah-manage/index.html'
 

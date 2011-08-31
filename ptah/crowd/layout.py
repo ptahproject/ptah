@@ -17,7 +17,7 @@ class LayoutMain(view.Layout):
 
     def update(self):
         actions = []
-        if ICrowdUser.providedBy(self.view.context):
+        if ICrowdUser.providedBy(self.viewcontext):
             registry = self.request.registry
             url = self.request.route_url('ptah-manage', traverse='crowd/')
             self.url = '%s%s/'%(url, self.view.context.__name__)

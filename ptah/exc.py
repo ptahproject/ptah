@@ -12,9 +12,9 @@ view.registerLayout(
 
 
 class Forbidden(view.View):
-    view.pyramidView(context = HTTPForbidden,
+    view.pyramidView(context=HTTPForbidden,
                      layout='ptah-exception',
-                     template = view.template('ptah:templates/forbidden.pt'))
+                     template=view.template('ptah:templates/forbidden.pt'))
 
     def update(self):
         self.__parent__ = view.DefaultRoot()

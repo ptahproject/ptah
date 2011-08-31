@@ -57,10 +57,8 @@ class Package(object):
 
 class MainView(view.View):
     view.pyramidView(
-        'index.html', IIntrospectModule,
-        route = 'ptah-manage', default='True',
-        template = view.template(
-            'ptah.modules:templates/introspect.pt', nolayer=True))
+        'index.html', IIntrospectModule, 'ptah-manage', default=True, layout='',
+        template = view.template('ptah.modules:templates/introspect.pt'))
 
     __doc__ = 'Introspection module view.'
     __intr_path__ = '/ptah-manage/introspect/index.html'
@@ -82,8 +80,7 @@ def lineno(ob):
 def viewDirective(
     action, request,
     lineno = lineno,
-    renderer = view.template(
-        'ptah.modules:templates/directive-view.pt', nolayer=True)):
+    renderer = view.template('ptah.modules:templates/directive-view.pt')):
     info = action.info
     factory = action.info.context
 
@@ -120,8 +117,7 @@ def viewDirective(
 def routeDirective(
     action, request,
     lineno = lineno,
-    template = view.template(
-        'ptah.modules:templates/directive-route.pt', nolayer=True)):
+    template = view.template('ptah.modules:templates/directive-route.pt')):
 
     name, pattern, factory = action.args[:3]
 
@@ -134,8 +130,7 @@ def routeDirective(
 def utilityDirective(
     action, request,
     lineno = lineno,
-    template=view.template(
-        'ptah.modules:templates/directive-utility.pt',nolayer=True)):
+    template=view.template('ptah.modules:templates/directive-utility.pt')):
 
     context = action.info.context
     iface, name = action.args[:2]
@@ -151,8 +146,7 @@ def utilityDirective(
 def adapterDirective(
     action, request,
     lineno = lineno,
-    template=view.template(
-        'ptah.modules:templates/directive-adapter.pt',nolayer=True)):
+    template=view.template('ptah.modules:templates/directive-adapter.pt')):
 
     context = action.info.context
 
@@ -176,8 +170,7 @@ def adapterDirective(
 def handlerDirective(
     action, request,
     lineno = lineno,
-    template=view.template(
-        'ptah.modules:templates/directive-handler.pt',nolayer=True)):
+    template=view.template('ptah.modules:templates/directive-handler.pt')):
 
     factory, ifaces = action.args[1:]
     factoryInfo = '%s.%s'%(action.info.module.__name__, factory.__name__)
@@ -195,8 +188,7 @@ def handlerDirective(
 def eventDirective(
     action, request,
     lineno = lineno,
-    template=view.template(
-        'ptah.modules:templates/directive-event.pt',nolayer=True)):
+    template=view.template('ptah.modules:templates/directive-event.pt')):
 
     event = directives.events[action.info.context]
 
@@ -206,8 +198,7 @@ def eventDirective(
 def pageletTypeDirective(
     action, request,
     lineno = lineno,
-    template=view.template(
-        'ptah.modules:templates/directive-ptype.pt',nolayer=True)):
+    template=view.template('ptah.modules:templates/directive-ptype.pt')):
 
     name = action.args[0]
     ptype = sys.modules['memphis.view.pagelet'].ptypes[name]
@@ -241,10 +232,8 @@ types = {
 
 class PackageView(view.View):
     view.pyramidView(
-        'index.html', IPackage,
-        route = 'ptah-manage', default='True',
-        template = view.template(
-            'ptah.modules:templates/introspect-pkg.pt', nolayer=True))
+        'index.html', IPackage, 'ptah-manage', default=True, layout='',
+        template = view.template('ptah.modules:templates/introspect-pkg.pt'))
 
     __doc__ = 'Package introspection page.'
     __intr_path__ = '/ptah-manage/introspect/${pkg}/index.html'
@@ -258,10 +247,8 @@ class PackageView(view.View):
 
 class EventsView(view.View):
     view.pyramidView(
-        'events.html', IIntrospectModule,
-        route = 'ptah-manage',
-        template = view.template(
-            'ptah.modules:templates/introspect-events.pt', nolayer=True))
+        'events.html', IIntrospectModule, 'ptah-manage', layout='',
+        template = view.template('ptah.modules:templates/introspect-events.pt'))
 
     __doc__ = 'Events introspection page.'
     __intr_path__ = '/ptah-manage/introspect/events.html'
@@ -304,10 +291,8 @@ class EventsView(view.View):
 
 class RoutesView(view.View):
     view.pyramidView(
-        'routes.html', IIntrospectModule,
-        route = 'ptah-manage',
-        template = view.template(
-            'ptah.modules:templates/introspect-routes.pt', nolayer=True))
+        'routes.html', IIntrospectModule, 'ptah-manage', layout='',
+        template = view.template('ptah.modules:templates/introspect-routes.pt'))
 
     __doc__ = 'Routes introspection page.'
     __intr_path__ = '/ptah-manage/introspect/routes.html'
@@ -338,13 +323,13 @@ class RoutesView(view.View):
                             isclass = True
                             name = action.args[0]
                             context = action.args[1]
-                            route = action.args[3]
+                            route = action.args[4]
                         else:
                             isclass = False
                             factory = action.args[0]
                             name = action.args[1]
                             context = action.args[2]
-                            route = action.args[4]
+                            route = action.args[5]
                         if route:
                             viewactions.append(
                                 (route, name, context, factory, action))
@@ -372,10 +357,8 @@ class RoutesView(view.View):
 
 class SourceView(view.View):
     view.pyramidView(
-        'source.html', IIntrospectModule,
-        route = 'ptah-manage',
-        template = view.template(
-            'ptah.modules:templates/introspect-source.pt', nolayer=True))
+        'source.html', IIntrospectModule, 'ptah-manage', layout='',
+        template = view.template('ptah.modules:templates/introspect-source.pt'))
 
     __doc__ = 'Source introspection page.'
     __intr_path__ = '/ptah-manage/introspect/source.html'
@@ -422,9 +405,9 @@ class SourceView(view.View):
                     noclasses = True,
                     cssclass="ptah-source")
 
-                def format(code, highlight=highlight,
+                def format(self, code, highlight=highlight,
                            lexer = PythonLexer()):
                     return highlight(code, lexer, html)
-                self.format = format
+                self.__class__.format = format
 
             self.source = self.format(source)

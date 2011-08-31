@@ -10,7 +10,7 @@ from interfaces import _, IPasswordTool, \
 
 
 class CreateUserForm(form.Form):
-    view.pyramidView('create.html', ICrowdModule, 'ptah-manage')
+    view.pyramidView('create.html', ICrowdModule, 'ptah-manage', layout='')
 
     __intr_path__ = '/ptah-manage/crowd/create.html'
 
@@ -60,7 +60,7 @@ class Info(object):
 
 class UserInfo(form.Form):
     view.pyramidView('index.html', ICrowdUser,
-                     route = 'ptah-manage', default = True)
+                     'ptah-manage', default = True, layout='')
 
     __intr_path__ = '/ptah-manage/crowd/${user}/index.html'
 
@@ -98,7 +98,7 @@ class ChangePasswordAction(object):
 
 
 class ChangePassword(form.Form):
-    view.pyramidView('password.html', ICrowdUser, route = 'ptah-manage')
+    view.pyramidView('password.html', ICrowdUser, 'ptah-manage', layout='')
 
     __intr_path__ = '/ptah-manage/crowd/${user}/password.html'
 

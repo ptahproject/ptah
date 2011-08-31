@@ -29,7 +29,7 @@ class TemplatesManagement(view.View):
     """List templates"""
     view.pyramidView(
         'index.html', ITemplatesModule,
-        route = 'ptah-manage', default='True',
+        'ptah-manage', default='True', layout='',
         template = view.template(
             'ptah.modules:templates/customize.pt', nolayer=True))
 
@@ -65,12 +65,13 @@ class TemplatesManagement(view.View):
 class ViewTemplate(view.View):
     """View template"""
     view.pyramidView(
-        'view.html', ITemplatesModule,
-        route = 'ptah-manage',
+        'view.html', ITemplatesModule, 'ptah-manage', layout='',
         template = view.template(
             'ptah.modules:templates/template.pt', nolayer=True))
 
     __intr_path__ = '/ptah-module/templates/view.html'
+
+    format = None
 
     def update(self):
         reg = tmpl.registry
@@ -113,15 +114,40 @@ class ViewTemplate(view.View):
                         location='customized.html?pkg=%s&template=%s'%(
                             self.pkg, self.template))
 
-        self.text = unicode(
-            open(data[self.template][0], 'rb').read(), 'utf-8')
+        if not self.format:
+            from pygments import highlight
+            from pygments.lexers import HtmlLexer
+            from pygments.formatters import HtmlFormatter
+
+            html = HtmlFormatter(
+                linenos='inline',
+                lineanchors='sl',
+                anchorlinenos=True,
+                noclasses = True,
+                cssclass="ptah-source")
+
+            def format(self, code, html=html,
+                       highlight=highlight,
+                       lexer = HtmlLexer()):
+                return highlight(code, lexer, html)
+
+            self.__class__.format = format
+
+        text = open(data[self.template][0], 'rb').read()
+
+        if data[self.template][0].endswith('.pt'):
+            text = self.format(text)
+
+        if isinstance(text, str):
+            text = unicode(text, 'utf-8')
+
+        self.text = text
 
 
 class CustomTemplate(view.View):
     """List customized templates"""
     view.pyramidView(
-        'customized.html', ITemplatesModule,
-        route = 'ptah-manage',
+        'customized.html', ITemplatesModule, 'ptah-manage', layout='',
         template = view.template(
             'ptah.modules:templates/customized.pt', nolayer=True))
 

@@ -12,8 +12,7 @@ Base = psa.get_base()
 
 class MainView(view.View):
     view.pyramidView(
-        'index.html', ISQLAModule,
-        route = 'ptah-manage', default='True',
+        'index.html', ISQLAModule, 'ptah-manage', default=True, layout='',
         template = view.template(
             'ptah.sqla:templates/index.pt', nolayer=True))
 

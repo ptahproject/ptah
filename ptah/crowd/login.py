@@ -18,7 +18,7 @@ view.registerRoute('ptah-login-suspended', '/login-suspended.html')
 
 class LoginForm(form.Form):
     view.pyramidView(
-        route = 'ptah-login', layout='ptah-crowd',
+        route='ptah-login', layout='ptah-crowd',
         template=view.template("ptah.crowd:templates/login.pt"))
 
     id = 'login-form'
