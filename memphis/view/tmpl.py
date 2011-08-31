@@ -57,9 +57,9 @@ def template(spec, layer=None, title=None, description=None, nolayer=False):
 
 def getRenderer(path):
     if path.endswith('.txt'):
-        return PageTextTemplateFile(path, extra_builtins={'format': format})
+        return PageTextTemplateFile(path)
 
-    return PageTemplateFile(path, extra_builtins={'format': format})
+    return PageTemplateFile(path)
 
 
 def path(spec, package_name=None):

@@ -3,7 +3,10 @@ import os
 import logging
 import colander
 import pyinotify
-from chameleon import template as chameleon_template
+try:
+    from chameleon import template as chameleon_template
+except:
+    chameleon_template = None
 
 from memphis import config
 from memphis.view import tmpl
@@ -243,8 +246,9 @@ def initialize(*args):
     except Exception, e:
         log.warning("Error during view customization initializations: %s", e)
 
-    chameleon_template.AUTO_RELOAD = TEMPLATE.chameleon_reload
-    chameleon_template.BaseTemplateFile.auto_reload = TEMPLATE.chameleon_reload
+    if chameleon_template:
+        chameleon_template.AUTO_RELOAD = TEMPLATE.chameleon_reload
+        chameleon_template.BaseTemplateFile.auto_reload = TEMPLATE.chameleon_reload
 
 
 @config.shutdownHandler
