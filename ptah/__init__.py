@@ -13,9 +13,8 @@ from ptah.batch import Batch, Batches, first_neighbours_last
 def initialize(package, pyramid_config, settings):
     from memphis import config
 
-    if pyramid_config is not None:
-        pyramid_config.hook_zca()
-        pyramid_config.begin()
+    pyramid_config.hook_zca()
+    pyramid_config.begin()
 
     if isinstance(package, basestring):
         package = (package,)
@@ -26,5 +25,4 @@ def initialize(package, pyramid_config, settings):
     # load settings
     config.initializeSettings(settings, pyramid_config)
 
-    if pyramid_config is not None:
-        pyramid_config.end()
+    pyramid_config.end()

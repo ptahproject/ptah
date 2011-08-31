@@ -116,7 +116,9 @@ class ChangePassword(form.Form):
             self.message(errors, 'form-error')
             return
 
+        sm = self.request.registry
+
         self.context.user.password = \
-            getUtility(IPasswordTool).encodePassword(data['password'])
+            sm.getUtility(IPasswordTool).encodePassword(data['password'])
 
         self.message("User password has been changed.")
