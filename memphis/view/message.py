@@ -66,25 +66,25 @@ class Message(object):
 
 
 class InformationMessage(Message):
-    config.adapts(IRequest, name='info')
+    config.adapter(IRequest, name='info')
 
     template = get_template('memphis.view:templates/msg-info.pt')
 
 
 class SuccessMessage(Message):
-    config.adapts(IRequest, name='success')
+    config.adapter(IRequest, name='success')
 
     template = get_template('memphis.view:templates/msg-success.pt')
 
 
 class WarningMessage(Message):
-    config.adapts(IRequest, name='warning')
+    config.adapter(IRequest, name='warning')
 
     template = get_template('memphis.view:templates/msg-warning.pt')
 
 
 class ErrorMessage(Message):
-    config.adapts(IRequest, name='error')
+    config.adapter(IRequest, name='error')
 
     template = get_template('memphis.view:templates/msg-error.pt')
 

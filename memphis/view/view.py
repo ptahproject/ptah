@@ -179,25 +179,26 @@ def registerViewImpl(
         pyramidView, (view_classifier, request_iface, context), IView, name)
 
     if default:
-        registerDefaultViewImpl(name, context, pyramidView)
+        registerDefaultViewImpl(name, context, request_iface, pyramidView)
 
 
-def registerDefaultView(name, context=interface.Interface):
+def registerDefaultView(name, context=interface.Interface, request=IRequest):
     info = config.DirectiveInfo()
     info.attach(
         config.Action(
             registerDefaultViewImpl,
-            (name, context, layer),
+            (name, context, request),
             discriminator = ('memphis.view:defaultView', name, context)))
 
 
-def registerDefaultViewImpl(name, context=interface.Interface, view=None):
+def registerDefaultViewImpl(
+    name, context=interface.Interface, request_iface=IRequest, view=None):
     if view is None:
         def view(context, request):
             return renderView(name, context, request)
 
     getSiteManager().registerAdapter(
-        view, (IViewClassifier, None, context), IView, '')
+        view, (IViewClassifier, request_iface, context), IView, '')
 
 
 def viewMapper(view, attr=None):
