@@ -1,20 +1,19 @@
 """Check Widget Implementation"""
 import colander
-import zope.interface
-import zope.schema
-from zope.schema import vocabulary
+from zope import interface
 
 from memphis import config, view
-from memphis.form import term, pagelets
+from memphis.form import pagelets, vocabulary
 from memphis.form.widget import SequenceWidget
 from memphis.form.widgets import widget
+from memphis.form.interfaces import ITerm
 
 from interfaces import _, ICheckBoxWidget, ISingleCheckBoxWidget
 
 
 class CheckBoxWidget(widget.HTMLInputWidget, SequenceWidget):
     """Input type checkbox widget implementation."""
-    zope.interface.implementsOnly(ICheckBoxWidget)
+    interface.implementsOnly(ICheckBoxWidget)
 
     klass = u'checkbox-widget'
     items = ()
@@ -35,7 +34,7 @@ class CheckBoxWidget(widget.HTMLInputWidget, SequenceWidget):
             checked = self.isChecked(term)
             id = '%s-%i' % (self.id, count)
             label = term.token
-            if zope.schema.interfaces.ITitledTokenizedTerm.providedBy(term):
+            if ITerm.providedBy(term):
                 label = self.localizer.translate(term.title)
             self.items.append(
                 {'id':id, 'name':self.name, 'value':term.token,
@@ -44,7 +43,7 @@ class CheckBoxWidget(widget.HTMLInputWidget, SequenceWidget):
 
 class SingleCheckBoxWidget(CheckBoxWidget):
     """Single Input type checkbox widget implementation."""
-    zope.interface.implementsOnly(ISingleCheckBoxWidget)
+    interface.implementsOnly(ISingleCheckBoxWidget)
     config.adapter(colander.SchemaNode, colander.Bool, name='checkbox')
 
     klass = u'single-checkbox-widget'
@@ -58,9 +57,9 @@ class SingleCheckBoxWidget(CheckBoxWidget):
 
     def updateTerms(self):
         if self.terms is None:
-            self.terms = term.Terms()
-            self.terms.terms = vocabulary.SimpleVocabulary((
-                vocabulary.SimpleTerm('selected', 'selected', ''), ))
+            self.terms = vocabulary.Vocabulary()
+            self.terms.terms = vocabulary.SimpleVocabulary(
+                vocabulary.SimpleTerm('selected', 'selected', ''))
         return self.terms
 
 

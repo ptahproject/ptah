@@ -1,10 +1,11 @@
 """Radio widget implementation"""
 import colander
-from zope import interface, schema
+from zope import interface
 
-from memphis import config, view
+from memphis import view
 from memphis.form import pagelets, widget
 from memphis.form.widget import SequenceWidget
+from memphis.form.interfaces import ITerm
 from memphis.form.widgets.widget import HTMLInputWidget
 
 from interfaces import _, IRadioWidget
@@ -30,7 +31,7 @@ class RadioWidget(HTMLInputWidget, SequenceWidget):
             checked = self.isChecked(term)
             id = '%s-%i' % (self.id, count)
             label = term.token
-            if schema.interfaces.ITitledTokenizedTerm.providedBy(term):
+            if ITerm.providedBy(term):
                 label = self.localizer.translate(term.title)
             self.items.append(
                 {'id':id, 'name':self.name, 'value':term.token,

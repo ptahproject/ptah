@@ -13,6 +13,8 @@ CHANGES
 
 - Added csrf protection
 
+- Added WidgetFactory
+
 - Use resource library api
 
 - Widget refactoring

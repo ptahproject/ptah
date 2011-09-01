@@ -1,6 +1,6 @@
-<div tal:attributes="class context.klass">
-  <ul class="z-listing">
-    <li tal:repeat="item context.items">
+<ul class="inputs-list">
+  <li tal:repeat="item context.items">
+    <label tal:attributes="for item['id']">
       <input type="radio"
              tal:define="checked item['checked']"
              tal:attributes="id item['id'];
@@ -15,11 +15,9 @@
                              alt context.alt;
                              accesskey context.accesskey;
                              checked python: checked and 'checked' or None" />
-      <label for="" tal:attributes="for item['id']">
-        <span class="label" tal:content="item['label']">Label</span>
-      </label>
-    </li>
-  </ul>
-</div>
+      <span>${item['label']}</span>
+    </label>
+  </li>
+</ul>
 <input name="field-empty-marker" type="hidden" value="1"
        tal:attributes="name string:${context.name}-empty-marker" />

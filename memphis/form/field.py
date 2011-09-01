@@ -127,11 +127,11 @@ class FieldWidgets(OrderedDict):
                 factory = getWidget(factory)
 
             if callable(factory):
-                widget = factory(field.node, field.typ)
+                widget = factory(field.node)
             else:
                 factory = getDefaultWidget(field.node)
                 if factory is not None:
-                    widget = factory(field.node, field.typ)
+                    widget = factory(field.node)
 
             if widget is None:
                 raise TypeError("Can't find widget for %s"%field)

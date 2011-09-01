@@ -7,6 +7,7 @@ from memphis.form.form import DisplayForm
 # widget
 from memphis.form.widget import Widget
 from memphis.form.widget import SequenceWidget
+from memphis.form.widget import WidgetFactory
 
 # widget registration
 from memphis.form.directive import widget
@@ -18,6 +19,9 @@ from memphis.form.field import Fields
 
 # buttons manager
 from memphis.form.button import Buttons
+
+# vocabulary
+from memphis.form.vocabulary import SimpleTerm, SimpleVocabulary
 
 # button
 from memphis.form.button import button

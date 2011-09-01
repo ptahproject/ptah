@@ -2,12 +2,44 @@
 import colander
 from zope import interface
 from zope.component import getMultiAdapter
-from zope.schema.interfaces import ITitledTokenizedTerm
-
 from webob.multidict import MultiDict
 
 from pagelets import FORM_INPUT
-from interfaces import IWidget, IDataManager, ISequenceWidget, ITerms
+from directive import getWidget, getDefaultWidget
+from interfaces import IWidget, IDataManager, ISequenceWidget, ITerm, IVocabulary
+
+
+class WidgetFactory(object):
+
+    def __init__(self, factory='', **kwargs):
+        self.factory = factory
+        self.kwargs = kwargs
+
+    def __call__(self, node):
+        widget = None
+
+        if self.factory:
+            factory = self.factory
+        else:
+            factory = node.widget
+
+        if isinstance(factory, basestring):
+            factory = getWidget(factory)
+
+        if callable(factory):
+            widget = factory(node)
+        else:
+            factory = getDefaultWidget(node)
+            if factory is not None:
+                widget = factory(node)
+
+        if widget is None:
+            raise TypeError("Can't find widget for %s"%node)
+
+        for attr, value in self.kwargs.items():
+            setattr(widget, attr, value)
+
+        return widget
 
 
 class Widget(object):
@@ -28,9 +60,9 @@ class Widget(object):
     params = MultiDict({})
     localizer = None
 
-    def __init__(self, node, typ):
+    def __init__(self, node):
         self.node = node
-        self.typ = typ
+        self.typ = node.typ
 
         self.name = node.name
         self.id = node.name.replace('.', '-')
@@ -82,12 +114,7 @@ class SequenceWidget(Widget):
     The sequence widget is used for select items from a sequence. Don't get
     confused, this widget does support to choose one or more values from a
     sequence. The word sequence is not used for the schema field, it's used
-    for the values where this widget can choose from.
-
-    This widget base class is used for build single or sequence values based
-    on a sequence which is in most use case a collection. e.g.
-    IList of IChoice for sequence values or IChoice for single values.
-    """
+    for the values where this widget can choose from."""
     interface.implements(ISequenceWidget)
 
     value = ()
@@ -104,7 +131,7 @@ class SequenceWidget(Widget):
             if token == self.noValueToken:
                 continue
             term = self.terms.getTermByToken(token)
-            if ITitledTokenizedTerm.providedBy(term):
+            if ITerm.providedBy(term):
                 value.append(self.localizer.translate(term.title))
             else:
                 value.append(term.value)
@@ -112,8 +139,11 @@ class SequenceWidget(Widget):
 
     def updateTerms(self):
         if self.terms is None:
-            self.terms = getMultiAdapter(
-                (self.content, self.node, self.node.typ, self), ITerms)
+            self.terms = getattr(self.node, 'vocabulary', None)
+            if self.terms is None:
+                self.terms = getMultiAdapter(
+                    (self.node, self.typ, self), IVocabulary)
+
         return self.terms
 
     def update(self):

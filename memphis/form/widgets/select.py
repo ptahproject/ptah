@@ -1,9 +1,9 @@
 """ Select/Multi select widget implementation """
-from zope import interface, schema
-from zope.schema.interfaces import ITitledTokenizedTerm
+from zope import interface
 
 from memphis import config, view
 from memphis.form import pagelets
+from memphis.form.interfaces import ITerm
 from memphis.form.widget import SequenceWidget
 from memphis.form.widgets import widget
 
@@ -47,7 +47,7 @@ class SelectWidget(widget.HTMLSelectWidget, SequenceWidget):
             selected = self.isSelected(term)
             id = '%s-%i' % (self.id, count)
             content = term.token
-            if ITitledTokenizedTerm.providedBy(term):
+            if ITerm.providedBy(term):
                 content = self.localizer.translate(term.title)
             items.append(
                 {'id':id, 'value':term.token, 'content':content,

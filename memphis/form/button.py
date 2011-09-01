@@ -2,7 +2,7 @@
 import sys, re
 import colander
 from zope import interface
-from zope.component import getSiteManager
+from pyramid.i18n import get_localizer
 
 from memphis import config
 from memphis.form.field import Field
@@ -84,6 +84,7 @@ class Actions(OrderedDict):
 
         self.form = form
         self.request = request
+        self.localizer = get_localizer(request)
 
     def update(self):
         content = self.content = self.form.getContent()
@@ -92,10 +93,9 @@ class Actions(OrderedDict):
         prefix = expandPrefix(self.form.prefix)
         prefix += expandPrefix(self.prefix)
         request = self.request
+        registry = request.registry
         params = self.form.getParams()
         context = self.form.getContext()
-
-        sm = getSiteManager()
 
         # Walk through each node, making a widget out of it.
         for field in self.form.buttons.values():
@@ -105,12 +105,11 @@ class Actions(OrderedDict):
             widget = None
             factory = field.widget
             if isinstance(factory, basestring):
-                widget = sm.queryMultiAdapter(
-                    (field, field.typ), IWidget, name=factory)
+                widget = registry.queryAdapter(field, IWidget, name=factory)
             elif callable(factory):
-                widget = factory(field, field.node)
+                widget = factory(field)
             else:
-                widget = sm.queryMultiAdapter((field, field.typ), IWidget)
+                widget = IWidget(field)
 
             # Step 3: Set the prefix for the widget
             widget.name = str(prefix + shortName)
@@ -125,6 +124,8 @@ class Actions(OrderedDict):
 
             # Step 6: Set some variables
             widget.params = params
+            widget.request = self.request
+            widget.localizer = self.localizer
 
             # Step 8: Update the widget
             widget.update()

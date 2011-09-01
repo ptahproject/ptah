@@ -56,14 +56,17 @@ class IDataManager(interface.Interface):
         """
 
 
-# term interfaces
-class ITerms(interface.Interface):
-    """ terms """
+# vocabulary/term interfaces
+class ITerm(interface.Interface):
+    """ term """
 
-    context = interface.Attribute('context')
-    field = interface.Attribute('Schema node')
-    typ = interface.Attribute('Schem type')
-    widget = interface.Attribute('Widget')
+    value = interface.Attribute('Value')
+    token = interface.Attribute('Token')
+    title = interface.Attribute('Title')
+
+
+class IVocabulary(interface.Interface):
+    """ vocabulary """
 
     def getTerm(value):
         """Return an ITitledTokenizedTerm object for the given value
@@ -92,14 +95,6 @@ class ITerms(interface.Interface):
 
     def __contains__(value):
         """Check wether terms containes the ``value``."""
-
-
-class IBoolTerms(ITerms):
-    """A specialization that handles boolean choices."""
-
-    trueLabel = interface.Attribute('True-value Label')
-
-    falseLabel = interface.Attribute('False-value Label')
 
 
 # ----[ Widgets ]------------------------------------------------------------
