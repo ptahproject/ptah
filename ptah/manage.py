@@ -31,21 +31,35 @@ class PtahModule(object):
         return True
 
 
+class PtahAccessManager(object):
+    """ default access manager """
+
+    def allowed(self, id):
+        if id and id in PTAH.managers:
+            return True
+        
+        if id:
+            return True
+
+        return False
+
+
 class PtahManageRoute(object):
     interface.implements(IPtahManageRoute)
 
     __name__ = 'ptah-manage'
     __parent__ = view.DefaultRoot()
 
+    accessManager = PtahAccessManager()
+
     def __init__(self, request):
         self.request = request
         self.registry = request.registry
 
         login = self.registry.getUtility(IAuthentication).getCurrentLogin()
-        if login and login in PTAH.managers:
-            pass
-
-        #raise HTTPForbidden()
+        
+        if not self.accessManager.allowed(login):
+            raise HTTPForbidden()
 
     def __getitem__(self, key):
         mod = self.registry.queryUtility(IPtahModule, key)

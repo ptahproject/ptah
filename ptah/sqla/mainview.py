@@ -13,8 +13,7 @@ Base = psa.get_base()
 class MainView(view.View):
     view.pyramidView(
         'index.html', ISQLAModule, 'ptah-manage', default=True, layout='',
-        template = view.template(
-            'ptah.sqla:templates/index.pt', nolayer=True))
+        template = view.template('ptah.sqla:templates/index.pt'))
 
     __doc__ = "sqlalchemy tables listing page."
     __intr_path__ = '/ptah-manage/sqla/index.html'
@@ -47,12 +46,15 @@ class MainView(view.View):
         return ("Table(%s)" % repr(table.name), columns)
 
     def update(self):
-        Base = psa.get_base()
-
         tables = []
 
-        for name, table in Base.metadata.tables.items():
-            tables.append((name, self.printTable(table)))
+        for id, (md, title) in self.context.metadata.items():
+            data = []
+            for name, table in md.tables.items():
+                data.append((name, self.printTable(table)))
+
+            data.sort()
+            tables.append((title, id, data))
 
         tables.sort()
         self.tables = tables

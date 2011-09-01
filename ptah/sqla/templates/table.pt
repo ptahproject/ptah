@@ -51,9 +51,8 @@
 	</ul>
       </div>
 
-      <tal:block condition="view.size">
-	${view.pagelet('form-actions', view)}
-      </tal:block>
+      <tal:block condition="view.size"
+	         content="structure view.pagelet('form-actions', view)" />
     </form>
   </div>
 </div>

@@ -2,13 +2,14 @@
   <h2>SQL Tables</h2>
 </div>
 
-<div class="row">
+<div class="row" tal:repeat="data view.tables">
   <div class="span16 column">
+    <h3>${data[0]}</h3>
     <table class="zebra-striped">
-      <tr tal:repeat="tb view.tables">
+      <tr tal:repeat="tb data[2]">
 	<td>
 	  <h4>
-	    <a href="${tb[0]}/">${tb[0]}</a>
+	    <a href="${data[1]}-${tb[0]}/">${tb[0]}</a>
 	  </h4>
 	  <p>
 	    <tal:block tal:repeat="rec tb[1][1]">

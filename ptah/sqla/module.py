@@ -18,8 +18,23 @@ class SQLAModule(ptah.PtahModule):
     title = 'SQLAlchemy'
     description = 'SQLAlchemy introspection module.'
 
+    metadata = {}
+
     def __getitem__(self, key):
-        return Table(metadata.tables[key], self, self.request)
+        try:
+            id, table = key.split('-', 1)
+        except:
+            raise KeyError(key)
+
+        md = self.metadata[id][0]
+        return Table(md.tables[table], self, self.request)
+
+    @classmethod
+    def addMetadata(cls, md, id, title=''):
+        cls.metadata[id] = [md, title or id.capitalize()]
+
+addMetadata = SQLAModule.addMetadata
+addMetadata(metadata, 'psqla', 'Pyramid sqla')
 
 
 class Table(object):

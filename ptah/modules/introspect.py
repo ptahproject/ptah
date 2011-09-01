@@ -1,9 +1,12 @@
 """ introspect module """
 import ptah
 import pkg_resources, inspect, os, sys
-from pyramid.interfaces import IRoutesMapper
+from pyramid.interfaces import IRoutesMapper, IRouteRequest
+from pyramid.interfaces import IViewClassifier, IExceptionViewClassifier
 
 from zope import interface
+from zope.interface.interface import InterfaceClass
+
 from memphis import config, view
 from memphis.config import directives
 from memphis.config.api import exclude, loadPackages
@@ -312,7 +315,6 @@ class RoutesView(view.View):
                 actions = directives.scan(pkg, seen, exclude)
 
                 for action in actions:
-                    
                     d = action.discriminator[0]
                     if d == 'memphis.view:route':
                         name, pattern, factory = action.args[:3]
@@ -334,11 +336,13 @@ class RoutesView(view.View):
                             viewactions.append(
                                 (route, name, context, factory, action))
 
+            sm = self.request.registry
+
             # add pyramid routes
-            for route in self.request.\
-                    registry.getUtility(IRoutesMapper).get_routes():
+            for route in sm.getUtility(IRoutesMapper).get_routes():
                 if route.name not in routes:
-                    routes[name] = (route.pattern,route.name,route.factory,[])
+                    routes[route.name] = (
+                        route.pattern, route.name, route.factory, [])
 
             # attach views to routes
             for route, name, context, factory, action in viewactions:
@@ -351,8 +355,32 @@ class RoutesView(view.View):
             routes = routes.values()
             routes.sort()
             self.routes = routes
-        else:
-            pass
+
+            # views
+            route_requests = [i for n, i in sm.getUtilitiesFor(IRouteRequest)]
+
+            views = []
+            data = sm.adapters._adapters[3]
+            for classifier, data in data.items():
+                if classifier in (IViewClassifier, IExceptionViewClassifier):
+                    for req, data2 in data.items():
+                        if req in route_requests:
+                            continue
+
+                        for context, data3 in data2.items():
+                            if isinstance(context, InterfaceClass):
+                                context = '%s.%s'%(
+                                    context.__module__, context.__name__)
+                            else:
+                                context = context.__name__
+
+                            for provides, adapters in data3.items():
+                                for name, factory in adapters.items():
+                                    views.append(
+                                        (context,name,classifier,req,factory))
+
+            views.sort()
+            self.views = views
 
 
 class SourceView(view.View):

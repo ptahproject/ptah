@@ -4,28 +4,49 @@
   </div>
 
   <div class="row">
-    <table class="zebra-stripe">
-      <tr tal:repeat="r view.routes">
-	<td>
-	  <h4>
-	    <a href="routes.html?route=${r[1]}">${r[0]}</a>
-	    ${r[1]} <small tal:content="r[2]" />
-	  </h4>
-	  <p>
-	    <ul>
-	      <li tal:repeat="v r[3]">
-		<a href="source.html?pkg=${v[1]}#sl-${v[2]}">
-		  ${v[0] or 'Route view'}
-		</a>
-		<tal:block content="v[3].__doc__" />
-		<tal:block tal:condition="v[4]">
-		  <br />Layer: ${v[4]}
-		</tal:block>
-	      </li>
-	    </ul>
-	  </p>
-	</td>
-      </tr>
-    </table>
+    <div class="span16 columns">
+      <table class="zebra-striped">
+	<tr tal:repeat="r view.routes">
+	  <td>
+	    <h4>
+	      <a href="routes.html?route=${r[1]}">${r[0]}</a>
+	      ${r[1]} <small tal:content="r[2]" />
+	    </h4>
+	    <p>
+	      <ul>
+		<li tal:repeat="v r[3]">
+		  <a href="source.html?pkg=${v[1]}#sl-${v[2]}">
+		    ${v[0] or 'Route view'}
+		  </a>
+		  <tal:block content="v[3].__doc__" />
+		  <tal:block tal:condition="v[4]">
+		    <br />Layer: ${v[4]}
+		  </tal:block>
+		</li>
+	      </ul>
+	    </p>
+	  </td>
+	</tr>
+      </table>
+    </div>
+  </div>
+</tal:block>
+
+<tal:block condition="view.routes">
+  <div class="page-header">
+    <h2>Views <small>registered pyramid views</small></h2>
+  </div>
+
+  <div class="row">
+    <div class="span16 columns">
+      <table class="zebra-striped">
+	<tr tal:repeat="r view.views">
+	  <td>
+	    <h4>${r[1] or 'Default view'} <small>for</small> ${r[0]}</h4>
+	    ${r[4]}
+	  </td>
+	</tr>
+      </table>
+    </div>
   </div>
 </tal:block>
