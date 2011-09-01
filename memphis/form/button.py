@@ -74,7 +74,7 @@ class Buttons(OrderedDict):
 
 class Actions(OrderedDict):
     """ Widget manager for Buttons """
-    config.adapts(IForm, interface.Interface)
+    config.adapter(IForm, interface.Interface)
     interface.implementsOnly(IActions)
 
     prefix = 'buttons.'

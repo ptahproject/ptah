@@ -83,7 +83,7 @@ class Fields(OrderedDict):
 
 class FieldWidgets(OrderedDict):
     interface.implements(IWidgets)
-    config.adapts(IForm, interface.Interface)
+    config.adapter(IForm, interface.Interface)
 
     prefix = 'widgets.'
     mode = FORM_INPUT

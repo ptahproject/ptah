@@ -1,4 +1,4 @@
-${view.include('jquery-ui')}
+<tal:block define="dummy view.include('jquery-ui')"/>
 <script>
   $(function() {
      $("#${context.id}-date" ).datepicker();

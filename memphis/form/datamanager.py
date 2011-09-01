@@ -8,7 +8,7 @@ from memphis.form.interfaces import IDataManager
 class AttributeField(object):
     """Attribute field."""
     interface.implements(IDataManager)
-    config.adapts(interface.Interface, colander.SchemaNode)
+    config.adapter(interface.Interface, colander.SchemaNode)
 
     def __init__(self, context, node):
         self.context = context
@@ -29,7 +29,7 @@ _marker = object()
 class DictionaryField(object):
     """Dictionary field."""
     interface.implements(IDataManager)
-    config.adapts(dict, colander.SchemaNode)
+    config.adapter(dict, colander.SchemaNode)
 
     def __init__(self, data, node):
         if not isinstance(data, dict):

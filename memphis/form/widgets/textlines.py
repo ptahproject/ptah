@@ -3,22 +3,17 @@ import colander
 from zope import interface
 
 from memphis import config, view
-from memphis.form import pagelets
+from memphis.form import pagelets, widget
 from memphis.form.widgets import textarea
 
 from interfaces import _, ITextLinesWidget
 
 
 class TextLinesWidget(textarea.TextAreaWidget):
-    """Input type sequence widget implementation."""
-    config.adapts(colander.SchemaNode, colander.Sequence)
-    config.adapts(colander.SchemaNode, colander.Sequence, name='textlines')
-    interface.implementsOnly(ITextLinesWidget)
+    __doc__ = _('Text area based widget, each line is treated as sequence element.')
 
-    __fname__ = 'textlines'
-    __title__ = _('Text lines widget')
-    __description__ = _('Text area based widget, '
-                        'each line is treated as sequence element.')
+    widget('textlines', _('Text lines widget'))
+    interface.implementsOnly(ITextLinesWidget)
 
 
 view.registerPagelet(

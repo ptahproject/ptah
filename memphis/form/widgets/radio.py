@@ -16,9 +16,6 @@ class RadioWidget(HTMLInputWidget, SequenceWidget):
     widget('radio', _('Radio widget'))
     interface.implementsOnly(IRadioWidget)
 
-    #config.adapts(colander.SchemaNode, colander.Bool, name='radio')
-    #config.adapts(schema.interfaces.IChoice, name='radio')
-
     klass = u'radio-widget'
     items = ()
 

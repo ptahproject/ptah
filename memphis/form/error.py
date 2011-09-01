@@ -5,7 +5,7 @@ from memphis.form.interfaces import _, IError, IWidgetError
 
 
 class FormErrorMessage(view.Message):
-    config.adapts(None, name='form-error')
+    config.adapter(None, name='form-error')
 
     formErrorsMessage = _(u'Please fix indicated errors.')
 

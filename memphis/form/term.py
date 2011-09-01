@@ -65,7 +65,7 @@ def ChoiceTerms(context, field, typ, widget):
 class ChoiceTermsVocabulary(Terms):
     """ITerms adapter for zope.schema.IChoice based implementations using
     vocabulary."""
-    config.adapts(
+    config.adapter(
         zope.interface.Interface,
         colander.SchemaNode,
         zope.schema.interfaces.IBaseVocabulary,
@@ -82,7 +82,7 @@ class ChoiceTermsVocabulary(Terms):
 
 class BoolTerms(Terms):
     """Default yes and no terms are used by default for IBool fields."""
-    config.adapts(
+    config.adapter(
         zope.interface.Interface,
         colander.SchemaNode,
         colander.Bool,
@@ -121,7 +121,7 @@ def CollectionTerms(context, request, form, field, widget):
 class CollectionTermsVocabulary(Terms):
     """ITerms adapter for zope.schema.ICollection based implementations using
     vocabulary."""
-    config.adapts(
+    config.adapter(
         zope.interface.Interface,
         zope.interface.Interface,
         zope.interface.Interface,

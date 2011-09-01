@@ -9,7 +9,7 @@ from interfaces import ISubmitWidget
 
 class SubmitWidget(button.ButtonWidget):
     """A submit button of a form."""
-    config.adapts(interfaces.IButton, None)
+    config.adapter(interfaces.IButton, None)
     interface.implementsOnly(ISubmitWidget)
 
     klass = u'btn submit-widget'
