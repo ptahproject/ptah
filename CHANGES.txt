@@ -22,6 +22,8 @@ CHANGES
 
 - Allow execute 'action' directive withing method declaration.
 
+- Removed 'adapts' directive, 'adapter' directive is unified
+
 
 0.6 (2011-06-29)
 ----------------

@@ -2,13 +2,11 @@
 
 from memphis.config.api import initialize
 
-from memphis.config.api import notify
 from memphis.config.api import cleanUp
 from memphis.config.api import addCleanup
 
 from memphis.config.directives import event
 from memphis.config.directives import action
-from memphis.config.directives import adapts
 from memphis.config.directives import adapter
 from memphis.config.directives import handler
 from memphis.config.directives import utility

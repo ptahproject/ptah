@@ -59,8 +59,8 @@ class TestAdaptsDirective(BaseTesting):
         global TestClass
 
         class TestClass(object):
-            config.adapts(IContext)
-            config.adapts(IContext)
+            config.adapter(IContext)
+            config.adapter(IContext)
             interface.implements(IAdapter)
 
         try:
@@ -77,7 +77,7 @@ class TestAdaptsDirective(BaseTesting):
         global TestClass
 
         class TestClass(object):
-            config.adapts(IContext)
+            config.adapter(IContext)
             interface.implements(IAdapter)
 
         self._init_memphis()
@@ -93,7 +93,7 @@ class TestAdaptsDirective(BaseTesting):
         global TestClass
 
         class TestClass(object):
-            config.adapts(IContext, name='test')
+            config.adapter(IContext, name='test')
             interface.implements(IAdapter)
 
         self._init_memphis()
@@ -108,7 +108,7 @@ class TestAdaptsDirective(BaseTesting):
         global TestClass
 
         class TestClass(object):
-            config.adapts(IContext, IContext2)
+            config.adapter(IContext, IContext2)
             interface.implements(IAdapter)
 
         self._init_memphis()
@@ -123,7 +123,7 @@ class TestAdaptsDirective(BaseTesting):
         global TestClass
 
         class TestClass(object):
-            config.adapts(IContext, IContext2, name='test')
+            config.adapter(IContext, IContext2, name='test')
             interface.implements(IAdapter)
 
         self._init_memphis()
@@ -138,7 +138,7 @@ class TestAdaptsDirective(BaseTesting):
         global TestClass
 
         class TestClass(object):
-            config.adapts(IContext)
+            config.adapter(IContext)
             interface.implements(IAdapter)
 
         self._init_memphis()

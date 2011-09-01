@@ -13,24 +13,6 @@ def action(func):
     return func
 
 
-def adapter(*required, **kw):
-    info = DirectiveInfo(allowed_scope=('module', 'function call'))
-
-    required = tuple(required)
-    name = kw.get('name', '')
-
-    def wrapper(func):
-        info.attach(
-            Action(
-                _register,
-                ('registerAdapter', func, required), {'name': name},
-                discriminator = ('memphis.config:adapter', 
-                                 required, _getProvides(func), name))
-            )
-        return func
-    return wrapper
-
-
 class IEventDescriptor(interface.Interface):
     """ event descriptor """
 
@@ -38,22 +20,25 @@ class IEventDescriptor(interface.Interface):
 
     title = interface.Attribute('Event title')
 
+    category = interface.Attribute('Event category')
+
     instance = interface.Attribute('Event class or interface')
 
 
 class EventDescriptor(object):
     interface.implements(IEventDescriptor)
 
-    def __init__(self, inst, title):
+    def __init__(self, inst, title, category):
         self.instance = inst
         self.title = title
+        self.category = category
         self.description = inst.__doc__
         self.name = '%s.%s'%(inst.__module__, inst.__name__)
 
 
 events = {}
 
-def event(title=''):
+def event(title='', category=''):
     info = DirectiveInfo(allowed_scope=('class',))
 
     def descriminator(action):
@@ -61,18 +46,18 @@ def event(title=''):
 
     info.attach(
         ClassAction(
-            _event, (title,),
+            _event, (title, category),
             discriminator = descriminator)
         )
 
-def _event(klass, title):
-    ev = EventDescriptor(klass, title)
+def _event(klass, title, category):
+    ev = EventDescriptor(klass, title, category)
     events[klass] = ev
     events[ev.name] = ev
 
 
-def adapts(*required, **kw):
-    info = DirectiveInfo(allowed_scope=('class',))
+def adapter(*required, **kw):
+    info = DirectiveInfo()
 
     required = tuple(required)
     name = kw.get('name', '')
@@ -81,11 +66,23 @@ def adapts(*required, **kw):
         return ('memphis.config:adapter', 
                 required, _getProvides(action.info.context), name)
 
-    info.attach(
-        ClassAction(
-            _adapts, (required, name),
-            discriminator = descriminator)
-        )
+    if info.scope in ('module', 'function call'): # function decorator
+        def wrapper(func):
+            info.attach(
+                Action(
+                    _register,
+                    ('registerAdapter', func, required), {'name': name},
+                    discriminator = ('memphis.config:adapter', 
+                                     required, _getProvides(func), name))
+                )
+            return func
+        return wrapper
+    else:
+        info.attach(
+            ClassAction(
+                _adapts, (required, name),
+                discriminator = descriminator)
+            )
 
 
 def utility(provides=None, name=''):
