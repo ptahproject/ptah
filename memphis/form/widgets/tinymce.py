@@ -11,12 +11,12 @@ class TinymceWidget(TextAreaWidget):
     __doc__ = _(u'TinyMCE Text Area input widget')
 
     widget('tinymce', _(u'TinyMCE widget'))
-    interface.implements(ITinymceWidget)
+    interface.implementsOnly(ITinymceWidget)
 
     klass = u'tinymce-widget'
 
     width = '400px'
-    height = '200px'
+    height = '300px'
     theme = "advanced"
 
 
