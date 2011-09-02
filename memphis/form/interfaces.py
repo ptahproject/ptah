@@ -115,6 +115,7 @@ class IWidget(interface.Interface):
     value = interface.Attribute('Value')
     params = interface.Attribute('Request params')
     localizer = interface.Attribute('Localizer')
+    template = interface.Attribute('Template')
 
     content = interface.Attribute('Widget content')
     context = interface.Attribute('Widget context')
@@ -137,6 +138,10 @@ class IWidget(interface.Interface):
 
     def update():
         """Setup all of the widget information used for displaying."""
+
+    def render(request):
+        """Render widget. First it tring to use template. If template is
+        not set then it uses one of the pagelets."""
 
 
 class ISequenceWidget(IWidget):

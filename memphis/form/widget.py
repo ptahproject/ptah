@@ -1,5 +1,6 @@
 """ Widget implementation """
 import colander
+from memphis import view
 from zope import interface
 from zope.component import getMultiAdapter
 from webob.multidict import MultiDict
@@ -59,6 +60,7 @@ class Widget(object):
     context = None
     params = MultiDict({})
     localizer = None
+    template = None
 
     def __init__(self, node):
         self.node = node
@@ -103,6 +105,16 @@ class Widget(object):
 
     def extract(self, default=colander.null):
         return self.params.get(self.name, default)
+
+    def render(self, request):
+        if self.template is not None:
+            return self.template(
+                view = self,
+                context = self.context,
+                form = self.form,
+                request = self.request)
+
+        return view.renderPagelet(self.mode, self, request)
 
     def __repr__(self):
         return '<%s %r>' % (self.__class__.__name__, self.name)
