@@ -50,8 +50,8 @@ class DatetimeWidget(HTMLTextInputWidget, Widget):
     date_part = colander.null
     tzinfo = None
 
-    def __init__(self, node, typ):
-        super(DatetimeWidget, self).__init__(node, typ)
+    def __init__(self, node):
+        super(DatetimeWidget, self).__init__(node)
 
         self.date_name = '%s.date'%node.name
         self.time_name = '%s.time'%node.name

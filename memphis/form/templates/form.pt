@@ -5,9 +5,10 @@
       method="${context.method}" enctype="${context.enctype}"
       accept="${context.accept}" acceptCharset="${context.acceptCharset}"
       tal:attributes="autocomplete getattr(context, 'autocomplete', None)">
-  
-  <fieldset tal:condition="context.widgets">
-    <tal:block tal:repeat="widget context.widgets.values()"
+
+  <fieldset tal:repeat="fieldset context.widgets.fieldsets">
+    <legend tal:condition="fieldset[0].title">${fieldset[0].title}</legend>
+    <tal:block tal:repeat="widget fieldset[1]"
 	       tal:content="structure view.pagelet('form-widget',widget)" />
   </fieldset>
   

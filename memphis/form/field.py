@@ -166,6 +166,28 @@ class FieldWidgets(OrderedDict):
             widget.__name__ = field.name
             self[field.name] = widget
 
+        keys = []
+        self.fieldsets = fieldsets = []
+        for schema in self.form.fields.schemas:
+            if not getattr(schema, 'fieldset', False):
+                continue
+
+            fields = []
+            for node in schema.children:
+                if node.name in self:
+                    keys.append(node.name)
+                    fields.append(self[node.name])
+
+            if fields:
+                fieldsets.append((schema, fields))
+
+        fields = []
+        for name, field in self.items():
+            if name not in keys:
+                fields.append(field)
+
+        fieldsets.insert(0, (colander.SchemaNode(colander.Mapping()), fields))
+
     def extract(self, setErrors=True):
         data = {}
         sm = self.request.registry
