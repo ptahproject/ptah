@@ -24,7 +24,7 @@ class Button(Field):
 
     def __init__(self, name='submit', title=None, type='submit', value=None,
                  disabled=False, accessKey = None,
-                 action=None, actype=AC_DEFAULT):
+                 action=None, actype=AC_DEFAULT, condition=None):
         if title is None:
             title = name.capitalize()
         name = re.sub(r'\s', '_', name)
@@ -44,6 +44,7 @@ class Button(Field):
         self.action = action
         self.required = False
         self.actype = actype
+        self.condition = condition
 
     def __repr__(self):
         return '<%s %r %r>' %(
@@ -87,18 +88,21 @@ class Actions(OrderedDict):
         self.localizer = get_localizer(request)
 
     def update(self):
-        content = self.content = self.form.getContent()
-
-        # Create a unique prefix.
-        prefix = expandPrefix(self.form.prefix)
-        prefix += expandPrefix(self.prefix)
+        form = self.form
+        content = self.content = form.getContent()
+        params = form.getParams()
         request = self.request
         registry = request.registry
-        params = self.form.getParams()
-        context = self.form.getContext()
+
+        # Create a unique prefix.
+        prefix = expandPrefix(form.prefix)
+        prefix += expandPrefix(self.prefix)
 
         # Walk through each node, making a widget out of it.
         for field in self.form.buttons.values():
+            if field.condition and not field.condition(form):
+                continue
+            
             # Step 2: Get the widget for the given field.
             shortName = field.name
 
@@ -116,7 +120,6 @@ class Actions(OrderedDict):
             widget.id = str(prefix + shortName).replace('.', '-')
 
             # Step 4: Set the content
-            widget.context = context
             widget.content = content
 
             # Step 5: Set the form
@@ -136,10 +139,16 @@ class Actions(OrderedDict):
             self[shortName] = widget
 
     def execute(self):
+        executed = False
         for action in self.values():
             val = action.extract()
             if val is not colander.null:
+                executed = True
                 action.node(self.form)
+                
+        if executed:
+            self.clear()
+            self.update()
 
 
 def button(title, **kwargs):
@@ -148,18 +157,13 @@ def button(title, **kwargs):
     if 'name' not in kwargs:
         kwargs['name'] = createId(title)
 
-    # Extract directly provided interfaces:
-    provides = kwargs.pop('provides', ())
-
     # Create button and add it to the button manager
     button = Button(**kwargs)
-    interface.alsoProvides(button, provides)
 
     # install buttons manager
-    frame = sys._getframe(1)
-    f_locals = frame.f_locals
-    buttons = f_locals.setdefault('buttons', Buttons())
-    f_locals['buttons'] += Buttons(button)
+    f_locals = sys._getframe(1).f_locals
+    f_locals['buttons'] = \
+        f_locals.setdefault('buttons', Buttons()) + Buttons(button)
 
     def createHandler(func):
         button.action = func

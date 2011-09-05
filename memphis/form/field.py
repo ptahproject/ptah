@@ -154,7 +154,6 @@ class FieldWidgets(OrderedDict):
         prefix += expandPrefix(self.prefix)
         request = self.request
         params = self.form.getParams()
-        context = self.form.getContext()
 
         sm = self.request.registry
 
