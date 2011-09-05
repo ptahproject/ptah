@@ -16,42 +16,42 @@ MAIL = config.registerSettings(
         title = 'Host',
         description = 'SMTP Server host name.',
         default = 'localhost'),
-      
+
     config.SchemaNode(
         colander.Int(),
         name = 'port',
         title = 'Port',
         description = 'SMTP Server port number.',
         default = 25),
-    
+
     config.SchemaNode(
         colander.Str(),
         name = 'username',
         title = 'Username',
         description = 'SMTP Auth username.',
         default = ''),
-    
+
     config.SchemaNode(
         colander.Str(),
         name = 'password',
         title = 'Password',
         description = 'SMTP Auth password.',
         default = ''),
-    
+
     config.SchemaNode(
         colander.Bool(),
         name = 'no_tls',
         title = 'No tls',
         description = 'Disable TLS.',
         default = False),
-    
+
     config.SchemaNode(
         colander.Bool(),
         name = 'force_tls',
         title = 'Force TLS',
         description = 'Force use TLS.',
         default = False),
-    
+
     config.SchemaNode(
         colander.Bool(),
         name = 'debug',

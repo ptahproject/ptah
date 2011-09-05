@@ -16,7 +16,7 @@
     </a>.
   </p>
 
-  <p>
+  <p tal:condition="view.CROWD.registration">
     <tal:block i18n:translate="">New user? If you do not have an account here, </tal:block>
     <a href="${app_url}/join.html">
       head over to the registration form.</a>

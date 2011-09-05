@@ -24,7 +24,7 @@ class IAuthenticationPlugin(interface.Interface):
 
     def isAnonymous():
         """ check if current use is anonymous """
-    
+
     def getPrincipal(id):
         """ return principal object for id """
 

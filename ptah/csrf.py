@@ -22,6 +22,6 @@ class CSRFService(object):
 
     def get(self, t):
         return token.tokenService.get(TOKEN_TYPE, t)
-        
+
     def remove(self, t):
         return token.tokenService.remove(t)

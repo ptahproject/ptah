@@ -17,12 +17,12 @@ class PreferencesPanel(view.DefaultRoot):
     __parent__ = None
 
 
-view.registerRoute('ptah-prefs', '/preferences/*traverse', 
+view.registerRoute('ptah-prefs', '/preferences/*traverse',
                    PreferencesPanel, use_global_views=True)
 
 
 class DefaultView(form.Form):
-    view.pyramidView('index.html', IPreferencesPanel, 'ptah-prefs', 
+    view.pyramidView('index.html', IPreferencesPanel, 'ptah-prefs',
                      default=True, layout='ptah-crowd')
 
     label = 'Preferences'

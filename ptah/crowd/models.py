@@ -10,7 +10,7 @@ Base = psa.get_base()
 Session = psa.get_session()
 
 
-class User(Base):
+class CrowdUser(Base):
 
     __tablename__ = 'ptah_crowd'
 
@@ -71,7 +71,7 @@ class UserProps(Base):
 
     def __init__(self, user):
         super(UserProps, self).__init__()
-    
+
         self.user = user
 
     @classmethod

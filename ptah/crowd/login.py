@@ -8,6 +8,7 @@ from ptah.mail import MAIL
 from ptah.interfaces import IAuthentication
 
 from interfaces import _
+from settings import CROWD
 from schemas import LoginSchema
 
 view.registerRoute('ptah-login', '/login.html')
@@ -52,6 +53,8 @@ class LoginForm(form.Form):
 
     def update(self):
         super(LoginForm, self).update()
+
+        self.CROWD = CROWD
 
         request = self.request
         auth = getUtility(IAuthentication)

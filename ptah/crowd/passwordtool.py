@@ -14,7 +14,7 @@ from memphis import config
 from ptah import token
 from ptah.interfaces import IAuthentication
 
-from models import User, Session
+from models import CrowdUser, Session
 from interfaces import _, IPasswordTool
 
 
@@ -96,7 +96,7 @@ class PasswordTool(object):
 
         if data is not None:
             principal = getUtility(IAuthentication).getUserByLogin(data)
-            user = User.get(principal.login)
+            user = CrowdUser.get(principal.login)
             if user is not None:
                 user.password = self.encodePassword(password)
                 token.tokenService.remove(passcode)

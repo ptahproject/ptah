@@ -2,7 +2,7 @@
 import colander
 from zope.component import getUtility
 
-from models import User
+from models import CrowdUser
 from interfaces import _, IPasswordTool
 
 def lower(s):
@@ -11,7 +11,7 @@ def lower(s):
     return s
 
 def checkLogin(node, login):
-    if login and User.get(login) is not None:
+    if login and CrowdUser.get(login) is not None:
         raise colander.Invalid(node, _('Login already is in use.'))
 
 
@@ -25,7 +25,7 @@ def passwordSchemaValidator(node, appstruct):
     if appstruct['password'] is colander.required or \
        appstruct['confirm_password'] is colander.required:
         return
-    
+
     if appstruct['password'] and appstruct['confirm_password']:
         if appstruct['password'] != appstruct['confirm_password']:
             raise colander.Invalid(

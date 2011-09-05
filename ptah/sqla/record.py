@@ -8,7 +8,7 @@ from interfaces import IRecord, ITable
 
 
 class EditRecord(form.Form):
-    view.pyramidView('index.html', IRecord, 
+    view.pyramidView('index.html', IRecord,
                      'ptah-manage', default=True, layout='')
 
     __doc__ = "Edit table record."
