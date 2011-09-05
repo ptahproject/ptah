@@ -1,15 +1,7 @@
 """ site registration form """
 from zope import interface
 from pyramid import security
-<<<<<<< HEAD
-from webob.exc import HTTPFound
 from memphis import view, form
-from ptah.interfaces import IAuthentication
-
-import validation
-from interfaces import _, IPasswordTool, IPreferencesGroup
-from models import Session, User
-=======
 from webob.exc import HTTPFound, HTTPForbidden
 from ptah.interfaces import IAuthentication
 
@@ -17,7 +9,6 @@ import validation
 from interfaces import _, IPasswordTool
 from settings import CROWD
 from models import Session, CrowdUser
->>>>>>> origin/master
 from schemas import RegistrationSchema, PasswordSchema
 
 

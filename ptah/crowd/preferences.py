@@ -3,11 +3,9 @@ from zope import interface
 from pyramid import security
 from memphis import config, view, form
 
-from models import Session, User
+from models import CrowdUser
 from schemas import RegistrationSchema, PasswordSchema
 from interfaces import IPreferencesPanel, IPreferencesGroup
-
-from models import User
 
 
 class PreferencesPanel(view.DefaultRoot):
@@ -46,7 +44,7 @@ class DefaultView(form.Form):
 
         id = security.authenticated_userid(self.request)
 
-        user = User.get(id)
+        user = CrowdUser.get(id)
         self.content = content = {'': user}
 
         for prop in self.props:

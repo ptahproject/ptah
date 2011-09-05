@@ -7,8 +7,8 @@ from pyramid.threadlocal import get_current_request
 
 from memphis import config
 from ptah.interfaces import IAuthentication
-#from ptah.crowd.interfaces import IPasswordTool
-#from ptah.crowd.models import CrowdUser
+from ptah.crowd.interfaces import IPasswordTool
+from ptah.crowd.models import CrowdUser
 
 
 class Principal(object):
@@ -21,10 +21,9 @@ class Principal(object):
 
 
 class Authentication(object):
-    #config.utility(IAuthentication)
+    config.utility(IAuthentication)
 
     def authenticate(self, login, password):
-        return
         user = CrowdUser.get(login)
 
         if user is not None:
@@ -43,13 +42,11 @@ class Authentication(object):
                 pass
 
     def getUserByLogin(self, login):
-        return
         user = CrowdUser.get(login)
         if user is not None:
             return Principal(user.id, user.name, user.login, user.suspended)
 
     def getCurrentUser(self):
-        return
         id = security.authenticated_userid(get_current_request())
         if id:
             return self.getUserByLogin(id)

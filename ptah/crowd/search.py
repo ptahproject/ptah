@@ -50,26 +50,26 @@ class SearchUsers(form.Form):
 
         if 'activate' in request.POST and uids:
             Session.query(CrowdUser).filter(
-                User.id.in_(uids)).update({'suspended': False}, False)
+                CrowdUser.id.in_(uids)).update({'suspended': False}, False)
             self.message("Selected accounts have been activated.", 'info')
 
         if 'suspend' in request.POST and uids:
             Session.query(CrowdUser).filter(
-                User.id.in_(uids)).update({'suspended': True}, False)
+                CrowdUser.id.in_(uids)).update({'suspended': True}, False)
             self.message("Selected accounts have been suspended.", 'info')
 
         if 'validate' in request.POST and uids:
             Session.query(CrowdUser).filter(
-                User.id.in_(uids)).update({'validated': True}, False)
+                CrowdUser.id.in_(uids)).update({'validated': True}, False)
             self.message("Selected accounts have been validated.", 'info')
 
         term = request.session.get('ptah-search-term', '')
         if term:
-            self.users = Session.query(User) \
+            self.users = Session.query(CrowdUser) \
                 .filter(CrowdUser.email.contains('%%%s%%'%term))\
                 .order_by(asc('name')).all()
         else:
-            self.size = Session.query(User).count()
+            self.size = Session.query(CrowdUser).count()
 
             try:
                 current = int(request.params.get('batch', None))

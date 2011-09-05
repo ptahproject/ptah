@@ -36,11 +36,11 @@ class CrowdUser(Base):
 
     @classmethod
     def get(cls, login):
-        return Session.query(User).filter(cls.login==login).first()
+        return Session.query(cls).filter(cls.login==login).first()
 
     @classmethod
     def getById(cls, id):
-        return Session.query(User).filter(cls.id==id).first()
+        return Session.query(cls).filter(cls.id==id).first()
 
 
 class UserActivity(Base):
