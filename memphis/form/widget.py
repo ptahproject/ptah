@@ -88,8 +88,13 @@ class Widget(object):
             #              content is to be used to extract a value, get
             #              it now via a data manager.
             if self.content is not None:
-                value = getMultiAdapter(
-                    (self.content, self.node), IDataManager).query()
+                if type(self.content) is dict and self.fieldset in self.content:
+                    value = getMultiAdapter(
+                        (self.content[self.fieldset], self.node),
+                        IDataManager).query()
+                else:
+                    value = getMultiAdapter(
+                        (self.content, self.node), IDataManager).query()
 
             # Step 1.2.2: If we still do not have a value, we can always use
             #             the default value of the node, id set

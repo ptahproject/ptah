@@ -15,7 +15,7 @@ from memphis.form.directive import registerWidget
 from memphis.form.directive import registerDefaultWidget
 
 # fields manager
-from memphis.form.field import Fields
+from memphis.form.field import Fields, Fieldset
 
 # buttons manager
 from memphis.form.button import Buttons
