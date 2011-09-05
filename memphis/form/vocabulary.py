@@ -24,7 +24,7 @@ class SimpleTerm(object):
 
     def __init__(self, value, token=None, title=None):
         """Create a term for value and token. If token is omitted,
-        str(value) is used for the token.  If title is provided, 
+        str(value) is used for the token.  If title is provided,
         term implements ITitledTokenizedTerm.
         """
         self.value = value
@@ -114,7 +114,7 @@ class BoolVocabulary(SimpleVocabulary):
         super(BoolVocabulary, self).__init__(
             SimpleTerm(True, 'true',  _('yes')),
             SimpleTerm(False, 'false',  _('no')))
-        
+
         self.node = node
         self.typ = typ
         self.widget = widget

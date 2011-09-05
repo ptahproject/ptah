@@ -36,7 +36,7 @@ view.registerPagelet(
 
 class DatetimeWidget(HTMLTextInputWidget, Widget):
     __doc__ = _(u'DateTime input widget with JQuery Datepicker.')
-    
+
     widget('datetime', 'DateTime widget')
     interface.implementsOnly(IDatetimeWidget)
 

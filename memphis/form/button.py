@@ -102,7 +102,7 @@ class Actions(OrderedDict):
         for field in self.form.buttons.values():
             if field.condition and not field.condition(form):
                 continue
-            
+
             # Step 2: Get the widget for the given field.
             shortName = field.name
 
@@ -145,7 +145,7 @@ class Actions(OrderedDict):
             if val is not colander.null:
                 executed = True
                 action.node(self.form)
-                
+
         if executed:
             self.clear()
             self.update()

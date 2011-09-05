@@ -38,7 +38,7 @@ class Fieldset(OrderedDict):
         super(Fieldset, self).__init__()
 
         node = args[0]
-        
+
         self.name = node.name
         self.legend = node.title
         self.names = []
@@ -74,7 +74,7 @@ class Fieldset(OrderedDict):
     def append(self, *args, **kwargs):
         omit = kwargs.get('omit', ())
         select = kwargs.get('select', ())
-        
+
         for node in args:
             self.schemas.append(node)
 
@@ -84,7 +84,7 @@ class Fieldset(OrderedDict):
                         continue
                     if select and snode.name not in select:
                         continue
-                    
+
                     self.names.append('%s%s'%(self.prefix, snode.name))
 
                     if isinstance(snode.typ, colander.Mapping):
@@ -119,7 +119,7 @@ class Fields(Fieldset):
     def __init__(self, *args, **kwargs):
         super(Fields, self).__init__(
             colander.SchemaNode(colander.Mapping()))
-        
+
         for arg in args:
             if isinstance(arg, colander._SchemaMeta):
                 arg = arg()
@@ -248,7 +248,7 @@ class FieldWidgets(OrderedDict):
                     widget.error = error
 
             data[widget.__name__] = value
-        
+
         data = self.form.fields.unflatten(data)
 
         # validate against schemas

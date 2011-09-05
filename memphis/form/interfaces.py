@@ -287,7 +287,7 @@ class ICSRFService(interface.Interface):
         """ Generate csrf token. """
 
     def get(token):
-        """ Get data for csrf token. This is form specific, 
+        """ Get data for csrf token. This is form specific,
         but usually it is form id."""
 
     def remove(token):

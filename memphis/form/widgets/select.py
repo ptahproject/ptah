@@ -17,7 +17,7 @@ class SelectWidget(HTMLSelectWidget, SequenceWidget):
 
     klass = u'select-widget'
     prompt = False
-    
+
     widget('select', _('Select widget'))
 
     noValueMessage = _('no value')
