@@ -40,7 +40,14 @@ class IField(interface.Interface):
 # ----[ Data Managers ]------------------------------------------------------
 
 class IDataManager(interface.Interface):
-    """ """
+    """ data manager """
+
+    def append(name, data):
+        """ append named data """
+
+    def dataset(name):
+        """ return named data """
+
 
 class IFieldDataManager(interface.Interface):
     """Field data manager."""

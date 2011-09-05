@@ -3,7 +3,7 @@ from zope import interface
 from pyramid.i18n import get_localizer
 
 from memphis import config
-from memphis.form.util import expandPrefix, OrderedDict
+from memphis.form.util import OrderedDict
 from memphis.form.error import Error, WidgetError
 from memphis.form.pagelets import FORM_INPUT, FORM_DISPLAY
 from memphis.form.interfaces import \
@@ -19,14 +19,12 @@ class Field(object):
     css = ''
     widget = None
 
-    def __init__(self, node, name=None, prefix='', mode=None, readonly=None):
+    def __init__(self, node, name=None, mode=None, readonly=None):
         self.typ = node.typ
         self.node = node
         if name is None:
             name = node.name
-        self.name = expandPrefix(prefix) + name
-        self.prefix = prefix
-
+        self.name = name
         self.mode = mode
 
         if readonly is None:
@@ -143,6 +141,8 @@ class FieldWidgets(OrderedDict):
     prefix = 'widgets.'
     mode = FORM_INPUT
     errors = ()
+    content = None
+    fieldsets = ()
 
     def __init__(self, form, request):
         super(FieldWidgets, self).__init__()
@@ -152,15 +152,16 @@ class FieldWidgets(OrderedDict):
         self.localizer = get_localizer(request)
 
     def update(self):
-        content = self.content = IDataManager(self.form.getContent())
-
+        content = self.form.getContent()
+        if content is not None:
+            self.content = content = IDataManager(content)
+                
         # Create a unique prefix.
-        prefix = expandPrefix(self.form.prefix)
-        prefix += expandPrefix(self.prefix)
-        request = self.request
-        params = self.form.getParams()
+        prefix = '%s%s'%(self.form.prefix, self.prefix)
 
-        sm = self.request.registry
+        request = self.request
+        sm = request.registry
+        params = self.form.getParams()
 
         self.fieldsets = fieldsets = []
 
@@ -191,13 +192,14 @@ class FieldWidgets(OrderedDict):
                 # Step 2: Set the prefix for the widget
                 name = '%s%s'%(fieldset.prefix, field.name)
 
-                widget.id = ('%s%s'%(self.prefix, name)).replace('.', '-')
+                widget.id = ('%s%s'%(prefix, name)).replace('.', '-')
                 widget.name = name
                 widget.fieldset = fieldset.name
                 widget.fieldname = field.name
 
                 # Step 3: Set the content
-                widget.content = content.dataset(fieldset.name)
+                if content is not None:
+                    widget.content = content.dataset(fieldset.name)
 
                 # Step 4: Set the form
                 widget.form = self.form
@@ -208,13 +210,12 @@ class FieldWidgets(OrderedDict):
                 widget.localizer = self.localizer
 
                 # Step 6: Set the mode of the widget
-                mode = self.mode
                 if field.mode is not None:
-                    mode = field.mode
+                    widget.mode = field.mode
                 elif field.readonly:
-                    mode = FORM_DISPLAY
-
-                widget.mode = mode
+                    widget.mode = FORM_DISPLAY
+                else:
+                    widget.mode = self.mode
 
                 # Step 7: Update the widget
                 widget.update()

@@ -20,16 +20,6 @@ def createCSSId(name):
                         for char in name))
 
 
-def expandPrefix(prefix):
-    """Expand prefix string by adding a trailing period if needed.
-
-    expandPrefix(p) should be used instead of p+'.' in most contexts.
-    """
-    if prefix and not prefix.endswith('.'):
-        return prefix + '.'
-    return prefix
-
-
 def getWidgetById(form, id):
     """Get a widget by it's rendered DOM element id."""
     # convert the id to a name

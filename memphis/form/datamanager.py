@@ -5,18 +5,18 @@ from memphis import config
 from memphis.form.interfaces import IDataManager, IFieldDataManager
 
 
-class DataManager(object):
+class DataManager(dict):
     interface.implements(IDataManager)
     config.adapter(interface.Interface)
 
     def __init__(self, default):
-        self.datasets = {'': IFieldDataManager(default)}
-    
+        self[''] = IFieldDataManager(default)
+
     def append(self, name, data):
-        self.datasets[name] = IFieldDataManager(data)
+        self[name] = IFieldDataManager(data)
 
     def dataset(self, name):
-        return self.datasets[name]
+        return self[name]
 
 
 class AttributeField(object):

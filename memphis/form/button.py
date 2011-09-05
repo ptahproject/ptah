@@ -6,7 +6,7 @@ from pyramid.i18n import get_localizer
 
 from memphis import config
 from memphis.form.field import Field
-from memphis.form.util import createId, expandPrefix, OrderedDict
+from memphis.form.util import createId, OrderedDict
 from memphis.form.interfaces import IForm, IButton, IActions, IWidget
 
 AC_DEFAULT = 0
@@ -95,8 +95,7 @@ class Actions(OrderedDict):
         registry = request.registry
 
         # Create a unique prefix.
-        prefix = expandPrefix(form.prefix)
-        prefix += expandPrefix(self.prefix)
+        prefix = '%s%s'%(form.prefix, self.prefix)
 
         # Walk through each node, making a widget out of it.
         for field in self.form.buttons.values():
