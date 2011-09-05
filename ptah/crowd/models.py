@@ -43,6 +43,42 @@ class User(Base):
         return Session.query(User).filter(cls.id==id).first()
 
 
+class UserActivity(Base):
+
+    __tablename__ = 'ptah_crowd_activity'
+
+    id = sa.Column(sa.Integer, primary_key=True)
+    user = sa.Column(sa.Integer)
+    date = sa.Column(sa.DateTime)
+    type = sa.Column(sa.Unicode(10))
+
+    def __init__(self, user, type):
+        super(UserActivity, self).__init__()
+
+        self.user = user
+        self.date = datetime.now()
+        self.type = type
+
+
+class UserProps(Base):
+
+    __tablename__ = 'ptah_crowd_testprops'
+
+    id = sa.Column(sa.Integer, primary_key=True)
+    user = sa.Column(sa.Integer)
+    date = sa.Column(sa.DateTime)
+    title = sa.Column(sa.Unicode(10))
+
+    def __init__(self, user):
+        super(UserProps, self).__init__()
+    
+        self.user = user
+
+    @classmethod
+    def get(cls, id):
+        return Session.query(cls).filter(cls.user==id).first()
+
+
 @config.handler(config.SettingsInitialized)
 def initialize(ev):
     # Create all tables

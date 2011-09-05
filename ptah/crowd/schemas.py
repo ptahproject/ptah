@@ -22,6 +22,10 @@ def passwordValidator(node, appstruct):
 
 
 def passwordSchemaValidator(node, appstruct):
+    if appstruct['password'] is colander.required or \
+       appstruct['confirm_password'] is colander.required:
+        return
+    
     if appstruct['password'] and appstruct['confirm_password']:
         if appstruct['password'] != appstruct['confirm_password']:
             raise colander.Invalid(
@@ -34,7 +38,7 @@ def passwordSchemaValidator(node, appstruct):
 
 class RegistrationSchema(colander.Schema):
 
-    fullname = colander.SchemaNode(
+    name = colander.SchemaNode(
         colander.Str(),
         title=_('Full Name'),
         description=_(u"e.g. John Smith. This is how users "
@@ -89,8 +93,8 @@ PasswordSchema = colander.SchemaNode(
     colander.SchemaNode(
         colander.Str(),
         name = 'password',
-        title = _(u'New password'),
-        description = _(u'Enter new password. '\
+        title = _(u'Password'),
+        description = _(u'Enter password. '\
                         u'No spaces or special characters, should contain '\
                         u'digits and letters in mixed case.'),
         default = u'',

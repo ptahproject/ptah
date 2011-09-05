@@ -4,26 +4,26 @@
 
 <div class="row" tal:define="items view.data.items();dummy items.sort()"
      tal:repeat="d items">
-  <h3 tal:define="info view.types.get(d[0], (d[0],''))">
-    ${info[0]} <small>${info[1]}</small>
-  </h3>
-  <div class="span10" tal:define="infos d[1].items(); dummy infos.sort()"
-       tal:repeat="info infos">
-    <h4>${info[0]}</h4>
-    <table class="zebra-striped">
-      <tr tal:repeat="i info[1]">
-	<td>
-	  <tal:block tal:condition="d[0] in view.renderers">
-	    ${view.renderers[d[0]](i, request)}
-	  </tal:block>
-	  <p tal:condition="d[0] not in view.renderers">
-	    <tal:block tal:content="i.info.context"/><br />
-	    <tal:block tal:content="i.args" tal:condition="i.args" /><br />
-	    <tal:block tal:content="i.kw" tal:condition="i.kw" />
-	  </p>
-	</td>
-      </tr>
-    </table>
+  <div class="span16 columns">
+    <h3 tal:define="info view.types.get(d[0], (d[0],''))">
+      ${info[0]} <small>${info[1]}</small>
+    </h3>
+    <div tal:define="infos d[1].items(); dummy infos.sort()" tal:repeat="info infos">
+      <h4>${info[0]}</h4>
+      <table class="zebra-striped">
+	<tr tal:repeat="i info[1]">
+	  <td>
+	    <tal:block tal:condition="d[0] in view.renderers">
+	      ${view.renderers[d[0]](i, request)}
+	    </tal:block>
+	    <p tal:condition="d[0] not in view.renderers">
+	      <tal:block tal:content="i.info.context"/><br />
+	      <tal:block tal:content="i.args" tal:condition="i.args" /><br />
+	      <tal:block tal:content="i.kw" tal:condition="i.kw" />
+	    </p>
+	  </td>
+	</tr>
+      </table>
+    </div>
   </div>
-  <div class="span10">&nbsp;&nbsp;</div>
 </div>

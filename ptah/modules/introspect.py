@@ -89,11 +89,11 @@ def viewDirective(
 
     if inspect.isclass(factory):
         isclass = True
-        name, context, template, route, layout, \
+        name, context, rendr, template, route, layout, \
             permission, default, decorator = action.args
     else:
         isclass = False
-        factory, name, context, template, route, layout, permission, \
+        factory, name, context, rendr, template, layout, permission, route, \
             default, decorator = action.args
 
     if route:

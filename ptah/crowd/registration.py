@@ -1,14 +1,12 @@
 """ site registration form """
 from zope import interface
-#from zope.lifecycleevent import ObjectCreatedEvent
-
-from memphis import view, form
 from pyramid import security
 from webob.exc import HTTPFound
+from memphis import view, form
 from ptah.interfaces import IAuthentication
 
 import validation
-from interfaces import _, IPasswordTool
+from interfaces import _, IPasswordTool, IPreferencesGroup
 from models import Session, User
 from schemas import RegistrationSchema, PasswordSchema
 
@@ -22,10 +20,24 @@ class Registration(form.Form):
     csrf = True
     label = _("Registration")
     fields = form.Fields(RegistrationSchema, PasswordSchema)
+    autocomplete = 'off'
+
+    def update(self):
+        sm = self.request.registry
+
+        fieldsets = []
+        self.props = props = []
+        for name, prop in sm.getUtilitiesFor(IPreferencesGroup):
+            props.append(prop)
+            fieldsets.append(form.Fieldset(prop.schema))
+
+        self.fields = form.Fields(RegistrationSchema, PasswordSchema, *fieldsets)
+
+        super(Registration, self).update()
 
     def create(self, data):
         # create user
-        user = User(data['fullname'], data['login'], data['login'])
+        user = User(data['name'], data['login'], data['login'])
 
         # set password
         passwordtool = self.request.registry.getUtility(IPasswordTool)
@@ -33,7 +45,10 @@ class Registration(form.Form):
         Session.add(user)
         Session.flush()
 
-        #config.notify(ObjectCreatedEvent(item))
+        for prop in self.props:
+            propdata = data.get(prop.name)
+            prop.create(user.id, **propdata)
+
         return user
 
     @form.button(_(u"Register"), actype=form.AC_PRIMARY)

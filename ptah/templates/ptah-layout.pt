@@ -1,5 +1,4 @@
-<div class="row">
-  ${view.renderMessages()}
+${view.renderMessages()}
 
-  <tal:block content="structure content" />
-</div>
+<tal:block content="structure content" />
+

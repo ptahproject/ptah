@@ -40,13 +40,13 @@ class ValidatedEvent(PrincipalEvent):
     config.event('Account validation event')
 
 
-class IUserAddedEvent(object):
+class UserAddedEvent(PrincipalEvent):
     """ """
 
     user = interface.Attribute('User object')
 
 
-class IUserRegisteredEvent(IUserAddedEvent):
+class UserRegisteredEvent(UserAddedEvent):
     """ """
 
 
@@ -58,6 +58,10 @@ class ICrowdUser(interface.Interface):
     """ wrapper for actual user """
 
     user = interface.Attribute('Wrapped user object')
+
+
+class IPreferencesPanel(interface.Interface):
+    """ preferences panel """
 
 
 class IAction(interface.Interface):
@@ -123,3 +127,19 @@ class IPasswordTool(interface.Interface):
 
     def resetPassword(passcode, password):
         """ reset password """
+
+
+class IPreferencesGroup(interface.Interface):
+    """ preferences group """
+
+    id = interface.Attribute('Unique pref id')
+
+    schema = interface.Attribute('Colander schema')
+
+    def get(id):
+        """ Return preferences for principal.
+
+        method returns dictionary. """
+
+    def update(id, **kwargs):
+        """ update preferences """
