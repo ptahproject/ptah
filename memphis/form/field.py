@@ -191,7 +191,6 @@ class FieldWidgets(OrderedDict):
         sm = self.request.registry
         errors = []
         errorViews = []
-        context = self.form.getContext()
 
         for name, widget in self.items():
             if widget.mode == FORM_DISPLAY:
