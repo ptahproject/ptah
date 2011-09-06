@@ -6,9 +6,9 @@ from zope.component import getSiteManager
 def initialize(packages=None, excludes=()):
     # list all packages
     if packages is None:
-        packages = loadPackages()
+        packages = loadPackages(excludes=excludes)
     else:
-        packages = loadPackages(packages)
+        packages = loadPackages(packages, excludes=excludes)
 
     # scan packages and load all actions
     seen = set()
@@ -33,8 +33,9 @@ def exclude(modname, excludes=()):
         if n in modname:
             return False
 
-    if modname in excludes:
-        return False
+    for mod in excludes:
+        if modname == mod or modname.startswith(mod):
+            return False
     return True
 
 
@@ -68,17 +69,21 @@ def loadPackage(name, seen, first=True):
     return packages
 
 
-def loadPackages(include_packages=None):
+def loadPackages(include_packages=None, excludes=None):
     seen = set()
     packages = []
 
     if include_packages is not None:
         for pkg in include_packages:
+            if excludes and pkg in excludes:
+                continue
             packages.extend(loadPackage(pkg, seen))
     else:
         for dist in pkg_resources.working_set:
             pkg = dist.project_name
             if pkg in seen:
+                continue
+            if excludes and pkg in excludes:
                 continue
 
             distmap = pkg_resources.get_entry_map(dist, 'memphis')

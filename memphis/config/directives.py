@@ -279,15 +279,16 @@ def scan(package, seen, exclude_filter=None):
             if modname in seen:
                 continue
 
+            seen.add(modname)
+
+            if exclude_filter is not None and modname != pkgname:
+                if not exclude_filter(modname):
+                    continue
+
             loader = importer.find_module(modname)
             if loader is not None:
                 module_type = loader.etc[2]
                 if module_type in (imp.PY_SOURCE, imp.PKG_DIRECTORY):
-                    seen.add(modname)
-                    if exclude_filter is not None and modname != pkgname:
-                        if not exclude_filter(modname):
-                            continue
-
                     try:
                         __import__(modname)
                     except Exception, e:
