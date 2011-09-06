@@ -314,13 +314,6 @@ def resolveConflicts(actions):
         discriminator = action.discriminator
 
         order = action.order or i
-        if discriminator is None or action.info is None:
-            # The discriminator is None or DirectiveInfo is None, 
-            # so this directive can never conflict. We can add it 
-            # directly to the configuration actions.
-            output.append((order, action))
-            continue
-
         a = unique.setdefault(discriminator, [])
         a.append((action.info.codeinfo[0], order, action))
 
@@ -333,10 +326,8 @@ def resolveConflicts(actions):
         basepath, order, action = dups[0]
 
         output.append((order, action))
-        for includepath, i, action in dups[1:]:
-            if discriminator not in conflicts:
-                conflicts[discriminator] = [action.info]
-            conflicts[discriminator].append(action.info)
+        if len(dups) > 1:
+            conflicts[discriminator] = [action.info for _i1, _i2, action in dups]
 
     if conflicts:
         raise ConflictError(conflicts)
