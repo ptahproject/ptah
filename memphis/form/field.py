@@ -104,7 +104,6 @@ class FieldWidgets(OrderedDict):
         prefix += expandPrefix(self.prefix)
         request = self.request
         params = self.form.getParams()
-        context = self.form.getContext()
 
         sm = self.request.registry
 
@@ -141,7 +140,6 @@ class FieldWidgets(OrderedDict):
             widget.id = widget.name.replace('.', '-')
 
             # Step 4: Set the content
-            widget.context = context
             widget.content = content
 
             # Step 5: Set the form

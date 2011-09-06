@@ -34,9 +34,8 @@ class Form(view.View):
 
     method = 'post'
     enctype = 'multipart/form-data'
-    acceptCharset = None
     accept = None
-    refreshActions = False
+    acceptCharset = None
 
     csrf = False
     csrfname = 'csrf-token'
@@ -52,9 +51,6 @@ class Form(view.View):
     @property
     def id(self):
         return self.name.replace('.', '-')
-
-    def getContext(self):
-        return self.context
 
     def getContent(self):
         return self.content
@@ -110,8 +106,6 @@ class Form(view.View):
         self.updateActions()
 
         self.actions.execute()
-        if self.refreshActions:
-            self.updateActions()
 
     def render(self):
         if self.template is None:

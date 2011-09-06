@@ -2,27 +2,26 @@
 from zope import interface
 
 from memphis import config, view
-from memphis.form import pagelets
+from memphis.form import pagelets, widget
 from memphis.form.interfaces import ITerm
 from memphis.form.widget import SequenceWidget
-from memphis.form.widgets import widget
+from memphis.form.widgets.widget import HTMLSelectWidget
 
 from interfaces import _, ISelectWidget
 
 
-class SelectWidget(widget.HTMLSelectWidget, SequenceWidget):
-    """Select widget implementation."""
+class SelectWidget(HTMLSelectWidget, SequenceWidget):
+    __doc__ = _('HTML Select input widget.')
+
     interface.implementsOnly(ISelectWidget)
 
     klass = u'select-widget'
     prompt = False
+    
+    widget('select', _('Select widget'))
 
     noValueMessage = _('no value')
     promptMessage = _('select a value ...')
-
-    __fname__ = 'select'
-    __title__ = _('Select widget')
-    __description__ = _('HTML Select input based widget.')
 
     def isSelected(self, term):
         return term.token in self.value
@@ -56,13 +55,12 @@ class SelectWidget(widget.HTMLSelectWidget, SequenceWidget):
 
 
 class MultiSelectWidget(SelectWidget):
+    __doc__ = _('HTML Multi Select input widget.')
 
     size = 5
     multiple = 'multiple'
 
-    __fname__ = 'multiselect'
-    __title__ = _('Multi select widget')
-    __description__ = _('HTML Multi Select input based widget.')
+    widget('multiselect', _('Multi select widget'))
 
 
 view.registerPagelet(

@@ -115,10 +115,11 @@ class IWidget(interface.Interface):
     value = interface.Attribute('Value')
     params = interface.Attribute('Request params')
     localizer = interface.Attribute('Localizer')
+
     template = interface.Attribute('Template')
+    widgetTemplate = interface.Attribute('Widget template')
 
     content = interface.Attribute('Widget content')
-    context = interface.Attribute('Widget context')
 
     def extract(default=colander.null):
         """Extract the string value(s) of the widget from the form.
@@ -140,7 +141,11 @@ class IWidget(interface.Interface):
         """Setup all of the widget information used for displaying."""
 
     def render(request):
-        """Render widget. First it tring to use template. If template is
+        """Render form. First it tring to use template. If template is
+        not set then it uses one of the pagelets."""
+
+    def renderWidget(request):
+        """Render html widget. First it tring to use template. If template is
         not set then it uses one of the pagelets."""
 
 
@@ -190,6 +195,8 @@ class IButton(interface.Interface):
     """A button in a form."""
 
     accessKey = interface.Attribute('Access Key')
+    actype = interface.Attribute('Action type (i.e. primary, danger, etc)')
+    condition = interface.Attribute('Callable, first argument is form instance')
 
 
 class IButtons(mapping.IEnumerableMapping):
@@ -258,20 +265,17 @@ class IDisplayForm(IForm):
 class IInputForm(interface.Interface):
     """A form that is meant to process the input of the form controls."""
 
-    action = interface.Attribute('Action')
-    name = interface.Attribute('Name')
     id = interface.Attribute('Id')
+    name = interface.Attribute('Name')
     method = interface.Attribute('Method')
+    action = interface.Attribute('Action')
     enctype = interface.Attribute('Encoding Type')
-    acceptCharset = interface.Attribute('Accepted Character Sets')
     accept = interface.Attribute('Accepted Content Types')
+    acceptCharset = interface.Attribute('Accepted Character Sets')
 
     csrf = interface.Attribute('Enable csrf protection')
     csrfname = interface.Attribute('csrf field name')
     token = interface.Attribute('csrf token')
-
-    def removeToken():
-        """ remove current csrf token """
 
 
 # --- CSRF ---
