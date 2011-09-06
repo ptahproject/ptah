@@ -3,7 +3,7 @@ from zope import interface
 from webob.exc import HTTPFound
 from memphis import config, view, form
 
-from models import User, Session
+from models import CrowdUser, Session
 from schemas import UserSchema, ManagerChangePasswordSchema
 from interfaces import _, IPasswordTool, \
     ICrowdModule, ICrowdUser, IManageUserAction
@@ -27,7 +27,7 @@ class CreateUserForm(form.Form):
             return
 
         # create user
-        user = User(data['fullname'], data['login'], data['login'])
+        user = CrowdUser(data['fullname'], data['login'], data['login'])
 
         if not data['validate']:
             user.validated = True

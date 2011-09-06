@@ -5,7 +5,7 @@ from webob.exc import HTTPFound
 from pyramid.security import remember
 
 from ptah import token, mail
-from ptah.crowd.models import User
+from ptah.crowd.models import CrowdUser
 
 
 TOKEN_TYPE = token.registerTokenType(
@@ -47,7 +47,7 @@ def validate(request):
 
     data = token.tokenService.get(TOKEN_TYPE, t)
     if data is not None:
-        user = User.getById(data)
+        user = CrowdUser.getById(data)
         if user is not None:
             user.validated = True
             token.tokenService.remove(t)

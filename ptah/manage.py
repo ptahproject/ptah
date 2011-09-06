@@ -1,5 +1,6 @@
 from memphis import view
 from zope import interface
+from pyramid import security
 from webob.exc import HTTPForbidden
 
 from ptah.settings import PTAH
@@ -31,17 +32,19 @@ class PtahModule(object):
         return True
 
 
-class PtahAccessManager(object):
+def PtahAccessManager(id):
     """ default access manager """
-
-    def allowed(self, id):
-        if id and id in PTAH.managers:
-            return True
+    if id and id in PTAH.managers:
+        return True
         
-        if id:
-            return True
+    return False
 
-        return False
+
+ACCESS_MANAGER = PtahAccessManager
+
+def setAccessManager(func):
+    global ACCESS_MANAGER
+    ACCESS_MANAGER = func
 
 
 class PtahManageRoute(object):
@@ -50,15 +53,12 @@ class PtahManageRoute(object):
     __name__ = 'ptah-manage'
     __parent__ = view.DefaultRoot()
 
-    accessManager = PtahAccessManager()
-
     def __init__(self, request):
         self.request = request
         self.registry = request.registry
 
-        login = self.registry.getUtility(IAuthentication).getCurrentLogin()
-        
-        if not self.accessManager.allowed(login):
+        userid = security.authenticated_userid(request)
+        if not ACCESS_MANAGER(userid):
             raise HTTPForbidden()
 
     def __getitem__(self, key):
@@ -71,7 +71,7 @@ class PtahManageRoute(object):
 
 
 view.registerRoute(
-    'ptah-manage', '/ptah-manage/*traverse', PtahManageRoute)
+    'ptah-manage','/ptah-manage/*traverse',PtahManageRoute,use_global_views=True)
 
 view.static('ptah', 'ptah:templates/static')
 
@@ -92,7 +92,8 @@ class LayoutPage(view.Layout):
         request = self.request
         registry = request.registry
 
-        self.user = registry.getUtility(IAuthentication).getCurrentUser()
+        self.username = security.authenticated_userid(request)
+        #self.user = registry.getUtility(IAuthentication).getCurrentUser()
 
         mod = self.viewcontext
         while not IPtahModule.providedBy(mod):

@@ -6,7 +6,7 @@ from webob.exc import HTTPFound
 from memphis import view, form, config
 from sqlalchemy.sql.expression import asc
 
-from models import Session, User
+from models import Session, CrowdUser
 from interfaces import _, ICrowdModule
 
 
@@ -49,24 +49,24 @@ class SearchUsers(form.Form):
             uids = []
 
         if 'activate' in request.POST and uids:
-            Session.query(User).filter(
+            Session.query(CrowdUser).filter(
                 User.id.in_(uids)).update({'suspended': False}, False)
             self.message("Selected accounts have been activated.", 'info')
 
         if 'suspend' in request.POST and uids:
-            Session.query(User).filter(
+            Session.query(CrowdUser).filter(
                 User.id.in_(uids)).update({'suspended': True}, False)
             self.message("Selected accounts have been suspended.", 'info')
 
         if 'validate' in request.POST and uids:
-            Session.query(User).filter(
+            Session.query(CrowdUser).filter(
                 User.id.in_(uids)).update({'validated': True}, False)
             self.message("Selected accounts have been validated.", 'info')
 
         term = request.session.get('ptah-search-term', '')
         if term:
             self.users = Session.query(User) \
-                .filter(User.email.contains('%%%s%%'%term))\
+                .filter(CrowdUser.email.contains('%%%s%%'%term))\
                 .order_by(asc('name')).all()
         else:
             self.size = Session.query(User).count()
@@ -99,7 +99,7 @@ class SearchUsers(form.Form):
                 self.batches = ptah.first_neighbours_last(
                     batches, current-1, 3, 3)
 
-                self.users = Session.query(User)\
+                self.users = Session.query(CrowdUser)\
                     .offset((current-1)*self.bsize).limit(self.bsize).all()
 
 

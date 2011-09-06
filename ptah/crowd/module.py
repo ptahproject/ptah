@@ -4,7 +4,7 @@ from zope import interface
 from memphis import config, view
 from interfaces import ICrowdModule, ICrowdUser
 
-from models import User
+from models import CrowdUser as SQLUser
 
 
 class CrowdModule(ptah.PtahModule):
@@ -19,7 +19,7 @@ class CrowdModule(ptah.PtahModule):
 
     def __getitem__(self, key):
         if key:
-            user = User.getById(key)
+            user = SQLUser.getById(key)
             if user is not None:
                 return CrowdUser(user, self)
 

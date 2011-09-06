@@ -2,9 +2,15 @@
   <h1>Modules <small>list of all available ptah modules</small></h1>
 </div>
 
-<div class="row" tal:repeat="mod view.modules">
-  <div class="span12 column">
-    <h4><a href="${mod.url(request)}">${mod.title}</a></h4>
-    <p>${mod.__doc__}</p>
+<div class="row">
+  <div class="span12 columns">
+    <table class="zebra-striped">
+      <tr tal:repeat="mod view.modules">
+	<td>
+	  <h4><a href="${mod.url(request)}">${mod.title}</a></h4>
+	  <p>${mod.__doc__}</p>
+	</td>
+      </tr>
+    </table>
   </div>
 </div>

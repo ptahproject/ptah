@@ -4,12 +4,13 @@ from zope import interface
 
 from memphis import view, form
 from pyramid import security
-from webob.exc import HTTPFound
+from webob.exc import HTTPFound, HTTPForbidden
 from ptah.interfaces import IAuthentication
 
 import validation
 from interfaces import _, IPasswordTool
-from models import Session, User
+from settings import CROWD
+from models import Session, CrowdUser
 from schemas import RegistrationSchema, PasswordSchema
 
 
@@ -23,9 +24,15 @@ class Registration(form.Form):
     label = _("Registration")
     fields = form.Fields(RegistrationSchema, PasswordSchema)
 
+    def update(self):
+        if not CROWD.registration:
+            raise HTTPForbidden('Site registraion is disabled.')
+
+        super(Registration, self).update()
+
     def create(self, data):
         # create user
-        user = User(data['fullname'], data['login'], data['login'])
+        user = CrowdUser(data['fullname'], data['login'], data['login'])
 
         # set password
         passwordtool = self.request.registry.getUtility(IPasswordTool)

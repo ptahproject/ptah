@@ -10,7 +10,7 @@ Base = psa.get_base()
 Session = psa.get_session()
 
 
-class User(Base):
+class CrowdUser(Base):
 
     __tablename__ = 'ptah_crowd'
 
