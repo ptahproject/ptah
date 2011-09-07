@@ -71,7 +71,8 @@ class PtahManageRoute(object):
 
 
 view.registerRoute(
-    'ptah-manage','/ptah-manage/*traverse',PtahManageRoute,use_global_views=True)
+    'ptah-manage','/ptah-manage/*traverse',
+    PtahManageRoute, use_global_views=True)
 
 view.static('ptah', 'ptah:templates/static')
 

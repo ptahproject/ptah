@@ -6,7 +6,7 @@ from webob.exc import HTTPFound, HTTPForbidden
 from ptah.interfaces import IAuthentication
 
 import validation
-from interfaces import _, IPasswordTool
+from interfaces import _, IPasswordTool, IPreferencesGroup
 from settings import CROWD
 from models import Session, CrowdUser
 from schemas import RegistrationSchema, PasswordSchema
@@ -24,6 +24,9 @@ class Registration(form.Form):
     autocomplete = 'off'
 
     def update(self):
+        if not CROWD.registration:
+            raise HTTPForbidden('Site registraion is disabled.')
+
         sm = self.request.registry
 
         fieldsets = []
@@ -33,12 +36,6 @@ class Registration(form.Form):
             fieldsets.append(form.Fieldset(prop.schema))
 
         self.fields = form.Fields(RegistrationSchema, PasswordSchema, *fieldsets)
-
-        super(Registration, self).update()
-
-    def update(self):
-        if not CROWD.registration:
-            raise HTTPForbidden('Site registraion is disabled.')
 
         super(Registration, self).update()
 

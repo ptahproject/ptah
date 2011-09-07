@@ -34,21 +34,21 @@ class DefaultView(form.Form):
     def update(self):
         sm = self.request.registry
 
+        self.fields = fields = form.Fields(RegistrationSchema)
+
         self.props = props = []
-        self.schemas = schemas = [RegistrationSchema]
         for name, prop in sm.getUtilitiesFor(IPreferencesGroup):
             props.append(prop)
-            schemas.append(prop.schema)
-
-        self.fields = form.Fields(*schemas)
+            fields.append(form.Fieldset(prop.schema))
 
         id = security.authenticated_userid(self.request)
 
         user = CrowdUser.get(id)
-        self.content = content = {'': user}
+
+        self.content = content = form.DataManager(user)
 
         for prop in self.props:
-            content[prop.name] = prop.get(user.id)
+            content.append(prop.name, prop.get(user.id))
 
         super(DefaultView, self).update()
 
