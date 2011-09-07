@@ -6,3 +6,7 @@ TODO
 * Custom layer filesystem watcher (global is implemented)
 
 * fixme: Customize/Listing for templates in custom named layers
+
+* Unify renderers for view and for subpath
+
+* Support subpath chaining to base view
