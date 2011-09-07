@@ -1,10 +1,10 @@
 """ forbidden view """
 import urllib
 from webob.exc import HTTPFound, HTTPForbidden
+from pyramid.security import authenticated_userid
 
 from memphis import view
 from ptah.settings import PTAH
-from ptah.interfaces import IAuthentication
 
 
 view.registerLayout(
@@ -21,13 +21,16 @@ class Forbidden(view.View):
         self.__parent__ = view.DefaultRoot()
 
         request = self.request
-        auth = request.registry.getUtility(IAuthentication)
 
-        user = auth.getCurrentLogin(request)
+        user = authenticated_userid(request)
         if user is None:
             loginurl = PTAH.login
-            if not loginurl.startswith(('http://', 'https://')):
+            if loginurl and not loginurl.startswith(('http://', 'https://')):
                 loginurl = request.application_url + loginurl
+            else:
+                loginurl = request.application_url + 'login.html'
+
+            print loginurl
 
             request.response.status = HTTPFound.code
             request.response.headers['location'] = '%s?%s'%(
