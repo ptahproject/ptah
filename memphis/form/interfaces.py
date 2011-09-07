@@ -40,15 +40,18 @@ class IField(interface.Interface):
 # ----[ Data Managers ]------------------------------------------------------
 
 class IDataManager(interface.Interface):
-    """Data manager."""
+    """ """
 
-    def get():
+class IFieldDataManager(interface.Interface):
+    """Field data manager."""
+
+    def get(node):
         """Get the value.
 
         If no value can be found, raise an error
         """
 
-    def query(default=colander.null):
+    def query(node, default=colander.null):
         """Get the value.
 
         If no value can be found, return the default value.

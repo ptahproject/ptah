@@ -7,7 +7,7 @@ from webob.multidict import MultiDict
 
 from pagelets import FORM_INPUT
 from directive import getWidget, getDefaultWidget
-from interfaces import IWidget, IDataManager, ISequenceWidget, ITerm, IVocabulary
+from interfaces import IWidget, ISequenceWidget, ITerm, IVocabulary
 
 
 class WidgetFactory(object):
@@ -57,7 +57,6 @@ class Widget(object):
 
     form = None
     content = None
-    context = None
     params = MultiDict({})
     localizer = None
     template = None
@@ -88,13 +87,7 @@ class Widget(object):
             #              content is to be used to extract a value, get
             #              it now via a data manager.
             if self.content is not None:
-                if type(self.content) is dict and self.fieldset in self.content:
-                    value = getMultiAdapter(
-                        (self.content[self.fieldset], self.node),
-                        IDataManager).query()
-                else:
-                    value = getMultiAdapter(
-                        (self.content, self.node), IDataManager).query()
+                value = self.content.query(self.node)
 
             # Step 1.2.2: If we still do not have a value, we can always use
             #             the default value of the node, id set

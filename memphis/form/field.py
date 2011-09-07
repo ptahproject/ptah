@@ -6,7 +6,8 @@ from memphis import config
 from memphis.form.util import expandPrefix, OrderedDict
 from memphis.form.error import Error, WidgetError
 from memphis.form.pagelets import FORM_INPUT, FORM_DISPLAY
-from memphis.form.interfaces import IForm, IField, IWidget, IWidgets
+from memphis.form.interfaces import \
+    IForm, IField, IWidget, IWidgets, IDataManager
 
 from directive import getWidget, getDefaultWidget
 
@@ -18,14 +19,18 @@ class Field(object):
     css = ''
     widget = None
 
-    def __init__(self, node, name=None, prefix='', mode=None, readonly=False):
+    def __init__(self, node, name=None, prefix='', mode=None, readonly=None):
         self.typ = node.typ
         self.node = node
         if name is None:
             name = node.name
         self.name = expandPrefix(prefix) + name
         self.prefix = prefix
+
         self.mode = mode
+
+        if readonly is None:
+            readonly = getattr(node, 'readonly', False)
         self.readonly = readonly
 
     def __repr__(self):
@@ -147,7 +152,7 @@ class FieldWidgets(OrderedDict):
         self.localizer = get_localizer(request)
 
     def update(self):
-        content = self.content = self.form.getContent()
+        content = self.content = IDataManager(self.form.getContent())
 
         # Create a unique prefix.
         prefix = expandPrefix(self.form.prefix)
@@ -164,14 +169,7 @@ class FieldWidgets(OrderedDict):
             widgets = []
 
             for field in fieldset.fields():
-                # Step 1: Determine the mode of the widget.
-                mode = self.mode
-                if field.mode is not None:
-                    mode = field.mode
-                elif field.readonly or getattr(field.node, 'readonly', False):
-                    mode = FORM_DISPLAY
-
-                # Step 2: Get the widget for the given field.
+                # Step 1: Get the widget for the given field.
                 widget = None
                 factory = field.widget
                 if factory is None:
@@ -190,37 +188,43 @@ class FieldWidgets(OrderedDict):
                 if widget is None:
                     raise TypeError("Can't find widget for %s"%field)
 
-                # Step 3: Set the prefix for the widget
-                name = '%s%s%s'%(prefix, fieldset.prefix, field.name)
+                # Step 2: Set the prefix for the widget
+                name = '%s%s'%(fieldset.prefix, field.name)
 
-                widget.id = name.replace('.', '-')
+                widget.id = ('%s%s'%(self.prefix, name)).replace('.', '-')
                 widget.name = name
                 widget.fieldset = fieldset.name
                 widget.fieldname = field.name
 
-                # Step 4: Set the content
-                widget.content = content
+                # Step 3: Set the content
+                widget.content = content.dataset(fieldset.name)
 
-                # Step 5: Set the form
+                # Step 4: Set the form
                 widget.form = self.form
 
-                # Step 6: Set some variables
+                # Step 5: Set some variables
                 widget.params = params
                 widget.request = self.request
                 widget.localizer = self.localizer
 
-                # Step 7: Set the mode of the widget
+                # Step 6: Set the mode of the widget
+                mode = self.mode
+                if field.mode is not None:
+                    mode = field.mode
+                elif field.readonly:
+                    mode = FORM_DISPLAY
+
                 widget.mode = mode
 
-                # Step 8: Update the widget
+                # Step 7: Update the widget
                 widget.update()
 
-                # Step 9:
+                # Step 8:
                 widget.addClass(field.css)
 
-                # Step 10: Add the widget to the manager
+                # Step 9: Add the widget to the manager
+                widget.__name__ = name
                 widget.__parent__ = self
-                widget.__name__ = '%s%s'%(fieldset.prefix, field.name)
                 widgets.append(widget)
                 self[widget.__name__] = widget
 
@@ -256,11 +260,10 @@ class FieldWidgets(OrderedDict):
         try:
             self.form.fields.validator(None, data)
         except colander.Invalid, error:
-            for err in error.children:
-                extra_errors.append(err)
-
             if error.msg is not None:
                 extra_errors.append(error)
+
+            extra_errors.extend(error.children)
 
         # form validation
         self.form.validate(data, extra_errors)
