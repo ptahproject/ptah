@@ -101,9 +101,18 @@ SQLA = config.registerSettings(
         title = 'Engine URL',
         description = 'SQLAlchemy database engine URL'),
 
+    config.SchemaNode(
+        colander.Bool(),
+        name = 'cache',
+        default = True,
+        title = 'Cache',
+        description = 'Eanble SQLAlchemy statement caching'),
+
     title = 'SQLAlchemy settings',
     description = 'Configuration settings for a SQLAlchemy database engine.'
     )
+
+SQL_compiled_cache = {}
 
 
 @config.handler(config.SettingsInitializing)
@@ -130,4 +139,9 @@ def initializing(ev):
 
     url = SQLA.url
     if url:
-        pyramid_sqla.add_engine({'sqlalchemy.url': url})
+        engine_args = {}
+        if SQLA.cache:
+            engine_args['execution_options'] = \
+                {'compiled_cache': SQL_compiled_cache}
+        pyramid_sqla.add_engine(
+            {'sqlalchemy.url': url}, **engine_args)
