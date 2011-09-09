@@ -11,6 +11,8 @@ from ptah.manage import setAccessManager
 # batches
 from ptah.batch import Batch, Batches, first_neighbours_last
 
+# sqlalchemy query freezer
+from ptah.query import QueryFreezer
 
 # create wsgi app
 def make_wsgi_app(global_config, **settings):
