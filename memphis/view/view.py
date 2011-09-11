@@ -12,6 +12,7 @@ from pyramid.interfaces import IRequest
 from pyramid.interfaces import IRouteRequest
 from pyramid.interfaces import IViewClassifier
 from pyramid.interfaces import IExceptionViewClassifier
+from pyramid.interfaces import IAuthorizationPolicy
 from pyramid.interfaces import IAuthenticationPolicy
 
 from memphis import config
@@ -120,6 +121,18 @@ def registerView(
         )
 
 
+AUTH = None
+AUTHZ = None
+
+@config.handler(config.SettingsInitialized)
+def initialized(ev):
+    global AUTH, AUTHZ
+
+    sm = getSiteManager()
+    AUTH = sm.queryUtility(IAuthenticationPolicy)
+    AUTHZ = sm.queryUtility(IAuthorizationPolicy)
+
+
 def registerViewImpl(
     factory, name, context, renderer, template, route_name, layout, 
     permission, default, decorator):
@@ -150,10 +163,11 @@ def registerViewImpl(
     sm = getSiteManager()
 
     auth = sm.queryUtility(IAuthenticationPolicy)
-    if auth and permission:
+    authz = sm.queryUtility(IAuthorizationPolicy)
+    if permission:
         def pyramidView(context, request):
-            principals = auth.effective_principals(request)
-            if auth.permits(context, principals, permission):
+            principals = AUTH.effective_principals(request)
+            if AUTHZ.permits(context, principals, permission):
                 return renderer(context, request)
 
             msg = getattr(request, 'authdebug_message',
