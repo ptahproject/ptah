@@ -24,7 +24,7 @@ def pagelet(pageletType, context=None, template=None, layer=''):
 
 
 def pyramidView(name='', context=None, route=None, renderer=None, template=None,
-                layout=None, permission='__no_permission_required__',
+                layout='', permission='__no_permission_required__',
                 default=False, decorator=None, layer=''):
 
     if renderer is not None and template is not None:

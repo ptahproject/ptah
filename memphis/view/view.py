@@ -100,7 +100,7 @@ class subpath(object):
 
 def registerView(
     name='', factory=View, context=None, renderer=None, template=None,
-    route=None, layout=None, permission='__no_permission_required__',
+    route=None, layout='', permission='__no_permission_required__',
     default=False, decorator=None, layer=''):
 
     if renderer is not None and template is not None:
