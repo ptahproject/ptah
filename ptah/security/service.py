@@ -1,7 +1,11 @@
 from zope import interface
 from pyramid import security
+from pyramid.security import Authenticated
+from pyramid.security import Everyone
 from pyramid.threadlocal import get_current_request
+from pyramid.interfaces import IAuthorizationPolicy
 
+from role import LocalRoles
 from interfaces import IAuthentication, ISearchableAuthProvider
 
 providers = {}
@@ -46,6 +50,13 @@ class Authentication(object):
                 name, login = info
                 return Principal(uuid, name, login)
 
+    def getPrincipalByLogin(self, login):
+        for pname, provider in providers.items():
+            info = provider.getPrincipalInfoByLogin(login)
+            if info is not None:
+                uuid, name, login = info
+                return Principal('user://%s:%s'%(pname, uuid), name, login)
+
     def isAnonymous(self):
         id = security.authenticated_userid(get_current_request())
         if id:
@@ -62,6 +73,24 @@ class Authentication(object):
             if ISearchableAuthProvider.providedBy(provider):
                 for id, name, login in provider.search(term):
                     yield Principal('user://%s:%s'%(pname, id), name, login)
+
+    def checkPermission(self, context, permission):
+        if not permission or permission == '__no_permission_required__':
+            return True
+
+        principals = [Everyone]
+
+        request = get_current_request()
+        userid = security.authenticated_userid(request)
+        if userid is not None:
+            principals.append(Authenticated)
+
+            roles = LocalRoles(userid, context=context)
+            if roles:
+                principals.extend(roles)
+
+        authz = request.registry.queryUtility(IAuthorizationPolicy)
+        return authz.permits(context, principals, permission)
 
 
 authService = Authentication()

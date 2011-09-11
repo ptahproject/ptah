@@ -14,11 +14,12 @@ Roles = Roles()
 
 class Role(object):
 
-    def __init__(self, name, title, description=''):
-        self.id = 'role:%s'%name
+    def __init__(self, id, name, title, description='', system=False):
+        self.id = id
         self.name = name
         self.title = title
         self.description = description
+        self.system = system
 
         self.allowed = set()
         self.denied = set()
@@ -49,10 +50,11 @@ class Role(object):
                 self.denied.remove(perm)
 
 
-def registerRole(name, title, description=u''):
+def registerRole(name, title, description=u'', prefix='role:', system=False):
     info = config.DirectiveInfo()
 
-    role = Role(name, title, description)
+    role = Role('%s%s'%(prefix, name), name, title, description, system)
+    Roles[role.name] = role
 
     info.attach(
         config.Action(
@@ -67,10 +69,18 @@ def registerRoleImpl(role):
     Roles[role.name] = role
 
 
-def LocalRoles(userid, request):
-    context = getattr(request, 'context', None)
+Everyone = registerRole(
+    'Everyone', 'Everyone', '', 'system.', True)
+
+Authenticated = registerRole(
+    'Authenticated', 'Authenticated', '', 'system.', True)
+
+
+def LocalRoles(userid, request=None, context=None):
     if context is None:
-        context = getattr(request, 'root', None)
+        context = getattr(request, 'context', None)
+        if context is None:
+            context = getattr(request, 'root', None)
 
     roles = OrderedDict()
     for location in lineage(context):

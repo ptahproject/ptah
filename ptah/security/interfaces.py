@@ -24,6 +24,9 @@ class IAuthentication(interface.Interface):
     def getPrincipal(uuid):
         pass
 
+    def getPrincipalByLogin(login):
+        pass
+
     def getCurrentPrincipal(uuid):
         pass
 
@@ -36,6 +39,9 @@ class IAuthProvider(interface.Interface):
 
     def getPrincipalInfo(id):
         """ return principal object for id """
+
+    def getPrincipalInfoByLogin(login):
+        """ return principal object """
 
     def authenticate(credentials):
         """ authenticate credentials """

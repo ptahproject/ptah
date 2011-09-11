@@ -23,9 +23,15 @@ class CrowdProvider(object):
         if user is not None:
             return user.name, user.login
 
+    def getPrincipalInfoByLogin(self, login):
+        user = CrowdUser.getByLogin(login)
+        if user is not None:
+            return user.uuid, user.name, user.login
+
     def search(self, term):
         for user in Session.query(CrowdUser) \
-            .filter(CrowdUser.email.contains('%%%s%%'%term))\
+            .filter(sql.or_(CrowdUser.email.contains('%%%s%%'%term),
+                            CrowdUser.name.contains('%%%s%%'%term)))\
             .order_by(sql.asc('name')).all():
             yield user.uuid, user.name, user.login
 

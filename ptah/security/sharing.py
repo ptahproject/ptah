@@ -40,7 +40,7 @@ class SharingForm(form.Form):
         request = self.request
         context = self.context
 
-        self.roles = ptah.Roles.values()
+        self.roles = [r for r in ptah.Roles.values() if not r.system]
         self.local_roles = local_roles = context.__local_roles__
 
         term = request.session.get('sharing-term', '')
