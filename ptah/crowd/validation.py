@@ -52,7 +52,7 @@ def validate(request):
             user.validated = True
             token.tokenService.remove(t)
 
-            headers = remember(request, user.login)
+            headers = remember(request, user.uuid)
             raise HTTPFound(location=request.application_url, headers=headers)
 
     view.addMessage(request, "Can't validate email address.", 'warning')

@@ -23,7 +23,7 @@
 	    <li>
 	      <h5 class="active">
 		<a href="${app_url}">
-		  ${view.username}:
+		  ${view.user}:
 		</a>
 	      </h5>
 	    </li>

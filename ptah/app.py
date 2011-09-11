@@ -3,19 +3,20 @@ import colander
 import pyramid_sqla
 import pyramid_beaker
 import translationstring
+import ptah.security
 from memphis import config
-from pyramid.interfaces import IAuthenticationPolicy
+from pyramid.interfaces import IAuthenticationPolicy, IAuthorizationPolicy
+from pyramid.authorization import ACLAuthorizationPolicy
 from pyramid.authentication import AuthTktAuthenticationPolicy
 
 _ = translationstring.TranslationStringFactory('ptah')
 
 types = {
     '': (),
-    'auth_tkt': (AuthTktAuthenticationPolicy,
-                 ('secret',)),
+    'auth_tkt': (AuthTktAuthenticationPolicy, ('secret',), ('callback',)),
 }
 
-SEQURITY = config.registerSettings(
+SECURITY = config.registerSettings(
     'auth',
 
     config.SchemaNode(
@@ -34,9 +35,19 @@ SEQURITY = config.registerSettings(
                         'cookie signing'),
         required = False),
 
+    config.SchemaNode(
+        colander.Bool(),
+        name = 'authorization',
+        title = _('Authorization policy'),
+        description = _('Enable/disable default authorization policy.'),
+        required = False,
+        default = True),
+
     title = _('Pyramid authentication settings'),
     validator = config.RequiredWithDependency('secret','policy','auth_tkt',''),
 )
+SECURITY['callback'] = ptah.security.LocalRoles
+
 
 SESSION = config.registerSettings(
     'session',
@@ -121,22 +132,33 @@ def initializing(ev):
 
     if config is not None:
         # auth
-        pname = SEQURITY.policy
+        pname = SECURITY.policy
         if pname not in ('', 'no-policy'):
-            policyFactory, attrs = types[pname]
+            policyFactory, attrs, kw = types[pname]
 
             settings = []
             for attr in attrs:
-                settings.append(SEQURITY.get(attr))
+                settings.append(SECURITY.get(attr))
 
-            policy = policyFactory(*settings)
+            kwargs = {}
+            for attr in kw:
+                kwargs[attr] = SECURITY.get(attr)
+
+            policy = policyFactory(*settings, **kwargs)
             config.registry.registerUtility(policy, IAuthenticationPolicy)
+
+        if SECURITY.authorization:
+            config.registry.registerUtility(
+                ACLAuthorizationPolicy(), IAuthorizationPolicy)
 
         # session
         session_factory = pyramid_beaker \
             .session_factory_from_settings(SESSION)
         config.set_session_factory(session_factory)
 
+
+@config.handler(config.SettingsInitializing)
+def sqla_initializing(ev):
     url = SQLA.url
     if url:
         engine_args = {}

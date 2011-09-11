@@ -1,0 +1,23 @@
+<div class="page-header">
+  <h2>Permissions and Roles</h2>
+</div>
+
+<div class="content">
+  <table class="zebra-striped">
+    <tr>
+      <th></th>
+      <th tal:repeat="r view.roles">
+	${r.title}
+      </th>
+    </tr>
+    <tr tal:repeat="p view.permissions">
+      <td>
+	${p.title}
+	<small>${p.description}</small>
+      </td>
+      <td tal:repeat="r view.roles">
+	${'x' if p in r.allowed else '-'}
+      </td>
+    </tr>
+  </table>
+</div>

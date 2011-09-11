@@ -6,7 +6,11 @@ from ptah.interfaces import IPtahModule
 from ptah.interfaces import IPtahManageRoute
 
 # manage
-from ptah.manage import setAccessManager
+from ptah.manage import setAccessManager, ACCESS_MANAGER
+
+# security
+from ptah import security
+from ptah.security import Role, Roles, Permission, registerRole, authService
 
 # batches
 from ptah.batch import Batch, Batches, first_neighbours_last

@@ -6,15 +6,12 @@ from hashlib import md5, sha1
 from base64 import urlsafe_b64encode, urlsafe_b64decode
 from datetime import timedelta
 
+from ptah import token
 from zope import interface
-from zope.component import getUtility, queryUtility
-
 from memphis import config
 
-from ptah import token
-from ptah.interfaces import IAuthentication
-
-from models import CrowdUser, Session
+from service import authService
+from settings import AUTH_SETTINGS
 from interfaces import _, IPasswordTool
 
 
@@ -58,7 +55,6 @@ class SSHAPasswordManager(object):
 
 class PasswordTool(object):
     """ Password management utility. """
-    config.utility()
     interface.implements(IPasswordTool)
 
     min_length = 5
@@ -68,9 +64,7 @@ class PasswordTool(object):
     pm = {'{plain}': PlainPasswordManager(),
           '{ssha}': SSHAPasswordManager(),
           }
-
-    #passwordManager = SSHAPasswordManager()
-    passwordManager = PlainPasswordManager()
+    passwordManager = pm['{plain}']
 
     def checkPassword(self, encodedPassword, password):
         for prefix, pm in self.pm.items():
@@ -86,90 +80,15 @@ class PasswordTool(object):
         data = token.tokenService.get(TOKEN_TYPE, passcode)
 
         if data is not None:
-            return getUtility(IAuthentication).getUserByLogin(data)
+            return authService.getPrincipal(data)
 
     def generatePasscode(self, principal):
-        return token.tokenService.generate(TOKEN_TYPE, principal.login)
+        return token.tokenService.generate(TOKEN_TYPE, principal.id)
 
-    def resetPassword(self, passcode, password):
-        data = token.tokenService.get(TOKEN_TYPE, passcode)
-
-        if data is not None:
-            principal = getUtility(IAuthentication).getUserByLogin(data)
-            user = CrowdUser.get(principal.login)
-            if user is not None:
-                user.password = self.encodePassword(password)
-                token.tokenService.remove(passcode)
-                return principal
+    def removePasscode(self, passcode):
+        token.tokenService.remove(passcode)
 
     def validatePassword(self, password):
-        """
-        >>> import zope.interface.verify
-        >>> from zope import interface, component
-
-        >>> zope.interface.verify.verifyClass(
-        ...     interfaces.IPasswordChecker, DefaultPasswordChecker)
-        True
-
-        Default password checker uses IDefaultPasswordChecker utility
-        to get configuration. We use controlpanel configlet for this but
-        in this code we should create it.
-
-        >>> checker = default.DefaultPasswordChecker()
-        >>> checker.min_length = 5
-        >>> checker.letters_digits = False
-        >>> checker.letters_mixed_case = False
-
-        >>> zope.interface.verify.verifyObject(IPasswordChecker, checker)
-        True
-
-        >>> checker.validate('passw')
-
-        >>> checker.validate('ps1')
-        Traceback (most recent call last):
-        ...
-        LengthPasswordError: ...
-
-        >>> configlet.min_length = 6
-        >>> checker.validate('passw')
-        Traceback (most recent call last):
-        ...
-        LengthPasswordError: ...
-
-        >>> checker.validate('password')
-
-        >>> configlet.letters_digits = True
-
-        >>> checker.validate('password')
-        Traceback (most recent call last):
-        ...
-        LettersDigitsPasswordError
-
-        >>> checker.validate('66665555')
-        Traceback (most recent call last):
-        ...
-        LettersDigitsPasswordError
-
-        >>> checker.validate('pass5word')
-
-        >>> configlet.letters_mixed_case = True
-        >>> checker.validate('pass5word')
-        Traceback (most recent call last):
-        ...
-        LettersCasePasswordError
-
-        >>> checker.validate('PASS5WORD')
-        Traceback (most recent call last):
-        ...
-        LettersCasePasswordError
-
-        >>> checker.validate('Pass5word')
-
-        By default password strength is always 100%
-
-        >>> checker.passwordStrength('Pass5word')
-        100.0
-        """
         if len(password) < self.min_length:
             #return _('Password should be at least ${count} characters.',
             #         mapping={'count': self.min_length})
@@ -184,3 +103,19 @@ class PasswordTool(object):
 
     def passwordStrength(self, password):
         return 100.0
+
+
+passwordTool = PasswordTool()
+
+
+@config.handler(config.SettingsInitializing)
+def initializing(ev):
+
+    mng = PasswordTool.pm.get(AUTH_SETTINGS.pwdmanager)
+    if mng is None:
+        mng = PasswordTool.pm.get('{%s}'%AUTH_SETTINGS.pwdmanager)
+
+    if mng is None:
+        mng = PasswordTool.pm['{plain}']
+
+    passwordTool.passwordManager = mng

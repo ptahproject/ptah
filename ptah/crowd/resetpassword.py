@@ -4,8 +4,7 @@ from pyramid import security
 from webob.exc import HTTPFound
 from memphis import config, form, view
 
-from ptah import mail
-from ptah.interfaces import IAuthentication
+from ptah import mail, security
 
 from interfaces import _, IPasswordTool
 from schemas import ResetPasswordSchema, PasswordSchema
@@ -45,8 +44,7 @@ class ResetPassword(form.Form):
                 .getUserByLogin(login)
 
             if principal is not None:
-                passcode = registry.getUtility(IPasswordTool)\
-                    .generatePasscode(principal)
+                passcode = security.passwordTool.generatePasscode(principal)
 
                 template = ResetPasswordTemplate(principal, request)
                 template.passcode = passcode
@@ -73,10 +71,8 @@ class ResetPasswordForm(form.Form):
 
     def update(self):
         request = self.request
-        ptool = self.ptool = request.registry.getUtility(IPasswordTool)
-
         passcode = request.params.get('passcode')
-        self.principal = principal = self.ptool.getPrincipal(passcode)
+        self.principal = principal = security.passwordTool.getPrincipal(passcode)
 
         if principal is not None:
             self.passcode = passcode
@@ -101,7 +97,7 @@ class ResetPasswordForm(form.Form):
                 self.message(exc, 'error')
                 return
 
-            headers = security.remember(self.request, self.principal.login)
+            headers = security.remember(self.request, self.principal.uuid)
             self.message(
                 _('You have successfully changed your password.'), 'success')
 

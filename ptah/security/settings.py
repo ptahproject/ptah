@@ -3,8 +3,8 @@ import colander
 from memphis import config
 
 
-CROWD = config.registerSettings(
-    'ptah-crowd',
+AUTH_SETTINGS = config.registerSettings(
+    'ptah-auth',
 
     config.SchemaNode(
         colander.Bool(),
@@ -26,6 +26,13 @@ CROWD = config.registerSettings(
         title = 'Email validation',
         description = 'Validate user account by email.',
         default = False),
+
+    config.SchemaNode(
+        colander.Str(),
+        name = 'pwdmanager',
+        title = 'Password manager',
+        description = 'Available password managers ("plain", "ssha", "bcrypt")',
+        default = 'plain'),
 
     title = 'Ptah auth settings',
     )

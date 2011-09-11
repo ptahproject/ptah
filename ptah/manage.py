@@ -1,10 +1,11 @@
 from memphis import view
 from zope import interface
-from pyramid import security
 from webob.exc import HTTPForbidden
+from pyramid.security import authenticated_userid
 
+from ptah import security
 from ptah.settings import PTAH
-from ptah.interfaces import IAuthentication, IPtahManageRoute, IPtahModule
+from ptah.interfaces import IPtahManageRoute, IPtahModule
 
 
 view.pageletType('ptah-module-actions', IPtahModule)
@@ -34,7 +35,9 @@ class PtahModule(object):
 
 def PtahAccessManager(id):
     """ default access manager """
-    if id and id in PTAH.managers:
+    principal = security.authService.getPrincipal(id)
+   
+    if principal is not None and principal.login in PTAH.managers:
         return True
 
     return False
@@ -57,7 +60,7 @@ class PtahManageRoute(object):
         self.request = request
         self.registry = request.registry
 
-        userid = security.authenticated_userid(request)
+        userid = authenticated_userid(request)
         if not ACCESS_MANAGER(userid):
             raise HTTPForbidden()
 
@@ -90,11 +93,7 @@ class LayoutPage(view.Layout):
                 template=view.template("ptah:templates/ptah-page.pt"))
 
     def update(self):
-        request = self.request
-        registry = request.registry
-
-        self.username = security.authenticated_userid(request)
-        #self.user = registry.getUtility(IAuthentication).getCurrentUser()
+        self.user = security.authService.getCurrentPrincipal()
 
         mod = self.viewcontext
         while not IPtahModule.providedBy(mod):

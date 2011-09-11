@@ -3,7 +3,6 @@ from zope import interface
 from pyramid import security
 from memphis import view, form
 from webob.exc import HTTPFound, HTTPForbidden
-from ptah.interfaces import IAuthentication
 
 import validation
 from interfaces import _, IPasswordTool, IPreferencesGroup
@@ -67,7 +66,7 @@ class Registration(form.Form):
         user = self.create(data)
 
         user = reg.getUtility(IAuthentication).getUserByLogin(data['login'])
-        headers = security.remember(self.request, user.login)
+        headers = security.remember(self.request, user.uuid)
 
         validation.initiateValidation(user, self.request)
 

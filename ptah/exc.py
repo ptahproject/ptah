@@ -28,9 +28,7 @@ class Forbidden(view.View):
             if loginurl and not loginurl.startswith(('http://', 'https://')):
                 loginurl = request.application_url + loginurl
             else:
-                loginurl = request.application_url + 'login.html'
-
-            print loginurl
+                loginurl = request.application_url + '/login.html'
 
             request.response.status = HTTPFound.code
             request.response.headers['location'] = '%s?%s'%(

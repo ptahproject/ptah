@@ -15,6 +15,7 @@ class CrowdUser(Base):
     __tablename__ = 'ptah_crowd'
 
     id = sa.Column(sa.Integer, primary_key=True)
+    uuid = sa.Column(sa.Unicode(32), unique=True)
     name = sa.Column(sa.Unicode(255))
     login = sa.Column(sa.Unicode(255), unique=True)
     email = sa.Column(sa.Unicode(255), unique=True)
@@ -27,6 +28,7 @@ class CrowdUser(Base):
         super(Base, self).__init__()
 
         self.name = name
+        self.uuid = uuid.uuid4().get_hex()
         self.login = login
         self.email = email
         self.password = password
@@ -35,12 +37,16 @@ class CrowdUser(Base):
         self.suspended = False
 
     @classmethod
-    def get(cls, login):
-        return Session.query(cls).filter(cls.login==login).first()
+    def get(cls, id):
+        return Session.query(cls).filter(cls.uuid==id).first()
 
     @classmethod
     def getById(cls, id):
         return Session.query(cls).filter(cls.id==id).first()
+
+    @classmethod
+    def getByLogin(cls, login):
+        return Session.query(cls).filter(cls.login==login).first()
 
 
 class UserActivity(Base):
