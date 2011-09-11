@@ -10,6 +10,7 @@
                        disabled context.disabled;
                        tabindex context.tabindex;
                        readonly context.readonly;
+		       required context.required;
                        alt context.alt;
                        accesskey context.accesskey;
                        size context.size;
