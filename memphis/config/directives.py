@@ -161,7 +161,8 @@ class Action(object):
         return self._discriminator
 
     def __call__(self):
-        self.callable(*self.args, **self.kw)
+        if self.callable:
+            self.callable(*self.args, **self.kw)
 
 
 class ClassAction(Action):
