@@ -1,9 +1,9 @@
 import colander
 from zope import interface
+from collections import OrderedDict
 from pyramid.i18n import get_localizer
 
 from memphis import config
-from memphis.form.util import OrderedDict
 from memphis.form.error import Error, WidgetError
 from memphis.form.pagelets import FORM_INPUT, FORM_DISPLAY
 from memphis.form.interfaces import \
@@ -245,7 +245,7 @@ class FieldWidgets(OrderedDict):
 
             value = widget.node.missing
             try:
-                value = widget.node.deserialize(widget.extract())
+                value = widget.deserialize(widget.extract())
             except colander.Invalid, error:
                 error = WidgetError(error, error.msg, widget)
                 errors.append(error)

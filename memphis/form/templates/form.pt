@@ -16,4 +16,5 @@
 
   <input type="hidden" tal:condition="context.csrf" 
 	 name="${context.csrfname}" value="${context.token}" />
+  <input type="hidden" name="__form_identity__" value="${context.id}" />
 </form>

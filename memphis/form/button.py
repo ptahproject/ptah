@@ -2,11 +2,11 @@
 import sys, re
 import colander
 from zope import interface
+from collections import OrderedDict
 from pyramid.i18n import get_localizer
 
 from memphis import config
 from memphis.form.field import Field
-from memphis.form.util import createId, OrderedDict
 from memphis.form.interfaces import IForm, IButton, IActions, IWidget
 
 AC_DEFAULT = 0
@@ -71,6 +71,9 @@ class Buttons(OrderedDict):
 
         for name, button in buttons:
             self[name] = button
+
+    def __add__(self, other):
+        return self.__class__(self, other)
 
 
 class Actions(OrderedDict):
@@ -148,6 +151,14 @@ class Actions(OrderedDict):
         if executed:
             self.clear()
             self.update()
+
+
+_identifier = re.compile('[A-Za-z][a-zA-Z0-9_]*$')
+
+def createId(name):
+    if _identifier.match(name):
+        return str(name).lower()
+    return name.encode('utf-8').encode('hex')
 
 
 def button(title, **kwargs):

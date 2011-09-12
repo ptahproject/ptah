@@ -1,5 +1,6 @@
 # widgets
 from text import TextWidget
+from file import FileWidget
 from radio import RadioWidget, HorizontalRadioWidget
 from tinymce import TinymceWidget
 from textarea import TextAreaWidget

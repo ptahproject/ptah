@@ -35,6 +35,7 @@ class IField(interface.Interface):
     prefix = interface.Attribute('Prefix')
     mode = interface.Attribute('Mode')
     widget = interface.Attribute('Widget Factory')
+    readonly = interface.Attribute('Readonly mode')
 
 
 # ----[ Data Managers ]------------------------------------------------------
@@ -151,12 +152,18 @@ class IWidget(interface.Interface):
         """Setup all of the widget information used for displaying."""
 
     def render(request):
-        """Render form. First it tring to use template. If template is
+        """Render form widget. First it tring to use template. If template is
         not set then it uses one of the pagelets."""
 
     def renderWidget(request):
         """Render html widget. First it tring to use template. If template is
         not set then it uses one of the pagelets."""
+
+    def serialize(value):
+        """ serialize value into widget compatible form """
+
+    def deserialize(value):
+        """ deserialize value """
 
 
 class ISequenceWidget(IWidget):

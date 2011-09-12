@@ -97,9 +97,16 @@ class Widget(object):
 
         # Step 1.4: Convert the value to one that the widget can understand
         if value is not colander.null:
-            self.value = self.node.serialize(value)
-            if type(self.value) is str:
-                self.value = unicode(self.value, 'utf-8')
+            self.value = self.serialize(value)
+
+    def serialize(self, value):
+        value = self.node.serialize(value)
+        if type(value) is str:
+            value = unicode(value, 'utf-8')
+        return value
+
+    def deserialize(self, value):
+        return self.node.deserialize(value)
 
     def extract(self, default=colander.null):
         return self.params.get(self.name, default)
@@ -119,12 +126,6 @@ class Widget(object):
 
 
 class SequenceWidget(Widget):
-    """Term based sequence widget base.
-
-    The sequence widget is used for select items from a sequence. Don't get
-    confused, this widget does support to choose one or more values from a
-    sequence. The word sequence is not used for the schema field, it's used
-    for the values where this widget can choose from."""
     interface.implements(ISequenceWidget)
 
     value = ()
