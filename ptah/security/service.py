@@ -5,6 +5,7 @@ from pyramid.security import Everyone
 from pyramid.threadlocal import get_current_request
 from pyramid.interfaces import IAuthorizationPolicy
 
+import ptah
 from role import LocalRoles
 from interfaces import IAuthentication, ISearchableAuthProvider
 
@@ -36,19 +37,19 @@ class Authentication(object):
                 id, name, login = info
                 return Principal('user://%s:%s'%(pname, id), name, login)
 
-    def getPrincipal(self, uuid):
-        if not uuid or not uuid.startswith('user://'):
+    def getPrincipal(self, uri):
+        if not uri or not uri.startswith('user://'):
             return
-        
-        uri = uuid.split('user://', 1)[1]
-        pid, id = uri.split(':', 1)
+
+        uuid = uri.split('user://', 1)[1]
+        pid, id = uuid.split(':', 1)
 
         provider = providers.get(pid)
         if provider is not None:
             info = provider.getPrincipalInfo(id)
             if info is not None:
                 name, login = info
-                return Principal(uuid, name, login)
+                return Principal(uri, name, login)
 
     def getPrincipalByLogin(self, login):
         for pname, provider in providers.items():
@@ -62,7 +63,7 @@ class Authentication(object):
         if id:
             return False
         return True
-        
+
     def getCurrentPrincipal(self):
         id = security.authenticated_userid(get_current_request())
         if id:
@@ -92,5 +93,11 @@ class Authentication(object):
         authz = request.registry.queryUtility(IAuthorizationPolicy)
         return authz.permits(context, principals, permission)
 
+    def _resolveUri(self, uri):
+        return self.getPrincipal(uri)
+
 
 authService = Authentication()
+
+ptah.registerResolver(
+    'user', authService._resolveUri, title='Principal resolver')

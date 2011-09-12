@@ -1,5 +1,8 @@
 # ptah public api
 
+# uri
+from ptah.uri import resolve, registerResolver
+
 # module
 from ptah.manage import PtahModule
 from ptah.interfaces import IPtahModule

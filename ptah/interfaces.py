@@ -28,3 +28,10 @@ class IPtahModule(interface.Interface):
 
     def available(request):
         """ is module available """
+
+
+class IURIResolver(interface.Interface):
+    """ uri resolver """
+
+    def __call__(uri):
+        """ resolve uri and return context object """
