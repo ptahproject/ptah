@@ -100,4 +100,4 @@ class Authentication(object):
 authService = Authentication()
 
 ptah.registerResolver(
-    'user', authService._resolveUri, title='Principal resolver')
+    'user', None, authService._resolveUri, title='Principal resolver')
