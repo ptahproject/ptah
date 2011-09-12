@@ -9,8 +9,11 @@ import ptah
 from role import LocalRoles
 from interfaces import IAuthentication, ISearchableAuthProvider
 
+checkers = []
 providers = {}
 
+def provideAuthChecker(checker):
+    checkers.append(checker)
 
 def registerProvider(name, provider):
     providers[name] = provider
@@ -23,6 +26,10 @@ class Authentication(object):
         for pname, provider in providers.items():
             principal = provider.authenticate(credentials)
             if principal is not None:
+                for checker in checkers:
+                    if not checker(principal):
+                        return
+
                 return principal
 
     def getPrincipalByLogin(self, login):

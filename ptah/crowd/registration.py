@@ -4,8 +4,10 @@ from pyramid import security
 from memphis import view, form
 from webob.exc import HTTPFound, HTTPForbidden
 
-import validation
-from interfaces import _, IPasswordTool, IPreferencesGroup
+import ptah
+from ptah.security import events, authService
+
+from interfaces import _, IPreferencesGroup
 from settings import CROWD
 from models import Session, CrowdUser
 from schemas import RegistrationSchema, PasswordSchema
@@ -43,7 +45,7 @@ class Registration(form.Form):
         user = CrowdUser(data['name'], data['login'], data['login'])
 
         # set password
-        passwordtool = self.request.registry.getUtility(IPasswordTool)
+        passwordtool = ptah.security.passwordTool
         user.password = passwordtool.encodePassword(data['password'])
         Session.add(user)
         Session.flush()
@@ -61,15 +63,17 @@ class Registration(form.Form):
             self.message(errors, 'form-error')
             return
 
-        reg = self.request.registry
-
         user = self.create(data)
 
-        user = reg.getUtility(IAuthentication).getUserByLogin(data['login'])
-        headers = security.remember(self.request, user.uuid)
+        sm = self.request.registry
+        sm.notify(events.UserRegisteredEvent(user))
 
-        validation.initiateValidation(user, self.request)
-
-        raise HTTPFound(
-            location='%s/login-success.html'%self.request.application_url,
-            headers = headers)
+        principal = authService.authenticate(
+            {'login': data['name'], 'password': data['password']})
+        if principal is not None:
+            headers = security.remember(self.request, user.uuid)
+            raise HTTPFound(
+                location='%s/login-success.html'%self.request.application_url,
+                headers = headers)
+        else:
+            raise HTTPFound(location=self.request.application_url)

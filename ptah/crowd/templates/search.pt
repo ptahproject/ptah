@@ -12,19 +12,13 @@
 	  <th>#</th>
 	  <th>Name</th>
 	  <th>Login/Email</th>
-	  <th>Validated</th>
-	  <th>Suspended</th>
-	  <th>Joined</th>
 	</tr>
 	<tr tal:repeat="user view.users">
-	  <td><input type="checkbox" name="uid" value="${user.id}" 
-		     tal:attributes="checked str(user.id) in uids" /></td>
-	  <td>${user.id}</td>
-	  <td><a href="${user.id}/index.html">${user.name}</a></td>
+	  <td><input type="checkbox" name="uid" value="${user.pid}" 
+		     tal:attributes="checked str(user.pid) in uids" /></td>
+	  <td>${user.pid}</td>
+	  <td><a href="${user.pid}/index.html">${user.name}</a></td>
 	  <td>${user.login}</td>
-	  <td>${user.validated}</td>
-	  <td>${user.suspended}</td>
-	  <td>${view.format.datetime(user.joined, 'medium')}</td>
 	</tr>
       </table>
       <div class="actions">

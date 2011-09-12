@@ -1,4 +1,5 @@
 """ login form """
+import colander
 from memphis import view, form
 from pyramid import security
 from webob.exc import HTTPFound
@@ -7,13 +8,34 @@ from ptah.mail import MAIL
 from ptah.security import authService
 
 from interfaces import _
-from schemas import LoginSchema
 from settings import AUTH_SETTINGS
 
 view.registerRoute('ptah-login', '/login.html')
 view.registerRoute('ptah-logout', '/logout.html')
 view.registerRoute('ptah-login-success', '/login-success.html')
 view.registerRoute('ptah-login-suspended', '/login-suspended.html')
+
+view.registerLayout(
+    'ptah-security', parent='.',
+    template = view.template('ptah.security:templates/layout.pt'))
+
+
+class LoginSchema(colander.Schema):
+    """ login form """
+
+    login = colander.SchemaNode(
+        colander.Str(),
+        title = _(u'Login Name'),
+        description = _('Login names are case sensitive, '\
+                            'make sure the caps lock key is not enabled.'),
+        default = u'')
+
+    password = colander.SchemaNode(
+        colander.Str(),
+        title = _(u'Password'),
+        description = _('Case sensitive, make sure caps lock is not enabled.'),
+        default = u'',
+        widget = 'password')
 
 
 class LoginForm(form.Form):

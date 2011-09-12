@@ -1,9 +1,11 @@
 """ schemas """
 import colander
 from zope.component import getUtility
+from ptah.security import passwordTool
 
+from interfaces import _
 from models import CrowdUser
-from interfaces import _, IPasswordTool
+
 
 def lower(s):
     if isinstance(s, basestring):
@@ -16,7 +18,7 @@ def checkLogin(node, login):
 
 
 def passwordValidator(node, appstruct):
-    err = getUtility(IPasswordTool).validatePassword(appstruct)
+    err = passwordTool.validatePassword(appstruct)
     if err is not None:
         raise colander.Invalid(node, err)
 
@@ -31,7 +33,7 @@ def passwordSchemaValidator(node, appstruct):
             raise colander.Invalid(
                 node, _("Password and Confirm Password should be the same."))
 
-        err = getUtility(IPasswordTool).validatePassword(appstruct['password'])
+        err = passwordTool.validatePassword(appstruct['password'])
         if err is not None:
             raise colander.Invalid(node, err)
 
@@ -144,22 +146,6 @@ class UserSchema(colander.Schema):
                         u'No spaces or special characters, should contain '\
                         u'digits and letters in mixed case.'),
         validator = passwordValidator)
-
-    suspend = colander.SchemaNode(
-        colander.Bool(),
-        title = _(u'Suspend'),
-        description = _(u'Suspend account immediately after creation.'),
-        default = False)
-
-    validate = colander.SchemaNode(
-        colander.Bool(),
-        title = _(u'Validate'),
-        description = _(u'Initiate email validation process for new account.'),
-        default = False)
-
-    joined = colander.SchemaNode(
-        colander.DateTime(),
-        title = _(u'Joined'))
 
 
 class ManagerChangePasswordSchema(colander.Schema):

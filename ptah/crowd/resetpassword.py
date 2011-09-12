@@ -6,7 +6,7 @@ from memphis import config, form, view
 
 from ptah import mail, security
 
-from interfaces import _, IPasswordTool
+from interfaces import _
 from schemas import ResetPasswordSchema, PasswordSchema
 
 MAIL = mail.MAIL

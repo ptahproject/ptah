@@ -2,8 +2,11 @@
 
 from service import authService
 from service import registerProvider
+from service import provideAuthChecker
 
 from interfaces import IPrincipal
+from interfaces import IPrincipalWithEmail
+
 from interfaces import IAuthProvider
 from interfaces import ISearchableAuthProvider
 

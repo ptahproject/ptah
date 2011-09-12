@@ -3,10 +3,11 @@ from zope import interface
 from webob.exc import HTTPFound
 from memphis import config, view, form
 
+from ptah.security import passwordTool, events
+
 from models import CrowdUser, Session
 from schemas import UserSchema, ManagerChangePasswordSchema
-from interfaces import _, IPasswordTool, \
-    ICrowdModule, ICrowdUser, IManageUserAction
+from interfaces import _, ICrowdModule, ICrowdUser, IManageUserAction
 
 
 class CreateUserForm(form.Form):
@@ -28,23 +29,15 @@ class CreateUserForm(form.Form):
 
         # create user
         user = CrowdUser(data['fullname'], data['login'], data['login'])
-
-        if not data['validate']:
-            user.validated = True
-
-        if data['suspend']:
-            user.suspended = True
-
         # set password
-        passwordtool = self.request.registry.getUtility(IPasswordTool)
-        user.password = passwordtool.encodePassword(data['password'])
+        user.password = passwordTool.encodePassword(data['password'])
         Session.add(user)
         Session.flush()
+        
+        self.request.registry.notify(events.UserAddedEvent(user))
 
         self.message('User has been created.', 'success')
         raise HTTPFound(location='./')
-
-        #event.notify(ObjectCreatedEvent(item))
 
 
 class Info(object):
@@ -68,7 +61,6 @@ class UserInfo(form.Form):
 
     fields = form.Fields(UserSchema)
     fields['id'].readonly = True
-    fields['joined'].readonly = True
 
     def getContent(self):
         return self.context.user
@@ -119,6 +111,6 @@ class ChangePassword(form.Form):
         sm = self.request.registry
 
         self.context.user.password = \
-            sm.getUtility(IPasswordTool).encodePassword(data['password'])
+            passwordTool.encodePassword(data['password'])
 
         self.message("User password has been changed.")

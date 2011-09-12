@@ -2,13 +2,14 @@
 from os import urandom
 from random import randint
 from codecs import getencoder
-from hashlib import md5, sha1
+from hashlib import sha1
 from base64 import urlsafe_b64encode, urlsafe_b64decode
 from datetime import timedelta
-
-from ptah import token
 from zope import interface
 from memphis import config
+
+import ptah
+from ptah import token
 
 from service import authService
 from settings import AUTH_SETTINGS
@@ -80,10 +81,10 @@ class PasswordTool(object):
         data = token.tokenService.get(TOKEN_TYPE, passcode)
 
         if data is not None:
-            return authService.getPrincipal(data)
+            return ptah.resolve(data)
 
-    def generatePasscode(self, principal):
-        return token.tokenService.generate(TOKEN_TYPE, principal.id)
+    def generatePasscode(self, uuid):
+        return token.tokenService.generate(TOKEN_TYPE, uuid)
 
     def removePasscode(self, passcode):
         token.tokenService.remove(passcode)

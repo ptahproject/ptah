@@ -15,19 +15,22 @@ class IPrincipal(interface.Interface):
     login = interface.Attribute('Principal login')
 
 
+class IPrincipalWithEmail(IPrincipal):
+    """ principal with email """
+
+    email = interface.Attribute('Principal email')
+
+
 class IAuthentication(interface.Interface):
     """ authentication """
 
     def isAnonymous():
         """ """
 
-    def getPrincipal(uuid):
-        pass
-
     def getPrincipalByLogin(login):
         pass
 
-    def getCurrentPrincipal(uuid):
+    def getCurrentPrincipal():
         pass
 
     def authenticate(credentials):

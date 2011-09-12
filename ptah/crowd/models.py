@@ -7,7 +7,7 @@ from memphis import config
 from zope import interface
 
 import ptah
-from ptah.security import IPrincipal
+from ptah.security import IPrincipalWithEmail
 
 Base = psa.get_base()
 Session = psa.get_session()
@@ -15,7 +15,7 @@ UUID = ptah.UUIDGenerator('user+crowd')
 
 
 class CrowdUser(Base):
-    interface.implements(IPrincipal)
+    interface.implements(IPrincipalWithEmail)
 
     __tablename__ = 'ptah_crowd'
 
@@ -25,9 +25,6 @@ class CrowdUser(Base):
     login = sa.Column(sa.Unicode(255), unique=True)
     email = sa.Column(sa.Unicode(255), unique=True)
     password = sa.Column(sa.Unicode(255))
-    joined = sa.Column(sa.DateTime)
-    validated = sa.Column(sa.Boolean)
-    suspended = sa.Column(sa.Boolean)
 
     def __init__(self, name, login, email, password=u''):
         super(Base, self).__init__()
@@ -37,9 +34,6 @@ class CrowdUser(Base):
         self.login = login
         self.email = email
         self.password = password
-        self.joined = datetime.datetime.now()
-        self.validated = False
-        self.suspended = False
 
     @classmethod
     def get(cls, id):
@@ -53,41 +47,11 @@ class CrowdUser(Base):
     def getByLogin(cls, login):
         return Session.query(cls).filter(cls.login==login).first()
 
+    def __str__(self):
+        return self.name
 
-class UserActivity(Base):
-
-    __tablename__ = 'ptah_crowd_activity'
-
-    id = sa.Column(sa.Integer, primary_key=True)
-    user = sa.Column(sa.Integer)
-    date = sa.Column(sa.DateTime)
-    type = sa.Column(sa.Unicode(10))
-
-    def __init__(self, user, type):
-        super(UserActivity, self).__init__()
-
-        self.user = user
-        self.date = datetime.now()
-        self.type = type
-
-
-class UserProps(Base):
-
-    __tablename__ = 'ptah_crowd_testprops'
-
-    id = sa.Column(sa.Integer, primary_key=True)
-    user = sa.Column(sa.Integer)
-    date = sa.Column(sa.DateTime)
-    title = sa.Column(sa.Unicode(10))
-
-    def __init__(self, user):
-        super(UserProps, self).__init__()
-
-        self.user = user
-
-    @classmethod
-    def get(cls, id):
-        return Session.query(cls).filter(cls.user==id).first()
+    def __repr__(self):
+        return '%s <%s>'%(self.name, self.uuid)
 
 
 @config.handler(config.SettingsInitialized)
