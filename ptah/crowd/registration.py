@@ -1,8 +1,8 @@
 """ site registration form """
 from zope import interface
-from pyramid import security
 from memphis import view, form
-from webob.exc import HTTPFound, HTTPForbidden
+from pyramid import security
+from pyramid.httpexceptions import HTTPFound, HTTPForbidden
 
 import ptah
 from ptah.security import authService, PasswordSchema, AUTH_SETTINGS

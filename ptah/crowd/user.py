@@ -1,7 +1,7 @@
 """ add/edit user """
 from zope import interface
-from webob.exc import HTTPFound
 from memphis import config, view, form
+from pyramid.httpexceptions import HTTPFound
 
 from ptah.security import passwordTool, PrincipalAddedEvent
 

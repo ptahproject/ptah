@@ -83,7 +83,7 @@ def validate(request):
     """Validate account"""
     t = request.GET.get('token')
 
-    data = token.tokenService.get(TOKEN_TYPE, t)
+    data = token.tokenService.get(t)
     if data is not None:
         user = MemberProperties.get(data)
         if user is not None:
@@ -91,7 +91,7 @@ def validate(request):
             token.tokenService.remove(t)
             view.addMessage(request, "Account has been successfully validated.")
 
-            request.notify(
+            request.registry.notify(
                 ptah.security.PrincipalValidatedEvent(
                     ptah.resolve(user.uuid)))
 

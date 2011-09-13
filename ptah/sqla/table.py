@@ -1,7 +1,7 @@
 import ptah
 import pyramid_sqla
 from memphis import view, form
-from webob.exc import HTTPFound
+from pyramid.httpexceptions import HTTPFound
 
 from module import Session
 from interfaces import ITable

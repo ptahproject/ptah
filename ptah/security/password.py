@@ -89,7 +89,7 @@ class PasswordTool(object):
         return ptah.extractUriType(uuid) in self._changers
 
     def getPrincipal(self, passcode):
-        data = token.tokenService.get(TOKEN_TYPE, passcode)
+        data = token.tokenService.get(passcode)
 
         if data is not None:
             return ptah.resolve(data)

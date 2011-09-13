@@ -15,13 +15,13 @@ class CSRFService(object):
     config.utility()
 
     def generate(self, data):
-        t = token.tokenService.getToken(TOKEN_TYPE, data)
+        t = token.tokenService.getByData(TOKEN_TYPE, data)
         if t is not None:
             return t
         return token.tokenService.generate(TOKEN_TYPE, data)
 
     def get(self, t):
-        return token.tokenService.get(TOKEN_TYPE, t)
+        return token.tokenService.get(t)
 
     def remove(self, t):
         return token.tokenService.remove(t)

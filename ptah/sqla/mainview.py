@@ -1,7 +1,7 @@
 import ptah
 from zope import interface
-from webob.exc import HTTPFound
 from memphis import config, view
+from pyramid.httpexceptions import HTTPFound
 
 import pyramid_sqla as psa
 

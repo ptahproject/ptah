@@ -2,7 +2,7 @@
 import colander
 from memphis import view, form
 from pyramid import security
-from webob.exc import HTTPFound
+from pyramid.httpexceptions import HTTPFound
 
 import ptah
 from ptah.mail import MAIL

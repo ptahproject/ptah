@@ -1,6 +1,6 @@
-from webob.exc import HTTPFound
 from memphis import view, form
 from pyramid.decorator import reify
+from pyramid.httpexceptions import HTTPFound
 
 from module import Session
 from fields import buildSchema

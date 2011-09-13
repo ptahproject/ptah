@@ -1,12 +1,10 @@
 """ simple token service """
-import datetime
-import uuid, transaction
+import datetime, uuid
 import pyramid_sqla as psa
-import sqlalchemy as sa
-import sqlalchemy.orm as orm
-from memphis import config
+import sqlalchemy as sqla
 from zope import interface
-from zope.component import getSiteManager
+from memphis import config
+from ptah.query import QueryFreezer
 
 __all__ = ['registerTokenType', 'tokenService', 'ITokenType', 'ITokenService']
 
@@ -59,46 +57,50 @@ class TokenType(object):
 
 def registerTokenType(id, timeout, title='', description=''):
     tt = TokenType(id, timeout, title, description)
+    types[tt.id] = tt
 
     info = config.DirectiveInfo()
     info.attach(
         config.Action(
-            registerTokenTypeImpl,
-            (tt, ), discriminator = ('ptah.token:tokenType', id)))
+            None, discriminator = ('ptah.token:tokenType', id)))
 
     return tt
 
 
-def registerTokenTypeImpl(tt):
-    types[tt.id] = tt
-
-
 class TokenService(object):
     interface.implements(ITokenService)
-    config.utility(ITokenService)
+
+    _sql_get = QueryFreezer(
+        lambda: Session.query(Token).filter(
+            Token.token==sqla.sql.bindparam('token')))
+
+    _sql_get_by_data = QueryFreezer(
+        lambda: Session.query(Token).filter(
+            sqla.sql.and_(Token.data==sqla.sql.bindparam('data'),
+                          Token.typ==sqla.sql.bindparam('typ'))))
 
     def generate(self, typ, data):
-        t = Token(typ.id, data)
+        t = Token(typ, data)
         Session.add(t)
-
         return t.token
 
-    def get(self, typ, token, data=None):
-        t = Token.get(token, typ.id)
+    def get(self, token, data=None):
+        t = self._sql_get.first(token=token)
         if t is not None:
             return t.data
 
-    def getToken(self, typ, data):
-        t = Token.getToken(data, typ.id)
+    def getByData(self, typ, data):
+        t = self._sql_get_by_data.first(data=data, typ=typ.id)
         if t is not None:
             return t.token
 
     def remove(self, token):
-        Session.query(Token).filter(Token.token == token).delete()
+        Session.query(Token).filter(
+            sqla.sql.or_(Token.token == token,
+                         Token.valid > datetime.datetime.now())).delete()
 
 
 tokenService = TokenService()
-
 
 Base = psa.get_base()
 Session = psa.get_session()
@@ -108,33 +110,16 @@ class Token(Base):
 
     __tablename__ = 'ptah_tokens'
 
-    id = sa.Column(sa.Integer, primary_key=True)
-    type = sa.Column(sa.Unicode(48))
-    time = sa.Column(sa.DateTime)
-    token = sa.Column(sa.Unicode(48))
-    data = sa.Column(sa.Unicode)
+    id = sqla.Column(sqla.Integer, primary_key=True)
+    token = sqla.Column(sqla.Unicode(48))
+    valid = sqla.Column(sqla.DateTime)
+    data = sqla.Column(sqla.Unicode)
+    typ = sqla.Column(sqla.Unicode(48))
 
-    def __init__(self, type, data):
+    def __init__(self, typ, data):
         super(Token, self).__init__()
 
-        self.type = type
+        self.typ = typ.id
         self.data = data
-        self.time = datetime.datetime.now()
+        self.valid = datetime.datetime.now() + typ.timeout
         self.token = str(uuid.uuid4())
-
-    @classmethod
-    def get(cls, token, type):
-        return Session.query(cls).filter_by(token=token, type=type).first()
-
-    @classmethod
-    def getToken(cls, data, type):
-        return Session.query(cls).filter_by(data=data, type=type).first()
-
-
-@config.handler(config.SettingsInitialized)
-def initialize(ev):
-    # Create all tables
-    Base.metadata.create_all()
-
-    # Commit changes
-    transaction.commit()
