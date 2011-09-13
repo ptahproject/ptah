@@ -4,8 +4,6 @@ from zope import interface
 from zope.interface import providedBy
 from zope.component import queryUtility, getSiteManager
 
-from webob.exc import HTTPForbidden
-
 from pyramid.config.views import requestonly, isexception
 from pyramid.interfaces import IView
 from pyramid.interfaces import IRequest
@@ -14,6 +12,7 @@ from pyramid.interfaces import IViewClassifier
 from pyramid.interfaces import IExceptionViewClassifier
 from pyramid.interfaces import IAuthorizationPolicy
 from pyramid.interfaces import IAuthenticationPolicy
+from pyramid.httpexceptions import HTTPForbidden
 
 from memphis import config
 from memphis.view.base import View

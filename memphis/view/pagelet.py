@@ -1,6 +1,6 @@
 """ pagelet implementation """
 import sys, logging
-from webob.exc import HTTPNotFound
+from pyramid.httpexceptions import HTTPNotFound
 
 from zope import interface
 from zope.component import getSiteManager

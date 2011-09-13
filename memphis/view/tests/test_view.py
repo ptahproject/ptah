@@ -1,11 +1,11 @@
 """ view tests """
 import sys, unittest
 from zope import interface, component
-from webob.exc import HTTPForbidden, HTTPNotFound, HTTPFound
 from webob.response import Response
 from pyramid.interfaces import IView, IRequest
 from pyramid.interfaces import IViewClassifier
 from pyramid.interfaces import IAuthenticationPolicy
+from pyramid.httpexceptions import HTTPForbidden, HTTPNotFound, HTTPFound
 
 from memphis import config, view
 from memphis.config import api
