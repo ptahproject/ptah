@@ -1,4 +1,4 @@
-<div class="row" tal:condition="view.users">
+<tal:block tal:condition="view.users">
   <div class="page-header">
     <h2>Users</h2>
   </div>
@@ -14,8 +14,8 @@
 	  <th>Login/Email</th>
 	</tr>
 	<tr tal:repeat="user view.users">
-	  <td><input type="checkbox" name="uid" value="${user.pid}" 
-		     tal:attributes="checked str(user.pid) in uids" /></td>
+	  <td><input type="checkbox" name="uid" value="${user.uuid}" 
+		     tal:attributes="checked str(user.uuid) in uids" /></td>
 	  <td>${user.pid}</td>
 	  <td><a href="${user.pid}/index.html">${user.name}</a></td>
 	  <td>${user.login}</td>
@@ -29,12 +29,10 @@
       </div>
     </form>
   </div>
+</tal:block>
+
+<div class="page-header">
+  <h3>Search users</h3>
 </div>
 
-<div class="row">
-  <div class="page-header">
-    <h3>Search users</h3>
-  </div>
-
-  <tal:block content="structure view.pagelet('form-view', view)" />
-</div>
+<tal:block content="structure view.pagelet('form-view', view)" />

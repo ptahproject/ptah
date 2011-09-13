@@ -5,19 +5,19 @@ from memphis import view, form
 from webob.exc import HTTPFound, HTTPForbidden
 
 import ptah
-from ptah.security import events, authService
+from ptah.security import authService, PasswordSchema, AUTH_SETTINGS
+from ptah.security import PrincipalRegisteredEvent
 
+from schemas import RegistrationSchema
+from provider import Session, CrowdUser
 from interfaces import _, IPreferencesGroup
-from settings import CROWD
-from models import Session, CrowdUser
-from schemas import RegistrationSchema, PasswordSchema
 
 
 view.registerRoute('ptah-join', '/join.html')
 
 
 class Registration(form.Form):
-    view.pyramidView(route = 'ptah-join', layout='ptah-crowd')
+    view.pyramidView(route = 'ptah-join', layout='ptah-security')
 
     csrf = True
     label = _("Registration")
@@ -25,7 +25,7 @@ class Registration(form.Form):
     autocomplete = 'off'
 
     def update(self):
-        if not CROWD.registration:
+        if not AUTH_SETTINGS.registration:
             raise HTTPForbidden('Site registraion is disabled.')
 
         sm = self.request.registry
@@ -36,7 +36,7 @@ class Registration(form.Form):
             props.append(prop)
             fieldsets.append(form.Fieldset(prop.schema))
 
-        self.fields = form.Fields(RegistrationSchema, PasswordSchema, *fieldsets)
+        self.fields = form.Fields(RegistrationSchema,PasswordSchema,*fieldsets)
 
         super(Registration, self).update()
 
@@ -66,7 +66,7 @@ class Registration(form.Form):
         user = self.create(data)
 
         sm = self.request.registry
-        sm.notify(events.UserRegisteredEvent(user))
+        sm.notify(PrincipalRegisteredEvent(user))
 
         principal = authService.authenticate(
             {'login': data['name'], 'password': data['password']})

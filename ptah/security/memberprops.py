@@ -3,7 +3,7 @@ import sqlalchemy as sqla
 import pyramid_sqla as psqla
 from datetime import datetime
 
-import ptah
+from ptah.query import QueryFreezer
 from ptah.utils import JsonDictType
 from ptah.security import IPrincipal
 
@@ -29,7 +29,7 @@ class MemberProperties(Base):
         self.validated = False
         self.suspended = False
 
-    _sql_get = ptah.QueryFreezer(
+    _sql_get = QueryFreezer(
         lambda: Session.query(MemberProperties)
         .filter(MemberProperties.uuid == sqla.sql.bindparam('uuid')))
 

@@ -20,6 +20,13 @@ def resolve(uri):
     return None
 
 
+def extractUriType(uri):
+    try:
+        return uri.split(':', 1)[0]
+    except ValueError:
+        return None
+
+
 def registerResolver(type, component, title='', description=''):
     resolvers[type] = component
     resolversInfo[type] = (title, description)

@@ -1,4 +1,3 @@
 ${view.renderMessages()}
 
 <tal:block content="structure content" />
-

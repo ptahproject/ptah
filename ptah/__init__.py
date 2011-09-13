@@ -1,7 +1,10 @@
 # ptah public api
 
 # uri
-from ptah.uri import resolve, registerResolver, UUIDGenerator
+from ptah.uri import resolve
+from ptah.uri import registerResolver
+from ptah.uri import extractUriType
+from ptah.uri import UUIDGenerator
 
 # module
 from ptah.manage import PtahModule
@@ -18,6 +21,9 @@ from ptah.security import Role, Roles, Permission, registerRole, authService
 
 # rest api
 from ptah import rest
+
+# mail api
+from ptah import mail
 
 # batches
 from ptah.batch import Batch, Batches, first_neighbours_last

@@ -1,6 +1,6 @@
 <tal:block i18n:domain="memphis.users">
   <div class="page-header">
-    <h1 i18n:translate="">Your account has been suspended</h1>
+    <h1 i18n:translate="">Your account is suspended</h1>
   </div>
 
   <p>

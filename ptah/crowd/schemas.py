@@ -4,13 +4,14 @@ from zope.component import getUtility
 from ptah.security import passwordTool
 
 from interfaces import _
-from models import CrowdUser
+from provider import CrowdUser
 
 
 def lower(s):
     if isinstance(s, basestring):
         return s.lower()
     return s
+
 
 def checkLogin(node, login):
     if login and CrowdUser.get(login) is not None:
@@ -21,21 +22,6 @@ def passwordValidator(node, appstruct):
     err = passwordTool.validatePassword(appstruct)
     if err is not None:
         raise colander.Invalid(node, err)
-
-
-def passwordSchemaValidator(node, appstruct):
-    if appstruct['password'] is colander.required or \
-       appstruct['confirm_password'] is colander.required:
-        return
-
-    if appstruct['password'] and appstruct['confirm_password']:
-        if appstruct['password'] != appstruct['confirm_password']:
-            raise colander.Invalid(
-                node, _("Password and Confirm Password should be the same."))
-
-        err = passwordTool.validatePassword(appstruct['password'])
-        if err is not None:
-            raise colander.Invalid(node, err)
 
 
 class RegistrationSchema(colander.Schema):
@@ -59,25 +45,6 @@ class RegistrationSchema(colander.Schema):
         )
 
 
-class LoginSchema(colander.Schema):
-    """ login form """
-
-    login = colander.SchemaNode(
-        colander.Str(),
-        title = _(u'Login Name'),
-        description = _('Login names are case sensitive, '\
-                            'make sure the caps lock key is not enabled.'),
-        default = u'')
-
-    password = colander.SchemaNode(
-        colander.Str(),
-        title = _(u'Password'),
-        description = _('Case sensitive, make sure caps lock is not enabled.'),
-        default = u'',
-        widget = 'password')
-
-
-
 class ResetPasswordSchema(colander.Schema):
     """ reset password """
 
@@ -87,32 +54,6 @@ class ResetPasswordSchema(colander.Schema):
         description = _('Login names are not case sensitive.'),
         missing = u'',
         default = u'')
-
-
-PasswordSchema = colander.SchemaNode(
-    colander.Mapping(),
-
-    colander.SchemaNode(
-        colander.Str(),
-        name = 'password',
-        title = _(u'Password'),
-        description = _(u'Enter password. '\
-                        u'No spaces or special characters, should contain '\
-                        u'digits and letters in mixed case.'),
-        default = u'',
-        widget = 'password'),
-
-    colander.SchemaNode(
-        colander.Str(),
-        name = 'confirm_password',
-        title = _(u'Confirm password'),
-        description = _(u'Re-enter the password. '
-                        u'Make sure the passwords are identical.'),
-        default = u'',
-        widget = 'password'),
-
-    validator = passwordSchemaValidator
-)
 
 
 class UserSchema(colander.Schema):

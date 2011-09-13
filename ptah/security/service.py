@@ -19,18 +19,45 @@ def registerProvider(name, provider):
     providers[name] = provider
 
 
+class AuthInfo(object):
+
+    def __init__(self, status=False, principal=None, message=u''):
+        self.status = status
+        self.principal = None
+        self.message = message
+        self.keywords = {}
+
+
 class Authentication(object):
     interface.implements(IAuthentication)
 
     def authenticate(self, credentials):
+        info = AuthInfo()
+        
         for pname, provider in providers.items():
             principal = provider.authenticate(credentials)
             if principal is not None:
-                for checker in checkers:
-                    if not checker(principal):
-                        return
+                info.principal = principal
 
-                return principal
+                for checker in checkers:
+                    if not checker(principal, info):
+                        return info
+
+                info.status = True
+                return info
+
+        return info
+
+    def checkPrincipalAuth(self, principal):
+        info = AuthInfo()
+        info.principal = principal
+
+        for checker in checkers:
+            if not checker(principal, info):
+                return info
+
+        info.status = True
+        return info
 
     def getPrincipalByLogin(self, login):
         for pname, provider in providers.items():

@@ -1,7 +1,7 @@
 """ forbidden view """
 import urllib
-from webob.exc import HTTPFound, HTTPForbidden
 from pyramid.security import authenticated_userid
+from pyramid.httpexceptions import HTTPFound, HTTPForbidden
 
 from memphis import view
 from ptah.settings import PTAH

@@ -5,6 +5,8 @@ from codecs import getencoder
 from hashlib import sha1
 from base64 import urlsafe_b64encode, urlsafe_b64decode
 from datetime import timedelta
+
+import colander
 from zope import interface
 from memphis import config
 
@@ -67,6 +69,9 @@ class PasswordTool(object):
           }
     passwordManager = pm['{plain}']
 
+    def __init__(self):
+        self._changers = {}
+
     def checkPassword(self, encodedPassword, password):
         for prefix, pm in self.pm.items():
             if encodedPassword.startswith(prefix):
@@ -76,6 +81,12 @@ class PasswordTool(object):
 
     def encodePassword(self, password, salt=None):
         return self.passwordManager.encode(password, salt)
+
+    def registerPasswordChanger(self, typ, changer):
+        self._changers[typ] = changer
+
+    def hasPasswordChanger(self, uuid):
+        return ptah.extractUriType(uuid) in self._changers
 
     def getPrincipal(self, passcode):
         data = token.tokenService.get(TOKEN_TYPE, passcode)
@@ -89,6 +100,19 @@ class PasswordTool(object):
     def removePasscode(self, passcode):
         token.tokenService.remove(passcode)
 
+    def changePassword(self, passcode, password):
+        principal = self.getPrincipal(passcode)
+
+        self.removePasscode(passcode)
+        
+        if principal is not None:
+            changer = self._changers.get(ptah.extractUriType(principal.uuid))
+            if changer is not None:
+                changer(principal, password)
+                return True
+
+        return False
+                
     def validatePassword(self, password):
         if len(password) < self.min_length:
             #return _('Password should be at least ${count} characters.',
@@ -107,6 +131,47 @@ class PasswordTool(object):
 
 
 passwordTool = PasswordTool()
+
+
+def passwordSchemaValidator(node, appstruct):
+    if appstruct['password'] is colander.required or \
+           appstruct['confirm_password'] is colander.required:
+        return
+
+    if appstruct['password'] and appstruct['confirm_password']:
+        if appstruct['password'] != appstruct['confirm_password']:
+            raise colander.Invalid(
+                node, _("Password and Confirm Password should be the same."))
+
+        err = passwordTool.validatePassword(appstruct['password'])
+        if err is not None:
+            raise colander.Invalid(node, err)
+
+
+PasswordSchema = colander.SchemaNode(
+    colander.Mapping(),
+
+    colander.SchemaNode(
+        colander.Str(),
+        name = 'password',
+        title = _(u'Password'),
+        description = _(u'Enter password. '\
+                        u'No spaces or special characters, should contain '\
+                        u'digits and letters in mixed case.'),
+        default = u'',
+        widget = 'password'),
+
+    colander.SchemaNode(
+        colander.Str(),
+        name = 'confirm_password',
+        title = _(u'Confirm password'),
+        description = _(u'Re-enter the password. '
+                        u'Make sure the passwords are identical.'),
+        default = u'',
+        widget = 'password'),
+
+    validator = passwordSchemaValidator
+)
 
 
 @config.handler(config.SettingsInitializing)

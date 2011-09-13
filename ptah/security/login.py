@@ -4,6 +4,7 @@ from memphis import view, form
 from pyramid import security
 from webob.exc import HTTPFound
 
+import ptah
 from ptah.mail import MAIL
 from ptah.security import authService
 
@@ -14,10 +15,6 @@ view.registerRoute('ptah-login', '/login.html')
 view.registerRoute('ptah-logout', '/logout.html')
 view.registerRoute('ptah-login-success', '/login-success.html')
 view.registerRoute('ptah-login-suspended', '/login-suspended.html')
-
-view.registerLayout(
-    'ptah-security', parent='.',
-    template = view.template('ptah.security:templates/layout.pt'))
 
 
 class LoginSchema(colander.Schema):
@@ -57,23 +54,35 @@ class LoginForm(form.Form):
             self.message(errors, 'form-error')
             return
 
-        user = authService.authenticate(data)
+        info = authService.authenticate(data)
 
-        if user is not None:
-            #raise HTTPFound(
-            #    location='%s/login-suspended.html'%request.application_url)
-
-            headers = security.remember(request, user.uuid)
+        if info.status:
+            request.registry.notify(
+                ptah.security.LoggedInEvent(info.principal))
+                
+            headers = security.remember(request, info.principal.uuid)
             raise HTTPFound(
                 headers = headers,
                 location = '%s/login-success.html'%request.application_url)
+
+        if info.principal is not None:
+            request.registry.notify(
+                ptah.security.LogingFailedEvent(info.principal, info.message))
+
+        if info.keywords.get('suspended'):
+            raise HTTPFound(
+                location='%s/login-suspended.html'%request.application_url)
+
+        if info.message:
+            self.message(info.message, 'warning')
+            return
 
         self.message(_('You enter wrong login or password.'), 'error')
 
     def update(self):
         super(LoginForm, self).update()
 
-        self.AUTH_SETTINGS = AUTH_SETTINGS
+        self.registration = AUTH_SETTINGS.registration
 
         if not authService.isAnonymous():
             app_url = self.request.application_url
@@ -122,6 +131,9 @@ def logout(request):
     uid = security.authenticated_userid(request)
 
     if uid is not None:
+        request.registry.notify(
+            ptah.security.LoggedOutEvent(ptah.resolve(uid)))
+            
         view.addMessage(request, _('Logout successful!'), 'info')
         headers = security.forget(request)
         raise HTTPFound(

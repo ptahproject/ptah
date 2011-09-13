@@ -1,24 +1,38 @@
 """ reset password form """
+import colander
 from datetime import datetime
-from pyramid import security
-from webob.exc import HTTPFound
 from memphis import config, form, view
+from pyramid import security
+from pyramid.httpexceptions import HTTPFound
 
-from ptah import mail, security
+from ptah import mail
+from ptah.security import authService
+from ptah.security import passwordTool
+from ptah.security import PasswordSchema
+from ptah.security.settings import ResetPasswordInitiatedEvent
+from ptah.security.settings import PrincipalPasswordChangedEvent
 
 from interfaces import _
-from schemas import ResetPasswordSchema, PasswordSchema
-
-MAIL = mail.MAIL
 
 view.registerRoute('ptah-resetpassword', '/resetpassword.html')
 view.registerRoute('ptah-resetpassword-form', '/resetpasswordform.html')
 
 
+class ResetPasswordSchema(colander.Schema):
+    """ reset password """
+
+    login = colander.SchemaNode(
+        colander.Str(),
+        title = _(u'Login Name'),
+        description = _('Login names are not case sensitive.'),
+        missing = u'',
+        default = u'')
+
+
 class ResetPassword(form.Form):
     view.pyramidView(
-        route = 'ptah-resetpassword', layout='ptah-crowd',
-        template = view.template('ptah.crowd:templates/resetpassword.pt'))
+        route = 'ptah-resetpassword', layout='ptah-security',
+        template = view.template('ptah.security:templates/resetpassword.pt'))
 
     csrf = True
     fields = form.Fields(ResetPasswordSchema)
@@ -29,8 +43,8 @@ class ResetPassword(form.Form):
     def update(self):
         super(ResetPassword, self).update()
 
-        self.from_name = MAIL.from_name
-        self.from_address = MAIL.from_address
+        self.from_name = mail.MAIL.from_name
+        self.from_address = mail.MAIL.from_address
 
     @form.button(_('Start password reset'), actype=form.AC_PRIMARY)
     def reset(self):
@@ -40,15 +54,19 @@ class ResetPassword(form.Form):
 
         login = data.get('login')
         if login:
-            principal = registry.getUtility(IAuthentication)\
-                .getUserByLogin(login)
+            principal = authService.getPrincipalByLogin(login)
 
-            if principal is not None:
-                passcode = security.passwordTool.generatePasscode(principal)
+            if principal is not None and \
+                   passwordTool.hasPasswordChanger(principal.uuid):
+                
+                passcode = passwordTool.generatePasscode(principal.uuid)
 
                 template = ResetPasswordTemplate(principal, request)
                 template.passcode = passcode
                 template.send()
+
+                self.request.registry.notify(
+                    ResetPasswordInitiatedEvent(principal))
 
                 self.message(_('Your password has been '
                                'reset and is being emailed to you.'))
@@ -63,8 +81,8 @@ class ResetPassword(form.Form):
 
 class ResetPasswordForm(form.Form):
     view.pyramidView(
-        route = 'ptah-resetpassword-form', layout='ptah-crowd',
-        template = view.template('ptah.crowd:templates/resetpasswordform.pt'))
+        route = 'ptah-resetpassword-form', layout='ptah-security',
+        template=view.template('ptah.security:templates/resetpasswordform.pt'))
 
     csrf = True
     fields = form.Fields(PasswordSchema)
@@ -72,9 +90,10 @@ class ResetPasswordForm(form.Form):
     def update(self):
         request = self.request
         passcode = request.params.get('passcode')
-        self.principal = principal = security.passwordTool.getPrincipal(passcode)
+        self.principal = principal = passwordTool.getPrincipal(passcode)
 
-        if principal is not None:
+        if principal is not None and \
+               passwordTool.hasPasswordChanger(principal.uuid):
             self.passcode = passcode
             self.title = principal.name or principal.login
         else:
@@ -91,16 +110,22 @@ class ResetPasswordForm(form.Form):
         if errors:
             self.message(errors, 'form-error')
         else:
-            try:
-                self.ptool.resetPassword(self.passcode, data['password'])
-            except Exception, exc:
-                self.message(exc, 'error')
-                return
+            principal = passwordTool.getPrincipal(self.passcode)
+            passwordTool.changePassword(self.passcode, data['password'])
 
-            headers = security.remember(self.request, self.principal.uuid)
+            self.request.registry.notify(
+                PrincipalPasswordChangedEvent(principal))
+
+            # check if principal can be authenticated
+            info = authService.checkPrincipalAuth(principal)
+
+            if info.status:
+                headers = security.remember(self.request, self.principal.uuid)
+            else:
+                headers = []
+
             self.message(
                 _('You have successfully changed your password.'), 'success')
-
             raise HTTPFound(
                 headers = headers,
                 location = self.request.application_url)
@@ -109,7 +134,7 @@ class ResetPasswordForm(form.Form):
 class ResetPasswordTemplate(mail.MailTemplate):
 
     subject = 'Password Reset Confirmation'
-    template = view.template('ptah.crowd:templates/resetpasswordmail.pt')
+    template = view.template('ptah.security:templates/resetpasswordmail.pt')
 
     def update(self):
         super(ResetPasswordTemplate, self).update()

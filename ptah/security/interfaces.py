@@ -21,6 +21,13 @@ class IPrincipalWithEmail(IPrincipal):
     email = interface.Attribute('Principal email')
 
 
+class IPasswordChanger(interface.Interface):
+    """ principal password changer """
+
+    def __call__(principal, password):
+        """ change password """
+
+
 class IAuthentication(interface.Interface):
     """ authentication """
 

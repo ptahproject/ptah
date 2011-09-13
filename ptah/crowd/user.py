@@ -3,11 +3,12 @@ from zope import interface
 from webob.exc import HTTPFound
 from memphis import config, view, form
 
-from ptah.security import passwordTool, events
+from ptah.security import passwordTool, PrincipalAddedEvent
 
-from models import CrowdUser, Session
+from interfaces import _
+from provider import CrowdUser, Session
 from schemas import UserSchema, ManagerChangePasswordSchema
-from interfaces import _, ICrowdModule, ICrowdUser, IManageUserAction
+from module import ICrowdModule, ICrowdUser #, IManageUserAction
 
 
 class CreateUserForm(form.Form):
@@ -34,21 +35,21 @@ class CreateUserForm(form.Form):
         Session.add(user)
         Session.flush()
         
-        self.request.registry.notify(events.UserAddedEvent(user))
+        self.request.registry.notify(PrincipalAddedEvent(user))
 
         self.message('User has been created.', 'success')
         raise HTTPFound(location='./')
 
 
-class Info(object):
-    config.utility(name='user-info')
-    interface.implements(IManageUserAction)
+#class Info(object):
+#    config.utility(name='user-info')
+#    interface.implements(IManageUserAction)
 
-    title = _('Information')
-    action = 'index.html'
+#    title = _('Information')
+#    action = 'index.html'
 
-    def available(self, principal):
-        return True
+#    def available(self, principal):
+#        return True
 
 
 class UserInfo(form.Form):
@@ -78,15 +79,15 @@ class UserInfo(form.Form):
         pass
 
 
-class ChangePasswordAction(object):
-    config.utility(name='user-password')
-    interface.implements(IManageUserAction)
+#class ChangePasswordAction(object):
+#    config.utility(name='user-password')
+#    interface.implements(IManageUserAction)
 
-    title = _('Change password')
-    action = 'password.html'
+#    title = _('Change password')
+#    action = 'password.html'
 
-    def available(self, principal):
-        return True
+#    def available(self, principal):
+#        return True
 
 
 class ChangePassword(form.Form):

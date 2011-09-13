@@ -5,11 +5,11 @@ from pyramid.security import remember
 from pyramid.httpexceptions import HTTPFound
 from pyramid.threadlocal import get_current_request
 
+import ptah
 from ptah import token, mail
 
 import service
 from settings import AUTH_SETTINGS
-from events import UserRegisteredEvent
 from memberprops import MemberProperties
 from interfaces import IPrincipalWithEmail
 
@@ -18,9 +18,11 @@ TOKEN_TYPE = token.registerTokenType(
 
 
 @service.provideAuthChecker
-def validationAndSuspendedChecker(principal):
+def validationAndSuspendedChecker(principal, info):
     props = MemberProperties.get(principal.uuid)
     if props.suspended:
+        info.message = 'Account is suspended.'
+        info.keywords['suspended'] = True
         return False
 
     if not AUTH_SETTINGS['validation']:
@@ -29,6 +31,8 @@ def validationAndSuspendedChecker(principal):
     if AUTH_SETTINGS['allow-unvalidated'] or props.validated:
         return True
 
+    info.message = 'Account is not validated.'
+    info.keywords['validation'] = False
     return False
 
 
@@ -40,7 +44,7 @@ def initiateValidation(principal, request):
     template.send()
 
 
-@config.handler(UserRegisteredEvent)
+@config.handler(ptah.security.PrincipalRegisteredEvent)
 def principalRegistered(ev):
     user = MemberProperties.get(ev.principal.uuid)
     user.joined = datetime.now()
@@ -50,7 +54,7 @@ def principalRegistered(ev):
         initiateValidation(ev.principal, get_current_request())
 
 
-@config.handler(UserRegisteredEvent)
+@config.handler(ptah.security.PrincipalRegisteredEvent)
 def principalAdded(ev):
     user = MemberProperties.get(ev.principal.uuid)
     user.joined = datetime.now()
@@ -86,6 +90,10 @@ def validate(request):
             user.validated = True
             token.tokenService.remove(t)
             view.addMessage(request, "Account has been successfully validated.")
+
+            request.notify(
+                ptah.security.PrincipalValidatedEvent(
+                    ptah.resolve(user.uuid)))
 
             headers = remember(request, user.uuid)
             raise HTTPFound(location=request.application_url, headers=headers)
