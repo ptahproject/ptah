@@ -8,7 +8,7 @@ _ = translationstring.TranslationStringFactory('ptah')
 class IPrincipal(interface.Interface):
     """ principal """
 
-    id = interface.Attribute('Unique principal uuid')
+    uuid = interface.Attribute('Unique principal uuid')
 
     name = interface.Attribute('Human readable principal name')
 

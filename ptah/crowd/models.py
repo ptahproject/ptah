@@ -1,21 +1,26 @@
 """ models """
 import datetime
-import uuid, transaction
 import pyramid_sqla as psa
 import sqlalchemy as sa
 import sqlalchemy.orm as orm
 from memphis import config
+from zope import interface
+
+import ptah
+from ptah.security import IPrincipal
 
 Base = psa.get_base()
 Session = psa.get_session()
+UUID = ptah.UUIDGenerator('user+crowd')
 
 
 class CrowdUser(Base):
+    interface.implements(IPrincipal)
 
     __tablename__ = 'ptah_crowd'
 
-    id = sa.Column(sa.Integer, primary_key=True)
-    uuid = sa.Column(sa.Unicode(32), unique=True)
+    pid = sa.Column(sa.Integer, primary_key=True)
+    uuid = sa.Column(sa.Unicode(45), unique=True)
     name = sa.Column(sa.Unicode(255))
     login = sa.Column(sa.Unicode(255), unique=True)
     email = sa.Column(sa.Unicode(255), unique=True)
@@ -28,7 +33,7 @@ class CrowdUser(Base):
         super(Base, self).__init__()
 
         self.name = name
-        self.uuid = uuid.uuid4().get_hex()
+        self.uuid = UUID()
         self.login = login
         self.email = email
         self.password = password
@@ -89,6 +94,3 @@ class UserProps(Base):
 def initialize(ev):
     # Create all tables
     Base.metadata.create_all()
-
-    # Commit changes
-    transaction.commit()

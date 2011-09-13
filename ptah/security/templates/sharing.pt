@@ -49,11 +49,11 @@
       </tr>
       <tr tal:repeat="user view.users">
 	<td>${user.name} (${user.login})
-	  <input type="hidden" name="userid-${user.id}" value="on" />
+	  <input type="hidden" name="userid-${user.uuid}" value="on" />
 	</td>
 	<td tal:repeat="role view.roles">
 	  <input type="checkbox" name="${name}"
-		 tal:define="name 'user-%s-%s'%(user.id, role.id)"
+		 tal:define="name 'user-%s-%s'%(user.uuid, role.id)"
 		 checked="${name in request.POST}" />
 	</td>
       </tr>

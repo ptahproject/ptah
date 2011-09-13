@@ -15,8 +15,11 @@ class CrowdProvider(object):
         user = CrowdUser.getByLogin(login)
 
         if user is not None:
-            if ptah.security.passwordTool.checkPassword(user.password, password):
-                return user.uuid, user.name, login
+            if ptah.security.passwordTool.checkPassword(user.password,password):
+                return user
+
+    def getPrincipal(self, uuid):
+        return CrowdUser.get(uuid)
 
     def getPrincipalInfo(self, id):
         user = CrowdUser.get(id)
@@ -33,7 +36,10 @@ class CrowdProvider(object):
             .filter(sql.or_(CrowdUser.email.contains('%%%s%%'%term),
                             CrowdUser.name.contains('%%%s%%'%term)))\
             .order_by(sql.asc('name')).all():
-            yield user.uuid, user.name, user.login
+            yield user
 
 
-ptah.security.registerProvider('crowd', CrowdProvider())
+provider = CrowdProvider()
+
+ptah.registerResolver('user+crowd', provider.getPrincipal)
+ptah.security.registerProvider('crowd', provider)

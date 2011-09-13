@@ -1,7 +1,7 @@
 # ptah public api
 
 # uri
-from ptah.uri import resolve, registerResolver
+from ptah.uri import resolve, registerResolver, UUIDGenerator
 
 # module
 from ptah.manage import PtahModule
@@ -13,6 +13,7 @@ from ptah.manage import setAccessManager, ACCESS_MANAGER
 
 # security
 from ptah import security
+from ptah.security import View
 from ptah.security import Role, Roles, Permission, registerRole, authService
 
 # batches

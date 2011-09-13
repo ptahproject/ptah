@@ -32,7 +32,7 @@ class SharingForm(form.Form):
         return {'term': self.request.session.get('sharing-term', '')}
 
     def getPrincipal(self, id):
-        return ptah.security.authService.getPrincipal(id)
+        return ptah.resolve(id)
 
     def update(self):
         super(SharingForm, self).update()

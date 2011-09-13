@@ -16,47 +16,20 @@ def registerProvider(name, provider):
     providers[name] = provider
 
 
-class Principal(object):
-
-    def __init__(self, id, name, login):
-        self.id = id
-        self.name = name
-        self.login = login
-
-    def __str__(self):
-        return self.name
-
-
 class Authentication(object):
     interface.implements(IAuthentication)
 
     def authenticate(self, credentials):
         for pname, provider in providers.items():
-            info = provider.authenticate(credentials)
-            if info is not None:
-                id, name, login = info
-                return Principal('user://%s:%s'%(pname, id), name, login)
-
-    def getPrincipal(self, uri):
-        if not uri or not uri.startswith('user://'):
-            return
-
-        uuid = uri.split('user://', 1)[1]
-        pid, id = uuid.split(':', 1)
-
-        provider = providers.get(pid)
-        if provider is not None:
-            info = provider.getPrincipalInfo(id)
-            if info is not None:
-                name, login = info
-                return Principal(uri, name, login)
+            principal = provider.authenticate(credentials)
+            if principal is not None:
+                return principal
 
     def getPrincipalByLogin(self, login):
         for pname, provider in providers.items():
-            info = provider.getPrincipalInfoByLogin(login)
-            if info is not None:
-                uuid, name, login = info
-                return Principal('user://%s:%s'%(pname, uuid), name, login)
+            principal = provider.getPrincipalInfoByLogin(login)
+            if principal is not None:
+                return principal
 
     def isAnonymous(self):
         id = security.authenticated_userid(get_current_request())
@@ -67,13 +40,13 @@ class Authentication(object):
     def getCurrentPrincipal(self):
         id = security.authenticated_userid(get_current_request())
         if id:
-            return self.getPrincipal(id)
+            return ptah.resolve(id)
 
     def search(self, term):
         for pname, provider in providers.items():
             if ISearchableAuthProvider.providedBy(provider):
-                for id, name, login in provider.search(term):
-                    yield Principal('user://%s:%s'%(pname, id), name, login)
+                for principal in provider.search(term):
+                    yield principal
 
     def checkPermission(self, context, permission):
         if not permission or permission == '__no_permission_required__':
@@ -93,11 +66,5 @@ class Authentication(object):
         authz = request.registry.queryUtility(IAuthorizationPolicy)
         return authz.permits(context, principals, permission)
 
-    def _resolveUri(self, uri):
-        return self.getPrincipal(uri)
-
 
 authService = Authentication()
-
-ptah.registerResolver(
-    'user', None, authService._resolveUri, title='Principal resolver')

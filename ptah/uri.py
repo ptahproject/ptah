@@ -1,4 +1,5 @@
 """ uri resolver """
+import uuid
 from memphis import config
 
 resolvers = {}
@@ -6,27 +7,30 @@ resolversInfo = {}
 
 
 def resolve(uri):
-    type, data = uri.split('://', 1)
-    subtype, uuid = data.split(':', 1)
+    type, uuid = uri.split('://', 1)
 
     try:
-        typeresolvers = resolvers[type]
-        if None in typeresolvers:
-            return typeresolvers[None](uuid)
-
-        return typeresolvers[subtype](uuid)
+        return resolvers[type](uri)
     except KeyError:
         pass
 
     return None
 
 
-def registerResolver(type, subtype, component, title='', description=''):
-    typeresolvers = resolvers.setdefault(type, {})
-    typeresolvers[subtype] = component
-    resolversInfo['%s://%s'%(type, subtype)] = (title, description)
+def registerResolver(type, component, title='', description=''):
+    resolvers[type] = component
+    resolversInfo['%s://'%type] = (title, description)
 
     info = config.DirectiveInfo()
     info.attach(
-        config.Action(None, discriminator = ('ptah:uri-resolver',type,subtype))
+        config.Action(None, discriminator = ('ptah:uri-resolver',type))
         )
+
+
+class UUIDGenerator(object):
+
+    def __init__(self, type):
+        self.type = type
+
+    def __call__(self):
+        return '%s://%s'%(self.type, uuid.uuid4().get_hex())
