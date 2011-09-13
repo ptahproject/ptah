@@ -2,9 +2,9 @@
 import ptah
 import colander
 import sqlalchemy as sqa
-from webob.exc import HTTPFound
 from zope import interface
 from memphis import view, form
+from pyramid.httpexceptions import HTTPFound
 
 import ptah_cms
 from ptah_app.permissions import AddPage
