@@ -3,7 +3,7 @@ from zope import interface
 from zope.component import queryUtility, getMultiAdapter
 from pyramid import security
 from pyramid.decorator import reify
-from webob.exc import HTTPForbidden
+from pyramid.httpexceptions import HTTPForbidden
 from webob.multidict import UnicodeMultiDict, MultiDict
 
 from memphis import view
