@@ -19,6 +19,7 @@ class LayoutWorkspace(view.Layout):
     template=view.template("ptah_app:templates/layoutworkspace.pt")
 
     def update(self):
+        self.root = getattr(self.request, 'root', None)
         self.user = ptah.authService.getCurrentPrincipal()
         self.isAnon = self.user is None
 

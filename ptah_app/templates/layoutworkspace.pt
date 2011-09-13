@@ -1,7 +1,7 @@
 <div class="topbar" tal:define="app_url request.application_url">
   <div class="fill">
     <div class="container">
-      <h3><a href="${app_url}">${getattr(request.root, 'title', '')}</a></h3>
+      <h3><a href="${app_url}">${getattr(view.root, 'title', '')}</a></h3>
       <tal:block tal:condition="not view.isAnon">
 	<ul>
 	  <li><a href="${app_url}">Home</a></li>
