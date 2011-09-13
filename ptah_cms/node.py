@@ -29,8 +29,8 @@ class Node(Base):
 
     __mapper_args__ = {'polymorphic_on': __type_id__}
 
-    __acl__ = ptah.security.ACL
     __parent__ = None
+    __uuid_generator__ = None
 
     def __init__(self, *args, **kw):
         for attr, value in kw.items():
@@ -39,4 +39,4 @@ class Node(Base):
         if '__parent__' in kw and kw['__parent__'] is not None:
             self.__parent_id__ = kw['__parent__'].__uuid__
 
-        self.__uuid__ = uuid.uuid4().get_hex()
+        self.__uuid__ = self.__uuid_generator__()

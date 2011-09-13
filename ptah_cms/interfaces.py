@@ -1,7 +1,6 @@
 """ interfaces """
 import colander
 from zope import interface
-from memphis import view
 
 
 class INode(interface.Interface):
@@ -25,26 +24,8 @@ class IContainer(IContent):
     __path__ = interface.Attribute('traversal path')
 
     
-class IApplicationRoot(IContent, IContainer, view.INavigationRoot):
+class IApplicationRoot(IContent, IContainer):
     """ application root object """
-
-
-class ContentSchema(colander.Schema):
-    """ base content schema """
-    
-    name = colander.SchemaNode(
-        colander.Str(),
-        title = 'Name')
-
-    title = colander.SchemaNode(
-        colander.Str(),
-        title = 'Title')
-
-    description = colander.SchemaNode(
-        colander.Str(),
-        title = 'Description',
-        missing = u'',
-        widget = 'textarea')
 
 
 class IAction(interface.Interface):
@@ -71,7 +52,7 @@ class IBlob(INode):
 class IBlobStorage(interface.Interface):
     """ blob storage """
 
-    def add(data, mimetype=None, filename=None):
+    def add(parent, data, mimetype=None, filename=None):
         """ add blob return uuid """
 
     def query(uuid):
@@ -82,3 +63,21 @@ class IBlobStorage(interface.Interface):
 
     def remove(uuid):
         """ remove blob """
+
+
+class ContentSchema(colander.Schema):
+    """ base content schema """
+    
+    name = colander.SchemaNode(
+        colander.Str(),
+        title = 'Name')
+
+    title = colander.SchemaNode(
+        colander.Str(),
+        title = 'Title')
+
+    description = colander.SchemaNode(
+        colander.Str(),
+        title = 'Description',
+        missing = u'',
+        widget = 'textarea')

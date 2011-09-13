@@ -6,7 +6,7 @@ from pyramid.decorator import reify
 import ptah
 from ptah.utils import JsonType
 
-from node import Node
+from node import Node, Session
 from interfaces import IContent
 
 
@@ -14,6 +14,8 @@ class Content(Node):
     interface.implements(IContent)
 
     __tablename__ = 'ptah_contents'
+    __uuid_generator__ = ptah.UUIDGenerator('cms+content')
+
     __id__ = sqla.Column('id', sqla.Integer, 
                          sqla.ForeignKey('ptah_nodes.id'), primary_key=True)
     name = sqla.Column(sqla.Unicode(255))
@@ -37,3 +39,14 @@ class Content(Node):
 
     def __resource_url__(self, request, info):
         return '%s%s/'%(self.__parent__.__path__, self.name)
+
+
+_sql_get = ptah.QueryFreezer(
+    lambda: Session.query(Content)
+    .filter(Content.__uuid__ == sqla.sql.bindparam('uuid')))
+
+def _getContent(uuid):
+    return _sql_get.first(uuid=uuid)
+
+ptah.registerResolver(
+    'cms+content', _getContent, title='Ptah CMS Content resolver')

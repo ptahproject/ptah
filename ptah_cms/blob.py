@@ -14,9 +14,10 @@ class Blob(Node):
 
     __tablename__ = 'ptah_blobstorage'
     __mapper_args__ = {'polymorphic_identity': 'ptah-blob'}
+    __uuid_generator__ = ptah.UUIDGenerator('blob+sql')
 
-    __id__ = sqla.Column(
-        'id', sqla.Integer, sqla.ForeignKey('ptah_nodes.id'), primary_key=True)
+    __id__ = sqla.Column('id', sqla.Integer, 
+                         sqla.ForeignKey('ptah_nodes.id'), primary_key=True)
 
     mimetype = sqla.Column(sqla.Unicode, default=u'')
     filename = sqla.Column(sqla.Unicode, default=u'')
@@ -38,16 +39,8 @@ class Blob(Node):
             self.filename = filename
 
 
-class Storage(object):
-
-    def blobRef(self, uuid):
-        return 'blob://%s:%s'%(self.name, uuid)
-
-
-class BlobStorage(Storage):
+class BlobStorage(object):
     interface.implements(IBlobStorage)
-
-    name = 'sql'
 
     _sql_get = ptah.QueryFreezer(
         lambda: Session.query(Blob)
@@ -69,7 +62,7 @@ class BlobStorage(Storage):
         Session.add(blob)
         Session.flush()
 
-        return self.blobRef(blob.__uuid__)
+        return blob.__uuid__
 
     def get(self, uuid):
         return self._sql_get.first(uuid=uuid)
@@ -87,5 +80,4 @@ class BlobStorage(Storage):
 blobStorage = BlobStorage()
 
 ptah.registerResolver(
-    'blob', 'sql', blobStorage.get,
-    title='SQL Blob storage resolver')
+    'blob+sql', blobStorage.get, title='SQL Blob storage resolver')

@@ -4,6 +4,7 @@ import sqlalchemy as sqla
 from zope import interface
 from memphis import config
 from pyramid.decorator import reify
+from pyramid.traversal import DefaultRootFactory
 
 from tinfo import Type
 from node import Base, Session
@@ -29,12 +30,14 @@ class ApplicationFactory(object):
             name=self.name, title=self.title)
 
         root.__path__ = self.path
+        root.__parent__ = DefaultRootFactory(request)
         return root
 
 
 class ApplicationRoot(Container):
     interface.implements(IApplicationRoot)
 
+    __acl__ = ptah.security.ACL
     __type__ = Type('application', 'Application')
 
     _sql_get_root = ptah.QueryFreezer(
