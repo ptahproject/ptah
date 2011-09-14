@@ -21,7 +21,6 @@ class Node(Base):
     __uuid__ = sqla.Column('uuid', sqla.String)
     __type_id__ = sqla.Column('type', sqla.String)
     __parent_id__ = sqla.Column('parent', sqla.String,sqla.ForeignKey(__uuid__))
-    __removed__ = sqla.Column('removed', sqla.Boolean)
     __local_roles__ = sqla.Column('roles', JsonDictType(), default={})
 
     __children__ = sqla.orm.relationship(

@@ -21,7 +21,7 @@ from ptah_cms.interfaces import ContentSchema
 from ptah_cms.interfaces import INode
 from ptah_cms.interfaces import IContent
 from ptah_cms.interfaces import IContainer
-
+from ptah_cms.interfaces import IApplicationRoot
 
 # sqlalchemy
 from ptah_cms.node import Base, Session
