@@ -110,17 +110,6 @@ def registerType(
     registered[name] = tinfo
 
 
-sharingAction = Action(**{'id': 'sharing',
-                          'title': 'Sharing',
-                          'action': 'sharing.html',
-                          'permission': View})
-
-@config.adapter(ptah.security.ILocalRolesAware, name='sharing')
-@interface.implementer(IAction)
-def sharingActionAdapter(context):
-    return sharingAction
-
-
 @config.addCleanup
 def cleanUp():
     registered.clear()

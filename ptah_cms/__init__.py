@@ -3,10 +3,14 @@
 # base node
 from ptah_cms.node import Node
 
-# content system
-from ptah_cms.tinfo import Type
+# Base content classes
 from ptah_cms.content import Content
 from ptah_cms.container import Container
+
+# Type information
+from ptah_cms.tinfo import Type
+from ptah_cms.tinfo import Action
+from ptah_cms.tinfo import IAction
 
 # application root
 from ptah_cms.root import ApplicationFactory
