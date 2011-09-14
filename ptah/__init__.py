@@ -16,6 +16,9 @@ from ptah import security
 from ptah.security import View
 from ptah.security import Role, Roles, Permission, registerRole, authService
 
+# rest api
+from ptah import rest
+
 # batches
 from ptah.batch import Batch, Batches, first_neighbours_last
 
