@@ -18,12 +18,12 @@
 	     condition="view.module"
 	     content="structure 
 		      view.pagelet('ptah-module-actions',view.module)" />
-	    
+	  
 	  <ul class="nav secondary-nav">
 	    <li>
 	      <h5 class="active">
 		<a href="${app_url}">
-		  ${view.user}:
+		  ${unicode(view.user)}:
 		</a>
 	      </h5>
 	    </li>
