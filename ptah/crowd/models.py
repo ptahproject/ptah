@@ -41,7 +41,7 @@ class CrowdUser(Base):
 
     @classmethod
     def getById(cls, id):
-        return Session.query(cls).filter(cls.id==id).first()
+        return Session.query(cls).filter(cls.pid==id).first()
 
     @classmethod
     def getByLogin(cls, login):

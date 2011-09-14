@@ -31,7 +31,7 @@ class CrowdUser(object):
 
     def __init__(self, user, parent):
         self.user = user
-        self.__name__ = str(user.id)
+        self.__name__ = str(user.pid)
         self.__parent__ = parent
 
 

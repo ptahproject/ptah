@@ -7,7 +7,10 @@ resolversInfo = {}
 
 
 def resolve(uri):
-    type, uuid = uri.split('://', 1)
+    try:
+        type, uuid = uri.split(':', 1)
+    except ValueError:
+        return None
 
     try:
         return resolvers[type](uri)
@@ -19,7 +22,7 @@ def resolve(uri):
 
 def registerResolver(type, component, title='', description=''):
     resolvers[type] = component
-    resolversInfo['%s://'%type] = (title, description)
+    resolversInfo[type] = (title, description)
 
     info = config.DirectiveInfo()
     info.attach(
@@ -33,4 +36,4 @@ class UUIDGenerator(object):
         self.type = type
 
     def __call__(self):
-        return '%s://%s'%(self.type, uuid.uuid4().get_hex())
+        return '%s:%s'%(self.type, uuid.uuid4().get_hex())
