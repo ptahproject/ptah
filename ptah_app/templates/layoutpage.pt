@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>${context.title}</title>
+    <title>${getattr(request.root, 'title', '')}</title>
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
 
     ${view.include('bootstrap')}

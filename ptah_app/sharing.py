@@ -1,8 +1,10 @@
 import colander
-from webob.exc import HTTPFound
+from zope import interface
 from memphis import config, view, form
+from pyramid.httpexceptions import HTTPFound
 
 import ptah
+import ptah_cms
 from ptah.security.interfaces import ILocalRolesAware
 
 
@@ -76,3 +78,14 @@ class SharingForm(form.Form):
 
         self.request.session['sharing-term'] = data['term']
         raise HTTPFound(location = self.request.url)
+
+
+sharingAction = ptah_cms.Action(**{'id': 'sharing',
+                                   'title': 'Sharing',
+                                   'action': 'sharing.html',
+                                   'permission': ptah.View})
+
+@config.adapter(ILocalRolesAware, name='sharing')
+@interface.implementer(ptah_cms.IAction)
+def sharingActionAdapter(context):
+    return sharingAction

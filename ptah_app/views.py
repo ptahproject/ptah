@@ -1,4 +1,5 @@
-from memphis import view, form
+from zope import interface
+from memphis import view, form, config
 from pyramid.httpexceptions import HTTPFound
 
 import ptah
@@ -7,14 +8,13 @@ from ptah.security import authService
 from ptah_cms import tinfo, interfaces
 
 
-
 view.registerLayout(
-    'page', ptah_cms.IApplicationRoot,
+    'page', view.INavigationRoot,
     template = view.template("ptah_app:templates/layoutpage.pt"))
 
 
 class LayoutWorkspace(view.Layout):
-    view.layout('workspace', ptah_cms.IApplicationRoot, parent="page")
+    view.layout('workspace', view.INavigationRoot, parent="page")
 
     template=view.template("ptah_app:templates/layoutworkspace.pt")
 
@@ -92,3 +92,14 @@ class Adding(view.View):
         for ti in tinfo.registered.values():
             if ti.add is not None:
                 types.append(ti)
+
+
+sharingAction = ptah_cms.Action(**{'id': 'adding',
+                                   'title': 'Add content',
+                                   'action': '+/',
+                                   'permission': ptah.View})
+
+@config.adapter(ptah_cms.IContainer, name='adding')
+@interface.implementer(ptah_cms.IAction)
+def addingActionAdapter(context):
+    return sharingAction
