@@ -88,6 +88,8 @@ class Adding(view.View):
         template=view.template("ptah_app:templates/adding.pt"))
     
     def update(self):
+        self.url = self.request.resource_url(self.context)
+
         self.types = types = []
         for ti in tinfo.registered.values():
             if ti.add is not None:
