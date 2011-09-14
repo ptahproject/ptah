@@ -1,0 +1,26 @@
+<div class="page-header">
+  <h3>${context.title}</h3>
+</div>
+<p>${context.description}</p>
+
+<tal:block tal:define="contents context.__children__;
+		       url request.resource_url(context)">
+  <form action="${request.url}" method="post">
+    <table class="zebra-striped">
+      <tr tal:repeat="item contents">
+	<td><input type="checkbox" name="item" value="${item.__uuid__}" />
+	<td><a href="${url}${item.name}">${item.name or 'unknown'}</a></td>
+	<td><a href="${url}${item.name}">${item.title}</a></td>
+      </tr>
+    </table>
+
+    <div class="actions" tal:condition="contents">
+      <input type="submit" class="btn"
+	     name="form.buttons.rename" value="Rename" />
+      <input type="submit" class="btn"
+	     name="form.buttons.cut" value="Cut" />
+      <input type="submit" class="btn danger"
+	     name="form.buttons.remove" value="Remove" />
+    </div>
+  </form>
+</tal:block>

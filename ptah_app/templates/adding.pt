@@ -1,0 +1,14 @@
+<div class="page-header">
+  <h1>Adding</h1>
+</div>
+
+<div>
+  <table class="zebra-striped">
+    <tr tal:repeat="info view.types">
+      <td>
+	<a href="${info.add}">${info.title}</a>
+	<p>${info.description}</p>
+      </td>
+    </tr>
+  </table>
+</div>

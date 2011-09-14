@@ -1,0 +1,41 @@
+<div class="topbar" tal:define="app_url request.application_url">
+  <div class="fill">
+    <div class="container">
+      <h3><a href="${app_url}">${context.title}</a></h3>
+      <tal:block tal:condition="not view.isAnon">
+	<ul>
+	  <li><a href="${app_url}">Home</a></li>
+	</ul>
+	<ul class="nav secondary-nav">
+	  <li>
+	    <h5 class="active">
+	      <a href="${app_url}">
+  		${view.user.name or view.user.login}:
+	      </a>
+	    </h5>
+	  </li>
+	  <li>
+	    <a href="${app_url}/ptah-manage/">Ptah</a>
+	  </li>
+	  <li>
+	    <a href="${app_url}/logout.html">Logout</a>
+	  </li>
+	</ul>
+      </tal:block>
+      
+      <ul class="nav secondary-nav" tal:condition="view.isAnon">
+	<li class="active">
+	  <a href="${app_url}/login.html">Sign in</a>
+	</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div style="margin-top: 60px;">
+  <div class="inner">
+    <div class="container">
+      <tal:block content="structure content" />
+    </div>
+  </div>
+</div>
