@@ -33,6 +33,8 @@ setup(name='ptah',
       include_package_data = True,
       zip_safe = False,
       entry_points = {
-        'memphis': ['package = ptah']
-        }
+        'memphis': ['package = ptah'],
+        'paste.app_factory': [
+            'app = ptah:make_wsgi_app'],
+        },
       )

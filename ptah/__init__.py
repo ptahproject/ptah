@@ -35,19 +35,37 @@ from ptah.batch import Batch, Batches, first_neighbours_last
 from ptah.query import QueryFreezer
 
 # create wsgi app
+class WSGIAppInitialized(object):
+    
+    def __init__(self, app, config):
+        self.app = app
+        self.config = config
+
+
 def make_wsgi_app(global_config, **settings):
+    import transaction
     from pyramid import path
     from pyramid.config import Configurator
 
     # configuration
     config = Configurator(settings=settings)
 
-    pkg = path.package_name(path.caller_module())
-
     # initialization
-    initialize(pkg, config, global_config)
+    initialize(None, config, global_config)
 
-    return config.make_wsgi_app()
+    # create wsgi app
+    app = config.make_wsgi_app()
+
+    # event
+    config.begin()
+    config.registry.notify(WSGIAppInitialized(app, config))
+    config.end()
+    config.commit()
+
+    # commit possible transaction
+    transaction.commit()
+
+    return app
 
 
 # initialize memphis
