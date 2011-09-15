@@ -33,10 +33,10 @@ class ITokenService(interface.Interface):
 
         ``data`` token type specific data, it must be python string. """
 
-    def get(token, type, data=None):
+    def get(token):
         """ Get data for token """
 
-    def getToken(type, data):
+    def getByData(type, data):
         """ Get token for data """
 
     def remove(token):
@@ -84,7 +84,7 @@ class TokenService(object):
         Session.add(t)
         return t.token
 
-    def get(self, token, data=None):
+    def get(self, token):
         t = self._sql_get.first(token=token)
         if t is not None:
             return t.data

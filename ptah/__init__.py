@@ -25,6 +25,9 @@ from ptah import rest
 # mail api
 from ptah import mail
 
+# ptah settnigs
+from ptah.settings import PTAH
+
 # batches
 from ptah.batch import Batch, Batches, first_neighbours_last
 
