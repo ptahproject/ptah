@@ -24,7 +24,8 @@ def processShutdown(sig, frame):
             try:
                 handler()
             except:
-                log.exception("Showndown handler: %s"%handler)
+                #log.exception("Showndown handler: %s"%handler)
+                pass
 
     if sig == SIGINT and callable(_handler_int):
         _handler_int(sig, frame)
