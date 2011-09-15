@@ -27,10 +27,10 @@ def processShutdown(sig, frame):
                 log.exception("Showndown handler: %s"%handler)
 
     if sig == SIGINT and callable(_handler_int):
-        _handler_int()
+        _handler_int(sig, frame)
 
     if sig == SIGTERM and callable(_handler_term): # pragma: no cover
-        _handler_term()
+        _handler_term(sig, frame)
 
     if sig == SIGTERM:
         raise sys.exit()
