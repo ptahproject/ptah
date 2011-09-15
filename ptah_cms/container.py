@@ -48,6 +48,9 @@ class Container(Content):
             item.__parent__ = self
         return item
 
+    def keys(self):
+        return [c.name for c in self.__children__]
+
     def __getitem__(self, key):
         try:
             item = self._sql_get.one(key=key, parent=self.__uuid__)

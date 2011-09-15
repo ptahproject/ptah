@@ -24,13 +24,14 @@ class ApplicationFactory(object):
             config.Action(None, discriminator=('ptah-cms:application', path))
             )
 
-    def __call__(self, request):
+    def __call__(self, request=None):
         root = ApplicationRoot.getRoot(
             __path__=self.path,
             name=self.name, title=self.title)
 
         root.__path__ = self.path
-        root.__parent__ = DefaultRootFactory(request)
+        if request is not None:
+            root.__parent__ = DefaultRootFactory(request)
         return root
 
 
