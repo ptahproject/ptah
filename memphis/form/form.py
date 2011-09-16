@@ -7,7 +7,7 @@ from pyramid.httpexceptions import HTTPForbidden
 from webob.multidict import UnicodeMultiDict, MultiDict
 
 from memphis import view
-from memphis.form.field import Fields
+from memphis.form.field import Fields, FieldWidgets
 from memphis.form.button import Buttons, Actions
 from memphis.form.pagelets import FORM_VIEW, FORM_INPUT, FORM_DISPLAY
 from memphis.form.interfaces import \
@@ -64,7 +64,7 @@ class Form(view.View):
             return {}
 
     def updateWidgets(self):
-        self.widgets = getMultiAdapter((self, self.request), IWidgets)
+        self.widgets = FieldWidgets(self.fields, self, self.request)
         self.widgets.mode = self.mode
         self.widgets.update()
 

@@ -136,7 +136,6 @@ class Fields(Fieldset):
 
 class FieldWidgets(OrderedDict):
     interface.implements(IWidgets)
-    config.adapter(IForm, interface.Interface)
 
     prefix = 'widgets.'
     mode = FORM_INPUT
@@ -144,9 +143,10 @@ class FieldWidgets(OrderedDict):
     content = None
     fieldsets = ()
 
-    def __init__(self, form, request):
+    def __init__(self, fields, form, request):
         super(FieldWidgets, self).__init__()
 
+        self.fields = fields
         self.form = form
         self.request = request
         self.localizer = get_localizer(request)
@@ -166,7 +166,7 @@ class FieldWidgets(OrderedDict):
         self.fieldsets = fieldsets = []
 
         # Walk through each field, making a widget out of it.
-        for fieldset in self.form.fields.fieldsets():
+        for fieldset in self.fields.fieldsets():
             widgets = []
 
             for field in fieldset.fields():
@@ -254,12 +254,12 @@ class FieldWidgets(OrderedDict):
 
             data[widget.__name__] = value
 
-        data = self.form.fields.unflatten(data)
+        data = self.fields.unflatten(data)
 
         # validate against schemas
         extra_errors = []
         try:
-            self.form.fields.validator(None, data)
+            self.fields.validator(None, data)
         except colander.Invalid, error:
             if error.msg is not None:
                 extra_errors.append(error)

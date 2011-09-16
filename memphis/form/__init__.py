@@ -15,13 +15,18 @@ from memphis.form.directive import registerWidget
 from memphis.form.directive import registerDefaultWidget
 
 # fields manager
-from memphis.form.field import Fields, Fieldset
+from memphis.form.field import Fields
+from memphis.form.field import Fieldset
+from memphis.form.field import FieldWidgets
 
 # data manager
 from memphis.form.datamanager import DataManager
 
 # buttons manager
 from memphis.form.button import Buttons
+
+# errors
+from memphis.form.error import Error, WidgetError
 
 # vocabulary
 from memphis.form.vocabulary import SimpleTerm, SimpleVocabulary
