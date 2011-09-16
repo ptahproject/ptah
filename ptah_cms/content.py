@@ -53,4 +53,5 @@ class Content(Node):
         return self.name
 
     def __resource_url__(self, request, info):
-        return self.__path__[len(request.root.__path__)-1:]
+        return '%s%s'%(request.root.__root_path__, 
+                       self.__path__[len(request.root.__path__):])

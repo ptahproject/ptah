@@ -5,21 +5,22 @@ from zope.component import getSiteManager
 
 import ptah
 from memphis import config
-from pyramid.traversal import DefaultRootFactory
 
 from tinfo import Type
-from node import Base, Session
+from node import Session
 from container import Container
+from policy import ApplicationPolicy
 from events import ContentCreatedEvent
 from interfaces import IApplicationRoot
 
 
 class ApplicationFactory(object):
 
-    def __init__(self, path, name, title):
+    def __init__(self, path, name, title, policy=ApplicationPolicy):
         self.path = path
         self.name = name
         self.title = title
+        self.policy = ApplicationPolicy
 
         info = config.DirectiveInfo()
         info.attach(
@@ -30,8 +31,7 @@ class ApplicationFactory(object):
         root = ApplicationRoot.getRoot(name=self.name, title=self.title)
 
         root.__root_path__ = self.path
-        if request is not None:
-            root.__parent__ = DefaultRootFactory(request)
+        root.__parent__ = self.policy(request)
         return root
 
 

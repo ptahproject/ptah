@@ -30,13 +30,13 @@ class ContentTraverser(object):
         vpath = path
         vroot_idx = -1
 
-        root_path_len = len(root.__root_path__)
+        l_path = len(root.__root_path__)
 
         # build paths for all parents in content hierarchy
         idx = 0
         paths = {}
         current = root.__path__
-        for sec in path[root_path_len:].split('/'):
+        for sec in path[l_path:].split('/'):
             if sec:
                 current = '%s%s/'%(current, sec)
                 paths[str(idx)] = current
@@ -62,8 +62,8 @@ class ContentTraverser(object):
                 parents[idx].__parent__ = parents[idx+1]
 
             context = parents[0]
-            node = context.__path__[len(root.__path__)-1:]
-            leaf = path[len(node):].split('/')
+            node = context.__path__[len(root.__path__):]
+            leaf = path[l_path+len(node):].split('/')
             leaf, subpath = leaf[0], leaf[1:]
 
             return {'context': context,
@@ -76,7 +76,7 @@ class ContentTraverser(object):
         else:
             vpath_tuple = ()
 
-            leaf = path[root_path_len:].split('/')
+            leaf = path[l_path:].split('/')
             leaf, subpath = leaf[0], leaf[1:]
 
             return {'context': context,
