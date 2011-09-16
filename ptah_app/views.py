@@ -56,12 +56,25 @@ view.registerLayout(
     template = view.template("ptah_app:templates/layoutdefault.pt"))
 
 
-from ptah_cms.container import loadContent
+def defaultView(renderer):
+    def wrap(context, request):
+        if context.view:
+            item = ptah_cms.loadContent(context.view)
+            if item is None:
+                return renderer(context, request)
+
+            request.context = item
+            return view.renderView('', item, request)
+
+        return renderer(context, request)
+    return wrap
+
+
+listing_template = view.template("ptah_app:templates/listing.pt")
 
 class ContainerListing(view.View):
-    view.pyramidView(
-        'index.html', interfaces.IContainer, default=True,
-        template=view.template("ptah_app:templates/folder_listing.pt"))
+    view.pyramidView('listing.html', interfaces.IContainer,
+                     template = listing_template)
 
     def update(self):
         context = self.context
@@ -84,6 +97,11 @@ class ContainerListing(view.View):
         if 'form.buttons.cut' in request.POST:
             uuids = self.request.POST.getall('item')
             print '=============', uuids
+
+
+class ViewContainer(ContainerListing):
+    view.pyramidView('index.html', default=True, decorator = defaultView,
+                     template = listing_template)
 
 
 class RenameForm(view.View):
