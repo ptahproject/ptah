@@ -20,7 +20,7 @@ class ApplicationFactory(object):
         self.path = path
         self.name = name
         self.title = title
-        self.policy = ApplicationPolicy
+        self.policy = policy
 
         info = config.DirectiveInfo()
         info.attach(
