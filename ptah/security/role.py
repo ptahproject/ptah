@@ -28,6 +28,9 @@ class Role(object):
     def __str__(self):
         return 'Role<%s>'%self.name
 
+    def __repr__(self):
+        return self.id
+
     def allow(self, *permissions):
         if self.allowed is ALL_PERMISSIONS:
             return
@@ -58,16 +61,10 @@ def registerRole(name, title, description=u'', prefix='role:', system=False):
     Roles[role.name] = role
 
     info.attach(
-        config.Action(
-            registerRoleImpl,
-            (role,), discriminator = ('ptah:role', name))
+        config.Action(None, discriminator = ('ptah:role', name))
         )
 
     return role
-
-
-def registerRoleImpl(role):
-    Roles[role.name] = role
 
 
 Everyone = registerRole(
