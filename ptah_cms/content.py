@@ -13,7 +13,6 @@ class Content(Node):
     interface.implements(IContent)
 
     __tablename__ = 'ptah_cms_content'
-    __uuid_generator__ = ptah.UUIDGenerator('cms+content')
 
     __id__ = sqla.Column('id', sqla.Integer, 
                          sqla.ForeignKey('ptah_cms_nodes.id'), primary_key=True)
@@ -23,7 +22,7 @@ class Content(Node):
 
     title = sqla.Column(sqla.Unicode, default=u'')
     description = sqla.Column(sqla.Unicode, default=u'')
-    default_view = sqla.Column(sqla.Unicode, default=u'')
+    view = sqla.Column(sqla.Unicode, default=u'')
 
     created = sqla.Column(sqla.DateTime)
     modified = sqla.Column(sqla.DateTime)
@@ -55,10 +54,3 @@ class Content(Node):
 
     def __resource_url__(self, request, info):
         return self.__path__[len(request.root.__path__)-1:]
-
-
-def _getContent(uuid):
-    return Content._sql_get.first(uuid=uuid)
-
-ptah.registerResolver(
-    'cms+content', _getContent, title='Ptah CMS Content resolver')

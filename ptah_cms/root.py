@@ -69,10 +69,3 @@ class ApplicationRoot(Container):
         acl = self._acl_()
         acl.extend(ptah.security.ACL)
         return acl
-
-
-def _getContent(uuid):
-    return ApplicationRoot._sql_get.first(uuid=uuid)
-
-ptah.registerResolver(
-    'cms+app', _getContent, title='Ptah CMS Content resolver')

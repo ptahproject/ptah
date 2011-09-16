@@ -5,7 +5,7 @@ import ptah
 from memphis import config
 from zope import interface
 
-from content import Content
+from content import Session, Content
 from permissions import View, ModifyContent
 from interfaces import ContentSchema, IAction, ITypeInformation
 
@@ -57,6 +57,16 @@ class TypeInformation(object):
         return instance
 
 
+# we have to generate seperate sql query for each type
+sql_get = ptah.QueryFreezer(
+    lambda: Session.query(Content)
+    .filter(Content.__uuid__ == sqla.sql.bindparam('uuid')))
+
+
+def resolveContent(uuid):
+    return sql_get.first(uuid=uuid)
+
+
 def Type(name, title, **kw):
     info = config.DirectiveInfo(allowed_scope=('class',))
 
@@ -72,6 +82,9 @@ def Type(name, title, **kw):
     if '__uuid_generator__' not in f_locals:
         f_locals['__uuid_generator__'] = ptah.UUIDGenerator('cms+%s'%name)
 
+        ptah.registerResolver(
+            'cms+%s'%name, resolveContent, 
+            title='Ptah CMS Content resolver for %s type'%title)
 
     info.attach(
         config.ClassAction(
