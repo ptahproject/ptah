@@ -41,6 +41,17 @@ class ITypeInformation(interface.Interface):
     """ Content type information """
 
 
+class IRestAction(interface.Interface):
+    """ action """
+
+    def __init__(self, content, request):
+        """ execute action, return dictionary """
+
+
+class IRestActionClassifier(interface.Interface):
+    """ rest action """
+
+
 class IBlob(INode):
     """ blob """
 

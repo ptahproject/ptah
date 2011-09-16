@@ -14,6 +14,8 @@ from events import ContentCreatedEvent
 from interfaces import IApplicationRoot
 
 
+factories = {}
+
 class ApplicationFactory(object):
 
     def __init__(self, path, name, title, policy=ApplicationPolicy):
@@ -21,6 +23,8 @@ class ApplicationFactory(object):
         self.name = name
         self.title = title
         self.policy = policy
+
+        factories[name] = self
 
         info = config.DirectiveInfo()
         info.attach(

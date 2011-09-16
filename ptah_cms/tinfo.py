@@ -1,7 +1,7 @@
 """ type implementation """
-import sys
-import sqlalchemy as sqla
 import ptah
+import sys, colander
+import sqlalchemy as sqla
 from memphis import config
 from zope import interface
 
@@ -115,6 +115,9 @@ def registerType(
             )
 
     tinfo.__dict__.update(kw)
+
+    if isinstance(schema, colander._SchemaMeta):
+        schema = schema()
 
     tinfo.schema = schema
     tinfo.factory = klass

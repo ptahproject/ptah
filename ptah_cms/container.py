@@ -1,8 +1,11 @@
 """ Base container class implementation """
-import ptah
 import sqlalchemy as sqla
 from zope import interface
 from zope.component import getSiteManager
+from pyramid.httpexceptions import HTTPForbidden
+
+import ptah
+from ptah.security import authService
 
 import events
 from node import Node, Session
@@ -44,7 +47,7 @@ class Container(Content):
 
         item.name = key
         item.__parent_id__ = self.__uuid__
-        item.__path__ = '%s%s/'%(self.__path__, item.name)
+        item.__path__ = '%s%s/'%(self.__path__, key)
 
         # recursevly update children paths
         def update_path(container):
@@ -78,7 +81,7 @@ class Container(Content):
         raise KeyError(item)
 
 
-def loadContent(uuid):
+def loadContent(uuid, permission=None):
     item = ptah.resolve(uuid)
 
     parents = []
@@ -92,4 +95,12 @@ def loadContent(uuid):
             parent.__parent__ = parent.__parent_ref__
         parent = parent.__parent__
 
+    if permission is not None:
+        if not authService.checkPermission(item, permission):
+            return HTTPForbidden
+
     return item
+
+
+def loadParents(content):
+    pass
