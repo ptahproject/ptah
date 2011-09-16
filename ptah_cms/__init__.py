@@ -7,6 +7,9 @@ from ptah_cms.node import Node
 from ptah_cms.content import Content
 from ptah_cms.container import Container
 
+# content loading
+from ptah_cms.container import loadContent
+
 # Type information
 from ptah_cms.tinfo import Type
 from ptah_cms.tinfo import Action
@@ -37,3 +40,7 @@ from ptah_cms.permissions import Viewer
 from ptah_cms.permissions import Editor
 from ptah_cms.permissions import ModifyContent
 from ptah_cms.permissions import DeleteContent
+
+# forms
+from ptah_cms.forms import AddForm
+from ptah_cms.forms import EditForm

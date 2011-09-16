@@ -67,10 +67,6 @@ class IBlobStorage(interface.Interface):
 
 class ContentSchema(colander.Schema):
     """ base content schema """
-    
-    name = colander.SchemaNode(
-        colander.Str(),
-        title = 'Name')
 
     title = colander.SchemaNode(
         colander.Str(),
