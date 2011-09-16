@@ -29,7 +29,7 @@ class CreateUserForm(form.Form):
             return
 
         # create user
-        user = CrowdUser(data['fullname'], data['login'], data['login'])
+        user = CrowdUser(data['name'], data['login'], data['login'])
         # set password
         user.password = passwordTool.encodePassword(data['password'])
         Session.add(user)
