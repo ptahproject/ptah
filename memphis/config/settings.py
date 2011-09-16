@@ -1,6 +1,5 @@
 """ settings api """
 import colander
-import pyinotify
 import logging, os.path, ConfigParser
 from datetime import datetime, timedelta
 from collections import OrderedDict
@@ -431,9 +430,16 @@ class FileStorage(object):
 Settings = SettingsImpl()
 
 
+try:
+    import pyinotify
+except ImportError:
+    pyinotify = None
+
+
 class iNotifyWatcher(object):
 
-    mask = pyinotify.IN_MODIFY
+    if pyinotify:
+        mask = pyinotify.IN_MODIFY
 
     started = False
     filename = ''
@@ -452,22 +458,27 @@ class iNotifyWatcher(object):
                 Settings.config.end()
 
     def start(self, filename):
-        if Settings.config is None:
-            return
+        pass
 
-        if self.started:
-            if self.filename != filename: # pragma: no cover
-                self.stop()
-            else:
+    if pyinotify:
+        
+        def start(self, filename):
+            if Settings.config is None:
                 return
 
-        wm = pyinotify.WatchManager()
-        wm.add_watch(filename, self.mask, self._process_ev, False, False)
-        self.notifier = notifier = pyinotify.ThreadedNotifier(wm)
-        self.notifier.start()
+            if self.started:
+                if self.filename != filename: # pragma: no cover
+                    self.stop()
+                else:
+                    return
 
-        self.started = True
-        self.filename = filename
+            wm = pyinotify.WatchManager()
+            wm.add_watch(filename, self.mask, self._process_ev, False, False)
+            self.notifier = notifier = pyinotify.ThreadedNotifier(wm)
+            self.notifier.start()
+
+            self.started = True
+            self.filename = filename
 
     def stop(self):
         if Settings.config is None:
