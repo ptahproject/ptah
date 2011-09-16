@@ -9,22 +9,6 @@ from ptah_app.permissions import AddFolder
 
 from interfaces import IFolder
 
-
-class FolderSchema(colander.Schema):
-
-    name = colander.SchemaNode(
-        colander.Str(),
-        title = 'Name')
-
-    title = colander.SchemaNode(
-        colander.Str(),
-        title = 'Title')
-
-    description = colander.SchemaNode(
-        colander.Str(),
-        title = 'Description',
-        widget = 'textarea')
-
     
 class Folder(ptah_cms.Container):
     interface.implements(IFolder)
@@ -36,7 +20,7 @@ class Folder(ptah_cms.Container):
         )
 
 
-class AddFolderForm(form.Form):
+class AddFolderForm(ptah_cms.AddForm):
     view.pyramidView('addfolder.html', ptah_cms.IContainer,
                      permission=AddFolder)
 
@@ -51,14 +35,17 @@ class AddFolderForm(form.Form):
             self.message(errors, 'form-error')
             return
 
-        folder = Folder(__parent__ = self.context, 
-                        name = data['name'],
-                        title = data['title'],
+        folder = Folder(title = data['title'],
                         description = data['description'])
         ptah_cms.Session.add(folder)
 
+        self.request.registry.notify(
+            ptah_cms.events.ContentCreatedEvent(folder))
+
+        self.context[data['__name__']] = folder
+
         self.message('New folder has been created.')
-        raise HTTPFound(location='%s/'%data['name'])
+        raise HTTPFound(location='%s/'%data['__name__'])
 
     @form.button('Cancel')
     def cancelHandler(self):

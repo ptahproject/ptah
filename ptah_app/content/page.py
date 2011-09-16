@@ -41,12 +41,12 @@ class PageView(view.View):
                      template=view.template('ptah_app:templates/page.pt'))
 
 
-
-class AddPageForm(form.Form):
-    view.pyramidView('addpage.html', ptah_cms.IContainer,
-                     permission=AddPage)
+class AddPageForm(ptah_cms.AddForm):
+    view.pyramidView('addpage.html', ptah_cms.IContainer, permission=AddPage)
 
     label = 'Add page'
+    description = Page.__type__.description
+    
     fields = form.Fields(PageSchema)
 
     @form.button('Add', actype=form.AC_PRIMARY)
@@ -57,15 +57,18 @@ class AddPageForm(form.Form):
             self.message(errors, 'form-error')
             return
 
-        page = Page(__parent__ = self.context, 
-                    name = data['name'],
-                    title = data['title'],
+        page = Page(title = data['title'],
                     description = data['description'],
                     text = data['text'])
         ptah_cms.Session.add(page)
 
+        self.request.registry.notify(
+            ptah_cms.events.ContentCreatedEvent(page))
+
+        self.context[data['__name__']] = page
+
         self.message('New page has been created.')
-        raise HTTPFound(location=data['name'])
+        raise HTTPFound(location=data['__name__'])
 
     @form.button('Cancel')
     def cancelHandler(self):

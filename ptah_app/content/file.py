@@ -62,7 +62,7 @@ class FileDownloadView(view.View):
         return response
 
 
-class FileAddForm(form.Form):
+class FileAddForm(ptah_cms.AddForm):
     view.pyramidView('addfile.html', ptah_cms.IContainer, permission=AddFile)
 
     label = 'Add file'
@@ -76,9 +76,7 @@ class FileAddForm(form.Form):
             self.message(errors, 'form-error')
             return
 
-        file = File(__parent__ = self.context, 
-                    name = data['name'],
-                    title = data['title'],
+        file = File(title = data['title'],
                     description = data['description'])
         ptah_cms.Session.add(file)
         ptah_cms.Session.flush()
@@ -91,8 +89,13 @@ class FileAddForm(form.Form):
 
         file.blobref = blob_uuid
 
+        self.request.registry.notify(
+            ptah_cms.events.ContentCreatedEvent(page))
+
+        self.context[data['__name__']] = file
+
         self.message('New file has been created.')
-        raise HTTPFound(location='%s/index.html'%data['name'])
+        raise HTTPFound(location='%s/index.html'%data['__name__'])
 
     @form.button('Cancel')
     def cancelHandler(self):

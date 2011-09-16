@@ -5,7 +5,7 @@ from pyramid.httpexceptions import HTTPFound
 import ptah
 import ptah_cms
 from ptah.security import authService
-from ptah_cms import tinfo, interfaces
+from ptah_cms import tinfo, interfaces, events
 
 
 view.registerLayout(
@@ -56,38 +56,47 @@ view.registerLayout(
     template = view.template("ptah_app:templates/layoutdefault.pt"))
 
 
+from ptah_cms.container import loadContent
+
 class ContainerListing(view.View):
     view.pyramidView(
         'index.html', interfaces.IContainer, default=True,
         template=view.template("ptah_app:templates/folder_listing.pt"))
 
     def update(self):
-        if 'form.buttons.remove' in self.request.POST:
+        context = self.context
+        request = self.request
+        registry = request.registry
+        
+        if 'form.buttons.remove' in request.POST:
+            uuids = self.request.POST.getall('item')
+            for uuid in uuids:
+                item = loadContent(uuid)
+                if item and item.__parent__ is context:
+                    del context[item]
+
+                self.message("Selected content items have been removed.")
+
+        if 'form.buttons.rename' in request.POST:
             uuids = self.request.POST.getall('item')
             print '=============', uuids
 
-        if 'form.buttons.rename' in self.request.POST:
-            uuids = self.request.POST.getall('item')
-            print '=============', uuids
-
-        if 'form.buttons.cut' in self.request.POST:
+        if 'form.buttons.cut' in request.POST:
             uuids = self.request.POST.getall('item')
             print '=============', uuids
 
 
-#class RenameForm(view.View):
-#    view.pyramidView(
-#        'rename.html', interfaces.IContainer,
-#        template=view.template("tartaroo:templates/folder_rename.pt"))
-    
-    
+class RenameForm(view.View):
+    view.pyramidView(
+        'rename.html', interfaces.IContainer,
+        template=view.template("ptah_app:templates/folder_rename.pt"))
 
 
 class Adding(view.View):
     view.pyramidView(
         '+', interfaces.IContainer,
         template=view.template("ptah_app:templates/adding.pt"))
-    
+
     def update(self):
         self.url = self.request.resource_url(self.context)
 
