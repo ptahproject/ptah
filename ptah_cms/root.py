@@ -38,7 +38,6 @@ class ApplicationFactory(object):
 class ApplicationRoot(Container):
     interface.implements(IApplicationRoot)
 
-    __acl__ = ptah.security.ACL
     __type__ = Type('app', 'Application')
 
     _sql_get_root = ptah.QueryFreezer(
@@ -64,6 +63,12 @@ class ApplicationRoot(Container):
 
     def __resource_url__(self, request, info):
         return self.__root_path__
+
+    @property
+    def __acl__(self):
+        acl = self._acl_()
+        acl.extend(ptah.security.ACL)
+        return acl
 
 
 def _getContent(uuid):

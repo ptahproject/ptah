@@ -12,7 +12,7 @@ Base = pyramid_sqla.get_base()
 Session = pyramid_sqla.get_session()
 
 
-class Node(Base):
+class Node(Base, ptah.security.PermissionsMapSupport):
     interface.implements(INode, 
                          ptah.security.IOwnersAware,
                          ptah.security.ILocalRolesAware)
