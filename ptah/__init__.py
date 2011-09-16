@@ -44,9 +44,10 @@ class WSGIAppInitialized(object):
 
 def make_wsgi_app(global_config, **settings):
     import transaction
+    import pyramid_sqla
     from pyramid import path
     from pyramid.config import Configurator
-
+    
     # configuration
     config = Configurator(settings=settings)
 
@@ -55,6 +56,10 @@ def make_wsgi_app(global_config, **settings):
 
     # create wsgi app
     app = config.make_wsgi_app()
+
+    # create sql tables
+    Base = pyramid_sqla.get_base()
+    Base.metadata.create_all()
 
     # event
     config.begin()
