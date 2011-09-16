@@ -125,8 +125,9 @@ class StaticView(object):
         if not path_info:
             return self.not_found(environ, start_response)
 
-        path = path_info[self.lprefix:]
-        
+        # windows only
+        path = os.path.join(*(path_info[self.lprefix:].split('/')))
+
         for abspath, dirinfo in self.data:
             if path in dirinfo:
                 fa = fileapp.FileApp(os.path.join(abspath, path))
