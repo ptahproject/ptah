@@ -90,7 +90,7 @@ class FileAddForm(ptah_cms.AddForm):
         file.blobref = blob_uuid
 
         self.request.registry.notify(
-            ptah_cms.events.ContentCreatedEvent(page))
+            ptah_cms.events.ContentCreatedEvent(file))
 
         self.context[data['__name__']] = file
 
