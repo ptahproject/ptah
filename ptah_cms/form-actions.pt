@@ -1,6 +1,0 @@
-${view.pagelet('form-widget',context.name_widgets['__name__'])}
-<div class="actions" tal:condition="context.actions.values()">
-  <tal:block tal:repeat="action context.actions.values()"
-             tal:content="structure view.pagelet(action.mode, action)">
-  </tal:block>
-</div>
