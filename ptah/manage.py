@@ -34,6 +34,9 @@ def PtahAccessManager(id):
     """ default access manager """
     principal = resolve(id)
    
+    if '*' in PTAH.managers:
+        return True
+
     if principal is not None and principal.login in PTAH.managers:
         return True
 
