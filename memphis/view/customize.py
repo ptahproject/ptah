@@ -2,7 +2,6 @@
 import os
 import logging
 import colander
-import pyinotify
 try:
     from chameleon import template as chameleon_template
 except:
@@ -163,11 +162,17 @@ class _GlobalLayerManager(object):
                 if t.custom is not None:
                     t.setCustom(None)
 
+try:
+    import pyinotify
+except ImportError:
+    pyinotify = None
+
 
 class iNotifyWatcher(object):
 
-    mask = pyinotify.IN_CREATE|pyinotify.IN_DELETE|\
-        pyinotify.IN_MOVED_FROM|pyinotify.IN_MOVED_TO
+    if pyinotify:
+        mask = pyinotify.IN_CREATE|pyinotify.IN_DELETE|\
+               pyinotify.IN_MOVED_FROM|pyinotify.IN_MOVED_TO
 
     type = 'inotify'
 
@@ -176,11 +181,13 @@ class iNotifyWatcher(object):
         self.directory = manager.directory
 
         self._started = False
-        self._wm = pyinotify.WatchManager()
-        self._notifier = pyinotify.ThreadedNotifier(self._wm)
-        self._wm.add_watch(
-            self.manager.directory, 
-            self.mask, self._process_ev, True, True)
+
+        if pyinotify:
+            self._wm = pyinotify.WatchManager()
+            self._notifier = pyinotify.ThreadedNotifier(self._wm)
+            self._wm.add_watch(
+                self.manager.directory, 
+                self.mask, self._process_ev, True, True)
 
     def _process_ev(self, ev):
         if ev.dir:
@@ -191,8 +198,9 @@ class iNotifyWatcher(object):
             self.manager.reloadPackage(pkg)
 
     def start(self):
-        self._notifier.start()
-        self._started = True
+        if pyinotify:
+            self._notifier.start()
+            self._started = True
 
     def stop(self):
         if self._started:
