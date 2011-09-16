@@ -1,4 +1,5 @@
 """ cms events """
+import ptah
 from memphis import config
 from datetime import datetime
 from zope.component.interfaces import ObjectEvent
@@ -34,6 +35,10 @@ def createdHandler(ev):
     now = datetime.now()
     ev.object.created = now
     ev.object.modified = now
+
+    user = ptah.security.authService.getCurrentPrincipal()
+    if user:
+        ev.object.__owners__ = [user.uuid]
 
 
 @config.handler(ContentModifiedEvent)

@@ -13,7 +13,9 @@ Session = pyramid_sqla.get_session()
 
 
 class Node(Base):
-    interface.implements(INode, ptah.security.ILocalRolesAware)
+    interface.implements(INode, 
+                         ptah.security.IOwnersAware,
+                         ptah.security.ILocalRolesAware)
 
     __tablename__ = 'ptah_cms_nodes'
 
