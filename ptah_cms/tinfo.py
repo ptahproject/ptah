@@ -68,7 +68,10 @@ def Type(name, title, **kw):
     if '__id__' not in f_locals and '__tablename__' in f_locals:
         f_locals['__id__'] = sqla.Column(
             'id', sqla.Integer, 
-            sqla.ForeignKey('ptah_contents.id'), primary_key=True)
+            sqla.ForeignKey('ptah_cms_content.id'), primary_key=True)
+    if '__uuid_generator__' not in f_locals:
+        f_locals['__uuid_generator__'] = ptah.UUIDGenerator('cms+%s'%name)
+
 
     info.attach(
         config.ClassAction(

@@ -17,7 +17,7 @@ class Blob(Node):
     __uuid_generator__ = ptah.UUIDGenerator('blob+sql')
 
     __id__ = sqla.Column('id', sqla.Integer, 
-                         sqla.ForeignKey('ptah_nodes.id'), primary_key=True)
+                         sqla.ForeignKey('ptah_cms_nodes.id'), primary_key=True)
 
     mimetype = sqla.Column(sqla.Unicode, default=u'')
     filename = sqla.Column(sqla.Unicode, default=u'')

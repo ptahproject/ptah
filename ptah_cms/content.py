@@ -1,7 +1,6 @@
 """ Base content class implementation """
 import sqlalchemy as sqla
 from zope import interface
-from pyramid.decorator import reify
 
 import ptah
 from ptah.utils import JsonType
@@ -13,15 +12,18 @@ from interfaces import IContent
 class Content(Node):
     interface.implements(IContent)
 
-    __tablename__ = 'ptah_contents'
+    __tablename__ = 'ptah_cms_content'
     __uuid_generator__ = ptah.UUIDGenerator('cms+content')
 
     __id__ = sqla.Column('id', sqla.Integer, 
-                         sqla.ForeignKey('ptah_nodes.id'), primary_key=True)
+                         sqla.ForeignKey('ptah_cms_nodes.id'), primary_key=True)
+    __path__ = sqla.Column('path', sqla.Unicode, default=u'')
+
     name = sqla.Column(sqla.Unicode(255))
 
     title = sqla.Column(sqla.Unicode, default=u'')
     description = sqla.Column(sqla.Unicode, default=u'')
+    default_view = sqla.Column(sqla.Unicode, default=u'')
 
     created = sqla.Column(sqla.DateTime)
     modified = sqla.Column(sqla.DateTime)
@@ -33,20 +35,30 @@ class Content(Node):
     publisher = sqla.Column(sqla.Unicode, default=u'')
     contributors = sqla.Column(JsonType, default=[])
 
-    @reify
+    # sql queries
+    _sql_get = ptah.QueryFreezer(
+        lambda: Session.query(Content)
+        .filter(Content.__uuid__ == sqla.sql.bindparam('uuid')))
+
+    _sql_get_in_parent = ptah.QueryFreezer(
+        lambda: Session.query(Content)
+            .filter(Content.name == sqla.sql.bindparam('key'))
+            .filter(Content.__parent_id__ == sqla.sql.bindparam('parent')))
+
+    _sql_parent = ptah.QueryFreezer(
+        lambda: Session.query(Content)
+            .filter(Content.__uuid__ == sqla.sql.bindparam('parent')))
+
+    @property
     def __name__(self):
         return self.name
 
     def __resource_url__(self, request, info):
-        return '%s%s/'%(self.__parent__.__path__, self.name)
+        return self.__path__[len(request.root.__path__)-1:]
 
-
-_sql_get = ptah.QueryFreezer(
-    lambda: Session.query(Content)
-    .filter(Content.__uuid__ == sqla.sql.bindparam('uuid')))
 
 def _getContent(uuid):
-    return _sql_get.first(uuid=uuid)
+    return Content._sql_get.first(uuid=uuid)
 
 ptah.registerResolver(
     'cms+content', _getContent, title='Ptah CMS Content resolver')
