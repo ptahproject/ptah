@@ -63,7 +63,7 @@ def loadPackage(name, seen, first=True):
     except pkg_resources.DistributionNotFound:
         pass
 
-    if first and name not in packages:
+    if first and name not in packages and '-' not in name:
         packages.append(name)
 
     return packages
