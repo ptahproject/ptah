@@ -72,7 +72,10 @@ class Authentication(object):
         return True
 
     def getCurrentPrincipal(self):
-        id = security.authenticated_userid(get_current_request())
+        try:
+            id = security.authenticated_userid(get_current_request())
+        except:
+            return None
         if id:
             return ptah.resolve(id)
 
