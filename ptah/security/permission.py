@@ -67,9 +67,7 @@ class PermissionsMapSupport(object):
 
         return acl
 
-    @property
-    def __acl__(self):
-        return self._acl_()
+    __acl__ = property(_acl_)
 
 
 def Permission(name, title, description=u''):
