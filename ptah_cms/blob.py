@@ -12,8 +12,8 @@ from interfaces import IBlob, IBlobStorage
 class Blob(Node):
     interface.implements(IBlob)
 
-    __tablename__ = 'ptah_blobstorage'
-    __mapper_args__ = {'polymorphic_identity': 'ptah-blob'}
+    __tablename__ = 'ptah_cms_blobs'
+    __mapper_args__ = {'polymorphic_identity': 'ptah-cms-blob'}
     __uuid_generator__ = ptah.UUIDGenerator('blob+sql')
 
     __id__ = sqla.Column('id', sqla.Integer, 
