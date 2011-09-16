@@ -33,3 +33,7 @@ from ptah_cms.permissions import Viewer
 from ptah_cms.permissions import Editor
 from ptah_cms.permissions import ModifyContent
 from ptah_cms.permissions import DeleteContent
+
+# forms
+from ptah_app.forms import AddForm
+from ptah_app.forms import EditForm

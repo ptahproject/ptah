@@ -7,6 +7,7 @@ from memphis import view, form
 from pyramid.httpexceptions import HTTPFound
 
 import ptah_cms
+from ptah_app import AddForm
 from ptah_app.permissions import AddPage
 
 from interfaces import IPage
@@ -41,12 +42,12 @@ class PageView(view.View):
                      template=view.template('ptah_app:templates/page.pt'))
 
 
-class AddPageForm(ptah_cms.AddForm):
+class AddPageForm(AddForm):
     view.pyramidView('addpage.html', ptah_cms.IContainer, permission=AddPage)
 
     label = 'Add page'
     description = Page.__type__.description
-    
+
     fields = form.Fields(PageSchema)
 
     @form.button('Add', actype=form.AC_PRIMARY)

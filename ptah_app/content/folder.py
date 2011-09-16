@@ -5,11 +5,12 @@ from memphis import view, form
 from pyramid.httpexceptions import HTTPFound
 
 import ptah_cms
+from ptah_app import AddForm
 from ptah_app.permissions import AddFolder
 
 from interfaces import IFolder
 
-    
+
 class Folder(ptah_cms.Container):
     interface.implements(IFolder)
 
@@ -20,7 +21,7 @@ class Folder(ptah_cms.Container):
         )
 
 
-class AddFolderForm(ptah_cms.AddForm):
+class AddFolderForm(AddForm):
     view.pyramidView('addfolder.html', ptah_cms.IContainer,
                      permission=AddFolder)
 

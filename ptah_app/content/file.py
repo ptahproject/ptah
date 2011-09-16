@@ -9,6 +9,7 @@ from memphis import view, form
 
 import ptah
 import ptah_cms
+from ptah_app import AddForm
 from ptah_app.permissions import AddFile
 
 from interfaces import IFile
@@ -62,7 +63,7 @@ class FileDownloadView(view.View):
         return response
 
 
-class FileAddForm(ptah_cms.AddForm):
+class FileAddForm(AddForm):
     view.pyramidView('addfile.html', ptah_cms.IContainer, permission=AddFile)
 
     label = 'Add file'
