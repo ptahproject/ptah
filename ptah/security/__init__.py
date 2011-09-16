@@ -12,6 +12,7 @@ from interfaces import IPasswordChanger
 from interfaces import IAuthProvider
 from interfaces import ISearchableAuthProvider
 
+from interfaces import IOwnersAware
 from interfaces import ILocalRolesAware
 
 # role
