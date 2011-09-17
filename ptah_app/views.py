@@ -84,7 +84,7 @@ class ContainerListing(view.View):
         if 'form.buttons.remove' in request.POST:
             uuids = self.request.POST.getall('item')
             for uuid in uuids:
-                item = loadContent(uuid)
+                item = ptah_cms.loadContent(uuid)
                 if item and item.__parent__ is context:
                     del context[item]
 
