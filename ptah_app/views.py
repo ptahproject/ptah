@@ -36,14 +36,14 @@ class ContentLayout(view.Layout):
         actions = []
         for action in ti.actions:
             if action.permission:
-                if authService.checkPermission(context, action.permission):
+                if ptah.checkPermission(context, action.permission, False):
                     actions.append(action)
             else:
                 actions.append(action)
 
         for name, action in sm.getAdapters((context,), interfaces.IAction):
             if action.permission:
-                if authService.checkPermission(context, action.permission):
+                if ptah.checkPermission(context, action.permission, False):
                     actions.append(action)
             else:
                 actions.append(action)
