@@ -4,14 +4,26 @@ from zope import interface
 from zope.component import getSiteManager
 
 import ptah
-from memphis import config
+from memphis import config, view
 
 from tinfo import Type
 from node import Session
 from container import Container
-from policy import ApplicationPolicy
 from events import ContentCreatedEvent
 from interfaces import IApplicationRoot
+
+
+class ApplicationPolicy(object):
+    interface.implements(view.INavigationRoot)
+
+    __name__ = ''
+    __parent__ = None
+
+    # default acl
+    __acl__ = ptah.security.ACL
+
+    def __init__(self, request):
+        self.request = request
 
 
 factories = {}
@@ -19,12 +31,13 @@ factories = {}
 class ApplicationFactory(object):
 
     def __init__(self, path, name, title, policy=ApplicationPolicy):
+        self.id = '-'.join(part for part in path.split('/') if part)
         self.path = path
         self.name = name
         self.title = title
         self.policy = policy
 
-        factories[name] = self
+        factories[self.id] = self
 
         info = config.DirectiveInfo()
         info.attach(

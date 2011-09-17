@@ -1,5 +1,4 @@
 """ rest api for cms """
-import ptah
 import sqlalchemy as sqla
 from collections import OrderedDict
 from zope import interface
@@ -9,6 +8,8 @@ from memphis import config
 from pyramid.location import lineage
 from pyramid.httpexceptions import HTTPNotFound
 
+import ptah
+import ptah_cms
 from ptah_cms.node import Node
 from ptah_cms.content import Content
 from ptah_cms.container import Container
@@ -32,16 +33,17 @@ class Applications(ptah.rest.Action):
 
         for name, factory in factories.items():
             root = factory(request)
-            
-            apps.append((root.title, root.name, {
-                '__name__': root.name,
-                '__uuid__': root.__uuid__,
-                '__link__': '%s/content:%s/%s/'%(
-                    request.application_url, root.name, root.__uuid__),
-                }))
+
+            apps.append((root.title, root.name, OrderedDict(
+                (('mount', name),
+                 ('__name__', root.name),
+                 ('__uuid__', root.__uuid__),
+                 ('__link__', '%s/content:%s/%s/'%(
+                     request.application_url, name, root.__uuid__))),
+                )))
 
         apps.sort()
-        return OrderedDict((name, info) for _t, name, info in apps)
+        return [info for _t, name, info in apps]
 
 
 class Content(ptah.rest.Action):
@@ -62,19 +64,20 @@ class Content(ptah.rest.Action):
         if not uuid:
             content = root
         else:
-            content = loadContent(uuid, ptah.View)
+            content = loadContent(uuid)
 
         adapters = request.registry.adapters
 
-        actionFactory = adapters.lookup(
+        action = adapters.lookup(
             (IRestActionClassifier, providedBy(content)),
             IRestAction, name=action, default=None)
 
-        if actionFactory:
+        if action:
             request.environ['SCRIPT_NAME'] = '%s/content:%s/'%(
                 request.environ['SCRIPT_NAME'], app)
 
-            return actionFactory(content, request)
+            ptah.security.checkPermission(content, action.__permission__)
+            return action(content, request)
 
         raise HTTPNotFound()
 
@@ -101,6 +104,8 @@ class ContentRestInfo(object):
     title = 'Content information'
     description = ''
 
+    __permission__ = ptah.View
+
     def parents(self, content):
         parents = []
 
@@ -110,12 +115,11 @@ class ContentRestInfo(object):
             else:
                 break
 
-        return parents
+        return parents[1:]
 
     def __call__(self, content, request):
         info = OrderedDict(
             (('__name__', content.name),
-             ('__path__', content.__path__),
              ('__type__', content.__type_id__),
              ('__uuid__', content.__uuid__),
              ('__container__', False),
@@ -145,6 +149,8 @@ class ContainerRestInfo(ContentRestInfo):
     title = 'Container information'
     description = ''
 
+    __permission__ = ptah.View
+
     def __call__(self, content, request):
         info = super(ContainerRestInfo, self).__call__(content, request)
         
@@ -153,14 +159,16 @@ class ContainerRestInfo(ContentRestInfo):
             contents.append(
                 OrderedDict((
                     ('__name__', content.name),
-                    ('__path__', content.__path__),
                     ('__type__', content.__type_id__),
                     ('__uuid__', content.__uuid__),
                     ('__container__', isinstance(content, Container)),
                     ('__link__', '%s%s/'%(request.application_url,
                                           content.__uuid__)),
                     ('title', content.title),
-                    ('description', content.description))))
+                    ('description', content.description),
+                    ('created', content.created),
+                    ('modified', content.modified),
+                    )))
 
         info['__contents__'] = contents
         info['__container__'] = True
@@ -171,6 +179,8 @@ class ContentAPIDoc(ContentRestInfo):
 
     title = 'API Doc'
     description = ''
+
+    __permission__ = ptah.View
 
     def __call__(self, content, request):
         info = super(ContentAPIDoc, self).__call__(content, request)
@@ -191,9 +201,21 @@ class ContentAPIDoc(ContentRestInfo):
         return info
 
 
+class DeleteAction(object):
+
+    title = 'Delete content'
+    description = ''
+
+    __permission__ = ptah_cms.DeleteContent
+
+    def __call__(self, content, request):
+        pass
+    
+
 registerRestAction('', IContent, ContentRestInfo())
 registerRestAction('', IContainer, ContainerRestInfo())
 registerRestAction('apidoc', IContent, ContentAPIDoc())
+registerRestAction('delete', IContent, DeleteAction())
 
 ptah.rest.registerService('cms', 'cms', 'Ptah CMS api')
 ptah.rest.registerServiceAction('cms', Content())
