@@ -28,9 +28,10 @@ class IntrospectModule(ptah.PtahModule):
     packages = loadPackages()
     packages.sort()
     packages = [pkg_resources.get_distribution(pkg) for pkg in packages]
-    packagesDict = dict((p.project_name, p) for p in packages)
+    packagesDict = dict((p.project_name.replace('-', '_'), p) for p in packages)
 
     def __getitem__(self, key):
+        key = key.replace('-','_')
         return Package(self.packagesDict[key], self, self.request)
 
 
@@ -45,7 +46,8 @@ class Package(object):
         self.request = request
 
     def actions(self):
-        actions = directives.scan(self.pkg.project_name, set(), exclude)
+        pkg = self.pkg.project_name.replace('-', '_')
+        actions = directives.scan(pkg, set(), exclude)
 
         info = {}
 
@@ -123,6 +125,7 @@ def routeDirective(
     template = view.template('ptah.modules:templates/directive-route.pt')):
 
     name, pattern, factory = action.args[:3]
+    print (name, pattern, factory)
 
     if not factory:
         factory = 'DefaultRootFactory'
@@ -180,10 +183,12 @@ def handlerDirective(
 
     if len(action.args[2]) > 1:
         obj = action.args[2][0]
-        event = directives.events[action.args[2][-1]]
+        klass = action.args[2][-1]
+        event = directives.events.get(action.args[2][-1], None)
     else:
         obj = None
-        event = directives.events[action.args[2][0]]
+        klass = action.args[2][0]
+        event = directives.events.get(action.args[2][0], None)
 
     return template(**locals())
 

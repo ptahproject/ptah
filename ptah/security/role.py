@@ -3,6 +3,7 @@ from collections import OrderedDict
 from pyramid.location import lineage
 from pyramid.security import Allow, Deny, ALL_PERMISSIONS
 
+from interfaces import IOwnersAware
 from interfaces import ILocalRolesAware
 
 
@@ -26,6 +27,9 @@ class Role(object):
 
     def __str__(self):
         return 'Role<%s>'%self.name
+
+    def __repr__(self):
+        return self.id
 
     def allow(self, *permissions):
         if self.allowed is ALL_PERMISSIONS:
@@ -57,16 +61,10 @@ def registerRole(name, title, description=u'', prefix='role:', system=False):
     Roles[role.name] = role
 
     info.attach(
-        config.Action(
-            registerRoleImpl,
-            (role,), discriminator = ('ptah:role', name))
+        config.Action(None, discriminator = ('ptah:role', name))
         )
 
     return role
-
-
-def registerRoleImpl(role):
-    Roles[role.name] = role
 
 
 Everyone = registerRole(
@@ -74,6 +72,9 @@ Everyone = registerRole(
 
 Authenticated = registerRole(
     'Authenticated', 'Authenticated', '', 'system.', True)
+
+Owner = registerRole(
+    'Owner', 'Owner', '', 'system.', True)
 
 
 def LocalRoles(userid, request=None, context=None):
@@ -83,6 +84,11 @@ def LocalRoles(userid, request=None, context=None):
             context = getattr(request, 'root', None)
 
     roles = OrderedDict()
+
+    if IOwnersAware.providedBy(context):
+        if userid in context.__owners__:
+            roles[Owner.id] = Allow
+
     for location in lineage(context):
         if ILocalRolesAware.providedBy(location):
             local_roles = location.__local_roles__

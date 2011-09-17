@@ -7,7 +7,7 @@
     <h3>Packages</h3>
     <ul>
       <li tal:repeat="pkg view.packages">
-	<a href="${pkg.project_name}/">${pkg}</a>
+	<a href="${pkg.project_name.replace('-','_')}/">${pkg}</a>
       </li>
     </ul>
   </div>

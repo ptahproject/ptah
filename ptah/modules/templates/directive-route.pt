@@ -1,4 +1,7 @@
 <h5>${name}: ${pattern}</h5>
 <p>
-  Factory: <a href="../source.html?pkg=${factory.__module__}#sl-${lineno(factory)}" tal:content="factory"/>
+  Factory: 
+  <a tal:condition="not isinstance(factory, str)"
+     href="../source.html?pkg=${factory.__module__}#sl-${lineno(factory)}" tal:content="factory"/>
+  <tal:block condition="isinstance(factory, str)">${factory}</tal:block>
 </p>

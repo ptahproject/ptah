@@ -10,8 +10,9 @@
       <tal:block tal:content="obj" /><br />
     </tal:block>
 
-    <a href="../events.html?ev=${event.name}">
+    <a tal:condition="event" href="../events.html?ev=${event.name}">
       ${event.title}</a><br/>
+    <tal:block tal:condition="not event" tal:content="klass" />
   </div>
 
   <tal:block condition="factory.__doc__">

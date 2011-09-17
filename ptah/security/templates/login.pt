@@ -1,4 +1,4 @@
-<div class="row" tal:define="app_url request.application_url">
+<div tal:define="app_url request.application_url">
 
   <div class="page-header">
     <h1 i18n:translate="">Please log in</h1>

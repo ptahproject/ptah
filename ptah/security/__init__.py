@@ -12,16 +12,26 @@ from interfaces import IPasswordChanger
 from interfaces import IAuthProvider
 from interfaces import ISearchableAuthProvider
 
+from interfaces import IOwnersAware
 from interfaces import ILocalRolesAware
 
 # role
-from ptah.security.role import ACL, Role, Roles, registerRole, LocalRoles
+from ptah.security.role import ACL
+from ptah.security.role import Owner
 from ptah.security.role import Everyone
 from ptah.security.role import Authenticated
+from ptah.security.role import Role
+from ptah.security.role import Roles
+from ptah.security.role import LocalRoles
+from ptah.security.role import registerRole
 
 # permission
 from ptah.security.permission import View
-from ptah.security.permission import Permission, Permissions
+from ptah.security.permission import Permission
+from ptah.security.permission import Permissions
+from ptah.security.permission import PermissionsMap
+from ptah.security.permission import PermissionsMaps
+from ptah.security.permission import PermissionsMapSupport
 
 # grant view to everyone
 Everyone.allow(View)

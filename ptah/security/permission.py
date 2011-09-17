@@ -1,10 +1,12 @@
 from memphis import config
+from pyramid.security import Allow, Deny
 
 
-class Permissions(dict):
+class _Permissions(dict):
     pass
 
-Permissions = Permissions()
+Permissions = _Permissions()
+PermissionsMaps = _Permissions()
 
 
 class PermissionInfo(str):
@@ -13,7 +15,9 @@ class PermissionInfo(str):
     description = u''
 
 
-class PermissionMap(object):
+class PermissionsMap(object):
+
+    # do we need somthing like Unset, to unset permission from parent
 
     def __init__(self, name, title, description=u''):
         self.name = name
@@ -23,17 +27,47 @@ class PermissionMap(object):
         self.allowed = {}
         self.denied = {}
 
+        PermissionsMaps[name] = self
+
+        info = config.DirectiveInfo()
+        info.attach(
+            config.Action(
+                None, discriminator = ('ptah:permission-map', name))
+            )
+
     def allow(self, role, *permissions):
-        perms = self.allowed.setdefault(role, set())
-        perms.extend(permissions)
+        perms = self.allowed.setdefault(role.id, set())
+        perms.update(permissions)
 
     def deny(self, role, permissions):
-        perms = self.denied.setdefault(role, set())
-        perms.extend(permissions)
+        perms = self.denied.setdefault(role.id, set())
+        perms.update(permissions)
 
-    @property
-    def __acl__(self):
-        pass
+
+class PermissionsMapSupport(object):
+
+    __permissions__ = []
+
+    def _acl_(self):
+        acl = []
+
+        for name in self.__permissions__:
+            pmap = PermissionsMaps.get(name)
+            if pmap:
+                acl.extend(
+                    [(Allow, role, permissions) 
+                     for role, permissions in pmap.denied.items()])
+
+        for name in self.__permissions__:
+            pmap = PermissionsMaps.get(name)
+            if pmap:
+                acl.extend(
+                    [(Allow, role, permissions) 
+                     for role, permissions in pmap.allowed.items()])
+
+        return acl
+
+    __acl__ = property(_acl_)
 
 
 def Permission(name, title, description=u''):

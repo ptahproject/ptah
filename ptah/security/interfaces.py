@@ -93,6 +93,12 @@ class IPasswordTool(interface.Interface):
         """ generate passcode for principal """
 
 
+class IOwnersAware(interface.Interface):
+    """ owners aware context """
+
+    __owners__ = interface.Attribute('Owners list')
+
+
 class ILocalRolesAware(interface.Interface):
     """ local roles aware context """
 

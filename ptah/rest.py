@@ -1,5 +1,6 @@
 # ptah rest api
 from memphis import view
+from datetime import datetime
 from simplejson import dumps
 from collections import OrderedDict
 
@@ -82,6 +83,11 @@ class ServiceAPIDoc(Action):
 view.registerRoute(
     'ptah-rest', '/__api__/{service}/*subpath', use_global_views=True)
 
+
+def dthandler(obj):
+    return obj.isoformat() if isinstance(obj, datetime) else None
+
+
 class Api(object):
     view.pyramidView(route='ptah-rest', layout=None)
 
@@ -96,6 +102,11 @@ class Api(object):
         if subpath:
             action = subpath[0]
             arguments = subpath[1:]
+            if ':' in action:
+                action, arg = action.split(':',1)
+                arguments = (arg,) + arguments
+
+                request.environ['SCRIPT_NAME'] = '/__api__/%s'%service
         else:
             action = 'apidoc'
             arguments = ()
@@ -103,4 +114,5 @@ class Api(object):
         request.response.headerslist = {'Content-Type': 'application/json'}
         return '%s\n\n'%dumps(
             services[service](request, action, *arguments), 
-            indent=True)
+            indent=True,
+            default=dthandler)
