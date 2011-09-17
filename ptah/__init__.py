@@ -18,6 +18,7 @@ from ptah.manage import setAccessManager, ACCESS_MANAGER
 from ptah import security
 from ptah.security import View
 from ptah.security import Role, Roles, Permission, registerRole, authService
+from ptah.security import checkPermission
 
 # rest api
 from ptah import rest
