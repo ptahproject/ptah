@@ -61,7 +61,7 @@ class PtahManageRoute(object):
         self.registry = request.registry
 
         userid = authenticated_userid(request)
-        if not ACCESS_MANAGER(userid):
+        if userid and not ACCESS_MANAGER(userid):
             raise HTTPForbidden()
 
     def __getitem__(self, key):
