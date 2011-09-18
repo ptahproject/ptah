@@ -1,10 +1,8 @@
 """ Page """
-import ptah
 import colander
-import sqlalchemy as sqa
+import sqlalchemy as sqla
 from zope import interface
 from memphis import view, form
-from pyramid.httpexceptions import HTTPFound
 
 import ptah_cms
 from ptah_app import AddForm
@@ -33,7 +31,7 @@ class Page(ptah_cms.Content):
         description = 'A page in the site.',
         )
 
-    text = sqa.Column(sqa.Unicode)
+    text = sqla.Column(sqla.Unicode)
 
 
 class PageView(view.View):
@@ -45,32 +43,5 @@ class PageView(view.View):
 class AddPageForm(AddForm):
     view.pyramidView('addpage.html', ptah_cms.IContainer, permission=AddPage)
 
-    label = 'Add page'
-    description = Page.__type__.description
-
+    tinfo = Page.__type__
     fields = form.Fields(PageSchema)
-
-    @form.button('Add', actype=form.AC_PRIMARY)
-    def saveHandler(self):
-        data, errors = self.extractData()
-
-        if errors:
-            self.message(errors, 'form-error')
-            return
-
-        page = Page(title = data['title'],
-                    description = data['description'],
-                    text = data['text'])
-        ptah_cms.Session.add(page)
-
-        self.request.registry.notify(
-            ptah_cms.events.ContentCreatedEvent(page))
-
-        self.context[data['__name__']] = page
-
-        self.message('New page has been created.')
-        raise HTTPFound(location=data['__name__'])
-
-    @form.button('Cancel')
-    def cancelHandler(self):
-        raise HTTPFound(location='.')

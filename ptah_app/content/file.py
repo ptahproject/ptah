@@ -66,7 +66,7 @@ class FileDownloadView(view.View):
 class FileAddForm(AddForm):
     view.pyramidView('addfile.html', ptah_cms.IContainer, permission=AddFile)
 
-    label = 'Add file'
+    tinfo = File.__type__
     fields = form.Fields(FileSchema)
 
     @form.button('Add', actype=form.AC_PRIMARY)

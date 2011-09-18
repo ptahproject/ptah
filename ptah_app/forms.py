@@ -4,6 +4,7 @@ from memphis import view, form
 from pyramid.decorator import reify
 from pyramid.httpexceptions import HTTPFound
 
+import ptah_cms
 from ptah_cms.interfaces import IContent
 from ptah_cms.permissions import ModifyContent
 
@@ -26,7 +27,12 @@ class NameSchema(colander.Schema):
 
 class AddForm(form.Form):
 
+    tinfo = None
     name_fields = form.Fields(NameSchema)
+
+    @reify
+    def fields(self):
+        return form.Fields(self.tinfo.schema)
 
     @reify
     def label(self):
@@ -66,10 +72,35 @@ class AddForm(form.Form):
         data.update(name_data)
         return data, errors
 
-    def update(self):
-        self.tinfo = self.context.__type__
+    def create(self, **data):
+        content = self.tinfo.create(**data)
+        ptah_cms.Session.add(content)
+        return content
 
-        super(AddForm, self).update()
+    def createAndAdd(self, **data):
+        content = self.create(**data)
+        
+        self.request.registry.notify(
+            ptah_cms.events.ContentCreatedEvent(content))
+        
+        self.context[data['__name__']] = content
+
+    @form.button('Add', actype=form.AC_PRIMARY)
+    def saveHandler(self):
+        data, errors = self.extractData()
+
+        if errors:
+            self.message(errors, 'form-error')
+            return
+
+        self.createAndAdd(**data)
+
+        self.message('New content has been created.')
+        raise HTTPFound(location=data['__name__'])
+
+    @form.button('Cancel')
+    def cancelHandler(self):
+        raise HTTPFound(location='.')
 
 
 view.registerPagelet(
