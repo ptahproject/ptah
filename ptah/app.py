@@ -140,7 +140,7 @@ def initializing(ev):
             for attr in attrs:
                 settings.append(SECURITY.get(attr))
 
-            kwargs = {}
+            kwargs = {'wild_domain': False}
             for attr in kw:
                 kwargs[attr] = SECURITY.get(attr)
 

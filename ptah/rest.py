@@ -1,8 +1,14 @@
 # ptah rest api
+import traceback
 from memphis import view
 from datetime import datetime
 from simplejson import dumps
 from collections import OrderedDict
+from cStringIO import StringIO
+from pyramid.security import remember, forget
+from pyramid.httpexceptions import WSGIHTTPException
+
+from ptah import security
 
 __all__ = ['registerService', 'registerServiceAction', 'Action']
 
@@ -34,7 +40,7 @@ class Service(object):
         action = self.actions.get(action)
         if action:
             return action(request, *args)
-
+    
 
 class Action(object):
 
@@ -94,10 +100,31 @@ class Api(object):
     def __init__(self, request):
         self.request = request
 
+    def login(self):
+        request = self.request
+        
+        login = request.POST.get('login', '')
+        password = request.POST.get('password', '')
+
+        credentials = {'login': login, 'password': password}
+        info = security.authService.authenticate(credentials)
+        if info.status:
+            headers = remember(request, info.uuid)
+            request.response.headerslist = headers
+            return {'status': True, 'message': '',
+                    'cookie': headers[0][1]}
+        else:
+            request.response.status = 403
+            return {'status': False, 'message': info.message}
+
     def render(self):
         request = self.request
 
         service = request.matchdict['service']
+        if service == 'login':
+            res = self.login()
+            return '%s\n\n'%dumps(res, indent=True, default=dthandler)
+        
         subpath = request.matchdict['subpath']
         if subpath:
             action = subpath[0]
@@ -105,14 +132,28 @@ class Api(object):
             if ':' in action:
                 action, arg = action.split(':',1)
                 arguments = (arg,) + arguments
-
-                request.environ['SCRIPT_NAME'] = '/__api__/%s'%service
         else:
             action = 'apidoc'
             arguments = ()
 
+        request.environ['SCRIPT_NAME'] = '/__api__/%s'%service
+
         request.response.headerslist = {'Content-Type': 'application/json'}
-        return '%s\n\n'%dumps(
-            services[service](request, action, *arguments), 
-            indent=True,
-            default=dthandler)
+
+        try:
+            result = services[service](request, action, *arguments)
+        except WSGIHTTPException, exc:
+            request.response.status = exc.status
+            result = {'code': exc.status,
+                      'message': str(exc)}
+        except Exception, exc:
+            request.response.status = 500
+
+            out = StringIO()
+            traceback.print_exc(file=out)
+
+            result = {'code': request.response.status,
+                      'message': str(exc),
+                      'traceback': out.getvalue()}
+
+        return '%s\n\n'%dumps(result, indent=True, default=dthandler)

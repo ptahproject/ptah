@@ -4,6 +4,7 @@
 from service import authService
 from service import registerProvider
 from service import provideAuthChecker
+from service import checkPermission
 
 from interfaces import IPrincipal
 from interfaces import IPrincipalWithEmail

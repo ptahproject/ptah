@@ -2,8 +2,10 @@ from zope import interface
 from pyramid import security
 from pyramid.security import Authenticated
 from pyramid.security import Everyone
+from pyramid.security import ACLDenied
 from pyramid.threadlocal import get_current_request
 from pyramid.interfaces import IAuthorizationPolicy
+from pyramid.httpexceptions import HTTPForbidden
 
 import ptah
 from role import LocalRoles
@@ -12,8 +14,10 @@ from interfaces import IAuthentication, ISearchableAuthProvider
 checkers = []
 providers = {}
 
+
 def provideAuthChecker(checker):
     checkers.append(checker)
+
 
 def registerProvider(name, provider):
     providers[name] = provider
@@ -21,12 +25,13 @@ def registerProvider(name, provider):
 
 class AuthInfo(object):
 
-    def __init__(self, status=False, principal=None, message=u''):
+    def __init__(self, status=False, principal=None, uuid=None, message=u''):
         self.status = status
-        self.principal = None
         self.message = message
         self.keywords = {}
-
+        self.principal = principal
+        self.uuid = uuid
+        
 
 class Authentication(object):
     interface.implements(IAuthentication)
@@ -37,6 +42,7 @@ class Authentication(object):
         for pname, provider in providers.items():
             principal = provider.authenticate(credentials)
             if principal is not None:
+                info.uuid = principal.uuid
                 info.principal = principal
 
                 for checker in checkers:
@@ -85,23 +91,31 @@ class Authentication(object):
                 for principal in provider.search(term):
                     yield principal
 
-    def checkPermission(self, context, permission):
-        if not permission or permission == '__no_permission_required__':
-            return True
-
-        principals = [Everyone]
-
-        request = get_current_request()
-        userid = security.authenticated_userid(request)
-        if userid is not None:
-            principals.append(Authenticated)
-
-            roles = LocalRoles(userid, context=context)
-            if roles:
-                principals.extend(roles)
-
-        authz = request.registry.queryUtility(IAuthorizationPolicy)
-        return authz.permits(context, principals, permission)
-
-
 authService = Authentication()
+
+
+def checkPermission(context, permission, throw=True):
+    if not permission or permission == '__no_permission_required__':
+        return True
+
+    principals = [Everyone]
+
+    request = get_current_request()
+    userid = security.authenticated_userid(request)
+    if userid is not None:
+        principals.append(Authenticated)
+
+        roles = LocalRoles(userid, context=context)
+        if roles:
+            principals.extend(roles)
+
+    authz = request.registry.queryUtility(IAuthorizationPolicy)
+
+    res = authz.permits(context, principals, permission)
+
+    if isinstance(res, ACLDenied):
+        if throw:
+            raise HTTPForbidden(res)
+
+        return False
+    return True
