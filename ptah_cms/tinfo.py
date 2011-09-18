@@ -3,15 +3,16 @@ import ptah
 import sys, colander
 import sqlalchemy as sqla
 from memphis import config
-from zope import interface, event
+from zope import interface
+from pyramid.threadlocal import get_current_request
 
 from content import Session, Content
 from events import ContentCreatedEvent
-from permissions import View, ModifyContent
 from interfaces import ContentSchema, IAction, ITypeInformation
+from permissions import View, AddContent, ModifyContent
 
 
-registered = {}
+registeredTypes = {}
 
 class Action(object):
     interface.implements(IAction)
@@ -32,6 +33,7 @@ class TypeInformation(object):
 
     add = None # add action, path relative to current container
     description = u''
+    permission = AddContent
 
     def __init__(self, factory, name, title, schema=ContentSchema, **kw):
         self.__dict__.update(kw)
@@ -52,7 +54,10 @@ class TypeInformation(object):
                 attrs[node.name] = data.get(node.name, node.default)
         
         content = self.factory(**attrs)
-        event.notify(ContentCreatedEvent(content))
+
+        request = get_current_request()
+        if request is not None:
+            request.registry.notify(ContentCreatedEvent(content))
 
         return content
 
@@ -125,7 +130,7 @@ def registerType(
     tinfo.permission = permission
     tinfo.actions = actions
 
-    registered[name] = tinfo
+    registeredTypes[name] = tinfo
 
 
 @config.addCleanup

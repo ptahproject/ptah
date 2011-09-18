@@ -12,6 +12,7 @@ from ptah_cms.container import loadContent
 
 # Type information
 from ptah_cms.tinfo import Type
+from ptah_cms.tinfo import registeredTypes
 from ptah_cms.tinfo import Action
 from ptah_cms.tinfo import IAction
 
@@ -23,6 +24,7 @@ from ptah_cms.blob import blobStorage
 
 # schemas
 from ptah_cms.interfaces import ContentSchema
+from ptah_cms.interfaces import ContentNameSchema
 
 # interfaces
 from ptah_cms.interfaces import INode

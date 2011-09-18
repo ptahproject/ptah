@@ -1,10 +1,11 @@
 """ rest api for cms """
+import colander
 import sqlalchemy as sqla
 from collections import OrderedDict
 from zope import interface
 from zope.interface import providedBy
 from zope.component import getSiteManager
-from memphis import config
+from memphis import config, form
 from pyramid.location import lineage
 from pyramid.httpexceptions import HTTPNotFound
 
@@ -46,6 +47,90 @@ class Applications(ptah.rest.Action):
         return [info for _t, name, info in apps]
 
 
+class Types(ptah.rest.Action):
+
+    name = 'types'
+    title = 'List content types'
+
+    def __call__(self, request, *args):
+        apps = []
+
+        for name, tinfo in ptah_cms.registeredTypes.items():
+
+            apps.append((tinfo.title, name, OrderedDict(
+                (('name', name),
+                 ('title', tinfo.title),
+                 ('description', tinfo.description),
+                 ('__link__', '%s/type:%s/'%(
+                     request.application_url, name))),
+                )))
+
+        apps.sort()
+        return [info for _t, name, info in apps]
+
+
+class Type(ptah.rest.Action):
+
+    name = 'type'
+    title = 'CMS Content Type'
+
+    def __call__(self, request, tname, actionId='', *args):
+        info = {}
+
+        tinfo = ptah_cms.registeredTypes.get(tname)
+        if tinfo is None:
+            raise HTTPNotFound
+
+        action = None
+        if not actionId:
+            action = TypeRestInfo()
+
+        if action:
+            request.environ['SCRIPT_NAME'] = '%s/type:%s/'%(
+                request.environ['SCRIPT_NAME'], tname)
+
+            res = action(tinfo, request, *args)
+            if not res:
+                res = {'success': True}
+            return res
+
+        raise HTTPNotFound()
+
+
+class TypeRestInfo(object):
+
+    title = 'Type information'
+    description = ''
+
+    def __call__(self, tinfo, request, *args):
+        info = OrderedDict(
+            (('name', tinfo.name),
+             ('title', tinfo.title),
+             ('description', tinfo.description),
+             ('permission', tinfo.permission),
+             ('schema', []),
+             ))
+
+        schema = info['schema']
+
+        for node in tinfo.schema.children \
+                + ptah_cms.ContentNameSchema().children:
+            widget = node.widget
+            if not widget:
+                widget = form.getDefaultWidgetName(node)
+                
+            schema.append(
+                OrderedDict(
+                    (('name', node.name),
+                     ('title', node.title),
+                     ('description', node.description),
+                     ('required', node.required),
+                     ('widget', widget),
+                     )))
+
+        return info
+
+
 class Content(ptah.rest.Action):
 
     name = 'content'
@@ -76,24 +161,27 @@ class Content(ptah.rest.Action):
             request.environ['SCRIPT_NAME'] = '%s/content:%s/'%(
                 request.environ['SCRIPT_NAME'], app)
 
-            ptah.security.checkPermission(content, action.__permission__)
-            return action(content, request)
+            ptah.security.checkPermission(content,action.__permission__,request)
+            res = action(content, request, *args)
+            if not res:
+                res = {'success': True}
+            return res
 
         raise HTTPNotFound()
 
 
-def registerRestAction(name, context, factory):
+def contentRestAction(name, context, factory):
     info = config.DirectiveInfo()
 
     info.attach(
         config.Action(
-            registerRestActionImpl,
+            contentRestActionImpl,
             (name, context, factory),
             discriminator = ('ptah_cms:rest-action', name, context))
         )
 
 
-def registerRestActionImpl(name, context, factory):
+def contentRestActionImpl(name, context, factory):
     getSiteManager().registerAdapter(
         factory, (IRestActionClassifier, context), IRestAction, name)
 
@@ -117,7 +205,7 @@ class ContentRestInfo(object):
 
         return parents[1:]
 
-    def __call__(self, content, request):
+    def __call__(self, content, request, *args):
         info = OrderedDict(
             (('__name__', content.name),
              ('__type__', content.__type_id__),
@@ -151,7 +239,7 @@ class ContainerRestInfo(ContentRestInfo):
 
     __permission__ = ptah.View
 
-    def __call__(self, content, request):
+    def __call__(self, content, request, *args):
         info = super(ContainerRestInfo, self).__call__(content, request)
         
         contents = []
@@ -182,21 +270,30 @@ class ContentAPIDoc(ContentRestInfo):
 
     __permission__ = ptah.View
 
-    def __call__(self, content, request):
+    def __call__(self, content, request, *args):
         info = super(ContentAPIDoc, self).__call__(content, request)
 
         info['__actions__'] = []
-        
+
+        actions = []
         url = request.application_url
-        for name, actionFactory in request.registry.adapters.lookupAll(
+        for name, action in request.registry.adapters.lookupAll(
             (IRestActionClassifier, providedBy(content)), IRestAction):
 
-            info['__actions__'].append(
-                OrderedDict(
-                    (('name', name),
-                     ('link', '%s%s/%s'%(url, content.__uuid__, name)), 
-                     ('title', actionFactory.title),
-                     ('description', actionFactory.description))))
+            if not ptah.security.checkPermission(
+                content, action.__permission__, request, False):
+                continue
+
+            actions.append(
+                (name, action.title,
+                 OrderedDict(
+                     (('name', name),
+                      ('link', '%s%s/%s'%(url, content.__uuid__, name)), 
+                      ('title', action.title),
+                      ('description', action.description)))))
+
+        actions.sort()
+        info['__actions__'] = [action for _t, _n, action in actions]
 
         return info
 
@@ -208,15 +305,106 @@ class DeleteAction(object):
 
     __permission__ = ptah_cms.DeleteContent
 
-    def __call__(self, content, request):
+    def __call__(self, content, request, *args):
+        parent = content.__parent__
+        if not isinstance(parent, Container):
+            raise ptah.RestException("Can't remove content from non container")
+
+        del parent[content]
+
+
+class MoveAction(object):
+
+    title = 'Move content'
+    description = ''
+
+    __permission__ = ptah_cms.ModifyContent
+
+    def __call__(self, content, request, *args):
         pass
-    
 
-registerRestAction('', IContent, ContentRestInfo())
-registerRestAction('', IContainer, ContainerRestInfo())
-registerRestAction('apidoc', IContent, ContentAPIDoc())
-registerRestAction('delete', IContent, DeleteAction())
 
-ptah.rest.registerService('cms', 'cms', 'Ptah CMS api')
-ptah.rest.registerServiceAction('cms', Content())
-ptah.rest.registerServiceAction('cms', Applications())
+class UpdateAction(object):
+
+    title = 'Update content'
+    description = ''
+
+    __permission__ = ptah_cms.ModifyContent
+
+    def __call__(self, content, request, *args):
+        tinfo = content.__type__
+
+        try:
+            data = tinfo.schema.deserialize(request.POST)
+        except colander.Invalid, e:
+            request.response.status = 500
+            return {'errors': e.asdict()}
+
+        for attr, value in data.items():
+            setattr(content, attr, value)
+
+        request.registry.notify(ptah_cms.events.ContentModifiedEvent(content))
+
+        return ContentRestInfo()(content, request)
+
+
+class CreateContentAction(object):
+
+    title = 'Create content'
+    description = ''
+
+    __permission__ = ptah_cms.View
+
+    name_schema = ptah_cms.ContentNameSchema()
+
+    def __call__(self, content, request, uuid='', *args):
+        if not isinstance(content, Container):
+            raise ptah_cms.RestException(
+                'Can create content only in container.')
+
+        if not uuid:
+            raise HTTPNotFound('Type information is not found')
+        
+        tinfo = ptah_cms.registeredTypes.get(uuid)
+        if tinfo is None:
+            raise HTTPNotFound('Type information is not found')
+
+        ptah.security.checkPermission(content, tinfo.permission, request)
+
+        try:
+            data = tinfo.schema.deserialize(request.POST)
+        except colander.Invalid, e:
+            request.response.status = 500
+            return {'errors': e.asdict()}
+
+        try:
+            name = self.name_schema.deserialize(request.POST)
+            v = name['__name__']
+            if v in content.keys():
+                raise colander.Invalid(
+                    self.name_schema['__name__'], 'Name already is in use')
+        except colander.Invalid, e:
+            request.response.status = 500
+            return {'errors': e.asdict()}
+
+        item = tinfo.create(**data)
+        ptah_cms.Session.add(item)
+
+        content[name['__name__']] = item
+
+        return ContentRestInfo()(item, request)
+
+
+contentRestAction('', IContent, ContentRestInfo())
+contentRestAction('', IContainer, ContainerRestInfo())
+contentRestAction('apidoc', IContent, ContentAPIDoc())
+contentRestAction('create', IContent, CreateContentAction())
+contentRestAction('update', IContent, UpdateAction())
+contentRestAction('delete', IContent, DeleteAction())
+contentRestAction('move', IContent, MoveAction())
+
+ptah.registerService('cms', 'cms', 'Ptah CMS api')
+ptah.registerServiceAction('cms', Content())
+ptah.registerServiceAction('cms', Applications())
+ptah.registerServiceAction('cms', Types())
+ptah.registerServiceAction('cms', Type())

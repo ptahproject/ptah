@@ -88,3 +88,19 @@ class ContentSchema(colander.Schema):
         title = 'Description',
         missing = u'',
         widget = 'textarea')
+
+
+def specialSymbols(node, appstruct):
+    if '/' in appstruct:
+        raise colander.Invalid(node, "Names cannot contain '/'")
+
+
+class ContentNameSchema(colander.Schema):
+    """ name schema """
+
+    __name__ = colander.SchemaNode(
+        colander.Str(),
+        title = 'Short Name',
+        description = 'Short name is the part that shows up in '\
+                            'the URL of the item.',
+        validator = specialSymbols)

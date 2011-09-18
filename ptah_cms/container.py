@@ -5,7 +5,7 @@ from zope.component import getSiteManager
 from pyramid.httpexceptions import HTTPForbidden
 
 import ptah
-from ptah.security import authService
+from ptah.security import checkPermission
 
 import events
 from node import Node, Session
@@ -96,7 +96,7 @@ def loadContent(uuid, permission=None):
         parent = parent.__parent__
 
     if permission is not None:
-        if not authService.checkPermission(item, permission):
+        if not checkPermission(item, permission):
             return HTTPForbidden
 
     return item
