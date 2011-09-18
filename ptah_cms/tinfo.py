@@ -3,9 +3,10 @@ import ptah
 import sys, colander
 import sqlalchemy as sqla
 from memphis import config
-from zope import interface
+from zope import interface, event
 
 from content import Session, Content
+from events import ContentCreatedEvent
 from permissions import View, ModifyContent
 from interfaces import ContentSchema, IAction, ITypeInformation
 
@@ -32,7 +33,7 @@ class TypeInformation(object):
     add = None # add action, path relative to current container
     description = u''
 
-    def __init__(self, factory, name, title, schema=None, **kw):
+    def __init__(self, factory, name, title, schema=ContentSchema, **kw):
         self.__dict__.update(kw)
 
         self.name = name
@@ -44,27 +45,25 @@ class TypeInformation(object):
         return getType, (self.id,)
 
     def create(self, **data):
-        instance = Instance(aq_base(self))
+        attrs = {}
 
-        # load datasheets
-        for schId in self.schemas:
-            if schId in data:
-                if isinstance(data[schId], Datasheet):
-                    ds = instance.getDatasheet(schId)
-                    ds.__load__(data[schId])
+        if self.schema is not None:
+            for node in self.schema:
+                attrs[node.name] = data.get(node.name, node.default)
+        
+        content = self.factory(**attrs)
+        event.notify(ContentCreatedEvent(content))
 
-        event.notify(ObjectCreatedEvent(instance))
-        return instance
+        return content
 
 
 # we have to generate seperate sql query for each type
-sql_get = ptah.QueryFreezer(
+_sql_get = ptah.QueryFreezer(
     lambda: Session.query(Content)
     .filter(Content.__uuid__ == sqla.sql.bindparam('uuid')))
 
-
 def resolveContent(uuid):
-    return sql_get.first(uuid=uuid)
+    return _sql_get.first(uuid=uuid)
 
 
 def Type(name, title, **kw):
