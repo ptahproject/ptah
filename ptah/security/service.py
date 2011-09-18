@@ -9,13 +9,14 @@ from pyramid.httpexceptions import HTTPForbidden
 
 import ptah
 from role import LocalRoles
-from interfaces import IAuthentication, ISearchableAuthProvider
+from interfaces import IAuthentication, IAuthInfo
 
 checkers = []
 providers = {}
+searchers = {}
 
 
-def provideAuthChecker(checker):
+def registerAuthChecker(checker):
     checkers.append(checker)
 
 
@@ -23,7 +24,12 @@ def registerProvider(name, provider):
     providers[name] = provider
 
 
+def registerSearcher(name, searcher):
+    searchers[name] = searcher
+
+
 class AuthInfo(object):
+    interface.implements(IAuthInfo)
 
     def __init__(self, status=False, principal=None, uuid=None, message=u''):
         self.status = status
@@ -85,12 +91,6 @@ class Authentication(object):
         if id:
             return ptah.resolve(id)
 
-    def search(self, term):
-        for pname, provider in providers.items():
-            if ISearchableAuthProvider.providedBy(provider):
-                for principal in provider.search(term):
-                    yield principal
-
 authService = Authentication()
 
 
@@ -119,3 +119,10 @@ def checkPermission(context, permission, throw=True):
 
         return False
     return True
+
+
+def searchPrincipals(term):
+    for name, searcher in searchers.items():
+        for principal in searcher(term):
+            yield principal
+

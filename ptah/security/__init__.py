@@ -3,15 +3,17 @@
 # auth service
 from service import authService
 from service import registerProvider
-from service import provideAuthChecker
+from service import registerSearcher
+from service import registerAuthChecker
 from service import checkPermission
+from service import searchPrincipals
 
 from interfaces import IPrincipal
 from interfaces import IPrincipalWithEmail
 from interfaces import IPasswordChanger
 
 from interfaces import IAuthProvider
-from interfaces import ISearchableAuthProvider
+from interfaces import IPrincipalSearcher
 
 from interfaces import IOwnersAware
 from interfaces import ILocalRolesAware
