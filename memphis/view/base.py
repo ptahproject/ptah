@@ -77,24 +77,29 @@ class View(object):
         return u''
 
 
+static('jquery', 'memphis.view:static/jquery')
+
 library(
     'jquery',
-    path="https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.js",
+    path="jquery-1.6.4.min.js",
+    resource="jquery",
     type="js")
 
 library(
     'jquery-ui',
-    path="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.js",
+    path="jquery-ui-1.8.16.min.js",
     type="js",
+    resource="jquery",
     require="jquery")
 
 library(
     'jquery-ui',
-    path="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/themes/ui-lightness/jquery-ui.css",
+    path="jquery-ui.css",
+    resource="jquery",
     type='css')
 
 
-static('bootstrap', 'memphis.view:bootstrap')
+static('bootstrap', 'memphis.view:static/bootstrap')
 
 library(
     'lesscss',
