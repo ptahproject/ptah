@@ -13,6 +13,7 @@ from memphis.form.widget import WidgetFactory
 from memphis.form.directive import widget
 from memphis.form.directive import registerWidget
 from memphis.form.directive import registerDefaultWidget
+from memphis.form.directive import getDefaultWidgetName
 
 # fields manager
 from memphis.form.field import Fields

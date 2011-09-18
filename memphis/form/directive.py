@@ -55,3 +55,8 @@ def getDefaultWidget(node):
         map(providedBy, (node, node.typ)), IWidget, default=None)
     if name is not None:
         return widgets[name]
+
+
+def getDefaultWidgetName(node):
+    return registry.lookup(
+        map(providedBy, (node, node.typ)), IWidget, default=None)
