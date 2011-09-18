@@ -35,3 +35,16 @@ class IURIResolver(interface.Interface):
 
     def __call__(uri):
         """ resolve uri and return context object """
+
+
+class IRestServiceAction(object):
+    """ simple rest service action """
+
+    name = interface.Attribute('Name')
+    
+    title = interface.Attribute('Action title')
+    
+    description = interface.Attribute('Action description')
+
+    def __call__(request, *args):
+        """ execute action """

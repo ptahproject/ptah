@@ -6,7 +6,7 @@ from simplejson import dumps
 from collections import OrderedDict
 from cStringIO import StringIO
 from pyramid.authentication import AuthTicket
-from pyramid.httpexceptions import WSGIHTTPException
+from pyramid.httpexceptions import WSGIHTTPException, HTTPServerError
 from pyramid.interfaces import IAuthenticationPolicy
 
 from ptah import security
@@ -25,6 +25,10 @@ def registerService(name, title, description):
 def registerServiceAction(name, action):
     services[name].registerAction(action)
 
+
+class RestException(HTTPServerError):
+    """ rest exception """
+    
 
 class Service(object):
 
@@ -63,11 +67,11 @@ class ServiceAPIDoc(Action):
 
     def __call__(self, request):
         srv = services[self.srvname]
-        url = '%s/__api__/'%request.application_url
+        url = request.application_url
 
         info = OrderedDict(
             (('name', srv.name),
-             ('link', '%s%s/'%(url, srv.name)),
+             ('link', '%s/'%url),
              ('title', srv.title),
              ('description', srv.description),
              ('actions', [])))
@@ -80,7 +84,7 @@ class ServiceAPIDoc(Action):
             info['actions'].append(
                 OrderedDict(
                     (('name', name),
-                     ('link', '%s%s/%s'%(url, srv.name, name)), 
+                     ('link', '%s/%s'%(url, name)), 
                      ('title', title),
                      ('description', description))))
 

@@ -21,7 +21,10 @@ from ptah.security import Role, Roles, Permission, registerRole, authService
 from ptah.security import checkPermission
 
 # rest api
-from ptah import rest
+from ptah.rest import RestException
+from ptah.rest import registerService
+from ptah.rest import registerServiceAction
+from ptah.interfaces import IRestServiceAction
 
 # mail api
 from ptah import mail
