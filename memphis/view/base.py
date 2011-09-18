@@ -79,7 +79,7 @@ class View(object):
 
 library(
     'jquery',
-    path="https://ajax.googleapis.com/ajax/libs/jquery/1.6.3/jquery.js",
+    path="https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.js",
     type="js")
 
 library(
@@ -104,9 +104,15 @@ library(
 
 library(
     'bootstrap',
-    path="bootstrap-1.2.0.min.css",
+    path="bootstrap-1.3.0.min.css",
     resource="bootstrap",
     type="css")
+
+library(
+    'bootstrap',
+    path="bootstrap-1.3.0.js",
+    resource="bootstrap",
+    type="js")
 
 library(
     'bootstrap-less',
