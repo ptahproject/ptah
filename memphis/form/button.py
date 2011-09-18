@@ -23,8 +23,9 @@ class Button(Field):
     description = ''
 
     def __init__(self, name='submit', title=None, type='submit', value=None,
-                 disabled=False, accessKey = None,
-                 action=None, actionName=None, actype=AC_DEFAULT, condition=None):
+                 disabled=False, accessKey = None, action=None, actionName=None,
+                 actype=AC_DEFAULT, condition=None):
+
         if title is None:
             title = name.capitalize()
         name = re.sub(r'\s', '_', name)
@@ -176,8 +177,12 @@ def button(title, **kwargs):
 
     # install buttons manager
     f_locals = sys._getframe(1).f_locals
-    f_locals['buttons'] = \
-        f_locals.setdefault('buttons', Buttons()) + Buttons(button)
+
+    buttons = f_locals.get('buttons')
+    if buttons is None:
+        f_locals['buttons'] = Buttons(button)
+    else:
+        buttons[button.name] = button
 
     def createHandler(func):
         button.actionName = func.__name__
