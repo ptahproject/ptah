@@ -128,6 +128,7 @@ class LoginSuspended(view.View):
 @view.pyramidView(route='ptah-logout')
 def logout(request):
     """Logout action"""
+    authService.setUserId(None)
     uid = security.authenticated_userid(request)
 
     if uid is not None:
