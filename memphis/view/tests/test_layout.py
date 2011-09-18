@@ -10,13 +10,13 @@ from memphis.view.renderers import Renderer, SimpleRenderer
 
 from base import Base
 
-       
+
 class LayoutPagelet(Base):
 
     def setUp(self):
         Base.setUp(self)
         self.dir = tempfile.mkdtemp()
-        
+
     def tearDown(self):
         Base.tearDown(self)
         shutil.rmtree(self.dir)
@@ -36,7 +36,7 @@ class LayoutPagelet(Base):
         self._init_memphis()
 
         layout = component.getMultiAdapter(
-            (View(object(), self.request), 
+            (View(object(), self.request),
              object(), self.request), view.ILayout, 'test')
 
         self.assertEqual(layout.name, 'test')
@@ -150,7 +150,7 @@ class LayoutPagelet(Base):
 
         view.registerLayout('', klass=Layout, context=Root)
         self._init_memphis()
-    
+
         root = Root()
         context = Context(root)
         v = View(context, self.request)
@@ -178,7 +178,7 @@ class LayoutPagelet(Base):
         self._init_memphis()
 
         renderer = SimpleRenderer(layout='test')
-        
+
         context = Context()
         res = renderer(context, self.request, viewMapper(View))
 
@@ -307,7 +307,7 @@ class LayoutPagelet(Base):
 
 
 class Context(object):
-    
+
     def __init__(self, parent=None):
         self.__parent__ = parent
 

@@ -9,7 +9,7 @@ from memphis.view.customize import _Manager
 
 grpTitleWrap = textwrap.TextWrapper(
     initial_indent='* ',
-    subsequent_indent='  ', 
+    subsequent_indent='  ',
     width = 80)
 
 grpDescriptionWrap = textwrap.TextWrapper(
@@ -61,13 +61,13 @@ class TemplatesCommand(Command):
     def command(self):
         # load all memphis packages
         config.initialize()
-        
+
         if self.options.filename:
             self.print_template(self.options.filename)
             return
 
         if self.options.custfile:
-            self.customize_template(self.options.custfile, 
+            self.customize_template(self.options.custfile,
                                     self.options.customdir,
                                     self.options.force)
             return
@@ -95,7 +95,7 @@ class TemplatesCommand(Command):
                     if '.' not in pkg_name:
                         break
                     pkg_name = pkg_name.rsplit('.',1)[0]
-            
+
             if dist is None:
                 continue
 
@@ -145,7 +145,7 @@ class TemplatesCommand(Command):
             return
 
         path, t, d, _tmpl, pkg = data[filename]
-        
+
         if t:
             print t
         if d:
@@ -257,7 +257,7 @@ class StaticCommand(Command):
                     print
 
             print basepath
-            return      
+            return
 
         # list static sections
         if self.options.section:
@@ -271,4 +271,3 @@ class StaticCommand(Command):
                     p = path.split(pkg, 1)[-1]
                     print nameTitleWrap.fill(' ../%s%s'%(pkg, p))
                 print
-

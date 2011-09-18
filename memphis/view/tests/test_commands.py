@@ -6,7 +6,7 @@ from cStringIO import StringIO
 from paste.script.command import run
 from memphis import config, view
 
-       
+
 class TestStaticCommand(unittest.TestCase):
 
     def setUp(self):
@@ -25,7 +25,7 @@ class TestStaticCommand(unittest.TestCase):
         _out = sys.stdout
 
         sys.argv[:] = ['paste', 'static', '-l']
-       
+
         out = StringIO()
         sys.stdout = out
 
@@ -33,7 +33,7 @@ class TestStaticCommand(unittest.TestCase):
             print run()
         except SystemExit:
             pass
-        
+
         sys.stdout = _out
 
         val = out.getvalue()
@@ -58,7 +58,7 @@ class TestStaticCommand(unittest.TestCase):
             run()
         except SystemExit:
             pass
-        
+
         sys.stdout = _out
         val = out.getvalue()
         self.assertTrue('Output path is not directory.' in val)
@@ -73,10 +73,10 @@ class TestStaticCommand(unittest.TestCase):
             run()
         except SystemExit:
             pass
-        
+
         val = self.out.getvalue()
         self.assertTrue("* Coping from 'memphis.view.tests'" in val)
-        self.assertTrue(os.listdir(os.path.join(dir, 'tests')) == 
+        self.assertTrue(os.listdir(os.path.join(dir, 'tests')) ==
                         ['text.txt', 'style.css'])
 
     def test_commands_static_dump_skipping_existing(self):
@@ -93,7 +93,7 @@ class TestStaticCommand(unittest.TestCase):
             run()
         except SystemExit:
             pass
-        
+
         val = self.out.getvalue()
         self.assertTrue("skipping ../memphis.view.tests/text.txt" in val)
         self.assertTrue('test existing file' == open(file, 'r').read())
@@ -122,7 +122,7 @@ class TestTemplatesCommand(unittest.TestCase):
 
     def test_commands_template_all(self):
         sys.argv[:] = ['paste', 'templates', '-a']
-        
+
         val = self._run()
         self.assertTrue('* memphis.view.tests' in val)
         self.assertTrue(
@@ -190,7 +190,7 @@ class TestTemplatesCommand(unittest.TestCase):
         tmpl = view.template('memphis.view:/tests/templates/test.pt')
         sys.argv[:] = ['paste', 'templates', '-p', 'memphis.view:filename']
 
-        val = self._run()       
+        val = self._run()
         self.assertTrue("Can't find template 'filename'" in val)
 
     def test_commands_template_print(self):
@@ -226,14 +226,14 @@ class TestTemplatesCommand(unittest.TestCase):
         tmpl = view.template('memphis.view:/tests/templates/test.pt')
         sys.argv[:] = ['paste', 'templates', '-c', 'memphis.view:filename']
 
-        val = self._run()       
+        val = self._run()
         self.assertTrue("Can't find template 'filename'" in val)
 
     def test_commands_template_customize_error4(self):
         tmpl = view.template('memphis.view:/tests/templates/test.pt')
         sys.argv[:] = ['paste', 'templates', '-c', 'memphis.view:test.pt']
 
-        val = self._run()       
+        val = self._run()
         self.assertTrue("Output directory is required, use -o CUSTOMDIR" in val)
 
     def test_commands_template_customize_error5(self):
@@ -247,7 +247,7 @@ class TestTemplatesCommand(unittest.TestCase):
         sys.argv[:] = ['paste', 'templates', '-c', 'memphis.view:test.pt',
                        '-o', file]
 
-        val = self._run()       
+        val = self._run()
         self.assertTrue("Custom path is not a directory:" in val)
 
     def test_commands_template_customize(self):
@@ -256,7 +256,7 @@ class TestTemplatesCommand(unittest.TestCase):
         sys.argv[:] = ['paste', 'templates', '-c', 'memphis.view:test.pt',
                        '-o', self.dir]
 
-        val = self._run()       
+        val = self._run()
 
         self.assertTrue(
             "Template 'memphis.view:test.pt' has been customized" in val)
@@ -290,7 +290,7 @@ class TestTemplatesCommand(unittest.TestCase):
         sys.argv[:] = ['paste', 'templates', '-c', 'memphis.view:test.pt',
                        '-o', self.dir, '--force']
 
-        val = self._run()       
+        val = self._run()
         self.assertTrue("Overrids: Template 'memphis.view:test.pt' has been customized." in val)
         self.assertEqual(
             open(os.path.join(self.dir, 'memphis.view', 'test.pt'),'rb').read(),

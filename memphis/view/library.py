@@ -6,15 +6,15 @@ from memphis.view.resources import static_url, registry
 _libraries = {}
 
 
-def library(name, 
-            path='', resource='', type='', 
+def library(name,
+            path='', resource='', type='',
             require='', prefix='', postfix='', extra=None):
 
     if not path:
         raise ValueError("path is required")
 
     if resource and resource not in registry:
-        raise ValueError("Resource is not found '%s'"%resource)       
+        raise ValueError("Resource is not found '%s'"%resource)
 
     if type not in ('js', 'css'):
         raise ValueError("Uknown type '%s'"%type)
@@ -84,7 +84,7 @@ def renderIncludes(request):
 
 class Entry(object):
 
-    def __init__(self, path, resource='', 
+    def __init__(self, path, resource='',
                  type='', prefix='', postfix='', extra={}):
         self.resource = resource
         self.type = type
@@ -109,7 +109,7 @@ class Entry(object):
 
     def render(self, request):
         result = [self.prefix]
-        
+
         urls = list(self.urls)
 
         for path in self.paths:

@@ -9,7 +9,7 @@ from memphis.view.interfaces import IMessage, IStatusMessage
 
 from base import Base
 
-       
+
 class TestStatusMessages(Base):
 
     def _setup_memphis(self):
@@ -46,11 +46,11 @@ class TestStatusMessages(Base):
         self._init_memphis()
 
         service = IStatusMessage(self.request)
-        
+
         # addMessage
         view.addMessage(self.request, 'message')
-        
-        self.assertEqual(service.clear(), 
+
+        self.assertEqual(service.clear(),
                          [u'<div class="alert-message info">\n  <a class="close" href="#">\xd7</a>\n  <p>message</p>\n</div>\n'])
         self.assertEqual(service.clear(), ())
 
@@ -69,7 +69,7 @@ class TestStatusMessages(Base):
 
         # add simple msg
         service.add('warning', 'warning')
-        self.assertEqual(service.clear(), 
+        self.assertEqual(service.clear(),
                          [u'<div class="alert-message warning">\n  <a class="close" href="#">\xd7</a>\n  <p>warning</p>\n</div>\n'])
 
     def test_messages_error_msg(self):
@@ -84,12 +84,12 @@ class TestStatusMessages(Base):
 
         service.add('error', 'error')
         self.assertEqual(
-            service.clear(), 
+            service.clear(),
             [u'<div class="alert-message error">\n  <a class="close" href="#">\xd7</a>\n  <p>error</p>\n</div>\n'])
 
         service.add(ValueError('Error'), 'error')
         self.assertEqual(
-            service.clear(), 
+            service.clear(),
             [u'<div class="alert-message error">\n  <a class="close" href="#">\xd7</a>\n  <p>ValueError: Error</p>\n</div>\n'])
 
     def test_messages_custom_msg(self):
@@ -103,7 +103,7 @@ class TestStatusMessages(Base):
                 return '<div class="customMsg">%s</div>'%message
 
         self._init_memphis()
-            
+
         sm = component.getSiteManager()
         sm.registerAdapter(CustomMessage, (IRequest,), IMessage, name='custom')
 
@@ -111,7 +111,7 @@ class TestStatusMessages(Base):
 
         service.add('message', 'custom')
         self.assertEqual(
-            service.clear(), 
+            service.clear(),
             [u'<div class="customMsg">message</div>'])
 
     def test_messages_render(self):
@@ -129,7 +129,7 @@ class TestStatusMessages(Base):
         self._init_memphis()
 
         v = view.View(None, self.request)
-        
+
         v.message('message')
 
         service = IStatusMessage(self.request)

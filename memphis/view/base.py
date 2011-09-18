@@ -59,7 +59,7 @@ class View(object):
 
     def static_url(self, name, path=''):
         return static_url(name, path, self.request)
-    
+
     def pagelet(self, ptype, context=None):
         sm = getSiteManager()
 
@@ -109,10 +109,11 @@ library(
     type="css")
 
 library(
-    'bootstrap',
+    'bootstrap-js',
     path="bootstrap-1.3.0.js",
     resource="bootstrap",
-    type="js")
+    type="js",
+    require="jquery")
 
 library(
     'bootstrap-less',

@@ -15,7 +15,7 @@ class TestFormatter(Base):
 
         format = formatter.format
         format['simple'] = simple
-        
+
         self.assertEqual(format.simple('test'), 'simple-test')
         self.assertRaises(ValueError, format.__setitem__, 'simple', simple)
 

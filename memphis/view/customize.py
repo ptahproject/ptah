@@ -186,7 +186,7 @@ class iNotifyWatcher(object):
             self._wm = pyinotify.WatchManager()
             self._notifier = pyinotify.ThreadedNotifier(self._wm)
             self._wm.add_watch(
-                self.manager.directory, 
+                self.manager.directory,
                 self.mask, self._process_ev, True, True)
 
     def _process_ev(self, ev):

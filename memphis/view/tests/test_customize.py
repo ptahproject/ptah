@@ -31,7 +31,7 @@ class BaseLayerTest(Base):
         self.dir2 = tempfile.mkdtemp()
         os.makedirs(os.path.join(self.dir2, 'memphis.view.tests'))
         Base.setUp(self)
-        
+
     def tearDown(self):
         Base.tearDown(self)
 
@@ -41,7 +41,7 @@ class BaseLayerTest(Base):
         for handler in shutdown.handlers:
             handler()
 
-      
+
 class TestGlobalCustomizeManagement(BaseLayerTest):
 
     def test_customize_global_disabled(self):
@@ -193,7 +193,7 @@ class TestTemplateLayer(BaseLayerTest):
         f = open(os.path.join(self.dir2, 'file.pt'), 'wb')
         f.write(self.file2)
         f.close()
-               
+
         # override file2.pt
         f = open(os.path.join(self.dir3, 'file2.pt'), 'wb')
         f.write(self.file1)
@@ -228,7 +228,7 @@ class TestTemplateLayer(BaseLayerTest):
         f = open(os.path.join(self.dir2, 'file.pt'), 'wb')
         f.write(self.file2)
         f.close()
-               
+
         # override file2.pt
         f = open(os.path.join(self.dir3, 'file2.pt'), 'wb')
         f.write(self.file1)

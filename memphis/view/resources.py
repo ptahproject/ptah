@@ -106,7 +106,7 @@ def initialize(ev):
 
                 ev.config.add_route(rname, pattern)
                 ev.config.add_view(
-                    route_name=rname, 
+                    route_name=rname,
                     view=StaticView(dirinfo, prefix))
 
 
@@ -119,7 +119,7 @@ class StaticView(object):
 
     def __call__(self, context, request):
         return request.get_response(self.process)
-    
+
     def process(self, environ, start_response):
         path_info = environ.get('PATH_INFO')
         if not path_info:

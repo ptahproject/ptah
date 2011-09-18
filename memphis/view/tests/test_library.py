@@ -4,7 +4,7 @@ from memphis import config, view
 
 from base import Base
 
-       
+
 class TestLibraryManagement(Base):
 
     def _setup_memphis(self):
@@ -15,7 +15,7 @@ class TestLibraryManagement(Base):
         self.assertRaises(ValueError, view.library, 'test')
 
         # resource should be registered
-        self.assertRaises(ValueError, view.library, 
+        self.assertRaises(ValueError, view.library,
                           'test', path='/test.js', resource='unknown')
 
         # type should be 'js' or 'css'
@@ -32,7 +32,7 @@ class TestLibraryManagement(Base):
 
         lib = view.library(
             'test-lib', path='style.css', resource='tests', type='css')
-    
+
         self.assertEqual(lib.name, 'test-lib')
         self.assertEqual(len(lib.entries), 1)
         self.assertEqual(len(lib.entries), 1)
@@ -52,7 +52,7 @@ class TestLibraryManagement(Base):
     def test_library_render_absurls(self):
         lib = view.library(
             'test-lib', path='http://memphis.org/style.css', type='css')
-    
+
         self.assertEqual(
             lib.render(self.request),
             '<link type="text/css" rel="stylesheet" href="http://memphis.org/style.css" />')
@@ -90,7 +90,7 @@ class TestLibraryManagement(Base):
 
         # include unknown
         view.include('test-lib', self.request)
-        self.assertEqual(view.renderIncludes(self.request), '')       
+        self.assertEqual(view.renderIncludes(self.request), '')
 
     def test_library_include_recursive(self):
         lib1 = view.library(

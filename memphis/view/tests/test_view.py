@@ -24,14 +24,14 @@ class BaseView(Base):
         adapters = component.getSiteManager().adapters
 
         view_callable = adapters.lookup(
-            (IViewClassifier, 
-             interface.providedBy(request), 
+            (IViewClassifier,
+             interface.providedBy(request),
              interface.providedBy(context)),
             IView, name=name, default=None)
 
         return view_callable(context, request)
 
-       
+
 class TestView(BaseView):
 
     def test_view_register_errs(self):
@@ -82,7 +82,7 @@ class TestView(BaseView):
 
         context = Context()
         self.assertTrue(
-            view.renderView('index.html', context, 
+            view.renderView('index.html', context,
                             self.request).content_length ==0)
 
     def test_view_register_view_layout(self):
@@ -256,12 +256,12 @@ class TestView(BaseView):
 
         class SimpleAuth(object):
             interface.implements(IAuthenticationPolicy)
-       
+
             allowed = False
-       
+
             def effective_principals(self, request):
                 return (1,2)
-       
+
             def permits(self, context, princials, permission):
                 return self.allowed
 
@@ -339,7 +339,7 @@ class TestSubpathView(BaseView):
 
         self.request.subpath = ('validate',)
         v = self._view('index.html', Context(), self.request)
-        self.assertTrue(isinstance(v, str))       
+        self.assertTrue(isinstance(v, str))
         self.assertEqual(v, 'Validate method')
 
     def test_view_subpath_call(self):
@@ -359,7 +359,7 @@ class TestSubpathView(BaseView):
 
         self.request.subpath = ('validate',)
         v = self._view('index.html', Context(), self.request)
-        self.assertTrue(isinstance(v, str))       
+        self.assertTrue(isinstance(v, str))
         self.assertEqual(v, 'Validate method')
 
     def test_view_subpath_json_renderer(self):
@@ -390,12 +390,12 @@ class TestSubpathView(BaseView):
 
         self.request.subpath = ('validate',)
         v = self._view('index.html', Context(), self.request)
-        self.assertTrue(isinstance(v, Response))       
+        self.assertTrue(isinstance(v, Response))
         self.assertEqual(v.body, 'Render method')
 
         self.request.subpath = ('test',)
         v = self._view('index.html', Context(), self.request)
-        self.assertTrue(isinstance(v, str))       
+        self.assertTrue(isinstance(v, str))
         self.assertEqual(v, 'Validate method')
 
     def test_view_subpath_class_requestonly(self):
@@ -418,7 +418,7 @@ class TestSubpathView(BaseView):
 
         self.request.subpath = ('validate',)
         v = self._view('index.html', Context(), self.request)
-        self.assertTrue(isinstance(v, str))       
+        self.assertTrue(isinstance(v, str))
         self.assertEqual(v, 'Validate method: True')
 
     def test_view_subpath_with_template(self):

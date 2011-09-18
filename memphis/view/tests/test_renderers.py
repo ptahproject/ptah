@@ -73,7 +73,7 @@ class TestSimpleRenderer(Base):
 
 
 class TestJSONRenderer(RendererBase):
-   
+
     def test_renderer_json(self):
         def viewFactory(context, request):
             return None, {'test': 1}

@@ -84,7 +84,7 @@ class Layout(View):
 
 
 def registerLayout(
-    name='', context=None, parent='', 
+    name='', context=None, parent='',
     klass=Layout, template = None, route=None, layer=''):
 
     if not klass or not issubclass(klass, Layout):
@@ -128,8 +128,8 @@ def registerLayoutImpl(klass, name, context, template, parent, route_name):
         layout_class = type(str('Layout<%s>'%name), (Layout,), cdict)
 
     # register layout
-    sm = getSiteManager()    
-    
+    sm = getSiteManager()
+
     request_iface = IRequest
     if route_name is not None:
         request_iface = sm.getUtility(IRouteRequest, name=route_name)

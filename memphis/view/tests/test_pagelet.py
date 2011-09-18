@@ -8,7 +8,7 @@ from memphis.view.pagelet import Pagelet, PageletType, renderPagelet
 
 from base import Base
 
-       
+
 class TestPagelet(Base):
 
     def _setup_memphis(self):
@@ -20,7 +20,7 @@ class TestPagelet(Base):
 
         view.registerPageletType('test', ITestPagelet, Context)
         self._init_memphis()
-        
+
         pt = component.getUtility(view.IPageletType, 'test')
         self.assertTrue(isinstance(pt, PageletType))
         self.assertEqual(pt.name, 'test')
@@ -36,7 +36,7 @@ class TestPagelet(Base):
             view.pageletType('test2', Context)
 
         self._init_memphis()
-                    
+
         pt = component.getUtility(view.IPageletType, 'test2')
         self.assertTrue(isinstance(pt, PageletType))
         self.assertEqual(pt.name, 'test2')
@@ -59,7 +59,7 @@ class TestPagelet(Base):
         view.registerPagelet(ITestPagelet2, Context, TestPagelet)
 
         self.assertRaises(ValueError, self._init_memphis)
- 
+
     def test_pagelet_register_nopt(self):
         class ITestPagelet(interface.Interface):
             pass
@@ -135,7 +135,7 @@ class TestPagelet(Base):
 
         pagelet = component.getMultiAdapter(
             (Context(), self.request), ITestPagelet)
-    
+
         self.assertTrue(isinstance(pagelet, Pagelet))
         self.assertEqual(str(pagelet.__class__),
                          "<class 'memphis.view.pagelet.Pagelet None'>")
@@ -153,16 +153,16 @@ class TestPagelet(Base):
 
         pagelet = component.getMultiAdapter(
             (Context(), self.request), ITestPagelet)
-    
+
         self.assertTrue(isinstance(pagelet, Pagelet))
         self.assertTrue(isinstance(pagelet, TestPagelet))
 
     def test_pagelet_renderpagelet_not_found(self):
         class ITestPagelet(interface.Interface):
             pass
-        
+
         self.assertRaises(
-            HTTPNotFound, 
+            HTTPNotFound,
             renderPagelet, ITestPagelet, Context(), self.request)
 
     def test_pagelet_render_with_exception(self):
@@ -200,7 +200,7 @@ class TestPagelet(Base):
         self._init_memphis()
 
         self.assertTrue(
-            'param1|param2|' in 
+            'param1|param2|' in
             renderPagelet(ITestPagelet, Context(), self.request))
 
     def test_pagelet_View_pagelet(self):
@@ -227,7 +227,7 @@ class TestPagelet(Base):
         # by default use view context
         base.context = Context()
         self.assertEqual(base.pagelet(ITestPagelet), 'test pagelet')
-        
+
 
     def test_pagelet_View_pagelet_with_error(self):
         class ITestPagelet(interface.Interface):

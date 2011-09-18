@@ -133,7 +133,7 @@ def initialized(ev):
 
 
 def registerViewImpl(
-    factory, name, context, renderer, template, route_name, layout, 
+    factory, name, context, renderer, template, route_name, layout,
     permission, default, decorator):
 
     if renderer is None:
@@ -178,7 +178,7 @@ def registerViewImpl(
     # register view
     if context is None:
         context = interface.Interface
-    
+
     if isexception(context):
         view_classifier = IExceptionViewClassifier
     else:

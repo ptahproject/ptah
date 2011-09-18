@@ -40,18 +40,18 @@ def pyramidView(name='', context=None, route=None, renderer=None, template=None,
             info.attach(
                 config.Action(
                     LayerWrapper(registerViewImpl, discriminator),
-                    (factory, name, context, renderer, template, route, layout, 
+                    (factory, name, context, renderer, template, route, layout,
                      permission, default, decorator),
                     discriminator = discriminator)
                 )
             return factory
         return wrapper
-    else: 
+    else:
         # class decorator
         info.attach(
             config.ClassAction(
                 LayerWrapper(registerViewImpl, discriminator),
-                (name, context, renderer, template, route, layout, 
+                (name, context, renderer, template, route, layout,
                  permission, default, decorator),
                 discriminator = discriminator)
             )

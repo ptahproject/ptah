@@ -6,7 +6,7 @@ from memphis.view.base import View
 
 from base import Base
 
-       
+
 class TestStaticManagement(Base):
 
     def _setup_memphis(self):
@@ -80,10 +80,10 @@ class TestStaticManagement(Base):
             'http://localhost:8080/static/tests2/styles.css')
 
     def test_static_wired(self):
-        # something strange can happen, info can be removed 
+        # something strange can happen, info can be removed
         # from registry before memphis init (tests for example)
         view.static('tests', 'memphis.view.tests:static/dir1')
-        
+
         self.assertTrue('tests' in resources.registry)
 
         del resources.registry['tests']
@@ -103,11 +103,11 @@ class TestStaticView(Base):
 
         abspath, pkg = view.path('memphis.view.tests:static/dir1')
         data = [(abspath, buildTree(abspath))]
-        
+
         if includeAll:
             abspath, pkg = view.path('memphis.view.tests:static/dir2')
             data.insert(0, (abspath, buildTree(abspath)))
-            
+
         return data
 
     def test_resource_empty_pathinfo(self):

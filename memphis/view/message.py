@@ -90,7 +90,7 @@ class ErrorMessage(Message):
 
     def render(self, e):
         if isinstance(e, Exception):
-            message = '%s: %s'%(e.__class__.__name__, 
+            message = '%s: %s'%(e.__class__.__name__,
                                 cgi.escape(str(e), True))
         else:
             message = e
