@@ -30,6 +30,28 @@ def renderView(name, context, request):
     return view_callable(context, request)
 
 
+checkPermission = None
+
+def defaultCheckPermission(context, permission, request=None, throw=False):
+    global AUTH, AUTHZ
+
+    try:
+        AUTH
+    except:
+        sm = getSiteManager()
+        AUTH = sm.queryUtility(IAuthenticationPolicy)
+        AUTHZ = sm.queryUtility(IAuthorizationPolicy)
+
+    principals = AUTH.effective_principals(request)
+    return AUTHZ.permits(context, principals, permission)
+
+def setCheckPermission(func):
+    global checkPermission
+    checkPermission = func
+
+setCheckPermission(defaultCheckPermission)
+
+
 chained = object()
 
 def subpathWrapper(factory, renderer, subpaths):
@@ -97,9 +119,11 @@ class subpath(object):
         return method
 
 
+unset = object()
+
 def registerView(
     name='', factory=View, context=None, renderer=None, template=None,
-    route=None, layout='', permission='__no_permission_required__',
+    route=None, layout=unset, permission='__no_permission_required__',
     default=False, decorator=None, layer=''):
 
     if renderer is not None and template is not None:
@@ -120,21 +144,17 @@ def registerView(
         )
 
 
-AUTH = None
-AUTHZ = None
-
-@config.handler(config.SettingsInitialized)
-def initialized(ev):
-    global AUTH, AUTHZ
-
-    sm = getSiteManager()
-    AUTH = sm.queryUtility(IAuthenticationPolicy)
-    AUTHZ = sm.queryUtility(IAuthorizationPolicy)
-
-
 def registerViewImpl(
     factory, name, context, renderer, template, route_name, layout,
     permission, default, decorator):
+
+    if layout is unset:
+        layout = None
+        try:
+            if issubclass(factory, View):
+                layout = ''
+        except:
+            pass
 
     if renderer is None:
         if template is not None:
@@ -161,12 +181,9 @@ def registerViewImpl(
 
     sm = getSiteManager()
 
-    auth = sm.queryUtility(IAuthenticationPolicy)
-    authz = sm.queryUtility(IAuthorizationPolicy)
     if permission:
         def pyramidView(context, request):
-            principals = AUTH.effective_principals(request)
-            if AUTHZ.permits(context, principals, permission):
+            if checkPermission(context, permission, request):
                 return renderer(context, request)
 
             msg = getattr(request, 'authdebug_message',

@@ -31,6 +31,7 @@ from memphis.view.view import subpath
 from memphis.view.view import renderView
 from memphis.view.view import registerView
 from memphis.view.view import registerDefaultView
+from memphis.view.view import setCheckPermission
 
 # renderers
 from memphis.view.renderers import Renderer
