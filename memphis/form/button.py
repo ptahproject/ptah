@@ -24,7 +24,7 @@ class Button(Field):
 
     def __init__(self, name='submit', title=None, type='submit', value=None,
                  disabled=False, accessKey = None,
-                 action=None, actype=AC_DEFAULT, condition=None):
+                 action=None, actionName=None, actype=AC_DEFAULT, condition=None):
         if title is None:
             title = name.capitalize()
         name = re.sub(r'\s', '_', name)
@@ -42,6 +42,7 @@ class Button(Field):
         self.disabled = disabled
         self.accessKey = accessKey
         self.action = action
+        self.actionName = actionName
         self.required = False
         self.actype = actype
         self.condition = condition
@@ -51,7 +52,10 @@ class Button(Field):
             self.__class__.__name__, self.name, self.title)
 
     def __call__(self, form):
-        return self.action(form)
+        if self.actionName is not None:
+            return getattr(form, self.actionName)()
+        else:
+            self.action(form)
 
 
 class Buttons(OrderedDict):
@@ -176,7 +180,7 @@ def button(title, **kwargs):
         f_locals.setdefault('buttons', Buttons()) + Buttons(button)
 
     def createHandler(func):
-        button.action = func
+        button.actionName = func.__name__
         return func
 
     return createHandler
