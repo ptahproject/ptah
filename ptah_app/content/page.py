@@ -29,16 +29,15 @@ class Page(ptah_cms.Content):
         add = 'addpage.html',
         schema = PageSchema,
         description = 'A page in the site.',
+        permission = AddPage,
         )
 
     text = sqla.Column(sqla.Unicode)
 
 
-class PageView(view.View):
-    view.pyramidView('index.html', IPage, default=True,
-                     permission=ptah_cms.View,
-                     template=view.template('ptah_app:templates/page.pt'))
-
+view.registerView(name='index.html', context=IPage, default=True,
+                  permission=ptah_cms.View,
+                  template=view.template('ptah_app:templates/page.pt'))
 
 class AddPageForm(AddForm):
     view.pyramidView('addpage.html', ptah_cms.IContainer, permission=AddPage)

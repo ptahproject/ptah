@@ -30,20 +30,24 @@ class ContentLayout(view.Layout):
 
     def update(self):
         context = self.context
-        sm = self.request.registry
-        ti = self.context.__type__
+        request = self.request
+        
+        sm = request.registry
+        ti = context.__type__
 
         actions = []
         for action in ti.actions:
             if action.permission:
-                if ptah.checkPermission(context, action.permission, False):
+                if ptah.checkPermission(
+                    context, action.permission, request, False):
                     actions.append(action)
             else:
                 actions.append(action)
 
         for name, action in sm.getAdapters((context,), interfaces.IAction):
             if action.permission:
-                if ptah.checkPermission(context, action.permission, False):
+                if ptah.checkPermission(
+                    context, action.permission, request, False):
                     actions.append(action)
             else:
                 actions.append(action)
@@ -119,7 +123,7 @@ class Adding(view.View):
         self.url = self.request.resource_url(self.context)
 
         self.types = types = []
-        for ti in tinfo.registered.values():
+        for ti in tinfo.registeredTypes.values():
             if ti.add is not None:
                 types.append(ti)
 

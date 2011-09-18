@@ -7,22 +7,26 @@
 		       url request.resource_url(context)">
   <form action="${request.url}" method="post">
     <table class="zebra-striped">
-      <tr>
-	<th></th>
-	<th>Name</th>
-	<th>Title</th>
-	<th>Type</th>
-	<th>Created</th>
-	<th>Modified</th>
-      </tr>
-      <tr tal:repeat="item contents">
-	<td><input type="checkbox" name="item" value="${item.__uuid__}" />
-	<td><a href="${url}${item.name}">${item.name or 'unknown'}</a></td>
-	<td><a href="${url}${item.name}">${item.title}</a></td>
-	<td>${item.__type__.title}</td>
- 	<td>${view.format.datetime(item.created, 'short')}</td>
- 	<td>${view.format.datetime(item.created)}</td>
-      </tr>
+      <thead>
+	<tr>
+	  <th></th>
+	  <th>Name</th>
+	  <th>Title</th>
+	  <th>Type</th>
+	  <th>Created</th>
+	  <th>Modified</th>
+	</tr>
+      </thead>
+      <tbody>
+	<tr tal:repeat="item contents">
+	  <td><input type="checkbox" name="item" value="${item.__uuid__}" />
+	  <td><a href="${url}${item.name}">${item.name or 'unknown'}</a></td>
+	  <td><a href="${url}${item.name}">${item.title}</a></td>
+	  <td>${item.__type__.title}</td>
+ 	  <td>${view.format.datetime(item.created, 'short')}</td>
+ 	  <td>${view.format.datetime(item.created)}</td>
+	</tr>
+      </tbody>
     </table>
 
     <div class="actions" tal:condition="contents">

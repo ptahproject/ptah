@@ -16,6 +16,7 @@ class Folder(ptah_cms.Container):
         'folder', 'Folder',
         add = 'addfolder.html',
         description = 'A folder which can contain other items.',
+        permission = AddFolder,
         )
 
 

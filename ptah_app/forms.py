@@ -9,26 +9,10 @@ from ptah_cms.interfaces import IContent
 from ptah_cms.permissions import ModifyContent
 
 
-def specialSymbols(node, appstruct):
-    if '/' in appstruct:
-        raise colander.Invalid(node, "Names cannot contain '/'")
-
-
-class NameSchema(colander.Schema):
-    """ name schema """
-
-    __name__ = colander.SchemaNode(
-        colander.Str(),
-        title = 'Short Name',
-        description = 'Short name is the part that shows up in '\
-                            'the URL of the item.',
-        validator = specialSymbols)
-
-
 class AddForm(form.Form):
 
     tinfo = None
-    name_fields = form.Fields(NameSchema)
+    name_fields = form.Fields(ptah_cms.ContentNameSchema)
 
     @reify
     def fields(self):
@@ -59,7 +43,7 @@ class AddForm(form.Form):
             name = data['__name__']
             if name in self.context.keys():
                 error = colander.Invalid(
-                    self.name_fields['__name__'].node, 'Name already in user')
+                    self.name_fields['__name__'].node, 'Name already in use')
                 errors.append(error)
 
     def extractData(self, setErrors=True):
@@ -137,6 +121,9 @@ class EditForm(form.Form):
 
         for attr, value in data.items():
             setattr(self.context, attr, value)
+
+        self.request.registry.notify(
+            ptah_cms.events.ContentModifiedEvent(self.context))
 
         self.message("Changes have been saved.")
         raise HTTPFound(location='.')

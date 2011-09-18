@@ -33,6 +33,7 @@ class File(ptah_cms.Content):
         add = 'addfile.html',
         schema = FileSchema,
         description = 'A file in the site.',
+        permission = AddFile,
         )
 
     blobref = sqla.Column(sqla.Unicode)
