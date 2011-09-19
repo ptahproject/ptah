@@ -283,11 +283,33 @@ class TestUtilityDirective(BaseTesting):
         self.assertRaises(
             config.ConflictError, self._init_memphis)
 
+    def test_utility_err2(self):
+        global TestClass
+
+        class TestClass(object):
+            config.utility()
+
+        self.assertRaises(
+            TypeError, self._init_memphis)
+
     def test_utility(self):
         global TestClass
 
         class TestClass(object):
             config.utility(IContext)
+
+        self._init_memphis()
+
+        sm = getSiteManager()
+        util = sm.getUtility(IContext)
+        self.assertTrue(isinstance(util, TestClass))
+
+    def test_utility_default_interface(self):
+        global TestClass
+
+        class TestClass(object):
+            interface.implements(IContext)
+            config.utility()
 
         self._init_memphis()
 

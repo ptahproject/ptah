@@ -72,6 +72,31 @@ class TestSettings(BaseTesting):
         self.assertTrue('group1' in config.Settings._changed)
         self.assertTrue('node' in config.Settings._changed['group1'])
 
+    def test_settings_register_multiple(self):
+        node = config.SchemaNode(
+            colander.Str(),
+            name = 'node',
+            default = 'test')
+
+        group = config.registerSettings(
+            'group1', node,
+            title = 'Section title',
+            description = 'Section description',
+            )
+
+        node2 = config.SchemaNode(
+            colander.Str(),
+            name = 'node2',
+            default = 'test2')
+
+        group2 = config.registerSettings(
+            'group1', node2,
+            title = 'Section title',
+            description = 'Section description',
+            )
+
+        self.assertTrue(group is group2)
+
     def test_settings_group_validation(self):
         def validator(node, appstruct):
             raise colander.Invalid(node['node'], 'Error')

@@ -432,7 +432,7 @@ Settings = SettingsImpl()
 
 try:
     import pyinotify
-except ImportError:
+except ImportError: # pragma: no cover
     pyinotify = None
 
 
@@ -457,7 +457,7 @@ class iNotifyWatcher(object):
             if Settings.config is not None:
                 Settings.config.end()
 
-    def start(self, filename):
+    def start(self, filename): # pragma: no cover
         pass
 
     if pyinotify:
