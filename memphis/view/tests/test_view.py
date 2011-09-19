@@ -4,6 +4,7 @@ from zope import interface, component
 from webob.response import Response
 from pyramid.interfaces import IView, IRequest
 from pyramid.interfaces import IViewClassifier
+from pyramid.interfaces import IAuthorizationPolicy
 from pyramid.interfaces import IAuthenticationPolicy
 from pyramid.httpexceptions import HTTPForbidden, HTTPNotFound, HTTPFound
 
@@ -120,7 +121,7 @@ class TestView(BaseView):
         self.assertEqual(res.body, 'test')
 
         v = MyView(None, self.request)
-        self.assertEqual(MyLayout(v, None, self.request).render(
+        self.assertEqual(MyLayout(v, self.request).render(
                 v.render()), '<html>test</html>')
 
     def test_view_custom_response(self):
@@ -257,16 +258,21 @@ class TestView(BaseView):
         class SimpleAuth(object):
             interface.implements(IAuthenticationPolicy)
 
-            allowed = False
-
             def effective_principals(self, request):
                 return (1,2)
+
+        class Authz(object):
+            interface.implements(IAuthorizationPolicy)
+
+            allowed = False
 
             def permits(self, context, princials, permission):
                 return self.allowed
 
         component.getSiteManager().registerUtility(
             SimpleAuth(), IAuthenticationPolicy)
+        component.getSiteManager().registerUtility(
+            Authz(), IAuthorizationPolicy)
 
         self._init_memphis()
 
@@ -275,7 +281,7 @@ class TestView(BaseView):
             HTTPForbidden,
             self._view, 'index.html', context, self.request)
 
-        SimpleAuth.allowed = True
+        Authz.allowed = True
         v = self._view('index.html', context, self.request)
         self.assertEqual(v.body, '<html>Secured view</html>')
 

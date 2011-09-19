@@ -11,16 +11,6 @@ from memphis.view.interfaces import IPagelet, IMemphisView, INavigationRoot
 log = logging.getLogger('memphis.view')
 
 
-class DefaultRoot(object):
-    interface.implements(INavigationRoot)
-
-    __name__ = None
-    __parent__ = None
-
-    def __init__(self, request=None):
-        self.request = request
-
-
 class View(object):
     interface.implements(IMemphisView)
 

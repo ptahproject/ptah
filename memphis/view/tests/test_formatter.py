@@ -61,9 +61,9 @@ class TestFormatter(Base):
         self.assertEqual(format.datetime(dt, 'short'),
                          '02/06/11 04:35 AM')
         self.assertEqual(format.datetime(dt, 'medium'),
-                         'Feb 06, 2011 04:35:45 AM')
+                         'Feb 06, 2011 04:35 AM')
         self.assertEqual(format.datetime(dt, 'long'),
-                         'February 06, 2011 04:35:45 AM -0600')
+                         'February 06, 2011 04:35 AM -0600')
         self.assertEqual(format.datetime(dt, 'full'),
                          'Sunday, February 06, 2011 04:35:45 AM CST')
 

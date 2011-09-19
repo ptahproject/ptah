@@ -36,8 +36,7 @@ class LayoutPagelet(Base):
         self._init_memphis()
 
         layout = component.getMultiAdapter(
-            (View(object(), self.request),
-             object(), self.request), view.ILayout, 'test')
+            (object(), self.request), view.ILayout, 'test')
 
         self.assertEqual(layout.name, 'test')
         self.assertEqual(layout.__name__, 'test')
@@ -53,8 +52,7 @@ class LayoutPagelet(Base):
         self._init_memphis()
 
         layout = component.getMultiAdapter(
-            (View(object(), self.request),
-             object(), self.request), view.ILayout, 'test')
+            (object(), self.request), view.ILayout, 'test')
 
         self.assertTrue(isinstance(layout, MyLayout))
 
@@ -78,13 +76,13 @@ class LayoutPagelet(Base):
             def render(self, rendered):
                 return '<html>%s</html>'%rendered
 
-        view.registerLayout('test', klass=Layout, view=View)
+        view.registerLayout('test', klass=Layout)
         self._init_memphis()
 
         v = View(Context(), self.request)
 
         # find layout for view
-        layout = queryLayout(v, self.request, v.context, 'test')
+        layout = queryLayout(self.request, v.context, 'test')
         self.assertTrue(isinstance(layout, Layout))
 
         layout.update()
@@ -106,7 +104,7 @@ class LayoutPagelet(Base):
 
         v = View(Context(), self.request)
 
-        layout = queryLayout(v, self.request, v.context, 'test')
+        layout = queryLayout(self.request, v.context, 'test')
         self.assertTrue(isinstance(layout, Layout))
 
         layout.update()
@@ -115,7 +113,7 @@ class LayoutPagelet(Base):
 
     def test_layout_simple_notfound(self):
         v = view.View(Context(Context()), self.request)
-        layout = queryLayout(v, self.request, v.context, 'test')
+        layout = queryLayout(self.request, v.context, 'test')
         self.assertTrue(layout is None)
 
     def test_layout_simple_context(self):
@@ -124,8 +122,8 @@ class LayoutPagelet(Base):
             def render(self):
                 return 'View: test'
         class Layout(view.Layout):
-            def render(self):
-                return '<html>%s</html>'%self.view.render()
+            def render(self, content):
+                return '<html>%s</html>'%content
 
         view.registerLayout('test', klass=Layout, context=Context)
         self._init_memphis()
@@ -133,12 +131,11 @@ class LayoutPagelet(Base):
         v = View(Context(), self.request)
 
         # find layout for view
-        layout = queryLayout(v, self.request, v.context, 'test')
+        layout = queryLayout(self.request, v.context, 'test')
         self.assertTrue(isinstance(layout, Layout))
 
         layout.update()
-        self.assertEqual(layout.render(),
-                         '<html>View: test</html>')
+        self.assertEqual(layout.render(v.render()), '<html>View: test</html>')
 
     def test_layout_simple_multilevel(self):
         class View(view.View):
@@ -156,7 +153,7 @@ class LayoutPagelet(Base):
         v = View(context, self.request)
 
         # find layout for view
-        layout = queryLayout(v, self.request, context, '')
+        layout = queryLayout(self.request, context, '')
         self.assertTrue(isinstance(layout, Layout))
 
         renderer = SimpleRenderer(layout='')
@@ -174,7 +171,7 @@ class LayoutPagelet(Base):
         tmpl.write('<html>${content}</html>')
         tmpl.close()
 
-        view.registerLayout('test', view=View, template = view.template(fn))
+        view.registerLayout('test', template = view.template(fn))
         self._init_memphis()
 
         renderer = SimpleRenderer(layout='test')
@@ -197,8 +194,8 @@ class LayoutPagelet(Base):
             def render(self, content):
                 return '<html>%s</html>'%content
 
-        view.registerLayout('', klass=LayoutPage, view=View, parent=None)
-        view.registerLayout('test', klass=LayoutTest, view=View, parent='.')
+        view.registerLayout('', klass=LayoutPage, parent=None)
+        view.registerLayout('test', klass=LayoutTest, parent='.')
         self._init_memphis()
 
         context = Context()
@@ -221,7 +218,7 @@ class LayoutPagelet(Base):
                 return '<html>%s</html>'%content
 
         view.registerLayout('', klass=LayoutPage, context=Root, parent=None)
-        view.registerLayout('test', klass=LayoutTest, view=View, parent='.')
+        view.registerLayout('test', klass=LayoutTest, parent='.')
         self._init_memphis()
 
         root = Root()
@@ -233,16 +230,13 @@ class LayoutPagelet(Base):
 
         self.assertTrue('<html><div>View: test</div></html>' in res.body)
 
-        layout = queryLayout(v, self.request, v.context, 'test')
+        layout = queryLayout(self.request, v.context, 'test')
         self.assertTrue(isinstance(layout, LayoutTest))
 
-        rootlayout = queryLayout(v, self.request, context, '')
+        rootlayout = queryLayout(self.request, context, '')
         self.assertTrue(isinstance(rootlayout, LayoutPage))
 
-        rootlayout = queryLayout(v, self.request, root, '')
-        self.assertTrue(isinstance(rootlayout, LayoutPage))
-
-        rootlayout = queryLayout(context, self.request, root, '')
+        rootlayout = queryLayout(self.request, root, '')
         self.assertTrue(isinstance(rootlayout, LayoutPage))
 
     def test_layout_chain_same_layer_id_on_different_levels(self):
@@ -296,12 +290,12 @@ class LayoutPagelet(Base):
             def render(self):
                 return 'test'
 
-        view.registerLayout('test', view=View)
+        view.registerLayout('test')
         self._init_memphis()
 
         v = View(Context(), self.request)
 
-        layout = queryLayout(v, self.request, v.context, 'test')
+        layout = queryLayout(self.request, v.context, 'test')
         layout.update()
         self.assertTrue('test' == layout.render(v.render()))
 

@@ -269,4 +269,4 @@ def shutdown():
 @config.addCleanup
 def cleanup():
     _Manager.layers.clear()
-    layersManager.layers.clear()
+    _layersManager.layers.clear()
