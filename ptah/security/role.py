@@ -15,7 +15,10 @@ Roles = Roles()
 
 class Role(object):
 
-    def __init__(self, id, name, title, description='', system=False):
+    def __init__(self, name, title, description='',
+                 prefix='role:', system=False):
+        id = '%s%s'%(prefix, name)
+
         self.id = id
         self.name = name
         self.title = title
@@ -25,8 +28,19 @@ class Role(object):
         self.allowed = set()
         self.denied = set()
 
+        # register role
+        Roles[name] = self
+
+        # conflict detection and introspection
+        info = config.DirectiveInfo()
+        info.attach(
+            config.Action(
+                lambda r: Roles.update({r.name: r}),
+                (self,), discriminator = ('ptah:role', name))
+            )
+
     def __str__(self):
-        return 'Role<%s>'%self.name
+        return 'Role<%s>'%self.title
 
     def __repr__(self):
         return self.id
@@ -38,42 +52,41 @@ class Role(object):
         if ALL_PERMISSIONS in permissions:
             self.allowed = ALL_PERMISSIONS
             return
-        
+
         for perm in permissions:
             self.allowed.add(perm)
 
     def deny(self, *permissions):
+        if self.denied is ALL_PERMISSIONS:
+            return
+
+        if ALL_PERMISSIONS in permissions:
+            self.denied = ALL_PERMISSIONS
+            return
+
         for perm in permissions:
             self.denied.add(perm)
 
     def unset(self, *permissions):
+        if ALL_PERMISSIONS in permissions:
+            self.denied = set()
+            self.allowed = set()
+            return
+
         for perm in permissions:
-            if perm in self.allowed:
+            if self.allowed is not ALL_PERMISSIONS and perm in self.allowed:
                 self.allowed.remove(perm)
-            if perm in self.denied:
+            if self.denied is not ALL_PERMISSIONS and perm in self.denied:
                 self.denied.remove(perm)
 
 
-def registerRole(name, title, description=u'', prefix='role:', system=False):
-    info = config.DirectiveInfo()
-
-    role = Role('%s%s'%(prefix, name), name, title, description, system)
-    Roles[role.name] = role
-
-    info.attach(
-        config.Action(None, discriminator = ('ptah:role', name))
-        )
-
-    return role
-
-
-Everyone = registerRole(
+Everyone = Role(
     'Everyone', 'Everyone', '', 'system.', True)
 
-Authenticated = registerRole(
+Authenticated = Role(
     'Authenticated', 'Authenticated', '', 'system.', True)
 
-Owner = registerRole(
+Owner = Role(
     'Owner', 'Owner', '', 'system.', True)
 
 
@@ -97,7 +110,7 @@ def LocalRoles(userid, request=None, context=None):
                     if r not in roles:
                         roles[r] = Allow
 
-    data = [userid]
+    data = []
     for r, val in roles.items():
         if val is Allow:
             data.append(r)
@@ -121,3 +134,4 @@ def initialized(ev):
 @config.addCleanup
 def cleanup():
     ACL[:] = []
+    Roles.clear()

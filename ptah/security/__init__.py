@@ -26,7 +26,6 @@ from ptah.security.role import Authenticated
 from ptah.security.role import Role
 from ptah.security.role import Roles
 from ptah.security.role import LocalRoles
-from ptah.security.role import registerRole
 
 # permission
 from ptah.security.permission import View

@@ -49,10 +49,10 @@ class IAuthentication(interface.Interface):
         """ """
 
     def getPrincipalByLogin(login):
-        pass
+        """ """
 
     def getCurrentPrincipal():
-        pass
+        """ """
 
     def authenticate(credentials):
         """ authenticate credentials """

@@ -45,17 +45,9 @@ class Base(unittest.TestCase):
 
     def setUp(self):
         self._setup_pyramid()
-        self._setup_memphis()
 
     def tearDown(self):
-        config.cleanUp(self.__class__.__module__)
+        config.cleanUp()
         sm = self.p_config
         sm.__init__('base')
         testing.tearDown()
-
-
-class Context(object):
-
-    def __init__(self, parent=None, name=''):
-        self.__name__ = name
-        self.__parent__ = parent
