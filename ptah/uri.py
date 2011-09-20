@@ -27,11 +27,11 @@ def extractUriType(uri):
         return None
 
 
-def registerResolver(type, component, title='', description=''):
+def registerResolver(type, component, title='', description='', depth=1):
     resolvers[type] = component
     resolversInfo[type] = (title, description)
 
-    info = config.DirectiveInfo()
+    info = config.DirectiveInfo(depth=depth)
     info.attach(
         config.Action(None, discriminator = ('ptah:uri-resolver',type))
         )
