@@ -106,11 +106,12 @@ def addCleanup(handler):
     return handler
 
 
-def cleanUp(modId=None):
+def cleanUp(*modIds):
     for h in _cleanups:
         h()
 
-    if modId in sys.modules:
-        mod = sys.modules[modId]
-        if hasattr(mod, directives.ATTACH_ATTR):
-            delattr(mod, directives.ATTACH_ATTR)
+    for modId in modIds:
+        if modId in sys.modules:
+            mod = sys.modules[modId]
+            if hasattr(mod, directives.ATTACH_ATTR):
+                delattr(mod, directives.ATTACH_ATTR)
