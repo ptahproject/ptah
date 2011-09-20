@@ -125,3 +125,9 @@ class ILocalRolesAware(interface.Interface):
     """ local roles aware context """
 
     __local_roles__ = interface.Attribute('Local roles dict')
+
+
+class IPermissionsMapAware(interface.Interface):
+    """ permissions map aware context """
+
+    __permission__ = interface.Attribute('List of permissions map ids')

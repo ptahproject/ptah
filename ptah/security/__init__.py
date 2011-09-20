@@ -17,6 +17,7 @@ from interfaces import IPrincipalSearcher
 
 from interfaces import IOwnersAware
 from interfaces import ILocalRolesAware
+from interfaces import IPermissionsMapAware
 
 # role
 from ptah.security.role import ACL

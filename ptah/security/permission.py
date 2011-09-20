@@ -1,5 +1,7 @@
+from zope import interface
 from memphis import config
 from pyramid.security import Allow, Deny
+from ptah.security.interfaces import IPermissionsMapAware
 
 
 class _Permissions(dict):
@@ -52,6 +54,7 @@ class PermissionsMap(object):
 
 
 class PermissionsMapSupport(object):
+    interface.implements(IPermissionsMapAware)
 
     __permissions__ = []
 
