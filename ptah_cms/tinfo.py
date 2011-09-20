@@ -43,9 +43,6 @@ class TypeInformation(object):
         self.factory = factory
         self.schema = schema
 
-    def __reduce__(self):
-        return getType, (self.id,)
-
     def create(self, **data):
         attrs = {}
 
@@ -135,4 +132,4 @@ def registerType(
 
 @config.addCleanup
 def cleanUp():
-    registered.clear()
+    registeredTypes.clear()

@@ -24,7 +24,8 @@ class ContentTraverser(object):
         environ = request.environ
 
         context = root = self.root
-        path = environ.get('PATH_INFO','/') or '/'
+        path = '/%s/'%'/'.join(traversal_path(
+                environ.get('PATH_INFO','/')))
 
         vroot_tuple = ()
         vpath = path
@@ -86,12 +87,3 @@ class ContentTraverser(object):
                     'virtual_root': root,
                     'virtual_root_path': (),
                     'root': root}
-
-        # not found
-        return {'context': None,
-                'view_name': '',
-                'subpath': traversal_path(vpath),
-                'traversed': (),
-                'virtual_root': root,
-                'virtual_root_path': vroot_tuple,
-                'root': root}

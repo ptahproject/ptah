@@ -27,6 +27,8 @@ class IContainer(IContent):
 class IApplicationRoot(IContent, IContainer):
     """ application root object """
 
+    __root_path__ = interface.Attribute('Current mount point')
+
 
 class IAction(interface.Interface):
 

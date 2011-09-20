@@ -70,10 +70,10 @@ class BlobStorage(object):
     def getByParent(self, parent):
         return self._sql_get_by_parent.first(parent=parent)
 
-    def replace(self, uuid, data, **metadata):
+    def replace(self, uuid, data, **metadata): # pragma: no cover
         pass
 
-    def remove(self, uuid):
+    def remove(self, uuid): # pragma: no cover
         pass
 
 

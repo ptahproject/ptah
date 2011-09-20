@@ -32,7 +32,7 @@ class ApplicationFactory(object):
 
     def __init__(self, path, name, title, policy=ApplicationPolicy):
         self.id = '-'.join(part for part in path.split('/') if part)
-        self.path = path
+        self.path = path if path.endswith('/') else '%s/'%path
         self.name = name
         self.title = title
         self.policy = policy
@@ -49,11 +49,15 @@ class ApplicationFactory(object):
 
         root.__root_path__ = self.path
         root.__parent__ = self.policy(request)
+        if request is not None:
+            request.root = root
         return root
 
 
 class ApplicationRoot(Container):
     interface.implements(IApplicationRoot)
+
+    __root_path__ = '/'
 
     __type__ = Type('app', 'Application')
 
@@ -62,8 +66,6 @@ class ApplicationRoot(Container):
             .filter(sqla.sql.and_(
                     Container.name == sqla.sql.bindparam('name'),
                     Container.__type_id__=='app')))
-
-    __root_path__ = '/'
 
     @classmethod
     def getRoot(cls, name='', title='', *args, **kw):
@@ -80,9 +82,3 @@ class ApplicationRoot(Container):
 
     def __resource_url__(self, request, info):
         return self.__root_path__
-
-    @property
-    def __acl__(self):
-        acl = self._acl_()
-        acl.extend(ptah.security.ACL)
-        return acl
