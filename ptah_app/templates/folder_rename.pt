@@ -8,8 +8,8 @@
     <table class="zebra-striped">
       <tr tal:repeat="item contents">
 	<td><input type="checkbox" name="item" value="${item.__uuid__}" />
-	<td><a href="${url}${item.name}">${item.name or 'unknown'}</a></td>
-	<td><a href="${url}${item.name}">${item.title}</a></td>
+	<td><a href="${url}${item.__name__}">${item.name or 'unknown'}</a></td>
+	<td><a href="${url}${item.__name__}">${item.title}</a></td>
       </tr>
     </table>
 

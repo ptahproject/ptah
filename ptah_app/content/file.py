@@ -130,7 +130,6 @@ class FileEditForm(form.Form):
                 filename = fd['filename'],
                 mimetype = fd['mimetype'])
 
-        self.context.name = data['name']
         self.context.title = data['title']
         self.context.description = data['description']
 
