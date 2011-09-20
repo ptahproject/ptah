@@ -7,11 +7,11 @@ AddContent = security.Permission('ptah-cms:Add', 'Add content')
 ModifyContent = security.Permission('ptah-cms:Edit', 'Modify content')
 DeleteContent = security.Permission('ptah-cms:Delete', 'Delete content')
 
-Viewer = security.registerRole('viewer', 'Viewer')
+Viewer = security.Role('viewer', 'Viewer')
 Viewer.allow(View)
 
-Editor = security.registerRole('editor', 'Editor')
+Editor = security.Role('editor', 'Editor')
 Editor.allow(View, ModifyContent)
 
-Manager = security.registerRole('manager', 'Manager')
+Manager = security.Role('manager', 'Manager')
 Manager.allow(ALL_PERMISSIONS)
