@@ -17,7 +17,7 @@ class Container(Content):
     interface.implements(IContainer)
 
     def keys(self):
-        return [c.name for c in self.__children__]
+        return [c.__name__ for c in self.__children__]
 
     def get(self, key, default=None):
         item = self._sql_get_in_parent.first(key=key, parent=self.__uuid__)
@@ -37,15 +37,23 @@ class Container(Content):
         if not isinstance(item, Content):
             raise ValueError("Content object is required")
 
+        if item.__uuid__ == self.__uuid__:
+            raise ValueError("Can't set to it self")
+
+        parents = [p.__uuid__ for p in loadParents(self)]
+        if item.__uuid__ in parents:
+            raise TypeError("Can't itself to chidlren")
+
         if key in self.keys():
             raise KeyError(key)
 
-        if item.__parent_id__ and item.__parent_id__ != self.__uuid__:
-            event = events.ContentMovedEvent(item)
-        else:
+        if item.__parent_id__ is None:
             event = events.ContentAddedEvent(item)
+        else:
+            event = events.ContentMovedEvent(item)
 
-        item.name = key
+        item.__name__ = key
+        item.__parent__ = self
         item.__parent_id__ = self.__uuid__
         item.__path__ = '%s%s/'%(self.__path__, key)
 
@@ -53,7 +61,7 @@ class Container(Content):
         def update_path(container):
             path = container.__path__
             for item in container.__children__:
-                item.__path__ = '%s%s/'%(path, item.name)
+                item.__path__ = '%s%s/'%(path, item.__name__)
 
                 if isinstance(item, Container):
                     update_path(item)
@@ -103,4 +111,16 @@ def loadContent(uuid, permission=None):
 
 
 def loadParents(content):
-    pass
+    parents = []
+    parent = content
+    while parent is not None:
+        if not isinstance(parent, Node): # pragma: no cover
+            break
+
+        parents.append(parent)
+        
+        if parent.__parent__ is None:
+            parent.__parent__ = parent.__parent_ref__
+        parent = parent.__parent__
+
+    return parents

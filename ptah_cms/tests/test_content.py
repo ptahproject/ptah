@@ -25,7 +25,7 @@ class TestContent(Base):
         
         root = factory(self.request)
 
-        content = MyContent(name='test',
+        content = MyContent(__name__='test',
                             __parent__ = root,
                             __path__ = '%stest/'%root.__path__)
         c_uuid = content.__uuid__

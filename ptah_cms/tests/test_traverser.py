@@ -30,13 +30,13 @@ class TestTraverser(Base):
         root = factory()
         
         folder = MyContent(
-            name = 'folder',
+            __name__ = 'folder',
             __parent__ = root,
             __path__ = '%sfolder/'%root.__path__)
         self.folder_uuid = folder.__uuid__
 
         content = MyContent(
-            name = 'content',
+            __name__ = 'content',
             __parent__ = folder,
             __path__ = '%scontent/'%folder.__path__)
         self.content_uuid = content.__uuid__

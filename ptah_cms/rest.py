@@ -35,9 +35,9 @@ class Applications(ptah.rest.Action):
         for name, factory in factories.items():
             root = factory(request)
 
-            apps.append((root.title, root.name, OrderedDict(
+            apps.append((root.title, root.__name__, OrderedDict(
                 (('mount', name),
-                 ('__name__', root.name),
+                 ('__name__', root.__name__),
                  ('__uuid__', root.__uuid__),
                  ('__link__', '%s/content:%s/%s/'%(
                      request.application_url, name, root.__uuid__))),
@@ -207,7 +207,7 @@ class ContentRestInfo(object):
 
     def __call__(self, content, request, *args):
         info = OrderedDict(
-            (('__name__', content.name),
+            (('__name__', content.__name__),
              ('__type__', content.__type_id__),
              ('__uuid__', content.__uuid__),
              ('__container__', False),
@@ -246,7 +246,7 @@ class ContainerRestInfo(ContentRestInfo):
         for content in content.__children__:
             contents.append(
                 OrderedDict((
-                    ('__name__', content.name),
+                    ('__name__', content.__name__),
                     ('__type__', content.__type_id__),
                     ('__uuid__', content.__uuid__),
                     ('__container__', isinstance(content, Container)),

@@ -16,8 +16,8 @@ class TestApplication(Base):
             name='test', title='Test application')
         
         self.assertTrue(isinstance(root, ptah_cms.ApplicationRoot))
-        self.assertTrue(root.name == 'test')
         self.assertTrue(root.title == 'Test application')
+        self.assertTrue(root.__name__ == 'test')
         self.assertTrue(root.__path__ == '/%s/'%root.__uuid__)
 
         # __resource_url__ always same as __root_path__
@@ -60,8 +60,8 @@ class TestApplicationFactoryRegistration(Base):
         root = factory(self.request)
 
         self.assertTrue(isinstance(root, ptah_cms.ApplicationRoot))
-        self.assertTrue(root.name == 'root')
         self.assertTrue(root.title == 'Root App')
+        self.assertTrue(root.__name__ == 'root')
         self.assertTrue(root.__root_path__ == '/test/')
         self.assertTrue(self.request.root is root)
 

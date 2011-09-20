@@ -37,7 +37,7 @@ class Node(Base, ptah.security.PermissionsMapSupport):
     __parent__ = None
     __uuid_generator__ = None
 
-    def __init__(self, *args, **kw):
+    def __init__(self, **kw):
         self.__owners__ = []
         self.__local_roles__ = {}
         self.__permissions__ = []

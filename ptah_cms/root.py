@@ -64,14 +64,15 @@ class ApplicationRoot(Container):
     _sql_get_root = ptah.QueryFreezer(
         lambda: Session.query(Container)\
             .filter(sqla.sql.and_(
-                    Container.name == sqla.sql.bindparam('name'),
-                    Container.__type_id__=='app')))
+                    Container.__name_id__ == sqla.sql.bindparam('name'),
+                    Container.__type_id__ == 'app')))
 
     @classmethod
     def getRoot(cls, name='', title='', *args, **kw):
         root = cls._sql_get_root.first(name=name)
         if root is None:
-            root = ApplicationRoot(name=name, title=title)
+            root = ApplicationRoot(title=title)
+            root.__name__ = name
             root.__path__ = '/%s/'%root.__uuid__
             getSiteManager().notify(ContentCreatedEvent(root))
 
