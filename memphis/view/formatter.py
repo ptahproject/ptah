@@ -136,9 +136,11 @@ def datetimeFormatter(value, tp='medium', request=None):
     tz = FORMAT.timezone
     if value.tzinfo is None:
         value = datetime(value.year, value.month, value.day, value.hour,
-                         value.minute, value.second, value.microsecond, tz)
+                         value.minute, value.second, value.microsecond,
+                         pytz.utc)
 
     value = value.astimezone(tz)
+
     format = '%s %s'%(FORMAT['date_%s'%tp], FORMAT['time_%s'%tp])
     return unicode(value.strftime(str(format)))
 
