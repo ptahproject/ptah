@@ -2,15 +2,12 @@
 import sqlalchemy as sqla
 from zope import interface
 from zope.component import getSiteManager
-from pyramid.httpexceptions import HTTPForbidden
 
 import ptah
-from ptah.security import checkPermission
-
-import events
-from node import Node, Session
-from content import Content
-from interfaces import IContainer
+from ptah_cms import events
+from ptah_cms.node import Node, Session
+from ptah_cms.content import Content, loadParents
+from ptah_cms.interfaces import IContainer
 
 
 class Container(Content):
@@ -87,40 +84,3 @@ class Container(Content):
             return
 
         raise KeyError(item)
-
-
-def loadContent(uuid, permission=None):
-    item = ptah.resolve(uuid)
-
-    parents = []
-
-    parent = item
-    while parent is not None:
-        if not isinstance(parent, Node):
-            break
-
-        if parent.__parent__ is None:
-            parent.__parent__ = parent.__parent_ref__
-        parent = parent.__parent__
-
-    if permission is not None:
-        if not checkPermission(item, permission):
-            return HTTPForbidden
-
-    return item
-
-
-def loadParents(content):
-    parents = []
-    parent = content
-    while parent is not None:
-        if not isinstance(parent, Node): # pragma: no cover
-            break
-
-        parents.append(parent)
-        
-        if parent.__parent__ is None:
-            parent.__parent__ = parent.__parent_ref__
-        parent = parent.__parent__
-
-    return parents

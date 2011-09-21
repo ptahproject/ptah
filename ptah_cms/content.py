@@ -1,12 +1,14 @@
 """ Base content class implementation """
 import sqlalchemy as sqla
 from zope import interface
+from pyramid.httpexceptions import HTTPForbidden
 
 import ptah
-from ptah.utils import JsonType
+from ptah.utils import JsonListType
+from ptah.security import checkPermission
 
-from node import Node, Session
-from interfaces import IContent
+from ptah_cms.node import Node, Session
+from ptah_cms.interfaces import IContent
 
 
 class Content(Node):
@@ -28,10 +30,10 @@ class Content(Node):
     effective = sqla.Column(sqla.DateTime)
     expires = sqla.Column(sqla.DateTime)
 
-    creators = sqla.Column(JsonType, default=[])
-    subjects = sqla.Column(JsonType, default=[])
+    creators = sqla.Column(JsonListType(), default=[])
+    subjects = sqla.Column(JsonListType(), default=[])
     publisher = sqla.Column(sqla.Unicode, default=u'')
-    contributors = sqla.Column(JsonType, default=[])
+    contributors = sqla.Column(JsonListType(), default=[])
 
     # sql queries
     _sql_get = ptah.QueryFreezer(
@@ -58,3 +60,40 @@ class Content(Node):
     def __resource_url__(self, request, info):
         return '%s%s'%(request.root.__root_path__, 
                        self.__path__[len(request.root.__path__):])
+
+
+def loadContent(uuid, permission=None):
+    item = ptah.resolve(uuid)
+
+    parents = []
+
+    parent = item
+    while parent is not None:
+        if not isinstance(parent, Node): # pragma: no cover
+            break
+
+        if parent.__parent__ is None:
+            parent.__parent__ = parent.__parent_ref__
+        parent = parent.__parent__
+
+    if permission is not None:
+        if not checkPermission(item, permission):
+            raise HTTPForbidden()
+
+    return item
+
+
+def loadParents(content):
+    parents = []
+    parent = content
+    while parent is not None:
+        if not isinstance(parent, Node): # pragma: no cover
+            break
+
+        parents.append(parent)
+        
+        if parent.__parent__ is None:
+            parent.__parent__ = parent.__parent_ref__
+        parent = parent.__parent__
+
+    return parents

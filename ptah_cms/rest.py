@@ -1,6 +1,5 @@
 """ rest api for cms """
 import colander
-import sqlalchemy as sqla
 from collections import OrderedDict
 from zope import interface
 from zope.interface import providedBy
@@ -13,15 +12,13 @@ import ptah
 import ptah_cms
 from ptah_cms.node import Node
 from ptah_cms.content import Content
+from ptah_cms.content import loadContent
 from ptah_cms.container import Container
 from ptah_cms.root import factories
 from ptah_cms.interfaces import IContent
 from ptah_cms.interfaces import IContainer
 from ptah_cms.interfaces import IRestAction
 from ptah_cms.interfaces import IRestActionClassifier
-from ptah_cms.interfaces import ContentSchema
-
-from ptah_cms.container import loadContent
 
 
 class Applications(ptah.rest.Action):
@@ -217,7 +214,7 @@ class ContentRestInfo(object):
 
         schema = content.__type__.schema
         if schema is None:
-            schema = ContentSchema
+            schema = ptah_cms.ContentSchema
         
         for node in schema:
             val = getattr(content, node.name, node.missing)

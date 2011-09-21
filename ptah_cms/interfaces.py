@@ -95,6 +95,8 @@ class ContentSchema(colander.Schema):
 def specialSymbols(node, appstruct):
     if '/' in appstruct:
         raise colander.Invalid(node, "Names cannot contain '/'")
+    if appstruct.startswith(' '):
+        raise colander.Invalid(node, "Names cannot starts with ' '")
 
 
 class ContentNameSchema(colander.Schema):
