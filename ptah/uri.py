@@ -7,6 +7,9 @@ resolversInfo = {}
 
 
 def resolve(uri):
+    if not uri:
+        return
+
     try:
         type, uuid = uri.split(':', 1)
     except ValueError:
