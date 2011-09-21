@@ -8,7 +8,8 @@ from ptah_cms.content import Content
 from ptah_cms.container import Container
 
 # content loading
-from ptah_cms.container import loadContent
+from ptah_cms.content import loadContent
+from ptah_cms.content import loadParents
 
 # Type information
 from ptah_cms.tinfo import Type

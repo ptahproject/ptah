@@ -4,7 +4,7 @@ import pyramid_sqla
 import sqlalchemy as sqla
 import ptah.security
 from zope import interface
-from ptah.utils import JsonType, JsonDictType, JsonListType
+from ptah.utils import JsonDictType, JsonListType
 
 from interfaces import INode
 
