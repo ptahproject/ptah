@@ -9,6 +9,9 @@ class QueryFreezer(object):
         self.builder = builder
         self.data = local()
 
+    def reset(self):
+        self.data = local()
+
     def iter(self, **params):
         data = self.data
         if not hasattr(data, 'query'):
