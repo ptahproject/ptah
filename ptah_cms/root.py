@@ -30,12 +30,17 @@ factories = {}
 
 class ApplicationFactory(object):
 
-    def __init__(self, path, name, title, policy=ApplicationPolicy):
+    def __init__(self, path, name, title,factory=None,policy=ApplicationPolicy):
         self.id = '-'.join(part for part in path.split('/') if part)
         self.path = path if path.endswith('/') else '%s/'%path
         self.name = name
         self.title = title
+
         self.policy = policy
+
+        if factory is None:
+            factory = ApplicationRoot.getRoot
+        self.factory = factory
 
         factories[self.id] = self
 
@@ -45,7 +50,7 @@ class ApplicationFactory(object):
             )
 
     def __call__(self, request=None):
-        root = ApplicationRoot.getRoot(name=self.name, title=self.title)
+        root = self.factory(name=self.name, title=self.title)
 
         root.__root_path__ = self.path
         root.__parent__ = self.policy(request)
@@ -65,13 +70,13 @@ class ApplicationRoot(Container):
         lambda: Session.query(Container)\
             .filter(sqla.sql.and_(
                     Container.__name_id__ == sqla.sql.bindparam('name'),
-                    Container.__type_id__ == 'app')))
+                    Container.__type_id__ == sqla.sql.bindparam('type'))))
 
     @classmethod
     def getRoot(cls, name='', title='', *args, **kw):
-        root = cls._sql_get_root.first(name=name)
+        root = cls._sql_get_root.first(name=name, type=cls.__type__.name)
         if root is None:
-            root = ApplicationRoot(title=title)
+            root = cls(title=title)
             root.__name__ = name
             root.__path__ = '/%s/'%root.__uuid__
             getSiteManager().notify(ContentCreatedEvent(root))

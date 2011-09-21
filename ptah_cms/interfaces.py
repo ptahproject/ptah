@@ -23,11 +23,18 @@ class IContainer(IContent):
 
     __path__ = interface.Attribute('traversal path')
 
-    
+
 class IApplicationRoot(IContent, IContainer):
     """ application root object """
 
     __root_path__ = interface.Attribute('Current mount point')
+
+
+class IApplicationRootFactory(interface.Interface):
+    """ application root factory """
+
+    def __call__(**kw):
+        """ return ApplicationRoot object """
 
 
 class IAction(interface.Interface):

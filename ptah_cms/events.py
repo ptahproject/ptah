@@ -37,7 +37,7 @@ def createdHandler(ev):
     ev.object.modified = now
 
     user = ptah.security.authService.getUserId()
-    if user:
+    if user and user not in ev.object.__owners__:
         ev.object.__owners__.append(user)
 
 
