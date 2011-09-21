@@ -92,10 +92,10 @@ class ServiceAPIDoc(Action):
 
 
 view.registerRoute(
-    'ptah-rest-login', '/__api__/login')
+    'ptah-rest-login', '/__rest__/login')
 
 view.registerRoute(
-    'ptah-rest', '/__api__/{service}/*subpath', use_global_views=True)
+    'ptah-rest', '/__rest__/{service}/*subpath', use_global_views=True)
 
 
 def dthandler(obj):
@@ -179,7 +179,7 @@ class Api(object):
             action = 'apidoc'
             arguments = ()
 
-        request.environ['SCRIPT_NAME'] = '/__api__/%s'%service
+        request.environ['SCRIPT_NAME'] = '/__rest__/%s'%service
         request.response.headerslist = {'Content-Type': 'application/json'}
 
         # execute action for specific service
