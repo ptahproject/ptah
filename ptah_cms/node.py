@@ -20,7 +20,7 @@ class Node(Base, ptah.security.PermissionsMapSupport):
     __tablename__ = 'ptah_cms_nodes'
 
     __id__ = sqla.Column('id', sqla.Integer, primary_key=True)
-    __uuid__ = sqla.Column('uuid', sqla.String)
+    __uuid__ = sqla.Column('uuid', sqla.String, unique=True)
     __type_id__ = sqla.Column('type', sqla.String)
     __parent_id__ = sqla.Column('parent', sqla.String,sqla.ForeignKey(__uuid__))
 
