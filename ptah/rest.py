@@ -5,8 +5,9 @@ from datetime import datetime
 from simplejson import dumps
 from collections import OrderedDict
 from cStringIO import StringIO
-from pyramid.security import remember, forget
-from pyramid.httpexceptions import WSGIHTTPException
+from pyramid.authentication import AuthTicket
+from pyramid.httpexceptions import WSGIHTTPException, HTTPServerError
+from pyramid.interfaces import IAuthenticationPolicy
 
 from ptah import security
 
@@ -24,6 +25,10 @@ def registerService(name, title, description):
 def registerServiceAction(name, action):
     services[name].registerAction(action)
 
+
+class RestException(HTTPServerError):
+    """ rest exception """
+    
 
 class Service(object):
 
@@ -62,11 +67,11 @@ class ServiceAPIDoc(Action):
 
     def __call__(self, request):
         srv = services[self.srvname]
-        url = '%s/__api__/'%request.application_url
+        url = request.application_url
 
         info = OrderedDict(
             (('name', srv.name),
-             ('link', '%s%s/'%(url, srv.name)),
+             ('link', '%s/'%url),
              ('title', srv.title),
              ('description', srv.description),
              ('actions', [])))
@@ -79,12 +84,15 @@ class ServiceAPIDoc(Action):
             info['actions'].append(
                 OrderedDict(
                     (('name', name),
-                     ('link', '%s%s/%s'%(url, srv.name, name)), 
+                     ('link', '%s/%s'%(url, name)), 
                      ('title', title),
                      ('description', description))))
 
         return info
 
+
+view.registerRoute(
+    'ptah-rest-login', '/__api__/login')
 
 view.registerRoute(
     'ptah-rest', '/__api__/{service}/*subpath', use_global_views=True)
@@ -94,13 +102,13 @@ def dthandler(obj):
     return obj.isoformat() if isinstance(obj, datetime) else None
 
 
-class Api(object):
-    view.pyramidView(route='ptah-rest', layout=None)
+class Login(object):
+    view.pyramidView(route='ptah-rest-login', layout=None)
 
     def __init__(self, request):
         self.request = request
 
-    def login(self):
+    def render(self):
         request = self.request
         
         login = request.POST.get('login', '')
@@ -109,22 +117,57 @@ class Api(object):
         credentials = {'login': login, 'password': password}
         info = security.authService.authenticate(credentials)
         if info.status:
-            headers = remember(request, info.uuid)
-            request.response.headerslist = headers
-            return {'status': True, 'message': '',
-                    'cookie': headers[0][1]}
+            token = self.get_token(request, info.uuid)
+            result = {'status': True, 'message': '', 'auth-token': token[:-1]}
         else:
             request.response.status = 403
-            return {'status': False, 'message': info.message}
+            result = {'status': False, 'message': info.message}
+
+        return '%s\n\n'%dumps(result, indent=True, default=dthandler)
+
+    def get_token(self, request, userid):
+        auth = request.registry.getUtility(IAuthenticationPolicy)
+
+        cookie = auth.cookie
+        environ = request.environ
+        remote_addr = '0.0.0.0'
+
+        ticket = AuthTicket(
+            cookie.secret,
+            userid,
+            remote_addr,
+            tokens=(),
+            user_data='',
+            cookie_name='auth-token',
+            secure=False)
+
+        return ticket.cookie_value()
+
+
+class Api(object):
+    view.pyramidView(route='ptah-rest', layout=None)
+
+    def __init__(self, request):
+        self.request = request
 
     def render(self):
         request = self.request
 
+        # authentication by token
+        token = request.environ.get('HTTP_X_AUTH_TOKEN')
+        if token:
+            auth = request.registry.getUtility(IAuthenticationPolicy)
+            try:
+                timestamp, userid, tokens, user_data = auth.cookie.parse_ticket(
+                    auth.cookie.secret, '%s!'%token, '0.0.0.0')
+            except auth.cookie.BadTicket:
+                userid = None
+
+            if userid:
+                security.authService.setUserId(userid)
+
+        # search service and action
         service = request.matchdict['service']
-        if service == 'login':
-            res = self.login()
-            return '%s\n\n'%dumps(res, indent=True, default=dthandler)
-        
         subpath = request.matchdict['subpath']
         if subpath:
             action = subpath[0]
@@ -137,9 +180,9 @@ class Api(object):
             arguments = ()
 
         request.environ['SCRIPT_NAME'] = '/__api__/%s'%service
-
         request.response.headerslist = {'Content-Type': 'application/json'}
 
+        # execute action for specific service
         try:
             result = services[service](request, action, *arguments)
         except WSGIHTTPException, exc:

@@ -50,11 +50,21 @@ def setAccessManager(func):
     ACCESS_MANAGER = func
 
 
+class DefaultRoot(object):
+    interface.implements(view.INavigationRoot)
+
+    __name__ = None
+    __parent__ = None
+
+    def __init__(self, request=None):
+        self.request = request
+
+
 class PtahManageRoute(object):
     interface.implements(IPtahManageRoute)
 
     __name__ = 'ptah-manage'
-    __parent__ = view.DefaultRoot()
+    __parent__ = DefaultRoot()
 
     def __init__(self, request):
         self.request = request

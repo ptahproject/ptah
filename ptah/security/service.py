@@ -1,21 +1,25 @@
+import threading
+from memphis import config, view
 from zope import interface
-from pyramid import security
+from zope.component import getUtility
 from pyramid.security import Authenticated
-from pyramid.security import Everyone
 from pyramid.security import ACLDenied
+from pyramid.security import Everyone
+from pyramid.security import authenticated_userid
 from pyramid.threadlocal import get_current_request
-from pyramid.interfaces import IAuthorizationPolicy
+from pyramid.interfaces import INewRequest, IAuthorizationPolicy
 from pyramid.httpexceptions import HTTPForbidden
 
 import ptah
 from role import LocalRoles
-from interfaces import IAuthentication, ISearchableAuthProvider
+from interfaces import IAuthentication, IAuthInfo
 
 checkers = []
 providers = {}
+searchers = {}
 
 
-def provideAuthChecker(checker):
+def registerAuthChecker(checker):
     checkers.append(checker)
 
 
@@ -23,7 +27,12 @@ def registerProvider(name, provider):
     providers[name] = provider
 
 
+def registerSearcher(name, searcher):
+    searchers[name] = searcher
+
+
 class AuthInfo(object):
+    interface.implements(IAuthInfo)
 
     def __init__(self, status=False, principal=None, uuid=None, message=u''):
         self.status = status
@@ -33,12 +42,16 @@ class AuthInfo(object):
         self.uuid = uuid
         
 
-class Authentication(object):
+_notSet = object()
+
+class Authentication(threading.local):
     interface.implements(IAuthentication)
+
+    uid = _notSet
 
     def authenticate(self, credentials):
         info = AuthInfo()
-        
+
         for pname, provider in providers.items():
             principal = provider.authenticate(credentials)
             if principal is not None:
@@ -72,36 +85,48 @@ class Authentication(object):
                 return principal
 
     def isAnonymous(self):
-        id = security.authenticated_userid(get_current_request())
-        if id:
-            return False
-        return True
+        return not self.getUserId()
+
+    def setUserId(self, uid):
+        self.uid = uid
+
+    def getUserId(self):
+        uid = getattr(self, 'uid', _notSet)
+        if uid is _notSet:
+            try:
+                self.uid = authenticated_userid(get_current_request())
+            except:
+                self.uid = None
+            return self.uid
+        return uid
 
     def getCurrentPrincipal(self):
-        try:
-            id = security.authenticated_userid(get_current_request())
-        except:
-            return None
-        if id:
-            return ptah.resolve(id)
-
-    def search(self, term):
-        for pname, provider in providers.items():
-            if ISearchableAuthProvider.providedBy(provider):
-                for principal in provider.search(term):
-                    yield principal
+        uid = self.getUserId()
+        if uid:
+            return ptah.resolve(uid)
 
 authService = Authentication()
 
 
-def checkPermission(context, permission, throw=True):
+@config.handler(INewRequest)
+def resetUserId(ev):
+    authService.uid = _notSet
+    authService.cache = {}
+
+
+def checkPermission(context, permission, request=None, throw=True):
     if not permission or permission == '__no_permission_required__':
         return True
 
+    global AUTHZ
+    try:
+        AUTHZ
+    except:
+        AUTHZ = getUtility(IAuthorizationPolicy)
+
     principals = [Everyone]
 
-    request = get_current_request()
-    userid = security.authenticated_userid(request)
+    userid = authService.getUserId()
     if userid is not None:
         principals.append(Authenticated)
 
@@ -109,9 +134,7 @@ def checkPermission(context, permission, throw=True):
         if roles:
             principals.extend(roles)
 
-    authz = request.registry.queryUtility(IAuthorizationPolicy)
-
-    res = authz.permits(context, principals, permission)
+    res = AUTHZ.permits(context, principals, permission)
 
     if isinstance(res, ACLDenied):
         if throw:
@@ -119,3 +142,11 @@ def checkPermission(context, permission, throw=True):
 
         return False
     return True
+
+view.setCheckPermission(checkPermission)
+
+
+def searchPrincipals(term):
+    for name, searcher in searchers.items():
+        for principal in searcher(term):
+            yield principal

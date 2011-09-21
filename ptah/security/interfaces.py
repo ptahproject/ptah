@@ -28,20 +28,42 @@ class IPasswordChanger(interface.Interface):
         """ change password """
 
 
+class IAuthInfo(interface.Interface):
+    """ auth info """
+
+    status = interface.Attribute('Status of authentication call')
+
+    message = interface.Attribute('Failed message')
+
+    keywords = interface.Attribute('Additional arguments from provider')
+
+    principal = interface.Attribute('Principal object')
+
+    uuid = interface.Attribute('Principal UUID')
+
+
 class IAuthentication(interface.Interface):
-    """ authentication """
+    """ authentication utility """
 
     def isAnonymous():
         """ """
 
     def getPrincipalByLogin(login):
-        pass
+        """ """
 
     def getCurrentPrincipal():
-        pass
+        """ """
 
     def authenticate(credentials):
         """ authenticate credentials """
+
+
+class IAuthChecker(interface.Interface):
+    """ it is possible to perform additional checks on principal 
+    during authentication process"""
+
+    def __call__(principal, authInfo):
+        """ perform additional check """
 
 
 class IAuthProvider(interface.Interface):
@@ -57,11 +79,11 @@ class IAuthProvider(interface.Interface):
         """ authenticate credentials """
 
 
-class ISearchableAuthProvider(interface.Interface):
+class IPrincipalSearcher(interface.Interface):
     """ auth provider with search support """
 
-    def search(term=''):
-        """ search users return id, name, login """
+    def __call__(term=''):
+        """ search users return IPrincipal object """
 
 
 class IPasswordTool(interface.Interface):
@@ -103,3 +125,9 @@ class ILocalRolesAware(interface.Interface):
     """ local roles aware context """
 
     __local_roles__ = interface.Attribute('Local roles dict')
+
+
+class IPermissionsMapAware(interface.Interface):
+    """ permissions map aware context """
+
+    __permission__ = interface.Attribute('List of permissions map ids')

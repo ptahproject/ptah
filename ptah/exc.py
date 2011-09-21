@@ -5,6 +5,7 @@ from pyramid.httpexceptions import HTTPFound, HTTPForbidden
 
 from memphis import view
 from ptah.settings import PTAH
+from ptah.manage import DefaultRoot
 
 
 view.registerLayout(
@@ -18,7 +19,7 @@ class Forbidden(view.View):
                      template=view.template('ptah:templates/forbidden.pt'))
 
     def update(self):
-        self.__parent__ = view.DefaultRoot()
+        self.__parent__ = DefaultRoot()
 
         request = self.request
 

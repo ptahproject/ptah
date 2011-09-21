@@ -8,8 +8,7 @@ Session = psa.get_session()
 
 
 class CrowdProvider(object):
-    interface.implements(ptah.security.IAuthProvider,
-                         ptah.security.ISearchableAuthProvider)
+    interface.implements(ptah.security.IAuthProvider)
 
     def authenticate(self, creds):
         login, password = creds['login'], creds['password']
@@ -41,6 +40,7 @@ class CrowdProvider(object):
 provider = CrowdProvider()
 ptah.registerResolver('user+crowd', provider.getPrincipal)
 ptah.security.registerProvider('crowd', provider)
+ptah.security.registerSearcher('crowd', provider.search)
 
 UUID = ptah.UUIDGenerator('user+crowd')
 

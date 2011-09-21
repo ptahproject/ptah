@@ -26,6 +26,30 @@ class JsonType(TypeDecorator):
         return value
 
 
+class MutationList(Mutable, list):
+
+    @classmethod
+    def coerce(cls, key, value):
+        if not isinstance(value, MutationList):
+            if isinstance(value, list):
+                return MutationList(value)
+            return Mutable.coerce(key, value)
+        else:
+            return value
+
+    def append(self, value):
+        list.append(self, value)
+        self.changed()
+
+    def __setitem__(self, key, value):
+        list[key] = value
+        self.changed()
+
+    def __delitem__(self, key):
+        del list[key]
+        self.changed()
+
+
 class MutationDict(Mutable, dict):
 
     @classmethod
@@ -48,6 +72,10 @@ class MutationDict(Mutable, dict):
 
 def JsonDictType():
     return MutationDict.as_mutable(JsonType)
+
+
+def JsonListType():
+    return MutationList.as_mutable(JsonType)
 
 
 class Guid(TypeDecorator):

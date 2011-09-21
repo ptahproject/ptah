@@ -3,18 +3,21 @@
 # auth service
 from service import authService
 from service import registerProvider
-from service import provideAuthChecker
+from service import registerSearcher
+from service import registerAuthChecker
 from service import checkPermission
+from service import searchPrincipals
 
 from interfaces import IPrincipal
 from interfaces import IPrincipalWithEmail
 from interfaces import IPasswordChanger
 
 from interfaces import IAuthProvider
-from interfaces import ISearchableAuthProvider
+from interfaces import IPrincipalSearcher
 
 from interfaces import IOwnersAware
 from interfaces import ILocalRolesAware
+from interfaces import IPermissionsMapAware
 
 # role
 from ptah.security.role import ACL
@@ -24,7 +27,6 @@ from ptah.security.role import Authenticated
 from ptah.security.role import Role
 from ptah.security.role import Roles
 from ptah.security.role import LocalRoles
-from ptah.security.role import registerRole
 
 # permission
 from ptah.security.permission import View

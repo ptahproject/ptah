@@ -1,5 +1,7 @@
+from zope import interface
 from memphis import config
 from pyramid.security import Allow, Deny
+from ptah.security.interfaces import IPermissionsMapAware
 
 
 class _Permissions(dict):
@@ -32,19 +34,27 @@ class PermissionsMap(object):
         info = config.DirectiveInfo()
         info.attach(
             config.Action(
-                None, discriminator = ('ptah:permission-map', name))
+                lambda p: PermissionsMaps.update({name: p}),
+                (self,), discriminator = ('ptah:permission-map', name))
             )
 
     def allow(self, role, *permissions):
-        perms = self.allowed.setdefault(role.id, set())
+        if not isinstance(role, basestring):
+            role = role.id
+            
+        perms = self.allowed.setdefault(role, set())
         perms.update(permissions)
 
-    def deny(self, role, permissions):
-        perms = self.denied.setdefault(role.id, set())
+    def deny(self, role, *permissions):
+        if not isinstance(role, basestring):
+            role = role.id
+
+        perms = self.denied.setdefault(role, set())
         perms.update(permissions)
 
 
 class PermissionsMapSupport(object):
+    interface.implements(IPermissionsMapAware)
 
     __permissions__ = []
 
@@ -80,16 +90,12 @@ def Permission(name, title, description=u''):
 
     info.attach(
         config.Action(
-            registerPermission,
+            lambda p: Permissions.update({str(p): p}),
             (permission,),
             discriminator = ('ptah:permission', name))
         )
 
     return permission
-
-
-def registerPermission(perm):
-    Permissions[str(perm)] = perm
 
 
 View = Permission('ptah:view', 'View')

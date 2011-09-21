@@ -17,7 +17,7 @@ TOKEN_TYPE = token.registerTokenType(
     '5cfcb3e2-e93f-42f7-9d1c-59077952bd72', timedelta(hours=24))
 
 
-@service.provideAuthChecker
+@service.registerAuthChecker
 def validationAndSuspendedChecker(principal, info):
     props = MemberProperties.get(principal.uuid)
     if props.suspended:

@@ -17,11 +17,19 @@ from ptah.manage import setAccessManager, ACCESS_MANAGER
 # security
 from ptah import security
 from ptah.security import View
-from ptah.security import Role, Roles, Permission, registerRole, authService
+from ptah.security import authService
+from ptah.security import Role, Roles
+from ptah.security import Permission
+from ptah.security import Permissions
+from ptah.security import PermissionsMap
+from ptah.security import PermissionsMaps
 from ptah.security import checkPermission
 
 # rest api
-from ptah import rest
+from ptah.rest import RestException
+from ptah.rest import registerService
+from ptah.rest import registerServiceAction
+from ptah.interfaces import IRestServiceAction
 
 # mail api
 from ptah import mail
