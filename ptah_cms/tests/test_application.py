@@ -1,3 +1,4 @@
+import ptah
 import transaction
 from memphis import config
 
@@ -58,12 +59,21 @@ class TestApplicationFactoryRegistration(Base):
         self._setRequest(self._makeRequest())
 
         root = factory(self.request)
+        r_uuid = root.__uuid__
 
         self.assertTrue(isinstance(root, ptah_cms.ApplicationRoot))
         self.assertTrue(root.title == 'Root App')
         self.assertTrue(root.__name__ == 'root')
         self.assertTrue(root.__root_path__ == '/test/')
         self.assertTrue(self.request.root is root)
+        transaction.commit()
+
+        root = factory(self.request)
+        self.assertEqual(root.__uuid__, r_uuid)
+        transaction.commit()
+
+        root = ptah.resolve(r_uuid)
+        self.assertEqual(root.__uuid__, r_uuid)
 
     def test_app_factory_mutiple(self):
         import ptah_cms
@@ -110,7 +120,39 @@ class TestApplicationFactoryRegistration(Base):
             pass
 
         factory = ptah_cms.ApplicationFactory(
-            '/app1', 'root', 'Root App', CustomPolicy)
+            '/app1', 'root', 'Root App', policy=CustomPolicy)
 
         root = factory(self._makeRequest())
         self.assertTrue(isinstance(root.__parent__, CustomPolicy))
+
+
+class TestApplicationFactoryCustom(Base):
+
+    def setUp(self):
+        super(TestApplicationFactoryCustom, self).setUp()
+
+        import ptah_cms
+        ptah_cms.ApplicationRoot._sql_get_root.reset()
+
+    def tearDown(self):
+        config.cleanUp(self.__class__.__module__)
+        super(TestApplicationFactoryCustom, self).tearDown()
+
+    def test_app_factory_custom_app(self):
+        import ptah_cms
+
+        class CustomApplication(ptah_cms.ApplicationRoot):
+            
+            __type__ = ptah_cms.Type('customapp', 'Custom app')
+
+        factory = ptah_cms.ApplicationFactory(
+            '/', 'root', 'Root App', factory=CustomApplication.getRoot)
+
+        root = factory()
+        self.assertTrue(isinstance(root, CustomApplication))
+
+        u_root = root.__uuid__
+        transaction.commit()
+
+        root = factory()
+        self.assertEqual(root.__uuid__, u_root)
