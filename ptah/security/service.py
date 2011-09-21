@@ -128,7 +128,7 @@ def checkPermission(context, permission, request=None, throw=True):
 
     userid = authService.getUserId()
     if userid is not None:
-        principals.append(Authenticated)
+        principals.extend((Authenticated, userid))
 
         roles = LocalRoles(userid, context=context)
         if roles:
