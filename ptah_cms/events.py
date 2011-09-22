@@ -36,9 +36,9 @@ def createdHandler(ev):
     ev.object.created = now
     ev.object.modified = now
 
-    user = ptah.security.authService.getUserId()
-    if user and user not in ev.object.__owners__:
-        ev.object.__owners__.append(user)
+    user = ptah.authService.getUserId()
+    if user:
+        ev.object.__owner__ = user
 
 
 @config.handler(ContentModifiedEvent)

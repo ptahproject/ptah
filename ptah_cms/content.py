@@ -4,8 +4,8 @@ from zope import interface
 from pyramid.httpexceptions import HTTPForbidden
 
 import ptah
+from ptah import checkPermission
 from ptah.utils import JsonListType
-from ptah.security import checkPermission
 
 from ptah_cms.node import Node, Session
 from ptah_cms.interfaces import IContent

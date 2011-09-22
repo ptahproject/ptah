@@ -2,8 +2,9 @@
 import uuid
 import pyramid_sqla
 import sqlalchemy as sqla
-import ptah.security
 from zope import interface
+
+import ptah
 from ptah.utils import JsonDictType, JsonListType
 
 from interfaces import INode
@@ -12,10 +13,11 @@ Base = pyramid_sqla.get_base()
 Session = pyramid_sqla.get_session()
 
 
-class Node(Base, ptah.security.PermissionsMapSupport):
+class Node(Base):
     interface.implements(INode, 
-                         ptah.security.IOwnersAware,
-                         ptah.security.ILocalRolesAware)
+                         ptah.IACLsAware,
+                         ptah.IOwnersAware,
+                         ptah.ILocalRolesAware)
 
     __tablename__ = 'ptah_cms_nodes'
 
@@ -24,9 +26,9 @@ class Node(Base, ptah.security.PermissionsMapSupport):
     __type_id__ = sqla.Column('type', sqla.String)
     __parent_id__ = sqla.Column('parent', sqla.String,sqla.ForeignKey(__uuid__))
 
-    __owners__ = sqla.Column('owner', JsonListType(), default=[])
+    __owner__ = sqla.Column('owner', sqla.String, default='')
     __local_roles__ = sqla.Column('roles', JsonDictType(), default={})
-    __permissions__ = sqla.Column('permissions', JsonListType(), default=[])
+    __acls__ = sqla.Column('acls', JsonListType(), default=[])
 
     __children__ = sqla.orm.relationship(
         'Node',
@@ -36,6 +38,8 @@ class Node(Base, ptah.security.PermissionsMapSupport):
 
     __parent__ = None
     __uuid_generator__ = None
+
+    __acl__ = ptah.ACLsProperty()
 
     def __init__(self, **kw):
         self.__owners__ = []

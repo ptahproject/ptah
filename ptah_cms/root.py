@@ -20,7 +20,7 @@ class ApplicationPolicy(object):
     __parent__ = None
 
     # default acl
-    __acl__ = ptah.security.ACL
+    __acl__ = ptah.DEFAULT_ACL
 
     def __init__(self, request):
         self.request = request

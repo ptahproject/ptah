@@ -81,9 +81,9 @@ class TestContent(Base):
         sm = component.getSiteManager()
         sm.notify(ptah_cms.ContentCreatedEvent(content))
 
-        self.assertEqual(content.__owners__, [])
+        self.assertEqual(content.__owner__, None)
 
         ptah.authService.setUserId('user')
         sm.notify(ptah_cms.ContentCreatedEvent(content))
 
-        self.assertEqual(content.__owners__, ['user'])
+        self.assertEqual(content.__owner__, 'user')

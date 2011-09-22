@@ -1,1 +1,1 @@
-""" ptah.security tests """
+""" ptah tests """
