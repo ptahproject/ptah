@@ -1,9 +1,9 @@
 # memphis.config package public API
 
-from memphis.config.api import initialize
+registry = None
 
+from memphis.config.api import initialize
 from memphis.config.api import notify
-from memphis.config.api import registry
 
 from memphis.config.api import cleanUp
 from memphis.config.api import addCleanup

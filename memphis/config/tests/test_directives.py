@@ -11,12 +11,9 @@ from memphis.config.api import objectEventNotify
 
 class BaseTesting(unittest.TestCase):
 
-    def _init_memphis(self, settings={}, newReg=True, *args, **kw):
-        if newReg:
-            config.initialize(('memphis.config', self.__class__.__module__),
-                              reg=Components('test'))
-        else:
-            config.initialize(('memphis.config', self.__class__.__module__))
+    def _init_memphis(self, settings={}, newReg=None, *args, **kw):
+        config.initialize(('memphis.config', self.__class__.__module__),
+                          reg=newReg)
 
     def tearDown(self):
         config.cleanUp(self.__class__.__module__)
@@ -78,6 +75,9 @@ class TestAdaptsDirective(BaseTesting):
             config.adapter(IContext)
             interface.implements(IAdapter)
 
+            def __init__(self, context):
+                pass
+
         self._init_memphis()
 
         sm = config.registry
@@ -86,6 +86,9 @@ class TestAdaptsDirective(BaseTesting):
         self.assertTrue(len(adapters) == 1)
         self.assertTrue(adapters[0][0] == '')
         self.assertTrue(adapters[0][1] is TestClass)
+
+        adapter = IAdapter(Context(IContext))
+        self.assertTrue(isinstance(adapter, TestClass))
 
     def test_adapts_named(self):
         global TestClass
@@ -256,7 +259,7 @@ class TestAdapterDirective(BaseTesting):
         sm = config.registry
         sm.__init__('base')
 
-        self._init_memphis(newReg=False)
+        self._init_memphis(newReg=config.registry)
 
         adapters = sm.adapters.lookupAll((IContext,), IAdapter)
 
@@ -400,8 +403,6 @@ class TestHandlerDirective(BaseTesting):
         self._init_memphis()
         
         sm = config.registry
-        sm.registerHandler(objectEventNotify, (IObjectEvent,))
-
         sm.subscribers((ObjectEvent(Context(IContext)),), None)
 
         self.assertTrue(len(events) == 1)

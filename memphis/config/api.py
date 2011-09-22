@@ -1,29 +1,17 @@
 import sys, pkg_resources
 from memphis.config import directives
 from zope.interface.registry import Components
+from zope.interface.interface import adapter_hooks
 from zope.interface.interfaces import IObjectEvent
-
-registry = Components('memphis')
-
-def _notify(self, *events):
-    [ _ for _ in self.subscribers(events, None) ]
-
-def objectEventNotify(event):
-    registry.subscribers((event.object, event), None)
-
-registry.registerHandler(objectEventNotify, (IObjectEvent,))
 
 
 def initialize(packages=None, excludes=(), reg=None):
-    global registry
-    if reg is not None:
-        registry = reg
-        if not hasattr(reg, 'notify'):
-            reg.notify = _notify
-        #reg.registerHandler(objectEventNotify, (IObjectEvent,))
+    if reg is None:
+        reg = Components('memphis')
+        reg.registerHandler(objectEventNotify, (IObjectEvent,))
 
-        import memphis.config
-        memphis.config.registry = reg
+    sys.modules['memphis.config'].registry = reg
+    sys.modules['memphis.config.api'].registry = reg
 
     # list all packages
     if packages is None:
@@ -118,6 +106,16 @@ def loadPackages(include_packages=None, excludes=None):
 
 def notify(*event):
     registry.subscribers(event, None)
+
+
+def objectEventNotify(event):
+    registry.subscribers((event.object, event), None)
+
+
+def adapterHook(iface, obj, name='', default=None):
+    return registry.queryAdapter(obj, iface, name, default)
+
+adapter_hooks.append(adapterHook)
 
 
 _cleanups = set()
