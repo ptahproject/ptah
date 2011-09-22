@@ -13,27 +13,58 @@ from ptah_cms.interfaces import IContainer
 class Container(Content):
     interface.implements(IContainer)
 
+    _v_keys = None
+    _v_temp_keys = None
+
+    _v_items = None
+
     _sql_get_children = ptah.QueryFreezer(
         lambda: Session.query(Content)
             .filter(Content.__parent_id__ == sqla.sql.bindparam('uuid')))
 
     def keys(self):
-        return [c.__name__ for c in 
-                self._sql_get_children.all(uuid=self.__uuid__)]
+        if self._v_keys is None:
+            self._v_keys = [c.__name__ for c in 
+                            self._sql_get_children.all(uuid=self.__uuid__)]
+        
+        if self._v_temp_keys:
+            self._v_keys.extend(self._v_temp_keys)
+            del self._v_temp_keys
+
+        return self._v_keys
 
     def get(self, key, default=None):
+        if self._v_items and key in self._v_items:
+            return self._v_items[key]
+
         item = self._sql_get_in_parent.first(key=key, parent=self.__uuid__)
         if item is not None:
             item.__parent__ = self
+            if not self._v_items:
+                self._v_items = {key: item}
+            else:
+                self._v_items[key] = item
         return item
+
+    def values(self):
+        for key in self.keys():
+            yield self.get(key)
 
     def __contains__(self, key):
         return key in self.keys()
 
     def __getitem__(self, key):
+        if self._v_items and key in self._v_items:
+            return self._v_items[key]
+
         try:
             item = self._sql_get_in_parent.one(key=key, parent=self.__uuid__)
             item.__parent__ = self
+            if not self._v_items:
+                self._v_items = {key: item}
+            else:
+                self._v_items[key] = item
+
             return item
         except sqla.orm.exc.NoResultFound:
             raise KeyError(key)
@@ -62,10 +93,26 @@ class Container(Content):
         item.__parent_id__ = self.__uuid__
         item.__path__ = '%s%s/'%(self.__path__, key)
 
+        # temporary keys
+        if not self._v_items:
+            self._v_items = {key: item}
+        else:
+            self._v_items[key] = item
+
+        if self._v_keys is not None:
+            if key not in self._v_keys:
+                self._v_keys.append(key)
+        else:
+            keys = self._v_temp_keys
+            if keys is None:
+                keys = []
+            keys.append(key)
+            self._v_temp_keys = keys
+
         # recursevly update children paths
         def update_path(container):
             path = container.__path__
-            for item in self._sql_get_children.all(uuid=self.__uuid__):
+            for item in container.values():
                 item.__path__ = '%s%s/'%(path, item.__name__)
 
                 if isinstance(item, Container):
@@ -84,6 +131,11 @@ class Container(Content):
             if isinstance(item, Container):
                 for key in item.keys():
                     del item[key]
+
+                    if self._v_keys:
+                        self._v_keys.remove(key)
+                    if self._v_items and key in self._v_items:
+                        del self._v_items[key]
 
             config.notify(events.ContentDeletingEvent(item))
 
