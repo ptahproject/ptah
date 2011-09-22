@@ -1,7 +1,6 @@
 import uuid
 import transaction
 from memphis import config
-from zope import component
 from datetime import datetime
 
 from base import Base
@@ -59,13 +58,12 @@ class TestContent(Base):
 
         content = MyContent()
 
-        sm = component.getSiteManager()
-        sm.notify(ptah_cms.ContentCreatedEvent(content))
+        config.notify(ptah_cms.ContentCreatedEvent(content))
 
         self.assertTrue(isinstance(content.created, datetime))
         self.assertTrue(isinstance(content.modified, datetime))
 
-        sm.notify(ptah_cms.ContentModifiedEvent(content))
+        config.notify(ptah_cms.ContentModifiedEvent(content))
         self.assertTrue(content.modified != content.created)
 
     def test_content_set_owner_on_create(self):
@@ -78,12 +76,11 @@ class TestContent(Base):
 
         content = MyContent()
 
-        sm = component.getSiteManager()
-        sm.notify(ptah_cms.ContentCreatedEvent(content))
+        config.notify(ptah_cms.ContentCreatedEvent(content))
 
         self.assertEqual(content.__owner__, None)
 
         ptah.authService.setUserId('user')
-        sm.notify(ptah_cms.ContentCreatedEvent(content))
+        config.notify(ptah_cms.ContentCreatedEvent(content))
 
         self.assertEqual(content.__owner__, 'user')

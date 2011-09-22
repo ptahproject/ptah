@@ -2,7 +2,7 @@
 import ptah
 from memphis import config
 from datetime import datetime
-from zope.component.interfaces import ObjectEvent
+from zope.interface.interfaces import ObjectEvent
 
 
 class ContentEvent(ObjectEvent):

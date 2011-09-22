@@ -1,7 +1,6 @@
 """ Aplication Root """
 import sqlalchemy as sqla
 from zope import interface
-from zope.component import getSiteManager
 
 import ptah
 from memphis import config, view
@@ -79,7 +78,7 @@ class ApplicationRoot(Container):
             root = cls(title=title)
             root.__name__ = name
             root.__path__ = '/%s/'%root.__uuid__
-            getSiteManager().notify(ContentCreatedEvent(root))
+            config.notify(ContentCreatedEvent(root))
 
             Session.add(root)
             Session.flush()

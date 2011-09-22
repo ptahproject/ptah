@@ -1,7 +1,7 @@
 """ Base container class implementation """
 import sqlalchemy as sqla
 from zope import interface
-from zope.component import getSiteManager
+from memphis import config
 
 import ptah
 from ptah_cms import events
@@ -69,7 +69,7 @@ class Container(Content):
         if isinstance(item, Container):
             update_path(item)
 
-        getSiteManager().notify(event)
+        config.notify(event)
 
     def __delitem__(self, item):
         if isinstance(item, basestring):
@@ -80,8 +80,7 @@ class Container(Content):
                 for key in item.keys():
                     del item[key]
 
-            getSiteManager().notify(
-                events.ContentDeletingEvent(item))
+            config.notify(events.ContentDeletingEvent(item))
 
             Session.delete(item)
             return

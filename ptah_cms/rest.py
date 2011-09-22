@@ -3,7 +3,6 @@ import colander
 from collections import OrderedDict
 from zope import interface
 from zope.interface import providedBy
-from zope.component import getSiteManager
 from memphis import config, form
 from pyramid.location import lineage
 from pyramid.httpexceptions import HTTPNotFound
@@ -179,7 +178,7 @@ def contentRestAction(name, context, factory):
 
 
 def contentRestActionImpl(name, context, factory):
-    getSiteManager().registerAdapter(
+    config.registry.registerAdapter(
         factory, (IRestActionClassifier, context), IRestAction, name)
 
 
