@@ -4,7 +4,7 @@ from pyramid.httpexceptions import HTTPFound
 
 import ptah
 import ptah_cms
-from ptah.security import authService
+from ptah import authService
 from ptah_cms import tinfo, interfaces, events
 
 

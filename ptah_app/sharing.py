@@ -5,7 +5,6 @@ from pyramid.httpexceptions import HTTPFound
 
 import ptah
 import ptah_cms
-from ptah import security
 
 
 class SearchSchema(colander.Schema):
@@ -21,7 +20,7 @@ class SearchSchema(colander.Schema):
 
 class SharingForm(form.Form):
     view.pyramidView(
-        'sharing.html', security.ILocalRolesAware,
+        'sharing.html', ptah.ILocalRolesAware,
         template = view.template('ptah_app:templates/sharing.pt'))
 
     csrf = True
@@ -47,7 +46,7 @@ class SharingForm(form.Form):
 
         term = request.session.get('sharing-term', '')
         if term:
-            self.users = list(security.searchPrincipals(term))
+            self.users = list(ptah.searchPrincipals(term))
 
         if 'form.buttons.save' in request.POST:
             users = []
@@ -85,7 +84,7 @@ sharingAction = ptah_cms.Action(**{'id': 'sharing',
                                    'action': 'sharing.html',
                                    'permission': ptah.View})
 
-@config.adapter(security.ILocalRolesAware, name='sharing')
+@config.adapter(ptah.ILocalRolesAware, name='sharing')
 @interface.implementer(ptah_cms.IAction)
 def sharingActionAdapter(context):
     return sharingAction
