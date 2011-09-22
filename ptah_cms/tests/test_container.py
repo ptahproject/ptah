@@ -125,6 +125,33 @@ class TestContainer(Base):
         self.assertEqual(container.keys(), ['folder'])
         self.assertEqual(folder.keys(), ['new-content'])
 
+    def test_container_insert_subtree(self):
+        container = Container(__name__ = 'container', __path__ = '/container/')
+        folder = Container(title='Folder')
+        content = Content(title='Content')
+
+        ptah_cms.Session.add(container)
+        ptah_cms.Session.add(folder)
+        ptah_cms.Session.add(content)
+
+        folder['content'] = content
+        container['folder'] = folder
+
+        content_uuid = content.__uuid__
+        folder_uuid = folder.__uuid__
+        container_uuid = container.__uuid__
+        transaction.commit()
+
+        container = ptah.resolve(container_uuid)
+        content = ptah.resolve(content_uuid)
+        folder = ptah.resolve(folder_uuid)
+
+        self.assertEqual(container.keys(), ['folder'])
+        self.assertEqual(folder.keys(), ['content'])
+        self.assertEqual(folder.__path__, '/container/folder/')
+        self.assertEqual(content.__path__, '/container/folder/content/')
+        transaction.commit()
+
     def test_container_simple_rename_subtree(self):
         container = Container(__name__ = 'container', __path__ = '/container/')
         folder1 = Container(title='Folder1')
