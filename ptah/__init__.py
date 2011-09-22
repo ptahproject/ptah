@@ -112,7 +112,6 @@ def make_wsgi_app(global_config, **settings):
 def initialize(package, pyramid_config, settings):
     from memphis import config
 
-    pyramid_config.hook_zca()
     pyramid_config.begin()
 
     if isinstance(package, basestring):
@@ -128,9 +127,7 @@ def initialize(package, pyramid_config, settings):
         excludes.extend(s.strip() for s in settings['excludes'].split())
 
     # load packages
-    config.initialize(package, excludes)
+    config.initialize(package, excludes, pyramid_config.registry)
 
     # load settings
     config.initializeSettings(settings, pyramid_config)
-
-    pyramid_config.end()

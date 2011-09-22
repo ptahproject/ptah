@@ -129,33 +129,33 @@ SQL_compiled_cache = {}
 
 @config.handler(config.SettingsInitializing)
 def initializing(ev):
-    config = ev.config
+    pconfig = ev.config
 
-    if config is not None:
-        # auth
-        pname = SECURITY.policy
-        if pname not in ('', 'no-policy'):
-            policyFactory, attrs, kw = types[pname]
+    # auth
+    pname = SECURITY.policy
+    if pname not in ('', 'no-policy'):
+        policyFactory, attrs, kw = types[pname]
 
-            settings = []
-            for attr in attrs:
-                settings.append(SECURITY.get(attr))
+        settings = []
+        for attr in attrs:
+            settings.append(SECURITY.get(attr))
 
-            kwargs = {'wild_domain': False}
-            for attr in kw:
-                kwargs[attr] = SECURITY.get(attr)
+        kwargs = {'wild_domain': False}
+        for attr in kw:
+            kwargs[attr] = SECURITY.get(attr)
 
-            policy = policyFactory(*settings, **kwargs)
-            config.registry.registerUtility(policy, IAuthenticationPolicy)
+        policy = policyFactory(*settings, **kwargs)
+        config.registry.registerUtility(policy, IAuthenticationPolicy)
 
-        if SECURITY.authorization:
-            config.registry.registerUtility(
-                ACLAuthorizationPolicy(), IAuthorizationPolicy)
+    if SECURITY.authorization:
+        config.registry.registerUtility(
+            ACLAuthorizationPolicy(), IAuthorizationPolicy)
 
+    if pconfig is not None:
         # session
         session_factory = pyramid_beaker \
             .session_factory_from_settings(SESSION)
-        config.set_session_factory(session_factory)
+        pconfig.set_session_factory(session_factory)
 
 
 @config.handler(config.SettingsInitializing)

@@ -1,7 +1,6 @@
 import threading
 from memphis import config, view
 from zope import interface
-from zope.component import getUtility
 from pyramid.security import Authenticated
 from pyramid.security import ACLDenied
 from pyramid.security import Everyone
@@ -122,7 +121,7 @@ def checkPermission(context, permission, request=None, throw=True):
     try:
         AUTHZ
     except:
-        AUTHZ = getUtility(IAuthorizationPolicy)
+        AUTHZ = config.registry.getUtility(IAuthorizationPolicy)
 
     principals = [Everyone]
 
