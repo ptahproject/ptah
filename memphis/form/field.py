@@ -42,8 +42,18 @@ class Fieldset(OrderedDict):
 
         node = args[0]
 
-        self.name = node.name
-        self.legend = node.title
+        if 'name' in kwargs:
+            name = kwargs.pop('name')
+        else:
+            name = node.name
+
+        if 'legend' in kwargs:
+            legend = kwargs.pop('legend')
+        else:
+            legend = node.title
+
+        self.name = name
+        self.legend = legend
         self.names = []
         self.schemas = []
         self.prefix = '%s.'%self.name if self.name else ''
