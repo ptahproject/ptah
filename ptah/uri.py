@@ -24,10 +24,14 @@ def resolve(uri):
 
 
 def extractUriType(uri):
-    try:
-        return uri.split(':', 1)[0]
-    except ValueError:
-        return None
+    if uri:
+        try:
+            type, uuid = uri.split(':', 1)
+            return type
+        except:
+            pass
+
+    return None
 
 
 def registerResolver(type, component, title='', description='', depth=1):

@@ -1,13 +1,7 @@
 """ various utils """
 import uuid, simplejson
 from sqlalchemy.ext.mutable import Mutable
-from sqlalchemy.types import TypeDecorator, VARCHAR, PickleType, String
-
-
-class JSONType(PickleType):
-
-    impl = VARCHAR
-    pickler = simplejson
+from sqlalchemy.types import TypeDecorator, VARCHAR
 
 
 class JsonType(TypeDecorator):
@@ -76,12 +70,3 @@ def JsonDictType():
 
 def JsonListType():
     return MutationList.as_mutable(JsonType)
-
-
-class Guid(TypeDecorator):
-    impl = String
-
-    def process_bind_param(self, value, dialect):
-        if value is None:
-            return uuid.uuid4().get_hex()
-        return None
