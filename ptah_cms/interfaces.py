@@ -49,6 +49,28 @@ class IAction(interface.Interface):
 class ITypeInformation(interface.Interface):
     """ Content type information """
 
+    name = interface.Attribute('Name')
+    title = interface.Attribute('Title')
+    description = interface.Attribute('Description')
+
+    permission = interface.Attribute('Add permission')
+
+    filter_content_types = interface.Attribute('Filter addable types')
+    allowed_content_types = interface.Attribute('List of addable types')
+    global_allow = interface.Attribute('Addable globally')
+
+    def create(**data):
+        """ construct new content instance """
+
+    def isAllowed(container):
+        """ allow create this content in container """
+
+    def checkContext(container):
+        """ same as isAllowed, but raises HTTPForbidden """
+
+    def listTypes(self, container):
+        """ list addable content types """
+
 
 class IRestAction(interface.Interface):
     """ action """
@@ -114,4 +136,5 @@ class ContentNameSchema(colander.Schema):
         title = 'Short Name',
         description = 'Short name is the part that shows up in '\
                             'the URL of the item.',
+        missing = u'',
         validator = specialSymbols)

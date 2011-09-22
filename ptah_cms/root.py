@@ -64,7 +64,7 @@ class ApplicationRoot(Container):
 
     __root_path__ = '/'
 
-    __type__ = Type('app', 'Application')
+    __type__ = Type('app', 'Application', global_allow=False)
 
     _sql_get_root = ptah.QueryFreezer(
         lambda: Session.query(Container)\

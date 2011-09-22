@@ -22,6 +22,9 @@ class Container(Content):
             item.__parent__ = self
         return item
 
+    def __contains__(self, key):
+        return key in self.keys()
+
     def __getitem__(self, key):
         try:
             item = self._sql_get_in_parent.one(key=key, parent=self.__uuid__)

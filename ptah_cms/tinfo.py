@@ -4,9 +4,11 @@ import sys, colander
 import sqlalchemy as sqla
 from memphis import config
 from zope import interface
+from pyramid.httpexceptions import HTTPForbidden
 from pyramid.threadlocal import get_current_request
 
 from content import Session, Content
+from container import Container
 from events import ContentCreatedEvent
 from interfaces import ContentSchema, IAction, ITypeInformation
 from permissions import View, AddContent, ModifyContent
@@ -65,7 +67,36 @@ class TypeInformation(object):
         return content
 
     def isAllowed(self, container):
-        """ allow create this content in container """
+        if not isinstance(container, Container):
+            return False
+
+        if self.permission:
+            return ptah.checkPermission(
+                container, self.permission, throw=False)
+        return True
+
+    def checkContext(self, container):
+        if not self.isAllowed(container):
+            raise HTTPForbidden()
+
+    def listTypes(self, container):
+        if container.__type__ is not self or \
+               not isinstance(container, Container):
+            return ()
+
+        types = []
+        if self.filter_content_types:
+            for tname in self.allowed_content_types:
+                tinfo = registeredTypes.get(tname)
+                if tinfo.isAllowed(container):
+                    types.append(tinfo)
+
+        else:
+            for tinfo in registeredTypes.values():
+                if tinfo.global_allow and tinfo.isAllowed(container):
+                    types.append(tinfo)
+
+        return types
 
 
 # we have to generate seperate sql query for each type
@@ -110,7 +141,7 @@ def Type(name, title, **kw):
 def registerType(
     klass, tinfo, name,
     title = '', description = '', schema = ContentSchema,
-    global_allow = True, permission = View,
+    global_allow = True, permission = '__denied__',
     actions = None, **kw):
 
     if actions is None:

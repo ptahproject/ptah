@@ -48,6 +48,7 @@ class TestContainer(Base):
         transaction.commit()
 
         container = ptah.resolve(container_uuid)
+        self.assertTrue('content' in container)
         self.assertEqual(container.keys(), ['content'])
         self.assertEqual(container['content'].__uuid__, content_uuid)
         self.assertEqual(container.get('content').__uuid__, content_uuid)
