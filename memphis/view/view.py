@@ -2,7 +2,6 @@
 import sys, inspect
 from zope import interface
 from zope.interface import providedBy
-from zope.component import queryUtility, getSiteManager
 
 from pyramid.config.views import requestonly, isexception
 from pyramid.interfaces import IView
@@ -21,7 +20,7 @@ from memphis.view.renderers import Renderer, SimpleRenderer
 
 
 def renderView(name, context, request):
-    adapters = getSiteManager().adapters
+    adapters = config.registry.adapters
 
     view_callable = adapters.lookup(
         (IViewClassifier, providedBy(request), providedBy(context)),
@@ -38,9 +37,8 @@ def defaultCheckPermission(context, permission, request=None, throw=False):
     try:
         AUTH
     except:
-        sm = getSiteManager()
-        AUTH = sm.queryUtility(IAuthenticationPolicy)
-        AUTHZ = sm.queryUtility(IAuthorizationPolicy)
+        AUTH = config.registry.queryUtility(IAuthenticationPolicy)
+        AUTHZ = config.registry.queryUtility(IAuthorizationPolicy)
 
     principals = AUTH.effective_principals(request)
     return AUTHZ.permits(context, principals, permission)
@@ -179,7 +177,7 @@ def registerViewImpl(
     if permission == '__no_permission_required__':
         permission = None
 
-    sm = getSiteManager()
+    sm = config.registry
 
     if permission:
         def pyramidView(context, request):
@@ -200,6 +198,8 @@ def registerViewImpl(
         view_classifier = IExceptionViewClassifier
     else:
         view_classifier = IViewClassifier
+
+    sm = config.registry
 
     request_iface = IRequest
     if route_name is not None:
@@ -227,7 +227,7 @@ def registerDefaultViewImpl(
         def view(context, request):
             return renderView(name, context, request)
 
-    getSiteManager().registerAdapter(
+    config.registry.registerAdapter(
         view, (IViewClassifier, request_iface, context), IView, '')
 
 

@@ -1,7 +1,7 @@
 """ layout tests """
 import os, unittest, tempfile, shutil
-from webob.exc import HTTPNotFound
-from zope import interface, component
+from zope import interface
+from pyramid.httpexceptions import HTTPNotFound
 
 from memphis import config, view
 from memphis.view.view import View, viewMapper
@@ -35,7 +35,7 @@ class LayoutPagelet(Base):
         view.registerLayout('test')
         self._init_memphis()
 
-        layout = component.getMultiAdapter(
+        layout = config.registry.getMultiAdapter(
             (object(), self.request), view.ILayout, 'test')
 
         self.assertEqual(layout.name, 'test')
@@ -51,7 +51,7 @@ class LayoutPagelet(Base):
         view.registerLayout('test', klass=MyLayout)
         self._init_memphis()
 
-        layout = component.getMultiAdapter(
+        layout = config.registry.getMultiAdapter(
             (object(), self.request), view.ILayout, 'test')
 
         self.assertTrue(isinstance(layout, MyLayout))

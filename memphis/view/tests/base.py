@@ -3,6 +3,7 @@ import unittest
 from memphis import config
 from pyramid import testing
 from pyramid.threadlocal import manager
+from zope.interface.registry import Components
 
 
 class Base(unittest.TestCase):
@@ -26,7 +27,8 @@ class Base(unittest.TestCase):
         return environ
 
     def _init_memphis(self, settings={}, handler=None, *args, **kw):
-        config.initialize(('memphis.view', self.__class__.__module__))
+        config.initialize(('memphis.view', self.__class__.__module__),
+                          reg = Components('test'))
         config.initializeSettings(settings, self.p_config)
 
     def _setup_pyramid(self):

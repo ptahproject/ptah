@@ -1,7 +1,6 @@
 """ layout implementation """
 import sys, logging
 from zope import interface
-from zope.component import getSiteManager
 from pyramid.interfaces import IRequest, IRouteRequest
 
 from memphis import config
@@ -14,10 +13,9 @@ log = logging.getLogger('memphis.view')
 
 
 def queryLayout(request, context, name=''):
-    sm = getSiteManager()
-
     while context is not None:
-        layout = sm.queryMultiAdapter((context, request), ILayout, name)
+        layout = config.registry.queryMultiAdapter(
+            (context, request), ILayout, name)
         if layout is not None:
             return layout
 
@@ -128,13 +126,11 @@ def registerLayoutImpl(klass, name, context, template, parent, route_name):
         layout_class = type(str('Layout<%s>'%name), (Layout,), cdict)
 
     # register layout
-    sm = getSiteManager()
-
     request_iface = IRequest
     if route_name is not None:
-        request_iface = sm.getUtility(IRouteRequest, name=route_name)
+        request_iface = config.registry.getUtility(IRouteRequest,name=route_name)
 
-    sm.registerAdapter(
+    config.registry.registerAdapter(
         layout_class, (context, request_iface), ILayout, name)
 
 

@@ -1,7 +1,6 @@
 """ status message implementation """
 import cgi
 from zope import interface
-from zope.component import getAdapter, queryUtility
 from pyramid.interfaces import IRequest
 
 from memphis import config
@@ -29,7 +28,7 @@ class MessageService(object):
             self.session = {}
 
     def add(self, text, type='info'):
-        message = getAdapter(self.request, IMessage, type)
+        message = config.registry.getAdapter(self.request, IMessage, type)
 
         messages = self.session.get(self.SESSIONKEY, [])
 
@@ -101,7 +100,7 @@ class ErrorMessage(Message):
 @config.adapter(IRequest)
 @interface.implementer(IStatusMessage)
 def getMessageService(request):
-    service = queryUtility(IStatusMessage)
+    service = config.registry.queryUtility(IStatusMessage)
     if service is None:
         service = MessageService(request)
     return service

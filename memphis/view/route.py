@@ -1,6 +1,5 @@
 """ routes """
 from zope import interface
-from zope.component import getSiteManager
 from pyramid.config.util import make_predicates
 from pyramid.request import route_request_iface
 from pyramid.traversal import DefaultRootFactory
@@ -32,17 +31,6 @@ def registerRoute(name, pattern=None, factory=None, header=None,
         traverse=traverse,
         custom=custom_predicates)
 
-    registry = getSiteManager()
-
-    request_iface = registry.queryUtility(IRouteRequest, name=name)
-    if request_iface is None:
-        if use_global_views:
-            bases = (IRequest,)
-        else:
-            bases = ()
-        request_iface = route_request_iface(name, bases)
-        registry.registerUtility(request_iface, IRouteRequest, name=name)
-
     info = config.DirectiveInfo()
     info.attach(
         config.Action(
@@ -54,21 +42,19 @@ def registerRoute(name, pattern=None, factory=None, header=None,
 
 def registerRouteImpl(name, pattern, factory,
                       predicates, pregenerator, use_global_views):
-    registry = getSiteManager()
-
-    request_iface = registry.queryUtility(IRouteRequest, name=name)
+    request_iface = config.registry.queryUtility(IRouteRequest, name=name)
     if request_iface is None:
         if use_global_views:
             bases = (IRequest,)
         else:
             bases = ()
         request_iface = route_request_iface(name, bases)
-        registry.registerUtility(request_iface, IRouteRequest, name=name)
+        config.registry.registerUtility(request_iface, IRouteRequest, name=name)
 
-    mapper = registry.queryUtility(IRoutesMapper)
+    mapper = config.registry.queryUtility(IRoutesMapper)
     if mapper is None:
         mapper = RoutesMapper()
-        registry.registerUtility(mapper, IRoutesMapper)
+        config.registry.registerUtility(mapper, IRoutesMapper)
 
     return mapper.connect(name, pattern, factory, predicates=predicates,
                           pregenerator=pregenerator, static=False)

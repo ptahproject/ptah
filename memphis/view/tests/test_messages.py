@@ -1,6 +1,6 @@
 """ message tests """
 import sys, unittest
-from zope import component, interface
+from zope import interface
 from pyramid.interfaces import IRequest
 
 from memphis import config, view
@@ -104,7 +104,7 @@ class TestStatusMessages(Base):
 
         self._init_memphis()
 
-        sm = component.getSiteManager()
+        sm = config.registry
         sm.registerAdapter(CustomMessage, (IRequest,), IMessage, name='custom')
 
         service = IStatusMessage(self.request)

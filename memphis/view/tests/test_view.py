@@ -1,7 +1,7 @@
 """ view tests """
 import sys, unittest
-from zope import interface, component
-from webob.response import Response
+from zope import interface
+from pyramid.response import Response
 from pyramid.interfaces import IView, IRequest
 from pyramid.interfaces import IViewClassifier
 from pyramid.interfaces import IAuthorizationPolicy
@@ -22,7 +22,7 @@ class BaseView(Base):
         pass
 
     def _view(self, name, context, request):
-        adapters = component.getSiteManager().adapters
+        adapters = config.registry.adapters
 
         view_callable = adapters.lookup(
             (IViewClassifier,
@@ -269,12 +269,10 @@ class TestView(BaseView):
             def permits(self, context, princials, permission):
                 return self.allowed
 
-        component.getSiteManager().registerUtility(
-            SimpleAuth(), IAuthenticationPolicy)
-        component.getSiteManager().registerUtility(
-            Authz(), IAuthorizationPolicy)
-
         self._init_memphis()
+
+        config.registry.registerUtility(SimpleAuth(), IAuthenticationPolicy)
+        config.registry.registerUtility(Authz(), IAuthorizationPolicy)
 
         context = Context()
         self.assertRaises(

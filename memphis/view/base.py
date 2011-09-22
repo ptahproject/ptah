@@ -1,7 +1,7 @@
 """ base view class with access to various api's """
 import logging
 from zope import interface
-from zope.component import getUtility, getSiteManager
+from memphis import config
 from memphis.view.formatter import format
 from memphis.view.resources import static, static_url
 from memphis.view.message import addMessage, renderMessages
@@ -51,13 +51,11 @@ class View(object):
         return static_url(name, path, self.request)
 
     def pagelet(self, ptype, context=None):
-        sm = getSiteManager()
-
         if context is None:
             context = self.context
 
         try:
-            pagelet = sm.queryMultiAdapter(
+            pagelet = config.registry.queryMultiAdapter(
                 (context, self.request), IPagelet, ptype)
             if pagelet is not None:
                 return pagelet()

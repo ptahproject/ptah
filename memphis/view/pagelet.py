@@ -1,9 +1,7 @@
 """ pagelet implementation """
 import sys, logging
-from pyramid.httpexceptions import HTTPNotFound
-
 from zope import interface
-from zope.component import getSiteManager
+from pyramid.httpexceptions import HTTPNotFound
 
 from memphis import config
 from memphis.view.base import View
@@ -46,7 +44,7 @@ class PageletType(object):
 
 
 def renderPagelet(ptype, context, request):
-    pagelet = getSiteManager().queryMultiAdapter(
+    pagelet = config.registry.queryMultiAdapter(
         (context, request), IPagelet, ptype)
     if pagelet is None:
         raise HTTPNotFound
@@ -130,5 +128,5 @@ def registerPageletImpl(klass, ptype, context, template):
         pagelet_class = type('Pagelet %s'%klass, bases, cdict)
 
     # register pagelet
-    getSiteManager().registerAdapter(
+    config.registry.registerAdapter(
         pagelet_class, requires, IPagelet, name = pt.name)

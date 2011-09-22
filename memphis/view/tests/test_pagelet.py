@@ -1,6 +1,6 @@
 """ pagelet tests """
 import sys, unittest
-from zope import interface, component
+from zope import interface
 from pyramid.httpexceptions import HTTPNotFound
 from memphis import config, view
 from memphis.config import api
@@ -102,7 +102,7 @@ class TestPagelet(Base):
         view.registerPagelet('test', Context)
         self._init_memphis()
 
-        pagelet = component.getMultiAdapter(
+        pagelet = config.registry.getMultiAdapter(
             (Context(), self.request), IPagelet, 'test')
 
         self.assertTrue(isinstance(pagelet, Pagelet))
@@ -117,13 +117,15 @@ class TestPagelet(Base):
         view.registerPagelet('test', Context, TestPagelet)
         self._init_memphis()
 
-        pagelet = component.getMultiAdapter(
+        pagelet = config.registry.getMultiAdapter(
             (Context(), self.request), IPagelet, 'test')
 
         self.assertTrue(isinstance(pagelet, Pagelet))
         self.assertTrue(isinstance(pagelet, TestPagelet))
 
     def test_pagelet_renderpagelet_not_found(self):
+        self._init_memphis()
+
         self.assertRaises(
             HTTPNotFound,
             renderPagelet, 'test', Context(), self.request)

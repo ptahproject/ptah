@@ -70,7 +70,7 @@ class TestFormatter(Base):
         # datetime without timezone
         dt = datetime(2011, 2, 6, 10, 35, 45, 80)
         self.assertEqual(format.datetime(dt, 'short'),
-                         '02/06/11 10:35 AM')
+                         '02/06/11 04:35 AM')
 
         # different format
         dt = datetime(2011, 2, 6, 10, 35, 45, 80, pytz.UTC)
