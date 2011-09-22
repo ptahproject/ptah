@@ -21,8 +21,7 @@ class Folder(ptah_cms.Container):
 
 
 class AddFolderForm(AddForm):
-    view.pyramidView('addfolder.html', ptah_cms.IContainer,
-                     permission=AddFolder)
+    view.pyramidView('addfolder.html', ptah_cms.IContainer)
 
     tinfo = Folder.__type__
     fields = form.Fields(Folder.__type__.schema)

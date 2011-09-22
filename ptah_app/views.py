@@ -122,10 +122,11 @@ class Adding(view.View):
     def update(self):
         self.url = self.request.resource_url(self.context)
 
-        self.types = types = []
-        for ti in tinfo.registeredTypes.values():
-            if ti.add is not None:
-                types.append(ti)
+        types = [(t.title, t) for t in
+                 self.context.__type__.listTypes(self.context)]
+        types.sort()
+
+        self.types = [t for _t, t in types]
 
 
 sharingAction = ptah_cms.Action(**{'id': 'adding',

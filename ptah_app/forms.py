@@ -1,4 +1,5 @@
 """ default content forms """
+import re
 import colander
 from memphis import view, form
 from pyramid.decorator import reify
@@ -12,6 +13,9 @@ from ptah_cms.permissions import ModifyContent
 class AddForm(form.Form):
 
     tinfo = None
+    container = None
+
+    name_suffix = ''
     name_fields = form.Fields(ptah_cms.ContentNameSchema)
 
     @reify
@@ -26,9 +30,32 @@ class AddForm(form.Form):
     def description(self):
         return self.tinfo.description
 
+    def chooseName(self, content, **kw):
+        name = kw.get('title', u'')
+        
+        name = re.sub(
+            r'-{2,}', '-',
+            re.sub('^\w-|-\w-|-\w$', '-',
+                   re.sub(r'\W', '-', name.strip()))).strip('-').lower()
+
+        n = '%s%s'%(name, self.name_suffix)
+        i = 1
+        while n in self.container:
+            i += 1
+            n = u'%s-%s%s'%(name, i, suffix)
+
+        return n.replace('/', '-').lstrip('+@')
+
+    def update(self):
+        self.container = self.context
+        self.name_suffix = getattr(self.tinfo, 'name_suffix', '')
+
+        self.tinfo.checkContext(self.context)
+        super(AddForm, self).update()
+
     def updateWidgets(self):
         super(AddForm, self).updateWidgets()
-        
+
         self.name_widgets = \
             form.FieldWidgets(self.name_fields, self, self.request)
         self.name_widgets.mode = self.mode
@@ -39,9 +66,9 @@ class AddForm(form.Form):
 
         if '__name__' in data:
             widget = self.name_widgets['__name__']
-            
+
             name = data['__name__']
-            if name in self.context.keys():
+            if name in self.container.keys():
                 error = colander.Invalid(
                     self.name_fields['__name__'].node, 'Name already in use')
                 errors.append(error)
@@ -66,8 +93,13 @@ class AddForm(form.Form):
         
         self.request.registry.notify(
             ptah_cms.events.ContentCreatedEvent(content))
-        
-        self.context[data['__name__']] = content
+
+        name = data['__name__']
+        if not name:
+            name = self.chooseName(content, **data)
+
+        self.container[name] = content
+        return content
 
     @form.button('Add', actype=form.AC_PRIMARY)
     def saveHandler(self):
@@ -77,10 +109,10 @@ class AddForm(form.Form):
             self.message(errors, 'form-error')
             return
 
-        self.createAndAdd(**data)
+        content = self.createAndAdd(**data)
 
         self.message('New content has been created.')
-        raise HTTPFound(location=data['__name__'])
+        raise HTTPFound(location=content.__name__)
 
     @form.button('Cancel')
     def cancelHandler(self):

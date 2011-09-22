@@ -30,6 +30,7 @@ class Page(ptah_cms.Content):
         schema = PageSchema,
         description = 'A page in the site.',
         permission = AddPage,
+        name_suffix = '.html',
         )
 
     text = sqla.Column(sqla.Unicode)

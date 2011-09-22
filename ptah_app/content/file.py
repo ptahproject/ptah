@@ -65,19 +65,24 @@ class FileDownloadView(view.View):
 
 
 class FileAddForm(AddForm):
-    view.pyramidView('addfile.html', ptah_cms.IContainer, permission=AddFile)
+    view.pyramidView('addfile.html', ptah_cms.IContainer)
 
     tinfo = File.__type__
     fields = form.Fields(FileSchema)
 
-    @form.button('Add', actype=form.AC_PRIMARY)
-    def saveHandler(self):
-        data, errors = self.extractData()
+    def chooseName(self, content, **kw):
+        filename = kw['data']['filename']
+        name = filename.split('\\')[-1].split('/')[-1]
 
-        if errors:
-            self.message(errors, 'form-error')
-            return
+        i = 1
+        n = name
+        while n in self.container:
+            i += 1
+            n = u'%s-%s'%(name, i)
 
+        return n
+
+    def create(self, **data):
         file = File(title = data['title'],
                     description = data['description'])
         ptah_cms.Session.add(file)
@@ -90,18 +95,7 @@ class FileAddForm(AddForm):
             mimetype = fd['mimetype'])
 
         file.blobref = blob_uuid
-
-        self.request.registry.notify(
-            ptah_cms.events.ContentCreatedEvent(file))
-
-        self.context[data['__name__']] = file
-
-        self.message('New file has been created.')
-        raise HTTPFound(location='%s/index.html'%data['__name__'])
-
-    @form.button('Cancel')
-    def cancelHandler(self):
-        raise HTTPFound(location='.')
+        return file
 
 
 class FileEditForm(form.Form):
@@ -111,10 +105,6 @@ class FileEditForm(form.Form):
     label = 'Modify file'
     fields = form.Fields(FileSchema)
 
-    def getContent(self):
-        return self.context
-
-    @form.button('Save', actype=form.AC_PRIMARY)
     def saveHandler(self):
         data, errors = self.extractData()
 
@@ -134,8 +124,4 @@ class FileEditForm(form.Form):
         self.context.description = data['description']
 
         self.message('Changes have been saved.')
-        raise HTTPFound(location='.')
-
-    @form.button('Cancel')
-    def cancelHandler(self):
         raise HTTPFound(location='.')
