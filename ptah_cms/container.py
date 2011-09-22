@@ -13,8 +13,13 @@ from ptah_cms.interfaces import IContainer
 class Container(Content):
     interface.implements(IContainer)
 
+    _sql_get_children = ptah.QueryFreezer(
+        lambda: Session.query(Content)
+            .filter(Content.__parent_id__ == sqla.sql.bindparam('uuid')))
+
     def keys(self):
-        return [c.__name__ for c in self.__children__]
+        return [c.__name__ for c in 
+                self._sql_get_children.all(uuid=self.__uuid__)]
 
     def get(self, key, default=None):
         item = self._sql_get_in_parent.first(key=key, parent=self.__uuid__)
@@ -60,7 +65,7 @@ class Container(Content):
         # recursevly update children paths
         def update_path(container):
             path = container.__path__
-            for item in container.__children__:
+            for item in self._sql_get_children.all(uuid=self.__uuid__):
                 item.__path__ = '%s%s/'%(path, item.__name__)
 
                 if isinstance(item, Container):

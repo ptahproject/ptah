@@ -3,7 +3,7 @@
 # base node
 from ptah_cms.node import Node
 
-# Base content classes
+# base content classes
 from ptah_cms.content import Content
 from ptah_cms.container import Container
 
@@ -11,7 +11,7 @@ from ptah_cms.container import Container
 from ptah_cms.content import loadContent
 from ptah_cms.content import loadParents
 
-# Type information
+# type information
 from ptah_cms.tinfo import Type
 from ptah_cms.tinfo import registeredTypes
 from ptah_cms.tinfo import Action
@@ -42,11 +42,17 @@ from ptah_cms.node import Base, Session
 
 # permissions
 from ptah import View
+from ptah_cms.permissions import ModifyContent
+from ptah_cms.permissions import DeleteContent
+from pyramid.security import ALL_PERMISSIONS
+
+# roles
+from ptah import Owner
+from ptah import Everyone
+from ptah import Authenticated
 from ptah_cms.permissions import Manager
 from ptah_cms.permissions import Viewer
 from ptah_cms.permissions import Editor
-from ptah_cms.permissions import ModifyContent
-from ptah_cms.permissions import DeleteContent
 
 # events
 from ptah_cms.events import ContentEvent

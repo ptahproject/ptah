@@ -41,15 +41,20 @@ class TypeInformation(object):
     allowed_content_types = ()
     global_allow = True
 
-    def __init__(self, factory, name, title, schema=ContentSchema, **kw):
+    def __init__(self, klass, name, title, 
+                 schema=ContentSchema, constructor=None, **kw):
         self.__dict__.update(kw)
 
         self.name = name
         self.title = title
-        self.factory = factory
+        self.klass = klass
         self.schema = schema
 
-    def create(self, **data):
+        if constructor is None:
+            constructor = self._constructor
+        self.constructor = constructor
+
+    def _constructor(self, **data):
         attrs = {}
 
         if self.schema is not None:
@@ -58,7 +63,10 @@ class TypeInformation(object):
                 if val is not colander.null:
                     attrs[node.name] = val
 
-        content = self.factory(**attrs)
+        return self.klass(**attrs)
+
+    def create(self, **data):
+        content = self.constructor(**data)
 
         request = get_current_request()
         if request is not None:
@@ -88,7 +96,7 @@ class TypeInformation(object):
         if self.filter_content_types:
             for tname in self.allowed_content_types:
                 tinfo = registeredTypes.get(tname)
-                if tinfo.isAllowed(container):
+                if tinfo and tinfo.isAllowed(container):
                     types.append(tinfo)
 
         else:
