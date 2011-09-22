@@ -100,7 +100,7 @@ class Actions(OrderedDict):
         content = self.content = form.getContent()
         params = form.getParams()
         request = self.request
-        registry = request.registry
+        registry = config.registry
 
         # Create a unique prefix.
         prefix = '%s%s'%(form.prefix, self.prefix)

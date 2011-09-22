@@ -1,12 +1,11 @@
 """Form implementation"""
 from zope import interface
-from zope.component import queryUtility, getMultiAdapter
 from pyramid import security
 from pyramid.decorator import reify
 from pyramid.httpexceptions import HTTPForbidden
 from webob.multidict import UnicodeMultiDict, MultiDict
 
-from memphis import view
+from memphis import view, config
 from memphis.form.field import Fields, FieldWidgets
 from memphis.form.button import Buttons, Actions
 from memphis.form.pagelets import FORM_VIEW, FORM_INPUT, FORM_DISPLAY
@@ -74,7 +73,7 @@ class Form(view.View):
 
     @property
     def token(self):
-        srv = queryUtility(ICSRFService)
+        srv = config.registry.queryUtility(ICSRFService)
         if srv is not None:
             return srv.generate(self.tokenData)
 
@@ -91,7 +90,7 @@ class Form(view.View):
         if self.csrf:
             token = self.getParams().get(self.csrfname, None)
             if token is not None:
-                srv = queryUtility(ICSRFService)
+                srv = config.registry.queryUtility(ICSRFService)
                 if srv is not None:
                     if srv.get(token) == self.tokenData:
                         return

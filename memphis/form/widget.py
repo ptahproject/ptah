@@ -1,8 +1,7 @@
 """ Widget implementation """
 import colander
-from memphis import view
+from memphis import view, config
 from zope import interface
-from zope.component import getMultiAdapter
 from webob.multidict import MultiDict
 
 from pagelets import FORM_INPUT
@@ -152,7 +151,7 @@ class SequenceWidget(Widget):
         if self.terms is None:
             self.terms = getattr(self.node, 'vocabulary', None)
             if self.terms is None:
-                self.terms = getMultiAdapter(
+                self.terms = config.registry.getMultiAdapter(
                     (self.node, self.typ, self), IVocabulary)
 
         return self.terms

@@ -159,8 +159,7 @@ class FieldWidgets(OrderedDict):
         # Create a unique prefix.
         prefix = '%s%s'%(self.form.prefix, self.prefix)
 
-        request = self.request
-        sm = request.registry
+        sm = config.registry
         params = self.form.getParams()
 
         self.fieldsets = fieldsets = []
@@ -237,7 +236,7 @@ class FieldWidgets(OrderedDict):
     def extract(self, setErrors=True):
         data = {}
         errors = []
-        sm = self.request.registry
+        sm = config.registry
 
         for name, widget in self.items():
             if widget.mode == FORM_DISPLAY:
