@@ -11,8 +11,8 @@ from pyramid.interfaces import INewRequest, IAuthorizationPolicy
 from pyramid.httpexceptions import HTTPForbidden
 
 import ptah
-from role import LocalRoles
-from interfaces import IAuthentication, IAuthInfo
+from ptah.security import LocalRoles
+from ptah.interfaces import IAuthentication, IAuthInfo
 
 checkers = []
 providers = {}
@@ -80,7 +80,7 @@ class Authentication(threading.local):
 
     def getPrincipalByLogin(self, login):
         for pname, provider in providers.items():
-            principal = provider.getPrincipalInfoByLogin(login)
+            principal = provider.getPrincipalByLogin(login)
             if principal is not None:
                 return principal
 

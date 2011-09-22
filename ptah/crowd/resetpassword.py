@@ -6,11 +6,11 @@ from pyramid import security
 from pyramid.httpexceptions import HTTPFound
 
 from ptah import mail
-from ptah.security import authService
-from ptah.security import passwordTool
-from ptah.security import PasswordSchema
-from ptah.security.settings import ResetPasswordInitiatedEvent
-from ptah.security.settings import PrincipalPasswordChangedEvent
+from ptah import authService
+from ptah import passwordTool
+from ptah.password import PasswordSchema
+from ptah.events import ResetPasswordInitiatedEvent
+from ptah.events import PrincipalPasswordChangedEvent
 
 from interfaces import _
 
@@ -32,7 +32,7 @@ class ResetPasswordSchema(colander.Schema):
 class ResetPassword(form.Form):
     view.pyramidView(
         route = 'ptah-resetpassword', layout='ptah-security',
-        template = view.template('ptah.security:templates/resetpassword.pt'))
+        template = view.template('ptah.crowd:templates/resetpassword.pt'))
 
     csrf = True
     fields = form.Fields(ResetPasswordSchema)
@@ -82,7 +82,7 @@ class ResetPassword(form.Form):
 class ResetPasswordForm(form.Form):
     view.pyramidView(
         route = 'ptah-resetpassword-form', layout='ptah-security',
-        template=view.template('ptah.security:templates/resetpasswordform.pt'))
+        template=view.template('ptah.crowd:templates/resetpasswordform.pt'))
 
     csrf = True
     fields = form.Fields(PasswordSchema)
@@ -134,7 +134,7 @@ class ResetPasswordForm(form.Form):
 class ResetPasswordTemplate(mail.MailTemplate):
 
     subject = 'Password Reset Confirmation'
-    template = view.template('ptah.security:templates/resetpasswordmail.pt')
+    template = view.template('ptah.crowd:templates/resetpasswordmail.pt')
 
     def update(self):
         super(ResetPasswordTemplate, self).update()

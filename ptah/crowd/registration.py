@@ -5,8 +5,9 @@ from pyramid import security
 from pyramid.httpexceptions import HTTPFound, HTTPForbidden
 
 import ptah
-from ptah.security import authService, PasswordSchema, AUTH_SETTINGS
-from ptah.security import PrincipalRegisteredEvent
+from ptah import authService
+from ptah.password import PasswordSchema
+from ptah.events import PrincipalRegisteredEvent
 
 from schemas import RegistrationSchema
 from provider import Session, CrowdUser
@@ -25,7 +26,7 @@ class Registration(form.Form):
     autocomplete = 'off'
 
     def update(self):
-        if not AUTH_SETTINGS.registration:
+        if not ptah.PTAH_CONFIG.registration:
             raise HTTPForbidden('Site registraion is disabled.')
 
         sm = self.request.registry
@@ -45,8 +46,7 @@ class Registration(form.Form):
         user = CrowdUser(data['name'], data['login'], data['login'])
 
         # set password
-        passwordtool = ptah.security.passwordTool
-        user.password = passwordtool.encodePassword(data['password'])
+        user.password = ptah.passwordtool.encodePassword(data['password'])
         Session.add(user)
         Session.flush()
 

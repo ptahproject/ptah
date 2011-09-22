@@ -3,12 +3,14 @@ import sqlalchemy as sqla
 import pyramid_sqla as psa
 from zope import interface
 
+from interfaces import IPrincipalWithEmail
+
 Base = psa.get_base()
 Session = psa.get_session()
 
 
 class CrowdProvider(object):
-    interface.implements(ptah.security.IAuthProvider)
+    interface.implements(ptah.IAuthProvider)
 
     def authenticate(self, creds):
         login, password = creds['login'], creds['password']
@@ -16,13 +18,13 @@ class CrowdProvider(object):
         user = CrowdUser.getByLogin(login)
 
         if user is not None:
-            if ptah.security.passwordTool.checkPassword(user.password,password):
+            if ptah.passwordTool.checkPassword(user.password,password):
                 return user
 
     def getPrincipal(self, uuid):
         return CrowdUser.get(uuid)
 
-    def getPrincipalInfoByLogin(self, login):
+    def getPrincipalByLogin(self, login):
         return CrowdUser.getByLogin(login)
 
     _sql_search = ptah.QueryFreezer(
@@ -39,15 +41,14 @@ class CrowdProvider(object):
 
 provider = CrowdProvider()
 ptah.registerResolver('user+crowd', provider.getPrincipal)
-ptah.security.registerProvider('crowd', provider)
-ptah.security.registerSearcher('crowd', provider.search)
+ptah.registerProvider('crowd', provider)
+ptah.registerSearcher('crowd', provider.search)
 
 UUID = ptah.UUIDGenerator('user+crowd')
 
 
 class CrowdUser(Base):
-    interface.implements(ptah.security.IPrincipalWithEmail,
-                         ptah.security.IPasswordChanger)
+    interface.implements(IPrincipalWithEmail)
 
     __tablename__ = 'ptah_crowd'
 
@@ -99,7 +100,6 @@ class CrowdUser(Base):
 
 
 def changeCrowdUserPassword(principal, password):
-    principal.password = ptah.security.passwordTool.encodePassword(password)
+    principal.password = ptah.passwordTool.encodePassword(password)
 
-ptah.security.passwordTool.registerPasswordChanger(
-    'user+crowd', changeCrowdUserPassword)
+ptah.passwordTool.registerPasswordChanger('user+crowd', changeCrowdUserPassword)

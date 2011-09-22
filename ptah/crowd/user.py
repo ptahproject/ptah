@@ -3,7 +3,8 @@ from zope import interface
 from memphis import config, view, form
 from pyramid.httpexceptions import HTTPFound
 
-from ptah.security import passwordTool, PrincipalAddedEvent
+import ptah
+from ptah.events import PrincipalAddedEvent
 
 from interfaces import _
 from provider import CrowdUser, Session
@@ -31,7 +32,7 @@ class CreateUserForm(form.Form):
         # create user
         user = CrowdUser(data['name'], data['login'], data['login'])
         # set password
-        user.password = passwordTool.encodePassword(data['password'])
+        user.password = ptah.passwordTool.encodePassword(data['password'])
         Session.add(user)
         Session.flush()
         
@@ -112,6 +113,6 @@ class ChangePassword(form.Form):
         sm = self.request.registry
 
         self.context.user.password = \
-            passwordTool.encodePassword(data['password'])
+            ptah.passwordTool.encodePassword(data['password'])
 
         self.message("User password has been changed.")

@@ -1,7 +1,6 @@
 """ schemas """
 import colander
-from zope.component import getUtility
-from ptah.security import passwordTool
+from ptah import passwordTool
 
 from interfaces import _
 from provider import CrowdUser

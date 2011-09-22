@@ -9,7 +9,7 @@ from pyramid.authentication import AuthTicket
 from pyramid.httpexceptions import WSGIHTTPException, HTTPServerError
 from pyramid.interfaces import IAuthenticationPolicy
 
-from ptah import security
+import ptah
 
 __all__ = ['registerService', 'registerServiceAction', 'Action']
 
@@ -115,7 +115,7 @@ class Login(object):
         password = request.POST.get('password', '')
 
         credentials = {'login': login, 'password': password}
-        info = security.authService.authenticate(credentials)
+        info = ptah.authService.authenticate(credentials)
         if info.status:
             token = self.get_token(request, info.uuid)
             result = {'status': True, 'message': '', 'auth-token': token[:-1]}
@@ -164,7 +164,7 @@ class Api(object):
                 userid = None
 
             if userid:
-                security.authService.setUserId(userid)
+                ptah.authService.setUserId(userid)
 
         # search service and action
         service = request.matchdict['service']

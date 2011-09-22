@@ -13,8 +13,7 @@ from memphis import config
 import ptah
 from ptah import token
 
-from service import authService
-from settings import AUTH_SETTINGS
+from settings import PTAH_CONFIG
 from interfaces import _, IPasswordTool
 
 
@@ -176,10 +175,9 @@ PasswordSchema = colander.SchemaNode(
 
 @config.handler(config.SettingsInitializing)
 def initializing(ev):
-
-    mng = PasswordTool.pm.get(AUTH_SETTINGS.pwdmanager)
+    mng = PasswordTool.pm.get(PTAH_CONFIG.pwdmanager)
     if mng is None:
-        mng = PasswordTool.pm.get('{%s}'%AUTH_SETTINGS.pwdmanager)
+        mng = PasswordTool.pm.get('{%s}'%PTAH_CONFIG.pwdmanager)
 
     if mng is None:
         mng = PasswordTool.pm['{plain}']

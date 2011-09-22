@@ -8,8 +8,6 @@ from pyramid.threadlocal import get_current_request
 import ptah
 from ptah import token, mail
 
-import service
-from settings import AUTH_SETTINGS
 from memberprops import MemberProperties
 from interfaces import IPrincipalWithEmail
 
@@ -17,7 +15,7 @@ TOKEN_TYPE = token.registerTokenType(
     '5cfcb3e2-e93f-42f7-9d1c-59077952bd72', timedelta(hours=24))
 
 
-@service.registerAuthChecker
+@ptah.registerAuthChecker
 def validationAndSuspendedChecker(principal, info):
     props = MemberProperties.get(principal.uuid)
     if props.suspended:
@@ -25,10 +23,10 @@ def validationAndSuspendedChecker(principal, info):
         info.keywords['suspended'] = True
         return False
 
-    if not AUTH_SETTINGS['validation']:
+    if not ptah.PTAH_CONFIG['validation']:
         return True
 
-    if AUTH_SETTINGS['allow-unvalidated'] or props.validated:
+    if ptah.PTAH_CONFIG['allow-unvalidated'] or props.validated:
         return True
 
     info.message = 'Account is not validated.'
@@ -44,17 +42,17 @@ def initiateValidation(principal, request):
     template.send()
 
 
-@config.handler(ptah.security.PrincipalRegisteredEvent)
+@config.handler(ptah.events.PrincipalRegisteredEvent)
 def principalRegistered(ev):
     user = MemberProperties.get(ev.principal.uuid)
     user.joined = datetime.now()
 
-    if AUTH_SETTINGS.validation and \
-           IPrincipalWithEmail.providedBy(ev.principal):
+    if ptah.PTAH_CONFIG.validation and \
+            IPrincipalWithEmail.providedBy(ev.principal):
         initiateValidation(ev.principal, get_current_request())
 
 
-@config.handler(ptah.security.PrincipalRegisteredEvent)
+@config.handler(ptah.events.PrincipalRegisteredEvent)
 def principalAdded(ev):
     user = MemberProperties.get(ev.principal.uuid)
     user.joined = datetime.now()
@@ -64,7 +62,7 @@ def principalAdded(ev):
 class ValidationTemplate(mail.MailTemplate):
 
     subject = 'Activate Your Account'
-    template = view.template('ptah.security:templates/validate_email.txt')
+    template = view.template('ptah.crowd:templates/validate_email.txt')
 
     def update(self):
         super(ValidationTemplate, self).update()
@@ -92,7 +90,7 @@ def validate(request):
             view.addMessage(request, "Account has been successfully validated.")
 
             request.registry.notify(
-                ptah.security.PrincipalValidatedEvent(
+                ptah.events.PrincipalValidatedEvent(
                     ptah.resolve(user.uuid)))
 
             headers = remember(request, user.uuid)

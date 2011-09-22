@@ -24,3 +24,9 @@ class IPreferencesGroup(interface.Interface):
 
     def update(id, **kwargs):
         """ update preferences """
+
+
+class IPrincipalWithEmail(ptah.IPrincipal):
+    """ principal with email """
+
+    email = interface.Attribute('Principal email')

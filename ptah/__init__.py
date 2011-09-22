@@ -1,4 +1,4 @@
-# ptah public api
+# ptah api
 
 # uri
 from ptah.uri import resolve
@@ -6,24 +6,47 @@ from ptah.uri import registerResolver
 from ptah.uri import extractUriType
 from ptah.uri import UUIDGenerator
 
-# module
-from ptah.manage import PtahModule
-from ptah.interfaces import IPtahModule
-from ptah.interfaces import IPtahManageRoute
-
 # manage
+from ptah.manage import PtahModule, IPtahModule
 from ptah.manage import setAccessManager, ACCESS_MANAGER
 
 # security
-from ptah import security
-from ptah.security import View
-from ptah.security import authService
-from ptah.security import Role, Roles
+from ptah.authentication import authService
+from ptah.authentication import checkPermission
+from ptah.authentication import registerAuthChecker
+from ptah.authentication import registerProvider
+from ptah.authentication import registerSearcher
+from ptah.authentication import searchPrincipals
+
+from ptah.interfaces import IPrincipal
+from ptah.interfaces import IAuthProvider
+from ptah.interfaces import IPasswordChanger
+
+from ptah.interfaces import IACLsAware
+from ptah.interfaces import IOwnersAware
+from ptah.interfaces import ILocalRolesAware
+
+# role
+from ptah.security import ACL
+from ptah.security import ACLs
+from ptah.security import ACLsProperty
+from ptah.security import Role
+from ptah.security import Roles
+from ptah.security import LocalRoles
+
+# permission
 from ptah.security import Permission
 from ptah.security import Permissions
-from ptah.security import PermissionsMap
-from ptah.security import PermissionsMaps
-from ptah.security import checkPermission
+
+# default roles and permissions
+from ptah.security import View
+from ptah.security import Everyone
+from ptah.security import Authenticated
+from ptah.security import Owner
+from ptah.security import DEFAULT_ACL
+
+# password tool
+from ptah.password import passwordTool
 
 # rest api
 from ptah.rest import RestException
@@ -31,11 +54,14 @@ from ptah.rest import registerService
 from ptah.rest import registerServiceAction
 from ptah.interfaces import IRestServiceAction
 
+# events
+from ptah import events
+
 # mail api
 from ptah import mail
 
 # ptah settnigs
-from ptah.settings import PTAH
+from ptah.settings import PTAH_CONFIG
 
 # batches
 from ptah.batch import Batch, Batches, first_neighbours_last

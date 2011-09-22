@@ -4,9 +4,32 @@ from pyramid.httpexceptions import HTTPForbidden
 from pyramid.security import authenticated_userid
 
 from ptah import resolve
-from ptah.settings import PTAH
-from ptah.security import authService
-from ptah.interfaces import IPtahManageRoute, IPtahModule
+from ptah.settings import PTAH_CONFIG
+from ptah.authentication import authService
+
+
+class IPtahRoute(interface.Interface):
+    """ ptah route """
+
+
+class IPtahManageRoute(view.INavigationRoot):
+    """ user management route """
+
+
+class IPtahModule(interface.Interface):
+    """ module """
+
+    name = interface.Attribute('Module name')
+    title = interface.Attribute('Module title')
+
+    def url(request):
+        """ return url to this module """
+
+    def bind(manager, request):
+        """ bind module to context """
+
+    def available(request):
+        """ is module available """
 
 
 class PtahModule(object):
@@ -34,10 +57,10 @@ def PtahAccessManager(id):
     """ default access manager """
     principal = resolve(id)
    
-    if '*' in PTAH.managers:
+    if '*' in PTAH_CONFIG.managers:
         return True
 
-    if principal is not None and principal.login in PTAH.managers:
+    if principal is not None and principal.login in PTAH_CONFIG.managers:
         return True
 
     return False

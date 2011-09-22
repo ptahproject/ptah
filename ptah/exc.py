@@ -4,7 +4,7 @@ from pyramid.security import authenticated_userid
 from pyramid.httpexceptions import HTTPFound, HTTPForbidden
 
 from memphis import view
-from ptah.settings import PTAH
+from ptah.settings import PTAH_CONFIG
 from ptah.manage import DefaultRoot
 
 
@@ -25,7 +25,7 @@ class Forbidden(view.View):
 
         user = authenticated_userid(request)
         if user is None:
-            loginurl = PTAH.login
+            loginurl = PTAH_CONFIG.login
             if loginurl and not loginurl.startswith(('http://', 'https://')):
                 loginurl = request.application_url + loginurl
             else:

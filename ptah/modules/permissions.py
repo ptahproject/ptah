@@ -3,8 +3,8 @@ from zope import interface
 from memphis import config, view
 
 import ptah
-from ptah.security.role import Roles
-from ptah.security.permission import Permissions
+from ptah import Roles
+from ptah import Permissions
 
 
 class IPermissionsModule(ptah.IPtahModule):

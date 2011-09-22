@@ -3,11 +3,12 @@ import colander
 import pyramid_sqla
 import pyramid_beaker
 import translationstring
-import ptah.security
 from memphis import config
 from pyramid.interfaces import IAuthenticationPolicy, IAuthorizationPolicy
 from pyramid.authorization import ACLAuthorizationPolicy
 from pyramid.authentication import AuthTktAuthenticationPolicy
+
+from ptah.security import LocalRoles
 
 _ = translationstring.TranslationStringFactory('ptah')
 
@@ -46,7 +47,7 @@ SECURITY = config.registerSettings(
     title = _('Pyramid authentication settings'),
     validator = config.RequiredWithDependency('secret','policy','auth_tkt',''),
 )
-SECURITY['callback'] = ptah.security.LocalRoles
+SECURITY['callback'] = LocalRoles
 
 
 SESSION = config.registerSettings(

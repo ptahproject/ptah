@@ -7,13 +7,13 @@ from pyramid.threadlocal import manager
 
 class Base(unittest.TestCase):
 
-    def _makeRequest(self, environ=None):
+    def _makeRequest(self, environ=None): #pragma: no cover
         from pyramid.request import Request
         if environ is None:
             environ = self._makeEnviron()
         return Request(environ)
 
-    def _makeEnviron(self, **extras):
+    def _makeEnviron(self, **extras): #pragma: no cover
         environ = {
             'wsgi.url_scheme':'http',
             'wsgi.version':(1,0),
@@ -35,10 +35,10 @@ class Base(unittest.TestCase):
         self.p_config = testing.setUp(request=request)
         self.p_config.get_routes_mapper()
 
-    def _setup_memphis(self):
+    def _setup_memphis(self): #pragma: no cover
         config.initialize(('ptah', self.__class__.__module__))
 
-    def _setRequest(self, request):
+    def _setRequest(self, request): #pragma: no cover
         self.request = request
         self.p_config.end()
         self.p_config.begin(request)

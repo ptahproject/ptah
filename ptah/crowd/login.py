@@ -5,11 +5,10 @@ from pyramid import security
 from pyramid.httpexceptions import HTTPFound
 
 import ptah
+from ptah import authService
 from ptah.mail import MAIL
-from ptah.security import authService
 
 from interfaces import _
-from settings import AUTH_SETTINGS
 
 view.registerRoute('ptah-login', '/login.html')
 view.registerRoute('ptah-logout', '/logout.html')
@@ -38,7 +37,7 @@ class LoginSchema(colander.Schema):
 class LoginForm(form.Form):
     view.pyramidView(
         route='ptah-login', layout='ptah-security',
-        template=view.template("ptah.security:templates/login.pt"))
+        template=view.template("ptah.crowd:templates/login.pt"))
 
     id = 'login-form'
     bane = 'login-form'
@@ -58,7 +57,7 @@ class LoginForm(form.Form):
 
         if info.status:
             request.registry.notify(
-                ptah.security.LoggedInEvent(info.principal))
+                ptah.events.LoggedInEvent(info.principal))
                 
             headers = security.remember(request, info.principal.uuid)
             raise HTTPFound(
@@ -67,7 +66,7 @@ class LoginForm(form.Form):
 
         if info.principal is not None:
             request.registry.notify(
-                ptah.security.LogingFailedEvent(info.principal, info.message))
+                ptah.events.LogingFailedEvent(info.principal, info.message))
 
         if info.keywords.get('suspended'):
             raise HTTPFound(
@@ -82,7 +81,7 @@ class LoginForm(form.Form):
     def update(self):
         super(LoginForm, self).update()
 
-        self.registration = AUTH_SETTINGS.registration
+        self.registration = ptah.PTAH_CONFIG.registration
 
         if not authService.isAnonymous():
             app_url = self.request.application_url
@@ -94,7 +93,7 @@ class LoginSuccess(view.View):
 
     view.pyramidView(
         route = 'ptah-login-success', layout='ptah-security',
-        template = view.template("ptah.security:templates/login-success.pt"))
+        template = view.template("ptah.crowd:templates/login-success.pt"))
 
     def update(self):
         user = authService.getCurrentPrincipal()
@@ -117,7 +116,7 @@ class LoginSuspended(view.View):
 
     view.pyramidView(
         route = 'ptah-login-suspended', layout='ptah-security',
-        template = view.template("ptah.security:templates/login-suspended.pt"))
+        template = view.template("ptah.crowd:templates/login-suspended.pt"))
 
     def update(self):
         self.from_name = MAIL.from_name
@@ -133,7 +132,7 @@ def logout(request):
 
     if uid is not None:
         request.registry.notify(
-            ptah.security.LoggedOutEvent(ptah.resolve(uid)))
+            ptah.events.LoggedOutEvent(ptah.resolve(uid)))
             
         view.addMessage(request, _('Logout successful!'), 'info')
         headers = security.forget(request)

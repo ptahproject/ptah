@@ -3,9 +3,9 @@ import sqlalchemy as sqla
 import pyramid_sqla as psqla
 from datetime import datetime
 
+from ptah import IPrincipal
 from ptah.query import QueryFreezer
 from ptah.utils import JsonDictType
-from ptah.security import IPrincipal
 
 Base = psqla.get_base()
 Session = psqla.get_session()
