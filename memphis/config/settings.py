@@ -4,9 +4,10 @@ import logging, os.path, ConfigParser
 from datetime import datetime, timedelta
 from collections import OrderedDict
 from zope import interface
-from zope.component import getSiteManager
-from zope.component.interfaces import ObjectEvent
+from zope.interface.interfaces import ObjectEvent
 from zope.interface.interface import InterfaceClass
+
+import api
 
 try:
     import transaction
@@ -204,7 +205,7 @@ class SettingsImpl(dict):
                         modified = data[name] != dict(group)
                         group.update(data[name])
                         if modified:
-                            getSiteManager().subscribers(
+                            api.registry.subscribers(
                                 (group, 
                                  SettingsGroupModified(group, self.config)), None)
                     else:

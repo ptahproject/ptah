@@ -1,8 +1,9 @@
 """ directives """
 import sys, inspect, imp, logging
-from pkgutil import walk_packages
 from zope import interface
-from zope.component import getSiteManager
+from pkgutil import walk_packages
+
+import api
 
 log = logging.getLogger('memphis.config')
 
@@ -117,16 +118,16 @@ def handler(*required):
 
 
 def _register(methodName, *args, **kw):
-    method = getattr(getSiteManager(), methodName)
+    method = getattr(api.registry, methodName)
     method(*args, **kw)
 
 
 def _utility(factory, provides, name):
-    getSiteManager().registerUtility(factory(), provides, name)
+    api.registry.registerUtility(factory(), provides, name)
 
 
 def _adapts(factory, required, name):
-    getSiteManager().registerAdapter(factory, required, name=name)
+    api.registry.registerAdapter(factory, required, name=name)
 
 
 def _getProvides(factory):

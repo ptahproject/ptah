@@ -1,26 +1,24 @@
 """ directives tests """
 import sys, unittest
 from zope import interface
-from zope.component import getSiteManager
-from zope.component.event import objectEventNotify
+from zope.interface.registry import Components
+from zope.interface.interfaces import IObjectEvent
 
 from memphis import config
 from memphis.config import directives
+from memphis.config.api import objectEventNotify
 
 
 class BaseTesting(unittest.TestCase):
 
-    def _init_memphis(self, settings={}, *args, **kw):
-        config.initialize(('memphis.config', self.__class__.__module__))
-
-    def setUp(self):
-        sm = getSiteManager()
-        sm.__init__('base')
+    def _init_memphis(self, settings={}, newReg=True, *args, **kw):
+        if newReg:
+            config.initialize(('memphis.config', self.__class__.__module__),
+                              reg=Components('test'))
+        else:
+            config.initialize(('memphis.config', self.__class__.__module__))
 
     def tearDown(self):
-        sm = getSiteManager()
-        sm.__init__('base')
-
         config.cleanUp(self.__class__.__module__)
         
         global TestClass, testAdapter, testHandler
@@ -82,7 +80,7 @@ class TestAdaptsDirective(BaseTesting):
 
         self._init_memphis()
 
-        sm = getSiteManager()
+        sm = config.registry
         adapters = sm.adapters.lookupAll((IContext,), IAdapter)
 
         self.assertTrue(len(adapters) == 1)
@@ -98,7 +96,7 @@ class TestAdaptsDirective(BaseTesting):
 
         self._init_memphis()
 
-        sm = getSiteManager()
+        sm = config.registry
         adapters = sm.adapters.lookupAll((IContext,), IAdapter)
 
         self.assertTrue(adapters[0][0] == 'test')
@@ -113,7 +111,7 @@ class TestAdaptsDirective(BaseTesting):
 
         self._init_memphis()
 
-        sm = getSiteManager()
+        sm = config.registry
         adapters = sm.adapters.lookupAll((IContext, IContext2), IAdapter)
 
         self.assertTrue(adapters[0][0] == '')
@@ -128,7 +126,7 @@ class TestAdaptsDirective(BaseTesting):
 
         self._init_memphis()
 
-        sm = getSiteManager()
+        sm = config.registry
         adapters = sm.adapters.lookupAll((IContext, IContext2), IAdapter)
 
         self.assertTrue(adapters[0][0] == 'test')
@@ -146,14 +144,14 @@ class TestAdaptsDirective(BaseTesting):
         # reinstall
         config.cleanUp()
 
-        sm = getSiteManager()
+        sm = config.registry
         sm.__init__('base')
         adapters = sm.adapters.lookupAll((IContext,), IAdapter)
         self.assertTrue(len(adapters) == 0)
 
         self._init_memphis()
         
-        sm = getSiteManager()
+        sm = config.registry
         adapters = sm.adapters.lookupAll((IContext,), IAdapter)
 
         self.assertTrue(len(adapters) == 1)
@@ -173,7 +171,7 @@ class TestAdapterDirective(BaseTesting):
 
         self._init_memphis()
 
-        sm = getSiteManager()
+        sm = config.registry
         adapters = sm.adapters.lookupAll((IContext,), IAdapter)
 
         self.assertTrue(len(adapters) == 1)
@@ -194,7 +192,7 @@ class TestAdapterDirective(BaseTesting):
 
         self._init_memphis()
 
-        sm = getSiteManager()
+        sm = config.registry
         adapters = sm.adapters.lookupAll((IContext,), IAdapter)
 
         self.assertTrue(len(adapters) == 1)
@@ -211,7 +209,7 @@ class TestAdapterDirective(BaseTesting):
 
         self._init_memphis()
 
-        sm = getSiteManager()
+        sm = config.registry
         adapters = sm.adapters.lookupAll((IContext, IContext2), IAdapter)
 
         self.assertTrue(len(adapters) == 1)
@@ -255,10 +253,10 @@ class TestAdapterDirective(BaseTesting):
         # reinstall
         config.cleanUp()
 
-        sm = getSiteManager()
+        sm = config.registry
         sm.__init__('base')
 
-        self._init_memphis()
+        self._init_memphis(newReg=False)
 
         adapters = sm.adapters.lookupAll((IContext,), IAdapter)
 
@@ -300,7 +298,7 @@ class TestUtilityDirective(BaseTesting):
 
         self._init_memphis()
 
-        sm = getSiteManager()
+        sm = config.registry
         util = sm.getUtility(IContext)
         self.assertTrue(isinstance(util, TestClass))
 
@@ -313,7 +311,7 @@ class TestUtilityDirective(BaseTesting):
 
         self._init_memphis()
 
-        sm = getSiteManager()
+        sm = config.registry
         util = sm.getUtility(IContext)
         self.assertTrue(isinstance(util, TestClass))
 
@@ -324,7 +322,7 @@ class TestUtilityDirective(BaseTesting):
 
         self._init_memphis()
 
-        sm = getSiteManager()
+        sm = config.registry
         util = sm.getUtility(IContext, 'test')
         self.assertTrue(isinstance(util, TestClass))
 
@@ -340,12 +338,12 @@ class TestUtilityDirective(BaseTesting):
         # reinstall
         config.cleanUp()
 
-        sm = getSiteManager()
+        sm = config.registry
         sm.__init__('base')
 
         self._init_memphis()
         
-        sm = getSiteManager()
+        sm = config.registry
         util = sm.getUtility(IContext)
         self.assertTrue(isinstance(util, TestClass))
 
@@ -363,7 +361,7 @@ class TestHandlerDirective(BaseTesting):
 
         self._init_memphis()
 
-        sm = getSiteManager()
+        sm = config.registry
         sm.subscribers((Context(IContext),), None)
 
         self.assertTrue(len(events) == 1)
@@ -383,7 +381,7 @@ class TestHandlerDirective(BaseTesting):
 
         self._init_memphis()
 
-        sm = getSiteManager()
+        sm = config.registry
         sm.subscribers((Context(IContext),), None)
         sm.subscribers((Context(IContext2),), None)
 
@@ -391,7 +389,7 @@ class TestHandlerDirective(BaseTesting):
 
     def test_handler_object(self):
         global testHandler
-        from zope.component.interfaces import IObjectEvent, ObjectEvent
+        from zope.interface.interfaces import IObjectEvent, ObjectEvent
 
         events = []
 
@@ -401,8 +399,8 @@ class TestHandlerDirective(BaseTesting):
 
         self._init_memphis()
         
-        sm = getSiteManager()
-        sm.registerHandler(objectEventNotify)
+        sm = config.registry
+        sm.registerHandler(objectEventNotify, (IObjectEvent,))
 
         sm.subscribers((ObjectEvent(Context(IContext)),), None)
 
@@ -423,12 +421,12 @@ class TestHandlerDirective(BaseTesting):
         # reinstall
         config.cleanUp()
 
-        sm = getSiteManager()
+        sm = config.registry
         sm.__init__('base')
 
         self._init_memphis()
 
-        sm = getSiteManager()
+        sm = config.registry
         sm.subscribers((Context(IContext),), None)
         self.assertTrue(len(events) == 1)
 

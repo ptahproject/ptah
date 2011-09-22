@@ -1,23 +1,24 @@
 """ """
 import time
 import unittest, os, shutil, tempfile, colander
-from zope.component import getSiteManager
-from zope.component.event import objectEventNotify
+from zope.interface.registry import Components
 from zope.interface.interface import InterfaceClass
+from zope.interface.interfaces import IObjectEvent
 
 from memphis import config
+from memphis.config.api import objectEventNotify
 from memphis.config.settings import FileStorage, iNotifyWatcher , shutdown
 
 
 class BaseTesting(unittest.TestCase):
 
     def _init_memphis(self, settings={}, *args, **kw):
-        config.initialize(('memphis.config', self.__class__.__module__))
+        config.initialize(
+            ('memphis.config', self.__class__.__module__),
+            reg = Components('test'))
 
     def tearDown(self):
         config.cleanUp(self.__class__.__module__)
-        sm = getSiteManager()
-        sm.__init__('base')
 
 
 class TestSettings(BaseTesting):
@@ -220,7 +221,7 @@ class TestSettings(BaseTesting):
     def test_settings_load_rawdata_and_send_modified_event(self):
         group = self._create_default_group()
 
-        sm = getSiteManager()
+        sm = config.registry
         
         events = []
         def h(grp, ev):
@@ -409,7 +410,7 @@ class TestSettings(BaseTesting):
         config.Settings.save()
         self.assertEqual(saved, {})
 
-        sm = getSiteManager()
+        sm = config.registry
         
         events = []
 
@@ -417,7 +418,7 @@ class TestSettings(BaseTesting):
             events.append((grp is group, ev))
 
         sm.registerHandler(h, (group.category, config.SettingsGroupModified))
-        sm.registerHandler(objectEventNotify)
+        sm.registerHandler(objectEventNotify, (IObjectEvent,))
 
         group['node1'] = 'val'
         group['node2'] = 90
@@ -557,7 +558,7 @@ class TestSettingsInitialization(BaseTesting):
         shutil.rmtree(self.dir)
 
     def test_settings_initialize_events(self):
-        sm = getSiteManager()
+        sm = config.registry
         
         events = []
         def h1(ev):

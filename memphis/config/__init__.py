@@ -2,6 +2,9 @@
 
 from memphis.config.api import initialize
 
+from memphis.config.api import notify
+from memphis.config.api import registry
+
 from memphis.config.api import cleanUp
 from memphis.config.api import addCleanup
 

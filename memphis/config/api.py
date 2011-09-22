@@ -1,9 +1,30 @@
 import sys, pkg_resources
 from memphis.config import directives
-from zope.component import getSiteManager
+from zope.interface.registry import Components
+from zope.interface.interfaces import IObjectEvent
+
+registry = Components('memphis')
+
+def _notify(self, *events):
+    [ _ for _ in self.subscribers(events, None) ]
+
+def objectEventNotify(event):
+    registry.subscribers((event.object, event), None)
+
+registry.registerHandler(objectEventNotify, (IObjectEvent,))
 
 
-def initialize(packages=None, excludes=()):
+def initialize(packages=None, excludes=(), reg=None):
+    global registry
+    if reg is not None:
+        registry = reg
+        if not hasattr(reg, 'notify'):
+            reg.notify = _notify
+        #reg.registerHandler(objectEventNotify, (IObjectEvent,))
+
+        import memphis.config
+        memphis.config.registry = reg
+
     # list all packages
     if packages is None:
         packages = loadPackages(excludes=excludes)
@@ -96,7 +117,7 @@ def loadPackages(include_packages=None, excludes=None):
 
 
 def notify(*event):
-    getSiteManager().subscribers(event, None)
+    registry.subscribers(event, None)
 
 
 _cleanups = set()
