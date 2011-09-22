@@ -10,7 +10,7 @@ from interfaces import ITable
 class TableView(form.Form):
     view.pyramidView(
         'index.html', ITable, 'ptah-manage', default=True, layout='',
-        template = view.template('ptah.sqla:templates/table.pt'))
+        template = view.template('ptah.modules.sqla:templates/table.pt'))
 
     __doc__ = "List table records."
     __intr_path__ = '/ptah-manage/sqla/${table}/index.html'

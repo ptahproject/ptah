@@ -13,7 +13,7 @@ Base = psa.get_base()
 class MainView(view.View):
     view.pyramidView(
         'index.html', ISQLAModule, 'ptah-manage', default=True, layout='',
-        template = view.template('ptah.sqla:templates/index.pt'))
+        template = view.template('ptah.modules.sqla:templates/index.pt'))
 
     __doc__ = "sqlalchemy tables listing page."
     __intr_path__ = '/ptah-manage/sqla/index.html'
