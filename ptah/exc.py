@@ -31,9 +31,13 @@ class Forbidden(view.View):
             else:
                 loginurl = request.application_url + '/login.html'
 
-            request.response.status = HTTPFound.code
-            request.response.headers['location'] = '%s?%s'%(
+            location = '%s?%s'%(
                 loginurl, urllib.urlencode({'came_from': request.url}))
+            if isinstance(location, unicode):
+                location = location.encode('utf-8')
+
+            request.response.status = HTTPFound.code
+            request.response.headers['location'] = location
             return
 
         self.request.response.status = HTTPForbidden.code
