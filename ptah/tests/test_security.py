@@ -107,6 +107,24 @@ class TestACL(Base):
         self.assertEqual(pmap[0][1], 'role:test')
         self.assertEqual(pmap[0][2], ALL_PERMISSIONS)
 
+    def test_acl_order(self):
+        import ptah
+
+        pmap = ptah.ACL('map', 'acl map')
+        pmap.deny('role:test', 'perm1')
+        pmap.allow('role:test', 'perm2')
+        pmap.allow('role:test2', 'perm2')
+        pmap.deny('role:test2', 'perm2')
+
+        self.assertEqual(pmap[0][0], Deny)
+        self.assertEqual(pmap[0][1], 'role:test')
+        self.assertEqual(pmap[1][0], Allow)
+        self.assertEqual(pmap[1][1], 'role:test')
+        self.assertEqual(pmap[2][0], Allow)
+        self.assertEqual(pmap[2][1], 'role:test2')
+        self.assertEqual(pmap[3][0], Deny)
+        self.assertEqual(pmap[3][1], 'role:test2')
+
     def test_acl_unset_allow(self):
         import ptah
 
@@ -171,11 +189,11 @@ class TestACL(Base):
 
         self.assertEqual(len(pmap), 2)
         self.assertEqual(pmap[0][0], Deny)
-        self.assertEqual(pmap[0][1], 'role:test2')
-        self.assertEqual(pmap[0][2], set(('perm1',)))
+        self.assertEqual(pmap[0][1], 'role:test')
+        self.assertEqual(pmap[0][2], set(('perm2',)))
         self.assertEqual(pmap[1][0], Deny)
-        self.assertEqual(pmap[1][1], 'role:test')
-        self.assertEqual(pmap[1][2], set(('perm2',)))
+        self.assertEqual(pmap[1][1], 'role:test2')
+        self.assertEqual(pmap[1][2], set(('perm1',)))
 
     def test_acl_unset_all(self):
         import ptah
@@ -200,13 +218,12 @@ class TestACL(Base):
 
         pmap.unset('role:test2', ALL_PERMISSIONS)
         self.assertEqual(len(pmap), 2)
-        self.assertEqual(pmap[0][0], Deny)
+        self.assertEqual(pmap[0][0], Allow)
         self.assertEqual(pmap[0][1], 'role:test1')
-        self.assertEqual(pmap[0][2], set(('perm1','perm2')))
-        self.assertEqual(pmap[1][0], Allow)
+        self.assertEqual(pmap[0][2], set(('perm2',)))
+        self.assertEqual(pmap[1][0], Deny)
         self.assertEqual(pmap[1][1], 'role:test1')
-        self.assertEqual(pmap[1][2], set(('perm2',)))
-
+        self.assertEqual(pmap[1][2], set(('perm1','perm2')))
 
 
 class TestACLsProps(Base):

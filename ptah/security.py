@@ -83,7 +83,7 @@ class ACL(list):
         rec = self.get(Deny, role)
         if rec is None:
             rec = [Deny, role, set()]
-            self.insert(0, rec)
+            self.append(rec)
 
         if rec[2] is ALL_PERMISSIONS:
             return
