@@ -38,7 +38,8 @@ class AddForm(form.Form):
             re.sub('^\w-|-\w-|-\w$', '-',
                    re.sub(r'\W', '-', name.strip()))).strip('-').lower()
 
-        n = '%s%s'%(name, self.name_suffix)
+        suffix = self.name_suffix
+        n = '%s%s'%(name, suffix)
         i = 1
         while n in self.container:
             i += 1
