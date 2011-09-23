@@ -10,9 +10,10 @@ from ptah_cms import tinfo, interfaces, events
 from interfaces import IPtahAppRoot
 
 
-view.registerLayout(
-    'page', IPtahAppRoot,
-    template = view.template("ptah_app:templates/layoutpage.pt"))
+page_tmpl = view.template("ptah_app:templates/layoutpage.pt")
+
+view.registerLayout('page', IPtahAppRoot, template = page_tmpl)
+view.registerLayout('page', view.INavigationRoot, template = page_tmpl)
 
 
 class LayoutWorkspace(view.Layout):
@@ -26,18 +27,26 @@ class LayoutWorkspace(view.Layout):
         self.isAnon = self.user is None
 
 
+class LayoutWorkspaceView(LayoutWorkspace):
+    view.layout('workspace', view.INavigationRoot, parent="page")
+
+
 class ContentLayout(view.Layout):
     view.layout('', interfaces.IContent, parent="workspace",
                 template=view.template("ptah_app:templates/layoutcontent.pt"))
 
     def update(self):
         ti = self.context.__type__
-        self.actions = ti.listAction(self.context, self.request)
+        self.actions = ti.listActions(self.context, self.request)
 
+
+view_tmpl = view.template("ptah_app:templates/layoutdefault.pt")
 
 view.registerLayout(
-    '', context=IPtahAppRoot, parent='workspace',
-    template = view.template("ptah_app:templates/layoutdefault.pt"))
+    '', context=IPtahAppRoot, parent='workspace', template = view_tmpl)
+
+view.registerLayout(
+    '', context=view.INavigationRoot, parent='workspace', template = view_tmpl)
 
 
 def defaultView(renderer):

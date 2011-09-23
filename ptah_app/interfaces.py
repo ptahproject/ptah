@@ -1,6 +1,5 @@
 """ """
-from zope import interface
+from memphis import view
 
-
-class IPtahAppRoot(interface.Interface):
+class IPtahAppRoot(view.INavigationRoot):
     pass
