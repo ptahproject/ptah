@@ -1,10 +1,7 @@
 import colander
-from zope import interface
-from memphis import config, view, form
+import ptah, ptah_cms
+from memphis import view, form
 from pyramid.httpexceptions import HTTPFound
-
-import ptah
-import ptah_cms
 
 
 class SearchSchema(colander.Schema):
@@ -21,6 +18,7 @@ class SearchSchema(colander.Schema):
 class SharingForm(form.Form):
     view.pyramidView(
         'sharing.html', ptah.ILocalRolesAware,
+        permission = ptah_cms.ShareContent,
         template = view.template('ptah_app:templates/sharing.pt'))
 
     csrf = True
@@ -77,14 +75,3 @@ class SharingForm(form.Form):
 
         self.request.session['sharing-term'] = data['term']
         raise HTTPFound(location = self.request.url)
-
-
-sharingAction = ptah_cms.Action(**{'id': 'sharing',
-                                   'title': 'Sharing',
-                                   'action': 'sharing.html',
-                                   'permission': ptah.View})
-
-@config.adapter(ptah.ILocalRolesAware, name='sharing')
-@interface.implementer(ptah_cms.IAction)
-def sharingActionAdapter(context):
-    return sharingAction

@@ -7,14 +7,16 @@ import ptah_cms
 from ptah import authService
 from ptah_cms import tinfo, interfaces, events
 
+from interfaces import IPtahAppRoot
+
 
 view.registerLayout(
-    'page', view.INavigationRoot,
+    'page', IPtahAppRoot,
     template = view.template("ptah_app:templates/layoutpage.pt"))
 
 
 class LayoutWorkspace(view.Layout):
-    view.layout('workspace', view.INavigationRoot, parent="page")
+    view.layout('workspace', IPtahAppRoot, parent="page")
 
     template=view.template("ptah_app:templates/layoutworkspace.pt")
 
@@ -29,34 +31,12 @@ class ContentLayout(view.Layout):
                 template=view.template("ptah_app:templates/layoutcontent.pt"))
 
     def update(self):
-        context = self.context
-        request = self.request
-        
-        sm = request.registry
-        ti = context.__type__
-
-        actions = []
-        for action in ti.actions:
-            if action.permission:
-                if ptah.checkPermission(
-                    context, action.permission, request, False):
-                    actions.append(action)
-            else:
-                actions.append(action)
-
-        for name, action in sm.getAdapters((context,), interfaces.IAction):
-            if action.permission:
-                if ptah.checkPermission(
-                    context, action.permission, request, False):
-                    actions.append(action)
-            else:
-                actions.append(action)
-
-        self.actions = actions
+        ti = self.context.__type__
+        self.actions = ti.listAction(self.context, self.request)
 
 
 view.registerLayout(
-    '', context=view.INavigationRoot, parent='workspace',
+    '', context=IPtahAppRoot, parent='workspace',
     template = view.template("ptah_app:templates/layoutdefault.pt"))
 
 
@@ -127,14 +107,3 @@ class Adding(view.View):
         types.sort()
 
         self.types = [t for _t, t in types]
-
-
-sharingAction = ptah_cms.Action(**{'id': 'adding',
-                                   'title': 'Add content',
-                                   'action': '+/',
-                                   'permission': ptah.View})
-
-@config.adapter(ptah_cms.IContainer, name='adding')
-@interface.implementer(ptah_cms.IAction)
-def addingActionAdapter(context):
-    return sharingAction

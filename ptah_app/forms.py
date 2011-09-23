@@ -65,7 +65,7 @@ class AddForm(form.Form):
     def validate(self, data, errors):
         super(AddForm, self).validate(data, errors)
 
-        if '__name__' in data:
+        if '__name__' in data and data['__name__']:
             widget = self.name_widgets['__name__']
 
             name = data['__name__']
@@ -111,11 +111,14 @@ class AddForm(form.Form):
         content = self.createAndAdd(**data)
 
         self.message('New content has been created.')
-        raise HTTPFound(location=content.__name__)
+        raise HTTPFound(location=self.nextUrl(content))
 
     @form.button('Cancel')
     def cancelHandler(self):
         raise HTTPFound(location='.')
+
+    def nextUrl(self, content):
+        return content.__name__
 
 
 view.registerPagelet(
