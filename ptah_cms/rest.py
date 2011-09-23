@@ -14,6 +14,7 @@ from ptah_cms.content import Content
 from ptah_cms.content import loadContent
 from ptah_cms.container import Container
 from ptah_cms.root import factories
+from ptah_cms.interfaces import IBlob
 from ptah_cms.interfaces import IContent
 from ptah_cms.interfaces import IContainer
 from ptah_cms.interfaces import IRestAction
@@ -182,6 +183,18 @@ def contentRestActionImpl(name, context, factory):
         factory, (IRestActionClassifier, context), IRestAction, name)
 
 
+def parents(content):
+    parents = []
+
+    for item in lineage(content):
+        if isinstance(item, Node):
+            parents.append(item.__uuid__)
+        else:
+            break
+
+    return parents[1:]
+
+
 class ContentRestInfo(object):
     interface.implements(IRestAction)
 
@@ -190,17 +203,6 @@ class ContentRestInfo(object):
 
     __permission__ = ptah.View
 
-    def parents(self, content):
-        parents = []
-
-        for item in lineage(content):
-            if isinstance(item, Node):
-                parents.append(item.__uuid__)
-            else:
-                break
-
-        return parents[1:]
-
     def __call__(self, content, request, *args):
         info = OrderedDict(
             (('__name__', content.__name__),
@@ -208,7 +210,7 @@ class ContentRestInfo(object):
              ('__uuid__', content.__uuid__),
              ('__container__', False),
              ('__link__', '%s%s/'%(request.application_url, content.__uuid__)),
-             ('__parents__', self.parents(content)),
+             ('__parents__', parents(content)),
              ))
 
         schema = content.__type__.schema
@@ -239,7 +241,7 @@ class ContainerRestInfo(ContentRestInfo):
         info = super(ContainerRestInfo, self).__call__(content, request)
         
         contents = []
-        for content in content.__children__:
+        for content in content.values():
             contents.append(
                 OrderedDict((
                     ('__name__', content.__name__),
@@ -390,6 +392,48 @@ class CreateContentAction(object):
 
         return ContentRestInfo()(item, request)
 
+
+class BlobRestInfo(object):
+    interface.implements(IRestAction)
+
+    title = 'Blob information'
+    description = ''
+
+    __permission__ = ptah.View
+
+    def __call__(self, content, request, *args):
+        info = OrderedDict(
+            (('mimetype', content.mimetype),
+             ('filename', content.filename),
+             ('size', content.size),
+             ('__link__', '%s%s/data'%(
+                 request.application_url, content.__uuid__)),
+             ('__parents__', parents(content)),
+             ))
+
+        return info
+
+
+class BlobData(object):
+    interface.implements(IRestAction)
+
+    title = 'Download blob'
+    description = ''
+
+    __permission__ = ptah.View
+
+    def __call__(self, content, request, *args):
+        response = request.response
+        response.content_type = content.mimetype
+        if content.filename:
+            response.headerlist = {
+                'Content-Disposition': 'filename="%s"'%content.filename}
+        response.body = content.read()
+        return response
+
+
+contentRestAction('', IBlob, BlobRestInfo())
+contentRestAction('data', IBlob, BlobData())
 
 contentRestAction('', IContent, ContentRestInfo())
 contentRestAction('', IContainer, ContainerRestInfo())

@@ -4,7 +4,6 @@ import sqlalchemy as sqla
 from zope import interface
 
 import ptah
-
 from node import Node, Session
 from interfaces import IBlob, IBlobStorage
 
