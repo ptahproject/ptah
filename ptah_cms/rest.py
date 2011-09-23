@@ -433,10 +433,10 @@ class BlobData(object):
 
     def __call__(self, content, request, *args):
         response = request.response
-        response.content_type = content.mimetype
+        response.content_type = content.mimetype.encode('utf-8')
         if content.filename:
             response.headerlist = {
-                'Content-Disposition': 'filename="%s"'%content.filename}
+                'Content-Disposition': 'filename="%s"'%content.filename.encode('utf-8')}
         response.body = content.read()
         return response
 
