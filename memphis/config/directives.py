@@ -255,13 +255,8 @@ def getFrameInfo(frame):
 
 def scan(package, seen, exclude_filter=None):
     if isinstance(package, basestring):
-        try:
-            __import__(package)
-            package = sys.modules[package]
-        except Exception, e:
-            log.exception("Can't load package '%s' with exception: %s"%(
-                    package, str(e)))
-            return ()
+        __import__(package)
+        package = sys.modules[package]
 
     actions = []
     
@@ -291,13 +286,7 @@ def scan(package, seen, exclude_filter=None):
             if loader is not None:
                 module_type = loader.etc[2]
                 if module_type in (imp.PY_SOURCE, imp.PKG_DIRECTORY):
-                    try:
-                        __import__(modname)
-                    except Exception, e:
-                        log.exception("Can't load module '%s': %s"%(
-                                modname, str(e)))
-                        continue
-
+                    __import__(modname)
                     module = sys.modules[modname]
                     if hasattr(module, ATTACH_ATTR):
                         actions.extend(getattr(module, ATTACH_ATTR))
