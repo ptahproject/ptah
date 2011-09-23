@@ -5,6 +5,7 @@ from datetime import datetime
 from simplejson import dumps
 from collections import OrderedDict
 from cStringIO import StringIO
+from pyramid.response import Response
 from pyramid.authentication import AuthTicket
 from pyramid.httpexceptions import WSGIHTTPException, HTTPServerError
 from pyramid.interfaces import IAuthenticationPolicy
@@ -199,4 +200,7 @@ class Api(object):
                       'message': str(exc),
                       'traceback': out.getvalue()}
 
+        if isinstance(result, Response):
+            return result
+        
         return '%s\n\n'%dumps(result, indent=True, default=dthandler)
