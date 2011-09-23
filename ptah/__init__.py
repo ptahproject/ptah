@@ -39,7 +39,6 @@ from ptah.security import Permission
 from ptah.security import Permissions
 
 # default roles and permissions
-from ptah.security import View
 from ptah.security import Everyone
 from ptah.security import Authenticated
 from ptah.security import Owner

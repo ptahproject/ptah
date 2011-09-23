@@ -207,11 +207,8 @@ def LocalRoles(userid, request=None, context=None):
 
 DEFAULT_ACL = ACL('', 'Default ACL map')
 
-View = Permission('ptah:view', 'View')
-
 Everyone = Role(
     'Everyone', 'Everyone', '', 'system.', True)
-Everyone.allow(View)
 
 Authenticated = Role(
     'Authenticated', 'Authenticated', '', 'system.', True)
