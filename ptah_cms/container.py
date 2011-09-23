@@ -14,24 +14,33 @@ class Container(Content):
     interface.implements(IContainer)
 
     _v_keys = None
+    _v_keys_loaded = False
     _v_temp_keys = None
 
     _v_items = None
 
-    _sql_get_children = ptah.QueryFreezer(
+    _sql_keys = ptah.QueryFreezer(
+        lambda: Session.query(Content.__name_id__)
+            .filter(Content.__parent_id__ == sqla.sql.bindparam('uuid')))
+
+    _sql_values = ptah.QueryFreezer(
         lambda: Session.query(Content)
             .filter(Content.__parent_id__ == sqla.sql.bindparam('uuid')))
 
     def keys(self):
-        if self._v_keys is None:
-            self._v_keys = [c.__name__ for c in 
-                            self._sql_get_children.all(uuid=self.__uuid__)]
-        
-        if self._v_temp_keys:
-            self._v_keys.extend(self._v_temp_keys)
-            del self._v_temp_keys
+        if self._v_keys_loaded:
+            return self._v_keys
+        else:
+            if self._v_keys is None:
+                self._v_keys = [n for n, in 
+                                self._sql_keys.all(uuid=self.__uuid__)]
 
-        return self._v_keys
+            if self._v_temp_keys:
+                self._v_keys.extend(self._v_temp_keys)
+                del self._v_temp_keys
+
+            self._v_keys_loaded = True
+            return self._v_keys
 
     def get(self, key, default=None):
         if self._v_items and key in self._v_items:
@@ -47,8 +56,15 @@ class Container(Content):
         return item
 
     def values(self):
-        for key in self.keys():
-            yield self.get(key)
+        if self._v_keys_loaded and self._v_items:
+            if len(self._v_items) == len(self._v_keys):
+                return self._v_items.values()
+
+        values = self._sql_values.all(uuid = self.__uuid__)
+        self._v_keys = list(c.__name_id__ for c in values)
+        self._v_items = dict((c.__name_id__, c) for c in values)
+
+        return values
 
     def __contains__(self, key):
         return key in self.keys()

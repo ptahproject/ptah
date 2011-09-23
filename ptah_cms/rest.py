@@ -20,6 +20,8 @@ from ptah_cms.interfaces import IContainer
 from ptah_cms.interfaces import IRestAction
 from ptah_cms.interfaces import IRestActionClassifier
 
+import permissions
+
 
 class Applications(ptah.rest.Action):
 
@@ -201,7 +203,7 @@ class ContentRestInfo(object):
     title = 'Content information'
     description = ''
 
-    __permission__ = ptah.View
+    __permission__ = permissions.View
 
     def __call__(self, content, request, *args):
         info = OrderedDict(
@@ -219,7 +221,10 @@ class ContentRestInfo(object):
         
         for node in schema:
             val = getattr(content, node.name, node.missing)
-            info[node.name] = node.serialize(val)
+            try:
+                info[node.name] = node.serialize(val)
+            except:
+                info[node.name] = node.default
 
         info['view'] = content.view
         info['created'] = content.created
@@ -235,13 +240,17 @@ class ContainerRestInfo(ContentRestInfo):
     title = 'Container information'
     description = ''
 
-    __permission__ = ptah.View
+    __permission__ = permissions.View
 
     def __call__(self, content, request, *args):
         info = super(ContainerRestInfo, self).__call__(content, request)
         
         contents = []
         for content in content.values():
+            if not ptah.checkPermission(
+                content, self.__permission__, request, False):
+                continue
+            
             contents.append(
                 OrderedDict((
                     ('__name__', content.__name__),
@@ -266,7 +275,7 @@ class ContentAPIDoc(ContentRestInfo):
     title = 'API Doc'
     description = ''
 
-    __permission__ = ptah.View
+    __permission__ = permissions.View
 
     def __call__(self, content, request, *args):
         info = super(ContentAPIDoc, self).__call__(content, request)
@@ -301,7 +310,7 @@ class DeleteAction(object):
     title = 'Delete content'
     description = ''
 
-    __permission__ = ptah_cms.DeleteContent
+    __permission__ = permissions.DeleteContent
 
     def __call__(self, content, request, *args):
         parent = content.__parent__
@@ -316,7 +325,7 @@ class MoveAction(object):
     title = 'Move content'
     description = ''
 
-    __permission__ = ptah_cms.ModifyContent
+    __permission__ = permissions.ModifyContent
 
     def __call__(self, content, request, *args):
         pass
@@ -327,7 +336,7 @@ class UpdateAction(object):
     title = 'Update content'
     description = ''
 
-    __permission__ = ptah_cms.ModifyContent
+    __permission__ = permissions.ModifyContent
 
     def __call__(self, content, request, *args):
         tinfo = content.__type__
@@ -351,7 +360,7 @@ class CreateContentAction(object):
     title = 'Create content'
     description = ''
 
-    __permission__ = ptah_cms.View
+    __permission__ = permissions.View
 
     name_schema = ptah_cms.ContentNameSchema()
 
@@ -399,7 +408,7 @@ class BlobRestInfo(object):
     title = 'Blob information'
     description = ''
 
-    __permission__ = ptah.View
+    __permission__ = permissions.View
 
     def __call__(self, content, request, *args):
         info = OrderedDict(
@@ -420,7 +429,7 @@ class BlobData(object):
     title = 'Download blob'
     description = ''
 
-    __permission__ = ptah.View
+    __permission__ = permissions.View
 
     def __call__(self, content, request, *args):
         response = request.response

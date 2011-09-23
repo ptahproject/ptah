@@ -31,7 +31,7 @@ class TestTypeInfo(Base):
 
         self.assertEqual(tinfo.name, 'mycontent')
         self.assertEqual(tinfo.title, 'MyContent')
-        self.assertEqual(tinfo.factory, MyContent)
+        self.assertEqual(tinfo.klass, MyContent)
 
     def test_tinfo_checks(self):
         import ptah_cms

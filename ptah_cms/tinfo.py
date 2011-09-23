@@ -16,19 +16,6 @@ from permissions import View, AddContent, ModifyContent
 
 registeredTypes = {}
 
-class Action(object):
-    interface.implements(IAction)
-
-    id = ''
-    title = ''
-    description = ''
-    action = ''
-    permission = None
-
-    def __init__(self, id='', **kw):
-        self.id = id
-        self.__dict__.update(kw)
-
 
 class TypeInformation(object):
     interface.implements(ITypeInformation)
@@ -106,6 +93,27 @@ class TypeInformation(object):
 
         return types
 
+    def listActions(self, content, request):
+        if content.__type__ is not self:
+            return ()
+
+        url = request.resource_url(content)
+
+        actions = []
+        for name, action in config.registry.adapters.lookupAll(
+            (interface.providedBy(content),), IAction):
+            if action.check(content, request):
+                actions.append(
+                    (action.sortWeight,
+                     {'id': action.id,
+                      'url': action.url(content, request, url),
+                      'title': action.title,
+                      'description': action.description,
+                      'data': action.data}))
+
+        actions.sort()
+        return [ac for _w, ac in actions]
+
 
 # we have to generate seperate sql query for each type
 _sql_get = ptah.QueryFreezer(
@@ -148,35 +156,92 @@ def Type(name, title, **kw):
 
 def registerType(
     klass, tinfo, name,
-    title = '', description = '', schema = ContentSchema,
-    global_allow = True, permission = '__denied__',
-    actions = None, **kw):
-
-    if actions is None:
-        actions = (
-            Action(**{'id': 'view',
-                      'title': 'View',
-                      'action': '',
-                      'permission': View}),
-            Action(**{'id': 'edit',
-                      'title': 'Edit',
-                      'action': 'edit.html',
-                      'permission': ModifyContent}),
-            )
+    title = '', 
+    description = '', 
+    schema = ContentSchema,
+    permission = '__denied__', **kw):
 
     tinfo.__dict__.update(kw)
 
     if isinstance(schema, colander._SchemaMeta):
         schema = schema()
 
+    tinfo.klass = klass
     tinfo.schema = schema
-    tinfo.factory = klass
     tinfo.description = description
-    tinfo.global_allow = global_allow
     tinfo.permission = permission
-    tinfo.actions = actions
 
     registeredTypes[name] = tinfo
+
+
+class Action(object):
+    interface.implements(IAction)
+
+    id = ''
+    title = ''
+    description = ''
+    action = ''
+    actionFactory = None
+    condition = None
+    permission = None
+    sortWeight = 1.0,
+    data = None
+
+    def __init__(self, id='', **kw):
+        self.id = id
+        self.__dict__.update(kw)
+
+    def url(self, context, request, url=''):
+        if self.actionFactory is not None:
+            return self.actionFactory(context, request)
+
+        if not self.action.startswith('/'):
+            return '%s%s'%(url, self.action)
+
+        return self.action
+
+    def check(self, context, request):
+        if self.permission:
+            if not ptah.checkPermission(
+                context, self.permission, request, False):
+                return False
+
+        if self.condition is not None:
+            return self.condition(context, request)
+
+        return True
+
+
+def contentAction(context, id, title,
+                  description = '',
+                  action='', condition=None, permission=None, 
+                  sortWeight = 1.0, **kw):
+
+    kwargs = {'id': id,
+              'title': title,
+              'description': description,
+              'condition': condition,
+              'permission': permission,
+              'sortWeight': sortWeight,
+              'data': kw}
+
+    if callable(action):
+        kwargs['actionFactory'] = action
+    else:
+        kwargs['action'] = action
+
+    ac = Action(**kwargs)
+    info = config.DirectiveInfo()
+
+    info.attach(
+        config.Action(
+            _contentAction, (id, context, ac,),
+            discriminator = ('ptah-cms:action', id, context))
+        )
+
+
+def _contentAction(id, context, ac):
+    config.registry.registerAdapter(ac, (context,), IAction, id)
 
 
 @config.addCleanup

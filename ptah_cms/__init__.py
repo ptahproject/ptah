@@ -14,8 +14,7 @@ from ptah_cms.content import loadParents
 # type information
 from ptah_cms.tinfo import Type
 from ptah_cms.tinfo import registeredTypes
-from ptah_cms.tinfo import Action
-from ptah_cms.tinfo import IAction
+from ptah_cms.tinfo import contentAction
 
 # application root
 from ptah_cms.root import ApplicationRoot
@@ -41,18 +40,12 @@ from ptah_cms.interfaces import IApplicationRoot
 from ptah_cms.node import Base, Session
 
 # permissions
-from ptah import View
-from ptah_cms.permissions import ModifyContent
+from ptah_cms.permissions import View
+from ptah_cms.permissions import AddContent
 from ptah_cms.permissions import DeleteContent
+from ptah_cms.permissions import ModifyContent
+from ptah_cms.permissions import ShareContent
 from pyramid.security import ALL_PERMISSIONS
-
-# roles
-from ptah import Owner
-from ptah import Everyone
-from ptah import Authenticated
-from ptah_cms.permissions import Manager
-from ptah_cms.permissions import Viewer
-from ptah_cms.permissions import Editor
 
 # events
 from ptah_cms.events import ContentEvent
