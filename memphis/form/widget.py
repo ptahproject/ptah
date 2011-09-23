@@ -99,7 +99,10 @@ class Widget(object):
             self.value = self.serialize(value)
 
     def serialize(self, value):
-        value = self.node.serialize(value)
+        try:
+            value = self.node.serialize(value)
+        except:
+            value = u''
         if type(value) is str:
             value = unicode(value, 'utf-8')
         return value
