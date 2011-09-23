@@ -1,7 +1,7 @@
 """ default content forms """
 import re
 import colander
-from memphis import view, form
+from memphis import config, view, form
 from pyramid.decorator import reify
 from pyramid.httpexceptions import HTTPFound
 
@@ -90,9 +90,7 @@ class AddForm(form.Form):
 
     def createAndAdd(self, **data):
         content = self.create(**data)
-        
-        self.request.registry.notify(
-            ptah_cms.events.ContentCreatedEvent(content))
+        config.notify(ptah_cms.events.ContentCreatedEvent(content))
 
         name = data['__name__']
         if not name:
@@ -143,6 +141,10 @@ class EditForm(form.Form):
 
         super(EditForm, self).update()
 
+    def applyChanges(self, **data):
+        for attr, value in data.items():
+            setattr(self.context, attr, value)
+
     @form.button('Save', actype=form.AC_PRIMARY)
     def saveHandler(self):
         data, errors = self.extractData()
@@ -151,11 +153,8 @@ class EditForm(form.Form):
             self.message(errors, 'form-error')
             return
 
-        for attr, value in data.items():
-            setattr(self.context, attr, value)
-
-        self.request.registry.notify(
-            ptah_cms.events.ContentModifiedEvent(self.context))
+        self.applyChanges(**data)
+        config.notify(ptah_cms.events.ContentModifiedEvent(self.context))
 
         self.message("Changes have been saved.")
         raise HTTPFound(location='.')
