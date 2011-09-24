@@ -4,7 +4,7 @@ from pyramid.httpexceptions import HTTPFound
 
 import ptah
 import ptah_cms
-from ptah import authService
+from ptah import authService, manage
 from ptah_cms import tinfo, interfaces, events
 
 from interfaces import IPtahAppRoot
@@ -23,8 +23,9 @@ class LayoutWorkspace(view.Layout):
 
     def update(self):
         self.root = getattr(self.request, 'root', None)
-        self.user = ptah.authService.getCurrentPrincipal()
+        self.user = authService.getCurrentPrincipal()
         self.isAnon = self.user is None
+        self.ptahManager = manage.ACCESS_MANAGER(authService.getUserId())
 
 
 class LayoutWorkspaceView(LayoutWorkspace):
