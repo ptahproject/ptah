@@ -60,3 +60,4 @@ from ptah_cms.rest import contentRestAction
 
 from ptah_cms.rest import IRestAction
 from ptah_cms.rest import ContentRestInfo
+from ptah_cms.rest import ContainerRestInfo
