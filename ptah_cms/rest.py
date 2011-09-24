@@ -205,16 +205,7 @@ class ContentRestInfo(object):
 
     __permission__ = permissions.View
 
-    def __call__(self, content, request, *args):
-        info = OrderedDict(
-            (('__name__', content.__name__),
-             ('__type__', content.__type_id__),
-             ('__uuid__', content.__uuid__),
-             ('__container__', False),
-             ('__link__', '%s%s/'%(request.application_url, content.__uuid__)),
-             ('__parents__', parents(content)),
-             ))
-
+    def loadInfo(self, info, content, request):
         schema = content.__type__.schema
         if schema is None:
             schema = ptah_cms.ContentSchema
@@ -232,6 +223,18 @@ class ContentRestInfo(object):
         info['effective'] = content.effective
         info['expires'] = content.expires
 
+    def __call__(self, content, request, *args):
+        info = OrderedDict(
+            (('__name__', content.__name__),
+             ('__type__', content.__type_id__),
+             ('__uuid__', content.__uuid__),
+             ('__container__', False),
+             ('__link__', '%s%s/'%(request.application_url, content.__uuid__)),
+             ('__parents__', parents(content)),
+             ))
+
+        self.loadInfo(info, content, request)
+
         return info
 
 
@@ -246,23 +249,23 @@ class ContainerRestInfo(ContentRestInfo):
         info = super(ContainerRestInfo, self).__call__(content, request)
         
         contents = []
-        for content in content.values():
+        for item in content.values():
             if not ptah.checkPermission(
-                content, self.__permission__, request, False):
+                item, self.__permission__, request, False):
                 continue
             
             contents.append(
                 OrderedDict((
-                    ('__name__', content.__name__),
-                    ('__type__', content.__type_id__),
-                    ('__uuid__', content.__uuid__),
-                    ('__container__', isinstance(content, Container)),
+                    ('__name__', item.__name__),
+                    ('__type__', item.__type_id__),
+                    ('__uuid__', item.__uuid__),
+                    ('__container__', isinstance(item, Container)),
                     ('__link__', '%s%s/'%(request.application_url,
-                                          content.__uuid__)),
-                    ('title', content.title),
-                    ('description', content.description),
-                    ('created', content.created),
-                    ('modified', content.modified),
+                                          item.__uuid__)),
+                    ('title', item.title),
+                    ('description', item.description),
+                    ('created', item.created),
+                    ('modified', item.modified),
                     )))
 
         info['__contents__'] = contents
@@ -447,10 +450,10 @@ contentRestAction('data', IBlob, BlobData())
 contentRestAction('', IContent, ContentRestInfo())
 contentRestAction('', IContainer, ContainerRestInfo())
 contentRestAction('apidoc', IContent, ContentAPIDoc())
-contentRestAction('create', IContent, CreateContentAction())
 contentRestAction('update', IContent, UpdateAction())
 contentRestAction('delete', IContent, DeleteAction())
 contentRestAction('move', IContent, MoveAction())
+contentRestAction('create', IContainer, CreateContentAction())
 
 ptah.registerService('cms', 'cms', 'Ptah CMS api')
 ptah.registerServiceAction('cms', Content())

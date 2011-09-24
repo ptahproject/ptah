@@ -60,9 +60,15 @@ class Container(Content):
             if len(self._v_items) == len(self._v_keys):
                 return self._v_items.values()
 
-        values = self._sql_values.all(uuid = self.__uuid__)
-        self._v_keys = list(c.__name_id__ for c in values)
-        self._v_items = dict((c.__name_id__, c) for c in values)
+        values = []
+        self._v_keys = keys = []
+        self._v_items = items = {}
+
+        for item in self._sql_values.all(uuid = self.__uuid__):
+            item.__parent__ = self
+            items[item.__name_id__] = item
+            keys.append(item.__name_id__)
+            values.append(item)
 
         return values
 

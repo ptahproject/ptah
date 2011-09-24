@@ -54,3 +54,9 @@ from ptah_cms.events import ContentAddedEvent
 from ptah_cms.events import ContentMovedEvent
 from ptah_cms.events import ContentModifiedEvent
 from ptah_cms.events import ContentDeletingEvent
+
+# cms rest
+from ptah_cms.rest import contentRestAction
+
+from ptah_cms.rest import IRestAction
+from ptah_cms.rest import ContentRestInfo
