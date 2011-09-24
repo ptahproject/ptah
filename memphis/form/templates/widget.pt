@@ -3,6 +3,7 @@
   <label tal:attributes="for context.id;
 			 title context.description">
     ${context.label}
+    <tal:block condition="context.required">*</tal:block>
   </label>
   <div class="input">
     <tal:block tal:content="structure context.render(request)" />
