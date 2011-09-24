@@ -15,7 +15,9 @@ class AddForm(form.Form):
     tinfo = None
     container = None
 
+    name_show = True
     name_suffix = ''
+    name_widgets = None
     name_fields = form.Fields(ptah_cms.ContentNameSchema)
 
     @reify
@@ -57,10 +59,11 @@ class AddForm(form.Form):
     def updateWidgets(self):
         super(AddForm, self).updateWidgets()
 
-        self.name_widgets = \
-            form.FieldWidgets(self.name_fields, self, self.request)
-        self.name_widgets.mode = self.mode
-        self.name_widgets.update()
+        if self.name_show:
+            self.name_widgets = \
+                form.FieldWidgets(self.name_fields, self, self.request)
+            self.name_widgets.mode = self.mode
+            self.name_widgets.update()
 
     def validate(self, data, errors):
         super(AddForm, self).validate(data, errors)
@@ -161,8 +164,11 @@ class EditForm(form.Form):
         config.notify(ptah_cms.events.ContentModifiedEvent(self.context))
 
         self.message("Changes have been saved.")
-        raise HTTPFound(location='.')
+        raise HTTPFound(location=self.nextUrl())
 
     @form.button('Cancel')
     def cancelHandler(self):
-        raise HTTPFound(location='.')
+        raise HTTPFound(location=self.nextUrl())
+
+    def nextUrl(self, content):
+        return '.'
