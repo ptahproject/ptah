@@ -8,7 +8,7 @@ from ptah.uri import UUIDGenerator
 
 # manage
 from ptah.manage import PtahModule, IPtahModule
-from ptah.manage import setAccessManager, ACCESS_MANAGER
+from ptah.manage import setAccessManager
 
 # security
 from ptah.authentication import authService
