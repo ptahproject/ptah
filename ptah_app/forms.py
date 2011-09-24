@@ -170,5 +170,5 @@ class EditForm(form.Form):
     def cancelHandler(self):
         raise HTTPFound(location=self.nextUrl())
 
-    def nextUrl(self, content):
+    def nextUrl(self):
         return '.'
