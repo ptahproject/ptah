@@ -9,15 +9,15 @@ class TestNode(Base):
 
     def test_node_instance(self):
         import ptah_cms
-        
+
         # it not possible to instatiate Node
         self.assertRaises(ptah_cms.Node)
 
     def test_node(self):
         import ptah_cms
-        
+
         class MyContent(ptah_cms.Node):
-            
+
             def __uuid_generator__(self):
                 return uuid.uuid4().get_hex()
 
@@ -30,14 +30,14 @@ class TestNode(Base):
             ptah_cms.Node.__uuid__ == _uuid).one()
 
         self.assertTrue(isinstance(c, ptah_cms.Node))
-        
+
     def test_polymorphic_node(self):
         import ptah_cms
 
         class MyContent(ptah_cms.Node):
 
             __mapper_args__ = {'polymorphic_identity': 'mycontent'}
-            
+
             def __uuid_generator__(self):
                 return uuid.uuid4().get_hex()
 
@@ -57,7 +57,7 @@ class TestNode(Base):
         class MyContent(ptah_cms.Node):
 
             __mapper_args__ = {'polymorphic_identity': 'mycontent'}
-            
+
             def __uuid_generator__(self):
                 return uuid.uuid4().get_hex()
 
@@ -70,7 +70,7 @@ class TestNode(Base):
         ptah_cms.Session.add(parent)
         ptah_cms.Session.add(content)
         transaction.commit()
-                
+
         c = ptah_cms.Session.query(ptah_cms.Node).filter(
             ptah_cms.Node.__uuid__ == __uuid).one()
 
@@ -83,7 +83,7 @@ class TestNode(Base):
         class MyContent(ptah_cms.Node):
 
             __mapper_args__ = {'polymorphic_identity': 'mycontent'}
-            
+
             def __uuid_generator__(self):
                 return uuid.uuid4().get_hex()
 

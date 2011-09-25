@@ -8,13 +8,13 @@ class TestNameSchema(unittest.TestCase):
         schema = ContentNameSchema()
 
         self.assertRaises(
-            colander.Invalid, 
+            colander.Invalid,
             schema.deserialize, {'__name__': '/asdfasdfadf'})
 
         self.assertRaises(
-            colander.Invalid, 
+            colander.Invalid,
             schema.deserialize, {'__name__': 'asdfasdf/adf'})
 
         self.assertRaises(
-            colander.Invalid, 
+            colander.Invalid,
             schema.deserialize, {'__name__': ' asdfasdfadf'})

@@ -10,7 +10,7 @@ from base import Base
 
 
 class Content(ptah_cms.Content):
-            
+
     __type__ = ptah_cms.Type('content', 'Test Content')
     __uuid_generator__ = ptah.UUIDGenerator('cms+content')
 
@@ -53,7 +53,7 @@ class TestLoadApi(Base):
 
     def test_loadapi_loadcontent_permission(self):
         from ptah_cms import content
-        
+
         allow = False
         def checkPermission(content, permission, r=None, t=True):
             if not allow:

@@ -28,7 +28,7 @@ class TestBlob(Base):
 
         blob = ptah_cms.blobStorage.add(
             StringIO('blob data'), filename='test.txt', mimetype='text/plain')
-        
+
         self.assertEqual(blob.filename, 'test.txt')
         self.assertEqual(blob.mimetype, 'text/plain')
 
@@ -40,7 +40,7 @@ class TestBlob(Base):
         blob_uuid = blob.__uuid__
 
         blob = ptah.resolve(blob_uuid)
-        
+
         self.assertEqual(blob.__uuid__, blob_uuid)
         self.assertEqual(blob.read(), 'blob data')
 

@@ -11,7 +11,7 @@ class TestTraverser(Base):
     def tearDown(self):
         config.cleanUp(self.__class__.__module__)
         super(TestTraverser, self).tearDown()
-        
+
     def _create_content(self):
         import ptah_cms
 
@@ -28,7 +28,7 @@ class TestTraverser(Base):
                 return uuid.uuid4().get_hex()
 
         root = factory()
-        
+
         folder = MyContent(
             __name__ = 'folder',
             __parent__ = root,
@@ -50,16 +50,16 @@ class TestTraverser(Base):
         from ptah_cms.traverser import ContentTraverser
 
         self._create_content()
-        
+
         request = self._makeRequest(
             {'PATH_INFO': '/test/index.html'})
 
         root = self.factory(request)
 
         traverser = ITraverser(root)
-        
+
         self.assertTrue(isinstance(traverser, ContentTraverser))
-        
+
         info = traverser(request)
         self.assertTrue(info['context'] is root)
         self.assertEqual(info['view_name'], 'index.html')
@@ -67,12 +67,12 @@ class TestTraverser(Base):
     def test_traverser_root_no_view(self):
         import ptah_cms
         self._create_content()
-        
+
         request = self._makeRequest({'PATH_INFO': '/test/'})
 
         root = self.factory(request)
         traverser = ITraverser(root)
-        
+
         info = traverser(request)
         self.assertTrue(info['context'] is root)
         self.assertEqual(info['view_name'], '')
@@ -80,9 +80,9 @@ class TestTraverser(Base):
     def test_traverser_folder(self):
         import ptah_cms
         self._create_content()
-        
+
         request = self._makeRequest({'PATH_INFO': '/test/folder'})
-        
+
         root = self.factory(request)
         traverser = ITraverser(root)
 
@@ -94,9 +94,9 @@ class TestTraverser(Base):
     def test_traverser_folder_2(self):
         import ptah_cms
         self._create_content()
-        
+
         request = self._makeRequest({'PATH_INFO': '/test/folder/'})
-        
+
         root = self.factory(request)
         traverser = ITraverser(root)
 
@@ -108,9 +108,9 @@ class TestTraverser(Base):
     def test_traverser_folder_view(self):
         import ptah_cms
         self._create_content()
-        
+
         request = self._makeRequest({'PATH_INFO': '/test/folder/index.html'})
-        
+
         root = self.factory(request)
         traverser = ITraverser(root)
 
@@ -122,9 +122,9 @@ class TestTraverser(Base):
     def test_traverser_folder_subcontent1(self):
         import ptah_cms
         self._create_content()
-        
+
         request = self._makeRequest({'PATH_INFO': '/test/folder/content'})
-        
+
         root = self.factory(request)
         traverser = ITraverser(root)
 
@@ -136,9 +136,9 @@ class TestTraverser(Base):
     def test_traverser_folder_subcontent2(self):
         import ptah_cms
         self._create_content()
-        
+
         request = self._makeRequest({'PATH_INFO': '/test/folder/content/'})
-        
+
         root = self.factory(request)
         traverser = ITraverser(root)
 
@@ -150,10 +150,10 @@ class TestTraverser(Base):
     def test_traverser_folder_subcontent_view(self):
         import ptah_cms
         self._create_content()
-        
+
         request = self._makeRequest(
             {'PATH_INFO': '/test/folder/content/index.html'})
-        
+
         root = self.factory(request)
         traverser = ITraverser(root)
 
@@ -165,10 +165,10 @@ class TestTraverser(Base):
     def test_traverser_folder_subcontent_view2(self):
         import ptah_cms
         self._create_content()
-        
+
         request = self._makeRequest(
             {'PATH_INFO': '/test//folder//content/index.html'})
-        
+
         root = self.factory(request)
         traverser = ITraverser(root)
 

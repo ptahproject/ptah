@@ -10,7 +10,7 @@ from pyramid.threadlocal import get_current_request
 from content import Session, Content
 from container import Container
 from events import ContentCreatedEvent
-from interfaces import ContentSchema, IAction, ITypeInformation
+from interfaces import ContentSchema, ITypeInformation
 from permissions import View, AddContent, ModifyContent
 
 
@@ -28,7 +28,7 @@ class TypeInformation(object):
     allowed_content_types = ()
     global_allow = True
 
-    def __init__(self, klass, name, title, 
+    def __init__(self, klass, name, title,
                  schema=ContentSchema, constructor=None, **kw):
         self.__dict__.update(kw)
 
@@ -93,27 +93,6 @@ class TypeInformation(object):
 
         return types
 
-    def listActions(self, content, request):
-        if content.__type__ is not self:
-            return ()
-
-        url = request.resource_url(content)
-
-        actions = []
-        for name, action in config.registry.adapters.lookupAll(
-            (interface.providedBy(content),), IAction):
-            if action.check(content, request):
-                actions.append(
-                    (action.sortWeight,
-                     {'id': action.id,
-                      'url': action.url(content, request, url),
-                      'title': action.title,
-                      'description': action.description,
-                      'data': action.data}))
-
-        actions.sort()
-        return [ac for _w, ac in actions]
-
 
 # we have to generate seperate sql query for each type
 _sql_get = ptah.QueryFreezer(
@@ -134,13 +113,13 @@ def Type(name, title, **kw):
         f_locals['__mapper_args__'] = {'polymorphic_identity': name}
     if '__id__' not in f_locals and '__tablename__' in f_locals:
         f_locals['__id__'] = sqla.Column( #pragma: no cover
-            'id', sqla.Integer, 
+            'id', sqla.Integer,
             sqla.ForeignKey('ptah_cms_content.id'), primary_key=True)
     if '__uuid_generator__' not in f_locals:
         f_locals['__uuid_generator__'] = ptah.UUIDGenerator('cms+%s'%name)
 
         ptah.registerResolver(
-            'cms+%s'%name, resolveContent, 
+            'cms+%s'%name, resolveContent,
             title = 'Ptah CMS Content resolver for %s type'%title,
             depth = 2)
 
@@ -156,8 +135,8 @@ def Type(name, title, **kw):
 
 def registerType(
     klass, tinfo, name,
-    title = '', 
-    description = '', 
+    title = '',
+    description = '',
     schema = ContentSchema,
     permission = '__denied__', **kw):
 
@@ -172,6 +151,10 @@ def registerType(
     tinfo.permission = permission
 
     registeredTypes[name] = tinfo
+
+
+class IAction(interface.Interface):
+    """ marker interface for actions """
 
 
 class Action(object):
@@ -195,10 +178,10 @@ class Action(object):
         if self.actionFactory is not None:
             return self.actionFactory(context, request)
 
-        if not self.action.startswith('/'):
+        if self.action.startswith('/'):
+            return '%s%s'%(request.application_url, self.action)
+        else:
             return '%s%s'%(url, self.action)
-
-        return self.action
 
     def check(self, context, request):
         if self.permission:
@@ -212,9 +195,13 @@ class Action(object):
         return True
 
 
+def _contentAction(id, context, ac):
+    config.registry.registerAdapter(ac, (context,), IAction, id)
+
+
 def contentAction(context, id, title,
                   description = '',
-                  action='', condition=None, permission=None, 
+                  action='', condition=None, permission=None,
                   sortWeight = 1.0, **kw):
 
     kwargs = {'id': id,
@@ -240,8 +227,23 @@ def contentAction(context, id, title,
         )
 
 
-def _contentAction(id, context, ac):
-    config.registry.registerAdapter(ac, (context,), IAction, id)
+def listActions(content, request):
+    url = request.resource_url(content)
+
+    actions = []
+    for name, action in config.registry.adapters.lookupAll(
+        (interface.providedBy(content),), IAction):
+        if action.check(content, request):
+            actions.append(
+                (action.sortWeight,
+                 {'id': action.id,
+                  'url': action.url(content, request, url),
+                  'title': action.title,
+                  'description': action.description,
+                  'data': action.data}))
+
+    actions.sort()
+    return [ac for _w, ac in actions]
 
 
 @config.addCleanup

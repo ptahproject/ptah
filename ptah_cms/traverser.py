@@ -51,7 +51,7 @@ class ContentTraverser(object):
                     lambda: Session.query(Content)\
                         .filter(Content.__path__.in_(bindparams))
                         .order_by(sql.desc(Content.__path__)))
-                
+
             parents = queries[idx].all(**paths)
         else:
             parents = []

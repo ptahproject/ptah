@@ -15,7 +15,7 @@ class Blob(Node):
     __mapper_args__ = {'polymorphic_identity': 'ptah-cms-blob'}
     __uuid_generator__ = ptah.UUIDGenerator('blob+sql')
 
-    __id__ = sqla.Column('id', sqla.Integer, 
+    __id__ = sqla.Column('id', sqla.Integer,
                          sqla.ForeignKey('ptah_cms_nodes.id'), primary_key=True)
 
     mimetype = sqla.Column(sqla.String(), default='')
@@ -58,15 +58,15 @@ class BlobStorage(object):
 
     def add(self, data, parent=None, **metadata):
         blob = self.create(parent)
-        
+
         data.seek(0)
-        
+
         blob.data = data.read()
         blob.updateMetadata(**metadata)
 
         data.seek(0, os.SEEK_END)
         blob.size = data.tell()
-        
+
         return blob
 
     def get(self, uuid):

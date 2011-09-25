@@ -8,7 +8,7 @@ from base import Base
 
 
 class Content(ptah_cms.Content):
-            
+
     __type__ = ptah_cms.Type('content', 'Test Content')
     __uuid_generator__ = ptah.UUIDGenerator('cms+content')
 
@@ -94,7 +94,7 @@ class TestContainer(Base):
                          [content_uuid, c2.__uuid__])
 
         del container['content']
-        
+
         self.assertEqual(container.keys(), ['content2'])
         self.assertEqual([c.__uuid__ for c in container.values()],
                          [c2.__uuid__])
@@ -156,9 +156,9 @@ class TestContainer(Base):
         self.assertEqual(container['content2'].__uuid__, c2_u)
         transaction.commit()
 
-        container = ptah.resolve(c_u)       
+        container = ptah.resolve(c_u)
         self.assertEqual(container.get('content1').__uuid__, c1_u)
-        self.assertEqual(container.get('content2').__uuid__, c2_u)        
+        self.assertEqual(container.get('content2').__uuid__, c2_u)
 
     def test_container_items(self):
         container = Container(__name__ = 'container', __path__ = '/container/')
@@ -266,13 +266,13 @@ class TestContainer(Base):
         folder2 = ptah.resolve(folder2_uuid)
         content = ptah.resolve(content_uuid)
         container = ptah.resolve(container_uuid)
-        
+
         self.assertEqual(container.keys(), ['new-folder'])
         self.assertEqual(folder1.__path__, '/container/new-folder/')
         self.assertEqual(folder2.__path__, '/container/new-folder/folder2/')
         self.assertEqual(content.__path__,
                          '/container/new-folder/folder2/content/')
-        
+
     def test_container_move_self_recursevly(self):
         container = Container(__name__ = 'container', __path__ = '/container/')
         folder = Container(title='Folder')
@@ -300,7 +300,7 @@ class TestContainer(Base):
         ptah_cms.Session.add(container)
         ptah_cms.Session.add(content)
         ptah_cms.Session.flush()
-        
+
         container['content'] = content
 
         content_uuid = content.__uuid__
@@ -310,7 +310,7 @@ class TestContainer(Base):
         container = ptah.resolve(container_uuid)
         del container['content']
         transaction.commit()
-        
+
         self.assertTrue(ptah.resolve(content_uuid) is None)
 
         container = ptah.resolve(container_uuid)

@@ -15,7 +15,7 @@ class TestApplication(Base):
 
         root = ptah_cms.ApplicationRoot.getRoot(
             name='test', title='Test application')
-        
+
         self.assertTrue(isinstance(root, ptah_cms.ApplicationRoot))
         self.assertTrue(root.title == 'Test application')
         self.assertTrue(root.__name__ == 'test')
@@ -40,7 +40,7 @@ class TestApplication(Base):
 
 
 class TestApplicationFactoryRegistration(Base):
-    
+
     def _setup_memphis(self):
         pass
 
@@ -107,7 +107,7 @@ class TestApplicationFactoryRegistration(Base):
         uuid1 = root1.__uuid__
         self.assertTrue(root1.__root_path__ == '/app1/')
         transaction.commit()
-        
+
         root2 = factory2()
 
         self.assertTrue(root2.__root_path__ == '/app2/')
@@ -142,7 +142,7 @@ class TestApplicationFactoryCustom(Base):
         import ptah_cms
 
         class CustomApplication(ptah_cms.ApplicationRoot):
-            
+
             __type__ = ptah_cms.Type('customapp', 'Custom app')
 
         factory = ptah_cms.ApplicationFactory(

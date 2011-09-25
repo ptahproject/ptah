@@ -14,7 +14,7 @@ Session = pyramid_sqla.get_session()
 
 
 class Node(Base):
-    interface.implements(INode, 
+    interface.implements(INode,
                          ptah.IACLsAware,
                          ptah.IOwnersAware,
                          ptah.ILocalRolesAware)

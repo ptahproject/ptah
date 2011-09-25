@@ -37,15 +37,6 @@ class IApplicationRootFactory(interface.Interface):
         """ return ApplicationRoot object """
 
 
-class IAction(interface.Interface):
-
-    id = interface.Attribute('Id')
-    title = interface.Attribute('Title')
-    description = interface.Attribute('Description')
-    permission = interface.Attribute('Permission')
-    action = interface.Attribute('Action')
-
-
 class ITypeInformation(interface.Interface):
     """ Content type information """
 

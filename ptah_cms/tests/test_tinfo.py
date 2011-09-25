@@ -1,5 +1,6 @@
 import uuid
 import transaction
+from zope import interface
 from memphis import config
 from pyramid.httpexceptions import HTTPForbidden
 
@@ -17,14 +18,14 @@ class TestTypeInfo(Base):
 
     def test_tinfo(self):
         import ptah_cms
-    
+
         global MyContent
         class MyContent(ptah_cms.Content):
-            
+
             __type__ = ptah_cms.Type('mycontent', 'MyContent')
 
         self._init_memphis()
-        
+
         self.assertTrue('mycontent' in ptah_cms.registeredTypes)
 
         tinfo = ptah_cms.registeredTypes['mycontent']
@@ -35,7 +36,7 @@ class TestTypeInfo(Base):
 
     def test_tinfo_checks(self):
         import ptah_cms
-    
+
         global MyContent, MyContainer
         class MyContent(ptah_cms.Content):
             __type__ = ptah_cms.Type('mycontent', 'Content', permission=None)
@@ -51,7 +52,7 @@ class TestTypeInfo(Base):
         self.assertRaises(
             HTTPForbidden, MyContent.__type__.checkContext, content)
 
-        # 
+        #
         self.assertTrue(MyContent.__type__.isAllowed(container))
         self.assertEqual(MyContent.__type__.checkContext(container), None)
 
@@ -63,7 +64,7 @@ class TestTypeInfo(Base):
 
     def test_tinfo_list(self):
         import ptah_cms
-    
+
         global MyContent, MyContainer
         class MyContent(ptah_cms.Content):
             __type__ = ptah_cms.Type('mycontent', 'Content', permission=None)
@@ -89,7 +90,7 @@ class TestTypeInfo(Base):
 
     def test_tinfo_list_filtered(self):
         import ptah_cms
-    
+
         global MyContent, MyContainer
         class MyContent(ptah_cms.Content):
             __type__ = ptah_cms.Type('mycontent', 'Content', permission=None)
@@ -109,7 +110,7 @@ class TestTypeInfo(Base):
 
     def test_tinfo_conflicts(self):
         import ptah_cms
-    
+
         global MyContent
         class MyContent(ptah_cms.Content):
             __type__ = ptah_cms.Type('mycontent2', 'MyContent')
@@ -121,7 +122,7 @@ class TestTypeInfo(Base):
 
     def test_tinfo_create(self):
         import ptah_cms
-    
+
         global MyContent
         class MyContent(ptah_cms.Content):
             __type__ = ptah_cms.Type('mycontent', 'MyContent')
@@ -135,14 +136,14 @@ class TestTypeInfo(Base):
 
     def test_tinfo_alchemy(self):
         import ptah_cms
-    
+
         global MyContent
         class MyContent(ptah_cms.Content):
             __tablename__ = "test_mycontents"
             __type__ = ptah_cms.Type('mycontent', 'MyContent')
 
         self._init_memphis()
-        
+
         self.assertEqual(
             MyContent.__mapper_args__['polymorphic_identity'], 'mycontent')
         self.assertTrue(
@@ -150,13 +151,13 @@ class TestTypeInfo(Base):
 
     def test_tinfo_resolver(self):
         import ptah, ptah_cms
-    
+
         global MyContent
         class MyContent(ptah_cms.Content):
             __type__ = ptah_cms.Type('mycontent2', 'MyContent')
 
         self._init_memphis()
-        
+
         content = MyContent.__type__.create(title='Test content')
         c_uuid = content.__uuid__
         ptah_cms.Session.add(content)
@@ -164,3 +165,167 @@ class TestTypeInfo(Base):
 
         c = ptah.resolve(c_uuid)
         self.assertTrue(isinstance(c, MyContent))
+
+
+class TestAction(Base):
+
+    def tearDown(self):
+        config.cleanUp(self.__class__.__module__)
+        super(TestAction, self).tearDown()
+
+    def _setup_memphis(self):
+        pass
+
+    def test_action(self):
+        import ptah_cms
+
+        class Content(object):
+            __name__ = ''
+
+        ptah_cms.contentAction(Content, 'action1', 'Action 1')
+        self._init_memphis()
+
+        request = self._makeRequest()
+
+        actions = ptah_cms.listActions(Content(), request)
+
+        self.assertEqual(len(actions), 1)
+        self.assertEqual(actions[0]['id'], 'action1')
+
+    def test_action_conflicts(self):
+        import ptah_cms
+
+        class Content(object):
+            __name__ = ''
+
+        ptah_cms.contentAction(Content, 'action1', 'Action 1')
+        ptah_cms.contentAction(Content, 'action1', 'Action 1')
+        self.assertRaises(config.ConflictError, self._init_memphis)
+
+    def test_action_url(self):
+        import ptah_cms
+
+        class Content(object):
+            __name__ = ''
+
+        ptah_cms.contentAction(Content, 'action1', 'Action 1',
+                               action='test.html')
+        self._init_memphis()
+        request = self._makeRequest()
+
+        actions = ptah_cms.listActions(Content(), request)
+        self.assertEqual(actions[0]['url'], 'http://localhost:8080/test.html')
+
+    def test_action_absolute_url(self):
+        import ptah_cms
+
+        class Content(object):
+            __name__ = ''
+
+        ptah_cms.contentAction(Content, 'action1', 'Action 1',
+                               action='/content/about.html')
+        self._init_memphis()
+        request = self._makeRequest()
+
+        actions = ptah_cms.listActions(Content(), request)
+        self.assertEqual(actions[0]['url'],
+                         'http://localhost:8080/content/about.html')
+
+    def test_action_custom_url(self):
+        import ptah_cms
+
+        class Content(object):
+            __name__ = ''
+
+        def customAction(content, request):
+            return 'http://github.com/ptahproject'
+
+        ptah_cms.contentAction(Content, 'action1', 'Action 1',
+                               action=customAction)
+        self._init_memphis()
+        request = self._makeRequest()
+
+        actions = ptah_cms.listActions(Content(), request)
+        self.assertEqual(actions[0]['url'], 'http://github.com/ptahproject')
+
+    def test_action_condition(self):
+        import ptah_cms
+
+        class Content(object):
+            __name__ = ''
+
+        allow = False
+        def condition(content, request):
+            return allow
+
+        ptah_cms.contentAction(
+            Content, 'action1', 'Action 1',
+            action='test.html', condition=condition)
+        self._init_memphis()
+        request = self._makeRequest()
+
+        actions = ptah_cms.listActions(Content(), request)
+        self.assertEqual(len(actions), 0)
+
+        allow = True
+        actions = ptah_cms.listActions(Content(), request)
+        self.assertEqual(len(actions), 1)
+
+    def test_action_permission(self):
+        import ptah, ptah_cms
+
+        class Content(object):
+            __name__ = ''
+
+        allow = False
+        def checkPermission(content, permission, request=None, throw=False):
+            return allow
+
+        ptah_cms.contentAction(
+            Content, 'action1', 'Action 1', permission='View')
+        self._init_memphis()
+        request = self._makeRequest()
+
+        orig_cp = ptah.checkPermission
+        ptah.checkPermission = checkPermission
+
+        actions = ptah_cms.listActions(Content(), request)
+        self.assertEqual(len(actions), 0)
+
+        allow = True
+        actions = ptah_cms.listActions(Content(), request)
+        self.assertEqual(len(actions), 1)
+
+        ptah.checkPermission = orig_cp
+
+    def test_action_sort_weight(self):
+        import ptah_cms
+
+        class Content(object):
+            __name__ = ''
+
+        ptah_cms.contentAction(Content, 'view', 'View', sortWeight=1.0)
+        ptah_cms.contentAction(Content, 'action', 'Action', sortWeight=2.0)
+        self._init_memphis()
+
+        request = self._makeRequest()
+
+        actions = ptah_cms.listActions(Content(), request)
+
+        self.assertEqual(actions[0]['id'], 'view')
+        self.assertEqual(actions[1]['id'], 'action')
+
+    def test_action_userdata(self):
+        import ptah_cms
+
+        class Content(object):
+            __name__ = ''
+
+        ptah_cms.contentAction(Content, 'view', 'View', testinfo='test')
+        self._init_memphis()
+
+        request = self._makeRequest()
+
+        actions = ptah_cms.listActions(Content(), request)
+
+        self.assertEqual(actions[0]['data'], {'testinfo': 'test'})

@@ -14,6 +14,9 @@ from ptah_cms.content import loadParents
 # type information
 from ptah_cms.tinfo import Type
 from ptah_cms.tinfo import registeredTypes
+
+# content actions
+from ptah_cms.tinfo import listActions
 from ptah_cms.tinfo import contentAction
 
 # application root

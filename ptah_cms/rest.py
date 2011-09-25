@@ -27,7 +27,7 @@ class Applications(ptah.rest.Action):
 
     name = 'applications'
     title = 'List applications'
-    
+
     def __call__(self, request, *args):
         apps = []
 
@@ -117,7 +117,7 @@ class TypeRestInfo(object):
             widget = node.widget
             if not widget:
                 widget = form.getDefaultWidgetName(node)
-                
+
             schema.append(
                 OrderedDict(
                     (('name', node.name),
@@ -209,7 +209,7 @@ class ContentRestInfo(object):
         schema = content.__type__.schema
         if schema is None:
             schema = ptah_cms.ContentSchema
-        
+
         for node in schema:
             val = getattr(content, node.name, node.missing)
             try:
@@ -247,13 +247,13 @@ class ContainerRestInfo(ContentRestInfo):
 
     def __call__(self, content, request, *args):
         info = super(ContainerRestInfo, self).__call__(content, request)
-        
+
         contents = []
         for item in content.values():
             if not ptah.checkPermission(
                 item, self.__permission__, request, False):
                 continue
-            
+
             contents.append(
                 OrderedDict((
                     ('__name__', item.__name__),
@@ -298,7 +298,7 @@ class ContentAPIDoc(ContentRestInfo):
                 (name, action.title,
                  OrderedDict(
                      (('name', name),
-                      ('link', '%s%s/%s'%(url, content.__uuid__, name)), 
+                      ('link', '%s%s/%s'%(url, content.__uuid__, name)),
                       ('title', action.title),
                       ('description', action.description)))))
 
@@ -374,7 +374,7 @@ class CreateContentAction(object):
 
         if not uuid:
             raise HTTPNotFound('Type information is not found')
-        
+
         tinfo = ptah_cms.registeredTypes.get(uuid)
         if tinfo is None:
             raise HTTPNotFound('Type information is not found')

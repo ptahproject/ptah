@@ -16,7 +16,7 @@ class Content(Node):
 
     __tablename__ = 'ptah_cms_content'
 
-    __id__ = sqla.Column('id', sqla.Integer, 
+    __id__ = sqla.Column('id', sqla.Integer,
                          sqla.ForeignKey('ptah_cms_nodes.id'), primary_key=True)
     __path__ = sqla.Column('path', sqla.Unicode, default=u'')
     __name_id__ = sqla.Column('name', sqla.Unicode(255))
@@ -56,9 +56,9 @@ class Content(Node):
         self.__name_id__ = value
 
     __name__ = property(__get_name, __set_name)
-    
+
     def __resource_url__(self, request, info):
-        return '%s%s'%(request.root.__root_path__, 
+        return '%s%s'%(request.root.__root_path__,
                        self.__path__[len(request.root.__path__):])
 
 
@@ -91,7 +91,7 @@ def loadParents(content):
             break
 
         parents.append(parent)
-        
+
         if parent.__parent__ is None:
             parent.__parent__ = parent.__parent_ref__
         parent = parent.__parent__

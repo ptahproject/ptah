@@ -30,7 +30,7 @@ class Container(Content):
             return self._v_keys
         else:
             if self._v_keys is None:
-                self._v_keys = [n for n, in 
+                self._v_keys = [n for n, in
                                 self._sql_keys.all(uuid=self.__uuid__)]
 
             self._v_keys_loaded = True
@@ -56,7 +56,7 @@ class Container(Content):
 
         values = []
         old_items = self._v_items
-        
+
         self._v_keys = keys = []
         self._v_items = items = {}
 
@@ -166,7 +166,7 @@ class Container(Content):
                 Session.delete(item)
             except:
                 pass
-            
+
             return
 
         raise KeyError(item)

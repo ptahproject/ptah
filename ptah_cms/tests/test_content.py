@@ -15,13 +15,13 @@ class TestContent(Base):
         class MyContent(ptah_cms.Content):
 
             __mapper_args__ = {'polymorphic_identity': 'mycontent'}
-            
+
             def __uuid_generator__(self):
                 return uuid.uuid4().get_hex()
 
-       
+
         factory = ptah_cms.ApplicationFactory('/app1', 'root', 'Root App')
-        
+
         root = factory(self.request)
 
         content = MyContent(__name__='test',
