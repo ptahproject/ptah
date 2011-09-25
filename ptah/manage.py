@@ -56,7 +56,7 @@ class PtahModule(object):
 def PtahAccessManager(id):
     """ default access manager """
     principal = resolve(id)
-   
+
     if '*' in PTAH_CONFIG.managers:
         return True
 
@@ -96,7 +96,7 @@ class PtahManageRoute(object):
         userid = authenticated_userid(request)
         if not userid:
             raise HTTPForbidden()
-            
+
         if not ACCESS_MANAGER(userid):
             raise HTTPForbidden()
 

@@ -18,10 +18,10 @@ class BatchPage(object):
 
         first = 1
         last = size
-        
+
         prevIdx = current - self.left_neighbours
         nextIdx = current + 1
-        
+
         if first < current:
             pages.append(first)
         if first + 1 < prevIdx:

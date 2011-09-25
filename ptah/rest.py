@@ -29,7 +29,7 @@ def registerServiceAction(name, action):
 
 class RestException(HTTPServerError):
     """ rest exception """
-    
+
 
 class Service(object):
 
@@ -46,7 +46,7 @@ class Service(object):
         action = self.actions.get(action)
         if action:
             return action(request, *args)
-    
+
 
 class Action(object):
 
@@ -77,15 +77,15 @@ class ServiceAPIDoc(Action):
              ('description', srv.description),
              ('actions', [])))
 
-        actions = [(a.title, a.name, a.description) 
+        actions = [(a.title, a.name, a.description)
                    for a in srv.actions.values()]
         actions.sort()
-        
+
         for title, name, description in actions:
             info['actions'].append(
                 OrderedDict(
                     (('name', name),
-                     ('link', '%s/%s'%(url, name)), 
+                     ('link', '%s/%s'%(url, name)),
                      ('title', title),
                      ('description', description))))
 
@@ -111,7 +111,7 @@ class Login(object):
 
     def render(self):
         request = self.request
-        
+
         login = request.POST.get('login', '')
         password = request.POST.get('password', '')
 
@@ -202,5 +202,5 @@ class Api(object):
 
         if isinstance(result, Response):
             return result
-        
+
         return '%s\n\n'%dumps(result, indent=True, default=dthandler)

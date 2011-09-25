@@ -65,12 +65,15 @@ from ptah.settings import PTAH_CONFIG
 # batches
 from ptah.batch import BatchPage
 
-# sqlalchemy query freezer
-from ptah.query import QueryFreezer
+# sqlalchemy utils
+from ptah.sqla import QueryFreezer
+from ptah.sqla import JsonDictType
+from ptah.sqla import JsonListType
+
 
 # create wsgi app
 class WSGIAppInitialized(object):
-    
+
     def __init__(self, app, config):
         self.app = app
         self.config = config
@@ -81,7 +84,7 @@ def make_wsgi_app(global_config, **settings):
     import pyramid_sqla
     from pyramid import path
     from pyramid.config import Configurator
-    
+
     # configuration
     config = Configurator(settings=settings)
 

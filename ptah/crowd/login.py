@@ -58,7 +58,7 @@ class LoginForm(form.Form):
         if info.status:
             request.registry.notify(
                 ptah.events.LoggedInEvent(info.principal))
-                
+
             headers = security.remember(request, info.principal.uuid)
             raise HTTPFound(
                 headers = headers,
@@ -133,7 +133,7 @@ def logout(request):
     if uid is not None:
         request.registry.notify(
             ptah.events.LoggedOutEvent(ptah.resolve(uid)))
-            
+
         view.addMessage(request, _('Logout successful!'), 'info')
         headers = security.forget(request)
         raise HTTPFound(

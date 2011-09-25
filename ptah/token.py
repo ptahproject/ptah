@@ -4,9 +4,9 @@ import pyramid_sqla as psa
 import sqlalchemy as sqla
 from zope import interface
 from memphis import config
-from ptah.query import QueryFreezer
+from sqla import QueryFreezer
 
-__all__ = ['registerTokenType', 'tokenService', 'ITokenType', 'ITokenService']
+__all__ = ['TokenType', 'service']
 
 
 class ITokenType(interface.Interface):
@@ -48,24 +48,19 @@ types = {}
 class TokenType(object):
     interface.implements(ITokenType)
 
-    def __init__(self, id, timeout, title, description):
+    def __init__(self, id, timeout, title='', description=''):
         self.id = id
         self.timeout = timeout
         self.title = title
         self.description = description
 
+        types[id] = self
 
-def registerTokenType(id, timeout, title='', description=''):
-    tt = TokenType(id, timeout, title, description)
-    types[tt.id] = tt
-
-    info = config.DirectiveInfo()
-    info.attach(
-        config.Action(
-            None, discriminator = ('ptah.token:tokenType', id)))
-
-    return tt
-
+        info = config.DirectiveInfo()
+        info.attach(
+            config.Action(
+                None, discriminator = ('ptah:token-type', id))
+            )
 
 class TokenService(object):
     interface.implements(ITokenService)
@@ -82,6 +77,7 @@ class TokenService(object):
     def generate(self, typ, data):
         t = Token(typ, data)
         Session.add(t)
+        Session.flush()
         return t.token
 
     def get(self, token):
@@ -100,7 +96,7 @@ class TokenService(object):
                          Token.valid > datetime.datetime.now())).delete()
 
 
-tokenService = TokenService()
+service = TokenService()
 
 Base = psa.get_base()
 Session = psa.get_session()

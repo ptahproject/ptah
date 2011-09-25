@@ -17,9 +17,9 @@ class IRestServiceAction(object):
     """ simple rest service action """
 
     name = interface.Attribute('Name')
-    
+
     title = interface.Attribute('Action title')
-    
+
     description = interface.Attribute('Action description')
 
     def __call__(request, *args):
@@ -83,7 +83,7 @@ class IAuthentication(interface.Interface):
 
 
 class IAuthChecker(interface.Interface):
-    """ it is possible to perform additional checks on principal 
+    """ it is possible to perform additional checks on principal
     during authentication process"""
 
     def __call__(principal, authInfo):

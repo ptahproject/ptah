@@ -35,7 +35,7 @@ class CreateUserForm(form.Form):
         user.password = ptah.passwordTool.encodePassword(data['password'])
         Session.add(user)
         Session.flush()
-        
+
         self.request.registry.notify(PrincipalAddedEvent(user))
 
         self.message('User has been created.', 'success')

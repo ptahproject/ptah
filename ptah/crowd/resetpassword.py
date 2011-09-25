@@ -58,7 +58,7 @@ class ResetPassword(form.Form):
 
             if principal is not None and \
                    passwordTool.hasPasswordChanger(principal.uuid):
-                
+
                 passcode = passwordTool.generatePasscode(principal.uuid)
 
                 template = ResetPasswordTemplate(principal, request)

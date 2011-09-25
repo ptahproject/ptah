@@ -11,8 +11,8 @@ from ptah import token, mail
 from memberprops import MemberProperties
 from interfaces import IPrincipalWithEmail
 
-TOKEN_TYPE = token.registerTokenType(
-    '5cfcb3e2-e93f-42f7-9d1c-59077952bd72', timedelta(hours=24))
+TOKEN_TYPE = token.TokenType(
+    'cd51f14e9b2842608ccadf1a240046c1', timedelta(hours=24))
 
 
 @ptah.registerAuthChecker
@@ -36,7 +36,7 @@ def validationAndSuspendedChecker(principal, info):
 
 def initiateValidation(principal, request):
     view.addMessage(request, 'Validation email has been sent.')
-    t = token.tokenService.generate(TOKEN_TYPE, principal.uuid)
+    t = token.service.generate(TOKEN_TYPE, principal.uuid)
     template = ValidationTemplate(principal, request)
     template.token = t
     template.send()
@@ -81,12 +81,12 @@ def validate(request):
     """Validate account"""
     t = request.GET.get('token')
 
-    data = token.tokenService.get(t)
+    data = token.service.get(t)
     if data is not None:
         user = MemberProperties.get(data)
         if user is not None:
             user.validated = True
-            token.tokenService.remove(t)
+            token.service.remove(t)
             view.addMessage(request, "Account has been successfully validated.")
 
             request.registry.notify(

@@ -12,7 +12,7 @@ class TestPermission(Base):
         import ptah
 
         perm = ptah.Permission('perm', 'Permission', 'Test permission')
-       
+
         self.assertTrue(perm == 'perm')
         self.assertTrue(perm.title == 'Permission')
         self.assertTrue(perm.description == 'Test permission')
@@ -37,7 +37,7 @@ class TestACL(Base):
         import ptah
 
         pmap = ptah.ACL('map', 'ACL', 'Map')
-        
+
         self.assertTrue(pmap.name == 'map')
         self.assertTrue(pmap.title == 'ACL')
         self.assertTrue(pmap.description == 'Map')
@@ -248,16 +248,16 @@ class TestACLsProps(Base):
         self.assertEqual(content.__acl__, ())
 
         content.__acls__ = ('acl1',)
-        self.assertEqual(list(content.__acl__), 
+        self.assertEqual(list(content.__acl__),
                          [['Allow', 'role1', set(['perm2', 'perm1'])]])
 
         content.__acls__ = ('acl1', 'acl2',)
-        self.assertEqual(list(content.__acl__), 
+        self.assertEqual(list(content.__acl__),
                          [['Allow', 'role1', set(['perm2', 'perm1'])],
                           ['Deny', 'role1', set(['perm2', 'perm1'])]])
 
         content.__acls__ = ('acl2', 'acl1')
-        self.assertEqual(list(content.__acl__), 
+        self.assertEqual(list(content.__acl__),
                          [['Deny', 'role1', set(['perm2', 'perm1'])],
                           ['Allow', 'role1', set(['perm2', 'perm1'])]])
 
@@ -268,7 +268,7 @@ class TestRole(Base):
         import ptah
 
         role = ptah.Role('myrole', 'MyRole')
-        
+
         self.assertTrue(role.id == 'role:myrole')
         self.assertTrue(role.name == 'myrole')
         self.assertTrue(role.title == 'MyRole')
@@ -281,7 +281,7 @@ class TestRole(Base):
 
         role1 = ptah.Role('myrole', 'MyRole1')
         role2 = ptah.Role('myrole', 'MyRole2')
-        
+
         self.assertRaises(config.ConflictError, self._init_memphis)
 
     def test_role_roles(self):
@@ -340,10 +340,10 @@ class TestRole(Base):
         role.deny('perm1')
 
         self.assertEqual(len(DEFAULT_ACL), 1)
-        
+
         role.unset('perm1')
         self.assertEqual(len(DEFAULT_ACL), 0)
-    
+
 
 class TestDefaultRoles(Base):
 

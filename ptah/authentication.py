@@ -39,7 +39,7 @@ class AuthInfo(object):
         self.keywords = {}
         self.principal = principal
         self.uuid = uuid
-        
+
 
 _notSet = object()
 

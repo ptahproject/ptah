@@ -1,11 +1,16 @@
 """ base class """
 import unittest
+import pyramid_sqla
+import transaction
 from memphis import config
 from pyramid import testing
 from pyramid.threadlocal import manager
 
 
 class Base(unittest.TestCase):
+
+    _settings = {'sqla.url': 'sqlite://',
+                 'sqla.cache': False}
 
     def _makeRequest(self, environ=None): #pragma: no cover
         from pyramid.request import Request
@@ -25,9 +30,18 @@ class Base(unittest.TestCase):
         environ.update(extras)
         return environ
 
-    def _init_memphis(self, settings={}, handler=None, *args, **kw):
+    def _init_memphis(self, settings=None, handler=None, *args, **kw):
+        if settings is None:
+            settings = self._settings
         config.initialize(('ptah', self.__class__.__module__))
         config.initializeSettings(settings, self.p_config)
+
+        # create sql tables
+        Base = pyramid_sqla.get_base()
+        Base.metadata.drop_all()
+        transaction.commit()
+        Base.metadata.create_all()
+        transaction.commit()
 
     def _setup_pyramid(self):
         self.request = request = testing.DummyRequest()

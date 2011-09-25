@@ -17,8 +17,8 @@ from settings import PTAH_CONFIG
 from interfaces import _, IPasswordTool
 
 
-TOKEN_TYPE = token.registerTokenType(
-    '2871cd61-8995-43d2-9b96-d841ec06b8de', timedelta(minutes=10))
+TOKEN_TYPE = token.TokenType(
+    '35c9b7df958f4e93ae9b275a7dc2219e', timedelta(minutes=10))
 
 
 class PlainPasswordManager(object):
@@ -88,22 +88,22 @@ class PasswordTool(object):
         return ptah.extractUriType(uuid) in self._changers
 
     def getPrincipal(self, passcode):
-        data = token.tokenService.get(passcode)
+        data = token.service.get(passcode)
 
         if data is not None:
             return ptah.resolve(data)
 
     def generatePasscode(self, uuid):
-        return token.tokenService.generate(TOKEN_TYPE, uuid)
+        return token.service.generate(TOKEN_TYPE, uuid)
 
     def removePasscode(self, passcode):
-        token.tokenService.remove(passcode)
+        token.service.remove(passcode)
 
     def changePassword(self, passcode, password):
         principal = self.getPrincipal(passcode)
 
         self.removePasscode(passcode)
-        
+
         if principal is not None:
             changer = self._changers.get(ptah.extractUriType(principal.uuid))
             if changer is not None:
@@ -111,7 +111,7 @@ class PasswordTool(object):
                 return True
 
         return False
-                
+
     def validatePassword(self, password):
         if len(password) < self.min_length:
             #return _('Password should be at least ${count} characters.',

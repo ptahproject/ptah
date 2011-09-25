@@ -6,8 +6,8 @@ from memphis import config
 from memphis.form.interfaces import ICSRFService
 
 
-TOKEN_TYPE = token.registerTokenType(
-    'cc2a8158-ea1e-4f04-b94c-5346fca9d7c3', timedelta(minutes=30))
+TOKEN_TYPE = token.TokenType(
+    '1c49d2aacf844557a7aff3dbf09c0740', timedelta(minutes=30))
 
 
 class CSRFService(object):
@@ -15,13 +15,13 @@ class CSRFService(object):
     config.utility()
 
     def generate(self, data):
-        t = token.tokenService.getByData(TOKEN_TYPE, data)
+        t = token.service.getByData(TOKEN_TYPE, data)
         if t is not None:
             return t
-        return token.tokenService.generate(TOKEN_TYPE, data)
+        return token.service.generate(TOKEN_TYPE, data)
 
     def get(self, t):
-        return token.tokenService.get(t)
+        return token.service.get(t)
 
     def remove(self, t):
-        return token.tokenService.remove(t)
+        return token.service.remove(t)
