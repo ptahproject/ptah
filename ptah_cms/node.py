@@ -1,11 +1,9 @@
 """ Node implementation """
+import ptah
 import uuid
 import pyramid_sqla
 import sqlalchemy as sqla
 from zope import interface
-
-import ptah
-from ptah.utils import JsonDictType, JsonListType
 
 from interfaces import INode
 
@@ -27,8 +25,8 @@ class Node(Base):
     __parent_id__ = sqla.Column('parent', sqla.String,sqla.ForeignKey(__uuid__))
 
     __owner__ = sqla.Column('owner', sqla.String, default='')
-    __local_roles__ = sqla.Column('roles', JsonDictType(), default={})
-    __acls__ = sqla.Column('acls', JsonListType(), default=[])
+    __local_roles__ = sqla.Column('roles', ptah.JsonDictType(), default={})
+    __acls__ = sqla.Column('acls', ptah.JsonListType(), default=[])
 
     __children__ = sqla.orm.relationship(
         'Node',

@@ -5,7 +5,6 @@ from pyramid.httpexceptions import HTTPForbidden
 
 import ptah
 from ptah import checkPermission
-from ptah.utils import JsonListType
 
 from ptah_cms.node import Node, Session
 from ptah_cms.interfaces import IContent
@@ -30,10 +29,10 @@ class Content(Node):
     effective = sqla.Column(sqla.DateTime)
     expires = sqla.Column(sqla.DateTime)
 
-    creators = sqla.Column(JsonListType(), default=[])
-    subjects = sqla.Column(JsonListType(), default=[])
+    creators = sqla.Column(ptah.JsonListType(), default=[])
+    subjects = sqla.Column(ptah.JsonListType(), default=[])
     publisher = sqla.Column(sqla.Unicode, default=u'')
-    contributors = sqla.Column(JsonListType(), default=[])
+    contributors = sqla.Column(ptah.JsonListType(), default=[])
 
     # sql queries
     _sql_get = ptah.QueryFreezer(
