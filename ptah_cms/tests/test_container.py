@@ -160,6 +160,17 @@ class TestContainer(Base):
         self.assertEqual(container.get('content1').__uuid__, c1_u)
         self.assertEqual(container.get('content2').__uuid__, c2_u)        
 
+    def test_container_items(self):
+        container = Container(__name__ = 'container', __path__ = '/container/')
+        content1 = Content(title='Content1')
+        content2 = Content(title='Content2')
+
+        container['content1'] = content1
+        container['content2'] = content2
+
+        self.assertEqual(list(container.items()),
+                         [('content1', content1), ('content2', content2)])
+
     def test_container_simple_move_to_subtree(self):
         container = Container(__name__ = 'container', __path__ = '/container/')
         folder = Container(title='Folder')

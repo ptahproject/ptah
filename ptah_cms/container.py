@@ -75,6 +75,10 @@ class Container(Content):
 
         return values
 
+    def items(self):
+        for item in self.values():
+            yield item.__name__, item
+
     def __contains__(self, key):
         return key in self.keys()
 
