@@ -1,8 +1,6 @@
 """ forbidden view """
 import urllib
-from memphis import view, config
-from pyramid.interfaces import IRootFactory
-from pyramid.traversal import DefaultRootFactory
+from memphis import view
 from pyramid.httpexceptions import HTTPFound, HTTPForbidden, HTTPNotFound
 
 from ptah import authService
@@ -15,14 +13,6 @@ view.registerLayout(
     'ptah-exception', parent='.',
     template = view.template('ptah:templates/ptah-exception.pt'))
 
-ROOT_FACTORY = None
-
-@config.handler(config.SettingsInitialized)
-def initRootFactory(ev):
-    global ROOT_FACTORY
-    ROOT_FACTORY = config.registry.queryUtility(
-        IRootFactory, default=DefaultRootFactory)
-
 
 class Forbidden(view.View):
     view.pyramidView(context=HTTPForbidden,
@@ -32,7 +22,11 @@ class Forbidden(view.View):
     def update(self):
         request = self.request
 
-        self.__parent__ = ROOT_FACTORY(request)
+        context = getattr(self.request, 'context', None)
+        if context is None:
+            context = getattr(self.request, 'root', None)
+        
+        self.__parent__ = context
 
         user = authService.getUserId()
         if user is None:
@@ -60,7 +54,11 @@ class NotFound(view.View):
                      template=view.template('ptah:templates/notfound.pt'))
 
     def update(self):
-        self.__parent__ = ROOT_FACTORY(self.request)
+        context = getattr(self.request, 'context', None)
+        if context is None:
+            context = getattr(self.request, 'root', None)
+        
+        self.__parent__ = context
 
         self.admin = MAIL.from_name
         self.email = MAIL.from_address
