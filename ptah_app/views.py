@@ -37,8 +37,7 @@ class ContentLayout(view.Layout):
                 template=view.template("ptah_app:templates/layoutcontent.pt"))
 
     def update(self):
-        ti = self.context.__type__
-        self.actions = ti.listActions(self.context, self.request)
+        self.actions = ptah_cms.listActions(self.context, self.request)
 
 
 view_tmpl = view.template("ptah_app:templates/layoutdefault.pt")
@@ -74,7 +73,7 @@ class ContainerListing(view.View):
         context = self.context
         request = self.request
         registry = request.registry
-        
+
         if 'form.buttons.remove' in request.POST:
             uuids = self.request.POST.getall('item')
             for uuid in uuids:

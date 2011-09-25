@@ -34,7 +34,7 @@ class AddForm(form.Form):
 
     def chooseName(self, content, **kw):
         name = kw.get('title', u'')
-        
+
         name = re.sub(
             r'-{2,}', '-',
             re.sub('^\w-|-\w-|-\w$', '-',
