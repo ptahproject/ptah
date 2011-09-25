@@ -30,21 +30,21 @@
 	</tr>
       </table>
 
-      <div class="pagination" tal:condition="len(view.batches)>1">
+      <div class="pagination" tal:condition="len(view.pages)>1">
 	<ul>
-	  <li class="${'prev' if view.hasPrev else 'prev disabled'}">
-	    <a href="?batch=${view.prevLink}">&larr; Previous</a>
+	  <li class="${'prev' if view.prev else 'prev disabled'}">
+	    <a href="?batch=${view.prev}">&larr; Previous</a>
 	  </li>
-
-	  <tal:block repeat="idx view.batches">
-	    <li tal:define="info view.pageInfo(idx)"
-		tal:attributes="class info[0]">
-	      <a href="?batch=${idx}">${info[1]}</a>
+	  
+	  <tal:block repeat="idx view.pages">
+	    <li tal:define="klass '' if idx else 'disabled'"
+		tal:attributes="class 'active' if idx==view.current else klass">
+	      <a href="?batch=${idx}">${idx if idx else '...'}</a>
 	    </li>
 	  </tal:block>
-
-	  <li class="${'next' if view.hasNext else 'next disabled'}">
-	    <a href="?batch=${view.nextLink}">
+	  
+	  <li class="${'next' if view.next else 'next disabled'}">
+	    <a href="?batch=${view.next}">
 	      Next &rarr;
 	    </a>
 	  </li>

@@ -16,7 +16,7 @@ class TableView(form.Form):
     __intr_path__ = '/ptah-manage/sqla/${table}/index.html'
 
     csrf = True
-    bsize = 15
+    page = ptah.BatchPage(15)
 
     def update(self):
         table = self.table = self.context.table
@@ -44,31 +44,12 @@ class TableView(form.Form):
                 current = 1
 
         self.size = Session.query(table).count()
-
-        total = int(round(self.size/float(self.bsize)+0.5))
-        batches = range(1, total+1)
-
-        self.total = total
         self.current = current
 
-        self.hasNext = current != total
-        self.hasPrev = current > 1
+        self.pages, self.prev, self.next = self.page(self.size, self.current)
 
-        self.prevLink = current if not self.hasPrev else current-1
-        self.nextLink = current if not self.hasNext else current+1
-
-        self.batches = ptah.first_neighbours_last(batches, current-1, 3, 3)
-
-        self.data = Session.query(table)\
-            .offset((current-1)*self.bsize).limit(self.bsize).all()
-
-    def pageInfo(self, idx):
-        if idx is None:
-            return 'disabled', '...'
-        elif idx == self.current:
-            return 'active', idx
-        else:
-            return '', idx
+        offset, limit = self.page.offset(current)
+        self.data = Session.query(table).offset(offset).limit(limit).all()
 
     @form.button('Add', actype=form.AC_PRIMARY)
     def add(self):

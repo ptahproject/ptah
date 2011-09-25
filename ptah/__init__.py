@@ -63,7 +63,7 @@ from ptah import mail
 from ptah.settings import PTAH_CONFIG
 
 # batches
-from ptah.batch import Batch, Batches, first_neighbours_last
+from ptah.batch import BatchPage
 
 # sqlalchemy query freezer
 from ptah.query import QueryFreezer

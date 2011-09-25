@@ -78,7 +78,7 @@ class SearchUsers(form.Form):
     fields = form.Fields(SearchSchema)
 
     users = None
-    bsize = 15
+    page = ptah.BatchPage(15)
 
     def getContent(self):
         return {'term': self.request.session.get('ptah-search-term', '')}
@@ -128,23 +128,13 @@ class SearchUsers(form.Form):
                 if not current:
                     current = 1
 
-                total = int(round(self.size/float(self.bsize)+0.5))
-                batches = range(1, total+1)
+            self.current = current
 
-                self.total = total
-                self.current = current
+            self.pages, self.prev, self.next = self.page(self.size,self.current)
 
-                self.hasNext = current != total
-                self.hasPrev = current > 1
-
-                self.prevLink = current if not self.hasPrev else current-1
-                self.nextLink = current if not self.hasNext else current+1
-
-                self.batches = ptah.first_neighbours_last(
-                    batches, current-1, 3, 3)
-
-                self.users = Session.query(SQLUser)\
-                    .offset((current-1)*self.bsize).limit(self.bsize).all()
+            offset, limit = self.page.offset(current)
+            self.users = Session.query(SQLUser)\
+                    .offset(offset).limit(limit).all()
 
     @form.button(_('Search'), actype=form.AC_PRIMARY)
     def search(self):
