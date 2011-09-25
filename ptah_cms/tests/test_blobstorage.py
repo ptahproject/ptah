@@ -11,20 +11,23 @@ class TestBlob(Base):
     def test_blob(self):
         import ptah_cms
 
-        self.assertTrue(ptah_cms.IBlobStorage.providedBy(ptah_cms.blobStorage))
-
-        blob_uuid = ptah_cms.blobStorage.add(StringIO('blob data'))
-        blob = ptah_cms.blobStorage.get(blob_uuid)
-        
+        blob = ptah_cms.blobStorage.add(StringIO('blob data'))
         self.assertTrue(ptah_cms.IBlob.providedBy(blob))
         self.assertEqual(blob.read(), 'blob data')
+        self.assertTrue(ptah_cms.IBlobStorage.providedBy(ptah_cms.blobStorage))
+
+    def test_blob_create(self):
+        import ptah_cms
+
+        blob = ptah_cms.blobStorage.create()
+        self.assertTrue(ptah_cms.IBlob.providedBy(blob))
+        self.assertEqual(blob.read(), None)
 
     def test_blob_metadata(self):
         import ptah_cms
 
-        blob_uuid = ptah_cms.blobStorage.add(
+        blob = ptah_cms.blobStorage.add(
             StringIO('blob data'), filename='test.txt', mimetype='text/plain')
-        blob = ptah_cms.blobStorage.get(blob_uuid)
         
         self.assertEqual(blob.filename, 'test.txt')
         self.assertEqual(blob.mimetype, 'text/plain')
@@ -32,7 +35,9 @@ class TestBlob(Base):
     def test_blob_resolver(self):
         import ptah, ptah_cms
 
-        blob_uuid = ptah_cms.blobStorage.add(StringIO('blob data'))
+        blob = ptah_cms.blobStorage.add(StringIO('blob data'))
+
+        blob_uuid = blob.__uuid__
 
         blob = ptah.resolve(blob_uuid)
         
@@ -50,9 +55,9 @@ class TestBlob(Base):
         content = MyContent()
         content_uuid = content.__uuid__
         ptah_cms.Session.add(content)
-        
+
         blob_uuid = ptah_cms.blobStorage.add(
-            StringIO('blob data'), content)
+            StringIO('blob data'), content).__uuid__
         transaction.commit()
 
         blob = ptah.resolve(blob_uuid)
@@ -64,7 +69,7 @@ class TestBlob(Base):
     def test_blob_write(self):
         import ptah, ptah_cms
 
-        blob_uuid = ptah_cms.blobStorage.add(StringIO('blob data'))
+        blob_uuid = ptah_cms.blobStorage.add(StringIO('blob data')).__uuid__
         blob = ptah.resolve(blob_uuid)
         blob.write('new data')
         transaction.commit()

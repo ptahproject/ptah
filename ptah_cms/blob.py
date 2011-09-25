@@ -49,19 +49,25 @@ class BlobStorage(object):
         lambda: Session.query(Blob)
             .filter(Blob.__parent_id__ == sqla.sql.bindparam('parent')))
 
+    def create(self, parent=None):
+        blob = Blob(__parent__=parent)
+        Session.add(blob)
+        Session.flush()
+
+        return blob
+
     def add(self, data, parent=None, **metadata):
+        blob = self.create(parent)
+        
         data.seek(0)
         
-        blob = Blob(__parent__=parent)
         blob.data = data.read()
         blob.updateMetadata(**metadata)
 
         data.seek(0, os.SEEK_END)
         blob.size = data.tell()
-        Session.add(blob)
-        Session.flush()
-
-        return blob.__uuid__
+        
+        return blob
 
     def get(self, uuid):
         return self._sql_get.first(uuid=uuid)
