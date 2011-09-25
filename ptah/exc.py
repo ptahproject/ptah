@@ -1,16 +1,27 @@
 """ forbidden view """
 import urllib
-from pyramid.security import authenticated_userid
-from pyramid.httpexceptions import HTTPFound, HTTPForbidden
+from memphis import view, config
+from pyramid.interfaces import IRootFactory
+from pyramid.traversal import DefaultRootFactory
+from pyramid.httpexceptions import HTTPFound, HTTPForbidden, HTTPNotFound
 
-from memphis import view
-from ptah.settings import PTAH_CONFIG
+from ptah import authService
 from ptah.manage import DefaultRoot
+from ptah.mail import MAIL
+from ptah.settings import PTAH_CONFIG
 
 
 view.registerLayout(
     'ptah-exception', parent='.',
     template = view.template('ptah:templates/ptah-exception.pt'))
+
+ROOT_FACTORY = None
+
+@config.handler(config.SettingsInitialized)
+def initRootFactory(ev):
+    global ROOT_FACTORY
+    ROOT_FACTORY = config.registry.queryUtility(
+        IRootFactory, default=DefaultRootFactory)
 
 
 class Forbidden(view.View):
@@ -19,11 +30,11 @@ class Forbidden(view.View):
                      template=view.template('ptah:templates/forbidden.pt'))
 
     def update(self):
-        self.__parent__ = DefaultRoot()
-
         request = self.request
 
-        user = authenticated_userid(request)
+        self.__parent__ = ROOT_FACTORY(request)
+
+        user = authService.getUserId()
         if user is None:
             loginurl = PTAH_CONFIG.login
             if loginurl and not loginurl.startswith(('http://', 'https://')):
@@ -41,3 +52,16 @@ class Forbidden(view.View):
             return
 
         self.request.response.status = HTTPForbidden.code
+
+
+class NotFound(view.View):
+    view.pyramidView(context=HTTPNotFound,
+                     layout='ptah-exception',
+                     template=view.template('ptah:templates/notfound.pt'))
+
+    def update(self):
+        self.__parent__ = ROOT_FACTORY(self.request)
+
+        self.admin = MAIL.from_name
+        self.email = MAIL.from_address
+        self.request.response.status = HTTPNotFound.code
