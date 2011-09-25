@@ -2,7 +2,7 @@
 import colander
 import sqlalchemy as sqla
 from pyramid.decorator import reify
-from pyramid.httpexceptions import HTTPFound
+from pyramid.httpexceptions import HTTPFound, HTTPNotFound
 
 from zope import interface
 from memphis import view, form
@@ -54,6 +54,8 @@ class FileDownloadView(view.View):
 
     def render(self):
         blob = ptah.resolve(self.context.blobref)
+        if blob is None:
+            raise HTTPNotFound()
 
         response = self.request.response
         response.content_type = blob.mimetype
@@ -89,12 +91,12 @@ class FileAddForm(AddForm):
         ptah_cms.Session.flush()
 
         fd = data['data']
-        blob_uuid = ptah_cms.blobStorage.add(
+        blob = ptah_cms.blobStorage.add(
             fd['fp'], file,
             filename = fd['filename'],
             mimetype = fd['mimetype'])
 
-        file.blobref = blob_uuid
+        file.blobref = blob.__uuid__
         return file
 
 
