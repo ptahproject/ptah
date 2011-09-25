@@ -59,11 +59,11 @@ from ptah import events
 # mail api
 from ptah import mail
 
-# ptah settnigs
+# ptah settings
 from ptah.settings import PTAH_CONFIG
 
-# batches
-from ptah.batch import BatchPage
+# pagination
+from ptah.util import Pagination
 
 # sqlalchemy utils
 from ptah.sqla import QueryFreezer

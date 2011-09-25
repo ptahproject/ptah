@@ -78,7 +78,7 @@ class SearchUsers(form.Form):
     fields = form.Fields(SearchSchema)
 
     users = None
-    page = ptah.BatchPage(15)
+    page = ptah.Pagination(15)
 
     def getContent(self):
         return {'term': self.request.session.get('ptah-search-term', '')}

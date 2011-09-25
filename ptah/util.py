@@ -1,7 +1,34 @@
-"""Batching Implementation"""
+""" csrf service for memphis.form """
+from datetime import timedelta
+from zope import interface
+from memphis import config
+from memphis.form.interfaces import ICSRFService
+
+from ptah import token
 
 
-class BatchPage(object):
+class MemphisFormCSRFService(object):
+    interface.implements(ICSRFService)
+    config.utility()
+    
+    TOKEN_TYPE = token.TokenType(
+        '1c49d2aacf844557a7aff3dbf09c0740', timedelta(minutes=30))
+
+    def generate(self, data):
+        t = token.service.getByData(self.TOKEN_TYPE, data)
+        if t is not None:
+            return t
+        return token.service.generate(self.TOKEN_TYPE, data)
+
+    def get(self, t):
+        return token.service.get(t)
+
+    def remove(self, t):
+        return token.service.remove(t)
+
+
+class Pagination(object):
+    """ simple pagination """
 
     def __init__(self, page_size, left_neighbours=3, right_neighbours=3):
         self.page_size = page_size
@@ -12,6 +39,9 @@ class BatchPage(object):
         return (current-1)*self.page_size, self.page_size
 
     def __call__(self, total, current):
+        if not current:
+            raise ValueError(current)
+        
         size = int(round(total/float(self.page_size)+0.4))
 
         pages = []

@@ -1,4 +1,3 @@
-""" role """
 import transaction
 from memphis import config
 from datetime import timedelta

@@ -16,7 +16,7 @@ class TableView(form.Form):
     __intr_path__ = '/ptah-manage/sqla/${table}/index.html'
 
     csrf = True
-    page = ptah.BatchPage(15)
+    page = ptah.Pagination(15)
 
     def update(self):
         table = self.table = self.context.table
