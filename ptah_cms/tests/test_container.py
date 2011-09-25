@@ -59,6 +59,46 @@ class TestContainer(Base):
         self.assertRaises(
             KeyError, container.__setitem__, 'content', content)
 
+    def test_container_keys_values_del(self):
+        container = Container(__name__ = 'container', __path__ = '/container/')
+        content = Content(title='Content')
+
+        container['content'] = content
+        self.assertEqual(container.keys(), ['content'])
+        self.assertEqual(container.values(), [content])
+
+        del container['content']
+        self.assertEqual(container.keys(), [])
+        self.assertEqual(container.values(), [])
+
+    def test_container_keys_with_local(self):
+        container = Container(__name__ = 'container', __path__ = '/container/')
+        content = Content(title='Content')
+        container['content'] = content
+
+        ptah_cms.Session.add(container)
+        ptah_cms.Session.add(content)
+        ptah_cms.Session.flush()
+
+        content_uuid = content.__uuid__
+        container_uuid = container.__uuid__
+        transaction.commit()
+
+        container = ptah.resolve(container_uuid)
+
+        c2 = Content(title='Content2')
+        container['content2'] = c2
+
+        self.assertEqual(container.keys(), ['content', 'content2'])
+        self.assertEqual([c.__uuid__ for c in container.values()],
+                         [content_uuid, c2.__uuid__])
+
+        del container['content']
+        
+        self.assertEqual(container.keys(), ['content2'])
+        self.assertEqual([c.__uuid__ for c in container.values()],
+                         [c2.__uuid__])
+
     def test_container_simple_move(self):
         container = Container(__name__ = 'container', __path__ = '/container/')
         content = Content(title='Content')
@@ -87,6 +127,38 @@ class TestContainer(Base):
         container = ptah.resolve(container_uuid)
         self.assertEqual(container.keys(), ['moved'])
         self.assertEqual(container['moved'].__uuid__, content_uuid)
+
+    def test_container_getitem(self):
+        container = Container(__name__ = 'container', __path__ = '/container/')
+        content1 = Content(title='Content1')
+        content2 = Content(title='Content2')
+
+        container['content1'] = content1
+        container['content2'] = content2
+
+        self.assertEqual(container['content1'].__uuid__, content1.__uuid__)
+        self.assertEqual(container['content2'].__uuid__, content2.__uuid__)
+        self.assertEqual(container.get('content1').__uuid__, content1.__uuid__)
+        self.assertEqual(container.get('content2').__uuid__, content2.__uuid__)
+
+        ptah_cms.Session.add(container)
+        ptah_cms.Session.add(content1)
+        ptah_cms.Session.add(content2)
+        ptah_cms.Session.flush()
+
+        c_u = container.__uuid__
+        c1_u = content1.__uuid__
+        c2_u = content2.__uuid__
+        transaction.commit()
+
+        container = ptah.resolve(c_u)
+        self.assertEqual(container['content1'].__uuid__, c1_u)
+        self.assertEqual(container['content2'].__uuid__, c2_u)
+        transaction.commit()
+
+        container = ptah.resolve(c_u)       
+        self.assertEqual(container.get('content1').__uuid__, c1_u)
+        self.assertEqual(container.get('content2').__uuid__, c2_u)        
 
     def test_container_simple_move_to_subtree(self):
         container = Container(__name__ = 'container', __path__ = '/container/')

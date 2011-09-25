@@ -15,8 +15,6 @@ class Container(Content):
 
     _v_keys = None
     _v_keys_loaded = False
-    _v_temp_keys = None
-
     _v_items = None
 
     _sql_keys = ptah.QueryFreezer(
@@ -34,10 +32,6 @@ class Container(Content):
             if self._v_keys is None:
                 self._v_keys = [n for n, in 
                                 self._sql_keys.all(uuid=self.__uuid__)]
-
-            if self._v_temp_keys:
-                self._v_keys.extend(self._v_temp_keys)
-                del self._v_temp_keys
 
             self._v_keys_loaded = True
             return self._v_keys
@@ -61,6 +55,8 @@ class Container(Content):
                 return self._v_items.values()
 
         values = []
+        old_items = self._v_items
+        
         self._v_keys = keys = []
         self._v_items = items = {}
 
@@ -69,6 +65,13 @@ class Container(Content):
             items[item.__name_id__] = item
             keys.append(item.__name_id__)
             values.append(item)
+
+        if old_items:
+            for name, item in old_items.items():
+                if name not in items:
+                    keys.append(name)
+                    items[name] = item
+                    values.append(item)
 
         return values
 
@@ -121,15 +124,8 @@ class Container(Content):
         else:
             self._v_items[key] = item
 
-        if self._v_keys is not None:
-            if key not in self._v_keys:
-                self._v_keys.append(key)
-        else:
-            keys = self._v_temp_keys
-            if keys is None:
-                keys = []
-            keys.append(key)
-            self._v_temp_keys = keys
+        if key not in self._v_keys:
+            self._v_keys.append(key)
 
         # recursevly update children paths
         def update_path(container):
@@ -149,19 +145,24 @@ class Container(Content):
         if isinstance(item, basestring):
             item = self[item]
 
-        if item.__parent__ is self:
+        if item.__parent_id__ == self.__uuid__:
             if isinstance(item, Container):
                 for key in item.keys():
                     del item[key]
 
-                    if self._v_keys:
-                        self._v_keys.remove(key)
-                    if self._v_items and key in self._v_items:
-                        del self._v_items[key]
-
             config.notify(events.ContentDeletingEvent(item))
 
-            Session.delete(item)
+            name = item.__name__
+            if self._v_keys:
+                self._v_keys.remove(name)
+            if self._v_items and name in self._v_items:
+                del self._v_items[name]
+
+            try:
+                Session.delete(item)
+            except:
+                pass
+            
             return
 
         raise KeyError(item)
