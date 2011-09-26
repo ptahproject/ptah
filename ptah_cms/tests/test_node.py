@@ -1,4 +1,4 @@
-import uuid
+import ptah
 import transaction
 from memphis import config
 
@@ -17,17 +17,15 @@ class TestNode(Base):
         import ptah_cms
 
         class MyContent(ptah_cms.Node):
-
-            def __uuid_generator__(self):
-                return uuid.uuid4().get_hex()
+            __uri_generator__ = ptah.UriGenerator('test')
 
         content = MyContent()
-        _uuid = content.__uuid__
+        _uri = content.__uri__
         ptah_cms.Session.add(content)
         transaction.commit()
 
         c = ptah_cms.Session.query(ptah_cms.Node).filter(
-            ptah_cms.Node.__uuid__ == _uuid).one()
+            ptah_cms.Node.__uri__ == _uri).one()
 
         self.assertTrue(isinstance(c, ptah_cms.Node))
 
@@ -35,19 +33,16 @@ class TestNode(Base):
         import ptah_cms
 
         class MyContent(ptah_cms.Node):
-
             __mapper_args__ = {'polymorphic_identity': 'mycontent'}
-
-            def __uuid_generator__(self):
-                return uuid.uuid4().get_hex()
+            __uri_generator__ = ptah.UriGenerator('test')
 
         content = MyContent()
-        _uuid = content.__uuid__
+        _uri = content.__uri__
         ptah_cms.Session.add(content)
         transaction.commit()
 
         c = ptah_cms.Session.query(ptah_cms.Node).filter(
-            ptah_cms.Node.__uuid__ == _uuid).one()
+            ptah_cms.Node.__uri__ == _uri).one()
 
         self.assertTrue(isinstance(c, MyContent))
 
@@ -55,40 +50,34 @@ class TestNode(Base):
         import ptah_cms
 
         class MyContent(ptah_cms.Node):
-
             __mapper_args__ = {'polymorphic_identity': 'mycontent'}
-
-            def __uuid_generator__(self):
-                return uuid.uuid4().get_hex()
+            __uri_generator__ = ptah.UriGenerator('test')
 
         parent = MyContent()
-        parent_uuid = parent.__uuid__
+        parent_uri = parent.__uri__
 
         content = MyContent(__parent__ = parent)
-        __uuid = content.__uuid__
+        __uri = content.__uri__
 
         ptah_cms.Session.add(parent)
         ptah_cms.Session.add(content)
         transaction.commit()
 
         c = ptah_cms.Session.query(ptah_cms.Node).filter(
-            ptah_cms.Node.__uuid__ == __uuid).one()
+            ptah_cms.Node.__uri__ == __uri).one()
 
-        self.assertTrue(c.__parent_id__ == parent_uuid)
-        self.assertTrue(c.__parent_ref__.__uuid__ == parent_uuid)
+        self.assertTrue(c.__parent_id__ == parent_uri)
+        self.assertTrue(c.__parent_ref__.__uri__ == parent_uri)
 
     def test_node_local_roles(self):
         import ptah, ptah_cms
 
         class MyContent(ptah_cms.Node):
-
+            __uri_generator__ = ptah.UriGenerator('test')
             __mapper_args__ = {'polymorphic_identity': 'mycontent'}
 
-            def __uuid_generator__(self):
-                return uuid.uuid4().get_hex()
-
         content = MyContent()
-        __uuid = content.__uuid__
+        __uri = content.__uri__
 
         self.assertTrue(ptah.ILocalRolesAware.providedBy(content))
 
@@ -96,13 +85,13 @@ class TestNode(Base):
         transaction.commit()
 
         c = ptah_cms.Session.query(ptah_cms.Node).filter(
-            ptah_cms.Node.__uuid__ == __uuid).one()
+            ptah_cms.Node.__uri__ == __uri).one()
 
         c.__local_roles__['userid'] = ('role:1',)
         transaction.commit()
 
         c = ptah_cms.Session.query(ptah_cms.Node).filter(
-            ptah_cms.Node.__uuid__ == __uuid).one()
+            ptah_cms.Node.__uri__ == __uri).one()
         self.assertTrue(c.__local_roles__ == {u'userid': [u'role:1']})
 
     def test_node_owners(self):
@@ -110,11 +99,10 @@ class TestNode(Base):
 
         class MyContent(ptah_cms.Node):
             __mapper_args__ = {'polymorphic_identity': 'mycontent'}
-            def __uuid_generator__(self):
-                return uuid.uuid4().get_hex()
+            __uri_generator__ = ptah.UriGenerator('test')
 
         content = MyContent()
-        __uuid = content.__uuid__
+        __uri = content.__uri__
 
         self.assertTrue(ptah.IOwnersAware.providedBy(content))
 
@@ -122,13 +110,13 @@ class TestNode(Base):
         transaction.commit()
 
         c = ptah_cms.Session.query(ptah_cms.Node).filter(
-            ptah_cms.Node.__uuid__ == __uuid).one()
+            ptah_cms.Node.__uri__ == __uri).one()
 
         c.__owner__ = 'userid'
         transaction.commit()
 
         c = ptah_cms.Session.query(ptah_cms.Node).filter(
-            ptah_cms.Node.__uuid__ == __uuid).one()
+            ptah_cms.Node.__uri__ == __uri).one()
         self.assertTrue(c.__owner__ == u'userid')
 
     def test_node_permissions(self):
@@ -136,11 +124,10 @@ class TestNode(Base):
 
         class MyContent(ptah_cms.Node):
             __mapper_args__ = {'polymorphic_identity': 'mycontent'}
-            def __uuid_generator__(self):
-                return uuid.uuid4().get_hex()
+            __uri_generator__ = ptah.UriGenerator('test')
 
         content = MyContent()
-        __uuid = content.__uuid__
+        __uri = content.__uri__
 
         self.assertTrue(ptah.IACLsAware.providedBy(content))
 
@@ -148,11 +135,11 @@ class TestNode(Base):
         transaction.commit()
 
         c = ptah_cms.Session.query(ptah_cms.Node).filter(
-            ptah_cms.Node.__uuid__ == __uuid).one()
+            ptah_cms.Node.__uri__ == __uri).one()
 
         c.__acls__.append('map1')
         transaction.commit()
 
         c = ptah_cms.Session.query(ptah_cms.Node).filter(
-            ptah_cms.Node.__uuid__ == __uuid).one()
+            ptah_cms.Node.__uri__ == __uri).one()
         self.assertTrue(c.__acls__ == [u'map1'])

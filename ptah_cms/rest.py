@@ -37,9 +37,9 @@ class Applications(ptah.rest.Action):
             apps.append((root.title, root.__name__, OrderedDict(
                 (('mount', name),
                  ('__name__', root.__name__),
-                 ('__uuid__', root.__uuid__),
+                 ('__uri__', root.__uri__),
                  ('__link__', '%s/content:%s/%s/'%(
-                     request.application_url, name, root.__uuid__))),
+                     request.application_url, name, root.__uri__))),
                 )))
 
         apps.sort()
@@ -135,7 +135,7 @@ class Content(ptah.rest.Action):
     name = 'content'
     title = 'CMS Content'
 
-    def __call__(self, request, app, uuid=None, action='', *args):
+    def __call__(self, request, app, uri=None, action='', *args):
         info = {}
 
         appfactory = Factories.get(app)
@@ -145,10 +145,10 @@ class Content(ptah.rest.Action):
         root = appfactory(request)
         request.root = root
 
-        if not uuid:
+        if not uri:
             content = root
         else:
-            content = loadNode(uuid)
+            content = loadNode(uri)
 
         adapters = request.registry.adapters
 
@@ -190,7 +190,7 @@ def parents(content):
 
     for item in lineage(content):
         if isinstance(item, Node):
-            parents.append(item.__uuid__)
+            parents.append(item.__uri__)
         else:
             break
 
@@ -227,9 +227,9 @@ class ContentRestInfo(object):
         info = OrderedDict(
             (('__name__', content.__name__),
              ('__type__', content.__type_id__),
-             ('__uuid__', content.__uuid__),
+             ('__uri__', content.__uri__),
              ('__container__', False),
-             ('__link__', '%s%s/'%(request.application_url, content.__uuid__)),
+             ('__link__', '%s%s/'%(request.application_url, content.__uri__)),
              ('__parents__', parents(content)),
              ))
 
@@ -258,10 +258,10 @@ class ContainerRestInfo(ContentRestInfo):
                 OrderedDict((
                     ('__name__', item.__name__),
                     ('__type__', item.__type_id__),
-                    ('__uuid__', item.__uuid__),
+                    ('__uri__', item.__uri__),
                     ('__container__', isinstance(item, Container)),
                     ('__link__', '%s%s/'%(request.application_url,
-                                          item.__uuid__)),
+                                          item.__uri__)),
                     ('title', item.title),
                     ('description', item.description),
                     ('created', item.created),
@@ -298,7 +298,7 @@ class ContentAPIDoc(ContentRestInfo):
                 (name, action.title,
                  OrderedDict(
                      (('name', name),
-                      ('link', '%s%s/%s'%(url, content.__uuid__, name)),
+                      ('link', '%s%s/%s'%(url, content.__uri__, name)),
                       ('title', action.title),
                       ('description', action.description)))))
 
@@ -367,15 +367,15 @@ class CreateContentAction(object):
 
     name_schema = ptah_cms.ContentNameSchema()
 
-    def __call__(self, content, request, uuid='', *args):
+    def __call__(self, content, request, uri='', *args):
         if not isinstance(content, Container):
             raise ptah_cms.RestException(
                 'Can create content only in container.')
 
-        if not uuid:
+        if not uri:
             raise HTTPNotFound('Type information is not found')
 
-        tinfo = ptah_cms.Types.get(uuid)
+        tinfo = ptah_cms.Types.get(uri)
         if tinfo is None:
             raise HTTPNotFound('Type information is not found')
 
@@ -419,7 +419,7 @@ class BlobRestInfo(object):
              ('filename', content.filename),
              ('size', content.size),
              ('__link__', '%s%s/data'%(
-                 request.application_url, content.__uuid__)),
+                 request.application_url, content.__uri__)),
              ('__parents__', parents(content)),
              ))
 

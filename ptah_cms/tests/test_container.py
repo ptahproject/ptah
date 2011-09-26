@@ -10,13 +10,13 @@ from base import Base
 class Content(ptah_cms.Content):
 
     __type__ = ptah_cms.Type('content', 'Test Content')
-    __uuid_generator__ = ptah.UUIDGenerator('cms+content')
+    __uri_generator__ = ptah.UriGenerator('cms+content')
 
 
 class Container(ptah_cms.Container):
 
     __type__ = ptah_cms.Type('container', 'Test Container')
-    __uuid_generator__ = ptah.UUIDGenerator('cms+container')
+    __uri_generator__ = ptah.UriGenerator('cms+container')
 
 
 class TestContainer(Base):
@@ -41,17 +41,17 @@ class TestContainer(Base):
         self.assertEqual(content.__name__, 'content')
         self.assertEqual(content.__path__, '/container/content/')
         self.assertEqual(content.__parent__, container)
-        self.assertEqual(content.__parent_id__, container.__uuid__)
+        self.assertEqual(content.__parent_id__, container.__uri__)
 
-        content_uuid = content.__uuid__
-        container_uuid = container.__uuid__
+        content_uri = content.__uri__
+        container_uri = container.__uri__
         transaction.commit()
 
-        container = ptah.resolve(container_uuid)
+        container = ptah.resolve(container_uri)
         self.assertTrue('content' in container)
         self.assertEqual(container.keys(), ['content'])
-        self.assertEqual(container['content'].__uuid__, content_uuid)
-        self.assertEqual(container.get('content').__uuid__, content_uuid)
+        self.assertEqual(container['content'].__uri__, content_uri)
+        self.assertEqual(container.get('content').__uri__, content_uri)
         self.assertEqual(container.get('unknown'), None)
         self.assertRaises(KeyError, container.__getitem__, 'unknown')
 
@@ -80,24 +80,24 @@ class TestContainer(Base):
         ptah_cms.Session.add(content)
         ptah_cms.Session.flush()
 
-        content_uuid = content.__uuid__
-        container_uuid = container.__uuid__
+        content_uri = content.__uri__
+        container_uri = container.__uri__
         transaction.commit()
 
-        container = ptah.resolve(container_uuid)
+        container = ptah.resolve(container_uri)
 
         c2 = Content(title='Content2')
         container['content2'] = c2
 
         self.assertEqual(container.keys(), ['content', 'content2'])
-        self.assertEqual([c.__uuid__ for c in container.values()],
-                         [content_uuid, c2.__uuid__])
+        self.assertEqual([c.__uri__ for c in container.values()],
+                         [content_uri, c2.__uri__])
 
         del container['content']
 
         self.assertEqual(container.keys(), ['content2'])
-        self.assertEqual([c.__uuid__ for c in container.values()],
-                         [c2.__uuid__])
+        self.assertEqual([c.__uri__ for c in container.values()],
+                         [c2.__uri__])
 
     def test_container_simple_move(self):
         container = Container(__name__ = 'container', __path__ = '/container/')
@@ -109,24 +109,24 @@ class TestContainer(Base):
 
         container['content'] = content
 
-        content_uuid = content.__uuid__
-        container_uuid = container.__uuid__
+        content_uri = content.__uri__
+        container_uri = container.__uri__
         transaction.commit()
 
-        container = ptah.resolve(container_uuid)
-        content = ptah.resolve(content_uuid)
+        container = ptah.resolve(container_uri)
+        content = ptah.resolve(content_uri)
 
         container['moved'] = content
 
         self.assertEqual(content.__name__, 'moved')
         self.assertEqual(content.__path__, '/container/moved/')
         self.assertEqual(content.__parent__, container)
-        self.assertEqual(content.__parent_id__, container.__uuid__)
+        self.assertEqual(content.__parent_id__, container.__uri__)
         transaction.commit()
 
-        container = ptah.resolve(container_uuid)
+        container = ptah.resolve(container_uri)
         self.assertEqual(container.keys(), ['moved'])
-        self.assertEqual(container['moved'].__uuid__, content_uuid)
+        self.assertEqual(container['moved'].__uri__, content_uri)
 
     def test_container_getitem(self):
         container = Container(__name__ = 'container', __path__ = '/container/')
@@ -136,29 +136,29 @@ class TestContainer(Base):
         container['content1'] = content1
         container['content2'] = content2
 
-        self.assertEqual(container['content1'].__uuid__, content1.__uuid__)
-        self.assertEqual(container['content2'].__uuid__, content2.__uuid__)
-        self.assertEqual(container.get('content1').__uuid__, content1.__uuid__)
-        self.assertEqual(container.get('content2').__uuid__, content2.__uuid__)
+        self.assertEqual(container['content1'].__uri__, content1.__uri__)
+        self.assertEqual(container['content2'].__uri__, content2.__uri__)
+        self.assertEqual(container.get('content1').__uri__, content1.__uri__)
+        self.assertEqual(container.get('content2').__uri__, content2.__uri__)
 
         ptah_cms.Session.add(container)
         ptah_cms.Session.add(content1)
         ptah_cms.Session.add(content2)
         ptah_cms.Session.flush()
 
-        c_u = container.__uuid__
-        c1_u = content1.__uuid__
-        c2_u = content2.__uuid__
+        c_u = container.__uri__
+        c1_u = content1.__uri__
+        c2_u = content2.__uri__
         transaction.commit()
 
         container = ptah.resolve(c_u)
-        self.assertEqual(container['content1'].__uuid__, c1_u)
-        self.assertEqual(container['content2'].__uuid__, c2_u)
+        self.assertEqual(container['content1'].__uri__, c1_u)
+        self.assertEqual(container['content2'].__uri__, c2_u)
         transaction.commit()
 
         container = ptah.resolve(c_u)
-        self.assertEqual(container.get('content1').__uuid__, c1_u)
-        self.assertEqual(container.get('content2').__uuid__, c2_u)
+        self.assertEqual(container.get('content1').__uri__, c1_u)
+        self.assertEqual(container.get('content2').__uri__, c2_u)
 
     def test_container_items(self):
         container = Container(__name__ = 'container', __path__ = '/container/')
@@ -184,14 +184,14 @@ class TestContainer(Base):
         container['content'] = content
         container['folder'] = folder
 
-        content_uuid = content.__uuid__
-        container_uuid = container.__uuid__
-        folder_uuid = folder.__uuid__
+        content_uri = content.__uri__
+        container_uri = container.__uri__
+        folder_uri = folder.__uri__
         transaction.commit()
 
-        container = ptah.resolve(container_uuid)
-        content = ptah.resolve(content_uuid)
-        folder = ptah.resolve(folder_uuid)
+        container = ptah.resolve(container_uri)
+        content = ptah.resolve(content_uri)
+        folder = ptah.resolve(folder_uri)
 
         self.assertEqual(container.keys(), ['folder', 'content'])
 
@@ -200,11 +200,11 @@ class TestContainer(Base):
         self.assertEqual(content.__name__, 'new-content')
         self.assertEqual(content.__path__, '/container/folder/new-content/')
         self.assertEqual(content.__parent__, folder)
-        self.assertEqual(content.__parent_id__, folder.__uuid__)
+        self.assertEqual(content.__parent_id__, folder.__uri__)
         transaction.commit()
 
-        folder = ptah.resolve(folder_uuid)
-        container = ptah.resolve(container_uuid)
+        folder = ptah.resolve(folder_uri)
+        container = ptah.resolve(container_uri)
         self.assertEqual(container.keys(), ['folder'])
         self.assertEqual(folder.keys(), ['new-content'])
 
@@ -220,14 +220,14 @@ class TestContainer(Base):
         folder['content'] = content
         container['folder'] = folder
 
-        content_uuid = content.__uuid__
-        folder_uuid = folder.__uuid__
-        container_uuid = container.__uuid__
+        content_uri = content.__uri__
+        folder_uri = folder.__uri__
+        container_uri = container.__uri__
         transaction.commit()
 
-        container = ptah.resolve(container_uuid)
-        content = ptah.resolve(content_uuid)
-        folder = ptah.resolve(folder_uuid)
+        container = ptah.resolve(container_uri)
+        content = ptah.resolve(content_uri)
+        folder = ptah.resolve(folder_uri)
 
         self.assertEqual(container.keys(), ['folder'])
         self.assertEqual(folder.keys(), ['content'])
@@ -251,21 +251,21 @@ class TestContainer(Base):
         folder1['folder2'] = folder2
         folder2['content'] = content
 
-        content_uuid = content.__uuid__
-        container_uuid = container.__uuid__
-        folder1_uuid = folder1.__uuid__
-        folder2_uuid = folder2.__uuid__
+        content_uri = content.__uri__
+        container_uri = container.__uri__
+        folder1_uri = folder1.__uri__
+        folder2_uri = folder2.__uri__
         transaction.commit()
 
-        container = ptah.resolve(container_uuid)
+        container = ptah.resolve(container_uri)
 
         container['new-folder'] = container['folder1']
         transaction.commit()
 
-        folder1 = ptah.resolve(folder1_uuid)
-        folder2 = ptah.resolve(folder2_uuid)
-        content = ptah.resolve(content_uuid)
-        container = ptah.resolve(container_uuid)
+        folder1 = ptah.resolve(folder1_uri)
+        folder2 = ptah.resolve(folder2_uri)
+        content = ptah.resolve(content_uri)
+        container = ptah.resolve(container_uri)
 
         self.assertEqual(container.keys(), ['new-folder'])
         self.assertEqual(folder1.__path__, '/container/new-folder/')
@@ -283,12 +283,12 @@ class TestContainer(Base):
 
         container['folder'] = folder
 
-        folder_uuid = folder.__uuid__
-        container_uuid = container.__uuid__
+        folder_uri = folder.__uri__
+        container_uri = container.__uri__
         transaction.commit()
 
-        container = ptah.resolve(container_uuid)
-        folder = ptah.resolve(folder_uuid)
+        container = ptah.resolve(container_uri)
+        folder = ptah.resolve(folder_uri)
 
         self.assertRaises(
             TypeError, folder.__setitem__, 'subfolder', container)
@@ -303,17 +303,17 @@ class TestContainer(Base):
 
         container['content'] = content
 
-        content_uuid = content.__uuid__
-        container_uuid = container.__uuid__
+        content_uri = content.__uri__
+        container_uri = container.__uri__
         transaction.commit()
 
-        container = ptah.resolve(container_uuid)
+        container = ptah.resolve(container_uri)
         del container['content']
         transaction.commit()
 
-        self.assertTrue(ptah.resolve(content_uuid) is None)
+        self.assertTrue(ptah.resolve(content_uri) is None)
 
-        container = ptah.resolve(container_uuid)
+        container = ptah.resolve(container_uri)
         self.assertEqual(container.keys(), [])
         self.assertRaises(KeyError, container.__delitem__, 'content')
         self.assertRaises(KeyError, container.__delitem__, Content())
@@ -331,14 +331,14 @@ class TestContainer(Base):
         container['folder'] = folder
         folder['content'] = content
 
-        content_uuid = content.__uuid__
-        container_uuid = container.__uuid__
-        folder_uuid = folder.__uuid__
+        content_uri = content.__uri__
+        container_uri = container.__uri__
+        folder_uri = folder.__uri__
         transaction.commit()
 
-        container = ptah.resolve(container_uuid)
+        container = ptah.resolve(container_uri)
         del container['folder']
         transaction.commit()
 
-        self.assertTrue(ptah.resolve(content_uuid) is None)
-        self.assertTrue(ptah.resolve(folder_uuid) is None)
+        self.assertTrue(ptah.resolve(content_uri) is None)
+        self.assertTrue(ptah.resolve(folder_uri) is None)

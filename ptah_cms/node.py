@@ -1,6 +1,5 @@
 """ Node implementation """
 import ptah
-import uuid
 import pyramid_sqla
 import sqlalchemy as sqla
 from zope import interface
@@ -15,7 +14,7 @@ Session = pyramid_sqla.get_session()
 class Node(Base):
     """ Base class for content objects.
 
-    .. attribute:: __uuid__
+    .. attribute:: __uri__
 
        Unique object id. *Required*
 
@@ -30,14 +29,14 @@ class Node(Base):
 
     .. attribute:: __owner__
 
-       UUID of owner principal. It possible to load principal object
+       URI of owner principal. It possible to load principal object
        by using :py:func:`ptah.resolve` function.
 
     .. attribute:: __local_roles__
 
     .. attribute:: __acls__
 
-    .. attribute:: __uuid_generator__
+    .. attribute:: __uri_generator__
 
     """
 
@@ -49,9 +48,9 @@ class Node(Base):
     __tablename__ = 'ptah_cms_nodes'
 
     __id__ = sqla.Column('id', sqla.Integer, primary_key=True)
-    __uuid__ = sqla.Column('uuid', sqla.String, unique=True)
+    __uri__ = sqla.Column('uri', sqla.String, unique=True)
     __type_id__ = sqla.Column('type', sqla.String)
-    __parent_id__ = sqla.Column('parent', sqla.String,sqla.ForeignKey(__uuid__))
+    __parent_id__ = sqla.Column('parent', sqla.String,sqla.ForeignKey(__uri__))
 
     __owner__ = sqla.Column('owner', sqla.String, default='')
     __local_roles__ = sqla.Column('roles', ptah.JsonDictType(), default={})
@@ -59,12 +58,12 @@ class Node(Base):
 
     __children__ = sqla.orm.relationship(
         'Node',
-        backref=sqla.orm.backref('__parent_ref__',remote_side=[__uuid__]))
+        backref=sqla.orm.backref('__parent_ref__',remote_side=[__uri__]))
 
     __mapper_args__ = {'polymorphic_on': __type_id__}
 
     __parent__ = None
-    __uuid_generator__ = None
+    __uri_generator__ = None
 
     __acl__ = ptah.ACLsProperty()
 
@@ -77,26 +76,26 @@ class Node(Base):
             setattr(self, attr, value)
 
         if '__parent__' in kw and kw['__parent__'] is not None:
-            self.__parent_id__ = kw['__parent__'].__uuid__
+            self.__parent_id__ = kw['__parent__'].__uri__
 
         try:
-            self.__uuid__ = self.__uuid_generator__()
+            self.__uri__ = self.__uri_generator__()
         except TypeError: # pragma: no cover
             raise TypeError(
-                'Subclass of Node has to override __uuid_generator__')
+                'Subclass of Node has to override __uri_generator__')
 
 
-def loadNode(uuid, permission=None):
-    """ Load node by `uuid` and initialize __parent__ attributes. Also checks
+def loadNode(uri, permission=None):
+    """ Load node by `uri` and initialize __parent__ attributes. Also checks
     permission if permissin is specified.
 
-    :param uuid: Node uuid
+    :param uri: Node uri
     :param permission: Check permission on node object
     :type permission: Permission id or None
-    :raise KeyError: Node with uuid is not found.
+    :raise KeyError: Node with this uri is not found.
     :raise HTTPForbidden: If current principal doesn't pass permission check on loaded node.
     """
-    item = ptah.resolve(uuid)
+    item = ptah.resolve(uri)
 
     if item is not None:
         loadParents(item)
@@ -105,7 +104,7 @@ def loadNode(uuid, permission=None):
             if not ptah.checkPermission(permission, item):
                 raise HTTPForbidden()
     else:
-        raise HTTPNotFound(uuid)
+        raise HTTPNotFound(uri)
 
     return item
 

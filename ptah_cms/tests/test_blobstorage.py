@@ -1,4 +1,4 @@
-import uuid
+import ptah
 import transaction
 from cStringIO import StringIO
 from memphis import config
@@ -37,11 +37,11 @@ class TestBlob(Base):
 
         blob = ptah_cms.blobStorage.add(StringIO('blob data'))
 
-        blob_uuid = blob.__uuid__
+        blob_uri = blob.__uri__
 
-        blob = ptah.resolve(blob_uuid)
+        blob = ptah.resolve(blob_uri)
 
-        self.assertEqual(blob.__uuid__, blob_uuid)
+        self.assertEqual(blob.__uri__, blob_uri)
         self.assertEqual(blob.read(), 'blob data')
 
     def test_blob_with_parent(self):
@@ -49,30 +49,29 @@ class TestBlob(Base):
 
         class MyContent(ptah_cms.Node):
             __mapper_args__ = {'polymorphic_identity': 'mycontent'}
-            def __uuid_generator__(self):
-                return uuid.uuid4().get_hex()
+            __uri_generator__ = ptah.UriGenerator('test')
 
         content = MyContent()
-        content_uuid = content.__uuid__
+        content_uri = content.__uri__
         ptah_cms.Session.add(content)
 
-        blob_uuid = ptah_cms.blobStorage.add(
-            StringIO('blob data'), content).__uuid__
+        blob_uri = ptah_cms.blobStorage.add(
+            StringIO('blob data'), content).__uri__
         transaction.commit()
 
-        blob = ptah.resolve(blob_uuid)
-        self.assertEqual(blob.__parent_ref__.__uuid__, content_uuid)
+        blob = ptah.resolve(blob_uri)
+        self.assertEqual(blob.__parent_ref__.__uri__, content_uri)
 
-        blob = ptah_cms.blobStorage.getByParent(content_uuid)
-        self.assertEqual(blob.__uuid__, blob_uuid)
+        blob = ptah_cms.blobStorage.getByParent(content_uri)
+        self.assertEqual(blob.__uri__, blob_uri)
 
     def test_blob_write(self):
         import ptah, ptah_cms
 
-        blob_uuid = ptah_cms.blobStorage.add(StringIO('blob data')).__uuid__
-        blob = ptah.resolve(blob_uuid)
+        blob_uri = ptah_cms.blobStorage.add(StringIO('blob data')).__uri__
+        blob = ptah.resolve(blob_uri)
         blob.write('new data')
         transaction.commit()
 
-        blob = ptah.resolve(blob_uuid)
+        blob = ptah.resolve(blob_uri)
         self.assertEqual(blob.read(), 'new data')

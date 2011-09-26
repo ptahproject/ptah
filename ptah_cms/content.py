@@ -71,7 +71,7 @@ class Content(Node):
     # sql queries
     _sql_get = ptah.QueryFreezer(
         lambda: Session.query(Content)
-        .filter(Content.__uuid__ == sqla.sql.bindparam('uuid')))
+        .filter(Content.__uri__ == sqla.sql.bindparam('uri')))
 
     _sql_get_in_parent = ptah.QueryFreezer(
         lambda: Session.query(Content)
@@ -80,7 +80,7 @@ class Content(Node):
 
     _sql_parent = ptah.QueryFreezer(
         lambda: Session.query(Content)
-            .filter(Content.__uuid__ == sqla.sql.bindparam('parent')))
+            .filter(Content.__uri__ == sqla.sql.bindparam('parent')))
 
     def __get_name(self):
         return self.__name_id__

@@ -12,13 +12,13 @@ from base import Base
 class Content(ptah_cms.Content):
 
     __type__ = ptah_cms.Type('content', 'Test Content')
-    __uuid_generator__ = ptah.UUIDGenerator('cms+content')
+    __uri_generator__ = ptah.UriGenerator('cms+content')
 
 
 class Container(ptah_cms.Container):
 
     __type__ = ptah_cms.Type('container', 'Test Container')
-    __uuid_generator__ = ptah.UUIDGenerator('cms+container')
+    __uri_generator__ = ptah.UriGenerator('cms+container')
 
 
 class TestLoadApi(Base):
@@ -26,13 +26,13 @@ class TestLoadApi(Base):
 
     def test_loadapi_loadnode(self):
         content = Content(title='Content')
-        uuid = content.__uuid__
+        uri = content.__uri__
 
         ptah_cms.Session.add(content)
         transaction.commit()
 
-        content = ptah_cms.loadNode(uuid)
-        self.assertEqual(content.__uuid__, uuid)
+        content = ptah_cms.loadNode(uri)
+        self.assertEqual(content.__uri__, uri)
 
     def test_loadapi_loadnode_notfound(self):
         self.assertRaises(HTTPNotFound, ptah_cms.loadNode, 'unknown')
@@ -41,18 +41,18 @@ class TestLoadApi(Base):
         content = Content(title='Content')
         container = Container(__name__='container', __path__='/container/')
 
-        c_uuid = content.__uuid__
-        co_uuid = container.__uuid__
+        c_uri = content.__uri__
+        co_uri = container.__uri__
         ptah_cms.Session.add(container)
         ptah_cms.Session.add(content)
         transaction.commit()
 
-        container = ptah.resolve(co_uuid)
-        container['content'] = ptah.resolve(c_uuid)
+        container = ptah.resolve(co_uri)
+        container['content'] = ptah.resolve(c_uri)
         transaction.commit()
 
-        content = ptah_cms.loadNode(c_uuid)
-        self.assertEqual(content.__parent__.__uuid__, co_uuid)
+        content = ptah_cms.loadNode(c_uri)
+        self.assertEqual(content.__parent__.__uri__, co_uri)
 
     def test_loadapi_loadnode_permission(self):
         import ptah
@@ -69,15 +69,15 @@ class TestLoadApi(Base):
         ptah.checkPermission = checkPermission
 
         c = Content(title='Content')
-        uuid = c.__uuid__
+        uri = c.__uri__
         ptah_cms.Session.add(c)
         transaction.commit()
 
-        self.assertRaises(HTTPForbidden, ptah_cms.loadNode, uuid, 'View')
+        self.assertRaises(HTTPForbidden, ptah_cms.loadNode, uri, 'View')
 
         allow = True
-        c = ptah_cms.loadNode(uuid, 'View')
-        self.assertEqual(c.__uuid__, uuid)
+        c = ptah_cms.loadNode(uri, 'View')
+        self.assertEqual(c.__uri__, uri)
 
         # remove monkey patch
         ptah.checkPermission = orig_checkPermission

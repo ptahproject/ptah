@@ -13,7 +13,7 @@ class Blob(Node):
 
     __tablename__ = 'ptah_cms_blobs'
     __mapper_args__ = {'polymorphic_identity': 'ptah-cms-blob'}
-    __uuid_generator__ = ptah.UUIDGenerator('blob+sql')
+    __uri_generator__ = ptah.UriGenerator('blob+sql')
 
     __id__ = sqla.Column('id', sqla.Integer,
                          sqla.ForeignKey('ptah_cms_nodes.id'), primary_key=True)
@@ -43,7 +43,7 @@ class BlobStorage(object):
 
     _sql_get = ptah.QueryFreezer(
         lambda: Session.query(Blob)
-            .filter(Blob.__uuid__ == sqla.sql.bindparam('uuid')))
+            .filter(Blob.__uri__ == sqla.sql.bindparam('uri')))
 
     _sql_get_by_parent = ptah.QueryFreezer(
         lambda: Session.query(Blob)
@@ -69,16 +69,16 @@ class BlobStorage(object):
 
         return blob
 
-    def get(self, uuid):
-        return self._sql_get.first(uuid=uuid)
+    def get(self, uri):
+        return self._sql_get.first(uri=uri)
 
     def getByParent(self, parent):
         return self._sql_get_by_parent.first(parent=parent)
 
-    def replace(self, uuid, data, **metadata): # pragma: no cover
+    def replace(self, uri, data, **metadata): # pragma: no cover
         pass
 
-    def remove(self, uuid): # pragma: no cover
+    def remove(self, uri): # pragma: no cover
         pass
 
 

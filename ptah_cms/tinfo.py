@@ -98,10 +98,10 @@ class TypeInformation(object):
 # we have to generate seperate sql query for each type
 _sql_get = ptah.QueryFreezer(
     lambda: Session.query(Content)
-    .filter(Content.__uuid__ == sqla.sql.bindparam('uuid')))
+    .filter(Content.__uri__ == sqla.sql.bindparam('uri')))
 
-def resolveContent(uuid):
-    return _sql_get.first(uuid=uuid)
+def resolveContent(uri):
+    return _sql_get.first(uri=uri)
 
 
 _contentSchema = ContentSchema()
@@ -124,8 +124,8 @@ def Type(name, title, schema = None, **kw):
         f_locals['__id__'] = sqla.Column( #pragma: no cover
             'id', sqla.Integer,
             sqla.ForeignKey('ptah_cms_content.id'), primary_key=True)
-    if '__uuid_generator__' not in f_locals:
-        f_locals['__uuid_generator__'] = ptah.UUIDGenerator('cms+%s'%name)
+    if '__uri_generator__' not in f_locals:
+        f_locals['__uri_generator__'] = ptah.UriGenerator('cms+%s'%name)
 
         ptah.registerResolver(
             'cms+%s'%name, resolveContent,

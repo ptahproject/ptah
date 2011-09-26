@@ -20,11 +20,11 @@ class Container(Content):
 
     _sql_keys = ptah.QueryFreezer(
         lambda: Session.query(Content.__name_id__)
-            .filter(Content.__parent_id__ == sqla.sql.bindparam('uuid')))
+            .filter(Content.__parent_id__ == sqla.sql.bindparam('uri')))
 
     _sql_values = ptah.QueryFreezer(
         lambda: Session.query(Content)
-            .filter(Content.__parent_id__ == sqla.sql.bindparam('uuid')))
+            .filter(Content.__parent_id__ == sqla.sql.bindparam('uri')))
 
     def keys(self):
         """Return an list of the keys in the container."""
@@ -34,7 +34,7 @@ class Container(Content):
         else:
             if self._v_keys is None:
                 self._v_keys = [n for n, in
-                                self._sql_keys.all(uuid=self.__uuid__)]
+                                self._sql_keys.all(uri=self.__uri__)]
 
             self._v_keys_loaded = True
             return self._v_keys
@@ -47,7 +47,7 @@ class Container(Content):
         if self._v_items and key in self._v_items:
             return self._v_items[key]
 
-        item = self._sql_get_in_parent.first(key=key, parent=self.__uuid__)
+        item = self._sql_get_in_parent.first(key=key, parent=self.__uri__)
         if item is not None:
             item.__parent__ = self
             if not self._v_items:
@@ -69,7 +69,7 @@ class Container(Content):
         self._v_keys = keys = []
         self._v_items = items = {}
 
-        for item in self._sql_values.all(uuid = self.__uuid__):
+        for item in self._sql_values.all(uri = self.__uri__):
             item.__parent__ = self
             items[item.__name_id__] = item
             keys.append(item.__name_id__)
@@ -102,7 +102,7 @@ class Container(Content):
             return self._v_items[key]
 
         try:
-            item = self._sql_get_in_parent.one(key=key, parent=self.__uuid__)
+            item = self._sql_get_in_parent.one(key=key, parent=self.__uri__)
             item.__parent__ = self
             if not self._v_items:
                 self._v_items = {key: item}
@@ -119,11 +119,11 @@ class Container(Content):
         if not isinstance(item, Content):
             raise ValueError("Content object is required")
 
-        if item.__uuid__ == self.__uuid__:
+        if item.__uri__ == self.__uri__:
             raise ValueError("Can't set to it self")
 
-        parents = [p.__uuid__ for p in loadParents(self)]
-        if item.__uuid__ in parents:
+        parents = [p.__uri__ for p in loadParents(self)]
+        if item.__uri__ in parents:
             raise TypeError("Can't itself to chidlren")
 
         if key in self.keys():
@@ -136,7 +136,7 @@ class Container(Content):
 
         item.__name__ = key
         item.__parent__ = self
-        item.__parent_id__ = self.__uuid__
+        item.__parent_id__ = self.__uri__
         item.__path__ = '%s%s/'%(self.__path__, key)
 
         # temporary keys
@@ -168,7 +168,7 @@ class Container(Content):
         if isinstance(item, basestring):
             item = self[item]
 
-        if item.__parent_id__ == self.__uuid__:
+        if item.__parent_id__ == self.__uri__:
             if isinstance(item, Container):
                 for key in item.keys():
                     del item[key]

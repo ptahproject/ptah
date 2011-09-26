@@ -7,7 +7,7 @@ class INode(interface.Interface):
     """ base """
 
     __id__ = interface.Attribute('Id')
-    __uuid__ = interface.Attribute('UUID')
+    __uri__ = interface.Attribute('Uri')
     __type_id__ = interface.Attribute('Node type')
     __parent_id__ = interface.Attribute('Node parent')
 
@@ -86,15 +86,15 @@ class IBlobStorage(interface.Interface):
     """ blob storage """
 
     def add(parent, data, mimetype=None, filename=None):
-        """ add blob return uuid """
+        """ add blob return uri """
 
-    def query(uuid):
+    def query(uri):
         """ return blob object """
 
-    def replace(uuid, data, mimetype=None, filename=None):
+    def replace(uri, data, mimetype=None, filename=None):
         """ replace existing blob """
 
-    def remove(uuid):
+    def remove(uri):
         """ remove blob """
 
 

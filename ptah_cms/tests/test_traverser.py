@@ -1,4 +1,4 @@
-import uuid
+import ptah
 import transaction
 from memphis import config
 from pyramid.interfaces import ITraverser
@@ -24,8 +24,7 @@ class TestTraverser(Base):
 
         class MyContent(ptah_cms.Content):
             __mapper_args__ = {'polymorphic_identity': 'mycontent'}
-            def __uuid_generator__(self):
-                return uuid.uuid4().get_hex()
+            __uri_generator__ = ptah.UriGenerator('test')
 
         root = factory()
 
@@ -33,13 +32,13 @@ class TestTraverser(Base):
             __name__ = 'folder',
             __parent__ = root,
             __path__ = '%sfolder/'%root.__path__)
-        self.folder_uuid = folder.__uuid__
+        self.folder_uri = folder.__uri__
 
         content = MyContent(
             __name__ = 'content',
             __parent__ = folder,
             __path__ = '%scontent/'%folder.__path__)
-        self.content_uuid = content.__uuid__
+        self.content_uri = content.__uri__
 
         ptah_cms.Session.add(folder)
         ptah_cms.Session.add(content)
@@ -87,7 +86,7 @@ class TestTraverser(Base):
         traverser = ITraverser(root)
 
         info = traverser(request)
-        self.assertEqual(info['context'].__uuid__, self.folder_uuid)
+        self.assertEqual(info['context'].__uri__, self.folder_uri)
         self.assertEqual(info['view_name'], '')
         self.assertEqual(info['traversed'], ('folder',))
 
@@ -101,7 +100,7 @@ class TestTraverser(Base):
         traverser = ITraverser(root)
 
         info = traverser(request)
-        self.assertEqual(info['context'].__uuid__, self.folder_uuid)
+        self.assertEqual(info['context'].__uri__, self.folder_uri)
         self.assertEqual(info['view_name'], '')
         self.assertEqual(info['traversed'], ('folder',))
 
@@ -115,7 +114,7 @@ class TestTraverser(Base):
         traverser = ITraverser(root)
 
         info = traverser(request)
-        self.assertEqual(info['context'].__uuid__, self.folder_uuid)
+        self.assertEqual(info['context'].__uri__, self.folder_uri)
         self.assertEqual(info['view_name'], 'index.html')
         self.assertEqual(info['traversed'], ('folder',))
 
@@ -129,7 +128,7 @@ class TestTraverser(Base):
         traverser = ITraverser(root)
 
         info = traverser(request)
-        self.assertEqual(info['context'].__uuid__, self.content_uuid)
+        self.assertEqual(info['context'].__uri__, self.content_uri)
         self.assertEqual(info['view_name'], '')
         self.assertEqual(info['traversed'], ('folder','content'))
 
@@ -143,7 +142,7 @@ class TestTraverser(Base):
         traverser = ITraverser(root)
 
         info = traverser(request)
-        self.assertEqual(info['context'].__uuid__, self.content_uuid)
+        self.assertEqual(info['context'].__uri__, self.content_uri)
         self.assertEqual(info['view_name'], '')
         self.assertEqual(info['traversed'], ('folder','content'))
 
@@ -158,7 +157,7 @@ class TestTraverser(Base):
         traverser = ITraverser(root)
 
         info = traverser(request)
-        self.assertEqual(info['context'].__uuid__, self.content_uuid)
+        self.assertEqual(info['context'].__uri__, self.content_uri)
         self.assertEqual(info['view_name'], 'index.html')
         self.assertEqual(info['traversed'], ('folder','content'))
 
@@ -173,6 +172,6 @@ class TestTraverser(Base):
         traverser = ITraverser(root)
 
         info = traverser(request)
-        self.assertEqual(info['context'].__uuid__, self.content_uuid)
+        self.assertEqual(info['context'].__uri__, self.content_uri)
         self.assertEqual(info['view_name'], 'index.html')
         self.assertEqual(info['traversed'], ('folder','content'))

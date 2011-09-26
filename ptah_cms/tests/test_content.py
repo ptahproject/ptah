@@ -1,4 +1,4 @@
-import uuid
+import ptah
 import transaction
 from memphis import config
 from datetime import datetime
@@ -15,9 +15,7 @@ class TestContent(Base):
         class MyContent(ptah_cms.Content):
 
             __mapper_args__ = {'polymorphic_identity': 'mycontent'}
-
-            def __uuid_generator__(self):
-                return uuid.uuid4().get_hex()
+            __uri_generator__ = ptah.UriGenerator('mycontent')
 
 
         factory = ptah_cms.ApplicationFactory('/app1', 'root', 'Root App')
@@ -27,7 +25,7 @@ class TestContent(Base):
         content = MyContent(__name__='test',
                             __parent__ = root,
                             __path__ = '%stest/'%root.__path__)
-        c_uuid = content.__uuid__
+        c_uri = content.__uri__
         ptah_cms.Session.add(content)
 
         self.assertTrue(
@@ -43,7 +41,7 @@ class TestContent(Base):
         root = factory2(self.request)
 
         c = ptah_cms.Session.query(MyContent).filter(
-            MyContent.__uuid__ == c_uuid).one()
+            MyContent.__uri__ == c_uri).one()
 
         self.assertTrue(
             c.__resource_url__(self.request, {}) == '/app2/test/')
@@ -53,8 +51,7 @@ class TestContent(Base):
 
         class MyContent(ptah_cms.Content):
             __mapper_args__ = {'polymorphic_identity': 'mycontent'}
-            def __uuid_generator__(self):
-                return uuid.uuid4().get_hex()
+            __uri_generator__ = ptah.UriGenerator('mycontent')
 
         content = MyContent()
 
@@ -71,8 +68,7 @@ class TestContent(Base):
 
         class MyContent(ptah_cms.Content):
             __mapper_args__ = {'polymorphic_identity': 'mycontent'}
-            def __uuid_generator__(self):
-                return uuid.uuid4().get_hex()
+            __uri_generator__ = ptah.UriGenerator('mycontent')
 
         content = MyContent()
 

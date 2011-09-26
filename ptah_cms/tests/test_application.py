@@ -25,7 +25,7 @@ class TestApplicationFactoryRegistration(Base):
         self._setRequest(self._makeRequest())
 
         root = factory(self.request)
-        r_uuid = root.__uuid__
+        r_uri = root.__uri__
 
         self.assertTrue(isinstance(root, ptah_cms.ApplicationRoot))
         self.assertTrue(root.title == 'Root App')
@@ -36,11 +36,11 @@ class TestApplicationFactoryRegistration(Base):
         transaction.commit()
 
         root = factory(self.request)
-        self.assertEqual(root.__uuid__, r_uuid)
+        self.assertEqual(root.__uri__, r_uri)
         transaction.commit()
 
-        root = ptah.resolve(r_uuid)
-        self.assertEqual(root.__uuid__, r_uuid)
+        root = ptah.resolve(r_uri)
+        self.assertEqual(root.__uri__, r_uri)
 
     def test_app_factory_mutiple(self):
         import ptah_cms
@@ -53,7 +53,7 @@ class TestApplicationFactoryRegistration(Base):
 
         self.assertTrue(root1.__root_path__ == '/app1/')
         self.assertTrue(root2.__root_path__ == '/app2/')
-        self.assertTrue(root1.__uuid__ != root2.__uuid__)
+        self.assertTrue(root1.__uri__ != root2.__uri__)
 
     def test_app_factory_mutiple_same_name(self):
         import ptah_cms
@@ -71,14 +71,14 @@ class TestApplicationFactoryRegistration(Base):
         factory2 = ptah_cms.ApplicationFactory('/app2', 'root', 'Root App')
 
         root1 = factory1()
-        uuid1 = root1.__uuid__
+        uri1 = root1.__uri__
         self.assertTrue(root1.__root_path__ == '/app1/')
         self.assertTrue(root1.__resource_url__(None, {}) == '/app1/')
         transaction.commit()
 
         root2 = factory2()
 
-        self.assertTrue(root2.__uuid__ == uuid1)
+        self.assertTrue(root2.__uri__ == uri1)
         self.assertTrue(root2.__root_path__ == '/app2/')
         self.assertTrue(root2.__resource_url__(None, {}) == '/app2/')
 
@@ -122,8 +122,8 @@ class TestApplicationFactoryCustom(Base):
         root = factory()
         self.assertTrue(isinstance(root, CustomApplication))
 
-        u_root = root.__uuid__
+        u_root = root.__uri__
         transaction.commit()
 
         root = factory()
-        self.assertEqual(root.__uuid__, u_root)
+        self.assertEqual(root.__uri__, u_root)

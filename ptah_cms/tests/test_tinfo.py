@@ -1,4 +1,3 @@
-import uuid
 import colander
 import transaction
 from zope import interface
@@ -149,7 +148,7 @@ class TestTypeInfo(Base):
         self.assertEqual(
             MyContent.__mapper_args__['polymorphic_identity'], 'mycontent')
         self.assertTrue(
-            MyContent.__uuid_generator__().startswith('cms+mycontent:'))
+            MyContent.__uri_generator__().startswith('cms+mycontent:'))
 
     def test_tinfo_resolver(self):
         import ptah, ptah_cms
@@ -161,11 +160,11 @@ class TestTypeInfo(Base):
         self._init_memphis()
 
         content = MyContent.__type__.create(title='Test content')
-        c_uuid = content.__uuid__
+        c_uri = content.__uri__
         ptah_cms.Session.add(content)
         transaction.commit()
 
-        c = ptah.resolve(c_uuid)
+        c = ptah.resolve(c_uri)
         self.assertTrue(isinstance(c, MyContent))
 
     def test_tinfo_schema(self):
