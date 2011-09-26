@@ -26,9 +26,9 @@ class TestTypeInfo(Base):
 
         self._init_memphis()
 
-        self.assertTrue('mycontent' in ptah_cms.registeredTypes)
+        self.assertTrue('mycontent' in ptah_cms.Types)
 
-        tinfo = ptah_cms.registeredTypes['mycontent']
+        tinfo = ptah_cms.Types['mycontent']
 
         self.assertEqual(tinfo.name, 'mycontent')
         self.assertEqual(tinfo.title, 'MyContent')
@@ -129,10 +129,11 @@ class TestTypeInfo(Base):
 
         self._init_memphis()
 
-        content = MyContent.__type__.create(title='Test content')
+        content = ptah_cms.Types['mycontent'].create(title='Test content')
 
         self.assertTrue(isinstance(content, MyContent))
         self.assertEqual(content.title, 'Test content')
+        self.assertTrue(content in ptah_cms.Session)
 
     def test_tinfo_alchemy(self):
         import ptah_cms

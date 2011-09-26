@@ -13,7 +13,7 @@ from ptah_cms.node import Node
 from ptah_cms.content import Content
 from ptah_cms.content import loadContent
 from ptah_cms.container import Container
-from ptah_cms.root import factories
+from ptah_cms.root import Factories
 from ptah_cms.interfaces import IBlob
 from ptah_cms.interfaces import IContent
 from ptah_cms.interfaces import IContainer
@@ -31,7 +31,7 @@ class Applications(ptah.rest.Action):
     def __call__(self, request, *args):
         apps = []
 
-        for name, factory in factories.items():
+        for name, factory in Factories.items():
             root = factory(request)
 
             apps.append((root.title, root.__name__, OrderedDict(
@@ -54,7 +54,7 @@ class Types(ptah.rest.Action):
     def __call__(self, request, *args):
         apps = []
 
-        for name, tinfo in ptah_cms.registeredTypes.items():
+        for name, tinfo in ptah_cms.Types.items():
 
             apps.append((tinfo.title, name, OrderedDict(
                 (('name', name),
@@ -76,7 +76,7 @@ class Type(ptah.rest.Action):
     def __call__(self, request, tname, actionId='', *args):
         info = {}
 
-        tinfo = ptah_cms.registeredTypes.get(tname)
+        tinfo = ptah_cms.Types.get(tname)
         if tinfo is None:
             raise HTTPNotFound
 
@@ -138,7 +138,7 @@ class Content(ptah.rest.Action):
     def __call__(self, request, app, uuid=None, action='', *args):
         info = {}
 
-        appfactory = factories.get(app)
+        appfactory = Factories.get(app)
         if appfactory is None:
             raise HTTPNotFound
 
@@ -375,7 +375,7 @@ class CreateContentAction(object):
         if not uuid:
             raise HTTPNotFound('Type information is not found')
 
-        tinfo = ptah_cms.registeredTypes.get(uuid)
+        tinfo = ptah_cms.Types.get(uuid)
         if tinfo is None:
             raise HTTPNotFound('Type information is not found')
 

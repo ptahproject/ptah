@@ -5,40 +5,6 @@ from memphis import config
 from base import Base
 
 
-class TestApplication(Base):
-
-    def test_app(self):
-        import ptah_cms
-
-        self.assertEqual(
-            ptah_cms.Session.query(ptah_cms.ApplicationRoot).all(), [])
-
-        root = ptah_cms.ApplicationRoot.getRoot(
-            name='test', title='Test application')
-
-        self.assertTrue(isinstance(root, ptah_cms.ApplicationRoot))
-        self.assertTrue(root.title == 'Test application')
-        self.assertTrue(root.__name__ == 'test')
-        self.assertTrue(root.__path__ == '/%s/'%root.__uuid__)
-
-        # __resource_url__ always same as __root_path__
-        self.assertTrue(root.__resource_url__(None, {}) == root.__root_path__)
-
-        self.assertEqual(
-            len(ptah_cms.Session.query(ptah_cms.ApplicationRoot).all()), 1)
-
-        uuid = root.__uuid__
-
-        transaction.commit()
-
-        root2 = ptah_cms.ApplicationRoot.getRoot(
-            name='test', title='Test application')
-
-        self.assertEqual(uuid, root2.__uuid__)
-        self.assertEqual(
-            len(ptah_cms.Session.query(ptah_cms.ApplicationRoot).all()), 1)
-
-
 class TestApplicationFactoryRegistration(Base):
 
     def _setup_memphis(self):
@@ -65,6 +31,7 @@ class TestApplicationFactoryRegistration(Base):
         self.assertTrue(root.title == 'Root App')
         self.assertTrue(root.__name__ == 'root')
         self.assertTrue(root.__root_path__ == '/test/')
+        self.assertTrue(root.__resource_url__(None, {}) == '/test/')
         self.assertTrue(self.request.root is root)
         transaction.commit()
 
@@ -106,12 +73,14 @@ class TestApplicationFactoryRegistration(Base):
         root1 = factory1()
         uuid1 = root1.__uuid__
         self.assertTrue(root1.__root_path__ == '/app1/')
+        self.assertTrue(root1.__resource_url__(None, {}) == '/app1/')
         transaction.commit()
 
         root2 = factory2()
 
-        self.assertTrue(root2.__root_path__ == '/app2/')
         self.assertTrue(root2.__uuid__ == uuid1)
+        self.assertTrue(root2.__root_path__ == '/app2/')
+        self.assertTrue(root2.__resource_url__(None, {}) == '/app2/')
 
     def test_app_factory_policy(self):
         import ptah_cms
@@ -132,7 +101,7 @@ class TestApplicationFactoryCustom(Base):
         super(TestApplicationFactoryCustom, self).setUp()
 
         import ptah_cms
-        ptah_cms.ApplicationRoot._sql_get_root.reset()
+        ptah_cms.ApplicationFactory._sql_get_root.reset()
 
     def tearDown(self):
         config.cleanUp(self.__class__.__module__)
@@ -145,8 +114,10 @@ class TestApplicationFactoryCustom(Base):
 
             __type__ = ptah_cms.Type('customapp', 'Custom app')
 
+        CustomApplication.__type__.klass = CustomApplication
+
         factory = ptah_cms.ApplicationFactory(
-            '/', 'root', 'Root App', factory=CustomApplication.getRoot)
+            '/', 'root', 'Root App', CustomApplication.__type__)
 
         root = factory()
         self.assertTrue(isinstance(root, CustomApplication))

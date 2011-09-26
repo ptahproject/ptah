@@ -7,6 +7,7 @@ from zope import interface
 from pyramid.httpexceptions import HTTPForbidden
 from pyramid.threadlocal import get_current_request
 
+from node import Session
 from content import Session, Content
 from container import Container
 from events import ContentCreatedEvent
@@ -14,7 +15,7 @@ from interfaces import ContentSchema, ITypeInformation
 from permissions import View, AddContent, ModifyContent
 
 
-registeredTypes = {}
+Types = {}
 
 
 class TypeInformation(object):
@@ -29,7 +30,7 @@ class TypeInformation(object):
     global_allow = True
 
     def __init__(self, klass, name, title,
-                 schema=ContentSchema, constructor=None, **kw):
+                 schema=ContentSchema(), constructor=None, **kw):
         self.__dict__.update(kw)
 
         self.name = name
@@ -54,10 +55,11 @@ class TypeInformation(object):
 
     def create(self, **data):
         content = self.constructor(**data)
+        Session.add(content)
 
         request = get_current_request()
         if request is not None:
-            request.registry.notify(ContentCreatedEvent(content))
+            config.notify(ContentCreatedEvent(content))
 
         return content
 
@@ -82,12 +84,12 @@ class TypeInformation(object):
         types = []
         if self.filter_content_types:
             for tname in self.allowed_content_types:
-                tinfo = registeredTypes.get(tname)
+                tinfo = Types.get(tname)
                 if tinfo and tinfo.isAllowed(container):
                     types.append(tinfo)
 
         else:
-            for tinfo in registeredTypes.values():
+            for tinfo in Types.values():
                 if tinfo.global_allow and tinfo.isAllowed(container):
                     types.append(tinfo)
 
@@ -137,7 +139,7 @@ def registerType(
     klass, tinfo, name,
     title = '',
     description = '',
-    schema = ContentSchema,
+    schema = ContentSchema(),
     permission = ptah.NOT_ALLOWED, **kw):
 
     tinfo.__dict__.update(kw)
@@ -150,7 +152,7 @@ def registerType(
     tinfo.description = description
     tinfo.permission = permission
 
-    registeredTypes[name] = tinfo
+    Types[name] = tinfo
 
 
 class IAction(interface.Interface):
@@ -248,4 +250,4 @@ def listActions(content, request):
 
 @config.addCleanup
 def cleanUp():
-    registeredTypes.clear()
+    Types.clear()
