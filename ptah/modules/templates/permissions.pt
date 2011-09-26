@@ -1,23 +1,18 @@
-<div class="page-header">
-  <h2>Permissions and Roles</h2>
-</div>
+<tal:block tal:repeat="acl view.acls">
+  <div class="page-header">
+    <h2>${acl.title} <small>${acl.name}</small></h2>
+    <p>Definded: 
+      <a href="${request.application_url}/ptah-manage/introspect/source.html?pkg=${acl.directiveInfo.module.__name__}#sl-${acl.directiveInfo.codeinfo[1]}">${acl.directiveInfo.module.__name__}</a></p>
+    <p>${acl.description}
+  </div>
 
-<div class="content">
-  <table class="zebra-striped">
-    <tr>
-      <th></th>
-      <th tal:repeat="r view.roles">
-	${r.title}
-      </th>
-    </tr>
-    <tr tal:repeat="p view.permissions">
-      <td>
-	${p.title}
-	<small>${p.description}</small>
-      </td>
-      <td tal:repeat="r view.roles">
-	${'x' if p in r.allowed else '-'}
-      </td>
-    </tr>
-  </table>
-</div>
+  <div class="content">
+    <table class="zebra-striped">
+      <tr tal:repeat="rec acl">
+	<td>${rec[0]}</td>
+	<td>${rec[1]}</td>
+	<td>${rec[2]}</td>
+      </tr>
+    </table>
+  </div>
+</tal:block>

@@ -21,6 +21,11 @@ class PermissionsModule(ptah.PtahModule):
     title = 'Permissions'
 
 
+view.registerPagelet(
+    'ptah-module-actions', PermissionsModule,
+    template = view.template('ptah.modules:templates/permissions-actions.pt'))
+
+
 class PermissionsView(view.View):
     view.pyramidView(
         'index.html', IPermissionsModule, default=True,
@@ -30,5 +35,16 @@ class PermissionsView(view.View):
         self.permissions = Permissions.values()
         self.permissions.sort(key = lambda p: p.title)
 
+        self.acls = [acl for acl in ptah.ACLs.values() if acl.name != '']
+        self.acls.sort(key = lambda a: a.title)
+        self.acls.insert(0, ptah.DEFAULT_ACL)
+
+
+class RolesView(view.View):
+    view.pyramidView(
+        'roles.html', IPermissionsModule,
+        template=view.template('ptah.modules:templates/roles.pt'))
+
+    def update(self):
         self.roles = Roles.values()
         self.roles.sort(key = lambda r: r.title)

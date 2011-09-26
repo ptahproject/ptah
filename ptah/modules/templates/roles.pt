@@ -1,0 +1,14 @@
+<div class="page-header">
+  <h2>Roles</h2>
+</div>
+
+<div class="content">
+  <table class="zebra-striped">
+    <tr tal:repeat="r view.roles">
+      <td>
+	<h3>${r.title} <small>(${r.id})</small></h3>
+	<p>${r.description}</p>
+      </td>
+    </tr>
+  </table>
+</div>

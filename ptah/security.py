@@ -57,6 +57,7 @@ class ACL(list):
                 lambda p: ACLs.update({name: p}),
                 (self,), discriminator = ('ptah:acl-map', name))
             )
+        self.directiveInfo = info
 
     def get(self, typ, role):
         for r in self:
