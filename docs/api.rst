@@ -1,12 +1,16 @@
 Memphis config  API
 -------------------
 
-Public APIs
-~~~~~~~~~~~
-
 .. automodule:: memphis.config
 
+  .. py:data:: registry
+
+     Active components registry
+
   .. autofunction:: initialize
+
+  .. autofunction:: notify
+
 
 Directives
 ~~~~~~~~~~
@@ -14,8 +18,6 @@ Directives
   .. autofunction:: event
 
   .. autofunction:: action
-
-  .. autofunction:: adapts
 
   .. autofunction:: adapter
 

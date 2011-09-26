@@ -435,8 +435,7 @@ class TestHandlerDirective(BaseTesting):
 class TestExtraDirective(BaseTesting):
 
     def test_scan_unknown(self):
-        self.assertEqual(
-            directives.scan('unknown', []), ())
+        self.assertRaises(ImportError,  directives.scan, 'unknown', [])
 
     def test_scan_package(self):
         global testHandler

@@ -9,6 +9,7 @@ log = logging.getLogger('memphis.config')
 
 
 def action(func):
+    """ Execute arbitrary action during configration process. """
     info = DirectiveInfo(allowed_scope=('module', 'function call'))
     info.attach(Action(func))
     return func
@@ -40,6 +41,7 @@ class EventDescriptor(object):
 events = {}
 
 def event(title='', category=''):
+    """ Register event object, it is used for introspection only. """
     info = DirectiveInfo(allowed_scope=('class',))
 
     def descriminator(action):
@@ -58,6 +60,7 @@ def _event(klass, title, category):
 
 
 def adapter(*required, **kw):
+    """ Register adapter """
     info = DirectiveInfo()
 
     required = tuple(required)
@@ -87,6 +90,8 @@ def adapter(*required, **kw):
 
 
 def utility(provides=None, name=''):
+    """ Register utility. """
+
     info = DirectiveInfo(allowed_scope=('class',))
 
     def descriminator(action):
@@ -105,6 +110,7 @@ def utility(provides=None, name=''):
 
 
 def handler(*required):
+    """ Register event handler. """
     info = DirectiveInfo(allowed_scope=('module', 'function call'))
 
     def wrapper(func):

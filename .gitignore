@@ -16,3 +16,4 @@ var/*
 *.bak
 .DS_Store
 .coverage
+docs/_build/

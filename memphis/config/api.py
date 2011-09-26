@@ -6,6 +6,9 @@ from zope.interface.interfaces import IObjectEvent
 
 
 def initialize(packages=None, excludes=(), reg=None):
+    """ Load memphis packages, scan and execute all configuration 
+    directives. """
+
     if reg is None:
         reg = Components('memphis')
         reg.registerHandler(objectEventNotify, (IObjectEvent,))
@@ -105,6 +108,7 @@ def loadPackages(include_packages=None, excludes=None):
 
 
 def notify(*event):
+    """ Send event to event listeners """
     registry.subscribers(event, None)
 
 

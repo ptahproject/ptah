@@ -21,7 +21,7 @@ log = logging.getLogger('memphis.config')
 
 
 class SettingsInitializing(object):
-    """ settings initializing event """
+    """ Settings initializing event """
     event('Settings initializing event')
 
     config = None
