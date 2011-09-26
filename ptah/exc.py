@@ -22,10 +22,10 @@ class Forbidden(view.View):
     def update(self):
         request = self.request
 
-        context = getattr(self.request, 'context', None)
+        context = getattr(request, 'context', None)
         if context is None:
-            context = getattr(self.request, 'root', None)
-        
+            context = getattr(request, 'root', None)
+
         self.__parent__ = context
 
         user = authService.getUserId()

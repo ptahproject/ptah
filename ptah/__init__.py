@@ -7,12 +7,12 @@ from ptah.uri import extractUriType
 from ptah.uri import UUIDGenerator
 
 # manage
-from ptah.manage import PtahModule, IPtahModule
+from ptah.manage import PtahModule
+from ptah.manage import IPtahModule
 from ptah.manage import setAccessManager
 
 # security
 from ptah.authentication import authService
-from ptah.authentication import checkPermission
 from ptah.authentication import registerAuthChecker
 from ptah.authentication import registerProvider
 from ptah.authentication import registerSearcher
@@ -37,12 +37,14 @@ from ptah.security import LocalRoles
 # permission
 from ptah.security import Permission
 from ptah.security import Permissions
+from ptah.security import checkPermission
 
 # default roles and permissions
 from ptah.security import Everyone
 from ptah.security import Authenticated
 from ptah.security import Owner
 from ptah.security import DEFAULT_ACL
+from ptah.security import NOT_ALLOWED
 
 # password tool
 from ptah.password import passwordTool

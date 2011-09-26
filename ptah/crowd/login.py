@@ -83,7 +83,7 @@ class LoginForm(form.Form):
 
         self.registration = ptah.PTAH_CONFIG.registration
 
-        if not authService.isAnonymous():
+        if not authService.getUserId():
             app_url = self.request.application_url
             raise HTTPFound(location = '%s/login-success.html'%app_url)
 

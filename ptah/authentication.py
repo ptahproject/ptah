@@ -1,17 +1,12 @@
 import threading
-from memphis import config, view
 from zope import interface
-from pyramid.security import Authenticated
-from pyramid.security import ACLDenied
-from pyramid.security import Everyone
+from memphis import config
+from pyramid.interfaces import INewRequest
 from pyramid.security import authenticated_userid
 from pyramid.threadlocal import get_current_request
-from pyramid.interfaces import INewRequest, IAuthorizationPolicy
-from pyramid.httpexceptions import HTTPForbidden
 
-import ptah
-from ptah.security import LocalRoles
-from ptah.interfaces import IAuthentication, IAuthInfo
+from ptah.uri import resolve
+from ptah.interfaces import IAuthInfo, IAuthentication
 
 checkers = []
 providers = {}
@@ -21,13 +16,28 @@ searchers = {}
 def registerAuthChecker(checker):
     checkers.append(checker)
 
+    info = config.DirectiveInfo()
+    info.attach(
+        config.Action(None, discriminator = ('ptah:auth-checker', checker))
+        )
+
 
 def registerProvider(name, provider):
     providers[name] = provider
 
+    info = config.DirectiveInfo()
+    info.attach(
+        config.Action(None, discriminator = ('ptah:auth-provider', name))
+        )
+
 
 def registerSearcher(name, searcher):
     searchers[name] = searcher
+
+    info = config.DirectiveInfo()
+    info.attach(
+        config.Action(None, discriminator = ('ptah:auth-searcher', name))
+        )
 
 
 class AuthInfo(object):
@@ -36,9 +46,9 @@ class AuthInfo(object):
     def __init__(self, status=False, principal=None, uuid=None, message=u''):
         self.status = status
         self.message = message
-        self.keywords = {}
         self.principal = principal
         self.uuid = uuid
+        self.arguments = {}
 
 
 _notSet = object()
@@ -58,7 +68,7 @@ class Authentication(threading.local):
                 info.principal = principal
 
                 for checker in checkers:
-                    if not checker(principal, info):
+                    if not checker(info):
                         return info
 
                 info.status = True
@@ -66,25 +76,17 @@ class Authentication(threading.local):
 
         return info
 
-    def checkPrincipalAuth(self, principal):
+    def authenticatePrincipal(self, principal):
         info = AuthInfo()
+        info.uuid = principal.uuid
         info.principal = principal
 
         for checker in checkers:
-            if not checker(principal, info):
+            if not checker(info):
                 return info
 
         info.status = True
         return info
-
-    def getPrincipalByLogin(self, login):
-        for pname, provider in providers.items():
-            principal = provider.getPrincipalByLogin(login)
-            if principal is not None:
-                return principal
-
-    def isAnonymous(self):
-        return not self.getUserId()
 
     def setUserId(self, uid):
         self.uid = uid
@@ -94,7 +96,7 @@ class Authentication(threading.local):
         if uid is _notSet:
             try:
                 self.uid = authenticated_userid(get_current_request())
-            except:
+            except: # pragma: no cover
                 self.uid = None
             return self.uid
         return uid
@@ -102,50 +104,33 @@ class Authentication(threading.local):
     def getCurrentPrincipal(self):
         uid = self.getUserId()
         if uid:
-            return ptah.resolve(uid)
+            return resolve(uid)
+
+    def getPrincipalByLogin(self, login):
+        for pname, provider in providers.items():
+            principal = provider.getPrincipalByLogin(login)
+            if principal is not None:
+                return principal
 
 authService = Authentication()
 
 
 @config.handler(INewRequest)
-def resetUserId(ev):
+def resetAuthCache(ev):
     authService.uid = _notSet
     authService.cache = {}
-
-
-def checkPermission(context, permission, request=None, throw=True):
-    if not permission or permission == '__no_permission_required__':
-        return True
-
-    global AUTHZ
-    try:
-        AUTHZ
-    except:
-        AUTHZ = config.registry.getUtility(IAuthorizationPolicy)
-
-    principals = [Everyone]
-
-    userid = authService.getUserId()
-    if userid is not None:
-        principals.extend((Authenticated, userid))
-
-        roles = LocalRoles(userid, context=context)
-        if roles:
-            principals.extend(roles)
-
-    res = AUTHZ.permits(context, principals, permission)
-
-    if isinstance(res, ACLDenied):
-        if throw:
-            raise HTTPForbidden(res)
-
-        return False
-    return True
-
-view.setCheckPermission(checkPermission)
 
 
 def searchPrincipals(term):
     for name, searcher in searchers.items():
         for principal in searcher(term):
             yield principal
+
+
+@config.addCleanup
+def cleanup():
+    checkers[:] = []
+    providers.clear()
+    searchers.clear()
+    authService.uid = _notSet
+    authService.cache = {}

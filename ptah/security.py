@@ -1,8 +1,14 @@
-from memphis import config
+from memphis import config, view
 from collections import OrderedDict
 from pyramid.location import lineage
-from pyramid.security import Allow, Deny, ALL_PERMISSIONS
+from pyramid.security import ACLDenied
+from pyramid.security import Allow, Deny
+from pyramid.security import ALL_PERMISSIONS
+from pyramid.security import NO_PERMISSION_REQUIRED
+from pyramid.interfaces import IAuthorizationPolicy
+from pyramid.httpexceptions import HTTPForbidden
 
+from ptah import authService
 from ptah.interfaces import IOwnersAware
 from ptah.interfaces import ILocalRolesAware
 
@@ -215,6 +221,44 @@ Authenticated = Role(
 
 Owner = Role(
     'Owner', 'Owner', '', 'system.', True)
+
+NOT_ALLOWED = Permission('__not_allowed__', 'Special permission')
+
+
+def checkPermission(permission, context, request=None, throw=True):
+    if not permission or permission == NO_PERMISSION_REQUIRED:
+        return True
+    if permission == NOT_ALLOWED:
+        if throw:
+            raise HTTPForbidden()
+        return False
+
+    global AUTHZ
+    try:
+        AUTHZ
+    except:
+        AUTHZ = config.registry.getUtility(IAuthorizationPolicy)
+
+    principals = [Everyone.id]
+
+    userid = authService.getUserId()
+    if userid is not None:
+        principals.extend((Authenticated.id, userid))
+
+        roles = LocalRoles(userid, context=context)
+        if roles:
+            principals.extend(roles)
+
+    res = AUTHZ.permits(context, principals, permission)
+
+    if isinstance(res, ACLDenied):
+        if throw:
+            raise HTTPForbidden(res)
+
+        return False
+    return True
+
+view.setCheckPermission(checkPermission)
 
 
 @config.addCleanup

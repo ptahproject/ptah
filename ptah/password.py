@@ -107,7 +107,7 @@ class PasswordTool(object):
         if principal is not None:
             changer = self._changers.get(ptah.extractUriType(principal.uuid))
             if changer is not None:
-                changer(principal, password)
+                changer(principal, self.encodePassword(password))
                 return True
 
         return False

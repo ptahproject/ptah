@@ -21,28 +21,9 @@ class CrowdProvider(object):
             if ptah.passwordTool.checkPassword(user.password,password):
                 return user
 
-    def getPrincipal(self, uuid):
-        return CrowdUser.get(uuid)
-
     def getPrincipalByLogin(self, login):
         return CrowdUser.getByLogin(login)
 
-    _sql_search = ptah.QueryFreezer(
-        lambda: Session.query(CrowdUser) \
-        .filter(
-            sqla.sql.or_(CrowdUser.email.contains(sqla.sql.bindparam('term')),
-                         CrowdUser.name.contains(sqla.sql.bindparam('term'))))\
-        .order_by(sqla.sql.asc('name')))
-
-    def search(self, term):
-        for user in self._sql_search.all(term = '%%%s%%'%term):
-            yield user
-
-
-provider = CrowdProvider()
-ptah.registerResolver('user+crowd', provider.getPrincipal)
-ptah.registerProvider('crowd', provider)
-ptah.registerSearcher('crowd', provider.search)
 
 UUID = ptah.UUIDGenerator('user+crowd')
 
@@ -100,6 +81,26 @@ class CrowdUser(Base):
 
 
 def changeCrowdUserPassword(principal, password):
-    principal.password = ptah.passwordTool.encodePassword(password)
+    principal.password = password
 
+
+def getPrincipal(uuid):
+    return CrowdUser.get(uuid)
+
+
+_sql_search = ptah.QueryFreezer(
+    lambda: Session.query(CrowdUser) \
+    .filter(
+        sqla.sql.or_(CrowdUser.email.contains(sqla.sql.bindparam('term')),
+                     CrowdUser.name.contains(sqla.sql.bindparam('term'))))\
+    .order_by(sqla.sql.asc('name')))
+
+def searchPrincipals(term):
+    for user in _sql_search.all(term = '%%%s%%'%term):
+        yield user
+
+
+ptah.registerResolver('user+crowd', getPrincipal)
+ptah.registerProvider('crowd', CrowdProvider())
+ptah.registerSearcher('crowd', searchPrincipals)
 ptah.passwordTool.registerPasswordChanger('user+crowd', changeCrowdUserPassword)

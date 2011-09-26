@@ -44,13 +44,9 @@ class Base(unittest.TestCase):
         transaction.commit()
 
     def _setup_pyramid(self):
-        self.request = request = testing.DummyRequest()
-        request.params = {}
+        self.request = request = self._makeRequest()
         self.p_config = testing.setUp(request=request)
         self.p_config.get_routes_mapper()
-
-    def _setup_memphis(self): #pragma: no cover
-        config.initialize(('ptah', self.__class__.__module__))
 
     def _setRequest(self, request): #pragma: no cover
         self.request = request

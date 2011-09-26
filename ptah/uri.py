@@ -34,14 +34,21 @@ def extractUriType(uri):
     return None
 
 
-def registerResolver(type, component, title='', description='', depth=1):
-    resolvers[type] = component
-    resolversInfo[type] = (title, description)
+def registerResolver(schema, resolver, title='', description='', depth=1):
+    resolvers[schema] = resolver
+    resolversInfo[schema] = (title, description)
 
     info = config.DirectiveInfo(depth=depth)
     info.attach(
-        config.Action(None, discriminator = ('ptah:uri-resolver',type))
+        config.Action(
+            _registerResolver, (schema, resolver, title, description),
+            discriminator = ('ptah:uri-resolver', schema))
         )
+
+
+def _registerResolver(schema, resolver, title, description):
+    resolvers[schema] = resolver
+    resolversInfo[schema] = (title, description)
 
 
 class UUIDGenerator(object):
@@ -51,3 +58,9 @@ class UUIDGenerator(object):
 
     def __call__(self):
         return '%s:%s'%(self.type, uuid.uuid4().get_hex())
+
+
+@config.addCleanup
+def cleanup():
+    resolvers.clear()
+    resolversInfo.clear()

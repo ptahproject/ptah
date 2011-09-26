@@ -16,11 +16,11 @@ TOKEN_TYPE = token.TokenType(
 
 
 @ptah.registerAuthChecker
-def validationAndSuspendedChecker(principal, info):
-    props = MemberProperties.get(principal.uuid)
+def validationAndSuspendedChecker(info):
+    props = MemberProperties.get(info.principal.uuid)
     if props.suspended:
         info.message = 'Account is suspended.'
-        info.keywords['suspended'] = True
+        info.arguments['suspended'] = True
         return False
 
     if not ptah.PTAH_CONFIG['validation']:
@@ -30,7 +30,7 @@ def validationAndSuspendedChecker(principal, info):
         return True
 
     info.message = 'Account is not validated.'
-    info.keywords['validation'] = False
+    info.arguments['validation'] = False
     return False
 
 

@@ -1,7 +1,9 @@
 """ role """
 from zope import interface
 from memphis import config
-from pyramid.security import Allow, Deny, ALL_PERMISSIONS
+from pyramid.security import Allow, Deny, ALL_PERMISSIONS, DENY_ALL
+from pyramid.security import NO_PERMISSION_REQUIRED
+from pyramid.httpexceptions import HTTPForbidden
 
 from base import Base
 
@@ -363,9 +365,11 @@ class TestDefaultRoles(Base):
 
 class Content(object):
 
-    def __init__(self, parent=None, iface=None):
+    def __init__(self, parent=None, iface=None, acl=None):
         self.__parent__ = parent
         self.__local_roles__ = {}
+        if acl is not None:
+            self.__acl__ = acl
 
         if iface:
             interface.directlyProvides(self, iface)
@@ -486,3 +490,72 @@ class TestOwnerLocalRoles(Base):
         self.assertEqual(security.LocalRoles('user', context=content), [])
         self.assertEqual(
             security.LocalRoles('user', context=parent), ['system.Owner'])
+
+
+class TestCheckPermission(Base):
+
+    def setUp(self):
+        super(TestCheckPermission, self).setUp()
+        self._init_memphis()
+
+    def test_checkpermission_allow(self):
+        import ptah
+        
+        content = Content(acl=[DENY_ALL])
+
+        self.assertFalse(ptah.checkPermission('View', content, throw=False))
+        self.assertTrue(ptah.checkPermission(
+            NO_PERMISSION_REQUIRED, content, throw=False))
+
+    def test_checkpermission_deny(self):
+        import ptah
+        
+        content = Content(acl=[(Allow, ptah.Everyone.id, ALL_PERMISSIONS)])
+
+        self.assertTrue(ptah.checkPermission('View', content, throw=False))
+        self.assertFalse(ptah.checkPermission(
+            ptah.NOT_ALLOWED, content, throw=False))
+
+    def test_checkpermission_exc(self):
+        import ptah
+        
+        content = Content(acl=[DENY_ALL])
+
+        self.assertRaises(
+            HTTPForbidden, ptah.checkPermission, 'View', content)
+
+        content = Content(acl=[(Allow, ptah.Everyone.id, ALL_PERMISSIONS)])
+
+        self.assertRaises(
+            HTTPForbidden, ptah.checkPermission, ptah.NOT_ALLOWED, content)
+
+    def test_checkpermission_authenticated(self):
+        import ptah
+
+        content = Content(acl=[(Allow, ptah.Authenticated.id, 'View')])
+
+        self.assertFalse(ptah.checkPermission('View', content, throw=False))
+
+        ptah.authService.setUserId('test-user')
+        self.assertTrue(ptah.checkPermission('View', content, throw=False))
+
+    def test_checkpermission_user(self):
+        import ptah
+        
+        content = Content(acl=[(Allow, 'test-user', 'View')])
+
+        ptah.authService.setUserId('test-user')
+        self.assertTrue(ptah.checkPermission('View', content, throw=False))
+
+    def test_checkpermission_local_roles(self):
+        import ptah
+        
+        content = Content(
+            iface=ptah.ILocalRolesAware,
+            acl=[(Allow, 'role:test', 'View')])
+
+        ptah.authService.setUserId('test-user')
+        self.assertFalse(ptah.checkPermission('View', content, throw=False))
+
+        content.__local_roles__['test-user'] = ['role:test']
+        self.assertTrue(ptah.checkPermission('View', content, throw=False))

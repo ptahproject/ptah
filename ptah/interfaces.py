@@ -60,11 +60,11 @@ class IAuthInfo(interface.Interface):
 class IAuthentication(interface.Interface):
     """ authentication utility """
 
-    def isAnonymous():
-        """ """
+    def authenticate(credentials):
+        """ authenticate credentials """
 
-    def getPrincipalByLogin(login):
-        """ """
+    def authenticatePrincipal(principal):
+        """ check principal restrictions """
 
     def setUserId(uuid):
         """ set current user """
@@ -75,11 +75,8 @@ class IAuthentication(interface.Interface):
     def getCurrentPrincipal():
         """ """
 
-    def authenticate(credentials):
-        """ authenticate credentials """
-
-    def checkPrincipalAuth(principal):
-        """ check principal auth restrictions """
+    def getPrincipalByLogin(login):
+        """ """
 
 
 class IAuthChecker(interface.Interface):
@@ -87,20 +84,17 @@ class IAuthChecker(interface.Interface):
     during authentication process"""
 
     def __call__(principal, authInfo):
-        """ perform additional check """
+        """ perform principal check """
 
 
 class IAuthProvider(interface.Interface):
     """ auth provider """
 
-    def getPrincipal(uuid):
-        """ return principal """
+    def authenticate(credentials):
+        """ authenticate credentials """
 
     def getPrincipalByLogin(login):
         """ return principal object """
-
-    def authenticate(credentials):
-        """ authenticate credentials """
 
 
 class IPrincipalSearcher(interface.Interface):
