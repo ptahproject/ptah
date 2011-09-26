@@ -88,9 +88,7 @@ class AddForm(form.Form):
         return data, errors
 
     def create(self, **data):
-        content = self.tinfo.create(**data)
-        ptah_cms.Session.add(content)
-        return content
+        return self.tinfo.create(**data)
 
     def createAndAdd(self, **data):
         content = self.create(**data)
