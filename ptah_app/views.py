@@ -52,7 +52,7 @@ view.registerLayout(
 def defaultView(renderer):
     def wrap(context, request):
         if context.view:
-            item = ptah_cms.loadContent(context.view)
+            item = ptah_cms.loadNode(context.view)
             if item is None:
                 return renderer(context, request)
 
@@ -77,7 +77,7 @@ class ContainerListing(view.View):
         if 'form.buttons.remove' in request.POST:
             uuids = self.request.POST.getall('item')
             for uuid in uuids:
-                item = ptah_cms.loadContent(uuid)
+                item = ptah_cms.loadNode(uuid)
                 if item and item.__parent__ is context:
                     del context[item]
 
