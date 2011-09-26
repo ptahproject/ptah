@@ -67,7 +67,7 @@ class TypeInformation(object):
 
         if self.permission:
             return ptah.checkPermission(
-                container, self.permission, throw=False)
+                self.permission, container, throw=False)
         return True
 
     def checkContext(self, container):
@@ -138,7 +138,7 @@ def registerType(
     title = '',
     description = '',
     schema = ContentSchema,
-    permission = '__denied__', **kw):
+    permission = ptah.NOT_ALLOWED, **kw):
 
     tinfo.__dict__.update(kw)
 
@@ -186,7 +186,7 @@ class Action(object):
     def check(self, context, request):
         if self.permission:
             if not ptah.checkPermission(
-                context, self.permission, request, False):
+                self.permission, context, request, False):
                 return False
 
         if self.condition is not None:

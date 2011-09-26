@@ -5,7 +5,6 @@ from pyramid.httpexceptions import HTTPForbidden
 
 import ptah
 from ptah import checkPermission
-
 from ptah_cms.node import Node, Session
 from ptah_cms.interfaces import IContent
 
@@ -76,7 +75,7 @@ def loadContent(uuid, permission=None):
         parent = parent.__parent__
 
     if permission is not None:
-        if not checkPermission(item, permission):
+        if not checkPermission(permission, item):
             raise HTTPForbidden()
 
     return item

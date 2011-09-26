@@ -160,7 +160,7 @@ class Content(ptah.rest.Action):
             request.environ['SCRIPT_NAME'] = '%s/content:%s/'%(
                 request.environ['SCRIPT_NAME'], app)
 
-            ptah.checkPermission(content, action.__permission__, request)
+            ptah.checkPermission(action.__permission__, content, request)
             res = action(content, request, *args)
             if not res:
                 res = {'success': True}
@@ -251,7 +251,7 @@ class ContainerRestInfo(ContentRestInfo):
         contents = []
         for item in content.values():
             if not ptah.checkPermission(
-                item, self.__permission__, request, False):
+                self.__permission__, item, request, False):
                 continue
 
             contents.append(
@@ -291,7 +291,7 @@ class ContentAPIDoc(ContentRestInfo):
             (IRestActionClassifier, providedBy(content)), IRestAction):
 
             if not ptah.checkPermission(
-                content, action.__permission__, request, False):
+                action.__permission__, content, request, False):
                 continue
 
             actions.append(
@@ -379,7 +379,7 @@ class CreateContentAction(object):
         if tinfo is None:
             raise HTTPNotFound('Type information is not found')
 
-        ptah.checkPermission(content, tinfo.permission, request)
+        ptah.checkPermission(tinfo.permission, content, request)
 
         try:
             data = tinfo.schema.deserialize(request.POST)

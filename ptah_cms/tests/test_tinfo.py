@@ -278,7 +278,7 @@ class TestAction(Base):
             __name__ = ''
 
         allow = False
-        def checkPermission(content, permission, request=None, throw=False):
+        def checkPermission(permission, content, request=None, throw=False):
             return allow
 
         ptah_cms.contentAction(

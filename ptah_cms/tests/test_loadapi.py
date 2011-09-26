@@ -55,7 +55,7 @@ class TestLoadApi(Base):
         from ptah_cms import content
 
         allow = False
-        def checkPermission(content, permission, r=None, t=True):
+        def checkPermission(permission, content, r=None, t=True):
             if not allow:
                 return False
 
