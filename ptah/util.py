@@ -10,7 +10,7 @@ from ptah import token
 class MemphisFormCSRFService(object):
     interface.implements(ICSRFService)
     config.utility()
-    
+
     TOKEN_TYPE = token.TokenType(
         '1c49d2aacf844557a7aff3dbf09c0740', timedelta(minutes=30))
 
@@ -41,7 +41,7 @@ class Pagination(object):
     def __call__(self, total, current):
         if not current:
             raise ValueError(current)
-        
+
         size = int(round(total/float(self.page_size)+0.4))
 
         pages = []

@@ -44,7 +44,7 @@ class TestAuthentication(Base):
         import ptah
 
         principal = Principal('1', 'user', 'user')
-        
+
         info = ptah.authService.authenticatePrincipal(principal)
         self.assertTrue(info.status)
         self.assertEqual(info.uuid, '1')
@@ -74,7 +74,7 @@ class TestAuthentication(Base):
         self.assertEqual(info.arguments, {'additional': 'test'})
 
         principal = Principal('1', 'user', 'user')
-        
+
         info = ptah.authService.authenticatePrincipal(principal)
         self.assertFalse(info.status)
         self.assertEqual(info.uuid, '1')
@@ -130,7 +130,7 @@ class TestPrincipalSearcher(Base):
 
     def test_principal_searcher(self):
         import ptah
-        
+
         principal = Principal('1', 'user', 'user')
         def search(term=''):
             if term == 'user':

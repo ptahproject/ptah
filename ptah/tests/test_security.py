@@ -500,7 +500,7 @@ class TestCheckPermission(Base):
 
     def test_checkpermission_allow(self):
         import ptah
-        
+
         content = Content(acl=[DENY_ALL])
 
         self.assertFalse(ptah.checkPermission('View', content, throw=False))
@@ -509,7 +509,7 @@ class TestCheckPermission(Base):
 
     def test_checkpermission_deny(self):
         import ptah
-        
+
         content = Content(acl=[(Allow, ptah.Everyone.id, ALL_PERMISSIONS)])
 
         self.assertTrue(ptah.checkPermission('View', content, throw=False))
@@ -518,7 +518,7 @@ class TestCheckPermission(Base):
 
     def test_checkpermission_exc(self):
         import ptah
-        
+
         content = Content(acl=[DENY_ALL])
 
         self.assertRaises(
@@ -541,7 +541,7 @@ class TestCheckPermission(Base):
 
     def test_checkpermission_user(self):
         import ptah
-        
+
         content = Content(acl=[(Allow, 'test-user', 'View')])
 
         ptah.authService.setUserId('test-user')
@@ -549,7 +549,7 @@ class TestCheckPermission(Base):
 
     def test_checkpermission_local_roles(self):
         import ptah
-        
+
         content = Content(
             iface=ptah.ILocalRolesAware,
             acl=[(Allow, 'role:test', 'View')])

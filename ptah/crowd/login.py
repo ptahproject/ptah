@@ -68,7 +68,7 @@ class LoginForm(form.Form):
             request.registry.notify(
                 ptah.events.LogingFailedEvent(info.principal, info.message))
 
-        if info.keywords.get('suspended'):
+        if info.arguments.get('suspended'):
             raise HTTPFound(
                 location='%s/login-suspended.html'%request.application_url)
 
@@ -83,7 +83,7 @@ class LoginForm(form.Form):
 
         self.registration = ptah.PTAH_CONFIG.registration
 
-        if not authService.getUserId():
+        if authService.getUserId():
             app_url = self.request.application_url
             raise HTTPFound(location = '%s/login-success.html'%app_url)
 

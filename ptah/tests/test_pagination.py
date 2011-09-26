@@ -30,7 +30,7 @@ class TestPagination(unittest.TestCase):
 
         self.assertEqual(
             page(1000, 3)[0], [1, 2, 3, 4, 5, None, 100])
-         
+
         self.assertEqual(
             page(1000, 4)[0], [1, 2, 3, 4, 5, 6, None, 100])
 
@@ -52,7 +52,7 @@ class TestPagination(unittest.TestCase):
 
         self.assertEqual(
             page(1000, 97)[0], [1, None, 95, 96, 97, 98, 99, 100])
-         
+
         self.assertEqual(
             page(1000, 98)[0], [1, None, 96, 97, 98, 99, 100])
 

@@ -57,7 +57,7 @@ class NotFound(view.View):
         context = getattr(self.request, 'context', None)
         if context is None:
             context = getattr(self.request, 'root', None)
-        
+
         self.__parent__ = context
 
         self.admin = MAIL.from_name

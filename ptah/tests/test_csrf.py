@@ -15,7 +15,7 @@ class TestCsrf(Base):
     def test_csrf_service(self):
         import ptah
         from ptah.util import MemphisFormCSRFService
-        
+
         self._init_memphis()
 
         csrf = config.registry.getUtility(ICSRFService)
@@ -29,7 +29,6 @@ class TestCsrf(Base):
 
         csrf.remove(t)
         self.assertEqual(csrf.get(t), None)
-        
+
         t2 = csrf.generate('test')
         self.assertTrue(t != t2)
-
