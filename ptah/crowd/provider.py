@@ -25,7 +25,7 @@ class CrowdProvider(object):
         return CrowdUser.getByLogin(login)
 
 
-UUID = ptah.UriGenerator('user+crowd')
+URI_gen = ptah.UriGenerator('user+crowd')
 
 
 class CrowdUser(Base):
@@ -34,7 +34,7 @@ class CrowdUser(Base):
     __tablename__ = 'ptah_crowd'
 
     pid = sqla.Column(sqla.Integer, primary_key=True)
-    uuid = sqla.Column(sqla.Unicode(45), unique=True)
+    uri = sqla.Column(sqla.Unicode(45), unique=True)
     name = sqla.Column(sqla.Unicode(255))
     login = sqla.Column(sqla.Unicode(255), unique=True)
     email = sqla.Column(sqla.Unicode(255), unique=True)
@@ -44,14 +44,14 @@ class CrowdUser(Base):
         super(Base, self).__init__()
 
         self.name = name
-        self.uuid = UUID()
+        self.uri = URI_gen()
         self.login = login
         self.email = email
         self.password = password
 
     _sql_get = ptah.QueryFreezer(
         lambda: Session.query(CrowdUser)\
-           .filter(CrowdUser.uuid==sqla.sql.bindparam('uuid')))
+           .filter(CrowdUser.uri==sqla.sql.bindparam('uri')))
 
     _sql_get_pid = ptah.QueryFreezer(
         lambda: Session.query(CrowdUser)\
@@ -63,7 +63,7 @@ class CrowdUser(Base):
 
     @classmethod
     def get(cls, id):
-        return cls._sql_get.first(uuid=id)
+        return cls._sql_get.first(uri=id)
 
     @classmethod
     def getById(cls, id):
@@ -77,15 +77,15 @@ class CrowdUser(Base):
         return self.name
 
     def __repr__(self):
-        return '%s <%s>'%(self.name, self.uuid)
+        return '%s <%s>'%(self.name, self.uri)
 
 
 def changeCrowdUserPassword(principal, password):
     principal.password = password
 
 
-def getPrincipal(uuid):
-    return CrowdUser.get(uuid)
+def getPrincipal(uri):
+    return CrowdUser.get(uri)
 
 
 _sql_search = ptah.QueryFreezer(

@@ -17,7 +17,7 @@ TOKEN_TYPE = token.TokenType(
 
 @ptah.registerAuthChecker
 def validationAndSuspendedChecker(info):
-    props = MemberProperties.get(info.principal.uuid)
+    props = MemberProperties.get(info.principal.uri)
     if props.suspended:
         info.message = 'Account is suspended.'
         info.arguments['suspended'] = True
@@ -36,7 +36,7 @@ def validationAndSuspendedChecker(info):
 
 def initiateValidation(principal, request):
     view.addMessage(request, 'Validation email has been sent.')
-    t = token.service.generate(TOKEN_TYPE, principal.uuid)
+    t = token.service.generate(TOKEN_TYPE, principal.uri)
     template = ValidationTemplate(principal, request)
     template.token = t
     template.send()
@@ -44,7 +44,7 @@ def initiateValidation(principal, request):
 
 @config.handler(ptah.events.PrincipalRegisteredEvent)
 def principalRegistered(ev):
-    user = MemberProperties.get(ev.principal.uuid)
+    user = MemberProperties.get(ev.principal.uri)
     user.joined = datetime.now()
 
     if ptah.PTAH_CONFIG.validation and \
@@ -54,7 +54,7 @@ def principalRegistered(ev):
 
 @config.handler(ptah.events.PrincipalRegisteredEvent)
 def principalAdded(ev):
-    user = MemberProperties.get(ev.principal.uuid)
+    user = MemberProperties.get(ev.principal.uri)
     user.joined = datetime.now()
     user.validated = True
 
@@ -91,9 +91,9 @@ def validate(request):
 
             request.registry.notify(
                 ptah.events.PrincipalValidatedEvent(
-                    ptah.resolve(user.uuid)))
+                    ptah.resolve(user.uri)))
 
-            headers = remember(request, user.uuid)
+            headers = remember(request, user.uri)
             raise HTTPFound(location=request.application_url, headers=headers)
 
     view.addMessage(request, "Can't validate email address.", 'warning')

@@ -43,11 +43,11 @@ def registerSearcher(name, searcher):
 class AuthInfo(object):
     interface.implements(IAuthInfo)
 
-    def __init__(self, status=False, principal=None, uuid=None, message=u''):
+    def __init__(self, status=False, principal=None, uri=None, message=u''):
         self.status = status
         self.message = message
         self.principal = principal
-        self.uuid = uuid
+        self.uri = uri
         self.arguments = {}
 
 
@@ -64,7 +64,7 @@ class Authentication(threading.local):
         for pname, provider in providers.items():
             principal = provider.authenticate(credentials)
             if principal is not None:
-                info.uuid = principal.uuid
+                info.uri = principal.uri
                 info.principal = principal
 
                 for checker in checkers:
@@ -78,7 +78,7 @@ class Authentication(threading.local):
 
     def authenticatePrincipal(self, principal):
         info = AuthInfo()
-        info.uuid = principal.uuid
+        info.uri = principal.uri
         info.principal = principal
 
         for checker in checkers:

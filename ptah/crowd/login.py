@@ -59,7 +59,7 @@ class LoginForm(form.Form):
             request.registry.notify(
                 ptah.events.LoggedInEvent(info.principal))
 
-            headers = security.remember(request, info.principal.uuid)
+            headers = security.remember(request, info.principal.uri)
             raise HTTPFound(
                 headers = headers,
                 location = '%s/login-success.html'%request.application_url)

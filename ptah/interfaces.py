@@ -29,7 +29,7 @@ class IRestServiceAction(object):
 class IPrincipal(interface.Interface):
     """ principal """
 
-    uuid = interface.Attribute('Unique principal uuid')
+    uri = interface.Attribute('Unique principal id')
 
     name = interface.Attribute('Human readable principal name')
 
@@ -46,7 +46,7 @@ class IPasswordChanger(interface.Interface):
 class IAuthInfo(interface.Interface):
     """ auth info """
 
-    uuid = interface.Attribute('Principal UUID')
+    uri = interface.Attribute('Principal UUID')
 
     status = interface.Attribute('Status of authentication call')
 
@@ -66,7 +66,7 @@ class IAuthentication(interface.Interface):
     def authenticatePrincipal(principal):
         """ check principal restrictions """
 
-    def setUserId(uuid):
+    def setUserId(uri):
         """ set current user """
 
     def getUserId():

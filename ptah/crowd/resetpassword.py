@@ -57,9 +57,9 @@ class ResetPassword(form.Form):
             principal = authService.getPrincipalByLogin(login)
 
             if principal is not None and \
-                   passwordTool.hasPasswordChanger(principal.uuid):
+                   passwordTool.hasPasswordChanger(principal.uri):
 
-                passcode = passwordTool.generatePasscode(principal.uuid)
+                passcode = passwordTool.generatePasscode(principal.uri)
 
                 template = ResetPasswordTemplate(principal, request)
                 template.passcode = passcode
@@ -93,7 +93,7 @@ class ResetPasswordForm(form.Form):
         self.principal = principal = passwordTool.getPrincipal(passcode)
 
         if principal is not None and \
-               passwordTool.hasPasswordChanger(principal.uuid):
+               passwordTool.hasPasswordChanger(principal.uri):
             self.passcode = passcode
             self.title = principal.name or principal.login
         else:
@@ -120,7 +120,7 @@ class ResetPasswordForm(form.Form):
             info = authService.authenticatePrincipal(principal)
 
             if info.status:
-                headers = security.remember(self.request, self.principal.uuid)
+                headers = security.remember(self.request, self.principal.uri)
             else:
                 headers = []
 

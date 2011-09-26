@@ -91,19 +91,19 @@ class SearchUsers(form.Form):
 
         if 'activate' in request.POST and uids:
             Session.query(MemberProperties)\
-                .filter( MemberProperties.uuid.in_(uids))\
+                .filter( MemberProperties.uri.in_(uids))\
                 .update({'suspended': False}, False)
             self.message("Selected accounts have been activated.", 'info')
 
         if 'suspend' in request.POST and uids:
             Session.query(MemberProperties).filter(
-                MemberProperties.uuid.in_(uids))\
+                MemberProperties.uri.in_(uids))\
                 .update({'suspended': True}, False)
             self.message("Selected accounts have been suspended.", 'info')
 
         if 'validate' in request.POST and uids:
             Session.query(MemberProperties).filter(
-                MemberProperties.uuid.in_(uids))\
+                MemberProperties.uri.in_(uids))\
                 .update({'validated': True}, False)
             self.message("Selected accounts have been validated.", 'info')
 

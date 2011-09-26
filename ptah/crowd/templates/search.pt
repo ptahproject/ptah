@@ -14,8 +14,8 @@
 	  <th>Login/Email</th>
 	</tr>
 	<tr tal:repeat="user view.users">
-	  <td><input type="checkbox" name="uid" value="${user.uuid}" 
-		     tal:attributes="checked str(user.uuid) in uids" /></td>
+	  <td><input type="checkbox" name="uid" value="${user.uri}" 
+		     tal:attributes="checked str(user.uri) in uids" /></td>
 	  <td>${user.pid}</td>
 	  <td><a href="${user.pid}/index.html">${user.name}</a></td>
 	  <td>${user.login}</td>

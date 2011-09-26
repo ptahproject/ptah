@@ -7,8 +7,8 @@ from base import Base
 
 class Principal(object):
 
-    def __init__(self, uuid, name, login):
-        self.uuid = uuid
+    def __init__(self, uri, name, login):
+        self.uri = uri
         self.name = name
         self.login = login
 
@@ -38,7 +38,7 @@ class TestAuthentication(Base):
             {'login': 'user', 'password': '12345'})
 
         self.assertTrue(info.status)
-        self.assertEqual(info.uuid, '1')
+        self.assertEqual(info.uri, '1')
 
     def test_auth_checker(self):
         import ptah
@@ -47,7 +47,7 @@ class TestAuthentication(Base):
 
         info = ptah.authService.authenticatePrincipal(principal)
         self.assertTrue(info.status)
-        self.assertEqual(info.uuid, '1')
+        self.assertEqual(info.uri, '1')
         self.assertEqual(info.message, '')
         self.assertEqual(info.arguments, {})
 
@@ -69,7 +69,7 @@ class TestAuthentication(Base):
             {'login': 'user', 'password': '12345'})
 
         self.assertFalse(info.status)
-        self.assertEqual(info.uuid, '1')
+        self.assertEqual(info.uri, '1')
         self.assertEqual(info.message, 'Suspended')
         self.assertEqual(info.arguments, {'additional': 'test'})
 
@@ -77,7 +77,7 @@ class TestAuthentication(Base):
 
         info = ptah.authService.authenticatePrincipal(principal)
         self.assertFalse(info.status)
-        self.assertEqual(info.uuid, '1')
+        self.assertEqual(info.uri, '1')
         self.assertEqual(info.message, 'Suspended')
         self.assertEqual(info.arguments, {'additional': 'test'})
 
@@ -97,8 +97,8 @@ class TestAuthentication(Base):
         import ptah
 
         principal = Principal('1', 'user', 'user')
-        def resolver(uuid):
-            if uuid == 'test:1':
+        def resolver(uri):
+            if uri == 'test:1':
                 return principal
 
         ptah.registerResolver('test', resolver)

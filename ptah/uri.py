@@ -17,7 +17,7 @@ def resolve(uri):
         return
 
     try:
-        schema, uuid = uri.split(':', 1)
+        schema, data = uri.split(':', 1)
     except ValueError:
         return None
 
@@ -33,7 +33,7 @@ def extractUriSchema(uri):
     """ Extract schema of given uri """
     if uri:
         try:
-            schema, uuid = uri.split(':', 1)
+            schema, data = uri.split(':', 1)
             return schema
         except:
             pass

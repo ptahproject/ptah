@@ -71,7 +71,7 @@ class Registration(form.Form):
         principal = authService.authenticate(
             {'login': data['name'], 'password': data['password']})
         if principal is not None:
-            headers = security.remember(self.request, user.uuid)
+            headers = security.remember(self.request, user.uri)
             raise HTTPFound(
                 location='%s/login-success.html'%self.request.application_url,
                 headers = headers)

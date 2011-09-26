@@ -12,7 +12,7 @@ class PtahEvent(Base):
     __tablename__ = 'ptah_events'
 
     id = sqla.Column(sqla.Integer, primary_key=True)
-    uuid = sqla.Column(sqla.Unicode)
+    uri = sqla.Column(sqla.Unicode)
     time = sqla.Column(sqla.DateTime)
     context = sqla.Column(sqla.Unicode)
     principal = sqla.Column(sqla.Unicode)

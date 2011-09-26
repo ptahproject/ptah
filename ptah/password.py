@@ -84,8 +84,8 @@ class PasswordTool(object):
     def registerPasswordChanger(self, typ, changer):
         self._changers[typ] = changer
 
-    def hasPasswordChanger(self, uuid):
-        return ptah.extractUriType(uuid) in self._changers
+    def hasPasswordChanger(self, uri):
+        return ptah.extractUriSchema(uri) in self._changers
 
     def getPrincipal(self, passcode):
         data = token.service.get(passcode)
@@ -93,8 +93,8 @@ class PasswordTool(object):
         if data is not None:
             return ptah.resolve(data)
 
-    def generatePasscode(self, uuid):
-        return token.service.generate(TOKEN_TYPE, uuid)
+    def generatePasscode(self, uri):
+        return token.service.generate(TOKEN_TYPE, uri)
 
     def removePasscode(self, passcode):
         token.service.remove(passcode)
@@ -105,7 +105,7 @@ class PasswordTool(object):
         self.removePasscode(passcode)
 
         if principal is not None:
-            changer = self._changers.get(ptah.extractUriType(principal.uuid))
+            changer = self._changers.get(ptah.extractUriType(principal.uri))
             if changer is not None:
                 changer(principal, self.encodePassword(password))
                 return True
