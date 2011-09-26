@@ -24,6 +24,7 @@ class PermissionInfo(str):
 
 
 def Permission(name, title, description=u''):
+    """ Register new permission. """
     info = config.DirectiveInfo()
 
     permission = PermissionInfo(name)
@@ -41,6 +42,19 @@ def Permission(name, title, description=u''):
 
 
 class ACL(list):
+    """ Named ACL map 
+
+    ACL contains list of permit rules, for example::
+
+      >> acl = ACL('test', 'Test ACL')
+      >> acl.allow('system.Everyone', 'View')
+      >> acl.deny('system.Everyone', 'Edit')
+
+      >> list(acl)
+      [(Allow, 'system.Everyone', ('View',)),
+       (Deny, 'system.Everyone', ('Edit',))]
+
+    """
 
     # do we need somthing like Unset, to unset permission from parent
 
@@ -67,6 +81,8 @@ class ACL(list):
         return None
 
     def allow(self, role, *permissions):
+        """ Give permissions to role """
+
         if not isinstance(role, basestring):
             role = role.id
 
@@ -84,6 +100,8 @@ class ACL(list):
             rec[2].update(permissions)
 
     def deny(self, role, *permissions):
+        """ Deny permissions for role """
+
         if not isinstance(role, basestring):
             role = role.id
 
@@ -101,6 +119,7 @@ class ACL(list):
             rec[2].update(permissions)
 
     def unset(self, role, *permissions):
+        """ Unset any previously defined permissions """
         for perm in permissions:
             for rec in self:
                 if role is not None and rec[1] != role:
@@ -133,6 +152,21 @@ class ACLsMerge(object):
 
 
 class ACLsProperty(object):
+    """ This property merges `__acls__` list of ACLs and 
+    generate one `__acl__`
+
+    For example::
+
+      >> class Content(object):
+      ...
+      ...   __acls__ = ['map1', 'map2']
+      ...
+      ...   __acl__ = ACLsProperty()
+    
+    In this case it is possible to manipulate permissions
+    by just changing `__acls__` list.
+
+    """
 
     def __get__(self, inst, klass):
         acls = getattr(inst, '__acls__', ())
@@ -143,6 +177,7 @@ class ACLsProperty(object):
 
 
 class Role(object):
+    """ Register new security role in the system """
 
     def __init__(self, name, title, description='',
                  prefix='role:', system=False):
@@ -185,6 +220,7 @@ class Role(object):
 
 
 def LocalRoles(userid, request=None, context=None):
+    """ LocalRole calculates local roles for userid """
     if context is None:
         context = getattr(request, 'context', None)
         if context is None:
@@ -227,6 +263,14 @@ NOT_ALLOWED = Permission('__not_allowed__', 'Special permission')
 
 
 def checkPermission(permission, context, request=None, throw=True):
+    """ Check `permission` withing `context`.
+
+    :param permission: Permission
+    :type permission: (Permission or sting)
+    :param context: Context object
+    :param throw: Throw HTTPForbidden exception.
+    """
+    
     if not permission or permission == NO_PERMISSION_REQUIRED:
         return True
     if permission == NOT_ALLOWED:

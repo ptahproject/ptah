@@ -7,27 +7,34 @@ resolversInfo = {}
 
 
 def resolve(uri):
+    """ Resolve uri, return resolved object.
+
+    Uri contains two parts, `schema` and `uuid`. `schema` is used for 
+    resolver selection. `uuid` is resolver specific data.
+    Ussually it is just uuid number.
+    """
     if not uri:
         return
 
     try:
-        type, uuid = uri.split(':', 1)
+        schema, uuid = uri.split(':', 1)
     except ValueError:
         return None
 
     try:
-        return resolvers[type](uri)
+        return resolvers[schema](uri)
     except KeyError:
         pass
 
     return None
 
 
-def extractUriType(uri):
+def extractUriSchema(uri):
+    """ Extract schema of given uri """
     if uri:
         try:
-            type, uuid = uri.split(':', 1)
-            return type
+            schema, uuid = uri.split(':', 1)
+            return schema
         except:
             pass
 
@@ -35,6 +42,19 @@ def extractUriType(uri):
 
 
 def registerResolver(schema, resolver, title='', description='', depth=1):
+    """ Register resolver for given schema 
+
+    :param schema: Uri schema
+    :type schema: string
+    :param resolver: Callable object that accept one parameter.
+        
+    Resolver interface::
+  
+      class Resolver(object):
+
+         def __call__(self, uri):
+             return content
+    """
     resolvers[schema] = resolver
     resolversInfo[schema] = (title, description)
 
@@ -51,13 +71,24 @@ def _registerResolver(schema, resolver, title, description):
     resolversInfo[schema] = (title, description)
 
 
-class UUIDGenerator(object):
+class UriGenerator(object):
+    """ Uri Generator 
 
-    def __init__(self, type):
-        self.type = type
+    Example::
+
+       >> uri = UriGenerator('cms+content')
+
+       >> uri()
+       'cms+content:f73f3266fa15438e94cca3621a3f2dbc'
+
+    """
+
+    def __init__(self, schema):
+        self.schema = schema
 
     def __call__(self):
-        return '%s:%s'%(self.type, uuid.uuid4().get_hex())
+        """ Generate new uri using supplied schema """
+        return '%s:%s'%(self.schema, uuid.uuid4().get_hex())
 
 
 @config.addCleanup

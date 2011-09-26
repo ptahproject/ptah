@@ -45,7 +45,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General substitutions.
-project = 'memphis.config'
+project = 'ptah'
 
 # The default replacements for |version| and |release|, also used in various
 # other places throughout the built documents.
@@ -62,7 +62,7 @@ release = version
 today_fmt = '%B %d, %Y'
 
 # List of documents that shouldn't be included in the build.
-unused_docs = ['_themes/README']
+#unused_docs = ['_themes/README']
 
 # List of directories, relative to source directories, that shouldn't be
 # searched for source files.
@@ -90,9 +90,9 @@ pygments_style = 'sphinx'
 # Options for HTML output
 # -----------------------
 
-sys.path.append(os.path.abspath('_themes'))
-html_theme_path = ['_themes']
-html_theme = 'pylons'
+#sys.path.append(os.path.abspath('_themes'))
+#html_theme_path = ['_themes']
+#html_theme = 'pylons'
 
 # The style sheet to use for HTML and HTML Help pages. A file of that name
 # must exist either in Sphinx' static/ path, or in one of the custom paths
@@ -175,7 +175,7 @@ htmlhelp_basename = 'atemplatedoc'
 # (source start file, target name, title,
 #  author, document class [howto/manual]).
 latex_documents = [
-  ('index', 'atemplate.tex', 'memphis.config Documentation',
+  ('index', 'atemplate.tex', 'Ptah Documentation',
    'Developers', 'manual'),
 ]
 

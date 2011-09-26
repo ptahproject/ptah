@@ -25,7 +25,7 @@ class CrowdProvider(object):
         return CrowdUser.getByLogin(login)
 
 
-UUID = ptah.UUIDGenerator('user+crowd')
+UUID = ptah.UriGenerator('user+crowd')
 
 
 class CrowdUser(Base):

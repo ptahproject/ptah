@@ -17,3 +17,4 @@ var/*
 .coverage
 .noseids
 htmlcov
+docs/_build/

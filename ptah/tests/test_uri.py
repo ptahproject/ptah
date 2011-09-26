@@ -34,14 +34,14 @@ class TestUri(Base):
     def test_uri_extract_type(self):
         import ptah
 
-        self.assertEqual(ptah.extractUriType('test:uuid'), 'test')
-        self.assertEqual(ptah.extractUriType('test'), None)
-        self.assertEqual(ptah.extractUriType(None), None)
+        self.assertEqual(ptah.extractUriSchema('test:uuid'), 'test')
+        self.assertEqual(ptah.extractUriSchema('test'), None)
+        self.assertEqual(ptah.extractUriSchema(None), None)
 
-    def test_uri_uuid_generator(self):
+    def test_uri_uri_generator(self):
         import ptah
 
-        uuid = ptah.UUIDGenerator('test')
+        uuid = ptah.UriGenerator('test')
 
         u1 = uuid()
         u2 = uuid()
