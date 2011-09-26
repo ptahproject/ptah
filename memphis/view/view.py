@@ -31,7 +31,7 @@ def renderView(name, context, request):
 
 checkPermission = None
 
-def defaultCheckPermission(context, permission, request=None, throw=False):
+def defaultCheckPermission(permission, context, request=None, throw=False):
     global AUTH, AUTHZ
 
     try:
@@ -181,7 +181,7 @@ def registerViewImpl(
 
     if permission:
         def pyramidView(context, request):
-            if checkPermission(context, permission, request):
+            if checkPermission(permission, context, request):
                 return renderer(context, request)
 
             msg = getattr(request, 'authdebug_message',
