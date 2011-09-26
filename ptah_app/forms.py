@@ -1,7 +1,7 @@
 """ default content forms """
 import re
 import colander
-from memphis import view, form
+from memphis import config, view, form
 from pyramid.decorator import reify
 from pyramid.httpexceptions import HTTPFound
 
@@ -15,7 +15,9 @@ class AddForm(form.Form):
     tinfo = None
     container = None
 
+    name_show = True
     name_suffix = ''
+    name_widgets = None
     name_fields = form.Fields(ptah_cms.ContentNameSchema)
 
     @reify
@@ -32,13 +34,14 @@ class AddForm(form.Form):
 
     def chooseName(self, content, **kw):
         name = kw.get('title', u'')
-        
+
         name = re.sub(
             r'-{2,}', '-',
             re.sub('^\w-|-\w-|-\w$', '-',
                    re.sub(r'\W', '-', name.strip()))).strip('-').lower()
 
-        n = '%s%s'%(name, self.name_suffix)
+        suffix = self.name_suffix
+        n = '%s%s'%(name, suffix)
         i = 1
         while n in self.container:
             i += 1
@@ -56,15 +59,16 @@ class AddForm(form.Form):
     def updateWidgets(self):
         super(AddForm, self).updateWidgets()
 
-        self.name_widgets = \
-            form.FieldWidgets(self.name_fields, self, self.request)
-        self.name_widgets.mode = self.mode
-        self.name_widgets.update()
+        if self.name_show:
+            self.name_widgets = \
+                form.FieldWidgets(self.name_fields, self, self.request)
+            self.name_widgets.mode = self.mode
+            self.name_widgets.update()
 
     def validate(self, data, errors):
         super(AddForm, self).validate(data, errors)
 
-        if '__name__' in data:
+        if '__name__' in data and data['__name__']:
             widget = self.name_widgets['__name__']
 
             name = data['__name__']
@@ -84,15 +88,11 @@ class AddForm(form.Form):
         return data, errors
 
     def create(self, **data):
-        content = self.tinfo.create(**data)
-        ptah_cms.Session.add(content)
-        return content
+        return self.tinfo.create(**data)
 
     def createAndAdd(self, **data):
         content = self.create(**data)
-        
-        self.request.registry.notify(
-            ptah_cms.events.ContentCreatedEvent(content))
+        config.notify(ptah_cms.events.ContentCreatedEvent(content))
 
         name = data['__name__']
         if not name:
@@ -112,11 +112,14 @@ class AddForm(form.Form):
         content = self.createAndAdd(**data)
 
         self.message('New content has been created.')
-        raise HTTPFound(location=content.__name__)
+        raise HTTPFound(location=self.nextUrl(content))
 
     @form.button('Cancel')
     def cancelHandler(self):
         raise HTTPFound(location='.')
+
+    def nextUrl(self, content):
+        return content.__name__
 
 
 view.registerPagelet(
@@ -143,6 +146,10 @@ class EditForm(form.Form):
 
         super(EditForm, self).update()
 
+    def applyChanges(self, **data):
+        for attr, value in data.items():
+            setattr(self.context, attr, value)
+
     @form.button('Save', actype=form.AC_PRIMARY)
     def saveHandler(self):
         data, errors = self.extractData()
@@ -151,15 +158,15 @@ class EditForm(form.Form):
             self.message(errors, 'form-error')
             return
 
-        for attr, value in data.items():
-            setattr(self.context, attr, value)
-
-        self.request.registry.notify(
-            ptah_cms.events.ContentModifiedEvent(self.context))
+        self.applyChanges(**data)
+        config.notify(ptah_cms.events.ContentModifiedEvent(self.context))
 
         self.message("Changes have been saved.")
-        raise HTTPFound(location='.')
+        raise HTTPFound(location=self.nextUrl())
 
     @form.button('Cancel')
     def cancelHandler(self):
-        raise HTTPFound(location='.')
+        raise HTTPFound(location=self.nextUrl())
+
+    def nextUrl(self):
+        return '.'

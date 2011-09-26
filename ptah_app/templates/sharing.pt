@@ -9,22 +9,26 @@
 
   <div tal:condition="view.local_roles">
     <table class="common-table zebra-striped">
-      <tr>
-	<th>Name</th>
-	<th tal:repeat="role view.roles">
-	  ${role.title}
-	</th>
-      </tr>
-      <tal:block tal:repeat="data view.local_roles.items()">
-	<tr tal:define="principal view.getPrincipal(data[0])"
-	    tal:condition="principal is not None">
-	  <td>${principal.name}</td>
-	  <td tal:repeat="role view.roles">
-	    <input type="checkbox" name="user-${data[0]}"
-		   checked="${role.id in data[1]}" />
-	  </td>
+      <thead>
+	<tr>
+	  <th>Name</th>
+	  <th tal:repeat="role view.roles">
+	    ${role.title}
+	  </th>
 	</tr>
-      </tal:block>
+      </thead>
+      <tbody>
+	<tal:block tal:repeat="data view.local_roles.items()">
+	  <tr tal:define="principal view.getPrincipal(data[0])"
+	      tal:condition="principal is not None">
+	    <td>${principal.name}</td>
+	    <td tal:repeat="role view.roles">
+	      <input type="checkbox" name="user-${data[0]}"
+		     checked="${role.id in data[1]}" />
+	    </td>
+	  </tr>
+	</tal:block>
+      </tbody>
     </table>
     <div class="actions">
       <input type="submit" class="btn primary" 
@@ -41,22 +45,26 @@
   <form method="post" action="${request.url}">
     <table class="common-table zebra-striped"
 	   tal:define="uids request.params.getall('uid')">
-      <tr>
-	<th>Name</th>
-	<th tal:repeat="role view.roles">
-	  ${role.title}
-	</th>
-      </tr>
-      <tr tal:repeat="user view.users">
-	<td>${user.name} (${user.login})
-	  <input type="hidden" name="userid-${user.uuid}" value="on" />
-	</td>
-	<td tal:repeat="role view.roles">
-	  <input type="checkbox" name="${name}"
-		 tal:define="name 'user-%s-%s'%(user.uuid, role.id)"
-		 checked="${name in request.POST}" />
-	</td>
-      </tr>
+      <thead>
+	<tr>
+	  <th>Name</th>
+	  <th tal:repeat="role view.roles">
+	    ${role.title}
+	  </th>
+	</tr>
+      </thead>
+      <tbody>
+	<tr tal:repeat="user view.users">
+	  <td>${user.name} (${user.login})
+	    <input type="hidden" name="userid-${user.uuid}" value="on" />
+	  </td>
+	  <td tal:repeat="role view.roles">
+	    <input type="checkbox" name="${name}"
+		   tal:define="name 'user-%s-%s'%(user.uuid, role.id)"
+		   checked="${name in request.POST}" />
+	  </td>
+	</tr>
+      </tbody>
     </table>
     <div class="actions">
       <input type="submit" class="btn primary" 

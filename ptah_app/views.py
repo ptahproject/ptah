@@ -4,24 +4,32 @@ from pyramid.httpexceptions import HTTPFound
 
 import ptah
 import ptah_cms
-from ptah import authService
+from ptah import authService, manage
 from ptah_cms import tinfo, interfaces, events
 
+from interfaces import IPtahAppRoot
 
-view.registerLayout(
-    'page', view.INavigationRoot,
-    template = view.template("ptah_app:templates/layoutpage.pt"))
+
+page_tmpl = view.template("ptah_app:templates/layoutpage.pt")
+
+view.registerLayout('page', IPtahAppRoot, template = page_tmpl)
+view.registerLayout('page', view.INavigationRoot, template = page_tmpl)
 
 
 class LayoutWorkspace(view.Layout):
-    view.layout('workspace', view.INavigationRoot, parent="page")
+    view.layout('workspace', IPtahAppRoot, parent="page")
 
     template=view.template("ptah_app:templates/layoutworkspace.pt")
 
     def update(self):
         self.root = getattr(self.request, 'root', None)
-        self.user = ptah.authService.getCurrentPrincipal()
+        self.user = authService.getCurrentPrincipal()
         self.isAnon = self.user is None
+        self.ptahManager = manage.ACCESS_MANAGER(authService.getUserId())
+
+
+class LayoutWorkspaceView(LayoutWorkspace):
+    view.layout('workspace', view.INavigationRoot, parent="page")
 
 
 class ContentLayout(view.Layout):
@@ -29,41 +37,22 @@ class ContentLayout(view.Layout):
                 template=view.template("ptah_app:templates/layoutcontent.pt"))
 
     def update(self):
-        context = self.context
-        request = self.request
-        
-        sm = request.registry
-        ti = context.__type__
+        self.actions = ptah_cms.listActions(self.context, self.request)
 
-        actions = []
-        for action in ti.actions:
-            if action.permission:
-                if ptah.checkPermission(
-                    context, action.permission, request, False):
-                    actions.append(action)
-            else:
-                actions.append(action)
 
-        for name, action in sm.getAdapters((context,), interfaces.IAction):
-            if action.permission:
-                if ptah.checkPermission(
-                    context, action.permission, request, False):
-                    actions.append(action)
-            else:
-                actions.append(action)
-
-        self.actions = actions
-
+view_tmpl = view.template("ptah_app:templates/layoutdefault.pt")
 
 view.registerLayout(
-    '', context=view.INavigationRoot, parent='workspace',
-    template = view.template("ptah_app:templates/layoutdefault.pt"))
+    '', context=IPtahAppRoot, parent='workspace', template = view_tmpl)
+
+view.registerLayout(
+    '', context=view.INavigationRoot, parent='workspace', template = view_tmpl)
 
 
 def defaultView(renderer):
     def wrap(context, request):
         if context.view:
-            item = ptah_cms.loadContent(context.view)
+            item = ptah_cms.loadNode(context.view)
             if item is None:
                 return renderer(context, request)
 
@@ -84,11 +73,11 @@ class ContainerListing(view.View):
         context = self.context
         request = self.request
         registry = request.registry
-        
+
         if 'form.buttons.remove' in request.POST:
             uuids = self.request.POST.getall('item')
             for uuid in uuids:
-                item = ptah_cms.loadContent(uuid)
+                item = ptah_cms.loadNode(uuid)
                 if item and item.__parent__ is context:
                     del context[item]
 
@@ -127,14 +116,3 @@ class Adding(view.View):
         types.sort()
 
         self.types = [t for _t, t in types]
-
-
-sharingAction = ptah_cms.Action(**{'id': 'adding',
-                                   'title': 'Add content',
-                                   'action': '+/',
-                                   'permission': ptah.View})
-
-@config.adapter(ptah_cms.IContainer, name='adding')
-@interface.implementer(ptah_cms.IAction)
-def addingActionAdapter(context):
-    return sharingAction

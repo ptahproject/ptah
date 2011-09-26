@@ -3,7 +3,7 @@
 </div>
 <p>${context.description}</p>
 
-<tal:block tal:define="contents context.__children__;
+<tal:block tal:define="contents context.values();
 		       url request.resource_url(context)">
   <form action="${request.url}" method="post">
     <table class="zebra-striped">
