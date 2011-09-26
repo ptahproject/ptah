@@ -75,21 +75,21 @@ class ContainerListing(view.View):
         registry = request.registry
 
         if 'form.buttons.remove' in request.POST:
-            uuids = self.request.POST.getall('item')
-            for uuid in uuids:
-                item = ptah_cms.loadNode(uuid)
+            uris = self.request.POST.getall('item')
+            for uri in uris:
+                item = ptah_cms.loadNode(uri)
                 if item and item.__parent__ is context:
                     del context[item]
 
                 self.message("Selected content items have been removed.")
 
         if 'form.buttons.rename' in request.POST:
-            uuids = self.request.POST.getall('item')
-            print '=============', uuids
+            uris = self.request.POST.getall('item')
+            print '=============', uris
 
         if 'form.buttons.cut' in request.POST:
-            uuids = self.request.POST.getall('item')
-            print '=============', uuids
+            uris = self.request.POST.getall('item')
+            print '=============', uris
 
 
 class ViewContainer(ContainerListing):

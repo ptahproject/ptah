@@ -7,7 +7,7 @@
   <form action="${request.url}" method="post">
     <table class="zebra-striped">
       <tr tal:repeat="item contents">
-	<td><input type="checkbox" name="item" value="${item.__uuid__}" />
+	<td><input type="checkbox" name="item" value="${item.__uri__}" />
 	<td><a href="${url}${item.__name__}">${item.name or 'unknown'}</a></td>
 	<td><a href="${url}${item.__name__}">${item.title}</a></td>
       </tr>

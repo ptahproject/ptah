@@ -96,7 +96,7 @@ class FileAddForm(AddForm):
             filename = fd['filename'],
             mimetype = fd['mimetype'])
 
-        file.blobref = blob.__uuid__
+        file.blobref = blob.__uri__
         return file
 
 
