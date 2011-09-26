@@ -4,6 +4,7 @@ import uuid
 import pyramid_sqla
 import sqlalchemy as sqla
 from zope import interface
+from pyramid.httpexceptions import HTTPNotFound, HTTPForbidden
 
 from interfaces import INode
 
@@ -12,6 +13,34 @@ Session = pyramid_sqla.get_session()
 
 
 class Node(Base):
+    """ Base class for content objects.
+
+    .. attribute:: __uuid__
+
+       Unique object id. *Required*
+
+    .. attribute:: __type__
+
+       Type information object :py:class:`ptah_cms.TypeInformation`
+
+    .. attribute:: __parent__
+
+       Parent of node. Ptah doesn't load `__parent__` automatically.
+       To load node parents use :py:func:`ptah_cms.loadParents` function.
+
+    .. attribute:: __owner__
+
+       UUID of owner principal. It possible to load principal object
+       by using :py:func:`ptah.resolve` function.
+
+    .. attribute:: __local_roles__
+
+    .. attribute:: __acls__
+
+    .. attribute:: __uuid_generator__
+
+    """
+
     interface.implements(INode,
                          ptah.IACLsAware,
                          ptah.IOwnersAware,
@@ -55,3 +84,48 @@ class Node(Base):
         except TypeError: # pragma: no cover
             raise TypeError(
                 'Subclass of Node has to override __uuid_generator__')
+
+
+def loadNode(uuid, permission=None):
+    """ Load node by `uuid` and initialize __parent__ attributes. Also checks
+    permission if permissin is specified.
+
+    :param uuid: Node uuid
+    :param permission: Check permission on node object
+    :type permission: Permission id or None
+    :raise KeyError: Node with uuid is not found.
+    :raise HTTPForbidden: If current principal doesn't pass permission check on loaded node.
+    """
+    item = ptah.resolve(uuid)
+
+    if item is not None:
+        loadParents(item)
+
+        if permission is not None:
+            if not ptah.checkPermission(permission, item):
+                raise HTTPForbidden()
+    else:
+        raise HTTPNotFound(uuid)
+
+    return item
+
+
+def loadParents(node):
+    """ Load and initialize `__parent__` attribute for node. 
+    Returns list of loaded parents. 
+    """
+    parents = []
+    parent = node
+    while parent is not None:
+        if not isinstance(parent, Node): # pragma: no cover
+            break
+
+        if parent.__parent__ is None:
+            parent.__parent__ = parent.__parent_ref__
+
+        parent = parent.__parent__
+
+        if parent is not None:
+            parents.append(parent)
+
+    return parents

@@ -1,19 +1,17 @@
 # ptah_cms api
 
-# base node
-from ptah_cms.node import Node
-
 # base content classes
+from ptah_cms.node import Node
+from ptah_cms.node import loadNode
+from ptah_cms.node import loadParents
+
 from ptah_cms.content import Content
 from ptah_cms.container import Container
-
-# content loading
-from ptah_cms.content import loadContent
-from ptah_cms.content import loadParents
 
 # type information
 from ptah_cms.tinfo import Type
 from ptah_cms.tinfo import Types
+from ptah_cms.tinfo import TypeInformation
 
 # content actions
 from ptah_cms.tinfo import listActions
@@ -48,6 +46,7 @@ from ptah_cms.permissions import AddContent
 from ptah_cms.permissions import DeleteContent
 from ptah_cms.permissions import ModifyContent
 from ptah_cms.permissions import ShareContent
+from ptah import NOT_ALLOWED
 from pyramid.security import ALL_PERMISSIONS
 
 # events

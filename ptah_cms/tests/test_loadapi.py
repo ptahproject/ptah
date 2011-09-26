@@ -1,6 +1,6 @@
 import transaction
 from memphis import config
-from pyramid.httpexceptions import HTTPForbidden
+from pyramid.httpexceptions import HTTPNotFound, HTTPForbidden
 
 import ptah
 import ptah_cms
@@ -24,17 +24,20 @@ class Container(ptah_cms.Container):
 class TestLoadApi(Base):
     """ fixme: redesign tests to use custom resolver """
 
-    def test_loadapi_loadcontent(self):
+    def test_loadapi_loadnode(self):
         content = Content(title='Content')
         uuid = content.__uuid__
 
         ptah_cms.Session.add(content)
         transaction.commit()
 
-        content = ptah_cms.loadContent(uuid)
+        content = ptah_cms.loadNode(uuid)
         self.assertEqual(content.__uuid__, uuid)
 
-    def test_loadapi_loadcontent_with_parents(self):
+    def test_loadapi_loadnode_notfound(self):
+        self.assertRaises(HTTPNotFound, ptah_cms.loadNode, 'unknown')
+
+    def test_loadapi_loadnode_with_parents(self):
         content = Content(title='Content')
         container = Container(__name__='container', __path__='/container/')
 
@@ -48,11 +51,11 @@ class TestLoadApi(Base):
         container['content'] = ptah.resolve(c_uuid)
         transaction.commit()
 
-        content = ptah_cms.loadContent(c_uuid)
+        content = ptah_cms.loadNode(c_uuid)
         self.assertEqual(content.__parent__.__uuid__, co_uuid)
 
-    def test_loadapi_loadcontent_permission(self):
-        from ptah_cms import content
+    def test_loadapi_loadnode_permission(self):
+        import ptah
 
         allow = False
         def checkPermission(permission, content, r=None, t=True):
@@ -62,18 +65,19 @@ class TestLoadApi(Base):
             return True
 
         # monkey patch
-        content.checkPermission = checkPermission
+        orig_checkPermission = ptah.checkPermission
+        ptah.checkPermission = checkPermission
 
         c = Content(title='Content')
         uuid = c.__uuid__
         ptah_cms.Session.add(c)
         transaction.commit()
 
-        self.assertRaises(HTTPForbidden, ptah_cms.loadContent, uuid, 'View')
+        self.assertRaises(HTTPForbidden, ptah_cms.loadNode, uuid, 'View')
 
         allow = True
-        c = ptah_cms.loadContent(uuid, 'View')
+        c = ptah_cms.loadNode(uuid, 'View')
         self.assertEqual(c.__uuid__, uuid)
 
         # remove monkey patch
-        content.checkPermission = ptah.checkPermission
+        ptah.checkPermission = orig_checkPermission

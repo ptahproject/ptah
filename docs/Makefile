@@ -25,7 +25,7 @@ help:
 clean:
 	-rm -rf _build/*
 
-html: _themes/
+html:
 	mkdir -p _build/html _build/doctrees
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) _build/html
 	@echo
@@ -84,5 +84,5 @@ epub:
 	@echo
 	@echo "Build finished. The epub file is in _build/epub."
 
-_themes:
-	git clone git://github.com/Pylons/pylons_sphinx_theme.git _themes
+#_themes:
+#	git clone git://github.com/Pylons/pylons_sphinx_theme.git _themes

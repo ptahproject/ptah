@@ -1,15 +1,50 @@
-""" Base content class implementation """
+""" Base content class """
 import sqlalchemy as sqla
 from zope import interface
-from pyramid.httpexceptions import HTTPForbidden
 
 import ptah
-from ptah import checkPermission
 from ptah_cms.node import Node, Session
 from ptah_cms.interfaces import IContent
 
 
 class Content(Node):
+    """ Base class for content objects. Class has to inherit from `Content` 
+    to participat in content hiararchy.
+
+    .. attribute:: __path__
+
+    .. attribute:: __name__
+
+    .. attribute:: title
+
+       Content title
+
+    .. attribute:: description
+
+       Content description
+
+    .. attribute:: created
+
+       Content creation time
+
+       :type: :py:class:`datetime.datetime`
+
+    .. attribute:: modified
+
+       Content modification time
+
+       :type: :py:class:`datetime.datetime`
+
+    .. attribute:: effective
+
+       :type: :py:class:`datetime.datetime` or None
+
+    .. attribute:: expires
+
+       :type: :py:class:`datetime.datetime` or None
+
+    """
+
     interface.implements(IContent)
 
     __tablename__ = 'ptah_cms_content'
@@ -58,40 +93,3 @@ class Content(Node):
     def __resource_url__(self, request, info):
         return '%s%s'%(request.root.__root_path__,
                        self.__path__[len(request.root.__path__):])
-
-
-def loadContent(uuid, permission=None):
-    item = ptah.resolve(uuid)
-
-    parents = []
-
-    parent = item
-    while parent is not None:
-        if not isinstance(parent, Node): # pragma: no cover
-            break
-
-        if parent.__parent__ is None:
-            parent.__parent__ = parent.__parent_ref__
-        parent = parent.__parent__
-
-    if permission is not None:
-        if not checkPermission(permission, item):
-            raise HTTPForbidden()
-
-    return item
-
-
-def loadParents(content):
-    parents = []
-    parent = content
-    while parent is not None:
-        if not isinstance(parent, Node): # pragma: no cover
-            break
-
-        parents.append(parent)
-
-        if parent.__parent__ is None:
-            parent.__parent__ = parent.__parent_ref__
-        parent = parent.__parent__
-
-    return parents

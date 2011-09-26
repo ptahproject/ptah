@@ -29,8 +29,7 @@ class TypeInformation(object):
     allowed_content_types = ()
     global_allow = True
 
-    def __init__(self, klass, name, title,
-                 schema=ContentSchema(), constructor=None, **kw):
+    def __init__(self, klass, name, title, schema=None, constructor=None, **kw):
         self.__dict__.update(kw)
 
         self.name = name
@@ -105,10 +104,15 @@ def resolveContent(uuid):
     return _sql_get.first(uuid=uuid)
 
 
-def Type(name, title, **kw):
+_contentSchema = ContentSchema()
+
+def Type(name, title, schema = None, **kw):
     info = config.DirectiveInfo(allowed_scope=('class',))
 
-    typeinfo = TypeInformation(None, name, title)
+    if schema is None:
+        schema = _contentSchema
+
+    typeinfo = TypeInformation(None, name, title, schema)
 
     f_locals = sys._getframe(1).f_locals
     if '__mapper_args__' not in f_locals:
@@ -139,16 +143,11 @@ def registerType(
     klass, tinfo, name,
     title = '',
     description = '',
-    schema = ContentSchema(),
     permission = ptah.NOT_ALLOWED, **kw):
 
     tinfo.__dict__.update(kw)
 
-    if isinstance(schema, colander._SchemaMeta):
-        schema = schema()
-
     tinfo.klass = klass
-    tinfo.schema = schema
     tinfo.description = description
     tinfo.permission = permission
 

@@ -10,8 +10,8 @@ from pyramid.httpexceptions import HTTPNotFound
 import ptah
 import ptah_cms
 from ptah_cms.node import Node
+from ptah_cms.node import loadNode
 from ptah_cms.content import Content
-from ptah_cms.content import loadContent
 from ptah_cms.container import Container
 from ptah_cms.root import Factories
 from ptah_cms.interfaces import IBlob
@@ -148,7 +148,7 @@ class Content(ptah.rest.Action):
         if not uuid:
             content = root
         else:
-            content = loadContent(uuid)
+            content = loadNode(uuid)
 
         adapters = request.registry.adapters
 

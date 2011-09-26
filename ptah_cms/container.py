@@ -5,12 +5,13 @@ from memphis import config
 
 import ptah
 from ptah_cms import events
-from ptah_cms.node import Node, Session
-from ptah_cms.content import Content, loadParents
+from ptah_cms.node import Node, Session, loadParents
+from ptah_cms.content import Content
 from ptah_cms.interfaces import IContainer
 
 
 class Container(Content):
+    """ Content container implementation. """
     interface.implements(IContainer)
 
     _v_keys = None
@@ -26,6 +27,8 @@ class Container(Content):
             .filter(Content.__parent_id__ == sqla.sql.bindparam('uuid')))
 
     def keys(self):
+        """Return an list of the keys in the container."""
+
         if self._v_keys_loaded:
             return self._v_keys
         else:
@@ -37,6 +40,10 @@ class Container(Content):
             return self._v_keys
 
     def get(self, key, default=None):
+        """Get a value for a key
+
+        The default is returned if there is no value for the key.
+        """
         if self._v_items and key in self._v_items:
             return self._v_items[key]
 
@@ -50,6 +57,8 @@ class Container(Content):
         return item
 
     def values(self):
+        """Return an list of the values in the container."""
+
         if self._v_keys_loaded and self._v_items:
             if len(self._v_items) == len(self._v_keys):
                 return self._v_items.values()
@@ -76,13 +85,19 @@ class Container(Content):
         return values
 
     def items(self):
+        """Return the items of the container."""
         for item in self.values():
             yield item.__name__, item
 
     def __contains__(self, key):
+        """Tell if a key exists in the mapping."""
         return key in self.keys()
 
     def __getitem__(self, key):
+        """Get a value for a key
+
+        A KeyError is raised if there is no value for the key.
+        """
         if self._v_items and key in self._v_items:
             return self._v_items[key]
 
@@ -99,6 +114,8 @@ class Container(Content):
             raise KeyError(key)
 
     def __setitem__(self, key, item):
+        """Set a new item in the container."""
+
         if not isinstance(item, Content):
             raise ValueError("Content object is required")
 
@@ -146,6 +163,8 @@ class Container(Content):
         config.notify(event)
 
     def __delitem__(self, item):
+        """Delete a value from the container using the key."""
+
         if isinstance(item, basestring):
             item = self[item]
 
