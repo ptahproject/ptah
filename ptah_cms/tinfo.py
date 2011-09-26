@@ -112,6 +112,9 @@ def Type(name, title, schema = None, **kw):
     if schema is None:
         schema = _contentSchema
 
+    if isinstance(schema, colander._SchemaMeta):
+        schema = schema()
+
     typeinfo = TypeInformation(None, name, title, schema)
 
     f_locals = sys._getframe(1).f_locals

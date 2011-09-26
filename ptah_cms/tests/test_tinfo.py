@@ -1,4 +1,5 @@
 import uuid
+import colander
 import transaction
 from zope import interface
 from memphis import config
@@ -166,6 +167,21 @@ class TestTypeInfo(Base):
 
         c = ptah.resolve(c_uuid)
         self.assertTrue(isinstance(c, MyContent))
+
+    def test_tinfo_schema(self):
+        import ptah, ptah_cms
+
+        class MySchema(ptah_cms.ContentSchema):
+            test = colander.SchemaNode(
+                colander.Str())
+
+        class MyContent(ptah_cms.Content):
+            __type__ = ptah_cms.Type('mycontent2', 'MyContent',
+                                     schema=MySchema)
+
+        tinfo = MyContent.__type__
+
+        self.assertFalse(isinstance(tinfo.schema, colander._SchemaMeta))
 
 
 class TestAction(Base):
