@@ -1,13 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head tal:define="root getattr(request, 'root', None)">
-    <title>${getattr(root, 'title', '')}</title>
-    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+    <head tal:define="root getattr(request, 'root', None)">
+        <title>${getattr(root, 'title', '')}</title>
+        <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
 
-    ${view.include('bootstrap')}
-    <tal:block content="structure view.renderIncludes()" />
-  </head>
-  <body>
-    <tal:block tal:content="structure content" />
-  </body>
+        ${view.include('bootstrap')}
+        <tal:block content="structure view.renderIncludes()" />
+    </head>
+
+    <body>
+        <tal:block tal:content="structure content" />
+        <script src="http://cdn.socket.io/stable/socket.io.js"></script>
+    </body>
 </html>
