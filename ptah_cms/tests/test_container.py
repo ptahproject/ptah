@@ -342,3 +342,14 @@ class TestContainer(Base):
 
         self.assertTrue(ptah.resolve(content_uri) is None)
         self.assertTrue(ptah.resolve(folder_uri) is None)
+
+    def test_container_setitem_parent_not_node(self):
+        container = Container(__name__ = 'container', __path__ = '/container/')
+        content = Content(title='Content')
+
+        container.__parent__ = object()
+
+        # this line should not fail
+        container['content'] = content
+
+        self.assertIs(container['content'], content)
