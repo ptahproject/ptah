@@ -48,9 +48,10 @@ class Node(Base):
     __tablename__ = 'ptah_cms_nodes'
 
     __id__ = sqla.Column('id', sqla.Integer, primary_key=True)
-    __uri__ = sqla.Column('uri', sqla.String, unique=True)
     __type_id__ = sqla.Column('type', sqla.String)
-    __parent_id__ = sqla.Column('parent', sqla.String,sqla.ForeignKey(__uri__))
+
+    __uri__ = sqla.Column('uri', sqla.String, unique=True, nullable=False)
+    __parent_uri__ = sqla.Column('parent', sqla.String,sqla.ForeignKey(__uri__))
 
     __owner__ = sqla.Column('owner', sqla.String, default='')
     __local_roles__ = sqla.Column('roles', ptah.JsonDictType(), default={})
@@ -76,7 +77,7 @@ class Node(Base):
             setattr(self, attr, value)
 
         if '__parent__' in kw and kw['__parent__'] is not None:
-            self.__parent_id__ = kw['__parent__'].__uri__
+            self.__parent_uri__ = kw['__parent__'].__uri__
 
         try:
             self.__uri__ = self.__uri_generator__()

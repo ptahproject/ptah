@@ -41,7 +41,7 @@ class TestContainer(Base):
         self.assertEqual(content.__name__, 'content')
         self.assertEqual(content.__path__, '/container/content/')
         self.assertEqual(content.__parent__, container)
-        self.assertEqual(content.__parent_id__, container.__uri__)
+        self.assertEqual(content.__parent_uri__, container.__uri__)
 
         content_uri = content.__uri__
         container_uri = container.__uri__
@@ -121,7 +121,7 @@ class TestContainer(Base):
         self.assertEqual(content.__name__, 'moved')
         self.assertEqual(content.__path__, '/container/moved/')
         self.assertEqual(content.__parent__, container)
-        self.assertEqual(content.__parent_id__, container.__uri__)
+        self.assertEqual(content.__parent_uri__, container.__uri__)
         transaction.commit()
 
         container = ptah.resolve(container_uri)
@@ -200,7 +200,7 @@ class TestContainer(Base):
         self.assertEqual(content.__name__, 'new-content')
         self.assertEqual(content.__path__, '/container/folder/new-content/')
         self.assertEqual(content.__parent__, folder)
-        self.assertEqual(content.__parent_id__, folder.__uri__)
+        self.assertEqual(content.__parent_uri__, folder.__uri__)
         transaction.commit()
 
         folder = ptah.resolve(folder_uri)

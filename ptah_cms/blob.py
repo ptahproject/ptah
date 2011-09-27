@@ -47,7 +47,7 @@ class BlobStorage(object):
 
     _sql_get_by_parent = ptah.QueryFreezer(
         lambda: Session.query(Blob)
-            .filter(Blob.__parent_id__ == sqla.sql.bindparam('parent')))
+            .filter(Blob.__parent_uri__ == sqla.sql.bindparam('parent')))
 
     def create(self, parent=None):
         blob = Blob(__parent__=parent)

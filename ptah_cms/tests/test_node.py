@@ -66,7 +66,7 @@ class TestNode(Base):
         c = ptah_cms.Session.query(ptah_cms.Node).filter(
             ptah_cms.Node.__uri__ == __uri).one()
 
-        self.assertTrue(c.__parent_id__ == parent_uri)
+        self.assertTrue(c.__parent_uri__ == parent_uri)
         self.assertTrue(c.__parent_ref__.__uri__ == parent_uri)
 
     def test_node_local_roles(self):

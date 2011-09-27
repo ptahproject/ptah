@@ -9,7 +9,7 @@ class INode(interface.Interface):
     __id__ = interface.Attribute('Id')
     __uri__ = interface.Attribute('Uri')
     __type_id__ = interface.Attribute('Node type')
-    __parent_id__ = interface.Attribute('Node parent')
+    __parent_uri__ = interface.Attribute('Node parent')
 
 
 class IContent(interface.Interface):

@@ -20,11 +20,11 @@ class Container(Content):
 
     _sql_keys = ptah.QueryFreezer(
         lambda: Session.query(Content.__name_id__)
-            .filter(Content.__parent_id__ == sqla.sql.bindparam('uri')))
+            .filter(Content.__parent_uri__ == sqla.sql.bindparam('uri')))
 
     _sql_values = ptah.QueryFreezer(
         lambda: Session.query(Content)
-            .filter(Content.__parent_id__ == sqla.sql.bindparam('uri')))
+            .filter(Content.__parent_uri__ == sqla.sql.bindparam('uri')))
 
     def keys(self):
         """Return an list of the keys in the container."""
@@ -128,14 +128,14 @@ class Container(Content):
         if key in self.keys():
             raise KeyError(key)
 
-        if item.__parent_id__ is None:
+        if item.__parent_uri__ is None:
             event = events.ContentAddedEvent(item)
         else:
             event = events.ContentMovedEvent(item)
 
         item.__name__ = key
         item.__parent__ = self
-        item.__parent_id__ = self.__uri__
+        item.__parent_uri__ = self.__uri__
         item.__path__ = '%s%s/'%(self.__path__, key)
 
         # temporary keys
@@ -167,7 +167,7 @@ class Container(Content):
         if isinstance(item, basestring):
             item = self[item]
 
-        if item.__parent_id__ == self.__uri__:
+        if item.__parent_uri__ == self.__uri__:
             if isinstance(item, Container):
                 for key in item.keys():
                     item.__delitem__(key, False)

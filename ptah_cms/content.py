@@ -76,7 +76,7 @@ class Content(Node):
     _sql_get_in_parent = ptah.QueryFreezer(
         lambda: Session.query(Content)
             .filter(Content.__name_id__ == sqla.sql.bindparam('key'))
-            .filter(Content.__parent_id__ == sqla.sql.bindparam('parent')))
+            .filter(Content.__parent_uri__ == sqla.sql.bindparam('parent')))
 
     _sql_parent = ptah.QueryFreezer(
         lambda: Session.query(Content)
