@@ -28,7 +28,6 @@ class Container(Content):
 
     def keys(self):
         """Return an list of the keys in the container."""
-
         if self._v_keys_loaded:
             return self._v_keys
         else:
@@ -162,7 +161,7 @@ class Container(Content):
 
         config.notify(event)
 
-    def __delitem__(self, item):
+    def __delitem__(self, item, flush=True):
         """Delete a value from the container using the key."""
 
         if isinstance(item, basestring):
@@ -171,7 +170,7 @@ class Container(Content):
         if item.__parent_id__ == self.__uri__:
             if isinstance(item, Container):
                 for key in item.keys():
-                    del item[key]
+                    item.__delitem__(key, False)
 
             config.notify(events.ContentDeletingEvent(item))
 
@@ -181,10 +180,10 @@ class Container(Content):
             if self._v_items and name in self._v_items:
                 del self._v_items[name]
 
-            try:
+            if item in Session:
                 Session.delete(item)
-            except:
-                pass
+                if flush:
+                    Session.flush()
 
             return
 

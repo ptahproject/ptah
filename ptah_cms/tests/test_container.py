@@ -309,6 +309,9 @@ class TestContainer(Base):
 
         container = ptah.resolve(container_uri)
         del container['content']
+        self.assertEqual(container.keys(), [])
+        self.assertEqual(container.values(), [])
+
         transaction.commit()
 
         self.assertTrue(ptah.resolve(content_uri) is None)
