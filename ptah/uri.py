@@ -41,6 +41,24 @@ def extractUriSchema(uri):
     return None
 
 
+def resolver(schema, title='', description=''):
+    info = config.DirectiveInfo()
+
+    def wrapper(func):
+        resolvers[schema] = func
+        resolversInfo[schema] = (title, description)
+
+        info.attach(
+            config.Action(
+                _registerResolver, (schema, func, title, description),
+                discriminator = ('ptah:uri-resolver', schema))
+            )
+
+        return func
+
+    return wrapper
+
+
 def registerResolver(schema, resolver, title='', description='', depth=1):
     """ Register resolver for given schema 
 
