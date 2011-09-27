@@ -67,6 +67,7 @@ class ApplicationFactory(object):
             root = self.tinfo.create(title=self.title)
             root.__name_id__ = self.name
             root.__path__ = '/%s/'%root.__uri__
+            Session.add(root)
             Session.flush()
 
         root.__root_path__ = self.path

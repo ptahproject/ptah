@@ -1,6 +1,22 @@
 """ interfaces """
 import colander
 from zope import interface
+from pyramid.httpexceptions import HTTPNotFound, HTTPForbidden, HTTPServerError
+
+
+class CmsException(Exception):
+    """ """
+
+class Forbidden(HTTPForbidden, CmsException):
+    """ something forbidden """
+
+
+class NotFound(HTTPNotFound, CmsException):
+    """ something not found """
+
+
+class Error(HTTPServerError, CmsException):
+    """ internale error """
 
 
 class INode(interface.Interface):

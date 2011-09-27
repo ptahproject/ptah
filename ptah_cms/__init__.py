@@ -1,5 +1,8 @@
 # ptah_cms api
 
+# 
+from ptah_cms.cms import cms, action, registerAction
+
 # base content classes
 from ptah_cms.node import Node
 from ptah_cms.node import loadNode

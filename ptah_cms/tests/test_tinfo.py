@@ -32,7 +32,7 @@ class TestTypeInfo(Base):
 
         self.assertEqual(tinfo.name, 'mycontent')
         self.assertEqual(tinfo.title, 'MyContent')
-        self.assertEqual(tinfo.klass, MyContent)
+        self.assertEqual(tinfo.factory, MyContent)
 
     def test_tinfo_checks(self):
         import ptah_cms
@@ -133,7 +133,7 @@ class TestTypeInfo(Base):
 
         self.assertTrue(isinstance(content, MyContent))
         self.assertEqual(content.title, 'Test content')
-        self.assertTrue(content in ptah_cms.Session)
+        self.assertTrue(content not in ptah_cms.Session)
 
     def test_tinfo_alchemy(self):
         import ptah_cms

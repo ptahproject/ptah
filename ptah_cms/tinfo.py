@@ -11,11 +11,17 @@ from node import Session
 from content import Session, Content
 from container import Container
 from events import ContentCreatedEvent
+from interfaces import Forbidden
 from interfaces import ContentSchema, ITypeInformation
 from permissions import View, AddContent, ModifyContent
 
 
 Types = {}
+
+
+@ptah.resolver('type', 'Type resolver')
+def typeInfoResolver(uri):
+    return Types.get(uri[5:])
 
 
 class TypeInformation(object):
@@ -29,37 +35,19 @@ class TypeInformation(object):
     allowed_content_types = ()
     global_allow = True
 
-    def __init__(self, klass, name, title, schema=None, constructor=None, **kw):
+    def __init__(self, factory, name, title, schema=None, **kw):
         self.__dict__.update(kw)
 
+        self.__uri__ = 'type:%s'%name
+
+        self.factory = factory
         self.name = name
         self.title = title
-        self.klass = klass
         self.schema = schema
 
-        if constructor is None:
-            constructor = self._constructor
-        self.constructor = constructor
-
-    def _constructor(self, **data):
-        attrs = {}
-
-        if self.schema is not None:
-            for node in self.schema:
-                val = data.get(node.name, node.default)
-                if val is not colander.null:
-                    attrs[node.name] = val
-
-        return self.klass(**attrs)
-
     def create(self, **data):
-        content = self.constructor(**data)
-        Session.add(content)
-
-        request = get_current_request()
-        if request is not None:
-            config.notify(ContentCreatedEvent(content))
-
+        content = self.factory(**data)
+        config.notify(ContentCreatedEvent(content))
         return content
 
     def isAllowed(self, container):
@@ -73,7 +61,7 @@ class TypeInformation(object):
 
     def checkContext(self, container):
         if not self.isAllowed(container):
-            raise HTTPForbidden()
+            raise Forbidden()
 
     def listTypes(self, container):
         if container.__type__ is not self or \
@@ -143,14 +131,14 @@ def Type(name, title, schema = None, **kw):
 
 
 def registerType(
-    klass, tinfo, name,
+    factory, tinfo, name,
     title = '',
     description = '',
     permission = ptah.NOT_ALLOWED, **kw):
 
     tinfo.__dict__.update(kw)
 
-    tinfo.klass = klass
+    tinfo.factory = factory
     tinfo.description = description
     tinfo.permission = permission
 
@@ -227,7 +215,7 @@ def contentAction(context, id, title,
     info.attach(
         config.Action(
             _contentAction, (id, context, ac,),
-            discriminator = ('ptah-cms:action', id, context))
+            discriminator = ('ptah-cms:ui-action', id, context))
         )
 
 

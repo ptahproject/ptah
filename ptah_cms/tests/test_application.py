@@ -114,7 +114,7 @@ class TestApplicationFactoryCustom(Base):
 
             __type__ = ptah_cms.Type('customapp', 'Custom app')
 
-        CustomApplication.__type__.klass = CustomApplication
+        CustomApplication.__type__.factory = CustomApplication
 
         factory = ptah_cms.ApplicationFactory(
             '/', 'root', 'Root App', CustomApplication.__type__)

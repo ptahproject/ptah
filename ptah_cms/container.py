@@ -137,6 +137,9 @@ class Container(Content):
         item.__parent__ = self
         item.__parent_uri__ = self.__uri__
         item.__path__ = '%s%s/'%(self.__path__, key)
+        
+        if item not in Session:
+            Session.add(item)
 
         # temporary keys
         if not self._v_items:
@@ -181,9 +184,12 @@ class Container(Content):
                 del self._v_items[name]
 
             if item in Session:
-                Session.delete(item)
-                if flush:
-                    Session.flush()
+                try:
+                    Session.delete(item)
+                    if flush:
+                        Session.flush()
+                except:
+                    pass
 
             return
 
