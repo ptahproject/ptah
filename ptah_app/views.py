@@ -74,7 +74,10 @@ class ContainerListing(view.View):
         request = self.request
         registry = request.registry
 
-        if 'form.buttons.remove' in request.POST:
+        self.deleteContent = ptah.checkPermission(
+            ptah_cms.DeleteContent, context, throw=False)
+
+        if self.deleteContent and 'form.buttons.remove' in request.POST:
             uris = self.request.POST.getall('item')
             for uri in uris:
                 item = ptah_cms.loadNode(uri)

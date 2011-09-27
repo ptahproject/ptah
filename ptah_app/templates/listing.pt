@@ -9,7 +9,7 @@
     <table class="zebra-striped">
       <thead>
 	<tr>
-	  <th></th>
+	  <th tal:condition="view.deleteContent"></th>
 	  <th>Name</th>
 	  <th>Title</th>
 	  <th>Type</th>
@@ -19,7 +19,9 @@
       </thead>
       <tbody>
 	<tr tal:repeat="item contents">
-	  <td><input type="checkbox" name="item" value="${item.__uri__}" />
+	  <td tal:condition="view.deleteContent">
+	    <input type="checkbox" name="item" value="${item.__uri__}" />
+	  </td>
 	  <td><a href="${url}${item.__name__}">${item.__name__ or 'unknown'}</a></td>
 	  <td><a href="${url}${item.__name__}">${item.title}</a></td>
 	  <td>${item.__type__.title}</td>
@@ -29,7 +31,8 @@
       </tbody>
     </table>
 
-    <div class="actions" tal:condition="contents">
+    <div class="actions" tal:condition="contents"
+	 tal:condition="view.deleteContent">
       <input type="submit" class="btn"
 	     name="form.buttons.rename" value="Rename" />
       <input type="submit" class="btn"
