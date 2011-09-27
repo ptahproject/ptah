@@ -80,15 +80,17 @@ class AddForm(form.Form):
     def extractData(self, setErrors=True):
         data, errors = self.widgets.extract(setErrors)
 
-        name_data, name_errors = self.name_widgets.extract(setErrors)
-        if name_errors:
-            errors.extend(name_errors)
+        if self.name_show:
+            name_data, name_errors = self.name_widgets.extract(setErrors)
+            if name_errors:
+                errors.extend(name_errors)
 
-        data.update(name_data)
+            data.update(name_data)
+
         return data, errors
 
     def create(self, **data):
-        name = data['__name__']
+        name = data.get('__name__')
         if not name:
             name = self.chooseName(**data)
 
