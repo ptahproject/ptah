@@ -2,8 +2,7 @@
 from zope import interface
 from memphis import view, form
 
-import ptah_cms
-from ptah_app import AddForm
+import ptah_cms, ptah_app
 from ptah_app.permissions import AddFolder
 
 from interfaces import IFolder
@@ -20,7 +19,7 @@ class Folder(ptah_cms.Container):
         )
 
 
-class AddFolderForm(AddForm):
+class AddFolderForm(ptah_app.AddForm):
     view.pyramidView('addfolder.html', ptah_cms.IContainer)
 
     tinfo = Folder.__type__

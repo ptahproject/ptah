@@ -77,12 +77,16 @@ class ContainerListing(view.View):
         self.deleteContent = ptah.checkPermission(
             ptah_cms.DeleteContent, context, throw=False)
 
+        # cms(uri).read()
+        # cms(uri).create(type)
+        # cms(uri).delete()
+        # cms(uri).update(**kwargs)
+        # cms(uri).items(offset, limit)
+
         if self.deleteContent and 'form.buttons.remove' in request.POST:
             uris = self.request.POST.getall('item')
             for uri in uris:
-                item = ptah_cms.loadNode(uri)
-                if item and item.__parent__ is context:
-                    del context[item]
+                ptah_cms.cms(uri).delete()
 
                 self.message("Selected content items have been removed.")
 

@@ -32,7 +32,7 @@ class AddForm(form.Form):
     def description(self):
         return self.tinfo.description
 
-    def chooseName(self, content, **kw):
+    def chooseName(self, **kw):
         name = kw.get('title', u'')
 
         name = re.sub(
@@ -88,17 +88,13 @@ class AddForm(form.Form):
         return data, errors
 
     def create(self, **data):
-        return self.tinfo.create(**data)
-
-    def createAndAdd(self, **data):
-        content = self.create(**data)
-        config.notify(ptah_cms.events.ContentCreatedEvent(content))
-
         name = data['__name__']
         if not name:
-            name = self.chooseName(content, **data)
+            name = self.chooseName(**data)
 
-        self.container[name] = content
+        content = ptah_cms.cms(self.context).create(self.tinfo.__uri__, name)
+        ptah_cms.cms(content).update(**data)
+
         return content
 
     @form.button('Add', actype=form.AC_PRIMARY)
@@ -109,7 +105,7 @@ class AddForm(form.Form):
             self.message(errors, 'form-error')
             return
 
-        content = self.createAndAdd(**data)
+        content = self.create(**data)
 
         self.message('New content has been created.')
         raise HTTPFound(location=self.nextUrl(content))
@@ -147,8 +143,7 @@ class EditForm(form.Form):
         super(EditForm, self).update()
 
     def applyChanges(self, **data):
-        for attr, value in data.items():
-            setattr(self.context, attr, value)
+        ptah_cms.cms(self.context).update(**data)
 
     @form.button('Save', actype=form.AC_PRIMARY)
     def saveHandler(self):

@@ -1,15 +1,12 @@
 """ file content implementation """
 import colander
 import sqlalchemy as sqla
-from pyramid.decorator import reify
-from pyramid.httpexceptions import HTTPFound, HTTPNotFound
+from pyramid.httpexceptions import HTTPNotFound
 
 from zope import interface
 from memphis import view, form
 
-import ptah
-import ptah_cms
-from ptah_app import AddForm
+import ptah, ptah_cms, ptah_app
 from ptah_app.permissions import AddFile
 
 from interfaces import IFile
@@ -38,6 +35,23 @@ class File(ptah_cms.Content):
 
     blobref = sqla.Column(sqla.Unicode)
 
+    @ptah_cms.action('update', IFile, ptah_cms.ModifyContent, "Update file")
+    def update(self, **data):
+        fd = data['data']
+        if fd:
+            blob = ptah.resolve(self.blobref)
+            if blob is None:
+                blob = ptah_cms.blobStorage.create(self)
+                self.blobref = blob.__uri__
+
+            blob.write(fd['fp'].read())
+            blob.updateMetadata(
+                filename = fd['filename'],
+                mimetype = fd['mimetype'])
+
+        self.title = data['title']
+        self.description = data['description']
+
 
 class FileView(view.View):
     view.pyramidView('index.html', IFile, default=True,
@@ -61,18 +75,19 @@ class FileDownloadView(view.View):
         response.content_type = blob.mimetype
         if blob.filename:
             response.headerlist = {
-                'Content-Disposition': 'filename="%s"'%blob.filename}
+                'Content-Disposition': 
+                'filename="%s"'%blob.filename.encode('utf-8')}
         response.body = blob.read()
         return response
 
 
-class FileAddForm(AddForm):
+class FileAddForm(ptah_app.AddForm):
     view.pyramidView('addfile.html', ptah_cms.IContainer)
 
     tinfo = File.__type__
     fields = form.Fields(FileSchema)
 
-    def chooseName(self, content, **kw):
+    def chooseName(self, **kw):
         filename = kw['data']['filename']
         name = filename.split('\\')[-1].split('/')[-1]
 
@@ -83,47 +98,3 @@ class FileAddForm(AddForm):
             n = u'%s-%s'%(name, i)
 
         return n
-
-    def create(self, **data):
-        file = File(title = data['title'],
-                    description = data['description'])
-        ptah_cms.Session.add(file)
-        ptah_cms.Session.flush()
-
-        fd = data['data']
-        blob = ptah_cms.blobStorage.add(
-            fd['fp'], file,
-            filename = fd['filename'],
-            mimetype = fd['mimetype'])
-
-        file.blobref = blob.__uri__
-        return file
-
-
-class FileEditForm(form.Form):
-    view.pyramidView('edit.html', IFile,
-                     permission=ptah_cms.ModifyContent)
-
-    label = 'Modify file'
-    fields = form.Fields(FileSchema)
-
-    def saveHandler(self):
-        data, errors = self.extractData()
-
-        if errors:
-            self.message(errors, 'form-error')
-            return
-
-        fd = data['data']
-        if fd:
-            blob = ptah.resolve(self.context.blobref)
-            blob.write(fd['fp'].read())
-            blob.updateMetadata(
-                filename = fd['filename'],
-                mimetype = fd['mimetype'])
-
-        self.context.title = data['title']
-        self.context.description = data['description']
-
-        self.message('Changes have been saved.')
-        raise HTTPFound(location='.')
