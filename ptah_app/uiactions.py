@@ -51,9 +51,9 @@ def _contentAction(id, context, ac):
 
 
 def uiAction(context, id, title,
-                  description = '',
-                  action='', condition=None, permission=None,
-                  sortWeight = 1.0, **kw):
+             description = '',
+             action='', condition=None, permission=None,
+             sortWeight = 1.0, **kw):
 
     kwargs = {'id': id,
               'title': title,

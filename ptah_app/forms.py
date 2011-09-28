@@ -20,6 +20,10 @@ class AddForm(form.Form):
     name_widgets = None
     name_fields = form.Fields(ptah_cms.ContentNameSchema)
 
+    def __init__(self, context, request):
+        self.container = context
+        super(AddForm, self).__init__(context, request)
+
     @reify
     def fields(self):
         return form.Fields(self.tinfo.schema)
@@ -50,10 +54,9 @@ class AddForm(form.Form):
         return n.replace('/', '-').lstrip('+@')
 
     def update(self):
-        self.container = self.context
         self.name_suffix = getattr(self.tinfo, 'name_suffix', '')
 
-        self.tinfo.checkContext(self.context)
+        self.tinfo.checkContext(self.container)
         super(AddForm, self).update()
 
     def updateWidgets(self):
@@ -94,7 +97,7 @@ class AddForm(form.Form):
         if not name:
             name = self.chooseName(**data)
 
-        content = ptah_cms.cms(self.context).create(self.tinfo.__uri__, name)
+        content = ptah_cms.cms(self.container).create(self.tinfo.__uri__, name)
         ptah_cms.cms(content).update(**data)
 
         return content
@@ -117,7 +120,7 @@ class AddForm(form.Form):
         raise HTTPFound(location='.')
 
     def nextUrl(self, content):
-        return content.__name__
+        return self.request.resource_url(content)
 
 
 view.registerPagelet(

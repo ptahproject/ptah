@@ -1,12 +1,13 @@
 from zope import interface
 from memphis import view, form, config
-from pyramid.httpexceptions import HTTPFound
+from pyramid.httpexceptions import HTTPFound, HTTPNotFound
 
 import ptah
 import ptah_cms
 from ptah import authService, manage
 from ptah_cms import tinfo, interfaces, events
 
+from forms import AddForm
 from uiactions import listUIActions
 from interfaces import IPtahAppRoot
 
@@ -113,8 +114,9 @@ class RenameForm(view.View):
 
 class Adding(view.View):
     view.pyramidView(
-        '+', interfaces.IContainer,
-        template=view.template("ptah_app:templates/adding.pt"))
+        '+', interfaces.IContainer)
+
+    template=view.template("ptah_app:templates/adding.pt")
 
     def update(self):
         self.url = self.request.resource_url(self.context)
@@ -124,3 +126,26 @@ class Adding(view.View):
         types.sort()
 
         self.types = [t for _t, t in types]
+
+    def render(self):
+        subpath = self.request.subpath
+        if subpath and subpath[0]:
+            tname = subpath[0]
+            tinfo = ptah_cms.Types.get(tname)
+            if tinfo is None:
+                raise HTTPNotFound
+
+            form = AddContentForm(tinfo, self, self.request)
+            form.update()
+            return form.render()
+
+        return super(Adding, self).render()
+
+
+class AddContentForm(AddForm):
+
+    def __init__(self, tinfo, form, request):
+        super(AddContentForm, self).__init__(form, request)
+
+        self.tinfo = tinfo
+        self.container = form.context
