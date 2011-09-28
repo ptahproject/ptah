@@ -1,6 +1,8 @@
 """ Base content class """
 import colander
 import sqlalchemy as sqla
+from sqlalchemy.ext.hybrid import hybrid_property
+
 from zope import interface
 from memphis import config
 from collections import OrderedDict
@@ -89,13 +91,15 @@ class Content(Node):
         lambda: Session.query(Content)
             .filter(Content.__uri__ == sqla.sql.bindparam('parent')))
 
-    def __get_name(self):
+    @hybrid_property
+    def __name__(self):
         return self.__name_id__
 
-    def __set_name(self, value):
+    @__name__.setter
+    def __name__(self, value):
         self.__name_id__ = value
 
-    __name__ = property(__get_name, __set_name)
+    #__name__ = property(__get_name, __set_name)
 
     def __resource_url__(self, request, info):
         return '%s%s'%(request.root.__root_path__,

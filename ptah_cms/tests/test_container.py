@@ -365,7 +365,6 @@ class TestContainer(Base):
 
         tinfo = Content.__type__
         tname = tinfo.__uri__
-        print tname
 
         self.assertRaises(
             ptah_cms.Forbidden, container.create, tname, 'test')
