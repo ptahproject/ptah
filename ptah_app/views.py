@@ -7,6 +7,7 @@ import ptah_cms
 from ptah import authService, manage
 from ptah_cms import tinfo, interfaces, events
 
+from uiactions import listUIActions
 from interfaces import IPtahAppRoot
 
 
@@ -37,7 +38,7 @@ class ContentLayout(view.Layout):
                 template=view.template("ptah_app:templates/layoutcontent.pt"))
 
     def update(self):
-        self.actions = ptah_cms.listActions(self.context, self.request)
+        self.actions = listUIActions(self.context, self.request)
 
 
 view_tmpl = view.template("ptah_app:templates/layoutdefault.pt")

@@ -1,7 +1,6 @@
 """ file content implementation """
 import colander
 import sqlalchemy as sqla
-from pyramid.httpexceptions import HTTPNotFound
 
 from zope import interface
 from memphis import view, form
@@ -35,8 +34,9 @@ class File(ptah_cms.Content):
 
     blobref = sqla.Column(sqla.Unicode)
 
-    @ptah_cms.action('update', IFile, ptah_cms.ModifyContent, "Update file")
+    @ptah_cms.action(permission=ptah_cms.ModifyContent)
     def update(self, **data):
+        """ Update file content. """
         fd = data['data']
         if fd:
             blob = ptah.resolve(self.blobref)
@@ -51,6 +51,17 @@ class File(ptah_cms.Content):
 
         self.title = data['title']
         self.description = data['description']
+
+    @ptah_cms.action(permission=ptah_cms.View)
+    def data(self):
+        """ Download data. """
+        blob = ptah.resolve(self.blobref)
+        if blob is None:
+            raise ptah_cms.NotFound()
+
+        return {'mimetype': blob.mimetype,
+                'filename': blob.filename,
+                'data': blob.read()}
 
 
 class FileView(view.View):
@@ -67,17 +78,14 @@ class FileDownloadView(view.View):
                      permission=ptah_cms.View)
 
     def render(self):
-        blob = ptah.resolve(self.context.blobref)
-        if blob is None:
-            raise HTTPNotFound()
+        data = self.context.data()
 
         response = self.request.response
-        response.content_type = blob.mimetype
-        if blob.filename:
-            response.headerlist = {
-                'Content-Disposition': 
-                'filename="%s"'%blob.filename.encode('utf-8')}
-        response.body = blob.read()
+        response.content_type = data['mimetype'].encode('utf-8')
+        response.headerlist = {
+            'Content-Disposition': 
+            'filename="%s"'%data['filename'].encode('utf-8')}
+        response.body = data['data']
         return response
 
 

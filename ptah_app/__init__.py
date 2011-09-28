@@ -4,6 +4,10 @@
 from ptah_app.forms import AddForm
 from ptah_app.forms import EditForm
 
+# ui actions
+from ptah_app.uiactions import uiAction
+from ptah_app.uiactions import listUIActions
+
 # roles
 from ptah import Owner
 from ptah import Everyone
