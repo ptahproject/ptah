@@ -1,7 +1,5 @@
 """ Text Lines widget implementation """
-import colander
 from zope import interface
-
 from memphis import config, view
 from memphis.form import pagelets, widget
 from memphis.form.widgets import textarea
@@ -14,6 +12,9 @@ class TextLinesWidget(textarea.TextAreaWidget):
 
     widget('textlines', _('Text lines widget'))
     interface.implementsOnly(ITextLinesWidget)
+
+    def deserialize(self, value):
+        return self.node.deserialize(value.split('\n'))
 
 
 view.registerPagelet(
