@@ -7,7 +7,7 @@ from collections import OrderedDict
 
 import ptah
 from ptah_cms import events
-from ptah_cms.cms import action
+from ptah_cms.cms import method
 from ptah_cms.node import Node, Session
 from ptah_cms.interfaces import Error
 from ptah_cms.interfaces import IContent
@@ -101,7 +101,7 @@ class Content(Node):
         return '%s%s'%(request.root.__root_path__,
                        self.__path__[len(request.root.__path__):])
 
-    @action(permission=DeleteContent)
+    @method(permission=DeleteContent)
     def delete(self):
         parent = self.__parent__
         if not isinstance(parent, Container):
@@ -109,7 +109,7 @@ class Content(Node):
 
         del parent[self]
 
-    @action(permission=ModifyContent)
+    @method(permission=ModifyContent)
     def update(self, **data):
         tinfo = self.__type__
 
@@ -134,7 +134,7 @@ class Content(Node):
         info['effective'] = self.effective
         info['expires'] = self.expires
 
-    @action(permission=View)
+    @method(permission=View)
     def info(self):
         info = OrderedDict(
             (('__name__', self.__name__),

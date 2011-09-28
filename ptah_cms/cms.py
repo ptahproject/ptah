@@ -30,12 +30,12 @@ class NodeWrapper(object):
         if not self.actions or action not in self.actions:
             raise NotFound(action)
 
-        permission = self.actions[action]
+        fname, permission = self.actions[action]
         if permission:
             if not ptah.checkPermission(permission, self.content, throw=False):
                 raise Forbidden(key)
 
-        return ActionWrapper(self.content, action)
+        return ActionWrapper(self.content, fname)
 
 
 class ActionWrapper(object):
@@ -48,13 +48,13 @@ class ActionWrapper(object):
         return getattr(self.content, self.action)(*args, **kw)
 
 
-def action(func=None, permission = View):
+def method(func=None, name=None, permission = View):
     info = config.DirectiveInfo(allowed_scope=('class',))
 
     def wrapper(func):
         info.attach(
             config.ClassAction(
-                actionImpl, (func, permission),
+                methodImpl, (func, name, permission),
                 discriminator = ('ptah-cms:action', func))
             )
 
@@ -65,7 +65,7 @@ def action(func=None, permission = View):
     return wrapper
 
 
-def actionImpl(cls, func, permission):
+def methodImpl(cls, func, name, permission):
     actions = getattr(cls, '__ptahcms_actions__', None)
     if actions is None:
         # get actions from parents
@@ -79,4 +79,7 @@ def actionImpl(cls, func, permission):
 
         cls.__ptahcms_actions__ = actions
 
-    actions[func.__name__] = permission
+    if name is None:
+        name = func.__name__
+
+    actions[name] = (func.__name__, permission)

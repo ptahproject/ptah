@@ -1,7 +1,7 @@
 # ptah_cms api
 
 # 
-from ptah_cms.cms import cms, action
+from ptah_cms.cms import cms, method
 from ptah_cms.interfaces import NotFound, Forbidden
 
 # base content classes
