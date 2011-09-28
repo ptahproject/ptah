@@ -23,12 +23,14 @@ def pagelet(pageletType, context=None, template=None, layer=''):
         )
 
 
-def pyramidView(name='', context=None, route=None, renderer=None, template=None,
+def pyramidView(name=u'', context=None, route=None, renderer=None, 
+                template=None,
                 layout=unset, permission='__no_permission_required__',
                 default=False, decorator=None, layer=''):
 
     if renderer is not None and template is not None:
-        raise ValueError("renderer and template can't be used at the same time.")
+        raise ValueError(
+            "renderer and template can't be used at the same time.")
 
     info = config.DirectiveInfo(
         allowed_scope=('class', 'module', 'function call'))

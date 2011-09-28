@@ -30,8 +30,14 @@ class View(object):
 
     def render(self):
         params = self.update()
+
         if self.template is not None:
-            return self.template(**params)
+            kwargs = {'view': self,
+                      'context': self.context,
+                      'request': self.request}
+            if type(params) is dict:
+                kwargs.update(params)
+            return self.template(**kwargs)
 
         return u''
 

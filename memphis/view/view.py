@@ -120,7 +120,7 @@ class subpath(object):
 unset = object()
 
 def registerView(
-    name='', factory=View, context=None, renderer=None, template=None,
+    name=u'', factory=View, context=None, renderer=None, template=None,
     route=None, layout=unset, permission='__no_permission_required__',
     default=False, decorator=None, layer=''):
 
