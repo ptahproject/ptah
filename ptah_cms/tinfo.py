@@ -12,6 +12,7 @@ from events import ContentCreatedEvent
 from interfaces import Forbidden
 from interfaces import ContentSchema, ITypeInformation
 from permissions import AddContent
+from sqlschema import generateSchema
 
 
 Types = {}
@@ -28,11 +29,14 @@ class TypeInformation(object):
     description = u''
     permission = AddContent
 
+    schema = None
+    schemaNodes = None
+
     filter_content_types = False
     allowed_content_types = ()
     global_allow = True
 
-    def __init__(self, factory, name, title, schema=None, **kw):
+    def __init__(self, factory, name, title, schema=ContentSchema(), **kw):
         self.__dict__.update(kw)
 
         self.__uri__ = 'cms+type:%s'%name
@@ -67,8 +71,10 @@ class TypeInformation(object):
 
         types = []
         if self.filter_content_types:
-            for tname in self.allowed_content_types:
-                tinfo = Types.get(tname)
+            for tinfo in self.allowed_content_types:
+                if isinstance(tinfo, basestring):
+                    tinfo = Types.get(tinfo)
+
                 if tinfo and tinfo.isAllowed(container):
                     types.append(tinfo)
 
@@ -89,18 +95,17 @@ def resolveContent(uri):
     return _sql_get.first(uri=uri)
 
 
-_contentSchema = ContentSchema()
-
 def Type(name, title, schema = None, **kw):
     info = config.DirectiveInfo(allowed_scope=('class',))
-
-    if schema is None:
-        schema = _contentSchema
 
     if isinstance(schema, colander._SchemaMeta):
         schema = schema()
 
-    typeinfo = TypeInformation(None, name, title, schema)
+    kwargs = {}
+    if schema is not None:
+        kwargs['schema'] = schema
+
+    typeinfo = TypeInformation(None, name, title, **kwargs)
 
     f_locals = sys._getframe(1).f_locals
     if '__mapper_args__' not in f_locals:
@@ -120,7 +125,7 @@ def Type(name, title, schema = None, **kw):
     info.attach(
         config.ClassAction(
             registerType,
-            (typeinfo, name, title), kw,
+            (typeinfo, name, schema), kw,
             discriminator = ('ptah-cms:type', name))
         )
 
@@ -128,15 +133,19 @@ def Type(name, title, schema = None, **kw):
 
 
 def registerType(
-    factory, tinfo, name,
-    title = '',
-    description = '',
-    permission = ptah.NOT_ALLOWED, **kw):
+    factory, tinfo, name, schema,
+    permission = ptah.NOT_ALLOWED, schemaNodes=None, **kw):
+
+    if schema is None:
+        # generate schema
+        schema = generateSchema(factory, schemaNodes=schemaNodes)
 
     tinfo.__dict__.update(kw)
 
+    if schema:
+        tinfo.schema = schema
+
     tinfo.factory = factory
-    tinfo.description = description
     tinfo.permission = permission
 
     Types[name] = tinfo

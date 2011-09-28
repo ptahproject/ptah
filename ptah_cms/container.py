@@ -72,8 +72,8 @@ class Container(Content):
 
         for item in self._sql_values.all(uri = self.__uri__):
             item.__parent__ = self
-            items[item.__name_id__] = item
-            keys.append(item.__name_id__)
+            items[item.__name__] = item
+            keys.append(item.__name__)
             values.append(item)
 
         if old_items:
