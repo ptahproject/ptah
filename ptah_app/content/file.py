@@ -34,7 +34,7 @@ class File(ptah_cms.Content):
 
     blobref = sqla.Column(sqla.Unicode)
 
-    @ptah_cms.action(permission=ptah_cms.ModifyContent)
+    @ptah_cms.method(permission=ptah_cms.ModifyContent)
     def update(self, **data):
         """ Update file content. """
         fd = data['data']
@@ -52,7 +52,7 @@ class File(ptah_cms.Content):
         self.title = data['title']
         self.description = data['description']
 
-    @ptah_cms.action(permission=ptah_cms.View)
+    @ptah_cms.method(permission=ptah_cms.View)
     def data(self):
         """ Download data. """
         blob = ptah.resolve(self.blobref)
