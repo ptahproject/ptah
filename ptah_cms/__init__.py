@@ -18,6 +18,7 @@ from ptah_cms.tinfo import Types
 from ptah_cms.tinfo import TypeInformation
 
 # application root
+from ptah_cms.root import Factories
 from ptah_cms.root import ApplicationRoot
 from ptah_cms.root import ApplicationPolicy
 from ptah_cms.root import ApplicationFactory

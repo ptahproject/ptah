@@ -5,7 +5,7 @@ from zope import interface
 from memphis import config, view
 
 from tinfo import Type
-from node import Session
+from node import Node, Session
 from container import Container
 from interfaces import IApplicationRoot
 
@@ -44,6 +44,9 @@ class ApplicationFactory(object):
         self.path = path if path.endswith('/') else '%s/'%path
         self.name = name
         self.title = title
+
+        if isinstance(tinfo, type) and issubclass(tinfo, Node):
+            tinfo = tinfo.__type__
 
         self.tinfo = tinfo
         self.policy = policy
