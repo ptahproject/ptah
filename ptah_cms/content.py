@@ -8,7 +8,7 @@ from collections import OrderedDict
 import ptah
 from ptah_cms import events
 from ptah_cms.cms import action
-from ptah_cms.node import Node, Session
+from ptah_cms.node import Node, Session, loadParents
 from ptah_cms.interfaces import Error
 from ptah_cms.interfaces import IContent
 from ptah_cms.permissions import View, DeleteContent, ModifyContent
@@ -104,29 +104,34 @@ class Content(Node):
     @action(permission=DeleteContent)
     def delete(self):
         parent = self.__parent__
-        if not isinstance(parent, Container):
-            raise Error("Can't remove content from non container")
+        if parent is None:
+            parent = self.__parent_ref__
+
+        if parent is None:
+            raise Error("Can't find parent")
 
         del parent[self]
 
     @action(permission=ModifyContent)
     def update(self, **data):
-        tinfo = self.__type__
+        if self.__type__:
+            tinfo = self.__type__
 
-        for node in tinfo.schema:
-            val = data.get(node.name, node.default)
-            if val is not colander.null:
-                setattr(self, node.name, val)
+            for node in tinfo.schema:
+                val = data.get(node.name, node.default)
+                if val is not colander.null:
+                    setattr(self, node.name, val)
 
-        config.notify(events.ContentModifiedEvent(self))
+            config.notify(events.ContentModifiedEvent(self))
 
     def _extra_info(self, info):
-        for node in self.__type__.schema:
-            val = getattr(content, node.name, node.missing)
-            try:
-                info[node.name] = node.serialize(val)
-            except:
-                info[node.name] = node.default
+        if self.__type__:
+            for node in self.__type__.schema:
+                val = getattr(self, node.name, node.missing)
+                try:
+                    info[node.name] = node.serialize(val)
+                except:
+                    info[node.name] = node.default
 
         info['view'] = self.view
         info['created'] = self.created
@@ -141,7 +146,8 @@ class Content(Node):
              ('__type__', self.__type_id__),
              ('__uri__', self.__uri__),
              ('__container__', False),
-             ('__parents__', parents(self)),
+             ('__parents__', [p.__uri__ for p in 
+                              loadParents(self) if isinstance(p, Node)]),
              ))
 
         self._extra_info(info)

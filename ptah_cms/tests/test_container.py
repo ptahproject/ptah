@@ -356,3 +356,33 @@ class TestContainer(Base):
         container['content'] = content
 
         self.assertIs(container['content'], content)
+
+    def test_container_create(self):
+        container = Container(__name__ = 'container', __path__ = '/container/')
+
+        self.assertRaises(
+            ptah_cms.NotFound, container.create, 'unknown', 'test')
+
+        tinfo = Content.__type__
+        tname = tinfo.__uri__
+        print tname
+
+        self.assertRaises(
+            ptah_cms.Forbidden, container.create, tname, 'test')
+
+        tinfo.permission = None
+
+        self.assertRaises(
+            ptah_cms.Error, container.create, tname, 'te/st')
+
+        self.assertRaises(
+            ptah_cms.Error, container.create, tname, ' test')
+
+        content = container.create(tname, 'test', title = 'Test title')
+        self.assertIsInstance(content, Content)
+        self.assertIsNotNone(content.created)
+        self.assertIsNotNone(content.modified)
+        self.assertEqual(content.title, 'Test title')
+        self.assertEqual(container.keys(), ['test'])
+
+        tinfo.permission = ptah.NOT_ALLOWED

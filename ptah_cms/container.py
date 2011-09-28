@@ -198,7 +198,7 @@ class Container(Content):
         raise KeyError(item)
 
     @action
-    def create(self, tname, name):
+    def create(self, tname, name, **params):
         tinfo = ptah.resolve(tname)
         if tinfo is None:
             raise NotFound('Type information is not found')
@@ -212,9 +212,12 @@ class Container(Content):
             raise Error("Names cannot starts with ' '")
 
         self[name] = tinfo.create()
-        return self[name]
+        content = self[name]
+        content.update(**params)
+
+        return content
 
     @action(permission=DeleteContent)
     def batchdelete(self, uris):
         """Batch delete"""
-        raise NotImplements()
+        raise NotImplements() # pragma: no cover

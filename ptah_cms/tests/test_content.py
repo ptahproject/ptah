@@ -8,6 +8,10 @@ from base import Base
 
 class TestContent(Base):
 
+    def tearDown(self):
+        config.cleanUp(self.__class__.__module__)
+        super(TestContent, self).tearDown()
+
     def test_content_path(self):
         import ptah_cms
         self._setRequest(self._makeRequest())
@@ -80,3 +84,65 @@ class TestContent(Base):
         config.notify(ptah_cms.ContentCreatedEvent(content))
 
         self.assertEqual(content.__owner__, 'user')
+
+    def test_content_info(self):
+        import ptah, ptah_cms
+
+        class MyContent(ptah_cms.Content):
+            __mapper_args__ = {'polymorphic_identity': 'mycontent'}
+            __uri_generator__ = ptah.UriGenerator('mycontent')
+
+        content = MyContent()
+        config.notify(ptah_cms.ContentCreatedEvent(content))
+
+        info = content.info()
+        self.assertIn('__name__', info)
+        self.assertIn('__type__', info)
+
+        global MyContent
+        class MyContent(ptah_cms.Content):
+            __type__ = ptah_cms.Type('mycontent', 'MyContent')
+
+        content = MyContent()
+        config.notify(ptah_cms.ContentCreatedEvent(content))
+
+        info = content.info()
+        self.assertIn('title', info)
+        self.assertIn('description', info)
+
+    def test_content_update(self):
+        import ptah, ptah_cms
+
+        class MyContent(ptah_cms.Content):
+            __type__ = ptah_cms.Type('mycontent', 'MyContent')
+
+        content = MyContent()
+        config.notify(ptah_cms.ContentCreatedEvent(content))
+
+        modified = content.modified
+
+        content.update(title='Test title')
+        info = content.info()
+
+        self.assertEqual(info['title'], 'Test title')
+        self.assertEqual(content.title, 'Test title')
+        self.assertTrue(content.modified > modified)
+
+    def test_content_delete(self):
+        import ptah, ptah_cms
+
+        class MyContent(ptah_cms.Content):
+            __type__ = ptah_cms.Type('mycontent', 'MyContent')
+
+        class MyContainer(ptah_cms.Container):
+            __type__ = ptah_cms.Type('container', 'Container')
+
+        content = MyContent()
+
+        self.assertRaises(ptah_cms.Error, content.delete)
+
+        container = MyContainer()
+        container['content'] = content
+
+        content.delete()
+        self.assertEqual(container.keys(), [])

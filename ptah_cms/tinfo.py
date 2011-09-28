@@ -16,10 +16,9 @@ from permissions import AddContent
 
 Types = {}
 
-
-@ptah.resolver('type', 'Type resolver')
+@ptah.resolver('cms+type', 'Type resolver')
 def typeInfoResolver(uri):
-    return Types.get(uri[5:])
+    return Types.get(uri[9:])
 
 
 class TypeInformation(object):
@@ -36,7 +35,7 @@ class TypeInformation(object):
     def __init__(self, factory, name, title, schema=None, **kw):
         self.__dict__.update(kw)
 
-        self.__uri__ = 'type:%s'%name
+        self.__uri__ = 'cms+type:%s'%name
 
         self.factory = factory
         self.name = name

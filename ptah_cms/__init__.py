@@ -2,7 +2,7 @@
 
 # 
 from ptah_cms.cms import cms, action
-from ptah_cms.interfaces import NotFound, Forbidden
+from ptah_cms.interfaces import Error, NotFound, Forbidden
 
 # base content classes
 from ptah_cms.node import Node

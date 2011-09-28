@@ -181,3 +181,17 @@ class TestTypeInfo(Base):
         tinfo = MyContent.__type__
 
         self.assertFalse(isinstance(tinfo.schema, colander._SchemaMeta))
+
+    def test_tinfo_type_resolver(self):
+        import ptah, ptah_cms
+
+        global MyContent
+        class MyContent(ptah_cms.Content):
+            __type__ = ptah_cms.Type('mycontent2', 'MyContent')
+
+        self._init_memphis()
+
+        tinfo_uri = MyContent.__type__.__uri__
+
+        self.assertEqual(tinfo_uri, 'cms+type:mycontent2')
+        self.assertIs(ptah.resolve(tinfo_uri), MyContent.__type__)

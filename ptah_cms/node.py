@@ -49,6 +49,7 @@ class Node(Base):
 
     __id__ = sqla.Column('id', sqla.Integer, primary_key=True)
     __type_id__ = sqla.Column('type', sqla.String)
+    __type__ = None
 
     __uri__ = sqla.Column('uri', sqla.String, unique=True, nullable=False)
     __parent_uri__ = sqla.Column('parent', sqla.String,sqla.ForeignKey(__uri__))
