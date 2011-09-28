@@ -10,7 +10,7 @@ from pyramid.httpexceptions import HTTPNotFound
 import ptah
 import ptah_cms
 from ptah_cms.node import Node
-from ptah_cms.node import loadNode
+from ptah_cms.node import load
 from ptah_cms.content import Content
 from ptah_cms.container import Container
 from ptah_cms.root import Factories
@@ -148,7 +148,7 @@ class Content(ptah.rest.Action):
         if not uri:
             content = root
         else:
-            content = loadNode(uri)
+            content = load(uri)
 
         adapters = request.registry.adapters
 

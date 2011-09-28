@@ -5,7 +5,7 @@ from memphis import config
 
 import ptah
 from ptah_cms import events
-from ptah_cms.cms import method
+from ptah_cms.cms import action
 from ptah_cms.node import Node, Session, loadParents
 from ptah_cms.content import Content
 from ptah_cms.permissions import DeleteContent
@@ -197,7 +197,7 @@ class Container(Content):
 
         raise KeyError(item)
 
-    @method
+    @action
     def create(self, tname, name):
         tinfo = ptah.resolve(tname)
         if tinfo is None:
@@ -214,7 +214,7 @@ class Container(Content):
         self[name] = tinfo.create()
         return self[name]
 
-    @method(permission=DeleteContent)
+    @action(permission=DeleteContent)
     def batchdelete(self, uris):
         """Batch delete"""
         raise NotImplements()

@@ -86,7 +86,7 @@ class Node(Base):
                 'Subclass of Node has to override __uri_generator__')
 
 
-def loadNode(uri, permission=None):
+def load(uri, permission=None):
     """ Load node by `uri` and initialize __parent__ attributes. Also checks
     permission if permissin is specified.
 

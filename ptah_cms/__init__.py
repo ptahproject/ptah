@@ -1,12 +1,12 @@
 # ptah_cms api
 
 # 
-from ptah_cms.cms import cms, method
+from ptah_cms.cms import cms, action
 from ptah_cms.interfaces import NotFound, Forbidden
 
 # base content classes
 from ptah_cms.node import Node
-from ptah_cms.node import loadNode
+from ptah_cms.node import load
 from ptah_cms.node import loadParents
 
 from ptah_cms.content import Content

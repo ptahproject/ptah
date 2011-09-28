@@ -3,14 +3,14 @@ import inspect
 from memphis import config
 from zope.interface import providedBy, Interface, implements
 
-from node import loadNode, loadParents
+from node import load, loadParents
 from permissions import View
 from interfaces import NotFound, Forbidden
 
 
 def cms(content):
     if isinstance(content, basestring):
-        content = loadNode(content)
+        content = load(content)
     else:
         loadParents(content)
 
@@ -48,13 +48,13 @@ class ActionWrapper(object):
         return getattr(self.content, self.action)(*args, **kw)
 
 
-def method(func=None, name=None, permission = View):
+def action(func=None, name=None, permission = View):
     info = config.DirectiveInfo(allowed_scope=('class',))
 
     def wrapper(func):
         info.attach(
             config.ClassAction(
-                methodImpl, (func, name, permission),
+                actionImpl, (func, name, permission),
                 discriminator = ('ptah-cms:action', func))
             )
 
@@ -65,7 +65,7 @@ def method(func=None, name=None, permission = View):
     return wrapper
 
 
-def methodImpl(cls, func, name, permission):
+def actionImpl(cls, func, name, permission):
     actions = getattr(cls, '__ptahcms_actions__', None)
     if actions is None:
         # get actions from parents

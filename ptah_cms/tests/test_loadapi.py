@@ -24,20 +24,20 @@ class Container(ptah_cms.Container):
 class TestLoadApi(Base):
     """ fixme: redesign tests to use custom resolver """
 
-    def test_loadapi_loadnode(self):
+    def test_loadapi_load(self):
         content = Content(title='Content')
         uri = content.__uri__
 
         ptah_cms.Session.add(content)
         transaction.commit()
 
-        content = ptah_cms.loadNode(uri)
+        content = ptah_cms.load(uri)
         self.assertEqual(content.__uri__, uri)
 
-    def test_loadapi_loadnode_notfound(self):
-        self.assertRaises(HTTPNotFound, ptah_cms.loadNode, 'unknown')
+    def test_loadapi_load_notfound(self):
+        self.assertRaises(HTTPNotFound, ptah_cms.load, 'unknown')
 
-    def test_loadapi_loadnode_with_parents(self):
+    def test_loadapi_load_with_parents(self):
         content = Content(title='Content')
         container = Container(__name__='container', __path__='/container/')
 
@@ -51,10 +51,10 @@ class TestLoadApi(Base):
         container['content'] = ptah.resolve(c_uri)
         transaction.commit()
 
-        content = ptah_cms.loadNode(c_uri)
+        content = ptah_cms.load(c_uri)
         self.assertEqual(content.__parent__.__uri__, co_uri)
 
-    def test_loadapi_loadnode_permission(self):
+    def test_loadapi_load_permission(self):
         import ptah
 
         allow = False
@@ -73,10 +73,10 @@ class TestLoadApi(Base):
         ptah_cms.Session.add(c)
         transaction.commit()
 
-        self.assertRaises(HTTPForbidden, ptah_cms.loadNode, uri, 'View')
+        self.assertRaises(HTTPForbidden, ptah_cms.load, uri, 'View')
 
         allow = True
-        c = ptah_cms.loadNode(uri, 'View')
+        c = ptah_cms.load(uri, 'View')
         self.assertEqual(c.__uri__, uri)
 
         # remove monkey patch
