@@ -1,15 +1,11 @@
-""" csrf service for memphis.form """
 from datetime import timedelta
-from zope import interface
-from memphis import config
-from memphis.form.interfaces import ICSRFService
+from memphis import config, form
 
 from ptah import token
 
 
-class MemphisFormCSRFService(object):
-    interface.implements(ICSRFService)
-    config.utility()
+class CSRFService(object):
+    """ csrf service for memphis.form """
 
     TOKEN_TYPE = token.TokenType(
         '1c49d2aacf844557a7aff3dbf09c0740', timedelta(minutes=30))
@@ -25,6 +21,8 @@ class MemphisFormCSRFService(object):
 
     def remove(self, t):
         return token.service.remove(t)
+
+form.setCsrfUtility(CSRFService())
 
 
 class Pagination(object):

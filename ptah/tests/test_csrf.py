@@ -1,7 +1,6 @@
 import transaction
 from datetime import timedelta
 from memphis import config
-from memphis.form.interfaces import ICSRFService
 
 from base import Base
 
@@ -14,14 +13,11 @@ class TestCsrf(Base):
 
     def test_csrf_service(self):
         import ptah
-        from ptah.util import MemphisFormCSRFService
+        from ptah.util import CSRFService
 
         self._init_memphis()
 
-        csrf = config.registry.getUtility(ICSRFService)
-
-        self.assertTrue(isinstance(csrf, MemphisFormCSRFService))
-
+        csrf = CSRFService()
         t = csrf.generate('test')
 
         self.assertEqual(csrf.get(t), 'test')
