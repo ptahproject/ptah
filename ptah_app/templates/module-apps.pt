@@ -1,0 +1,16 @@
+<div class="paga-header">
+  <h1>${context.title}</h1>
+  <p>${context.__doc__}</p>
+</div>
+
+<table class="zebra-striped">
+  <tbody>
+    <tr tal:repeat="f view.factories">
+      <td>
+	<h3><a href="${f.id}/">${f.title}</a> <small>${f.name}</small></h3>
+	Mount: ${f.path}<br />
+	Type: ${f.tinfo.title} <br />
+      </td>
+    </tr>
+  </tbody>
+</table>
