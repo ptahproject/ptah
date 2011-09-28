@@ -12,7 +12,6 @@ from memphis.config.directives import event
 from memphis.config.directives import action
 from memphis.config.directives import adapter
 from memphis.config.directives import handler
-from memphis.config.directives import utility
 
 from memphis.config.directives import Action
 from memphis.config.directives import ClassAction

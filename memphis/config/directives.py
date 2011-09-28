@@ -89,26 +89,6 @@ def adapter(*required, **kw):
             )
 
 
-def utility(provides=None, name=''):
-    """ Register utility. """
-
-    info = DirectiveInfo(allowed_scope=('class',))
-
-    def descriminator(action):
-        if provides is not None:
-            return ('memphis.config:utility', provides, name)
-        else:
-            return ('memphis.config:utility', 
-                    _getProvides(action.info.context), name)
-
-    info.attach(
-        ClassAction(
-            _utility,
-            (provides, name),
-            discriminator = descriminator)
-        )
-
-
 def handler(*required):
     """ Register event handler. """
     info = DirectiveInfo(allowed_scope=('module', 'function call'))
@@ -126,10 +106,6 @@ def handler(*required):
 def _register(methodName, *args, **kw):
     method = getattr(api.registry, methodName)
     method(*args, **kw)
-
-
-def _utility(factory, provides, name):
-    api.registry.registerUtility(factory(), provides, name)
 
 
 def _adapts(factory, required, name):
@@ -169,13 +145,21 @@ class Action(object):
 
     def __call__(self):
         if self.callable:
-            self.callable(*self.args, **self.kw)
+            try:
+                self.callable(*self.args, **self.kw)
+            except: # pragma: no cover
+                log.exception(self.discriminator)
+                raise
 
 
 class ClassAction(Action):
 
     def __call__(self):
-        self.callable(self.info.context, *self.args, **self.kw)
+        try:
+            self.callable(self.info.context, *self.args, **self.kw)
+        except: # pragma: no cover
+            log.exception(self.discriminator)
+            raise
 
 
 class DirectiveInfo(object):

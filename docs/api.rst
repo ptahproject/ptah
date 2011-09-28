@@ -23,7 +23,6 @@ Directives
 
   .. autofunction:: handler
 
-  .. autofunction:: utility
 
 Settings
 ~~~~~~~~
