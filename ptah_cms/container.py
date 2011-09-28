@@ -5,9 +5,11 @@ from memphis import config
 
 import ptah
 from ptah_cms import events
+from ptah_cms.cms import action
 from ptah_cms.node import Node, Session, loadParents
 from ptah_cms.content import Content
-from ptah_cms.interfaces import IContainer
+from ptah_cms.permissions import DeleteContent
+from ptah_cms.interfaces import IContainer, NotFound, Error
 
 
 class Container(Content):
@@ -194,3 +196,25 @@ class Container(Content):
             return
 
         raise KeyError(item)
+
+    @action
+    def create(self, tname, name):
+        tinfo = ptah.resolve(tname)
+        if tinfo is None:
+            raise NotFound('Type information is not found')
+
+        tinfo.checkContext(self)
+
+        if '/' in name:
+            raise Error("Names cannot contain '/'")
+
+        if name.startswith(' '):
+            raise Error("Names cannot starts with ' '")
+
+        self[name] = tinfo.create()
+        return self[name]
+
+    @action(permission=DeleteContent)
+    def batchdelete(self, uris):
+        """Batch delete"""
+        raise NotImplements()

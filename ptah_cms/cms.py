@@ -1,38 +1,41 @@
+import ptah
+import inspect
 from memphis import config
 from zope.interface import providedBy, Interface, implements
 
-from node import loadNode
+from node import loadNode, loadParents
+from permissions import View
 from interfaces import NotFound, Forbidden
 
 
 def cms(content):
     if isinstance(content, basestring):
         content = loadNode(content)
+    else:
+        loadParents(content)
 
     if content is None:
         raise NotFound()
 
-    return CMS(content)
+    return NodeWrapper(content)
 
 
-class CMS(object):
+class NodeWrapper(object):
 
     def __init__(self, content):
         self.content = content
-        self.provided = providedBy(content)
+        self.actions = getattr(content, '__ptahcms_actions__', None)
 
-    def __getattr__(self, key):
-        action = config.registry.adapters.lookup(
-            (self.provided,), IAction, name=key, default=None)
-        if action is None:
-            raise NotFound(key)
+    def __getattr__(self, action):
+        if not self.actions or action not in self.actions:
+            raise NotFound(action)
 
-        if action.permission:
-            if not ptah.checkPermission(
-                action.permission, content, throw=False):
+        permission = self.actions[action]
+        if permission:
+            if not ptah.checkPermission(permission, self.content, throw=False):
                 raise Forbidden(key)
 
-        return ActionWrapper(self.content, action.action)
+        return ActionWrapper(self.content, action)
 
 
 class ActionWrapper(object):
@@ -42,60 +45,38 @@ class ActionWrapper(object):
         self.action = action
 
     def __call__(self, *args, **kw):
-        return self.action(self.content, *args, **kw)
+        return getattr(self.content, self.action)(*args, **kw)
 
 
-class IAction(Interface):
-    pass
-
-
-class Action(object):
-    implements(IAction)
-
-    id = ''
-    title = ''
-    description = ''
-    action = ''
-    permission = None
-
-    def __init__(self, id, action, title, description, permission):
-        self.id = id
-        self.action = action
-        self.title = title
-        self.description = description 
-        self.permission = permission
-
-
-def action(id, context, permission = None, title = '', description = ''):
-    info = config.DirectiveInfo()
+def action(func=None, permission = View):
+    info = config.DirectiveInfo(allowed_scope=('class',))
 
     def wrapper(func):
-        def actionImpl(func, id, context, permission, title, description):
-            ac = Action(id, func, permission, title, description)
-            config.registry.registerAdapter(ac, (context,), IAction, id)
-
         info.attach(
-            config.Action(
-                actionImpl, (func, id, context, permission, title, description),
-                discriminator = ('ptah-cms:action', id, context))
+            config.ClassAction(
+                actionImpl, (func, permission),
+                discriminator = ('ptah-cms:action', func))
             )
 
         return func
 
+    if func is not None:
+        return wrapper(func)
     return wrapper
 
 
-def registerAction(id, callable, context,
-                   permission=None, title='', description=''):
-    info = config.DirectiveInfo()
+def actionImpl(cls, func, permission):
+    actions = getattr(cls, '__ptahcms_actions__', None)
+    if actions is None:
+        # get actions from parents
+        mro = inspect.getmro(cls)
 
-    ac = Action(id, callable, permission, title, description)
+        actions = {}
+        for idx in range(len(mro)-1, 0, -1):
+            a = getattr(mro[idx], '__ptahcms_actions__', None)
+            if a is not None:
+                actions.update(a)
 
-    def _register(id, context, ac):
-        config.registry.registerAdapter(ac, (context,), IAction, id)
+        cls.__ptahcms_actions__ = actions
 
-    info.attach(
-        config.Action(
-            _register, (id, context, ac),
-            discriminator = ('ptah-cms:action', id, context))
-        )
+    actions[func.__name__] = permission

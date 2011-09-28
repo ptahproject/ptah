@@ -1,7 +1,8 @@
 # ptah_cms api
 
 # 
-from ptah_cms.cms import cms, action, registerAction
+from ptah_cms.cms import cms, action
+from ptah_cms.interfaces import NotFound, Forbidden
 
 # base content classes
 from ptah_cms.node import Node
@@ -15,10 +16,6 @@ from ptah_cms.container import Container
 from ptah_cms.tinfo import Type
 from ptah_cms.tinfo import Types
 from ptah_cms.tinfo import TypeInformation
-
-# content actions
-from ptah_cms.tinfo import listActions
-from ptah_cms.tinfo import contentAction
 
 # application root
 from ptah_cms.root import ApplicationRoot
