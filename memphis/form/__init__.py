@@ -3,6 +3,7 @@
 # forms
 from memphis.form.form import Form
 from memphis.form.form import DisplayForm
+from memphis.form.form import setCsrfUtility
 
 # widget
 from memphis.form.widget import Widget

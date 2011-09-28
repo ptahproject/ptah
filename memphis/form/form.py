@@ -9,8 +9,13 @@ from memphis import view, config
 from memphis.form.field import Fields, FieldWidgets
 from memphis.form.button import Buttons, Actions
 from memphis.form.pagelets import FORM_VIEW, FORM_INPUT, FORM_DISPLAY
-from memphis.form.interfaces import \
-    IForm, IInputForm, IDisplayForm, IWidgets, ICSRFService
+from memphis.form.interfaces import IForm, IInputForm, IDisplayForm, IWidgets
+
+CSRF = None
+
+def setCsrfUtility(util):
+    global CSRF
+    CSRF = util
 
 
 class Form(view.View):
@@ -73,9 +78,8 @@ class Form(view.View):
 
     @property
     def token(self):
-        srv = config.registry.queryUtility(ICSRFService)
-        if srv is not None:
-            return srv.generate(self.tokenData)
+        if CSRF is not None:
+            return CSRF.generate(self.tokenData)
 
     @reify
     def tokenData(self):
@@ -90,9 +94,8 @@ class Form(view.View):
         if self.csrf:
             token = self.getParams().get(self.csrfname, None)
             if token is not None:
-                srv = config.registry.queryUtility(ICSRFService)
-                if srv is not None:
-                    if srv.get(token) == self.tokenData:
+                if CSRF is not None:
+                    if CSRF.get(token) == self.tokenData:
                         return
 
             raise HTTPForbidden("Form authenticator is not found.")
