@@ -53,7 +53,7 @@ view.registerLayout(
 def defaultView(renderer):
     def wrap(context, request):
         if context.view:
-            item = ptah_cms.loadNode(context.view)
+            item = ptah_cms.load(context.view)
             if item is None:
                 return renderer(context, request)
 
