@@ -9,11 +9,11 @@ from ptah.events import PrincipalAddedEvent
 from interfaces import _
 from provider import CrowdUser, Session
 from schemas import UserSchema, ManagerChangePasswordSchema
-from module import ICrowdModule, ICrowdUser #, IManageUserAction
+from module import CrowdModule, ICrowdUser
 
 
 class CreateUserForm(form.Form):
-    view.pyramidView('create.html', ICrowdModule, 'ptah-manage', layout='')
+    view.pyramidView('create.html', CrowdModule, 'ptah-manage', layout='')
 
     __intr_path__ = '/ptah-manage/crowd/create.html'
 

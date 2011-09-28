@@ -7,7 +7,7 @@
     <table class="zebra-striped">
       <tr tal:repeat="mod view.modules">
 	<td>
-	  <h4><a href="${mod.url(request)}">${mod.title}</a></h4>
+	  <h4><a href="${mod.url()}">${mod.title}</a></h4>
 	  <p>${mod.__doc__}</p>
 	</td>
       </tr>

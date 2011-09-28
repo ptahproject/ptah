@@ -1,28 +1,18 @@
 """ settings module """
 import ptah
-from zope import interface
 from memphis import config, view
-
-from zope import interface
-
-
-class ISettingsModule(ptah.IPtahModule):
-    """ Settings module """
 
 
 class SettingsModule(ptah.PtahModule):
     """ Memphis settings management module. """
 
-    config.utility(name='settings')
-    interface.implementsOnly(ISettingsModule)
-
-    name = 'settings'
     title = 'Settings'
+    ptah.manageModule('settings')
 
 
 class MainView(view.View):
     view.pyramidView(
-        'index.html', ISettingsModule, 'ptah-manage', default=True, layout='',
+        'index.html', SettingsModule, 'ptah-manage', default=True, layout='',
         template = view.template(
             'ptah.modules:templates/settings.pt', nolayer=True))
 

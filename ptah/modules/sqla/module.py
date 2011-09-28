@@ -3,20 +3,17 @@ import ptah
 import pyramid_sqla as psa
 from memphis import config
 from zope import interface
-from interfaces import ISQLAModule, ITable, IRecord
+from interfaces import ITable, IRecord
 
 Session = psa.get_session()
 metadata = psa.get_base().metadata
 
 
 class SQLAModule(ptah.PtahModule):
-    """ SQLAlchemy instrospection ptah module. """
-    config.utility(name='sqla')
-    interface.implementsOnly(ISQLAModule)
+    """ SQLAlchemy instrospection module. """
 
-    name = 'sqla'
     title = 'SQLAlchemy'
-    description = 'SQLAlchemy introspection module.'
+    ptah.manageModule('sqla')
 
     metadata = {}
 

@@ -5,14 +5,14 @@ from pyramid.httpexceptions import HTTPFound
 
 import pyramid_sqla as psa
 
-from interfaces import ISQLAModule
+from module import SQLAModule
 
 Base = psa.get_base()
 
 
 class MainView(view.View):
     view.pyramidView(
-        'index.html', ISQLAModule, 'ptah-manage', default=True, layout='',
+        'index.html', SQLAModule, 'ptah-manage', default=True, layout='',
         template = view.template('ptah.modules.sqla:templates/index.pt'))
 
     __doc__ = "sqlalchemy tables listing page."

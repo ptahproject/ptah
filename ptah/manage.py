@@ -1,4 +1,4 @@
-from memphis import view
+from memphis import view, config
 from zope import interface
 from pyramid.httpexceptions import HTTPForbidden
 from pyramid.security import authenticated_userid
@@ -32,25 +32,42 @@ class IPtahModule(interface.Interface):
         """ is module available """
 
 
+MODULES = {}
+
 class PtahModule(object):
     interface.implements(IPtahModule)
 
     name = ''
     title = ''
 
-    def url(self, request):
+    def __init__(self, manager, request):
+        self.__parent__ = manager
+        self.request = request
+
+    def url(self):
         return '%s/'%self.name
 
-    def bind(self, manager, request):
-        clone = self.__class__.__new__(self.__class__)
-        clone.__dict__.update(self.__dict__)
-        clone.__name__ = self.name
-        clone.__parent__ = manager
-        clone.request = request
-        return clone
+    @property
+    def __name__(self):
+        return self.name
 
-    def available(self, request):
+    def available(self):
         return True
+
+
+def manageModule(id):
+    info = config.DirectiveInfo(allowed_scope=('class',))
+
+    def _complete(klass, id):
+        MODULES[id] = klass
+
+        klass.name = id
+
+    info.attach(
+        config.ClassAction(
+            _complete, (id,),
+            discriminator = ('ptah:manage-module', id))
+        )
 
 
 def PtahAccessManager(id):
@@ -101,10 +118,10 @@ class PtahManageRoute(object):
             raise HTTPForbidden()
 
     def __getitem__(self, key):
-        mod = self.registry.queryUtility(IPtahModule, key)
+        mod = MODULES.get(key)
 
         if mod is not None:
-            return mod.bind(self, self.request)
+            return mod(self, self.request)
 
         raise KeyError(key)
 
@@ -152,11 +169,12 @@ class ManageView(view.View):
     __intr_path__ = '/ptah-manage/index.html'
 
     def update(self):
-        reg = self.request.registry
+        context = self.context
+        request = self.request
 
         mods = []
-        for name, mod in reg.getUtilitiesFor(IPtahModule):
+        for name, mod in MODULES.items():
             mods.append((mod.title, mod))
 
         mods.sort()
-        self.modules = [mod for _t, mod in mods]
+        self.modules = [mod(context, request) for _t, mod in mods]

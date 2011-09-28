@@ -5,22 +5,16 @@ from memphis import config, view
 from memphis.view import tmpl
 from memphis.view.customize import TEMPLATE
 
-from interfaces import ITemplatesModule
-
 
 class TemplatesModule(ptah.PtahModule):
-    """ Templates management ptah module. """
+    """ Templates management module. """
 
-    config.utility(name='templates')
-    interface.implementsOnly(ITemplatesModule)
-
-    name = 'templates'
     title = 'Templates'
-    description = 'Templates customization management.'
+    ptah.manageModule('templates')
 
 
 view.registerPagelet(
-    'ptah-module-actions', ITemplatesModule,
+    'ptah-module-actions', TemplatesModule,
     template = view.template(
         'ptah.modules:templates/customize-actions.pt', nolayer = True))
 
@@ -28,7 +22,7 @@ view.registerPagelet(
 class TemplatesManagement(view.View):
     """List templates"""
     view.pyramidView(
-        'index.html', ITemplatesModule,
+        'index.html', TemplatesModule,
         'ptah-manage', default='True', layout='',
         template = view.template(
             'ptah.modules:templates/customize.pt', nolayer=True))
@@ -65,7 +59,7 @@ class TemplatesManagement(view.View):
 class ViewTemplate(view.View):
     """View template"""
     view.pyramidView(
-        'view.html', ITemplatesModule, 'ptah-manage', layout='',
+        'view.html', TemplatesModule, 'ptah-manage', layout='',
         template = view.template(
             'ptah.modules:templates/template.pt', nolayer=True))
 
@@ -147,7 +141,7 @@ class ViewTemplate(view.View):
 class CustomTemplate(view.View):
     """List customized templates"""
     view.pyramidView(
-        'customized.html', ITemplatesModule, 'ptah-manage', layout='',
+        'customized.html', TemplatesModule, 'ptah-manage', layout='',
         template = view.template(
             'ptah.modules:templates/customized.pt', nolayer=True))
 

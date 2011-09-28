@@ -7,18 +7,11 @@ from ptah import Roles
 from ptah import Permissions
 
 
-class IPermissionsModule(ptah.IPtahModule):
-    """ module """
-
-
 class PermissionsModule(ptah.PtahModule):
     __doc__ = 'Default permission settings.'
 
-    config.utility(name='permissions')
-    interface.implementsOnly(IPermissionsModule)
-
-    name = 'permissions'
     title = 'Permissions'
+    ptah.manageModule('permissions')
 
 
 view.registerPagelet(
@@ -28,7 +21,7 @@ view.registerPagelet(
 
 class PermissionsView(view.View):
     view.pyramidView(
-        'index.html', IPermissionsModule, default=True,
+        'index.html', PermissionsModule, default=True,
         template=view.template('ptah.modules:templates/permissions.pt'))
 
     def update(self):
@@ -42,7 +35,7 @@ class PermissionsView(view.View):
 
 class RolesView(view.View):
     view.pyramidView(
-        'roles.html', IPermissionsModule,
+        'roles.html', PermissionsModule,
         template=view.template('ptah.modules:templates/roles.pt'))
 
     def update(self):

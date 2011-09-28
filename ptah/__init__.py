@@ -9,7 +9,7 @@ from ptah.uri import UriGenerator
 
 # manage
 from ptah.manage import PtahModule
-from ptah.manage import IPtahModule
+from ptah.manage import manageModule
 from ptah.manage import setAccessManager
 
 # security

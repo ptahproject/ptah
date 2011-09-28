@@ -13,10 +13,6 @@ from memberprops import MemberProperties
 from interfaces import _
 
 
-class ICrowdModule(ptah.IPtahModule):
-    """ marker interface for crowd module """
-
-
 class ICrowdUser(interface.Interface):
     """ wrapper for actual user """
 
@@ -26,11 +22,8 @@ class ICrowdUser(interface.Interface):
 class CrowdModule(ptah.PtahModule):
     """ Basic user management module. """
 
-    config.utility(name='crowd')
-    interface.implementsOnly(ICrowdModule)
-
-    name = 'crowd'
     title = 'Crowd'
+    ptah.manageModule('crowd')
 
     def __getitem__(self, key):
         if key:
@@ -51,7 +44,7 @@ class CrowdUser(object):
 
 
 view.registerPagelet(
-    'ptah-module-actions', ICrowdModule,
+    'ptah-module-actions', CrowdModule,
     template = view.template('ptah.crowd:templates/ptah-actions.pt'))
 
 
@@ -68,7 +61,7 @@ class SearchSchema(colander.Schema):
 
 class SearchUsers(form.Form):
     view.pyramidView(
-        'search.html', ICrowdModule, 'ptah-manage', default=True,
+        'search.html', CrowdModule, 'ptah-manage', default=True,
         template = view.template('ptah.crowd:templates/search.pt'))
 
     __doc__ = 'List/search users view'
