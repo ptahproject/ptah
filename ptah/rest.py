@@ -119,10 +119,10 @@ class Login(object):
         info = ptah.authService.authenticate(credentials)
         if info.status:
             token = self.get_token(request, info.uri)
-            result = {'status': True, 'message': '', 'auth-token': token[:-1]}
+            result = {'message': '', 'auth-token': token[:-1]}
         else:
             request.response.status = 403
-            result = {'status': False, 'message': info.message}
+            result = {'message': info.message or 'authentication failed'}
 
         return '%s\n\n'%dumps(result, indent=True, default=dthandler)
 
