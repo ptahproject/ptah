@@ -143,16 +143,10 @@ class Content(Node):
         info['effective'] = self.effective
         info['expires'] = self.expires
 
-    @action(permission=View)
     def info(self):
-        info = OrderedDict(
-            (('__name__', self.__name__),
-             ('__type__', self.__type_id__),
-             ('__uri__', self.__uri__),
-             ('__container__', False),
-             ('__parents__', [p.__uri__ for p in 
-                              loadParents(self) if isinstance(p, Node)]),
-             ))
-
+        info = super(Content, self).info()
+        info['__name__'] = self.__name__
+        info['__content__'] = True
+        info['__container__'] = False
         self._extra_info(info)
         return info

@@ -13,6 +13,7 @@ from interfaces import Forbidden
 from interfaces import ContentSchema, ITypeInformation
 from permissions import AddContent
 from sqlschema import generateSchema
+from cms import buildClassActions
 
 
 Types = {}
@@ -109,7 +110,7 @@ def Type(name, title, schema = None, **kw):
 
     f_locals = sys._getframe(1).f_locals
     if '__mapper_args__' not in f_locals:
-        f_locals['__mapper_args__'] = {'polymorphic_identity': name}
+        f_locals['__mapper_args__'] = {'polymorphic_identity': typeinfo.__uri__}
     if '__id__' not in f_locals and '__tablename__' in f_locals:
         f_locals['__id__'] = sqla.Column( #pragma: no cover
             'id', sqla.Integer,
@@ -149,6 +150,9 @@ def registerType(
     tinfo.permission = permission
 
     Types[name] = tinfo
+
+    # build cms actions
+    buildClassActions(factory)
 
 
 @config.addCleanup

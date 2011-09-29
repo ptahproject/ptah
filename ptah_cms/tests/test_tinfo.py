@@ -30,6 +30,7 @@ class TestTypeInfo(Base):
 
         tinfo = ptah_cms.Types['mycontent']
 
+        self.assertEqual(tinfo.__uri__, 'cms+type:mycontent')
         self.assertEqual(tinfo.name, 'mycontent')
         self.assertEqual(tinfo.title, 'MyContent')
         self.assertEqual(tinfo.factory, MyContent)
@@ -146,7 +147,9 @@ class TestTypeInfo(Base):
         self._init_memphis()
 
         self.assertEqual(
-            MyContent.__mapper_args__['polymorphic_identity'], 'mycontent')
+            MyContent.__mapper_args__['polymorphic_identity'], 
+            'cms+type:mycontent')
+
         self.assertTrue(
             MyContent.__uri_generator__().startswith('cms+mycontent:'))
 

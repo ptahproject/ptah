@@ -8,6 +8,7 @@ from tinfo import Type
 from node import Node, Session
 from container import Container
 from interfaces import IApplicationRoot
+from interfaces import IApplicationPolicy
 
 
 class ApplicationRoot(Container):
@@ -22,7 +23,7 @@ class ApplicationRoot(Container):
 
 
 class ApplicationPolicy(object):
-    interface.implements(view.INavigationRoot)
+    interface.implements(IApplicationPolicy, view.INavigationRoot)
 
     __name__ = ''
     __parent__ = None
@@ -65,7 +66,7 @@ class ApplicationFactory(object):
                     Container.__type_id__ == sqla.sql.bindparam('type'))))
 
     def __call__(self, request=None):
-        root = self._sql_get_root.first(name=self.name, type=self.tinfo.name)
+        root = self._sql_get_root.first(name=self.name, type=self.tinfo.__uri__)
         if root is None:
             root = self.tinfo.create(title=self.title)
             root.__name_id__ = self.name

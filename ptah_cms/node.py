@@ -3,9 +3,12 @@ import ptah
 import pyramid_sqla
 import sqlalchemy as sqla
 from zope import interface
+from collections import OrderedDict
 from pyramid.httpexceptions import HTTPNotFound, HTTPForbidden
 
-from interfaces import INode
+from cms import action
+from permissions import View
+from interfaces import INode, IApplicationPolicy
 
 Base = pyramid_sqla.get_base()
 Session = pyramid_sqla.get_session()
@@ -86,8 +89,20 @@ class Node(Base):
             raise TypeError(
                 'Subclass of Node has to override __uri_generator__')
 
+    @action(permission=View)
+    def info(self):
+        info = OrderedDict(
+            (('__type__', self.__type_id__),
+             ('__content__', False),
+             ('__uri__', self.__uri__),
+             ('__parents__', [p.__uri__ for p in 
+                              loadParents(self, filterNodes=True)]),
+             ))
 
-def load(uri, permission=None):
+        return info
+
+
+def load(uri, permission=None, policy=None):
     """ Load node by `uri` and initialize __parent__ attributes. Also checks
     permission if permissin is specified.
 
@@ -100,7 +115,7 @@ def load(uri, permission=None):
     item = ptah.resolve(uri)
 
     if item is not None:
-        loadParents(item)
+        loadParents(item, policy=policy)
 
         if permission is not None:
             if not ptah.checkPermission(permission, item):
@@ -111,7 +126,7 @@ def load(uri, permission=None):
     return item
 
 
-def loadParents(node):
+def loadParents(node, policy=None, filterNodes=False):
     """ Load and initialize `__parent__` attribute for node. 
     Returns list of loaded parents. 
     """
@@ -128,5 +143,17 @@ def loadParents(node):
 
         if parent is not None:
             parents.append(parent)
+
+    if policy is not None:
+        if parents:
+            n = parents[-1]
+        else:
+            n = node
+
+        if not IApplicationPolicy.providedBy(n):
+            n.__parent__ = policy
+
+    if filterNodes:
+        return [p for p in parents if isinstance(p, Node)]
 
     return parents

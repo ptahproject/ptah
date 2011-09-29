@@ -37,6 +37,7 @@ from ptah_cms.interfaces import INode
 from ptah_cms.interfaces import IContent
 from ptah_cms.interfaces import IContainer
 from ptah_cms.interfaces import IApplicationRoot
+from ptah_cms.interfaces import IApplicationPolicy
 
 # sqlalchemy
 from ptah_cms.node import Base, Session
@@ -62,5 +63,5 @@ from ptah_cms.events import ContentDeletingEvent
 from ptah_cms.rest import contentRestAction
 
 from ptah_cms.rest import IRestAction
-from ptah_cms.rest import ContentRestInfo
+from ptah_cms.rest import NodeRestInfo
 from ptah_cms.rest import ContainerRestInfo

@@ -3,16 +3,17 @@ import inspect
 from memphis import config
 from zope.interface import providedBy, Interface, implements
 
-from node import load, loadParents
+import ptah_cms
+#from node import load, loadParents
 from permissions import View
 from interfaces import NotFound, Forbidden
 
 
 def cms(content):
     if isinstance(content, basestring):
-        content = load(content)
+        content = ptah_cms.load(content)
     else:
-        loadParents(content)
+        ptah_cms.loadParents(content)
 
     if content is None:
         raise NotFound()
@@ -33,7 +34,7 @@ class NodeWrapper(object):
         fname, permission = self.actions[action]
         if permission:
             if not ptah.checkPermission(permission, self.content, throw=False):
-                raise Forbidden(key)
+                raise Forbidden(action)
 
         return ActionWrapper(self.content, fname)
 
@@ -68,18 +69,28 @@ def action(func=None, name=None, permission = View):
 def actionImpl(cls, func, name, permission):
     actions = getattr(cls, '__ptahcms_actions__', None)
     if actions is None:
-        # get actions from parents
-        mro = inspect.getmro(cls)
-
         actions = {}
-        for idx in range(len(mro)-1, 0, -1):
-            a = getattr(mro[idx], '__ptahcms_actions__', None)
-            if a is not None:
-                actions.update(a)
-
         cls.__ptahcms_actions__ = actions
 
     if name is None:
         name = func.__name__
 
     actions[name] = (func.__name__, permission)
+
+
+def buildClassActions(cls):
+    actions = getattr(cls, '__ptahcms_actions__', None)
+    if actions is None:
+        actions = {}
+
+    # get actions from parents
+    mro = inspect.getmro(cls)
+
+    for idx in range(len(mro)-1, 0, -1):
+        a = getattr(mro[idx], '__ptahcms_actions__', None)
+        if a is not None:
+            for name, action in a.items():
+                if name not in actions:
+                    actions[name] = action
+
+    cls.__ptahcms_actions__ = actions

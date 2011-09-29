@@ -20,7 +20,11 @@ from ptah_cms.interfaces import IContainer
 from ptah_cms.interfaces import IRestAction
 from ptah_cms.interfaces import IRestActionClassifier
 
-import permissions
+from cms import cms
+from interfaces import Error, CmsException
+from permissions import View, ModifyContent, DeleteContent
+
+from pprint import pprint
 
 
 class Applications(ptah.rest.Action):
@@ -34,16 +38,17 @@ class Applications(ptah.rest.Action):
         for name, factory in Factories.items():
             root = factory(request)
 
-            apps.append((root.title, root.__name__, OrderedDict(
-                (('mount', name),
-                 ('__name__', root.__name__),
-                 ('__uri__', root.__uri__),
-                 ('__link__', '%s/content:%s/%s/'%(
-                     request.application_url, name, root.__uri__))),
-                )))
+            try:
+                info = cms(root).info()
+            except (AttributeError, CmsException):
+                continue
 
-        apps.sort()
-        return [info for _t, name, info in apps]
+            info['__mount__'] = name
+            info['__link__'] = '%s/content:%s/%s/'%(
+                request.application_url, name, root.__uri__)
+            apps.append(info)
+
+        return apps
 
 
 class Types(ptah.rest.Action):
@@ -51,34 +56,14 @@ class Types(ptah.rest.Action):
     name = 'types'
     title = 'List content types'
 
-    def __call__(self, request, tname='', *args):
-        if tname:
-            info = {}
+    def __call__(self, request, *args):
+        types = []
 
-            tinfo = ptah_cms.Types.get(tname)
-            if tinfo is None:
-                raise HTTPNotFound
+        for name, tinfo in ptah_cms.Types.items():
+            types.append((tinfo.title, name, self.typeInfo(tinfo, request)))
 
-            res = self.typeInfo(tinfo, request)
-            if not res:
-                res = {'success': True}
-            return res
-        else:
-            apps = []
-
-            for name, tinfo in ptah_cms.Types.items():
-
-                apps.append((tinfo.title, name, OrderedDict(
-                    (('name', name),
-                     ('title', tinfo.title),
-                     ('description', tinfo.description),
-                     ('__uri__', tinfo.__uri__),
-                     ('__link__', '%s/types/%s/'%(
-                         request.application_url, name))),
-                    )))
-
-            apps.sort()
-            return [info for _t, name, info in apps]
+        types.sort()
+        return [info for _t, name, info in types]
 
     def typeInfo(self, tinfo, request):
         info = OrderedDict(
@@ -127,7 +112,7 @@ class Content(ptah.rest.Action):
         if not uri:
             content = root
         else:
-            content = load(uri)
+            content = load(uri, policy=root.__parent__)
 
         adapters = request.registry.adapters
 
@@ -164,65 +149,26 @@ def contentRestActionImpl(name, context, factory):
         factory, (IRestActionClassifier, context), IRestAction, name)
 
 
-def parents(content):
-    parents = []
-
-    for item in lineage(content):
-        if isinstance(item, Node):
-            parents.append(item.__uri__)
-        else:
-            break
-
-    return parents[1:]
-
-
-class ContentRestInfo(object):
+class NodeRestInfo(object):
     interface.implements(IRestAction)
 
     title = 'Content information'
     description = ''
 
-    __permission__ = permissions.View
-
-    def loadInfo(self, info, content, request):
-        schema = content.__type__.schema
-        if schema is None:
-            schema = ptah_cms.ContentSchema
-
-        for node in schema:
-            val = getattr(content, node.name, node.missing)
-            try:
-                info[node.name] = node.serialize(val)
-            except:
-                info[node.name] = node.default
-
-        info['view'] = content.view
-        info['created'] = content.created
-        info['modified'] = content.modified
-        info['effective'] = content.effective
-        info['expires'] = content.expires
+    __permission__ = View
 
     def __call__(self, content, request, *args):
-        info = OrderedDict(
-            (('__name__', content.__name__),
-             ('__type__', content.__type_id__),
-             ('__uri__', content.__uri__),
-             ('__container__', False),
-             ('__link__', '%s%s/'%(request.application_url, content.__uri__)),
-             ('__parents__', parents(content)),
-             ))
-
-        self.loadInfo(info, content, request)
-
+        info = cms(content).info()
+        info['__link__'] = '%s%s/'%(request.application_url, content.__uri__)
         return info
 
 
-class ContainerRestInfo(ContentRestInfo):
+class ContainerRestInfo(NodeRestInfo):
 
     title = 'Container information'
     description = ''
 
-    __permission__ = permissions.View
+    __permission__ = View
 
     def __call__(self, content, request, *args):
         info = super(ContainerRestInfo, self).__call__(content, request)
@@ -252,12 +198,12 @@ class ContainerRestInfo(ContentRestInfo):
         return info
 
 
-class ContentAPIDoc(ContentRestInfo):
+class ContentAPIDoc(NodeRestInfo):
 
     title = 'API Doc'
     description = ''
 
-    __permission__ = permissions.View
+    __permission__ = View
 
     def __call__(self, content, request, *args):
         info = super(ContentAPIDoc, self).__call__(content, request)
@@ -276,7 +222,7 @@ class ContentAPIDoc(ContentRestInfo):
             actions.append(
                 (name, action.title,
                  OrderedDict(
-                     (('name', name),
+                     (('name', name or 'info'),
                       ('link', '%s%s/%s'%(url, content.__uri__, name)),
                       ('title', action.title),
                       ('description', action.description)))))
@@ -292,14 +238,10 @@ class DeleteAction(object):
     title = 'Delete content'
     description = ''
 
-    __permission__ = permissions.DeleteContent
+    __permission__ = DeleteContent
 
     def __call__(self, content, request, *args):
-        parent = content.__parent__
-        if not isinstance(parent, Container):
-            raise ptah.RestException("Can't remove content from non container")
-
-        del parent[content]
+        content.delete()
 
 
 class MoveAction(object):
@@ -307,18 +249,18 @@ class MoveAction(object):
     title = 'Move content'
     description = ''
 
-    __permission__ = permissions.ModifyContent
+    __permission__ = ModifyContent
 
     def __call__(self, content, request, *args):
         pass
 
 
-class UpdateAction(object):
+class UpdateAction(NodeRestInfo):
 
     title = 'Update content'
     description = ''
 
-    __permission__ = permissions.ModifyContent
+    __permission__ = ModifyContent
 
     def __call__(self, content, request, *args):
         tinfo = content.__type__
@@ -329,12 +271,9 @@ class UpdateAction(object):
             request.response.status = 500
             return {'errors': e.asdict()}
 
-        for attr, value in data.items():
-            setattr(content, attr, value)
+        content.update(**data)
 
-        request.registry.notify(ptah_cms.events.ContentModifiedEvent(content))
-
-        return ContentRestInfo()(content, request)
+        return super(UpdateAction, self).__call__(content, request)
 
 
 class CreateContentAction(object):
@@ -342,67 +281,23 @@ class CreateContentAction(object):
     title = 'Create content'
     description = ''
 
-    __permission__ = permissions.View
-
-    name_schema = ptah_cms.ContentNameSchema()
+    __permission__ = View
 
     def __call__(self, content, request, uri='', *args):
-        if not isinstance(content, Container):
-            raise ptah_cms.RestException(
-                'Can create content only in container.')
+        name = request.GET.get('name')
+        tinfo = request.GET.get('tinfo')
 
-        if not uri:
-            raise HTTPNotFound('Type information is not found')
+        item = cms(content).create(tinfo, name)
 
-        tinfo = ptah_cms.Types.get(uri)
-        if tinfo is None:
-            raise HTTPNotFound('Type information is not found')
-
-        ptah.checkPermission(tinfo.permission, content, request)
-
+        tinfo = item.__type__
         try:
             data = tinfo.schema.deserialize(request.POST)
         except colander.Invalid, e:
             request.response.status = 500
             return {'errors': e.asdict()}
 
-        try:
-            name = self.name_schema.deserialize(request.POST)
-            v = name['__name__']
-            if v in content.keys():
-                raise colander.Invalid(
-                    self.name_schema['__name__'], 'Name already is in use')
-        except colander.Invalid, e:
-            request.response.status = 500
-            return {'errors': e.asdict()}
-
-        item = tinfo.create(**data)
-        ptah_cms.Session.add(item)
-
-        content[name['__name__']] = item
-
-        return ContentRestInfo()(item, request)
-
-
-class BlobRestInfo(object):
-    interface.implements(IRestAction)
-
-    title = 'Blob information'
-    description = ''
-
-    __permission__ = permissions.View
-
-    def __call__(self, content, request, *args):
-        info = OrderedDict(
-            (('mimetype', content.mimetype),
-             ('filename', content.filename),
-             ('size', content.size),
-             ('__link__', '%s%s/data'%(
-                 request.application_url, content.__uri__)),
-             ('__parents__', parents(content)),
-             ))
-
-        return info
+        item.update(**data)
+        return NodeRestInfo()(item, request)
 
 
 class BlobData(object):
@@ -411,22 +306,22 @@ class BlobData(object):
     title = 'Download blob'
     description = ''
 
-    __permission__ = permissions.View
+    __permission__ = View
 
     def __call__(self, content, request, *args):
         response = request.response
         response.content_type = content.mimetype.encode('utf-8')
         if content.filename:
             response.headerlist = {
-                'Content-Disposition': 'filename="%s"'%content.filename.encode('utf-8')}
+                'Content-Disposition': 
+                'filename="%s"'%content.filename.encode('utf-8')}
         response.body = content.read()
         return response
 
 
-contentRestAction('', IBlob, BlobRestInfo())
 contentRestAction('data', IBlob, BlobData())
 
-contentRestAction('', IContent, ContentRestInfo())
+contentRestAction('', IContent, NodeRestInfo())
 contentRestAction('', IContainer, ContainerRestInfo())
 contentRestAction('apidoc', IContent, ContentAPIDoc())
 contentRestAction('update', IContent, UpdateAction())

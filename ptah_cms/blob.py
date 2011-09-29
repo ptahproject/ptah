@@ -37,6 +37,14 @@ class Blob(Node):
         if filename is not None:
             self.filename = filename
 
+    def info(self):
+        info = super(Blob, self).info()
+
+        info['size'] = self.size
+        info['mimetype'] = self.mimetype
+        info['mimetype'] = self.filename
+        return info
+
 
 class BlobStorage(object):
     interface.implements(IBlobStorage)

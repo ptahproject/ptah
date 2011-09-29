@@ -40,6 +40,10 @@ class IContainer(IContent):
     __path__ = interface.Attribute('traversal path')
 
 
+class IApplicationPolicy(interface.Interface):
+    """ application policy """
+
+
 class IApplicationRoot(IContent, IContainer):
     """ application root object """
 

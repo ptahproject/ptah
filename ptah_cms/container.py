@@ -211,6 +211,9 @@ class Container(Content):
         if name.startswith(' '):
             raise Error("Names cannot starts with ' '")
 
+        if name in self:
+            raise Error("Name already in use.")
+
         self[name] = tinfo.create()
         content = self[name]
         content.update(**params)
@@ -221,3 +224,8 @@ class Container(Content):
     def batchdelete(self, uris):
         """Batch delete"""
         raise NotImplements() # pragma: no cover
+
+    def info(self):
+        info = super(Container, self).info()
+        info['__container__'] = True
+        return info
