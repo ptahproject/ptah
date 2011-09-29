@@ -4,24 +4,16 @@ from collections import OrderedDict
 from zope import interface
 from zope.interface import providedBy
 from memphis import config, form
-from pyramid.location import lineage
-from pyramid.httpexceptions import HTTPNotFound
 
 import ptah
 import ptah_cms
-from ptah_cms.node import Node
 from ptah_cms.node import load
 from ptah_cms.content import Content
 from ptah_cms.container import Container
-from ptah_cms.root import Factories
-from ptah_cms.interfaces import IBlob
-from ptah_cms.interfaces import IContent
-from ptah_cms.interfaces import IContainer
-from ptah_cms.interfaces import IRestAction
-from ptah_cms.interfaces import IRestActionClassifier
 
 from cms import cms
-from interfaces import Error, CmsException
+from interfaces import Error, NotFound, CmsException
+from interfaces import INode, IBlob, IContent, IContainer
 from permissions import View, ModifyContent, DeleteContent
 
 
@@ -33,7 +25,7 @@ class Applications(ptah.rest.Action):
     def __call__(self, request, *args):
         apps = []
 
-        for name, factory in Factories.items():
+        for name, factory in ptah_cms.Factories.items():
             root = factory(request)
 
             try:
@@ -100,9 +92,9 @@ class Content(ptah.rest.Action):
     def __call__(self, request, app, uri=None, action='', *args):
         info = {}
 
-        appfactory = Factories.get(app)
+        appfactory = ptah_cms.Factories.get(app)
         if appfactory is None:
-            raise HTTPNotFound
+            raise NotFound()
 
         root = appfactory(request)
         request.root = root
@@ -122,74 +114,74 @@ class Content(ptah.rest.Action):
             request.environ['SCRIPT_NAME'] = '%s/content:%s/'%(
                 request.environ['SCRIPT_NAME'], app)
 
-            ptah.checkPermission(action.__permission__, content, request)
-            res = action(content, request, *args)
+            ptah.checkPermission(action.permission, content, request)
+            res = action.callable(content, request, *args)
             if not res:
                 res = {'success': True}
             return res
 
-        raise HTTPNotFound()
+        raise NotFound()
 
 
-def contentRestAction(name, context, factory):
-    info = config.DirectiveInfo()
-
-    info.attach(
-        config.Action(
-            contentRestActionImpl,
-            (name, context, factory),
-            discriminator = ('ptah_cms:rest-action', name, context))
-        )
+class IRestAction(interface.Interface):
+    pass
 
 
-def contentRestAction(name, context, factory):
-    info = config.DirectiveInfo()
-
-    info.attach(
-        config.Action(
-            contentRestActionImpl,
-            (name, context, factory),
-            discriminator = ('ptah_cms:rest-action', name, context))
-        )
+class IRestActionClassifier(interface.Interface):
+    pass
 
 
-def contentRestActionImpl(name, context, factory):
-    config.registry.registerAdapter(
-        factory, (IRestActionClassifier, context), IRestAction, name)
-
-
-class NodeRestInfo(object):
+class Action(object):
     interface.implements(IRestAction)
 
-    title = 'Content information'
-    description = ''
-
-    __permission__ = View
-
-    def __call__(self, content, request, *args):
-        info = cms(content).info()
-        info['__link__'] = '%s%s/'%(request.application_url, content.__uri__)
-        return info
+    def __init__(self, callable, name, permission):
+        self.callable = callable
+        self.name = name
+        self.title = name
+        self.description = callable.__doc__
+        self.permission = permission
 
 
-class ContainerRestInfo(NodeRestInfo):
+def restAction(name, context, permission):
+    info = config.DirectiveInfo()
 
-    title = 'Container information'
-    description = ''
+    def _register(callable, name, context, permission):
+        ac = Action(callable, name, permission)
+        config.registry.registerAdapter(
+            ac, (IRestActionClassifier, context), IRestAction, name)
 
-    __permission__ = View
+    def wrapper(func):
+        info.attach(
+            config.Action(
+                _register,
+                (func, name, context, permission),
+                discriminator = ('ptah_cms:rest-action', name, context))
+            )
+        return func
 
-    def __call__(self, content, request, *args):
-        info = super(ContainerRestInfo, self).__call__(content, request)
+    return wrapper
 
-        contents = []
-        for item in content.values():
-            if not ptah.checkPermission(
-                self.__permission__, item, request, False):
-                continue
 
-            contents.append(
-                OrderedDict((
+@restAction('', IContent, View)
+def nodeInfo(content, request, *args):
+    info = cms(content).info()
+    info['__link__'] = '%s%s/'%(request.application_url, content.__uri__)
+    return info
+
+
+@restAction('', IContainer, View)
+def containerNodeInfo(content, request, *args):
+    """Container information"""
+    info = nodeInfo(content, request)
+
+    contents = []
+    for item in content.values():
+        if not ptah.checkPermission(
+            View, item, request, False):
+            continue
+
+        contents.append(
+            OrderedDict((
                     ('__name__', item.__name__),
                     ('__type__', item.__type_id__),
                     ('__uri__', item.__uri__),
@@ -201,142 +193,94 @@ class ContainerRestInfo(NodeRestInfo):
                     ('created', item.created),
                     ('modified', item.modified),
                     )))
-
-        info['__contents__'] = contents
-        info['__container__'] = True
-        return info
-
-
-class ContentAPIDoc(NodeRestInfo):
-
-    title = 'API Doc'
-    description = ''
-
-    __permission__ = View
-
-    def __call__(self, content, request, *args):
-        info = super(ContentAPIDoc, self).__call__(content, request)
-
-        info['__actions__'] = []
-
-        actions = []
-        url = request.application_url
-        for name, action in request.registry.adapters.lookupAll(
-            (IRestActionClassifier, providedBy(content)), IRestAction):
-
-            if not ptah.checkPermission(
-                action.__permission__, content, request, False):
-                continue
-
-            actions.append(
-                (name, action.title,
-                 OrderedDict(
-                     (('name', name or 'info'),
-                      ('link', '%s%s/%s'%(url, content.__uri__, name)),
-                      ('title', action.title),
-                      ('description', action.description)))))
-
-        actions.sort()
-        info['__actions__'] = [action for _t, _n, action in actions]
-
-        return info
+        
+    info['__contents__'] = contents
+    info['__container__'] = True
+    return info
 
 
-class DeleteAction(object):
+@restAction('apidoc', INode, View)
+def apidocAction(content, request, *args):
+    """api doc"""
+    actions = []
+    url = request.application_url
+    for name, action in request.registry.adapters.lookupAll(
+        (IRestActionClassifier, providedBy(content)), IRestAction):
 
-    title = 'Delete content'
-    description = ''
+        if not ptah.checkPermission(
+            action.__permission__, content, request, False):
+            continue
 
-    __permission__ = DeleteContent
+        actions.append(
+            (name, action.title,
+             OrderedDict(
+                    (('name', name or 'info'),
+                     ('link', '%s%s/%s'%(url, content.__uri__, name)),
+                     ('title', action.title),
+                     ('description', action.description)))))
 
-    def __call__(self, content, request, *args):
-        content.delete()
-
-
-class MoveAction(object):
-
-    title = 'Move content'
-    description = ''
-
-    __permission__ = ModifyContent
-
-    def __call__(self, content, request, *args):
-        pass
-
-
-class UpdateAction(NodeRestInfo):
-
-    title = 'Update content'
-    description = ''
-
-    __permission__ = ModifyContent
-
-    def __call__(self, content, request, *args):
-        tinfo = content.__type__
-
-        try:
-            data = tinfo.schema.deserialize(request.POST)
-        except colander.Invalid, e:
-            request.response.status = 500
-            return {'errors': e.asdict()}
-
-        content.update(**data)
-
-        return super(UpdateAction, self).__call__(content, request)
+    actions.sort()
+    return [action for _t, _n, action in actions]
 
 
-class CreateContentAction(object):
-
-    title = 'Create content'
-    description = ''
-
-    __permission__ = View
-
-    def __call__(self, content, request, uri='', *args):
-        name = request.GET.get('name')
-        tinfo = request.GET.get('tinfo')
-
-        item = cms(content).create(tinfo, name)
-
-        tinfo = item.__type__
-        try:
-            data = tinfo.schema.deserialize(request.POST)
-        except colander.Invalid, e:
-            request.response.status = 500
-            return {'errors': e.asdict()}
-
-        item.update(**data)
-        return NodeRestInfo()(item, request)
+@restAction('delete', IContent, DeleteContent)
+def deleteAction(content, request, *args):
+    """Delete content"""
+    content.delete()
 
 
-class BlobData(object):
-    interface.implements(IRestAction)
-
-    title = 'Download blob'
-    description = ''
-
-    __permission__ = View
-
-    def __call__(self, content, request, *args):
-        response = request.response
-        response.content_type = content.mimetype.encode('utf-8')
-        if content.filename:
-            response.headerlist = {
-                'Content-Disposition': 
-                'filename="%s"'%content.filename.encode('utf-8')}
-        response.body = content.read()
-        return response
+@restAction('move', IContent, ModifyContent)
+def moveAction(content, request, *args):
+    """Move content"""
 
 
-contentRestAction('data', IBlob, BlobData())
+@restAction('update', IContent, ModifyContent)
+def updateAction(content, request, *args):
+    """Update content"""
+    tinfo = content.__type__
 
-contentRestAction('', IContent, NodeRestInfo())
-contentRestAction('', IContainer, ContainerRestInfo())
-contentRestAction('apidoc', IContent, ContentAPIDoc())
-contentRestAction('update', IContent, UpdateAction())
-contentRestAction('delete', IContent, DeleteAction())
-contentRestAction('move', IContent, MoveAction())
-contentRestAction('create', IContainer, CreateContentAction())
+    try:
+        data = tinfo.schema.deserialize(request.POST)
+    except colander.Invalid, e:
+        request.response.status = 500
+        return {'errors': e.asdict()}
+
+    content.update(**data)
+
+    return nodeInfo(content, request)
+
+
+@restAction('create', IContainer, View)
+def createContentAction(content, request, *args):
+    """Create content"""
+    name = request.GET.get('name')
+    tinfo = request.GET.get('tinfo')
+
+    item = cms(content).create(tinfo, name)
+
+    tinfo = item.__type__
+    try:
+        data = tinfo.schema.deserialize(request.POST)
+    except colander.Invalid, e:
+        request.response.status = 500
+        return {'errors': e.asdict()}
+
+    item.update(**data)
+    return nodeInfo(item, request)
+
+
+@restAction('data', IBlob, View)
+def blobData(content, request, *args):
+    """Download blob"""
+    response = request.response
+    response.content_type = content.mimetype.encode('utf-8')
+    if content.filename:
+        response.headerlist = {
+            'Content-Disposition': 
+            'filename="%s"'%content.filename.encode('utf-8')}
+    response.body = content.read()
+    return response
+
 
 ptah.registerService('cms', 'cms', 'Ptah CMS api')
 ptah.registerServiceAction('cms', Content())

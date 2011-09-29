@@ -4,7 +4,6 @@ from memphis import config
 from zope.interface import providedBy, Interface, implements
 
 import ptah_cms
-#from node import load, loadParents
 from permissions import View
 from interfaces import NotFound, Forbidden
 
@@ -52,30 +51,22 @@ class ActionWrapper(object):
 def action(func=None, name=None, permission = View):
     info = config.DirectiveInfo(allowed_scope=('class',))
 
-    def wrapper(func):
-        info.attach(
-            config.ClassAction(
-                actionImpl, (func, name, permission),
-                discriminator = ('ptah-cms:action', func))
-            )
+    actions = info.locals.get('__ptahcms_actions__', None)
+    if actions is None:
+        actions = {}
+        info.locals['__ptahcms_actions__'] = actions
+
+    def wrapper(func, name=name):
+        if name is None:
+            name = func.__name__
+
+        actions[name] = (func.__name__, permission)
 
         return func
 
     if func is not None:
         return wrapper(func)
     return wrapper
-
-
-def actionImpl(cls, func, name, permission):
-    actions = getattr(cls, '__ptahcms_actions__', None)
-    if actions is None:
-        actions = {}
-        cls.__ptahcms_actions__ = actions
-
-    if name is None:
-        name = func.__name__
-
-    actions[name] = (func.__name__, permission)
 
 
 def buildClassActions(cls):
