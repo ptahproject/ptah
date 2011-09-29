@@ -8,6 +8,7 @@ from ptah_cms.interfaces import Error, NotFound, Forbidden
 from ptah_cms.node import Node
 from ptah_cms.node import load
 from ptah_cms.node import loadParents
+from ptah_cms.node import getPolicy, setPolicy
 
 from ptah_cms.content import Content
 from ptah_cms.container import Container

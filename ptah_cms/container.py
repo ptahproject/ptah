@@ -123,7 +123,7 @@ class Container(Content):
         if item.__uri__ == self.__uri__:
             raise ValueError("Can't set to it self")
 
-        parents = [p.__uri__ for p in loadParents(self) if isinstance(p, Node)]
+        parents = [p.__uri__ for p in loadParents(self)]
         if item.__uri__ in parents:
             raise TypeError("Can't itself to chidlren")
 

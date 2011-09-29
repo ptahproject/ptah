@@ -127,3 +127,24 @@ class TestApplicationFactoryCustom(Base):
 
         root = factory()
         self.assertEqual(root.__uri__, u_root)
+
+    def test_app_factory_custom_app2(self):
+        import ptah_cms
+
+        class CustomApplication(ptah_cms.ApplicationRoot):
+
+            __type__ = ptah_cms.Type('customapp', 'Custom app')
+
+        CustomApplication.__type__.factory = CustomApplication
+
+        factory = ptah_cms.ApplicationFactory(
+            '/', 'root', 'Root App', CustomApplication)
+
+        root = factory()
+        self.assertTrue(isinstance(root, CustomApplication))
+
+        u_root = root.__uri__
+        transaction.commit()
+
+        root = factory()
+        self.assertEqual(root.__uri__, u_root)

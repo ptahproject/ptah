@@ -89,6 +89,20 @@ class TestTypeInfo(Base):
         MyContent.__type__.permission = 'Protected'
         self.assertEqual(MyContainer.__type__.listTypes(container), [])
 
+    def test_tinfo_global_allow_Node(self):
+        import ptah_cms
+
+        global MyContent
+        class MyContent(ptah_cms.Node):
+            __type__ = ptah_cms.Type('mycontent', 'Content', permission=None)
+        class MyContainer(ptah_cms.Node):
+            __type__ = ptah_cms.Type('mycontainer', 'Container',
+                                     global_allow = True)
+        self._init_memphis()
+
+        self.assertFalse(MyContent.__type__.global_allow)
+        self.assertTrue(MyContainer.__type__.global_allow)
+
     def test_tinfo_list_filtered(self):
         import ptah_cms
 

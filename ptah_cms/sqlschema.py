@@ -3,8 +3,6 @@ import sqlalchemy as sqla
 from zope import interface
 from memphis import config
 
-from pprint import pprint
-
 
 def generateSchema(model, schemaNodes = None, skipPrimaryKey=True):
     if '__tablename__' not in model.__dict__:

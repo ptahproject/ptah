@@ -95,14 +95,13 @@ class Node(Base):
             (('__type__', self.__type_id__),
              ('__content__', False),
              ('__uri__', self.__uri__),
-             ('__parents__', [p.__uri__ for p in 
-                              loadParents(self, filterNodes=True)]),
+             ('__parents__', [p.__uri__ for p in loadParents(self)]),
              ))
 
         return info
 
 
-def load(uri, permission=None, policy=None):
+def load(uri, permission=None):
     """ Load node by `uri` and initialize __parent__ attributes. Also checks
     permission if permissin is specified.
 
@@ -115,7 +114,7 @@ def load(uri, permission=None, policy=None):
     item = ptah.resolve(uri)
 
     if item is not None:
-        loadParents(item, policy=policy)
+        loadParents(item)
 
         if permission is not None:
             if not ptah.checkPermission(permission, item):
@@ -126,7 +125,7 @@ def load(uri, permission=None, policy=None):
     return item
 
 
-def loadParents(node, policy=None, filterNodes=False):
+def loadParents(node):
     """ Load and initialize `__parent__` attribute for node. 
     Returns list of loaded parents. 
     """
@@ -140,20 +139,24 @@ def loadParents(node, policy=None, filterNodes=False):
             parent.__parent__ = parent.__parent_ref__
 
         parent = parent.__parent__
-
         if parent is not None:
             parents.append(parent)
 
-    if policy is not None:
-        if parents:
-            n = parents[-1]
-        else:
-            n = node
+    root = node if not parents else parents[-1]
+    if not IApplicationPolicy.providedBy(root):
+        try:
+            root.__parent__ = getPolicy()
+        except AttributeError:
+            # __parent__ is read onl
+            pass
 
-        if not IApplicationPolicy.providedBy(n):
-            n.__parent__ = policy
+    return [p for p in parents if isinstance(p, Node)]
 
-    if filterNodes:
-        return [p for p in parents if isinstance(p, Node)]
 
-    return parents
+KEY = '__ptahcms_policy__'
+
+def getPolicy():
+    return ptah.tldata.get(KEY)
+
+def setPolicy(policy):
+    return ptah.tldata.set(KEY, policy)

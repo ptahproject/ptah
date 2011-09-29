@@ -32,6 +32,16 @@ class TestBlob(Base):
         self.assertEqual(blob.filename, 'test.txt')
         self.assertEqual(blob.mimetype, 'text/plain')
 
+    def test_blob_info(self):
+        import ptah_cms
+        blob = ptah_cms.blobStorage.add(
+            StringIO('blob data'), filename='test.txt', mimetype='text/plain')
+
+        info = blob.info()
+        self.assertEqual(info['__uri__'], blob.__uri__)
+        self.assertEqual(info['filename'], 'test.txt')
+        self.assertEqual(info['mimetype'], 'text/plain')
+
     def test_blob_resolver(self):
         import ptah, ptah_cms
 

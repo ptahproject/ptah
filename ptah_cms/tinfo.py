@@ -141,6 +141,9 @@ def registerType(
         # generate schema
         schema = generateSchema(factory, schemaNodes=schemaNodes)
 
+    if 'global_allow' not in kw and not issubclass(factory, Content):
+        kw['global_allow'] = False
+
     tinfo.__dict__.update(kw)
 
     if schema:

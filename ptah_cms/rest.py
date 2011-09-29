@@ -24,8 +24,6 @@ from cms import cms
 from interfaces import Error, CmsException
 from permissions import View, ModifyContent, DeleteContent
 
-from pprint import pprint
-
 
 class Applications(ptah.rest.Action):
 
@@ -112,7 +110,7 @@ class Content(ptah.rest.Action):
         if not uri:
             content = root
         else:
-            content = load(uri, policy=root.__parent__)
+            content = load(uri)
 
         adapters = request.registry.adapters
 
@@ -131,6 +129,17 @@ class Content(ptah.rest.Action):
             return res
 
         raise HTTPNotFound()
+
+
+def contentRestAction(name, context, factory):
+    info = config.DirectiveInfo()
+
+    info.attach(
+        config.Action(
+            contentRestActionImpl,
+            (name, context, factory),
+            discriminator = ('ptah_cms:rest-action', name, context))
+        )
 
 
 def contentRestAction(name, context, factory):

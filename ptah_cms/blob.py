@@ -42,7 +42,7 @@ class Blob(Node):
 
         info['size'] = self.size
         info['mimetype'] = self.mimetype
-        info['mimetype'] = self.filename
+        info['filename'] = self.filename
         return info
 
 
