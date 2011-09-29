@@ -51,59 +51,39 @@ class Types(ptah.rest.Action):
     name = 'types'
     title = 'List content types'
 
-    def __call__(self, request, *args):
-        apps = []
+    def __call__(self, request, tname='', *args):
+        if tname:
+            info = {}
 
-        for name, tinfo in ptah_cms.Types.items():
+            tinfo = ptah_cms.Types.get(tname)
+            if tinfo is None:
+                raise HTTPNotFound
 
-            apps.append((tinfo.title, name, OrderedDict(
-                (('name', name),
-                 ('title', tinfo.title),
-                 ('description', tinfo.description),
-                 ('__link__', '%s/type:%s/'%(
-                     request.application_url, name))),
-                )))
-
-        apps.sort()
-        return [info for _t, name, info in apps]
-
-
-class Type(ptah.rest.Action):
-
-    name = 'type'
-    title = 'CMS Content Type'
-
-    def __call__(self, request, tname, actionId='', *args):
-        info = {}
-
-        tinfo = ptah_cms.Types.get(tname)
-        if tinfo is None:
-            raise HTTPNotFound
-
-        action = None
-        if not actionId:
-            action = TypeRestInfo()
-
-        if action:
-            request.environ['SCRIPT_NAME'] = '%s/type:%s/'%(
-                request.environ['SCRIPT_NAME'], tname)
-
-            res = action(tinfo, request, *args)
+            res = self.typeInfo(tinfo, request)
             if not res:
                 res = {'success': True}
             return res
+        else:
+            apps = []
 
-        raise HTTPNotFound()
+            for name, tinfo in ptah_cms.Types.items():
 
+                apps.append((tinfo.title, name, OrderedDict(
+                    (('name', name),
+                     ('title', tinfo.title),
+                     ('description', tinfo.description),
+                     ('__uri__', tinfo.__uri__),
+                     ('__link__', '%s/types/%s/'%(
+                         request.application_url, name))),
+                    )))
 
-class TypeRestInfo(object):
+            apps.sort()
+            return [info for _t, name, info in apps]
 
-    title = 'Type information'
-    description = ''
-
-    def __call__(self, tinfo, request, *args):
+    def typeInfo(self, tinfo, request):
         info = OrderedDict(
-            (('name', tinfo.name),
+            (('__uri__', tinfo.__uri__),
+             ('name', tinfo.name),
              ('title', tinfo.title),
              ('description', tinfo.description),
              ('permission', tinfo.permission),
@@ -112,8 +92,7 @@ class TypeRestInfo(object):
 
         schema = info['schema']
 
-        for node in tinfo.schema.children \
-                + ptah_cms.ContentNameSchema().children:
+        for node in tinfo.schema.children:
             widget = node.widget
             if not widget:
                 widget = form.getDefaultWidgetName(node)
@@ -459,4 +438,3 @@ ptah.registerService('cms', 'cms', 'Ptah CMS api')
 ptah.registerServiceAction('cms', Content())
 ptah.registerServiceAction('cms', Applications())
 ptah.registerServiceAction('cms', Types())
-ptah.registerServiceAction('cms', Type())
