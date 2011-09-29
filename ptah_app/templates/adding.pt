@@ -6,7 +6,9 @@
   <table class="zebra-striped">
     <tr tal:repeat="info view.types">
       <td>
-	<a href="${view.url}${info.add}">${info.title}</a>
+	<a href="${view.url}${info.add if info.add else '+/%s'%info.name}">
+	  ${info.title}
+	</a>
 	<p>${info.description}</p>
       </td>
     </tr>
