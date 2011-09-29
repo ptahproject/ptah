@@ -22,6 +22,7 @@
             });
 
             socket.on('message', function(obj) {
+                $.sticky(obj.message);
             });
 
             socket.on('error', function(obj) {
