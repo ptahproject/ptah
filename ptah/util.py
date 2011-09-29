@@ -1,7 +1,30 @@
+import threading
 from datetime import timedelta
 from memphis import config, form
+from pyramid.interfaces import INewRequest
 
 from ptah import token
+
+
+class ThreadLocalManager(threading.local):
+
+    def __init__(self):
+        self.data = {}
+
+    def get(self, key, default=None):
+        return self.data.get(key, default)
+
+    def set(self, key, value):
+        self.data[key] = value
+
+    def clear(self):
+        self.data = {}
+
+tldata = ThreadLocalManager()
+
+@config.handler(INewRequest)
+def resetThreadLocalData(ev):
+    tldata.clear()
 
 
 class CSRFService(object):
@@ -73,3 +96,8 @@ class Pagination(object):
         nextLink = None if current >= size else current+1
 
         return pages, prevLink, nextLink
+
+
+@config.addCleanup
+def cleanup():
+    tldata.clear()

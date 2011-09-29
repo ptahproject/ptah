@@ -6,6 +6,7 @@ from pyramid.security import authenticated_userid
 from pyramid.threadlocal import get_current_request
 
 from ptah.uri import resolve
+from ptah.util import tldata
 from ptah.interfaces import IAuthInfo, IAuthentication
 
 checkers = []
@@ -51,12 +52,13 @@ class AuthInfo(object):
         self.arguments = {}
 
 
-_notSet = object()
+_not_set = object()
 
-class Authentication(threading.local):
+USER_KEY = '__ptah_auth_userid__'
+
+
+class Authentication(object):
     interface.implements(IAuthentication)
-
-    uid = _notSet
 
     def authenticate(self, credentials):
         info = AuthInfo()
@@ -89,16 +91,16 @@ class Authentication(threading.local):
         return info
 
     def setUserId(self, uid):
-        self.uid = uid
+        tldata.set(USER_KEY, uid)
 
     def getUserId(self):
-        uid = getattr(self, 'uid', _notSet)
-        if uid is _notSet:
+        uid = tldata.get(USER_KEY, _not_set)
+        if uid is _not_set:
             try:
-                self.uid = authenticated_userid(get_current_request())
+                self.setUserId(authenticated_userid(get_current_request()))
             except: # pragma: no cover
-                self.uid = None
-            return self.uid
+                self.setUserId(None)
+            return tldata.get(USER_KEY)
         return uid
 
     def getCurrentPrincipal(self):
@@ -115,12 +117,6 @@ class Authentication(threading.local):
 authService = Authentication()
 
 
-@config.handler(INewRequest)
-def resetAuthCache(ev):
-    authService.uid = _notSet
-    authService.cache = {}
-
-
 def searchPrincipals(term):
     for name, searcher in searchers.items():
         for principal in searcher(term):
@@ -132,5 +128,3 @@ def cleanup():
     checkers[:] = []
     providers.clear()
     searchers.clear()
-    authService.uid = _notSet
-    authService.cache = {}

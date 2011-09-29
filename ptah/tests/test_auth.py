@@ -83,14 +83,14 @@ class TestAuthentication(Base):
 
     def test_auth_get_set_userid(self):
         import ptah
-        import ptah.authentication
+        import ptah.util
 
         self.assertEqual(ptah.authService.getUserId(), None)
 
         ptah.authService.setUserId('user')
         self.assertEqual(ptah.authService.getUserId(), 'user')
 
-        ptah.authentication.resetAuthCache(None)
+        ptah.util.resetThreadLocalData(None)
         self.assertEqual(ptah.authService.getUserId(), None)
 
     def test_auth_principal(self):

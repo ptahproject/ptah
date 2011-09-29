@@ -70,6 +70,9 @@ from ptah.settings import PTAH_CONFIG
 # pagination
 from ptah.util import Pagination
 
+# thread local data
+from ptah.util import tldata
+
 # sqlalchemy utils
 from ptah.sqla import QueryFreezer
 from ptah.sqla import JsonDictType
