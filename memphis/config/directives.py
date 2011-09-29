@@ -177,6 +177,7 @@ class DirectiveInfo(object):
         else:
             self.name = codeinfo[2]
 
+        self.locals = f_locals
         self.scope = scope
         self.module = module
         self.codeinfo = codeinfo
