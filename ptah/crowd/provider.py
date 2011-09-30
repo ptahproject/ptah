@@ -12,7 +12,6 @@ class CrowdProvider(object):
 
     def authenticate(self, creds):
         login, password = creds['login'], creds['password']
-        print '=============='
 
         user = CrowdUser.getByLogin(login)
 
