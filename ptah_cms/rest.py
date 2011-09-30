@@ -17,110 +17,102 @@ from interfaces import INode, IBlob, IContent, IContainer
 from permissions import View, ModifyContent, DeleteContent
 
 
-class Applications(ptah.rest.Action):
-
-    name = 'applications'
-    title = 'List applications'
-
-    def __call__(self, request, *args):
-        apps = []
-
-        for name, factory in ptah_cms.Factories.items():
-            root = factory(request)
-
-            try:
-                info = cms(root).info()
-            except (AttributeError, CmsException):
-                continue
-
-            info['__mount__'] = name
-            info['__link__'] = '%s/content:%s/%s/'%(
-                request.application_url, name, root.__uri__)
-            apps.append(info)
-
-        return apps
+CMS = ptah.restService('cms', 'Ptah CMS API')
 
 
-class Types(ptah.rest.Action):
+@CMS.action('applications', 'List applications')
+def cmsApplications(request, *args):
+    apps = []
 
-    name = 'types'
-    title = 'List content types'
+    for name, factory in ptah_cms.Factories.items():
+        root = factory(request)
 
-    def __call__(self, request, *args):
-        types = []
+        try:
+            info = cms(root).info()
+        except (AttributeError, CmsException):
+            continue
 
-        for name, tinfo in ptah_cms.Types.items():
-            types.append((tinfo.title, name, self.typeInfo(tinfo, request)))
+        info['__mount__'] = name
+        info['__link__'] = '%s/content:%s/%s/'%(
+            request.application_url, name, root.__uri__)
+        apps.append(info)
 
-        types.sort()
-        return [info for _t, name, info in types]
-
-    def typeInfo(self, tinfo, request):
-        info = OrderedDict(
-            (('__uri__', tinfo.__uri__),
-             ('name', tinfo.name),
-             ('title', tinfo.title),
-             ('description', tinfo.description),
-             ('permission', tinfo.permission),
-             ('schema', []),
-             ))
-
-        schema = info['schema']
-
-        for node in tinfo.schema.children:
-            widget = node.widget
-            if not widget:
-                widget = form.getDefaultWidgetName(node)
-
-            schema.append(
-                OrderedDict(
-                    (('name', node.name),
-                     ('title', node.title),
-                     ('description', node.description),
-                     ('required', node.required),
-                     ('widget', widget),
-                     )))
-
-        return info
+    return apps
 
 
-class Content(ptah.rest.Action):
+@CMS.action('types', 'List content types')
+def cmsTypes(request, *args):
+    types = []
 
-    name = 'content'
-    title = 'CMS Content'
+    for name, tinfo in ptah_cms.Types.items():
+        types.append((tinfo.title, name, typeInfo(tinfo, request)))
 
-    def __call__(self, request, app, uri=None, action='', *args):
-        info = {}
+    types.sort()
+    return [info for _t, name, info in types]
 
-        appfactory = ptah_cms.Factories.get(app)
-        if appfactory is None:
-            raise NotFound()
 
-        root = appfactory(request)
-        request.root = root
+def typeInfo(tinfo, request):
+    info = OrderedDict(
+        (('__uri__', tinfo.__uri__),
+         ('name', tinfo.name),
+         ('title', tinfo.title),
+         ('description', tinfo.description),
+         ('permission', tinfo.permission),
+         ('schema', []),
+         ))
 
-        if not uri:
-            content = root
-        else:
-            content = load(uri)
+    schema = info['schema']
 
-        adapters = request.registry.adapters
+    for node in tinfo.schema.children:
+        widget = node.widget
+        if not widget:
+            widget = form.getDefaultWidgetName(node)
 
-        action = adapters.lookup(
-            (IRestActionClassifier, providedBy(content)),
-            IRestAction, name=action, default=None)
+        schema.append(
+            OrderedDict(
+                (('name', node.name),
+                 ('title', node.title),
+                 ('description', node.description),
+                 ('required', node.required),
+                 ('widget', widget),
+                 )))
 
-        if action:
-            request.environ['SCRIPT_NAME'] = '%s/content:%s/'%(
-                request.environ['SCRIPT_NAME'], app)
+    return info
 
-            ptah.checkPermission(action.permission, content, request)
-            res = action.callable(content, request, *args)
-            if not res:
-                res = {'success': True}
-            return res
 
+@CMS.action('content', 'CMS content')
+def cmsContent(request, app, uri=None, action='', *args):
+    info = {}
+
+    appfactory = ptah_cms.Factories.get(app)
+    if appfactory is None:
         raise NotFound()
+
+    root = appfactory(request)
+    request.root = root
+
+    if not uri:
+        content = root
+    else:
+        content = load(uri)
+
+    adapters = request.registry.adapters
+
+    action = adapters.lookup(
+        (IRestActionClassifier, providedBy(content)),
+        IRestAction, name=action, default=None)
+
+    if action:
+        request.environ['SCRIPT_NAME'] = '%s/content:%s/'%(
+            request.environ['SCRIPT_NAME'], app)
+
+        ptah.checkPermission(action.permission, content, request)
+        res = action.callable(content, request, *args)
+        if not res:
+            res = {'success': True}
+        return res
+
+    raise NotFound()
 
 
 class IRestAction(interface.Interface):
@@ -280,9 +272,3 @@ def blobData(content, request, *args):
             'filename="%s"'%content.filename.encode('utf-8')}
     response.body = content.read()
     return response
-
-
-ptah.registerService('cms', 'cms', 'Ptah CMS api')
-ptah.registerServiceAction('cms', Content())
-ptah.registerServiceAction('cms', Applications())
-ptah.registerServiceAction('cms', Types())
