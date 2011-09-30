@@ -12,7 +12,7 @@ from ptah.password import PasswordSchema
 from ptah.events import ResetPasswordInitiatedEvent
 from ptah.events import PrincipalPasswordChangedEvent
 
-from interfaces import _
+from ptah.crowd import _
 
 view.registerRoute('ptah-resetpassword', '/resetpassword.html')
 view.registerRoute('ptah-resetpassword-form', '/resetpasswordform.html')

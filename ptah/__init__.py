@@ -53,10 +53,7 @@ from ptah.security import NOT_ALLOWED
 from ptah.password import passwordTool
 
 # rest api
-from ptah.rest import RestException
-from ptah.rest import registerService
-from ptah.rest import registerServiceAction
-from ptah.interfaces import IRestServiceAction
+from ptah.rest import restService
 
 # events
 from ptah import events

@@ -3,8 +3,6 @@ import sqlalchemy as sqla
 import pyramid_sqla as psa
 from zope import interface
 
-from interfaces import IPrincipalWithEmail
-
 Base = psa.get_base()
 Session = psa.get_session()
 
@@ -29,7 +27,7 @@ URI_gen = ptah.UriGenerator('user+crowd')
 
 
 class CrowdUser(Base):
-    interface.implements(IPrincipalWithEmail)
+    #interface.implements(IPrincipalWithEmail)
 
     __tablename__ = 'ptah_crowd'
 

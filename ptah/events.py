@@ -6,7 +6,7 @@ class PrincipalEvent(object):
 
     principal = None # IPrincipal object
 
-    def __init__(self, principal):
+    def __init__(self, principal): # pragma: no cover
         self.principal = principal
 
 
@@ -21,7 +21,7 @@ class LogingFailedEvent(PrincipalEvent):
 
     message = ''
 
-    def __init__(self, principal, message=u''):
+    def __init__(self, principal, message=u''): # pragma: no cover
         self.principal = principal
         self.message = message
 

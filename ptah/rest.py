@@ -1,34 +1,48 @@
-# ptah rest api
+""" ptah rest api """
 import traceback
-from memphis import view
 from datetime import datetime
+from cStringIO import StringIO
 from simplejson import dumps
 from collections import OrderedDict
-from cStringIO import StringIO
 from pyramid.response import Response
 from pyramid.authentication import AuthTicket
-from pyramid.httpexceptions import WSGIHTTPException, HTTPServerError
+from pyramid.httpexceptions import \
+    WSGIHTTPException, HTTPServerError, HTTPNotFound
 from pyramid.interfaces import IAuthenticationPolicy
+from memphis import view, config
 
 import ptah
-
-__all__ = ['registerService', 'registerServiceAction', 'Action']
 
 
 services = {}
 
+def restService(name, title, description=''):
+    srv = Service(name, title, description)
+    apidoc = ServiceAPIDoc(name)
 
-def registerService(name, title, description):
-    services[name] = Service(name, title, description)
-    services[name].registerAction(ServiceAPIDoc(name))
+    services[name] = srv
+    srv.actions['apidoc'] = Action(apidoc, 'apidoc', apidoc.title)
+
+    def _register(srv):
+        services[name] = srv
+
+    info = config.DirectiveInfo()
+    info.attach(
+        config.Action(
+            _register, (srv,),
+            discriminator = ('ptah:rest-service', id))
+        )
+
+    return srv
 
 
-def registerServiceAction(name, action):
-    services[name].registerAction(action)
+class Action(object):
 
-
-class RestException(HTTPServerError):
-    """ rest exception """
+    def __init__(self, callable, name, title):
+        self.name = name
+        self.title = title
+        self.callable = callable
+        self.description = callable.__doc__ or ''
 
 
 class Service(object):
@@ -39,28 +53,25 @@ class Service(object):
         self.description = description
         self.actions = {}
 
-    def registerAction(self, action):
-        self.actions[action.name] = action
+    def action(self, name, title):
+        info = config.DirectiveInfo()
+
+        def wrapper(func):
+            self.actions[name] = Action(func, name, title)
+            return func
+
+        return wrapper
 
     def __call__(self, request, action, *args):
         action = self.actions.get(action)
         if action:
-            return action(request, *args)
+            return action.callable(request, *args)
+        else:
+            raise HTTPNotFound
 
 
-class Action(object):
+class ServiceAPIDoc(object):
 
-    name = ''
-    title = ''
-    description = ''
-
-    def __call__(self, request, *args):
-        raise NotImplemented()
-
-
-class ServiceAPIDoc(Action):
-
-    name='apidoc'
     title = 'API Doc'
 
     def __init__(self, name):
@@ -188,16 +199,14 @@ class Api(object):
             result = services[service](request, action, *arguments)
         except WSGIHTTPException, exc:
             request.response.status = exc.status
-            result = {'code': exc.status,
-                      'message': str(exc)}
+            result = {'message': str(exc)}
         except Exception, exc:
             request.response.status = 500
 
             out = StringIO()
             traceback.print_exc(file=out)
 
-            result = {'code': request.response.status,
-                      'message': str(exc),
+            result = {'message': str(exc),
                       'traceback': out.getvalue()}
 
         if isinstance(result, Response):

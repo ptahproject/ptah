@@ -6,11 +6,10 @@ from zope import interface
 from pyramid.httpexceptions import HTTPFound
 from memphis import view, form, config
 
+from ptah.crowd import _
 from provider import Session
 from provider import CrowdUser as SQLUser
 from memberprops import MemberProperties
-
-from interfaces import _
 
 
 class ICrowdUser(interface.Interface):

@@ -1,1 +1,0 @@
-# ptah event public api
