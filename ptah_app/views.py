@@ -17,28 +17,6 @@ page_tmpl = view.template("ptah_app:templates/layoutpage.pt")
 view.registerLayout('page', IPtahAppRoot, template = page_tmpl)
 view.registerLayout('page', view.INavigationRoot, template = page_tmpl)
 
-view.static('socketio', 'ptah_app:static')
-view.library(
-    'socket.io',
-    path="socket.io.js",                                                                        
-    resource="socketio",                                                                                 
-    type="js",
-    require='jquery',
-)
-view.library(
-    'sticky.min.css',
-    path="sticky.min.css",                                                                        
-    resource="socketio",                                                                                 
-    type="css",
-)
-view.library(
-    'sticky.min.js',
-    path="sticky.min.js",                                                                        
-    resource="socketio",                                                                                 
-    type="js",
-    require='jquery',
-)
-
 
 class LayoutWorkspace(view.Layout):
     view.layout('workspace', IPtahAppRoot, parent="page")
