@@ -12,6 +12,7 @@ from pyramid.interfaces import IAuthenticationPolicy
 from memphis import view, config
 
 import ptah
+from ptah.app import SECURITY
 
 
 services = {}
@@ -135,17 +136,16 @@ class Login(object):
             request.response.status = 403
             result = {'message': info.message or 'authentication failed'}
 
+        request.response.headerslist = {'Content-Type': 'application/json'}
         return '%s\n\n'%dumps(result, indent=True, default=dthandler)
 
     def get_token(self, request, userid):
-        auth = request.registry.getUtility(IAuthenticationPolicy)
-
-        cookie = auth.cookie
+        secret = SECURITY.secret
         environ = request.environ
         remote_addr = '0.0.0.0'
 
         ticket = AuthTicket(
-            cookie.secret,
+            secret,
             userid,
             remote_addr,
             tokens=(),

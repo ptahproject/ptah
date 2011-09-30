@@ -1,4 +1,5 @@
 """ basic app settings """
+import uuid
 import colander
 import pyramid_sqla
 import pyramid_beaker
@@ -132,6 +133,9 @@ def initializing(ev):
     pconfig = ev.config
 
     # auth
+    if not SECURITY.secret:
+        SECURITY.secret = uuid.uuid4.get_hex()
+
     pname = SECURITY.policy
     if pname not in ('', 'no-policy'):
         policyFactory, attrs, kw = types[pname]

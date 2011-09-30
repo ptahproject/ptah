@@ -1,5 +1,8 @@
-import unittest
+import ptah
+import transaction
+import simplejson
 from memphis import config
+from pyramid.testing import DummyRequest
 from pyramid.httpexceptions import HTTPNotFound
 
 from base import Base
@@ -75,9 +78,45 @@ class TestRestRegistrations(Base):
             info['actions'][1]['link'], 'http://localhost:8080/action')
 
 
-#class TestRestView(Base):
+class Principal(object):
+    uri = 'testprincipal:1'
+    name = 'admin'
+    login = 'admin'
 
-#    def tearDown(self):
-#        config.cleanUp(self.__class__.__module__)
-#        super(TestRestApi, self).tearDown()
+class Provider(object):
+    principal = Principal()
 
+    def authenticate(self, creds):
+        return self.principal
+
+
+class TestRestView(Base):
+
+    def tearDown(self):
+        config.cleanUp(self.__class__.__module__)
+        super(TestRestView, self).tearDown()
+
+    def test_rest_login(self):
+        from ptah.rest import Login
+
+        request = DummyRequest()
+        login = Login(request)
+
+        self.assertIn('authentication failed', login.render())
+        self.assertEqual(request.response.status, '403 Forbidden')
+        
+    def test_rest_login_success(self):
+        from ptah.rest import Login
+        from ptah import authentication
+        self._init_memphis()
+
+        authentication.providers['test'] = Provider()
+        request = DummyRequest(params = {'login': 'admin', 'password': '12345'})
+        
+        login = Login(request)
+        info = simplejson.loads(login.render())
+        
+        self.assertIn('auth-token', info)
+        self.assertEqual(request.response.status, '200 OK')
+
+        del authentication.providers['test']

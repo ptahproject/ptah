@@ -10,7 +10,8 @@ from pyramid.threadlocal import manager
 class Base(unittest.TestCase):
 
     _settings = {'sqla.url': 'sqlite://',
-                 'sqla.cache': False}
+                 'sqla.cache': False,
+                 'auth.secret': 'test'}
 
     def _makeRequest(self, environ=None): #pragma: no cover
         from pyramid.request import Request
