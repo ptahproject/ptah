@@ -96,7 +96,7 @@ def cmsContent(request, app, uri=None, action='', *args):
     else:
         content = load(uri)
 
-    adapters = request.registry.adapters
+    adapters = config.registry.adapters
 
     action = adapters.lookup(
         (IRestActionClassifier, providedBy(content)),
@@ -108,8 +108,8 @@ def cmsContent(request, app, uri=None, action='', *args):
 
         ptah.checkPermission(action.permission, content, request)
         res = action.callable(content, request, *args)
-        if not res:
-            res = {'success': True}
+        if not res: # pragma: no cover
+            res = {}
         return res
 
     raise NotFound()
@@ -169,7 +169,7 @@ def containerNodeInfo(content, request, *args):
     contents = []
     for item in content.values():
         if not ptah.checkPermission(
-            View, item, request, False):
+            View, item, request, False): # pragma: no cover
             continue
 
         contents.append(
@@ -187,7 +187,6 @@ def containerNodeInfo(content, request, *args):
                     )))
         
     info['__contents__'] = contents
-    info['__container__'] = True
     return info
 
 
@@ -196,11 +195,11 @@ def apidocAction(content, request, *args):
     """api doc"""
     actions = []
     url = request.application_url
-    for name, action in request.registry.adapters.lookupAll(
+    for name, action in config.registry.adapters.lookupAll(
         (IRestActionClassifier, providedBy(content)), IRestAction):
 
         if not ptah.checkPermission(
-            action.__permission__, content, request, False):
+            action.permission, content, request, False):
             continue
 
         actions.append(
@@ -248,14 +247,14 @@ def createContentAction(content, request, *args):
     name = request.GET.get('name')
     tinfo = request.GET.get('tinfo')
 
-    item = cms(content).create(tinfo, name)
-
-    tinfo = item.__type__
+    tinfo = ptah.resolve(tinfo)
     try:
         data = tinfo.schema.deserialize(request.POST)
     except colander.Invalid, e:
         request.response.status = 500
         return {'errors': e.asdict()}
+
+    item = cms(content).create(tinfo.__uri__, name)
 
     item.update(**data)
     return nodeInfo(item, request)
@@ -265,10 +264,12 @@ def createContentAction(content, request, *args):
 def blobData(content, request, *args):
     """Download blob"""
     response = request.response
-    response.content_type = content.mimetype.encode('utf-8')
-    if content.filename:
+    
+    info = content.info()
+    response.content_type = info['mimetype'].encode('utf-8')
+    if info['filename']:
         response.headerlist = {
             'Content-Disposition': 
-            'filename="%s"'%content.filename.encode('utf-8')}
+            'filename="%s"'%info['filename'].encode('utf-8')}
     response.body = content.read()
     return response

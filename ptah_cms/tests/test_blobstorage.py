@@ -58,6 +58,7 @@ class TestBlob(Base):
         import ptah, ptah_cms
 
         class MyContent(ptah_cms.Node):
+            __name__ = ''
             __mapper_args__ = {'polymorphic_identity': 'mycontent'}
             __uri_generator__ = ptah.UriGenerator('test')
 
@@ -85,3 +86,20 @@ class TestBlob(Base):
 
         blob = ptah.resolve(blob_uri)
         self.assertEqual(blob.read(), 'new data')
+
+    def test_blob_rest_data(self):
+        import ptah_cms
+        from ptah_cms.rest import blobData
+        from pyramid.testing import DummyRequest
+
+        blob = ptah_cms.blobStorage.add(
+            StringIO('blob data'), filename='test.txt', mimetype='text/plain')
+
+        request = DummyRequest()
+        
+        response = blobData(blob, request)
+        self.assertEqual(response.body, 'blob data')
+        self.assertEqual(
+            response.headerlist,
+            [('Content-Disposition', 'filename="test.txt"'), 
+             ('Content-Length', '9')])

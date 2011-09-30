@@ -24,6 +24,7 @@ class Base(unittest.TestCase):
             'wsgi.url_scheme':'http',
             'wsgi.version':(1,0),
             'PATH_INFO': '/',
+            'SCRIPT_NAME': '',
             'SERVER_NAME':'localhost',
             'SERVER_PORT':'8080',
             'REQUEST_METHOD':'GET',

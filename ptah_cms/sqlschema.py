@@ -64,17 +64,8 @@ def buildSchema(table, schemaNodes=None, skipPrimaryKey=False):
         if cl.primary_key and skipPrimaryKey:
             continue
 
-        if 'type' in cl.info:
-            tp = cl.info['type']
-        else:
-            tp = cl.type
-
-        typ = IField(tp, None)
-        if typ is None:
-            node = colander.SchemaNode(colander.Str(), name = cl.name)
-        if type(typ) is tuple:
-            node = colander.SchemaNode(typ[0], typ[1], name = cl.name)
-        else:
+        typ = IField(cl.type, None)
+        if typ is not None:
             node = colander.SchemaNode(typ, name = cl.name)
 
         for name in ('missing', 'title', 'description',

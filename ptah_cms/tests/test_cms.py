@@ -8,6 +8,10 @@ from base import Base
 
 class TestAction(Base):
 
+    def tearDown(self):
+        config.cleanUp(self.__class__.__module__)
+        super(TestAction, self).tearDown()
+
     def test_cms_action_reg(self):
         import ptah_cms
 
@@ -89,6 +93,10 @@ class TestAction(Base):
 
 class TestWrapper(Base):
 
+    def tearDown(self):
+        config.cleanUp(self.__class__.__module__)
+        super(TestWrapper, self).tearDown()
+
     def test_cms_wrapper_not_found(self):
         import ptah_cms
         from ptah_cms.cms import NodeWrapper
@@ -130,6 +138,10 @@ class TestWrapper(Base):
 
 
 class TestCms(Base):
+
+    def tearDown(self):
+        config.cleanUp(self.__class__.__module__)
+        super(TestCms, self).tearDown()
 
     def test_cms_not_found(self):
         import ptah_cms
