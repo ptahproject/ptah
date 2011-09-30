@@ -48,6 +48,7 @@ from ptah.security import Authenticated
 from ptah.security import Owner
 from ptah.security import DEFAULT_ACL
 from ptah.security import NOT_ALLOWED
+from pyramid.security import NO_PERMISSION_REQUIRED
 
 # password tool
 from ptah.password import passwordTool
