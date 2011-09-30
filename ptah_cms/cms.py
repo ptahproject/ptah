@@ -23,19 +23,19 @@ def cms(content):
 class NodeWrapper(object):
 
     def __init__(self, content):
-        self.content = content
-        self.actions = getattr(content, '__ptahcms_actions__', None)
+        self._content = content
+        self._actions = getattr(content, '__ptahcms_actions__', None)
 
     def __getattr__(self, action):
-        if not self.actions or action not in self.actions:
+        if not self._actions or action not in self._actions:
             raise NotFound(action)
 
-        fname, permission = self.actions[action]
+        fname, permission = self._actions[action]
         if permission:
-            if not ptah.checkPermission(permission, self.content, throw=False):
+            if not ptah.checkPermission(permission, self._content, throw=False):
                 raise Forbidden(action)
 
-        return ActionWrapper(self.content, fname)
+        return ActionWrapper(self._content, fname)
 
 
 class ActionWrapper(object):
@@ -70,7 +70,7 @@ def action(func=None, name=None, permission = View):
 
 
 def buildClassActions(cls):
-    actions = getattr(cls, '__ptahcms_actions__', None)
+    actions = cls.__dict__.get('__ptahcms_actions__', None)
     if actions is None:
         actions = {}
 

@@ -4,10 +4,10 @@ import pyramid_sqla
 import sqlalchemy as sqla
 from zope import interface
 from collections import OrderedDict
-from pyramid.httpexceptions import HTTPNotFound, HTTPForbidden
 
 from cms import action
 from permissions import View
+from interfaces import NotFound, Forbidden
 from interfaces import INode, IApplicationPolicy
 
 Base = pyramid_sqla.get_base()
@@ -109,7 +109,7 @@ def load(uri, permission=None):
     :param permission: Check permission on node object
     :type permission: Permission id or None
     :raise KeyError: Node with this uri is not found.
-    :raise HTTPForbidden: If current principal doesn't pass permission check on loaded node.
+    :raise Forbidden: If current principal doesn't pass permission check on loaded node.
     """
     item = ptah.resolve(uri)
 
@@ -118,9 +118,9 @@ def load(uri, permission=None):
 
         if permission is not None:
             if not ptah.checkPermission(permission, item):
-                raise HTTPForbidden()
+                raise Forbidden()
     else:
-        raise HTTPNotFound(uri)
+        raise NotFound(uri)
 
     return item
 
