@@ -24,10 +24,41 @@ class TestUri(Base):
         self.assertEqual(ptah.resolve('unknown'), None)
         self.assertEqual(ptah.resolve('unknown:uri'), None)
 
+    def test_uri_registration_decorator(self):
+        import ptah
+
+        @ptah.resolver('test1')
+        def resolver1(uri):
+            return 'Resolved1'
+
+        @ptah.resolver('test2')
+        def resolver2(uri):
+            return 'Resolved2'
+
+        self.assertEqual(ptah.resolve('test1:uri'), 'Resolved1')
+        self.assertEqual(ptah.resolve('test2:uri'), 'Resolved2')
+
+        self.assertEqual(ptah.resolve(None), None)
+        self.assertEqual(ptah.resolve('unknown'), None)
+        self.assertEqual(ptah.resolve('unknown:uri'), None)
+
     def test_uri_registration_conflicts(self):
         import ptah
         ptah.registerResolver('test', None)
         ptah.registerResolver('test', None)
+
+        self.assertRaises(config.ConflictError, self._init_memphis)
+
+    def test_uri_registration_decorator_conflicts(self):
+        import ptah
+
+        @ptah.resolver('test1')
+        def resolver1(uri): # pragma: no cover
+            return 'Resolved1'
+
+        @ptah.resolver('test1')
+        def resolver2(uri): # pragma: no cover
+            return 'Resolved2'
 
         self.assertRaises(config.ConflictError, self._init_memphis)
 
