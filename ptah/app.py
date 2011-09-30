@@ -134,7 +134,7 @@ def initializing(ev):
 
     # auth
     if not SECURITY.secret:
-        SECURITY.secret = uuid.uuid4.get_hex()
+        SECURITY.secret = uuid.uuid4().get_hex()
 
     pname = SECURITY.policy
     if pname not in ('', 'no-policy'):
