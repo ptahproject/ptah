@@ -7,8 +7,7 @@ from pyramid.httpexceptions import HTTPFound
 import ptah
 from ptah import authService
 from ptah.mail import MAIL
-
-from interfaces import _
+from ptah.crowd import _
 
 view.registerRoute('ptah-login', '/login.html')
 view.registerRoute('ptah-logout', '/logout.html')

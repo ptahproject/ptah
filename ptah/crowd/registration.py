@@ -9,9 +9,9 @@ from ptah import authService
 from ptah.password import PasswordSchema
 from ptah.events import PrincipalRegisteredEvent
 
+from ptah.crowd import _
 from schemas import RegistrationSchema
 from provider import Session, CrowdUser
-from interfaces import _, IPreferencesGroup
 
 
 view.registerRoute('ptah-join', '/join.html')
@@ -33,9 +33,9 @@ class Registration(form.Form):
 
         fieldsets = []
         self.props = props = []
-        for name, prop in sm.getUtilitiesFor(IPreferencesGroup):
-            props.append(prop)
-            fieldsets.append(form.Fieldset(prop.schema))
+        #for name, prop in sm.getUtilitiesFor(IPreferencesGroup):
+        #    props.append(prop)
+        #    fieldsets.append(form.Fieldset(prop.schema))
 
         self.fields = form.Fields(RegistrationSchema,PasswordSchema,*fieldsets)
 

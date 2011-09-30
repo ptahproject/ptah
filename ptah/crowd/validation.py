@@ -9,7 +9,6 @@ import ptah
 from ptah import token, mail
 
 from memberprops import MemberProperties
-from interfaces import IPrincipalWithEmail
 
 TOKEN_TYPE = token.TokenType(
     'cd51f14e9b2842608ccadf1a240046c1', timedelta(hours=24))
@@ -47,9 +46,9 @@ def principalRegistered(ev):
     user = MemberProperties.get(ev.principal.uri)
     user.joined = datetime.now()
 
-    if ptah.PTAH_CONFIG.validation and \
-            IPrincipalWithEmail.providedBy(ev.principal):
-        initiateValidation(ev.principal, get_current_request())
+    #if ptah.PTAH_CONFIG.validation and \
+    #        IPrincipalWithEmail.providedBy(ev.principal):
+    #    initiateValidation(ev.principal, get_current_request())
 
 
 @config.handler(ptah.events.PrincipalRegisteredEvent)

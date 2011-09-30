@@ -2,7 +2,7 @@
 import colander
 from ptah import passwordTool
 
-from interfaces import _
+from ptah.crowd import _
 from provider import CrowdUser
 
 

@@ -1,3 +1,4 @@
-#
+# ptah.crowd package
+import translationstring
 
-from ptah.crowd.interfaces import IPrincipalWithEmail
+_ = translationstring.TranslationStringFactory('ptah')
