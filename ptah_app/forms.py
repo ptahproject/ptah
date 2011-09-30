@@ -159,7 +159,7 @@ class EditForm(form.Form):
             return
 
         self.applyChanges(**data)
-        config.notify(ptah_cms.events.ContentModifiedEvent(self.context))
+        #config.notify(ptah_cms.events.ContentModifiedEvent(self.context))
 
         self.message("Changes have been saved.")
         raise HTTPFound(location=self.nextUrl())
