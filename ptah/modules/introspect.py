@@ -12,6 +12,7 @@ from memphis.config import directives
 from memphis.config.api import exclude, loadPackages
 
 from ptah.manage import INTROSPECTIONS
+from ptah.uri import resolvers, resolversTitle
 
 from zope import interface
 from interfaces import IPackage
@@ -123,7 +124,6 @@ def routeDirective(
     template = view.template('ptah.modules:templates/directive-route.pt')):
 
     name, pattern, factory = action.args[:3]
-    print (name, pattern, factory)
 
     if not factory:
         factory = 'DefaultRootFactory'
@@ -211,11 +211,8 @@ renderers = {
 types = {
     'memphis.view:view': ('View', 'Pyramid views'),
     'memphis.view:route': ('Route', 'Pyramid routes'),
-    'memphis.view:layout': ('Layout', 'Memphis layouts'),
-    'memphis.view:pagelet': ('Pagelet', 'Memphis pagelets'),
     'memphis.view:pageletType': ('Pagelet Type', 'Memphis pagelet types'),
     'memphis.config:event': ('Events', 'event declarations'),
-    'memphis.config:utility': ('Utility', 'zca utility registrations'),
     'memphis.config:adapter': ('Adapters','zca adapter registrations'),
     'memphis.config:handler': ('Event listeners',
                                'zca event handler registrations'),
@@ -444,3 +441,26 @@ class SourceView(view.View):
                 self.__class__.format = format
 
             self.source = self.format(source)
+
+
+class UriIntrospection(object):
+    """ """
+
+    title = 'Uri resolver'
+    ptah.introspection('ptah:uri-resolver')
+
+    actions = view.template('ptah.modules:templates/directive-uriresolver.pt')
+
+    def __init__(self, request):
+        self.request = request
+
+    def renderAction(self, action):
+        pass
+
+    def renderActions(self, *actions):
+        return self.actions(
+            resolvers = resolvers,
+            resolversTitle = resolversTitle,
+            actions = actions,
+            request = self.request)
+

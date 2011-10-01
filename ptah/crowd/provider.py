@@ -82,6 +82,7 @@ def changeCrowdUserPassword(principal, password):
     principal.password = password
 
 
+@ptah.resolver('user+crowd', 'Ptah Crowd principal resolver')
 def getPrincipal(uri):
     return CrowdUser.get(uri)
 
@@ -98,7 +99,6 @@ def searchPrincipals(term):
         yield user
 
 
-ptah.registerResolver('user+crowd', getPrincipal)
 ptah.registerProvider('crowd', CrowdProvider())
 ptah.registerSearcher('crowd', searchPrincipals)
 ptah.passwordTool.registerPasswordChanger('user+crowd', changeCrowdUserPassword)

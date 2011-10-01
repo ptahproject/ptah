@@ -3,7 +3,7 @@ import uuid
 from memphis import config
 
 resolvers = {}
-resolversInfo = {}
+resolversTitle = {}
 
 
 def resolve(uri):
@@ -41,16 +41,16 @@ def extractUriSchema(uri):
     return None
 
 
-def resolver(schema, title='', description=''):
+def resolver(schema, title=''):
     info = config.DirectiveInfo()
 
     def wrapper(func):
         resolvers[schema] = func
-        resolversInfo[schema] = (title, description)
+        resolversTitle[schema] = title or schema
 
         info.attach(
             config.Action(
-                _registerResolver, (schema, func, title, description),
+                _registerResolver, (schema, func, title),
                 discriminator = ('ptah:uri-resolver', schema))
             )
 
@@ -59,7 +59,7 @@ def resolver(schema, title='', description=''):
     return wrapper
 
 
-def registerResolver(schema, resolver, title='', description='', depth=1):
+def registerResolver(schema, resolver, title='', depth=1):
     """ Register resolver for given schema 
 
     :param schema: Uri schema
@@ -74,19 +74,19 @@ def registerResolver(schema, resolver, title='', description='', depth=1):
              return content
     """
     resolvers[schema] = resolver
-    resolversInfo[schema] = (title, description)
+    resolversTitle[schema] = title or schema
 
     info = config.DirectiveInfo(depth=depth)
     info.attach(
         config.Action(
-            _registerResolver, (schema, resolver, title, description),
+            _registerResolver, (schema, resolver, title),
             discriminator = ('ptah:uri-resolver', schema))
         )
 
 
-def _registerResolver(schema, resolver, title, description):
+def _registerResolver(schema, resolver, title):
     resolvers[schema] = resolver
-    resolversInfo[schema] = (title, description)
+    resolversTitle[schema] = title or schema
 
 
 class UriGenerator(object):
@@ -112,4 +112,4 @@ class UriGenerator(object):
 @config.addCleanup
 def cleanup():
     resolvers.clear()
-    resolversInfo.clear()
+    resolversTitle.clear()
