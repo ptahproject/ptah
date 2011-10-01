@@ -72,10 +72,10 @@ def manageModule(id):
 
 def PtahAccessManager(id):
     """ default access manager """
-    principal = resolve(id)
-
     if '*' in PTAH_CONFIG.managers:
         return True
+
+    principal = resolve(id)
 
     if principal is not None and principal.login in PTAH_CONFIG.managers:
         return True
@@ -108,9 +108,8 @@ class PtahManageRoute(object):
 
     def __init__(self, request):
         self.request = request
-        self.registry = request.registry
 
-        userid = authenticated_userid(request)
+        userid = authService.getUserId()
         if not userid:
             raise HTTPForbidden()
 
@@ -153,7 +152,7 @@ class LayoutPage(view.Layout):
         mod = self.viewcontext
         while not IPtahModule.providedBy(mod):
             mod = getattr(mod, '__parent__', None)
-            if mod is None:
+            if mod is None: # pragma: no cover
                 break
 
         self.module = mod
@@ -162,8 +161,8 @@ class LayoutPage(view.Layout):
 class ManageView(view.View):
     """List ptah modules"""
     view.pyramidView(
-        'index.html', IPtahManageRoute,
-        route = 'ptah-manage', default=True, layout='page',
+        context = IPtahManageRoute,
+        route = 'ptah-manage', layout='page',
         template = view.template('ptah:templates/manage.pt'))
 
     __intr_path__ = '/ptah-manage/index.html'
