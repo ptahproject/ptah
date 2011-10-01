@@ -134,7 +134,5 @@ def cleanUp(*modIds):
         h()
 
     for modId in modIds:
-        if modId in sys.modules:
-            mod = sys.modules[modId]
-            if hasattr(mod, directives.ATTACH_ATTR):
-                delattr(mod, directives.ATTACH_ATTR)
+        if modId in directives.ACTIONS:
+            del directives.ACTIONS[modId]
