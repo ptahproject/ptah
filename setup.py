@@ -15,8 +15,6 @@ setup(name='memphis.view',
           'Detailed Documentation\n' +
           '======================\n'
           + '\n\n' +
-          read('memphis', 'view', 'README.txt')
-          + '\n\n' +
           read('CHANGES.txt')
           ),
       classifiers=[
