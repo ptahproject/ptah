@@ -111,3 +111,25 @@ class SharingForm(form.Form):
 
         self.request.session['sharing-term'] = data['term']
         raise HTTPFound(location = self.request.url)
+
+
+class TypeIntrospection(object):
+    """ Ptah CMS content types """
+
+    name = 'ptah-cms:type'
+    title = 'Content Types'
+    ptah.introspection('ptah-cms:type')
+
+    actions = view.template('ptah_app:templates/directive-type.pt')
+
+    def __init__(self, request):
+        self.request = request
+
+    def renderAction(self, action):
+        pass
+
+    def renderActions(self, *actions):
+        return self.actions(
+            types = ptah_cms.Types,
+            actions = actions,
+            request = self.request)
