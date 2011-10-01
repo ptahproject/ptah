@@ -5,6 +5,7 @@ from paste import fileapp, request, httpexceptions
 
 from memphis import config
 from memphis.view import tmpl
+from memphis.view.customize import LayerWrapper
 
 
 STATIC = config.registerSettings(
@@ -26,12 +27,11 @@ STATIC.isurl = False
 
 
 registry = {}
+dirs = {}
 
-
-def static(name, path):
+def static(name, path, layer=''):
     abspath, pkg = tmpl.path(path)
-    data = registry.setdefault(name, [])
-    data.append((abspath, pkg))
+    data = registry[name] = [abspath, pkg]
 
     if not abspath:
         raise ValueError("Can't find path to static resource")
@@ -39,18 +39,15 @@ def static(name, path):
     if not os.path.isdir(abspath):
         raise ValueError("path is not directory")
 
+    discriminator = ('memphis.view:static', name, layer)
+
     info = config.DirectiveInfo()
     info.attach(
         config.Action(
-            staticImpl,
+            LayerWrapper(lambda a1,a2,a3: registry.update({a1: (a2, a3)}),
+                         discriminator),
             (name, abspath, pkg),
-            discriminator = ('memphis.view:static', name, path)))
-
-
-def staticImpl(name, abspath, pkg):
-    data = registry.setdefault(name, [])
-    if (abspath, pkg) not in data:
-        data.append((abspath, pkg))
+            discriminator = discriminator))
 
 
 def static_url(name, path, request, **kw):
@@ -92,14 +89,10 @@ def initialize(ev):
             # it's a URL
             STATIC.isurl = True
             for name, data in registry.items():
-                registry[name] = (0, urljoin(url, name))
+                dirs[name] = (0, urljoin(url, name))
 
         else:
-            for name, data in registry.items():
-                dirinfo = []
-                for abspath, pkg in data:
-                    dirinfo.insert(0, (abspath, buildTree(abspath)))
-
+            for name, (abspath, pkg) in registry.items():
                 prefix = '%s/%s'%(url, name)
                 rname = '%s-%s'%(url, name)
                 pattern = '%s/*subpath'%prefix
@@ -107,13 +100,14 @@ def initialize(ev):
                 ev.config.add_route(rname, pattern)
                 ev.config.add_view(
                     route_name=rname,
-                    view=StaticView(dirinfo, prefix))
+                    view=StaticView(abspath, buildTree(abspath), prefix))
 
 
 class StaticView(object):
 
-    def __init__(self, data, prefix):
-        self.data = data
+    def __init__(self, path, dirinfo, prefix):
+        self.path = path
+        self.dirinfo = dirinfo
         self.prefix = '/%s'%prefix
         self.lprefix = len(self.prefix)+1
 
@@ -128,13 +122,12 @@ class StaticView(object):
         # windows only
         path = os.path.join(*(path_info[self.lprefix:].split('/')))
 
-        for abspath, dirinfo in self.data:
-            if path in dirinfo:
-                fa = fileapp.FileApp(os.path.join(abspath, path))
-                if STATIC.cache_max_age:
-                    fa.cache_control(max_age=STATIC.cache_max_age)
+        if path in self.dirinfo:
+            fa = fileapp.FileApp(os.path.join(self.path, path))
+            if STATIC.cache_max_age:
+                fa.cache_control(max_age=STATIC.cache_max_age)
 
-                return fa(environ, start_response)
+            return fa(environ, start_response)
 
         return self.not_found(environ, start_response)
 

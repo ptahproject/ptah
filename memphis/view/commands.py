@@ -233,8 +233,7 @@ class StaticCommand(Command):
 
             items = resources.registry.items()
             items.sort()
-            for name, data in items:
-                for path, pkg in data:
+            for name, (path, pkg) in items:
                     print "* Coping from '%s' %s"%(pkg, path)
 
                     d = resources.buildTree(path)
@@ -264,10 +263,9 @@ class StaticCommand(Command):
             items = resources.registry.items()
             items.sort()
 
-            for name, data in items:
+            for name, (path, pkg) in items:
                 print grpTitleWrap.fill(name)
-                for path, pkg in data:
-                    print nameWrap.fill('by: %s'%pkg)
-                    p = path.split(pkg, 1)[-1]
-                    print nameTitleWrap.fill(' ../%s%s'%(pkg, p))
+                print nameWrap.fill('by: %s'%pkg)
+                p = path.split(pkg, 1)[-1]
+                print nameTitleWrap.fill(' ../%s%s'%(pkg, p))
                 print

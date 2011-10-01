@@ -3,8 +3,15 @@ import unittest
 from memphis import config, view
 from memphis.view import resources
 from memphis.view.base import View
+from memphis.view.resources import buildTree
+from memphis.view.resources import StaticView
 
 from base import Base
+
+abspath1, pkg1 = view.path('memphis.view.tests:static/dir1')
+abspath2, pkg2 = view.path('memphis.view.tests:static/dir2')
+dirinfo1 = buildTree(abspath1)
+dirinfo2 = buildTree(abspath2)
 
 
 class TestStaticManagement(Base):
@@ -94,27 +101,10 @@ class TestStaticManagement(Base):
 
 class TestStaticView(Base):
 
-    def _makeOne(self, data, prefix):
-        from memphis.view.resources import StaticView
-        return StaticView(data, prefix)
-
-    def _makeData(self, includeAll=False):
-        from memphis.view.resources import buildTree
-
-        abspath, pkg = view.path('memphis.view.tests:static/dir1')
-        data = [(abspath, buildTree(abspath))]
-
-        if includeAll:
-            abspath, pkg = view.path('memphis.view.tests:static/dir2')
-            data.insert(0, (abspath, buildTree(abspath)))
-
-        return data
-
     def test_resource_empty_pathinfo(self):
         environ = self._makeEnviron(PATH_INFO='')
         request = self._makeRequest(environ)
-        data = self._makeData()
-        inst = self._makeOne(data, 'static/test')
+        inst = StaticView(abspath1, dirinfo1, 'static/test')
 
         response = inst(None, request)
         self.assertTrue(response.status == '404 Not Found')
@@ -125,8 +115,8 @@ class TestStaticView(Base):
     def test_resource_doesnt_exist(self):
         environ = self._makeEnviron(PATH_INFO='/static/test/notthere')
         request = self._makeRequest(environ)
-        data = self._makeData()
-        inst = self._makeOne(data, 'static/test')
+
+        inst = StaticView(abspath1, dirinfo1, 'static/test')
 
         response = inst(None, request)
         self.assertTrue(response.status == '404 Not Found')
@@ -136,8 +126,7 @@ class TestStaticView(Base):
     def test_resource_file(self):
         environ = self._makeEnviron(PATH_INFO='/static/test/style.css')
         request = self._makeRequest(environ)
-        data = self._makeData()
-        inst = self._makeOne(data, 'static/test')
+        inst = StaticView(abspath1, dirinfo1, 'static/test')
 
         response = inst(None, request)
         self.assertTrue(response.status == '200 OK')
@@ -146,8 +135,7 @@ class TestStaticView(Base):
     def test_resource_file_from_subdir(self):
         environ = self._makeEnviron(PATH_INFO='/static/test/subdir/text.txt')
         request = self._makeRequest(environ)
-        data = self._makeData()
-        inst = self._makeOne(data, 'static/test')
+        inst = StaticView(abspath1, dirinfo1, 'static/test')
 
         response = inst(None, request)
         self.assertTrue(response.status == '200 OK')
@@ -156,8 +144,7 @@ class TestStaticView(Base):
     def test_resource_file_with_cache(self):
         environ = self._makeEnviron(PATH_INFO='/static/test/style.css')
         request = self._makeRequest(environ)
-        data = self._makeData()
-        inst = self._makeOne(data, 'static/test')
+        inst = StaticView(abspath1, dirinfo1, 'static/test')
 
         response = inst(None, request)
         self.assertFalse('Cache-Control' in response.headers)
@@ -169,22 +156,11 @@ class TestStaticView(Base):
         self.assertTrue(response.headers['Cache-Control'],
                         'public, max-age=360')
 
-    def test_resource_layers(self):
-        environ = self._makeEnviron(PATH_INFO='/static/test/style.css')
-        request = self._makeRequest(environ)
-        data = self._makeData(True)
-        inst = self._makeOne(data, 'static/test')
-
-        response = inst(None, request)
-        self.assertTrue(response.status == '200 OK')
-        self.assertTrue('/* CSS styles file 2 */' in response.body)
-
     def test_resource_layers_bypass_to_parent(self):
         # if not exist in upper layer tring to get from lower layer
         environ = self._makeEnviron(PATH_INFO='/static/test/text2.txt')
         request = self._makeRequest(environ)
-        data = self._makeData(True)
-        inst = self._makeOne(data, 'static/test')
+        inst = StaticView(abspath1, dirinfo1, 'static/test')
 
         response = inst(None, request)
         self.assertTrue(response.status == '200 OK')
@@ -194,8 +170,7 @@ class TestStaticView(Base):
         # if not exist in upper layer tring to get from lower layer
         environ = self._makeEnviron(PATH_INFO='/static/test/subdir/text.txt')
         request = self._makeRequest(environ)
-        data = self._makeData(True)
-        inst = self._makeOne(data, 'static/test')
+        inst = StaticView(abspath1, dirinfo1, 'static/test')
 
         response = inst(None, request)
         self.assertTrue(response.status == '200 OK')

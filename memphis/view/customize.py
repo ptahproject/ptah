@@ -4,7 +4,7 @@ import logging
 import colander
 try:
     from chameleon import template as chameleon_template
-except:
+except: # pragma: no cover
     chameleon_template = None
 
 from memphis import config
@@ -164,7 +164,7 @@ class _GlobalLayerManager(object):
 
 try:
     import pyinotify
-except ImportError:
+except ImportError: # pragma: no cover
     pyinotify = None
 
 
