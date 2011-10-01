@@ -37,18 +37,18 @@ class TypeInformation(object):
     allowed_content_types = ()
     global_allow = True
 
-    def __init__(self, factory, name, title, schema=ContentSchema(), **kw):
+    def __init__(self, cls, name, title, schema=ContentSchema(), **kw):
         self.__dict__.update(kw)
 
         self.__uri__ = 'cms+type:%s'%name
 
-        self.factory = factory
+        self.cls = cls
         self.name = name
         self.title = title
         self.schema = schema
 
     def create(self, **data):
-        content = self.factory(**data)
+        content = self.cls(**data)
         config.notify(ContentCreatedEvent(content))
         return content
 
@@ -134,14 +134,14 @@ def Type(name, title, schema = None, **kw):
 
 
 def registerType(
-    factory, tinfo, name, schema,
+    cls, tinfo, name, schema,
     permission = ptah.NOT_ALLOWED, schemaNodes=None, **kw):
 
     if schema is None:
         # generate schema
-        schema = generateSchema(factory, schemaNodes=schemaNodes)
+        schema = generateSchema(cls, schemaNodes=schemaNodes)
 
-    if 'global_allow' not in kw and not issubclass(factory, Content):
+    if 'global_allow' not in kw and not issubclass(cls, Content):
         kw['global_allow'] = False
 
     tinfo.__dict__.update(kw)
@@ -149,13 +149,13 @@ def registerType(
     if schema:
         tinfo.schema = schema
 
-    tinfo.factory = factory
+    tinfo.cls = cls
     tinfo.permission = permission
 
     Types[name] = tinfo
 
     # build cms actions
-    buildClassActions(factory)
+    buildClassActions(cls)
 
 
 @config.addCleanup
