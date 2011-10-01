@@ -1,0 +1,15 @@
+<table class="zebra-striped" tal:define="url request.application_url">
+  <tbody>
+    <tr tal:repeat="action actions">
+      <td tal:define="p permissions[action.args[0]]">
+	<h4>${p.title} 
+	  <small>
+	    <a href="${url}/ptah-manage/introspect/source.html?pkg=${action.info.context.__name__}#sl-${action.info.codeinfo[1]}">
+	      ${p}</a>
+	  </small>
+	</h4>
+	<p tal:condition="p.description">${p.description}</p>
+      </td>
+    </tr>
+  </tbody>
+</table>

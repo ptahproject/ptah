@@ -11,6 +11,7 @@ from ptah.uri import UriGenerator
 from ptah.manage import PtahModule
 from ptah.manage import manageModule
 from ptah.manage import setAccessManager
+from ptah.manage import introspection
 
 # security
 from ptah.authentication import authService

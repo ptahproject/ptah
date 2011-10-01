@@ -11,6 +11,8 @@ from memphis import config, view
 from memphis.config import directives
 from memphis.config.api import exclude, loadPackages
 
+from ptah.manage import INTROSPECTIONS
+
 from zope import interface
 from interfaces import IPackage
 
@@ -126,23 +128,10 @@ def routeDirective(
     if not factory:
         factory = 'DefaultRootFactory'
 
-    return template(**locals())
-
-
-def utilityDirective(
-    action, request,
-    lineno = lineno,
-    template=view.template('ptah.modules:templates/directive-utility.pt')):
-
-    context = action.info.context
-    iface, name = action.args[:2]
-
-    if iface is None:
-        provided = list(interface.implementedBy(context))
-        if len(provided):
-            iface = provided[0]
-
-    return template(**locals())
+    try:
+        return template(**locals())
+    except:
+        return ''
 
 
 def adapterDirective(
@@ -214,7 +203,6 @@ renderers = {
     'memphis.view:view': viewDirective,
     'memphis.view:route': routeDirective,
     'memphis.view:pageletType': pageletTypeDirective,
-    'memphis.config:utility': utilityDirective,
     'memphis.config:adapter': adapterDirective,
     'memphis.config:handler': handlerDirective,
     'memphis.config:event': eventDirective,
@@ -236,7 +224,7 @@ types = {
 
 class PackageView(view.View):
     view.pyramidView(
-        'index.html', IPackage, 'ptah-manage', default=True, layout='',
+        context = IPackage,
         template = view.template('ptah.modules:templates/introspect-pkg.pt'))
 
     __doc__ = 'Package introspection page.'
@@ -247,6 +235,22 @@ class PackageView(view.View):
 
     def update(self):
         self.data = self.context.actions()
+
+        self.ndata = ndata = {}
+        for tp, d in self.data.items():
+            actions = []
+            for k, ac in d.items():
+                actions.extend(ac)
+
+            ndata[tp] = actions
+
+        itypes = []
+        for key, cls in INTROSPECTIONS.items():
+            if key in self.data:
+                itypes.append((cls.title, cls(self.request)))
+
+        itypes.sort()
+        self.itypes = [it for _t, it in itypes]
 
 
 class EventsView(view.View):

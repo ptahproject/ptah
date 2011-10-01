@@ -58,15 +58,31 @@ class PtahModule(object):
 def manageModule(id):
     info = config.DirectiveInfo(allowed_scope=('class',))
 
-    def _complete(klass, id):
-        MODULES[id] = klass
+    def _complete(cls, id):
+        MODULES[id] = cls
 
-        klass.name = id
+        cls.name = id
 
     info.attach(
         config.ClassAction(
             _complete, (id,),
             discriminator = ('ptah:manage-module', id))
+        )
+
+
+INTROSPECTIONS = {}
+
+def introspection(id):
+    info = config.DirectiveInfo(allowed_scope=('class',))
+
+    def _complete(cls, id):
+        INTROSPECTIONS[id] = cls
+        cls.name = id
+
+    info.attach(
+        config.ClassAction(
+            _complete, (id,),
+            discriminator = ('ptah:introspection', id))
         )
 
 

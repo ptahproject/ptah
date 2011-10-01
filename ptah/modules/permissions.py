@@ -41,3 +41,46 @@ class RolesView(view.View):
     def update(self):
         self.roles = Roles.values()
         self.roles.sort(key = lambda r: r.title)
+
+
+class RoleIntrospection(object):
+    """ Role registrations """
+
+    title = 'Role'
+    ptah.introspection('ptah:role')
+
+    actions = view.template('ptah.modules:templates/directive-role.pt')
+
+    def __init__(self, request):
+        self.request = request
+
+    def renderAction(self, action):
+        pass
+
+    def renderActions(self, *actions):
+        return self.actions(
+            roles = ptah.Roles,
+            actions = actions,
+            request = self.request)
+
+
+class PermissionIntrospection(object):
+    """ Permission registrations """
+
+    title = 'Permission'
+    ptah.introspection('ptah:permission')
+
+    actions = view.template('ptah.modules:templates/directive-permission.pt')
+
+    def __init__(self, request):
+        self.request = request
+
+    def renderAction(self, action):
+        pass
+
+    def renderActions(self, *actions):
+        return self.actions(
+            permissions = ptah.Permissions,
+            actions = actions,
+            request = self.request)
+

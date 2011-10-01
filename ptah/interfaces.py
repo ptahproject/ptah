@@ -136,3 +136,19 @@ class IACLsAware(interface.Interface):
     """ acl maps aware context """
 
     __acls__ = interface.Attribute('List of acl map ids')
+
+
+class IIntrospection(interface.Interface):
+    """ introspection handler """
+
+    name = interface.Attribute('Name')
+    title = interface.Attribute('Title')
+
+    def __init__(request):
+        """ constructor """
+
+    def renderAction(action):
+        """ render config actions """
+
+    def renderActions(*actions):
+        """ render config actions """

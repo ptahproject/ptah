@@ -125,3 +125,24 @@ class TestManageModule(Base):
         layout.update()
         
         self.assertIs(layout.module, mod)
+
+
+class TestInstrospection(Base):
+
+    def tearDown(self):
+        config.cleanUp(self.__class__.__module__)
+        super(TestInstrospection, self).tearDown()
+
+    def test_manage_module(self):
+        from ptah.manage import INTROSPECTIONS, introspection
+        
+        global TestModule
+        class TestModule(object):
+            """ module description """
+            
+            title = 'Test module'
+            introspection('test-module')
+
+        self._init_memphis()
+        self.assertIn('test-module', INTROSPECTIONS)
+        self.assertIs(INTROSPECTIONS['test-module'], TestModule)
