@@ -51,7 +51,7 @@ class SettingsGroupModified(ObjectEvent):
 
 _marker = object()
 
-def initializeSettings(settings, 
+def initializeSettings(settings,
                        config=None, loader=None, watcherFactory=_marker,
                        section=ConfigParser.DEFAULTSECT):
     if Settings.initialized:
@@ -107,7 +107,7 @@ def registerSettings(name, *nodes, **kw):
         'SettingsGroup:%s'%iname.upper(), (),
         __doc__='Settings group: %s' %name,
         __module__='memphis.config.settings')
-    
+
     if name in Settings:
         group = Settings[name]
     else:
@@ -206,7 +206,7 @@ class SettingsImpl(dict):
                         group.update(data[name])
                         if modified:
                             api.registry.subscribers(
-                                (group, 
+                                (group,
                                  SettingsGroupModified(group, self.config)), None)
                     else:
                         group.update(data[name])
@@ -306,7 +306,7 @@ class Group(dict):
         self.settings = settings
         self.category = category
         self.schema = schema.SchemaNode(
-            schema.Mapping(), 
+            schema.Mapping(),
             name=name,
             required=False,
             validator=GroupValidator())
@@ -462,7 +462,7 @@ class iNotifyWatcher(object):
         pass
 
     if pyinotify:
-        
+
         def start(self, filename):
             if Settings.config is None:
                 return

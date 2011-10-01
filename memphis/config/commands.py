@@ -41,11 +41,11 @@ class SettingsCommand(object):
     parser.add_argument('-a', '--all', action="store_true",
                         dest='all',
                         help = 'List all registered settings')
-    parser.add_argument('-l', '--list', 
+    parser.add_argument('-l', '--list',
                         dest='section', default='',
                         help = 'List registered settings')
     parser.add_argument('-p', '--print', action="store_true",
-                        dest='printcfg', 
+                        dest='printcfg',
                         help = 'Print default settings in ConfigParser format')
 
     def __init__(self, args):
@@ -99,7 +99,7 @@ class SettingsCommand(object):
                 default = '<required>' if node.required else node.default
                 print nameWrap.fill(
                     '%s.%s: %s (%s: %s)'%(
-                        name, node.name, node.title, 
+                        name, node.name, node.title,
                         node.typ.__class__.__name__, default))
 
                 print nameTitleWrap.fill(node.description)

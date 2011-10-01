@@ -1,4 +1,3 @@
-""" """
 import time
 import unittest, os, shutil, tempfile, colander
 from zope.interface.registry import Components
@@ -50,7 +49,7 @@ class TestSettings(BaseTesting):
         self.assertEqual(group.description, 'Section description')
         self.assertEqual(len(group.schema.children), 0)
         self.assertTrue(isinstance(group.category, InterfaceClass))
-        
+
         self._init_memphis()
 
         self.assertEqual(len(group.schema.children), 1)
@@ -147,7 +146,7 @@ class TestSettings(BaseTesting):
         except colander.Invalid, err:
             pass
 
-        self.assertEqual(err.asdict(), 
+        self.assertEqual(err.asdict(),
                          {'group3.group3': 'Error2', 'group3.node1': 'Error1'})
 
     def test_settings_export(self):
@@ -222,7 +221,7 @@ class TestSettings(BaseTesting):
         group = self._create_default_group()
 
         sm = config.registry
-        
+
         events = []
         def h(grp, ev):
             events.append((grp is group, ev))
@@ -314,7 +313,7 @@ class TestSettings(BaseTesting):
 
         group = self._create_default_group()
         config.Settings.init(Loader())
-        
+
         self.assertEqual(group['node1'], 'new-value')
         self.assertEqual(group['node2'], 60)
 
@@ -337,7 +336,7 @@ class TestSettings(BaseTesting):
         config.Settings.init(Loader(),
                              {'group.node1': 'new-default',
                               'group.node2': 50})
-        
+
         self.assertEqual(group['node1'], 'new-value')
         self.assertEqual(group['node2'], 60)
 
@@ -359,7 +358,7 @@ class TestSettings(BaseTesting):
 
         group = self._create_default_group()
         config.Settings.init(Loader())
-        
+
         self.assertEqual(group['node1'], 'new-value')
         self.assertEqual(group['node2'], 60)
 
@@ -380,7 +379,7 @@ class TestSettings(BaseTesting):
 
         group = self._create_default_group()
         config.Settings.init(Loader())
-        
+
         group['node1'] = 'val'
         group['node2'] = 90
 
@@ -406,12 +405,12 @@ class TestSettings(BaseTesting):
 
         group = self._create_default_group()
         config.Settings.init(Loader())
-        
+
         config.Settings.save()
         self.assertEqual(saved, {})
 
         sm = config.registry
-        
+
         events = []
 
         def h(grp, ev):
@@ -433,7 +432,7 @@ class TestFileStorage(BaseTesting):
 
     def setUp(self):
         self.dir = tempfile.mkdtemp()
-        
+
     def tearDown(self):
         shutil.rmtree(self.dir)
 
@@ -458,7 +457,7 @@ class TestFileStorage(BaseTesting):
 
         fs = FileStorage(None, path)
 
-        self.assertEqual(fs.loadDefaults(), 
+        self.assertEqual(fs.loadDefaults(),
                          {'group.node1': 'test',
                           'group.node2': '40', 'here': ''})
 
@@ -488,13 +487,13 @@ class TestFileStorage(BaseTesting):
         f.close()
 
         fs = FileStorage(path)
-        self.assertEqual(fs.load(), 
+        self.assertEqual(fs.load(),
                          {'group.node1': 'test',
                           'group.node2': '40', 'here': ''})
 
     def test_settings_fs_nosettings_file(self):
         path = os.path.join(self.dir, 'settings.cfg')
-        
+
         fs = FileStorage(path)
         self.assertEqual(fs.load(), {'here': ''})
         self.assertTrue(os.path.exists(path))
@@ -505,13 +504,13 @@ class TestFileStorage(BaseTesting):
 
     def test_settings_fs_save(self):
         path = os.path.join(self.dir, 'settings.cfg')
-        
+
         fs = FileStorage(path)
         self.assertEqual(fs.load(), {'here': ''})
 
         fs.save({'group.node1': 'value'})
         self.assertEqual(fs.load(), {'group.node1': 'value', 'here': ''})
-        self.assertEqual(open(path).read(), 
+        self.assertEqual(open(path).read(),
                          '[DEFAULT]\ngroup.node1 = value\n\n')
 
     def test_settings_fs_save_to_existing(self):
@@ -526,7 +525,7 @@ class TestFileStorage(BaseTesting):
         fs.save({'group.node1': 'value'})
         self.assertEqual(fs.load(), {'group.node1': 'value', 'here': ''})
         self.assertEqual(
-            open(path).read(), 
+            open(path).read(),
             '[DEFAULT]\ngroup.node1 = value\n\n[TEST]\ngroup.node1 = value\n\n')
 
     def test_settings_fs_save_to_existing_diff_sect(self):
@@ -542,7 +541,7 @@ class TestFileStorage(BaseTesting):
 
         #self.assertEqual(fs.load(), {'group.node3': 'value', 'here': ''})
         self.assertEqual(
-            open(path).read(), 
+            open(path).read(),
             '[DEFAULT]\ngroup.node = value\n\n[TEST]\ngroup.node3 = value\n\n')
 
 
@@ -552,14 +551,14 @@ class TestSettingsInitialization(BaseTesting):
         config.cleanUp()
         BaseTesting.setUp(self)
         self.dir = tempfile.mkdtemp()
-        
+
     def tearDown(self):
         BaseTesting.tearDown(self)
         shutil.rmtree(self.dir)
 
     def test_settings_initialize_events(self):
         sm = config.registry
-        
+
         events = []
         def h1(ev):
             events.append(ev)

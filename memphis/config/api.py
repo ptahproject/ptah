@@ -6,7 +6,7 @@ from zope.interface.interfaces import IObjectEvent
 
 
 def initialize(packages=None, excludes=(), reg=None):
-    """ Load memphis packages, scan and execute all configuration 
+    """ Load memphis packages, scan and execute all configuration
     directives. """
 
     if reg is None:

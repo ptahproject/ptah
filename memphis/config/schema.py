@@ -11,7 +11,7 @@ class Required(colander.Invalid):
 class RequiredWithDependency(object):
     """ Validator which fails only if other key is set. """
 
-    def __init__(self, key, depkey, 
+    def __init__(self, key, depkey,
                  depval=colander.required, default=colander.required):
         self.key = key
         self.depkey = depkey

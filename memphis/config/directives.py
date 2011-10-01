@@ -67,7 +67,7 @@ def adapter(*required, **kw):
     name = kw.get('name', '')
 
     def descriminator(action):
-        return ('memphis.config:adapter', 
+        return ('memphis.config:adapter',
                 required, _getProvides(action.info.context), name)
 
     if info.scope in ('module', 'function call'): # function decorator
@@ -76,7 +76,7 @@ def adapter(*required, **kw):
                 Action(
                     _register,
                     ('registerAdapter', func, required), {'name': name},
-                    discriminator = ('memphis.config:adapter', 
+                    discriminator = ('memphis.config:adapter',
                                      required, _getProvides(func), name))
                 )
             return func
@@ -127,7 +127,7 @@ ACTIONS = {}
 
 class Action(object):
 
-    def __init__(self, callable, args=(), kw={}, 
+    def __init__(self, callable, args=(), kw={},
                  discriminator=None, order=0, info=None):
         self.callable = callable
         self.args = args
@@ -169,7 +169,7 @@ class DirectiveInfo(object):
 
         if allowed_scope and scope not in allowed_scope:
             raise TypeError("This directive is not allowed "
-                            "to run in this scope: %s"%scope)    
+                            "to run in this scope: %s"%scope)
 
         if scope == 'module':
             self.name = f_locals['__name__']
@@ -246,7 +246,7 @@ def scan(package, seen, exclude_filter=None):
         package = sys.modules[package]
 
     actions = []
-    
+
     pkgname = package.__name__
     if pkgname in seen:
         return actions

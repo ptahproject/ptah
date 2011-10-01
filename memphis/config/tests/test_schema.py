@@ -1,9 +1,8 @@
-""" """
 import unittest
 import colander
 from colander.tests import TestMapping, TestSequence, TestSchemaNode
 
-    
+
 class TestMemphisMapping(TestMapping):
 
     def _makeOne(self, *arg, **kw):
@@ -13,7 +12,7 @@ class TestMemphisMapping(TestMapping):
     def test_schema_mapping_flatten_without_name(self):
         node = colander.SchemaNode(
             self._makeOne(),
-            
+
             colander.SchemaNode(
                 colander.Int(),
                 name = 'a'),
@@ -29,18 +28,18 @@ class TestMemphisMapping(TestMapping):
     def test_schema_mapping_unflatten_without_name(self):
         node = colander.SchemaNode(
             self._makeOne(),
-            
+
             colander.SchemaNode(
                 self._makeOne(),
 
                 colander.SchemaNode(
                     colander.Int(),
                     name = 'a'),
-                
+
                 colander.SchemaNode(
                     colander.Int(),
                     name = 'b'),
-                
+
                 name = 'node',
                 ),
             )
@@ -51,7 +50,7 @@ class TestMemphisMapping(TestMapping):
     def test_schema_mapping_unflatten_non_existing(self):
         node = colander.SchemaNode(
             self._makeOne(),
-            
+
             colander.SchemaNode(
                 self._makeOne(),
                 colander.SchemaNode(colander.Int(), name = 'a'),
@@ -86,7 +85,7 @@ class TestMemphisString(unittest.TestCase):
         from memphis.config.schema import Str
 
         typ = Str()
-        
+
         self.assertEqual(typ.encoding, 'utf-8')
 
 
@@ -98,16 +97,16 @@ class TestMemphisSchemaNode(unittest.TestCase):
 
     def test_schema_node_deserialize(self):
         from memphis.config.schema import Required
-        
+
         node = self._makeOne(
             colander.Int(),
             name = 'node')
 
         self.assertEqual(node.deserialize('1'), 1)
-        
+
         self.assertRaises(
             Required, node.deserialize)
-        
+
         node = self._makeOne(
             colander.Int(),
             name = 'node',
@@ -127,7 +126,7 @@ class TestMemphisSchemaNode(unittest.TestCase):
 
         self.assertRaises(
             colander.Invalid, node.deserialize, '10')
-        
+
         node = self._makeOne(
             colander.Int(),
             name = 'node',
@@ -138,7 +137,7 @@ class TestMemphisSchemaNode(unittest.TestCase):
 
     def test_schema_node_deserialize_str(self):
         from memphis.config.schema import Required
-        
+
         node = self._makeOne(
             colander.Str(),
             name = 'node',
@@ -164,30 +163,30 @@ class TestRequiredWithDependency(unittest.TestCase):
     def test_schema_required_validator(self):
         from memphis import config
         from memphis.config.schema import Required
-        
+
         v = config.RequiredWithDependency(
             'field', 'depends', 'depvalue', 'default')
 
         self.assertEqual(v(None, {}), None)
         self.assertEqual(v(None, {'depends': 'sothing diff'}), None)
-        self.assertEqual(v(None, 
+        self.assertEqual(v(None,
                            {'field':'val', 'depends': 'sothing diff'}), None)
 
         self.assertRaises(
             Required,
-            v, {'field': 
-                colander.SchemaNode(colander.Str(), name='field')}, 
+            v, {'field':
+                colander.SchemaNode(colander.Str(), name='field')},
             {'depends': 'depvalue'})
-        
-        
+
+
         v = config.RequiredWithDependency('field', 'depends')
         self.assertRaises(
-            Required, 
-            v, {'field': 
+            Required,
+            v, {'field':
                 colander.SchemaNode(colander.Str(), name='field')},
             {'depends': 'somthing diff'})
 
         self.assertEqual(
-            v({'field': 
+            v({'field':
                colander.SchemaNode(colander.Str(), name='field')},
               {'field': 'val', 'depends': 'somthing diff'}), None)

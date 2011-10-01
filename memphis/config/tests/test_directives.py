@@ -17,7 +17,7 @@ class BaseTesting(unittest.TestCase):
 
     def tearDown(self):
         config.cleanUp(self.__class__.__module__)
-        
+
         global TestClass, testAdapter, testHandler
         try:
             del TestClass
@@ -31,7 +31,7 @@ class BaseTesting(unittest.TestCase):
             del testHandler
         except:
             pass
-        
+
 
 class IContext(interface.Interface):
     pass
@@ -153,7 +153,7 @@ class TestAdaptsDirective(BaseTesting):
         self.assertTrue(len(adapters) == 0)
 
         self._init_memphis()
-        
+
         sm = config.registry
         adapters = sm.adapters.lookupAll((IContext,), IAdapter)
 
@@ -322,7 +322,7 @@ class TestHandlerDirective(BaseTesting):
             events.append(args)
 
         self._init_memphis()
-        
+
         sm = config.registry
         sm.subscribers((ObjectEvent(Context(IContext)),), None)
 
@@ -367,7 +367,7 @@ class TestExtraDirective(BaseTesting):
 
         seen = set()
         actions = directives.scan(self.__class__.__module__, seen)
-        
+
         self.assertTrue(len(actions) == 1)
         self.assertTrue(self.__class__.__module__ in seen)
 
@@ -377,16 +377,16 @@ class TestExtraDirective(BaseTesting):
 
     def test_directive_info_limit_scope(self):
         self.assertRaises(
-            TypeError, 
+            TypeError,
             directives.DirectiveInfo, 2, allowed_scope=('class',))
 
     def test_directive_info_context(self):
         info = directives.DirectiveInfo(0)
         info.scope = 'module'
 
-        self.assertEqual(info.module, 
+        self.assertEqual(info.module,
                          sys.modules[self.__class__.__module__])
-        self.assertEqual(info.context, 
+        self.assertEqual(info.context,
                          sys.modules[self.__class__.__module__])
 
     def test_api_init(self):
@@ -399,7 +399,7 @@ class TestExtraDirective(BaseTesting):
             processed.append(1)
 
         config.initialize()
-        
+
         self.assertTrue(len(processed) == 0)
 
         config.initialize((self.__class__.__module__,))
