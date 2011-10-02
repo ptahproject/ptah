@@ -65,7 +65,7 @@ class File(ptah_cms.Content):
 
 
 class FileView(view.View):
-    view.pyramidView('index.html', IFile, default=True,
+    view.pyramidView(context=IFile,
                      permission=ptah_cms.View,
                      template=view.template('ptah_app:templates/file.pt'))
 

@@ -36,7 +36,7 @@ class Page(ptah_cms.Content):
     text = sqla.Column(sqla.Unicode)
 
 
-view.registerView(name='index.html', context=IPage, default=True,
+view.registerView(context=IPage,
                   permission=ptah_cms.View,
                   template=view.template('ptah_app:templates/page.pt'))
 

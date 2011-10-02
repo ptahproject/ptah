@@ -19,7 +19,7 @@ class ApplicationsModule(ptah.PtahModule):
 
 class ApplicationsModuleView(view.View):
     view.pyramidView(
-        'index.html', ApplicationsModule, default=True,
+        context=ApplicationsModule,
         template=view.template('ptah_app:templates/module-apps.pt'))
 
     def update(self):
@@ -54,7 +54,7 @@ class SearchSchema(colander.Schema):
 
 class SharingForm(form.Form):
     view.pyramidView(
-        'sharing.html', AppFactory, default = True,
+        context = AppFactory,
         template = view.template('ptah_app:templates/module-apps-sharing.pt'))
 
     csrf = True

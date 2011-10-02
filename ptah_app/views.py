@@ -102,7 +102,7 @@ class ContainerListing(view.View):
 
 
 class ViewContainer(ContainerListing):
-    view.pyramidView('index.html', default=True, decorator = defaultView,
+    view.pyramidView(decorator = defaultView,
                      template = listing_template)
 
 
