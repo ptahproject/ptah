@@ -101,9 +101,9 @@ class ContainerListing(view.View):
             print '=============', uris
 
 
+@defaultView
 class ViewContainer(ContainerListing):
-    view.pyramidView(decorator = defaultView,
-                     template = listing_template)
+    view.pyramidView(template = listing_template)
 
 
 class RenameForm(view.View):
@@ -113,8 +113,7 @@ class RenameForm(view.View):
 
 
 class Adding(view.View):
-    view.pyramidView(
-        '+', interfaces.IContainer)
+    view.pyramidView('+', interfaces.IContainer)
 
     template=view.template("ptah_app:templates/adding.pt")
 

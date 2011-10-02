@@ -83,7 +83,7 @@ class FileDownloadView(view.View):
         response = self.request.response
         response.content_type = data['mimetype'].encode('utf-8')
         response.headerlist = {
-            'Content-Disposition': 
+            'Content-Disposition':
             'filename="%s"'%data['filename'].encode('utf-8')}
         response.body = data['data']
         return response
