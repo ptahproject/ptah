@@ -168,7 +168,15 @@ def registerViewImpl(factory, name, context, template, route_name,
 
     sm = config.registry
 
-    if permission:
+    if callable(permission):
+        def pyramidView(context, request):
+            if permission(context, request):
+                return renderer(context, request)
+
+            msg = getattr(request, 'authdebug_message',
+                          'Unauthorized: %s failed permission check'%factory)
+            raise HTTPForbidden(msg)
+    elif permission:
         def pyramidView(context, request):
             if checkPermission(permission, context, request):
                 return renderer(context, request)

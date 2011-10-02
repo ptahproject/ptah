@@ -252,6 +252,27 @@ class TestView(BaseView):
         v = self._view('index.html', context, self.request)
         self.assertEqual(v.body, '<div>My pagelet</div>\n')
 
+    def test_view_register_callable_permission(self):
+        def render(request):
+            return '<html>Secured view</html>'
+
+        allowed = False
+        def checkPermission(context, request):
+            return allowed
+
+        view.registerView('index.html', render,
+                          permission = checkPermission)
+
+        self._init_memphis()
+
+        context = Context()
+        self.assertRaises(
+            HTTPForbidden, self._view, 'index.html', context, self.request)
+
+        allowed = True
+        v = self._view('index.html', context, self.request)
+        self.assertEqual(v.body, '<html>Secured view</html>')
+
     def test_view_register_secured_view(self):
         def render(request):
             return '<html>Secured view</html>'
@@ -489,3 +510,30 @@ class TestSubpathView(BaseView):
         self.assertRaises(
             ValueError,
             sp, self.test_view_subpath_err, sys._getframe(1))
+
+
+
+class TestRouteRegistration(BaseView):
+
+    def test_view_route(self):
+        view.registerRoute('test-route', '/test/')
+        self._init_memphis()
+
+        request_iface = config.registry.getUtility(
+            IRouteRequest, name='test-route')
+
+        self.assertIsNotNone(request_iface)
+
+    def test_view_route_global_view(self):
+        view.registerRoute('test-route', '/test/', use_global_views=True)
+        self._init_memphis()
+
+        request_iface = config.registry.getUtility(
+            IRouteRequest, name='test-route')
+
+        self.assertTrue(request_iface.isOrExtends(IRequest))
+
+    def test_view_route_conflict(self):
+        view.registerRoute('test-route', '/test/')
+        view.registerRoute('test-route', '/test2/')
+        self.assertRaises(config.ConflictError, self._init_memphis)

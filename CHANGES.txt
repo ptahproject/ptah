@@ -40,6 +40,8 @@ CHANGES
 
 - Allow to register view for exception
 
+- Allow to set custom checkPermission
+
 - Removed 'pagelet' chameleon expression
 
 - Use simplejson instead of standard json
