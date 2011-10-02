@@ -22,8 +22,7 @@ view.registerPagelet(
 class TemplatesManagement(view.View):
     """List templates"""
     view.pyramidView(
-        'index.html', TemplatesModule,
-        'ptah-manage', default='True', layout='',
+        context = TemplatesModule,
         template = view.template(
             'ptah.modules:templates/customize.pt', nolayer=True))
 
@@ -59,7 +58,7 @@ class TemplatesManagement(view.View):
 class ViewTemplate(view.View):
     """View template"""
     view.pyramidView(
-        'view.html', TemplatesModule, 'ptah-manage', layout='',
+        'view.html', TemplatesModule,
         template = view.template(
             'ptah.modules:templates/template.pt', nolayer=True))
 
@@ -141,7 +140,7 @@ class ViewTemplate(view.View):
 class CustomTemplate(view.View):
     """List customized templates"""
     view.pyramidView(
-        'customized.html', TemplatesModule, 'ptah-manage', layout='',
+        'customized.html', TemplatesModule,
         template = view.template(
             'ptah.modules:templates/customized.pt', nolayer=True))
 

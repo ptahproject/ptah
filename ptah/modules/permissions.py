@@ -21,7 +21,7 @@ view.registerPagelet(
 
 class PermissionsView(view.View):
     view.pyramidView(
-        'index.html', PermissionsModule, default=True,
+        context=PermissionsModule,
         template=view.template('ptah.modules:templates/permissions.pt'))
 
     def update(self):

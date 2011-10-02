@@ -61,7 +61,7 @@ class Package(object):
 
 class MainView(view.View):
     view.pyramidView(
-        'index.html', IntrospectModule, 'ptah-manage', default=True, layout='',
+        context = IntrospectModule,
         template = view.template('ptah.modules:templates/introspect.pt'))
 
     __doc__ = 'Introspection module view.'
@@ -252,7 +252,7 @@ class PackageView(view.View):
 
 class EventsView(view.View):
     view.pyramidView(
-        'events.html', IntrospectModule, 'ptah-manage', layout='',
+        'events.html', IntrospectModule,
         template = view.template('ptah.modules:templates/introspect-events.pt'))
 
     __doc__ = 'Events introspection page.'
@@ -296,7 +296,7 @@ class EventsView(view.View):
 
 class RoutesView(view.View):
     view.pyramidView(
-        'routes.html', IntrospectModule, 'ptah-manage', layout='',
+        'routes.html', IntrospectModule,
         template = view.template('ptah.modules:templates/introspect-routes.pt'))
 
     __doc__ = 'Routes introspection page.'
@@ -387,7 +387,7 @@ class RoutesView(view.View):
 
 class SourceView(view.View):
     view.pyramidView(
-        'source.html', IntrospectModule, 'ptah-manage', layout='',
+        'source.html', IntrospectModule,
         template = view.template('ptah.modules:templates/introspect-source.pt'))
 
     __doc__ = 'Source introspection page.'

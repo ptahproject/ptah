@@ -8,8 +8,7 @@ from interfaces import IRecord, ITable
 
 
 class EditRecord(form.Form):
-    view.pyramidView('index.html', IRecord,
-                     'ptah-manage', default=True, layout='')
+    view.pyramidView(context = IRecord)
 
     __doc__ = "Edit table record."
     __intr_path__ = '/ptah-manage/sqla/${table}/${record}/index.html'
@@ -56,7 +55,7 @@ class EditRecord(form.Form):
 
 class AddRecord(form.Form):
     """ Add new table record. """
-    view.pyramidView('add.html', ITable, 'ptah-manage', layout='')
+    view.pyramidView('add.html', ITable)
 
     __intr_path__ = '/ptah-manage/sqla/${table}/add.html'
 

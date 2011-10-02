@@ -13,7 +13,7 @@ from module import CrowdModule, ICrowdUser
 
 
 class CreateUserForm(form.Form):
-    view.pyramidView('create.html', CrowdModule, 'ptah-manage', layout='')
+    view.pyramidView('create.html', CrowdModule)
 
     __intr_path__ = '/ptah-manage/crowd/create.html'
 
@@ -54,8 +54,7 @@ class CreateUserForm(form.Form):
 
 
 class UserInfo(form.Form):
-    view.pyramidView('index.html', ICrowdUser,
-                     'ptah-manage', default = True, layout='')
+    view.pyramidView(context=ICrowdUser)
 
     __intr_path__ = '/ptah-manage/crowd/${user}/index.html'
 
@@ -92,7 +91,7 @@ class UserInfo(form.Form):
 
 
 class ChangePassword(form.Form):
-    view.pyramidView('password.html', ICrowdUser, 'ptah-manage', layout='')
+    view.pyramidView('password.html', ICrowdUser)
 
     __intr_path__ = '/ptah-manage/crowd/${user}/password.html'
 

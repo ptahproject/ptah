@@ -12,7 +12,7 @@ class SettingsModule(ptah.PtahModule):
 
 class MainView(view.View):
     view.pyramidView(
-        'index.html', SettingsModule, 'ptah-manage', default=True, layout='',
+        context = SettingsModule,
         template = view.template(
             'ptah.modules:templates/settings.pt', nolayer=True))
 

@@ -9,7 +9,7 @@ from interfaces import ITable
 
 class TableView(form.Form):
     view.pyramidView(
-        'index.html', ITable, 'ptah-manage', default=True, layout='',
+        context = ITable,
         template = view.template('ptah.modules.sqla:templates/table.pt'))
 
     __doc__ = "List table records."
