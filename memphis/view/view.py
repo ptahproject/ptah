@@ -122,7 +122,7 @@ unset = object()
 def registerView(
     name=u'', factory=View, context=None, renderer=None, template=None,
     route=None, layout=unset, permission='__no_permission_required__',
-    default=False, decorator=None, layer=''):
+    decorator=None, layer=''):
 
     if renderer is not None and template is not None:
         raise ValueError("renderer and template can't be used at the same time.")
@@ -137,14 +137,14 @@ def registerView(
         config.Action(
             LayerWrapper(registerViewImpl, discriminator),
             (factory, name, context, renderer, template,
-             route, layout, permission, default, decorator),
+             route, layout, permission, decorator),
             discriminator = discriminator)
         )
 
 
 def registerViewImpl(
     factory, name, context, renderer, template, route_name, layout,
-    permission, default, decorator):
+    permission, decorator):
 
     if layout is unset:
         layout = None
@@ -207,9 +207,6 @@ def registerViewImpl(
 
     sm.registerAdapter(
         pyramidView, (view_classifier, request_iface, context), IView, name)
-
-    if default:
-        registerDefaultViewImpl(name, context, request_iface, pyramidView)
 
 
 def registerDefaultView(name, context=interface.Interface, request=IRequest):

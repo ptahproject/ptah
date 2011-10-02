@@ -283,20 +283,6 @@ class TestView(BaseView):
         v = self._view('index.html', context, self.request)
         self.assertEqual(v.body, '<html>Secured view</html>')
 
-    def test_view_register_default_view(self):
-        def render(request):
-            return '<html>content</html>'
-
-        view.registerView('index.html', render, default = True)
-        self._init_memphis()
-
-        context = Context()
-        v = self._view('index.html', context, self.request)
-        self.assertEqual(v.body, '<html>content</html>')
-
-        v = self._view('', context, self.request)
-        self.assertEqual(v.body, '<html>content</html>')
-
     def test_view_register_default_view_seperate_reg(self):
         def render(request):
             return '<html>content</html>'

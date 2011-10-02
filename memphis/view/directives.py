@@ -26,7 +26,7 @@ def pagelet(pageletType, context=None, template=None, layer=''):
 def pyramidView(name=u'', context=None, route=None, renderer=None, 
                 template=None,
                 layout=unset, permission='__no_permission_required__',
-                default=False, decorator=None, layer=''):
+                decorator=None, layer=''):
 
     if renderer is not None and template is not None:
         raise ValueError(
@@ -43,7 +43,7 @@ def pyramidView(name=u'', context=None, route=None, renderer=None,
                 config.Action(
                     LayerWrapper(registerViewImpl, discriminator),
                     (factory, name, context, renderer, template, route, layout,
-                     permission, default, decorator),
+                     permission, decorator),
                     discriminator = discriminator)
                 )
             return factory
@@ -54,7 +54,7 @@ def pyramidView(name=u'', context=None, route=None, renderer=None,
             config.ClassAction(
                 LayerWrapper(registerViewImpl, discriminator),
                 (name, context, renderer, template, route, layout,
-                 permission, default, decorator),
+                 permission, decorator),
                 discriminator = discriminator)
             )
 
