@@ -8,9 +8,11 @@ dist
 .installed.cfg
 develop-eggs
 var/*
+htmlcov
 *.egg-info
 *.pyc
 *.pt.py
 *.pt.pyc
 *.bak
+.coverage
 .DS_Store

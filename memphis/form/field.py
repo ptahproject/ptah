@@ -89,31 +89,43 @@ class Fieldset(OrderedDict):
         select = kwargs.get('select', ())
 
         for node in args:
-            self.schemas.append(node)
-
             if isinstance(node, colander.SchemaNode):
-                for snode in node.children:
-                    if omit and snode.name in omit:
-                        continue
-                    if select and snode.name not in select:
-                        continue
+                if isinstance(node.typ, colander.Mapping):
+                    self.schemas.append(node)
 
-                    self.names.append('%s%s'%(self.prefix, snode.name))
+                    for snode in node.children:
+                        if omit and snode.name in omit:
+                            continue
+                        if select and snode.name not in select:
+                            continue
 
-                    if isinstance(snode.typ, colander.Mapping):
-                        self[snode.name] = Fieldset(snode)
-                    else:
-                        field = Field(snode)
-                        if field.name in self:
-                            raise ValueError("Duplicate name", field.name)
-                        self[field.name] = field
+                        self.names.append('%s%s'%(self.prefix, snode.name))
+
+                        if isinstance(snode.typ, colander.Mapping):
+                            if snode.name in self:
+                                self[snode.name].append(snode)
+                            else:
+                                self[snode.name] = Fieldset(snode)
+                        else:
+                            field = Field(snode)
+                            if field.name in self:
+                                raise ValueError("Duplicate name", field.name)
+                            self[field.name] = field
+                else:
+                    field = Field(node)
+                    if field.name in self:
+                        raise ValueError("Duplicate name", field.name)
+                    self[field.name] = field
+                    self.names.append('%s%s'%(self.prefix, field.name))
 
             elif isinstance(node, Fieldset):
+                if node.name in self:
+                    raise ValueError("Duplicate name", node.name)
                 self[node.name] = node
                 self.names.append('%s%s'%(self.prefix, node.name))
 
             else:
-                raise TypeError("Unrecognized argument type", arg)
+                raise TypeError("Unrecognized argument type", node)
 
     def select(self, *names):
         return self.__class__(select=names, *self.schemas)
@@ -165,7 +177,7 @@ class FieldWidgets(OrderedDict):
         content = self.form.getContent()
         if content is not None:
             self.content = content = IDataManager(content)
-                
+
         # Create a unique prefix.
         prefix = '%s%s'%(self.form.prefix, self.prefix)
 
