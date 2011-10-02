@@ -61,7 +61,9 @@ def defaultView(renderer):
             request.context = item
             return view.renderView('', item, request)
 
-        return renderer(context, request)
+        view = renderer(context, request)
+        view.update()
+        return view.render()
     return wrap
 
 
@@ -101,9 +103,11 @@ class ContainerListing(view.View):
             print '=============', uris
 
 
-@defaultView
+#@defaultView
+
 class ViewContainer(ContainerListing):
-    view.pyramidView(template = listing_template)
+    view.pyramidView(context = interfaces.IContainer,
+                     template = listing_template)
 
 
 class RenameForm(view.View):
