@@ -354,7 +354,7 @@ class TestView(BaseView):
 
     def test_view_for_route(self):
         view.registerRoute('test-route', '/test/')
-        
+
         @view.pyramidView(route='test-route')
         def render(request):
             return '<html>Route view</html>'

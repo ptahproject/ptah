@@ -234,26 +234,26 @@ class StaticCommand(Command):
             items = resources.registry.items()
             items.sort()
             for name, (path, pkg) in items:
-                    print "* Coping from '%s' %s"%(pkg, path)
+                print "* Coping from '%s' %s"%(pkg, path)
 
-                    d = resources.buildTree(path)
-                    di = d.items()
-                    di.sort()
+                d = resources.buildTree(path)
+                di = d.items()
+                di.sort()
 
-                    for p, _t in di:
-                        bp = os.path.join(basepath, name, p)
-                        dest_dir = os.path.split(bp)[0]
-                        if not os.path.exists(dest_dir):
-                            os.makedirs(dest_dir)
+                for p, _t in di:
+                    bp = os.path.join(basepath, name, p)
+                    dest_dir = os.path.split(bp)[0]
+                    if not os.path.exists(dest_dir):
+                        os.makedirs(dest_dir)
 
-                        forp = '%s/%s'%(pkg, p.split(pkg, 1)[-1])
-                        if os.path.exists(bp):
-                            print '   skipping ../%s'%forp
-                        else:
-                            print '   coping ../%s'%forp
-                            shutil.copyfile(os.path.join(path, p), bp)
+                    forp = '%s/%s'%(pkg, p.split(pkg, 1)[-1])
+                    if os.path.exists(bp):
+                        print '   skipping ../%s'%forp
+                    else:
+                        print '   coping ../%s'%forp
+                        shutil.copyfile(os.path.join(path, p), bp)
 
-                    print
+                print
 
             print basepath
             return
