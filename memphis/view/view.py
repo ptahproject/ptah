@@ -120,12 +120,8 @@ class subpath(object):
 unset = object()
 
 def registerView(
-    name=u'', factory=View, context=None, renderer=None, template=None,
-    route=None, layout=unset, permission='__no_permission_required__',
-    decorator=None, layer=''):
-
-    if renderer is not None and template is not None:
-        raise ValueError("renderer and template can't be used at the same time.")
+    name=u'', factory=View, context=None, template=None, route=None,
+    layout=unset, permission='__no_permission_required__', layer=''):
 
     if factory is None or not callable(factory):
         raise ValueError('view factory is required')
@@ -136,15 +132,13 @@ def registerView(
     info.attach(
         config.Action(
             LayerWrapper(registerViewImpl, discriminator),
-            (factory, name, context, renderer, template,
-             route, layout, permission, decorator),
+            (factory, name, context, template, route, layout, permission),
             discriminator = discriminator)
         )
 
 
-def registerViewImpl(
-    factory, name, context, renderer, template, route_name, layout,
-    permission, decorator):
+def registerViewImpl(factory, name, context, template, route_name,
+                     layout, permission):
 
     if layout is unset:
         layout = None
@@ -154,13 +148,12 @@ def registerViewImpl(
         except:
             pass
 
-    if renderer is None:
-        if template is not None:
-            renderer = Renderer(template, layout=layout).bind(
-                viewMapper(factory, 'update'))
-        else:
-            renderer = SimpleRenderer(layout=layout).bind(
-                viewMapper(factory, 'render'))
+    if template is not None:
+        renderer = Renderer(template, layout=layout).bind(
+            viewMapper(factory, 'update'))
+    else:
+        renderer = SimpleRenderer(layout=layout).bind(
+            viewMapper(factory, 'render'))
 
     # add 'subpath' support
     if inspect.isclass(factory):
@@ -168,10 +161,6 @@ def registerViewImpl(
         if subpath_traverse is not None:
             renderer = subpathWrapper(
                 viewInstanceMapper(factory), renderer, subpath_traverse)
-
-    # decorate renderer
-    if decorator:
-        renderer = decorator(renderer)
 
     # build pyramid view
     if permission == '__no_permission_required__':

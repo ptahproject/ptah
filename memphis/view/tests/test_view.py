@@ -2,8 +2,9 @@
 import sys, unittest
 from zope import interface
 from pyramid.response import Response
-from pyramid.interfaces import IView, IRequest
+from pyramid.interfaces import IView, IRequest, IRouteRequest
 from pyramid.interfaces import IViewClassifier
+from pyramid.interfaces import IExceptionViewClassifier
 from pyramid.interfaces import IAuthorizationPolicy
 from pyramid.interfaces import IAuthenticationPolicy
 from pyramid.httpexceptions import HTTPForbidden, HTTPNotFound, HTTPFound
@@ -179,13 +180,16 @@ class TestView(BaseView):
                 return 'decorator'
             return func
 
-        view.registerView(
-            'index.html', view.View, Context, decorator = deco)
+        global DecoView
+
+        @deco
+        class DecoView(view.View):
+            view.pyramidView('index.html', Context)
 
         self._init_memphis()
 
         res = view.renderView('index.html', Context(), self.request)
-        self.assertEqual(res, 'decorator')
+        self.assertEqual(res.body, 'decorator')
 
     def test_view_register_view_class_requestonly(self):
         class MyView(object):
@@ -308,6 +312,62 @@ class TestView(BaseView):
         context = Context()
         v = self._view('index.html', context, self.request)
         self.assertEqual(v.body, '<html>content</html>')
+
+    def test_view_custom_class(self):
+        global View
+        class View(object):
+            view.pyramidView('index.html')
+
+            def __init__(self, request):
+                self.request = request
+                self.updated = False
+            def update(self):
+                self.updated = True
+            def render(self):
+                return str(self.updated)
+
+        self._init_memphis()
+
+        context = Context()
+        v = self._view('index.html', context, self.request)
+        self.assertEqual(v.body, 'True')
+
+    def test_view_for_exception(self):
+        @view.pyramidView(context=HTTPForbidden)
+        def render(request):
+            return '<html>Forbidden</html>'
+
+        self._init_memphis()
+
+        context = HTTPForbidden()
+
+        adapters = config.registry.adapters
+
+        view_callable = adapters.lookup(
+            (IExceptionViewClassifier,
+             interface.providedBy(self.request),
+             interface.providedBy(context)),
+            IView, name='', default=None)
+
+        v = view_callable(context, self.request)
+        self.assertEqual(v.body, '<html>Forbidden</html>')
+
+    def test_view_for_route(self):
+        view.registerRoute('test-route', '/test/')
+        
+        @view.pyramidView(route='test-route')
+        def render(request):
+            return '<html>Route view</html>'
+
+        self._init_memphis()
+
+        request_iface = config.registry.getUtility(
+            IRouteRequest, name='test-route')
+
+        interface.directlyProvides(self.request, request_iface)
+
+        v = self._view('', None, self.request)
+        self.assertEqual(v.body, '<html>Route view</html>')
 
 
 class TestSubpathView(BaseView):

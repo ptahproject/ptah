@@ -23,14 +23,9 @@ def pagelet(pageletType, context=None, template=None, layer=''):
         )
 
 
-def pyramidView(name=u'', context=None, route=None, renderer=None, 
-                template=None,
-                layout=unset, permission='__no_permission_required__',
-                decorator=None, layer=''):
-
-    if renderer is not None and template is not None:
-        raise ValueError(
-            "renderer and template can't be used at the same time.")
+def pyramidView(name=u'', context=None, route=None,
+                template=None, layout=unset,
+                permission='__no_permission_required__', layer=''):
 
     info = config.DirectiveInfo(
         allowed_scope=('class', 'module', 'function call'))
@@ -42,8 +37,8 @@ def pyramidView(name=u'', context=None, route=None, renderer=None,
             info.attach(
                 config.Action(
                     LayerWrapper(registerViewImpl, discriminator),
-                    (factory, name, context, renderer, template, route, layout,
-                     permission, decorator),
+                    (factory, name, context, template, route,
+                     layout, permission),
                     discriminator = discriminator)
                 )
             return factory
@@ -53,13 +48,12 @@ def pyramidView(name=u'', context=None, route=None, renderer=None,
         info.attach(
             config.ClassAction(
                 LayerWrapper(registerViewImpl, discriminator),
-                (name, context, renderer, template, route, layout,
-                 permission, decorator),
+                (name, context, template, route, layout, permission),
                 discriminator = discriminator)
             )
 
 
-def layout(name='', context=None, parent='', route=None, template=None, layer=''):
+def layout(name='',context=None,parent='',route=None,template=None,layer=''):
     info = config.DirectiveInfo(allowed_scope=('class',))
 
     discriminator = ('memphis.view:layout', name, context, route, layer)
