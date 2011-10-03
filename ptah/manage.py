@@ -1,7 +1,7 @@
 from memphis import view, config
 from zope import interface
-from pyramid.httpexceptions import HTTPForbidden
 from pyramid.security import authenticated_userid
+from pyramid.httpexceptions import HTTPFound, HTTPForbidden
 
 from ptah import resolve
 from ptah.settings import PTAH_CONFIG
@@ -144,6 +144,10 @@ class PtahManageRoute(object):
 view.pageletType('ptah-module-actions', IPtahModule)
 
 view.registerRoute(
+    'ptah-manage-view','/ptah-manage', 
+    PtahManageRoute)
+
+view.registerRoute(
     'ptah-manage','/ptah-manage/*traverse',
     PtahManageRoute, use_global_views=True)
 
@@ -193,3 +197,8 @@ class ManageView(view.View):
 
         mods.sort()
         self.modules = [mod(context, request) for _t, mod in mods]
+
+
+@view.pyramidView(context = IPtahManageRoute, route = 'ptah-manage-view')
+def redirectToManage(request):
+    raise HTTPFound(location = '%s/'%request.url)
