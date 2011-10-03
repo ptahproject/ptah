@@ -42,7 +42,7 @@ def Permission(name, title, description=u''):
 
 
 class ACL(list):
-    """ Named ACL map 
+    """ Named ACL map
 
     ACL contains list of permit rules, for example::
 
@@ -152,7 +152,7 @@ class ACLsMerge(object):
 
 
 class ACLsProperty(object):
-    """ This property merges `__acls__` list of ACLs and 
+    """ This property merges `__acls__` list of ACLs and
     generate one `__acl__`
 
     For example::
@@ -162,7 +162,7 @@ class ACLsProperty(object):
       ...   __acls__ = ['map1', 'map2']
       ...
       ...   __acl__ = ACLsProperty()
-    
+
     In this case it is possible to manipulate permissions
     by just changing `__acls__` list.
 
@@ -270,7 +270,7 @@ def checkPermission(permission, context, request=None, throw=True):
     :param context: Context object
     :param throw: Throw HTTPForbidden exception.
     """
-    
+
     if not permission or permission == NO_PERMISSION_REQUIRED:
         return True
     if permission == NOT_ALLOWED:

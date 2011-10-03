@@ -204,7 +204,7 @@ renderers = {
     'memphis.view:route': routeDirective,
     'memphis.view:pageletType': pageletTypeDirective,
     'memphis.config:adapter': adapterDirective,
-    'memphis.config:handler': handlerDirective,
+    'memphis.config:subscriber': handlerDirective,
     'memphis.config:event': eventDirective,
     }
 
@@ -214,7 +214,7 @@ types = {
     'memphis.view:pageletType': ('Pagelet Type', 'Memphis pagelet types'),
     'memphis.config:event': ('Events', 'event declarations'),
     'memphis.config:adapter': ('Adapters','zca adapter registrations'),
-    'memphis.config:handler': ('Event listeners',
+    'memphis.config:subscriber': ('Event listeners',
                                'zca event handler registrations'),
     }
 
@@ -284,7 +284,7 @@ class EventsView(view.View):
             actions = []
             for pkg in pkgs:
                 for action in directives.scan(pkg, seen, exclude):
-                    if action.discriminator[0] == 'memphis.config:handler':
+                    if action.discriminator[0] == 'memphis.config:subscriber':
                         required = action.args[2]
                         if len(required) == 2 and required[1] == evinst:
                             actions.append(action)
@@ -463,4 +463,3 @@ class UriIntrospection(object):
             resolversTitle = resolversTitle,
             actions = actions,
             request = self.request)
-

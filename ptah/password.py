@@ -173,7 +173,7 @@ PasswordSchema = colander.SchemaNode(
 )
 
 
-@config.handler(config.SettingsInitializing)
+@config.subscriber(config.SettingsInitializing)
 def initializing(ev):
     mng = PasswordTool.pm.get(PTAH_CONFIG.pwdmanager)
     if mng is None:

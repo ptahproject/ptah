@@ -84,7 +84,7 @@ MAIL = config.registerSettings(
 )
 
 
-@config.handler(config.SettingsInitializing)
+@config.subscriber(config.SettingsInitializing)
 def initializing(ev):
     smtp_mailer = SMTPMailer(
         hostname = MAIL.host,
@@ -99,7 +99,7 @@ def initializing(ev):
     MAIL.full_from_address = formataddr((MAIL.from_name, MAIL.from_address))
 
 
-@config.handler(MAIL.category, config.SettingsGroupModified)
+@config.subscriber(MAIL.category, config.SettingsGroupModified)
 def mailSettingsModified(group, ev):
     print '--------------'
 

@@ -83,4 +83,3 @@ class PermissionIntrospection(object):
             permissions = ptah.Permissions,
             actions = actions,
             request = self.request)
-

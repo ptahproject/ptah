@@ -22,7 +22,7 @@ class ThreadLocalManager(threading.local):
 
 tldata = ThreadLocalManager()
 
-@config.handler(INewRequest)
+@config.subscriber(INewRequest)
 def resetThreadLocalData(ev):
     tldata.clear()
 

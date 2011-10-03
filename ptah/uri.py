@@ -9,7 +9,7 @@ resolversTitle = {}
 def resolve(uri):
     """ Resolve uri, return resolved object.
 
-    Uri contains two parts, `schema` and `uuid`. `schema` is used for 
+    Uri contains two parts, `schema` and `uuid`. `schema` is used for
     resolver selection. `uuid` is resolver specific data.
     Ussually it is just uuid number.
     """
@@ -60,14 +60,14 @@ def resolver(schema, title=''):
 
 
 def registerResolver(schema, resolver, title='', depth=1):
-    """ Register resolver for given schema 
+    """ Register resolver for given schema
 
     :param schema: Uri schema
     :type schema: string
     :param resolver: Callable object that accept one parameter.
-        
+
     Resolver interface::
-  
+
       class Resolver(object):
 
          def __call__(self, uri):
@@ -90,7 +90,7 @@ def _registerResolver(schema, resolver, title):
 
 
 class UriGenerator(object):
-    """ Uri Generator 
+    """ Uri Generator
 
     Example::
 

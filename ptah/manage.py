@@ -144,7 +144,7 @@ class PtahManageRoute(object):
 view.pageletType('ptah-module-actions', IPtahModule)
 
 view.registerRoute(
-    'ptah-manage-view','/ptah-manage', 
+    'ptah-manage-view','/ptah-manage',
     PtahManageRoute)
 
 view.registerRoute(

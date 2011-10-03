@@ -41,7 +41,7 @@ class TestRestRegistrations(Base):
         def raction(request, *args):
             """ doc string """
             return 'test'
-        
+
         self.assertIn('action', srv.actions)
 
         ac = srv.actions['action']
@@ -104,7 +104,7 @@ class TestRestView(Base):
 
         self.assertIn('authentication failed', login.render())
         self.assertEqual(request.response.status, '403 Forbidden')
-        
+
     def test_rest_login_success(self):
         from ptah.rest import Login
         from ptah import authentication
@@ -112,10 +112,10 @@ class TestRestView(Base):
 
         authentication.providers['test'] = Provider()
         request = DummyRequest(params = {'login': 'admin', 'password': '12345'})
-        
+
         login = Login(request)
         info = simplejson.loads(login.render())
-        
+
         self.assertIn('auth-token', info)
         self.assertEqual(request.response.status, '200 OK')
 

@@ -128,7 +128,7 @@ SQLA = config.registerSettings(
 SQL_compiled_cache = {}
 
 
-@config.handler(config.SettingsInitializing)
+@config.subscriber(config.SettingsInitializing)
 def initializing(ev):
     pconfig = ev.config
 
@@ -162,7 +162,7 @@ def initializing(ev):
         pconfig.set_session_factory(session_factory)
 
 
-@config.handler(config.SettingsInitializing)
+@config.subscriber(config.SettingsInitializing)
 def sqla_initializing(ev):
     url = SQLA.url
     if url:

@@ -41,7 +41,7 @@ def initiateValidation(principal, request):
     template.send()
 
 
-@config.handler(ptah.events.PrincipalRegisteredEvent)
+@config.subscriber(ptah.events.PrincipalRegisteredEvent)
 def principalRegistered(ev):
     user = MemberProperties.get(ev.principal.uri)
     user.joined = datetime.now()
@@ -51,7 +51,7 @@ def principalRegistered(ev):
     #    initiateValidation(ev.principal, get_current_request())
 
 
-@config.handler(ptah.events.PrincipalRegisteredEvent)
+@config.subscriber(ptah.events.PrincipalRegisteredEvent)
 def principalAdded(ev):
     user = MemberProperties.get(ev.principal.uri)
     user.joined = datetime.now()

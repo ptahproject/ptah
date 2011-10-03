@@ -16,11 +16,11 @@ class TestManageModule(Base):
 
     def test_manage_module(self):
         from ptah.manage import MODULES, PtahManageRoute
-        
+
         global TestModule
         class TestModule(ptah.PtahModule):
             """ module description """
-            
+
             title = 'Test module'
             ptah.manageModule('test-module')
 
@@ -52,7 +52,7 @@ class TestManageModule(Base):
     def test_manage_access_manager(self):
         from ptah.manage import PtahAccessManager
         from ptah.settings import PTAH_CONFIG
-        
+
         PTAH_CONFIG.managers = ['*']
 
         self.assertTrue(PtahAccessManager('test:user'))
@@ -79,7 +79,7 @@ class TestManageModule(Base):
         global TestModule
         class TestModule(ptah.PtahModule):
             """ module description """
-            
+
             title = 'Test module'
             ptah.manageModule('test-module')
 
@@ -96,7 +96,7 @@ class TestManageModule(Base):
 
         view = ManageView(route, request)
         view.update()
-        
+
         self.assertIsInstance(view.modules[-1], TestModule)
 
     def test_manage_layout(self):
@@ -105,7 +105,7 @@ class TestManageModule(Base):
         global TestModule
         class TestModule(ptah.PtahModule):
             """ module description """
-            
+
             title = 'Test module'
             ptah.manageModule('test-module')
 
@@ -119,11 +119,11 @@ class TestManageModule(Base):
         mod = TestModule(None, request)
         content = Content()
         content.__parent__ = mod
-        
+
         layout = LayoutPage(mod, request)
         layout.viewcontext = content
         layout.update()
-        
+
         self.assertIs(layout.module, mod)
 
 
@@ -135,11 +135,11 @@ class TestInstrospection(Base):
 
     def test_manage_module(self):
         from ptah.manage import INTROSPECTIONS, introspection
-        
+
         global TestModule
         class TestModule(object):
             """ module description """
-            
+
             title = 'Test module'
             introspection('test-module')
 
