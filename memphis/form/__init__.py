@@ -19,7 +19,7 @@ from memphis.form.directive import getDefaultWidgetName
 # fields manager
 from memphis.form.field import Fields
 from memphis.form.field import Fieldset
-from memphis.form.field import FieldWidgets
+from memphis.form.field import Widgets
 
 # data manager
 from memphis.form.datamanager import DataManager

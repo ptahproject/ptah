@@ -156,7 +156,7 @@ class Fields(Fieldset):
                 raise TypeError("Unrecognized argument type", arg)
 
 
-class FieldWidgets(OrderedDict):
+class Widgets(OrderedDict):
     interface.implements(IWidgets)
 
     prefix = 'widgets.'
@@ -166,7 +166,7 @@ class FieldWidgets(OrderedDict):
     fieldsets = ()
 
     def __init__(self, fields, form, request):
-        super(FieldWidgets, self).__init__()
+        super(Widgets, self).__init__()
 
         self.fields = fields
         self.form = form
