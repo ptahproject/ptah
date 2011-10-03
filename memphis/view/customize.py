@@ -208,8 +208,8 @@ class iNotifyWatcher(object):
             self._notifier.stop()
 
 
-@config.handler(config.SettingsInitializing)
-@config.handler(TEMPLATE.category, config.SettingsGroupModified)
+@config.subscriber(config.SettingsInitializing)
+@config.subscriber(TEMPLATE.category, config.SettingsGroupModified)
 def initialize(*args):
     _Manager.initialize()
 

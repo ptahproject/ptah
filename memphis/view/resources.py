@@ -81,7 +81,7 @@ def buildTree(path, not_allowed=re.compile('^[.~$#]')):
     return data
 
 
-@config.handler(config.SettingsInitializing)
+@config.subscriber(config.SettingsInitializing)
 def initialize(ev):
     if ev.config is not None:
         url = STATIC.url
