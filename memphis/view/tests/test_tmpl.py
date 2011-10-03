@@ -27,9 +27,9 @@ class TestTmplCommand(unittest.TestCase):
     def test_tmpl_multiple_decl(self):
         tmpl = view.template('memphis.view.tests:templates/test.pt')
 
-        self.assertRaises(
-            ValueError,
-            view.template, 'memphis.view.tests:templates/test.pt')
+        tmpl1 = view.template('memphis.view.tests:templates/test.pt')
+
+        self.assertIs(tmpl, tmpl1)
 
     def test_tmpl_multiple_disable_packages(self):
         tmpl = view.template('memphis.view.tests:templates/test.pt',

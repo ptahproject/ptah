@@ -36,8 +36,6 @@ def template(spec, layer=None, title=None, description=None, nolayer=False):
     if not abspath:
         raise ValueError('Missing template asset: %s' % spec)
 
-    tmpl = _Template(getRenderer(abspath), spec=spec)
-
     if not nolayer:
         if layer is None:
             layer = package_name
@@ -45,12 +43,14 @@ def template(spec, layer=None, title=None, description=None, nolayer=False):
         data = registry.setdefault(layer, {})
 
         filename = os.path.split(abspath)[1]
-        if filename in data:
-            raise ValueError(
-                'Template "%s" with this name already has '
-                'been registered in "%s" layer'%(filename, layer))
 
-        data[filename] = [abspath,title,description,tmpl,package_name]
+        if filename in data:
+            tmpl = data[filename][3]
+        else:
+            tmpl = _Template(getRenderer(abspath), spec=spec)
+            data[filename] = [abspath,title,description,tmpl,package_name]
+    else:
+        tmpl = _Template(getRenderer(abspath), spec=spec)
 
     return tmpl
 
