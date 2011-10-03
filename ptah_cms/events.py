@@ -30,7 +30,7 @@ class ContentDeletingEvent(ContentEvent):
     pass
 
 
-@config.handler(ContentCreatedEvent)
+@config.subscriber(ContentCreatedEvent)
 def createdHandler(ev):
     now = datetime.utcnow()
     ev.object.created = now
@@ -41,6 +41,6 @@ def createdHandler(ev):
         ev.object.__owner__ = user
 
 
-@config.handler(ContentModifiedEvent)
+@config.subscriber(ContentModifiedEvent)
 def modifiedHandler(ev):
     ev.object.modified = datetime.utcnow()
