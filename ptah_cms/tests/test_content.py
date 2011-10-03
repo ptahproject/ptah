@@ -99,7 +99,6 @@ class TestContent(Base):
         self.assertIn('__name__', info)
         self.assertIn('__type__', info)
 
-        global MyContent
         class MyContent(ptah_cms.Content):
             __type__ = ptah_cms.Type('mycontent', 'MyContent')
 

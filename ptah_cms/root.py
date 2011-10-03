@@ -2,7 +2,7 @@
 import ptah
 import sqlalchemy as sqla
 from zope import interface
-from memphis import config, view
+from memphis import config
 
 from tinfo import Type
 from node import Node, Session, setPolicy
@@ -23,7 +23,7 @@ class ApplicationRoot(Container):
 
 
 class ApplicationPolicy(object):
-    interface.implements(IApplicationPolicy, view.INavigationRoot)
+    interface.implements(IApplicationPolicy)
 
     __name__ = ''
     __parent__ = None
