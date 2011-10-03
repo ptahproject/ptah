@@ -89,15 +89,16 @@ def adapter(*required, **kw):
             )
 
 
-def handler(*required):
-    """ Register event handler. """
+def subscriber(*required):
+    """ Register event subscriber. """
     info = DirectiveInfo(allowed_scope=('module', 'function call'))
 
     def wrapper(func):
         info.attach(
             Action(
                 _register, ('registerHandler', func, required),
-                discriminator = ('memphis.config:handler',func,tuple(required)))
+                discriminator = ('memphis.config:subscriber', 
+                                 func, tuple(required)))
             )
         return func
     return wrapper

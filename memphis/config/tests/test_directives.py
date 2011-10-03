@@ -272,14 +272,14 @@ class TestAdapterDirective(BaseTesting):
         self.assertTrue(adapters[0][1] is testAdapter)
 
 
-class TestHandlerDirective(BaseTesting):
+class TestSubscriberDirective(BaseTesting):
 
-    def test_handler(self):
-        global testHandler
+    def test_subscriber(self):
+        global testSubscriber
 
         events = []
 
-        @config.handler(IContext)
+        @config.subscriber(IContext)
         def testHandler(*args):
             events.append(args)
 
@@ -293,13 +293,13 @@ class TestHandlerDirective(BaseTesting):
         sm.subscribers((Context(IContext2),), None)
         self.assertTrue(len(events) == 1)
 
-    def test_handler_several(self):
-        global testHandler
+    def test_subscriber_multple(self):
+        global testSubscriber
 
         events = []
 
-        @config.handler(IContext)
-        @config.handler(IContext2)
+        @config.subscriber(IContext)
+        @config.subscriber(IContext2)
         def testHandler(*args):
             events.append(args)
 
@@ -311,14 +311,14 @@ class TestHandlerDirective(BaseTesting):
 
         self.assertTrue(len(events) == 2)
 
-    def test_handler_object(self):
-        global testHandler
+    def test_subscriber_object(self):
+        global testSubscriber
         from zope.interface.interfaces import IObjectEvent, ObjectEvent
 
         events = []
 
-        @config.handler(IContext, IObjectEvent)
-        def testHandler(*args):
+        @config.subscriber(IContext, IObjectEvent)
+        def testSubscriber(*args):
             events.append(args)
 
         self._init_memphis()
@@ -329,13 +329,13 @@ class TestHandlerDirective(BaseTesting):
         self.assertTrue(len(events) == 1)
         self.assertTrue(len(events[0]) == 2)
 
-    def test_handler_reinitialize(self):
-        global testHandler
+    def test_subscriber_reinitialize(self):
+        global testSubscriber
 
         events = []
 
-        @config.handler(IContext)
-        def testHandler(*args):
+        @config.subscriber(IContext)
+        def testSubscriber(*args):
             events.append(args)
 
         self._init_memphis()
