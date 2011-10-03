@@ -30,10 +30,6 @@ class LayoutWorkspace(view.Layout):
         self.ptahManager = manage.ACCESS_MANAGER(authService.getUserId())
 
 
-class LayoutWorkspaceView(LayoutWorkspace):
-    view.layout('workspace', view.INavigationRoot, parent="page")
-
-
 class ContentLayout(view.Layout):
     view.layout('', interfaces.IContent, parent="workspace",
                 template=view.template("ptah_app:templates/layoutcontent.pt"))
@@ -42,13 +38,13 @@ class ContentLayout(view.Layout):
         self.actions = listUIActions(self.context, self.request)
 
 
-view_tmpl = view.template("ptah_app:templates/layoutdefault.pt")
+class LayoutWorkspacePtah(LayoutWorkspace):
+    view.layout('workspace', view.INavigationRoot, parent="page")
+
 
 view.registerLayout(
-    '', context=IPtahAppRoot, parent='workspace', template = view_tmpl)
-
-view.registerLayout(
-    '', context=view.INavigationRoot, parent='workspace', template = view_tmpl)
+    'ptah-security', view.INavigationRoot, parent='workspace',
+    template = view.template("ptah_app:templates/layout-ptahsecurity.pt"))
 
 
 def defaultView(renderer):

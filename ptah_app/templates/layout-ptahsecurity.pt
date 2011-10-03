@@ -1,0 +1,5 @@
+<div class="span10 offset3 columns">
+    <tal:block content="structure view.renderMessages()" />
+
+    <tal:block content="structure content" />
+</div>
