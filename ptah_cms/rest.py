@@ -225,19 +225,28 @@ def moveAction(content, request, *args):
     """Move content"""
 
 
+class Form(form.Form):
+
+    def __init__(self, tinfo, context, request):
+        super(Form, self).__init__(context, request)
+        self.fields = form.Fields(tinfo.schema)
+
+
 @restAction('update', IContent, ModifyContent)
 def updateAction(content, request, *args):
     """Update content"""
     tinfo = content.__type__
 
-    try:
-        data = tinfo.schema.deserialize(request.POST)
-    except colander.Invalid, e:
+    form = Form(tinfo, content, request)
+    form.update()
+
+    data, errors = form.extractData()
+    if errors:
+        print errors
         request.response.status = 500
-        return {'errors': e.asdict()}
+        return {'errors': ''}
 
     content.update(**data)
-
     return nodeInfo(content, request)
 
 
@@ -248,15 +257,16 @@ def createContentAction(content, request, *args):
     tinfo = request.GET.get('tinfo')
 
     tinfo = ptah.resolve(tinfo)
-    try:
-        data = tinfo.schema.deserialize(request.POST)
-    except colander.Invalid, e:
+
+    form = Form(tinfo, content, request)
+    form.update()
+
+    data, errors = form.extractData()
+    if errors:
         request.response.status = 500
-        return {'errors': e.asdict()}
+        return {'errors': ''}
 
-    item = cms(content).create(tinfo.__uri__, name)
-
-    item.update(**data)
+    item = cms(content).create(tinfo.__uri__, name, **data)
     return nodeInfo(item, request)
 
 
@@ -264,12 +274,12 @@ def createContentAction(content, request, *args):
 def blobData(content, request, *args):
     """Download blob"""
     response = request.response
-    
+
     info = content.info()
     response.content_type = info['mimetype'].encode('utf-8')
     if info['filename']:
         response.headerlist = {
-            'Content-Disposition': 
+            'Content-Disposition':
             'filename="%s"'%info['filename'].encode('utf-8')}
     response.body = content.read()
     return response
