@@ -229,7 +229,7 @@ class Form(form.Form):
 
     def __init__(self, tinfo, context, request):
         super(Form, self).__init__(context, request)
-        self.fields = form.Fields(tinfo.schema)
+        self.fields = form.Fieldset(tinfo.schema)
 
 
 @restAction('update', IContent, ModifyContent)
