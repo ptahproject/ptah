@@ -1,0 +1,10 @@
+<span id="" class=""
+      tal:attributes="id context.id;
+                      class context.klass;
+                      title context.title;
+                      lang context.lang;">
+  <tal:block repeat="value context.displayValue">
+    <span class="selected-option" tal:content="value" />
+    <tal:block condition="not repeat['value'].end">, </tal:block>
+  </tal:block>
+</span>
