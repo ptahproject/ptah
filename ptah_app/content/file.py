@@ -93,7 +93,7 @@ class FileAddForm(ptah_app.AddForm):
     view.pyramidView('addfile.html', ptah_cms.IContainer)
 
     tinfo = File.__type__
-    fields = form.Fields(FileSchema)
+    fields = form.Fieldset(FileSchema)
 
     def chooseName(self, **kw):
         filename = kw['data']['filename']

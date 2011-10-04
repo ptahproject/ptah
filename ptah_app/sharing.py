@@ -22,7 +22,7 @@ class SharingForm(form.Form):
         template = view.template('ptah_app:templates/sharing.pt'))
 
     csrf = True
-    fields = form.Fields(SearchSchema)
+    fields = form.Fieldset(SearchSchema)
 
     users = None
     bsize = 15

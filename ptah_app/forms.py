@@ -18,7 +18,7 @@ class AddForm(form.Form):
     name_show = True
     name_suffix = ''
     name_widgets = None
-    name_fields = form.Fields(ptah_cms.ContentNameSchema)
+    name_fields = form.Fieldset(ptah_cms.ContentNameSchema)
 
     def __init__(self, context, request):
         self.container = context
@@ -26,7 +26,7 @@ class AddForm(form.Form):
 
     @reify
     def fields(self):
-        return form.Fields(self.tinfo.schema)
+        return form.Fieldset(self.tinfo.schema)
 
     @reify
     def label(self):
@@ -137,7 +137,7 @@ class EditForm(form.Form):
 
     @reify
     def fields(self):
-        return form.Fields(self.tinfo.schema)
+        return form.Fieldset(self.tinfo.schema)
 
     def getContent(self):
         return self.context

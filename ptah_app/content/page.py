@@ -44,4 +44,4 @@ class AddPageForm(AddForm):
     view.pyramidView('addpage.html', ptah_cms.IContainer, permission=AddPage)
 
     tinfo = Page.__type__
-    fields = form.Fields(PageSchema)
+    fields = form.Fieldset(PageSchema)
