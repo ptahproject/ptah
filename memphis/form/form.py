@@ -6,9 +6,11 @@ from pyramid.httpexceptions import HTTPForbidden
 from webob.multidict import UnicodeMultiDict, MultiDict
 
 from memphis import view, config
-from memphis.form.field import Fields, Widgets
+from memphis.form.field import Fieldset
+from memphis.form.widgets import Widgets
 from memphis.form.button import Buttons, Actions
-from memphis.form.pagelets import FORM_VIEW, FORM_INPUT, FORM_DISPLAY
+from memphis.form.pagelets import FORM_VIEW
+from memphis.form.interfaces import FORM_INPUT, FORM_DISPLAY
 from memphis.form.interfaces import IForm, IInputForm, IDisplayForm, IWidgets
 
 CSRF = None
@@ -22,7 +24,7 @@ class Form(view.View):
     """A base form."""
     interface.implements(IForm, IInputForm)
 
-    fields = Fields()
+    fields = Fieldset()
     buttons = Buttons()
 
     label = None
@@ -71,6 +73,9 @@ class Form(view.View):
         self.widgets = Widgets(self.fields, self, self.request)
         self.widgets.mode = self.mode
         self.widgets.update()
+
+        print dict(self.widgets)
+        print self.widgets.fieldsets
 
     def updateActions(self):
         self.actions = Actions(self, self.request)

@@ -1,5 +1,0 @@
-<input id="" name="" class="" value="" disabled="disabled" type="button" 
-       tal:attributes="id context.id;
-                       name context.name;
-                       class context.klass;
-                       value context.value" />

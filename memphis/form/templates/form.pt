@@ -8,6 +8,9 @@
 
   <fieldset tal:repeat="fieldset context.widgets.fieldsets">
     <legend tal:condition="fieldset['legend']">${fieldset['legend']}</legend>
+    <tal:block repeat="widget fieldset['widgets']">
+      
+    </tal:block>
     <tal:block tal:repeat="widget fieldset['widgets']"
 	       tal:content="structure view.pagelet('form-widget',widget)" />
   </fieldset>

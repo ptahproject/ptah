@@ -1,10 +1,24 @@
 """ Form and Widget Framework Interfaces """
-import colander
 from zope import interface
 from zope.interface.common import mapping
 from translationstring import TranslationStringFactory
 
 MessageFactory = _ = TranslationStringFactory('memphis.form')
+
+FORM_INPUT = 'form-input'
+FORM_DISPLAY = 'form-display'
+
+required = object()
+
+class _null(object):
+    """ Represents a null value in colander-related operations. """
+    def __nonzero__(self):
+        return False
+
+    def __repr__(self):
+        return '<widget.null>'
+
+null = _null()
 
 
 # ----[ Errors ]--------------------------------------------------------------
@@ -59,7 +73,7 @@ class IFieldDataManager(interface.Interface):
         If no value can be found, raise an error
         """
 
-    def query(node, default=colander.null):
+    def query(node, default=null):
         """Get the value.
 
         If no value can be found, return the default value.
@@ -132,7 +146,7 @@ class IWidget(interface.Interface):
 
     content = interface.Attribute('Widget content')
 
-    def extract(default=colander.null):
+    def extract(default=null):
         """Extract the string value(s) of the widget from the form.
 
         The return value may be any Python construct, but is typically a

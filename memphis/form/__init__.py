@@ -5,21 +5,17 @@ from memphis.form.form import Form
 from memphis.form.form import DisplayForm
 from memphis.form.form import setCsrfUtility
 
-# widget
-from memphis.form.widget import Widget
-from memphis.form.widget import SequenceWidget
-from memphis.form.widget import WidgetFactory
+# field
+from memphis.form.field import Fieldset
+from memphis.form.field import Field
+from memphis.form.field import SequenceField
 
 # widget registration
 from memphis.form.directive import widget
 from memphis.form.directive import registerWidget
-from memphis.form.directive import registerDefaultWidget
-from memphis.form.directive import getDefaultWidgetName
 
 # fields manager
-from memphis.form.field import Fields
-from memphis.form.field import Fieldset
-from memphis.form.field import Widgets
+from memphis.form.widgets import Widgets
 
 # data manager
 from memphis.form.datamanager import DataManager
@@ -28,7 +24,7 @@ from memphis.form.datamanager import DataManager
 from memphis.form.button import Buttons
 
 # errors
-from memphis.form.error import Error, WidgetError
+from memphis.form.error import Invalid
 
 # vocabulary
 from memphis.form.vocabulary import SimpleTerm, SimpleVocabulary
@@ -48,13 +44,15 @@ from memphis.form.pagelets import FORM_ACTIONS
 from memphis.form.pagelets import FORM_WIDGET
 from memphis.form.pagelets import FORM_DISPLAY_WIDGET
 
-# widget pagelets
-from memphis.form.pagelets import FORM_INPUT
-from memphis.form.pagelets import FORM_DISPLAY
-from memphis.form.pagelets import FORM_HIDDEN
+# widget mode
+from memphis.form.interfaces import FORM_INPUT
+from memphis.form.interfaces import FORM_DISPLAY
 
 # widgets
 from memphis.form import widgets
+
+# fields
+from memphis.form import fields
 
 # interfaces
 from memphis.form.interfaces import IForm

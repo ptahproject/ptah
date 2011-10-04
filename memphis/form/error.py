@@ -1,7 +1,6 @@
 """Error views implementation"""
-from zope import interface
 from memphis import config, view
-from memphis.form.interfaces import _, IError, IWidgetError
+from memphis.form.interfaces import _
 
 
 class FormErrorMessage(view.Message):
@@ -14,7 +13,7 @@ class FormErrorMessage(view.Message):
     def render(self, message):
         self.errors = [
             err for err in message
-            if not IWidgetError.providedBy(err) or err.widget.error is None]
+            if not isinstance(err, Invalid) or err.field is None]
 
         return self.template(
             message = self.formErrorsMessage,
@@ -22,18 +21,8 @@ class FormErrorMessage(view.Message):
             request = self.request)
 
 
-class Error(object):
-    interface.implements(IError)
+class Invalid(Exception):
 
-    def __init__(self, error, message):
-        self.error = error
+    def __init__(self, field, message):
+        self.field = field
         self.message = message
-
-
-class WidgetError(Error):
-    interface.implements(IWidgetError)
-
-    def __init__(self, error, message, widget):
-        self.error = error
-        self.message = message
-        self.widget = widget

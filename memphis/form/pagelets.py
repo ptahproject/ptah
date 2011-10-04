@@ -1,5 +1,6 @@
 from zope import interface
 from memphis import view
+from memphis.form.field import Field
 from memphis.form.interfaces import IForm, IInputForm, IDisplayForm, IWidget
 
 FORM_VIEW = 'form-view'
@@ -7,17 +8,10 @@ FORM_ACTIONS = 'form-actions'
 FORM_WIDGET = 'form-widget'
 FORM_DISPLAY_WIDGET = 'form-display-widget'
 
-FORM_INPUT = 'form-input'
-FORM_DISPLAY = 'form-display'
-FORM_HIDDEN = 'form-hidden'
-
 view.pageletType(FORM_VIEW, IForm, 'Form view')
 view.pageletType(FORM_ACTIONS, IForm, 'Form actions')
-view.pageletType(FORM_WIDGET, IWidget, 'Form widget')
-view.pageletType(FORM_DISPLAY_WIDGET, IWidget, 'Form display widget')
-view.pageletType(FORM_INPUT, IWidget, 'Input widget renderer')
-view.pageletType(FORM_DISPLAY, IWidget, 'Display widget renderer')
-view.pageletType(FORM_HIDDEN, IWidget, 'Hidden widget renderer')
+view.pageletType(FORM_WIDGET, Field, 'Form widget')
+view.pageletType(FORM_DISPLAY_WIDGET, Field, 'Form display widget')
 
 
 view.registerPagelet(
@@ -36,12 +30,12 @@ view.registerPagelet(
 
 
 view.registerPagelet(
-    'form-widget', IWidget,
+    'form-widget', Field,
     template = view.template('memphis.form:templates/widget.pt'))
 
 
 view.registerPagelet(
-    'form-display-widget', IWidget,
+    'form-display-widget', Field,
     template = view.template('memphis.form:templates/widget-display.pt'))
 
 

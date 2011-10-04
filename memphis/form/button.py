@@ -1,13 +1,15 @@
 """ Button and Button Manager implementation """
 import sys, re
-import colander
 from zope import interface
 from collections import OrderedDict
 from pyramid.i18n import get_localizer
 
-from memphis import config
-from memphis.form.field import Field
+from memphis import config, view
 from memphis.form.interfaces import IForm, IButton, IActions, IWidget
+
+import htmlwidget
+from interfaces import null, required
+
 
 AC_DEFAULT = 0
 AC_PRIMARY = 1
@@ -16,11 +18,11 @@ AC_SUCCESS = 3
 AC_INFO = 4
 
 
-class Button(Field):
+class Button(object):
     """A simple button in a form."""
     interface.implements(IButton)
 
-    description = ''
+    template = view.template("memphis.form:templates/submit.pt")
 
     def __init__(self, name='submit', title=None, type='submit', value=None,
                  disabled=False, accessKey = None, action=None, actionName=None,
@@ -33,7 +35,6 @@ class Button(Field):
             value = name
 
         self.name = name
-        self.typ = colander.Str()
 
         self.__name__ = name
 
@@ -57,6 +58,34 @@ class Button(Field):
             return getattr(form, self.actionName)()
         else:
             self.action(form)
+
+
+class SubmitWidget(htmlwidget.HTMLInputWidget):
+    """A simple button of a form."""
+
+    klass = u'btn submit-widget'
+    template = view.template("memphis.form:templates/submit.pt")
+
+    def __init__(self, node, request):
+        self.node = node
+        self.request = request
+
+    def update(self):
+        self.value = self.node.title
+        if self.node.actype == AC_PRIMARY:
+            self.addClass('primary')
+        elif self.node.actype == AC_DANGER:
+            self.addClass('danger')
+        elif self.node.actype == AC_SUCCESS:
+            self.addClass('success')
+        elif self.node.actype == AC_INFO:
+            self.addClass('info')
+
+    def extract(self, default=None):
+        return self.params.get(self.name, default)
+
+    def render(self):
+        return self.template(context = self, request = self.request)
 
 
 class Buttons(OrderedDict):
@@ -113,14 +142,7 @@ class Actions(OrderedDict):
             # Step 2: Get the widget for the given field.
             shortName = field.name
 
-            widget = None
-            factory = field.widget
-            if isinstance(factory, basestring):
-                widget = registry.queryAdapter(field, IWidget, name=factory)
-            elif callable(factory):
-                widget = factory(field)
-            else:
-                widget = IWidget(field)
+            widget = SubmitWidget(field, request)
 
             # Step 3: Set the prefix for the widget
             widget.name = str(prefix + shortName)
@@ -128,6 +150,7 @@ class Actions(OrderedDict):
 
             # Step 4: Set the content
             widget.content = content
+            widget.value = field.value
 
             # Step 5: Set the form
             widget.form = self.form
@@ -149,7 +172,7 @@ class Actions(OrderedDict):
         executed = False
         for action in self.values():
             val = action.extract()
-            if val is not colander.null:
+            if val is not None: #null:
                 executed = True
                 action.node(self.form)
 

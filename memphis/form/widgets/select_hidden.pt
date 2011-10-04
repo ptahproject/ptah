@@ -1,9 +1,0 @@
-<tal:block define="id context.id;
-                   name string:${context.name}:list"
-           repeat="item context.items">
-  <input id="" name=""  value="" class="hidden-widget" type="hidden"
-         tal:condition="item/selected"
-         tal:attributes="id item/id; name name; value item/value" />
-</tal:block>
-<input name="field-empty-marker" type="hidden" value="1"
-       tal:attributes="name string:${context.name}-empty-marker" />

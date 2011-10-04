@@ -12,7 +12,6 @@
 #
 ##############################################################################
 """ vocabulary implementation from zope.schema """
-import colander
 from zope import interface
 from memphis import config
 from memphis.form.interfaces import _, ITerm, IVocabulary, IWidget
@@ -108,7 +107,7 @@ class SimpleVocabulary(object):
 
 class BoolVocabulary(SimpleVocabulary):
     """Default yes and no terms are used by default for Bool fields."""
-    config.adapter(colander.SchemaNode, colander.Bool, IWidget)
+    #config.adapter(colander.SchemaNode, colander.Bool, IWidget)
 
     def __init__(self, node, typ, widget):
         super(BoolVocabulary, self).__init__(

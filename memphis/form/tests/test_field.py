@@ -157,7 +157,7 @@ class TestFields(Base):
                 colander.Str(),
                 title = 'Test node')
 
-        fields = form.Fields(Schema)
+        fields = form.Fieldset(Schema)
         self.assertEqual(fields.name, '')
         self.assertEqual(fields.prefix, '')
         self.assertIn('test', fields)
