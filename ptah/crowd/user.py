@@ -19,7 +19,7 @@ class CreateUserForm(form.Form):
 
     csrf = True
     label = _('Create new user')
-    fields = form.Fields(UserSchema).omit('id', 'joined')
+    fields = form.Fieldset(UserSchema).omit('id', 'joined')
 
     @form.button(_('Create'), actype=form.AC_PRIMARY)
     def create(self):
@@ -60,8 +60,8 @@ class UserInfo(form.Form):
 
     label = 'Update user'
 
-    fields = form.Fields(UserSchema)
-    fields['id'].readonly = True
+    #fields = form.Fieldset(UserSchema)
+    #fields['id'].readonly = True
 
     def getContent(self):
         return self.context.user
@@ -96,7 +96,7 @@ class ChangePassword(form.Form):
     __intr_path__ = '/ptah-manage/crowd/${user}/password.html'
 
     csrf = True
-    fields = form.Fields(ManagerChangePasswordSchema)
+    fields = form.Fieldset(ManagerChangePasswordSchema)
 
     label = _('Change password')
     description = _('Please specify password for this users.')

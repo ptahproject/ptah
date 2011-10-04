@@ -22,7 +22,7 @@ class Registration(form.Form):
 
     csrf = True
     label = _("Registration")
-    fields = form.Fields(RegistrationSchema, PasswordSchema)
+    fields = form.Fieldset(RegistrationSchema, PasswordSchema)
     autocomplete = 'off'
 
     def update(self):
@@ -37,7 +37,7 @@ class Registration(form.Form):
         #    props.append(prop)
         #    fieldsets.append(form.Fieldset(prop.schema))
 
-        self.fields = form.Fields(RegistrationSchema,PasswordSchema,*fieldsets)
+        self.fields = form.Fieldset(RegistrationSchema,PasswordSchema,*fieldsets)
 
         super(Registration, self).update()
 

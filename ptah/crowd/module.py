@@ -67,7 +67,7 @@ class SearchUsers(form.Form):
     __intr_path__ = '/ptah-manage/crowd/search.html'
 
     csrf = True
-    fields = form.Fields(SearchSchema)
+    fields = form.Fieldset(SearchSchema)
 
     users = None
     page = ptah.Pagination(15)

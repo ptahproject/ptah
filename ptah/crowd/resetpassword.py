@@ -35,7 +35,7 @@ class ResetPassword(form.Form):
         template = view.template('ptah.crowd:templates/resetpassword.pt'))
 
     csrf = True
-    fields = form.Fields(ResetPasswordSchema)
+    fields = form.Fieldset(ResetPasswordSchema)
 
     def getContent(self):
         return {'login': self.request.params.get('login', '')}
@@ -85,7 +85,7 @@ class ResetPasswordForm(form.Form):
         template=view.template('ptah.crowd:templates/resetpasswordform.pt'))
 
     csrf = True
-    fields = form.Fields(PasswordSchema)
+    fields = form.Fieldset(PasswordSchema)
 
     def update(self):
         request = self.request

@@ -21,7 +21,7 @@ class EditRecord(form.Form):
 
     @reify
     def fields(self):
-        return form.Fields(buildSchema(self.context.table))
+        return form.Fieldset(buildSchema(self.context.table))
 
     def getContent(self):
         return self.context.data
@@ -67,7 +67,7 @@ class AddRecord(form.Form):
 
     @reify
     def fields(self):
-        return form.Fields(buildSchema(self.context.table))
+        return form.Fieldset(buildSchema(self.context.table))
 
     @form.button('Create', actype=form.AC_PRIMARY)
     def create(self):

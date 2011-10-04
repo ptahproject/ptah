@@ -15,33 +15,30 @@ view.registerRoute('ptah-login-success', '/login-success.html')
 view.registerRoute('ptah-login-suspended', '/login-suspended.html')
 
 
-class LoginSchema(colander.Schema):
-    """ login form """
-
-    login = colander.SchemaNode(
-        colander.Str(),
-        title = _(u'Login Name'),
-        description = _('Login names are case sensitive, '\
-                            'make sure the caps lock key is not enabled.'),
-        default = u'')
-
-    password = colander.SchemaNode(
-        colander.Str(),
-        title = _(u'Password'),
-        description = _('Case sensitive, make sure caps lock is not enabled.'),
-        default = u'',
-        widget = 'password')
-
-
 class LoginForm(form.Form):
     view.pyramidView(
         route='ptah-login', layout='ptah-security',
-        template=view.template("ptah.crowd:templates/login.pt"))
+        template = view.template("ptah.crowd:templates/login.pt"))
 
     id = 'login-form'
-    bane = 'login-form'
     title = _('Login')
-    fields = form.Fields(LoginSchema)
+
+    fields = form.Fieldset(
+        form.fields.TextField(
+            'login',
+            title = _(u'Login Name'),
+            description = _('Login names are case sensitive, '\
+                                'make sure the caps lock key is not enabled.'),
+            default = u''),
+        
+        form.fields.PasswordField(
+            'password',
+            title = _(u'Password'),
+            description = _('Case sensitive, make sure caps '\
+                                'lock is not enabled.'),
+            default = u'',
+            widget = 'password'),
+        )
 
     @form.button(_(u"Log in"), actype=form.AC_PRIMARY)
     def handleLogin(self):
@@ -65,7 +62,7 @@ class LoginForm(form.Form):
 
         if info.principal is not None:
             request.registry.notify(
-                ptah.events.LogingFailedEvent(info.principal, info.message))
+                ptah.events.LoginFailedEvent(info.principal, info.message))
 
         if info.arguments.get('suspended'):
             raise HTTPFound(
@@ -78,13 +75,13 @@ class LoginForm(form.Form):
         self.message(_('You enter wrong login or password.'), 'error')
 
     def update(self):
-        super(LoginForm, self).update()
-
         self.registration = ptah.PTAH_CONFIG.registration
 
         if authService.getUserId():
             app_url = self.request.application_url
             raise HTTPFound(location = '%s/login-success.html'%app_url)
+
+        super(LoginForm, self).update()
 
 
 class LoginSuccess(view.View):
