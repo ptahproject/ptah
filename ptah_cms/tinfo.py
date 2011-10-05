@@ -5,14 +5,15 @@ import sqlalchemy as sqla
 from memphis import config
 from zope import interface
 
+from ptah.sqlfields import generateFieldset
+
 from node import Session
-from content import Session, Content
+from content import Content
 from container import Container
 from events import ContentCreatedEvent
 from interfaces import Forbidden
 from interfaces import ContentSchema, ITypeInformation
 from permissions import AddContent
-from sqlschema import generateFieldset
 from cms import buildClassActions
 
 
@@ -143,7 +144,7 @@ def registerType(
 
     tinfo.__dict__.update(kw)
 
-    if fieldset:
+    if fieldset is not None:
         tinfo.fieldset = fieldset
 
     tinfo.cls = cls

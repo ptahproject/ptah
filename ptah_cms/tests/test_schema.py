@@ -1,21 +1,28 @@
 import unittest
 from memphis import form
 
+from base import Base
 
-class TestNameSchema(unittest.TestCase):
+
+class TestNameSchema(Base):
 
     def test_schema_name_validator(self):
         from ptah_cms.interfaces import ContentNameSchema
-        schema = ContentNameSchema()
 
-        self.assertRaises(
-            form.Invalid,
-            schema.deserialize, {'__name__': '/asdfasdfadf'})
+        fieldset = ContentNameSchema.bind(
+            params = {'__name__': '/asdfasdfadf'})
+        
+        data, errors = fieldset.extract()
+        self.assertTrue(errors)
 
-        self.assertRaises(
-            form.Invalid,
-            schema.deserialize, {'__name__': 'asdfasdf/adf'})
+        fieldset = ContentNameSchema.bind(
+            params = {'__name__': 'asdfasdf/adf'})
 
-        self.assertRaises(
-            form.Invalid,
-            schema.deserialize, {'__name__': ' asdfasdfadf'})
+        data, errors = fieldset.extract()
+        self.assertTrue(errors)
+
+        fieldset = ContentNameSchema.bind(
+            params = {'__name__': ' asdfasdfadf'})
+
+        data, errors = fieldset.extract()
+        self.assertTrue(errors)

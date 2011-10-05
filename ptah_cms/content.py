@@ -98,8 +98,6 @@ class Content(Node):
     def __name__(self, value):
         self.__name_id__ = value
 
-    #__name__ = property(__get_name, __set_name)
-
     def __resource_url__(self, request, info):
         return '%s%s'%(request.root.__root_path__,
                        self.__path__[len(request.root.__path__):])
@@ -120,21 +118,19 @@ class Content(Node):
         if self.__type__:
             tinfo = self.__type__
 
-            for node in tinfo.fieldset.fields():
-                val = data.get(node.name, node.default)
+            for field in tinfo.fieldset.fields():
+                val = data.get(field.name,  field.default)
                 if val is not form.null:
-                    setattr(self, node.name, val)
+                    setattr(self, field.name, val)
 
             config.notify(events.ContentModifiedEvent(self))
 
     def _extra_info(self, info):
         if self.__type__:
-            for node in self.__type__.fieldset.fields():
-                val = getattr(self, node.name, node.default)
-                try:
-                    info[node.name] = node.serialize(val)
-                except:
-                    info[node.name] = node.default
+            fieldset = self.__type__.fieldset.bind()
+            for field in fieldset.fields():
+                val = getattr(self, field.name, field.default)
+                info[field.name] = field.serialize(val)
 
         info['view'] = self.view
         info['created'] = self.created

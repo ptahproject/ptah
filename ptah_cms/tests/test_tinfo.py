@@ -1,7 +1,6 @@
-import colander
 import transaction
-from zope import interface
-from memphis import config
+import sqlalchemy as sqla
+from memphis import config, form
 from pyramid.httpexceptions import HTTPForbidden
 
 from base import Base
@@ -184,20 +183,33 @@ class TestTypeInfo(Base):
         c = ptah.resolve(c_uri)
         self.assertTrue(isinstance(c, MyContent))
 
-    def test_tinfo_schema(self):
+    def test_tinfo_fieldset(self):
         import ptah, ptah_cms
 
-        class MySchema(ptah_cms.ContentSchema):
-            test = colander.SchemaNode(
-                colander.Str())
+        MySchema = ptah_cms.ContentSchema + \
+            form.Fieldset(form.TextField('test'))
 
         class MyContent(ptah_cms.Content):
             __type__ = ptah_cms.Type('mycontent2', 'MyContent',
-                                     schema=MySchema)
+                                     fieldset=MySchema)
 
         tinfo = MyContent.__type__
+        self.assertIs(tinfo.fieldset, MySchema)
 
-        self.assertFalse(isinstance(tinfo.schema, colander._SchemaMeta))
+    def test_tinfo_fieldset_gen(self):
+        import ptah, ptah_cms
+
+        global MyContent
+        class MyContent(ptah_cms.Content):
+            __tablename__ = 'test_content'
+            __type__ = ptah_cms.Type('mycontent2', 'MyContent')
+
+            test = sqla.Column(sqla.Unicode())
+
+        self._init_memphis()
+
+        tinfo = MyContent.__type__
+        self.assertIn('test', tinfo.fieldset)
 
     def test_tinfo_type_resolver(self):
         import ptah, ptah_cms

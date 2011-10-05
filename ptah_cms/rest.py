@@ -29,8 +29,6 @@ def cmsApplications(request, *args):
         try:
             info = cms(root).info()
         except (AttributeError, CmsException):
-            import traceback
-            traceback.print_exc()
             continue
 
         info['__mount__'] = name
@@ -64,18 +62,14 @@ def typeInfo(tinfo, request):
 
     fieldset = info['fieldset']
 
-    for node in tinfo.fieldset.fields():
-        fname = node.__field_name__
-        if not fname:
-            continue
-
+    for field in tinfo.fieldset.fields():
         fieldset.append(
             OrderedDict(
-                (('name', node.name),
-                 ('title', node.title),
-                 ('description', node.description),
-                 ('required', node.required),
-                 ('widget', fname),
+                (('type', field.__field_name__),
+                 ('name', field.name),
+                 ('title', field.title),
+                 ('description', field.description),
+                 ('required', field.required),
                  )))
 
     return info
@@ -235,7 +229,7 @@ def updateAction(content, request, *args):
     data, errors = fieldset.extract()
     if errors:
         request.response.status = 500
-        return {'errors': ''}
+        return {'errors': errors.message}
 
     content.update(**data)
     return nodeInfo(content, request)
@@ -253,7 +247,7 @@ def createContentAction(content, request, *args):
     data, errors = fieldset.extract()
     if errors:
         request.response.status = 500
-        return {'errors': ''}
+        return {'errors': errors.message}
 
     item = cms(content).create(tinfo.__uri__, name, **data)
     return nodeInfo(item, request)

@@ -78,8 +78,12 @@ class TestRestApi(RestBase):
         self._init_memphis()
 
         info = cmsTypes(request)
+
         self.assertEqual(info[0]['name'], 'app')
         self.assertEqual(info[0]['__uri__'], 'cms+type:app')
+        self.assertEqual(len(info[0]['fieldset']), 2)
+        self.assertEqual(info[0]['fieldset'][0]['name'], 'title')
+        self.assertEqual(info[0]['fieldset'][1]['name'], 'description')
 
     def test_rest_content(self):
         from ptah_cms.rest import cmsContent
