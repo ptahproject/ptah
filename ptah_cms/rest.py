@@ -65,7 +65,7 @@ def typeInfo(tinfo, request):
     for field in tinfo.fieldset.fields():
         fieldset.append(
             OrderedDict(
-                (('type', field.__field_name__),
+                (('type', field.__field__),
                  ('name', field.name),
                  ('title', field.title),
                  ('description', field.description),
