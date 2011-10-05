@@ -1,6 +1,5 @@
 """ interfaces """
 import translationstring
-from memphis import view
 from zope import interface
 
 _ = translationstring.TranslationStringFactory('ptah')

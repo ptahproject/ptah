@@ -2,14 +2,14 @@
   <h1>${context.__name__} <small>size: ${view.size}</small></h1>
 </div>
 
-<div class="row">
+<div class="row" tal:define="url request.url">
   <div class="span16 columns">
     <tal:block tal:condition="not view.size">
       Table is empty.
     </tal:block>
 
-    <form method="post" action="${request.url}" tal:condition="view.size">
-      <table class="zebra-striped">
+    <form method="post" action="${request.url}">
+      <table class="zebra-striped" tal:condition="view.size">
 	<tr>
 	  <th>&nbsp;</th>
 	  <th tal:repeat="c view.table.columns">
@@ -25,7 +25,7 @@
 	  <td tal:repeat="val row" tal:content="val"></td>
 	  <td>
 	    <a class="btn info"
-	       href="${getattr(row, view.primary)}/index.html">Edit</a>
+	       href="${url}${getattr(row, view.primary)}/">Edit</a>
 	  </td>
 	</tr>
       </table>
@@ -51,8 +51,7 @@
 	</ul>
       </div>
 
-      <tal:block condition="view.size"
-	         content="structure view.pagelet('form-actions', view)" />
+      <tal:block content="structure view.pagelet('form-actions', view)" />
     </form>
   </div>
 </div>

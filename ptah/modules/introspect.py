@@ -14,9 +14,6 @@ from memphis.config.api import exclude, loadPackages
 from ptah.manage import INTROSPECTIONS
 from ptah.uri import resolvers, resolversTitle
 
-from zope import interface
-from interfaces import IPackage
-
 
 class IntrospectModule(ptah.PtahModule):
     """ Introspection various aspects of memphis & ptah. """
@@ -35,7 +32,6 @@ class IntrospectModule(ptah.PtahModule):
 
 
 class Package(object):
-    interface.implements(IPackage)
 
     def __init__(self, pkg, mod, request):
         self.__name__ = pkg.project_name
@@ -221,7 +217,7 @@ types = {
 
 class PackageView(view.View):
     view.pyramidView(
-        context = IPackage,
+        context = Package,
         template = view.template('ptah.modules:templates/introspect-pkg.pt'))
 
     __doc__ = 'Package introspection page.'

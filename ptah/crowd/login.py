@@ -29,7 +29,7 @@ class LoginForm(form.Form):
             description = _('Login names are case sensitive, '\
                                 'make sure the caps lock key is not enabled.'),
             default = u''),
-        
+
         form.fields.PasswordField(
             'password',
             title = _(u'Password'),

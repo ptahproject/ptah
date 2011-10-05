@@ -76,7 +76,8 @@ from ptah.util import tldata
 from ptah.sqla import QueryFreezer
 from ptah.sqla import JsonDictType
 from ptah.sqla import JsonListType
-
+from ptah.sqla import generateFieldset
+from ptah.sqla import buildSqlaFieldset
 
 # create wsgi app
 class WSGIAppInitialized(object):

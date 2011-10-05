@@ -201,4 +201,4 @@ class ManageView(view.View):
 
 @view.pyramidView(context = IPtahManageRoute, route = 'ptah-manage-view')
 def redirectToManage(request):
-    raise HTTPFound(location = '%s/'%request.url)
+    raise HTTPFound(location = '%s/'%request.url) # pragma: no cover
