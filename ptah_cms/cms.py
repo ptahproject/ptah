@@ -1,9 +1,8 @@
-import ptah
 import inspect
 from memphis import config
 from zope.interface import providedBy, Interface, implements
 
-import ptah_cms
+import ptah, ptah_cms
 from permissions import View
 from interfaces import NotFound, Forbidden
 

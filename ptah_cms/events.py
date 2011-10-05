@@ -11,23 +11,23 @@ class ContentEvent(ObjectEvent):
 
 
 class ContentCreatedEvent(ContentEvent):
-    pass
+    """ """
 
 
 class ContentAddedEvent(ContentEvent):
-    pass
+    """ """
 
 
 class ContentMovedEvent(ContentEvent):
-    pass
+    """ """
 
 
 class ContentModifiedEvent(ContentEvent):
-    pass
+    """ """
 
 
 class ContentDeletingEvent(ContentEvent):
-    pass
+    """ """
 
 
 @config.subscriber(ContentCreatedEvent)

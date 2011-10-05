@@ -8,11 +8,9 @@ from zope import interface
 from node import Session
 from content import Content
 from container import Container
-from events import ContentCreatedEvent
-from interfaces import Forbidden
-from interfaces import ContentSchema, ITypeInformation
-from permissions import AddContent
 from cms import buildClassActions
+from events import ContentCreatedEvent
+from interfaces import Forbidden, ContentSchema, ITypeInformation
 
 
 Types = {}
@@ -25,18 +23,16 @@ def typeInfoResolver(uri):
 class TypeInformation(object):
     interface.implements(ITypeInformation)
 
-    add = None # add action, path relative to current container
-    description = u''
-    permission = AddContent
-
     fieldset = None
-    fieldNames = None
+    description = u''
+    permission = ptah.NOT_ALLOWED
 
+    add = None # add action, path relative to current container
     filter_content_types = False
     allowed_content_types = ()
     global_allow = True
 
-    def __init__(self, cls, name, title, fieldset=ContentSchema, **kw):
+    def __init__(self, cls, name, title, fieldset, **kw):
         self.__dict__.update(kw)
 
         self.__uri__ = 'cms+type:%s'%name
@@ -77,7 +73,6 @@ class TypeInformation(object):
 
                 if tinfo and tinfo.isAllowed(container):
                     types.append(tinfo)
-
         else:
             for tinfo in Types.values():
                 if tinfo.global_allow and tinfo.isAllowed(container):
@@ -98,11 +93,9 @@ def resolveContent(uri):
 def Type(name, title, fieldset = None, **kw):
     info = config.DirectiveInfo(allowed_scope=('class',))
 
-    kwargs = {}
-    if fieldset is not None:
-        kwargs['fieldset'] = fieldset
+    fs = ContentSchema if fieldset is None else fieldset
 
-    typeinfo = TypeInformation(None, name, title, **kwargs)
+    typeinfo = TypeInformation(None, name, title, fs, **kw)
 
     f_locals = sys._getframe(1).f_locals
     if '__mapper_args__' not in f_locals:
@@ -116,13 +109,11 @@ def Type(name, title, fieldset = None, **kw):
 
         ptah.registerResolver(
             'cms+%s'%name, resolveContent,
-            title = 'Ptah CMS Content resolver for %s type'%title,
-            depth = 2)
+            title = 'CMS Content resolver for %s type'%title, depth = 2)
 
     info.attach(
         config.ClassAction(
-            registerType,
-            (typeinfo, name, fieldset), kw,
+            registerType, (typeinfo, name, fieldset), kw,
             discriminator = ('ptah-cms:type', name))
         )
 
@@ -133,8 +124,8 @@ def registerType(
     cls, tinfo, name, fieldset,
     permission = ptah.NOT_ALLOWED, fieldNames=None, **kw):
 
+    # generate schema
     if fieldset is None:
-        # generate schema
         fieldset = ptah.generateFieldset(cls, fieldNames=fieldNames)
 
     if 'global_allow' not in kw and not issubclass(cls, Content):

@@ -118,16 +118,15 @@ ContentSchema = form.Fieldset(
         'textarea',
         'description',
         title = 'Description',
-        missing = u'',
-        widget = 'textarea'),
+        missing = u''),
     )
 
 
-def specialSymbols(node, appstruct):
+def specialSymbols(field, appstruct):
     if '/' in appstruct:
-        raise form.Invalid(node, "Names cannot contain '/'")
+        raise form.Invalid(field, "Names cannot contain '/'")
     if appstruct.startswith(' '):
-        raise form.Invalid(node, "Names cannot starts with ' '")
+        raise form.Invalid(field, "Names cannot starts with ' '")
 
 
 ContentNameSchema = form.Fieldset(

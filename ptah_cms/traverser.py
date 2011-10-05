@@ -24,8 +24,7 @@ class ContentTraverser(object):
         environ = request.environ
 
         context = root = self.root
-        path = '/%s/'%'/'.join(traversal_path(
-                environ.get('PATH_INFO','/')))
+        path = '/%s/'%'/'.join(traversal_path(environ.get('PATH_INFO','/')))
 
         vroot_tuple = ()
         vpath = path
