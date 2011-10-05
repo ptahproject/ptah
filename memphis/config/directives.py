@@ -97,7 +97,7 @@ def subscriber(*required):
         info.attach(
             Action(
                 _register, ('registerHandler', func, required),
-                discriminator = ('memphis.config:subscriber', 
+                discriminator = ('memphis.config:subscriber',
                                  func, tuple(required)))
             )
         return func
