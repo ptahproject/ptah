@@ -33,7 +33,7 @@ def registerField(cls, name, layer=''):
 
 def registerFieldImpl(cls, name):
     fields[name] = cls
-    cls.__field_name__ = name
+    cls.__field__ = name
 
 
 def getField(name):
@@ -179,7 +179,7 @@ class FieldsetErrors(list):
 class Field(object):
     """Widget base class."""
 
-    __field_name__ = ''
+    __field__ = ''
 
     name = ''
     title = u''
@@ -348,18 +348,18 @@ class SequenceField(Field):
 
 class FieldFactory(Field):
 
-    __field_name__ = ''
+    __field__ = ''
 
     def __init__(self, typ, name, **kw):
-        self.__field_name__ = typ
+        self.__field__ = typ
 
         super(FieldFactory, self).__init__(name, **kw)
 
     def bind(self, prefix, content, params):
-        cls = getField(self.__field_name__)
+        cls = getField(self.__field__)
         if cls is None:
             raise TypeError(
-                "Can't find field implementation for '%s'"%cls.__field_name__)
+                "Can't find field implementation for '%s'"%cls.__field__)
 
         clone = cls.__new__(cls)
         clone.__dict__.update(self.__dict__)
