@@ -152,7 +152,7 @@ class Fieldset(OrderedDict):
 
     def __add__(self, fieldset):
         if not isinstance(fieldset, Fieldset):
-            return NotImplemented
+            raise ValueError(fieldset)
 
         return self.__class__(self, fieldset)
 

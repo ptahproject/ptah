@@ -1,163 +1,87 @@
-import colander
 from memphis import form
 from base import Base
 
-node = colander.SchemaNode(
-    colander.Str(),
-    name = 'test',
-    title = 'Test node')
+field = form.TextField(
+    'test', title = 'Test node')
 
-node1 = colander.SchemaNode(
-    colander.Str(),
-    name = 'test1',
-    title = 'Test node')
-
-
-class TestField(Base):
-
-    def test_field(self):
-        from memphis.form.field import Field
-
-        field = Field(node)
-
-        self.assertEqual(field.name, 'test')
-        self.assertFalse(field.readonly)
-        self.assertEqual(repr(field), "<Field 'test'>")
+field1 = form.TextField(
+    'test1', title = 'Test node')
 
 
 class TestFieldset(Base):
 
     def test_fieldset_name_title(self):
-        fieldset = form.Fieldset(node)
+        fieldset = form.Fieldset(field)
 
-        self.assertEqual(fieldset.name, 'test')
-        self.assertEqual(fieldset.legend, 'Test node')
+        self.assertEqual(fieldset.name, '')
+        self.assertEqual(fieldset.legend, '')
 
-        fieldset = form.Fieldset(node, name='othername', legend='Other name')
+        fieldset = form.Fieldset(field1, name='othername', legend='Other name')
 
         self.assertEqual(fieldset.name, 'othername')
         self.assertEqual(fieldset.legend, 'Other name')
 
+    def test_fieldset_fields(self):
+        fieldset = form.Fieldset(field, field1)
+
+        self.assertEqual(list(fieldset.fields()), [field, field1])
+
     def test_fieldset_append_simple(self):
-        fieldset = form.Fieldset(node)
+        fieldset = form.Fieldset(field, name='test')
 
         self.assertIn('test', fieldset)
-        self.assertIn('test.test', fieldset.names)
         self.assertEqual(fieldset.prefix, 'test.')
 
-        self.assertIs(fieldset['test'].node, node)
+        self.assertIs(fieldset['test'], field)
 
-        self.assertRaises(ValueError, fieldset.append, node)
+        self.assertRaises(ValueError, fieldset.append, field)
         self.assertRaises(TypeError, fieldset.append, object())
 
-    def test_fieldset_append_mapping(self):
-        schema = colander.SchemaNode(
-            colander.Mapping(),
-            node,
-            node1,
-            name = 'schema')
-
-        fieldset = form.Fieldset(schema)
-
-        self.assertEqual(fieldset.prefix, 'schema.')
-        self.assertEqual(fieldset.keys(), ['test', 'test1'])
-        self.assertIn('test', fieldset)
-        self.assertIn('test1', fieldset)
-
-        fields = list(fieldset.fields())
-        self.assertIs(fields[0].node, node)
-        self.assertIs(fields[1].node, node1)
-
-        self.assertRaises(ValueError, fieldset.append, schema)
-
-    def test_fieldset_fiedset(self):
-        schema = colander.SchemaNode(
-            colander.Mapping(),
-            node,
-            node1,
-            name = 'schema')
-
-        fieldset = form.Fieldset(schema)
+    def test_fieldset_append_fieldset(self):
+        fieldset = form.Fieldset(field, name='schema')
         self.assertEqual(list(fieldset.fieldsets()), [fieldset])
 
-        schema = colander.SchemaNode(
-            colander.Mapping(),
-            colander.SchemaNode(
-                colander.Mapping(),
-                node,
-                name = 'schema2'),
-            name = 'schema',
-            )
-
-        fieldset.append(schema)
-        self.assertEqual(len(list(fieldset.fieldsets())), 2)
-
-        fs = fieldset['schema2']
-        self.assertIsInstance(fs, form.Fieldset)
-        self.assertIn('test', fs)
-
-        self.assertRaises(ValueError, fieldset.append, schema)
-
-    def test_fieldset_append_fieldset(self):
-        schema = colander.SchemaNode(
-            colander.Mapping(),
-            node,
-            name = 'schema')
-
-        fieldset = form.Fieldset(schema)
-
-        schema2 = colander.SchemaNode(
-            colander.Mapping(),
-            node1,
-            name = 'schema2')
-
-        fs = form.Fieldset(schema2)
+        fs = form.Fieldset(field1, name='schema2', )
 
         fieldset.append(fs)
+        self.assertEqual(len(list(fieldset.fieldsets())), 2)
 
-        self.assertIn('schema.schema2', fieldset.names)
+        self.assertIn('schema2', fieldset)
         self.assertIs(fieldset['schema2'], fs)
         self.assertRaises(ValueError, fieldset.append, fs)
 
     def test_fieldset_select(self):
-        schema = colander.SchemaNode(
-            colander.Mapping(),
-            node,
-            node1,
-            name = 'schema')
-
-        fieldset = form.Fieldset(schema)
+        fieldset = form.Fieldset(field, field1)
 
         newfs = fieldset.select('test')
         self.assertNotIn('test1', newfs)
         self.assertEqual(newfs.keys(), ['test'])
 
     def test_fieldset_omit(self):
-        schema = colander.SchemaNode(
-            colander.Mapping(),
-            node,
-            node1,
-            name = 'schema')
-
-        fieldset = form.Fieldset(schema)
+        fieldset = form.Fieldset(field, field1)
 
         newfs = fieldset.omit('test')
         self.assertNotIn('test', newfs)
         self.assertEqual(newfs.keys(), ['test1'])
 
+    def test_fieldset_add(self):
+        fieldset = form.Fieldset(field)
+        fieldset = fieldset + form.Fieldset(field1)
 
-class TestFields(Base):
+        self.assertIn('test', fieldset)
+        self.assertIn('test1', fieldset)
+        self.assertEqual(fieldset.keys(), ['test', 'test1'])
 
-    def test_fields(self):
-        self.assertRaises(TypeError, form.Fields, object())
+    def test_fieldset_iadd(self):
+        fieldset = form.Fieldset(field)
+        fieldset += form.Fieldset(field1)
 
-        class Schema(colander.Schema):
+        self.assertIn('test', fieldset)
+        self.assertIn('test1', fieldset)
+        self.assertEqual(fieldset.keys(), ['test', 'test1'])
 
-            test = colander.SchemaNode(
-                colander.Str(),
-                title = 'Test node')
+    def test_fieldset_add_err(self):
+        fieldset = form.Fieldset(field)
 
-        fields = form.Fieldset(Schema)
-        self.assertEqual(fields.name, '')
-        self.assertEqual(fields.prefix, '')
-        self.assertIn('test', fields)
+        self.assertRaises(ValueError, fieldset.__add__, object())
+
