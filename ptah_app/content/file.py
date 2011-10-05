@@ -1,5 +1,4 @@
 """ file content implementation """
-import colander
 import sqlalchemy as sqla
 
 from zope import interface

@@ -1,6 +1,5 @@
 """ default content forms """
 import re
-import colander
 from memphis import config, view, form
 from pyramid.decorator import reify
 from pyramid.httpexceptions import HTTPFound

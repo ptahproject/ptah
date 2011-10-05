@@ -1,4 +1,3 @@
-import colander
 import transaction
 from zope import interface
 from memphis import config

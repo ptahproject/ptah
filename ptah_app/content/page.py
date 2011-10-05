@@ -1,5 +1,4 @@
 """ Page """
-import colander
 import sqlalchemy as sqla
 from zope import interface
 from memphis import view, form
@@ -36,4 +35,3 @@ class AddPageForm(AddForm):
     view.pyramidView('addpage.html', ptah_cms.IContainer, permission=AddPage)
 
     tinfo = Page.__type__
-

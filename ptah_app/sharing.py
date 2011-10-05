@@ -1,18 +1,6 @@
-import colander
 import ptah, ptah_cms
 from memphis import view, form
 from pyramid.httpexceptions import HTTPFound
-
-
-class SearchSchema(colander.Schema):
-    """ search users """
-
-    term = colander.SchemaNode(
-        colander.Str(),
-        title = u'Search term',
-        description = 'Searches users by login and email',
-        missing = u'',
-        default = u'')
 
 
 class SharingForm(form.Form):
