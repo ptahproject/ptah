@@ -7,7 +7,6 @@ from pyramid.i18n import get_localizer
 from memphis import config, view
 from memphis.form.interfaces import IForm, IButton, IActions, IWidget
 
-import htmlwidget
 from interfaces import null, required
 
 
@@ -60,15 +59,30 @@ class Button(object):
             self.action(form)
 
 
-class SubmitWidget(htmlwidget.HTMLInputWidget):
+class SubmitWidget(view.View):
     """A simple button of a form."""
 
     klass = u'btn submit-widget'
     template = view.template("memphis.form:templates/submit.pt")
 
+    lang = None
+    readonly = None
+    alt = None
+    accesskey = None
+    disabled = None
+    tabindex = None
+
     def __init__(self, node, request):
         self.node = node
+        self.context = node
         self.request = request
+
+    def addClass(self, klass):
+        if not self.klass:
+            self.klass = klass
+        else:
+            if klass not in self.klass:
+                self.klass = u'%s %s'%(self.klass, klass)
 
     def update(self):
         self.value = self.node.title

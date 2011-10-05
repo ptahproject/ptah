@@ -103,17 +103,3 @@ class SimpleVocabulary(object):
 
     def __len__(self):
         return len(self.by_value)
-
-
-class BoolVocabulary(SimpleVocabulary):
-    """Default yes and no terms are used by default for Bool fields."""
-    #config.adapter(colander.SchemaNode, colander.Bool, IWidget)
-
-    def __init__(self, node, typ, widget):
-        super(BoolVocabulary, self).__init__(
-            SimpleTerm(True, 'true',  _('yes')),
-            SimpleTerm(False, 'false',  _('no')))
-
-        self.node = node
-        self.typ = typ
-        self.widget = widget

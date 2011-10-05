@@ -1,11 +1,43 @@
+from memphis import config, view
 from collections import OrderedDict
-from pyramid.i18n import get_localizer
 
-from memphis import config
-from memphis.form.error import Invalid
-from memphis.form.interfaces import \
-    IForm, IField, IWidget, IWidgets, IDataManager, null, required
-from memphis.form.interfaces import _, FORM_INPUT, FORM_DISPLAY
+from validator import All
+from interfaces import _, null, required, Invalid, FORM_INPUT, FORM_DISPLAY
+
+
+fields = {}
+
+def field(name, layer=''):
+    info = config.DirectiveInfo(allowed_scope=('class',))
+
+    discriminator = ('memphis.form:field', name, layer)
+
+    info.attach(
+        config.ClassAction(
+            view.LayerWrapper(registerFieldImpl, discriminator),
+            (name, ), discriminator = discriminator)
+        )
+
+
+def registerField(cls, name, layer=''):
+    info = config.DirectiveInfo()
+
+    discriminator = ('memphis.form:field', name, layer)
+
+    info.attach(
+        config.Action(
+            view.LayerWrapper(registerFieldImpl, discriminator),
+            (cls, name),
+            discriminator = discriminator)
+        )
+
+def registerFieldImpl(cls, name):
+    fields[name] = cls
+    cls.__field_name__ = name
+
+
+def getField(name):
+    return fields.get(name, None)
 
 
 class Fieldset(OrderedDict):
@@ -13,15 +45,15 @@ class Fieldset(OrderedDict):
     def __init__(self, *args, **kwargs):
         super(Fieldset, self).__init__()
 
-        name = kwargs.pop('name', u'')
-        legend = kwargs.pop('legend', u'')
-
-        self.name = name
-        self.legend = legend
-        self.names = []
-        self.schemas = []
+        self.name = kwargs.pop('name', u'')
+        self.legend = kwargs.pop('legend', u'')
         self.prefix = '%s.'%self.name if self.name else ''
         self.lprefix = len(self.prefix)
+
+        self.validator = All()
+        validator = kwargs.pop('validator', None)
+        if validator is not None:
+            self.validator.validators.append(validator)
 
         self.append(*args, **kwargs)
 
@@ -37,51 +69,91 @@ class Fieldset(OrderedDict):
             if isinstance(fieldset, Fieldset):
                 yield fieldset
 
-    def unflatten(self, appdata):
-        data = dict((key[self.lprefix:], appdata[key])
-                    for key in appdata if key in self.names)
-
-        for name, fieldset in self.items():
-            if isinstance(fieldset, Fieldset):
-                data[name] = fieldset.unflatten(appdata)
-
-        return data
-
     def append(self, *args, **kwargs):
-        omit = kwargs.get('omit', ())
-        select = kwargs.get('select', ())
-
         for field in args:
             if isinstance(field, Field):
                 if field.name in self:
                     raise ValueError("Duplicate name", field.name)
                 self[field.name] = field
-                self.names.append('%s%s'%(self.prefix, field.name))
 
             elif isinstance(field, Fieldset):
+                if field.name in self.name:
+                    self.append(*field.values())
+                    self.validator.validators.extend(field.validator.validators)
+                    continue
                 if field.name in self:
                     raise ValueError("Duplicate name", field.name)
                 self[field.name] = field
-                self.names.append('%s%s'%(self.prefix, field.name))
 
             else:
-                pass
-                #raise TypeError("Unrecognized argument type", field)
+                raise TypeError("Unrecognized argument type", field)
 
     def select(self, *names):
-        return self.__class__(select=names, *self.schemas)
+        return self.__class__(*[field for name, field in self.items()
+                                if name in names])
 
     def omit(self, *names):
-        return self.__class__(omit=names, *self.schemas)
+        return self.__class__(*[field for name, field in self.items()
+                                if name not in names])
 
-    def validator(self, node, appstruct):
-        for schema in self.schemas:
-            if schema.validator is not None:
-                schema.validator(schema, appstruct)
+    def validate(self, data):
+        self.validator(self, data)
+
+    def bind(self, content, params):
+        clone = Fieldset(
+            name = self.name,
+            legend = self.legend,
+            prefix = self.prefix,
+            validator = self.validator)
+
+        if content is None:
+            content = {}
+
+        for name, field in self.items():
+            clone[name] = field.bind(
+                self.prefix, content.get(name, null), params)
+
+        clone.params = params
+        clone.content = content
+        return clone
+
+    def extract(self):
+        data = {}
+        errors = []
+
+        for field in self.fields():
+            if field.mode == FORM_DISPLAY:
+                continue
+
+            value = field.missing
+            try:
+                form = field.extract()
+                value = field.deserialize(form)
+                value = field.validate(value)
+            except Invalid, error:
+                errors.append(error)
+
+            data[field.name] = value
+
+        if not errors:
+            try:
+                self.validate(data)
+            except Invalid, error:
+                errors.append(error)
+
+        return data, errors
+
+    def __add__(self, fieldset):
+        if not isinstance(fieldset, Fieldset):
+            return NotImplemented
+
+        return self.__class__(self, fieldset)
 
 
 class Field(object):
     """Widget base class."""
+
+    __field_name__ = ''
 
     name = ''
     label = u''
@@ -95,6 +167,9 @@ class Field(object):
     value = null
     mode = FORM_INPUT
 
+    id = None
+    klass = None
+
     tmpl_input = None
     tmpl_display = None
 
@@ -103,57 +178,51 @@ class Field(object):
         self.label = kw.get('title', name.capitalize())
         self.description = kw.get('description', u'')
         self.readonly = kw.get('readonly', None)
-        self.missing = kw.get('missing', required)
         self.default = kw.get('missing', null)
+        self.missing = kw.get('missing', required)
+        self.preparer = kw.get('preparer', None)
         self.validator = kw.get('validator', None)
+        self.required = self.missing is required
 
-    @property
-    def required(self):
-        return self.missing is required
-
-    def bind(self, content, params, request, **kw):
+    def bind(self, prefix, content, params):
         clone = self.__class__.__new__(self.__class__)
         clone.__dict__.update(self.__dict__)
         clone.content = content
         clone.params = params
-        clone.request = request
-        clone.localizer = kw.get('localizer')
-        mode = kw.get('mode')
-        if mode:
-            clone.mode = mode
-        elif self.readonly:
-            clone.mode = FORM_DISPLAY
+        clone.name = '%s%s'%(prefix, self.name)
+        return clone
+
+    def update(self, request):
+        self.request = request
 
         value = null
 
-        # Step 1.1: If possible, get a value from the params
-        widget_value = self.extract(params)
+        # Step 1.1: extract from request
+        widget_value = self.extract()
         if widget_value is not null:
-            clone.value = widget_value
-            return clone
+            self.value = widget_value
+            return
 
-        # Step 1.2: If we have a widget with a field and we have no value yet,
-        #           we have some more possible locations to get the value
+        # Step 1.2: get from content
         if value is null:
-            # Step 1.2.1: If the widget knows about its content and the
-            #              content is to be used to extract a value, get
-            #              it now via a data manager.
-            if content is not None:
-                value = content.query(self)
+            if self.content is not null:
+                value = self.content
 
-            # Step 1.2.2: If we still do not have a value, we can always use
-            #             the default value of the node, id set
-            if ((value is self.missing or value is null) and
-                self.default is not null):
+            # Step 1.2.2: default
+            if value is null:
                 value = self.default
 
         # Step 1.4: Convert the value to one that the widget can understand
         if value is not null:
-            clone.value = self.serialize(value)
+            self.value = self.serialize(value)
 
-        return clone
+    def serialize(self, value):
+        raise NotImplemented
 
     def deserialize(self, value):
+        raise NotImplemented
+
+    def validate(self, value):
         if value is null:
             value = self.missing
             if value is required:
@@ -162,23 +231,40 @@ class Field(object):
 
         if self.validator is not None:
             self.validator(self, value)
+
+        if self.preparer is not None:
+            value = self.preparer(value)
+
         return value
 
-    def extract(self, params, default = null):
-        value = params.get(self.name, default)
+    def extract(self, default=null):
+        value = self.params.get(self.name, default)
         if not value:
             return null
         return value
 
     def render(self, request):
-        if self.mode == FORM_DISPLAY:
-            return self.tmpl_display(
-                context = self,
-                request = self.request)
+        try:
+            if self.mode == FORM_DISPLAY:
+                return self.tmpl_display(
+                    view = view,
+                    context = self,
+                    request = self.request)
+            else:
+                return self.tmpl_input(
+                    view = self,
+                    context = self,
+                    request = self.request)
+        except:
+            import traceback
+            traceback.print_exc()
+
+    def addClass(self, klass):
+        if not self.klass:
+            self.klass = klass
         else:
-            return self.tmpl_input(
-                context = self,
-                request = self.request)
+            if klass not in self.klass:
+                self.klass = u'%s %s'%(self.klass, klass)
 
     def __repr__(self):
         return '<%s %r>' % (self.__class__.__name__, self.name)
@@ -223,7 +309,7 @@ class SequenceField(Field):
         self.updateTerms()
         super(SequenceWidget, self).update()
 
-    def extract(self, params, default=null):
+    def extract(self, default=null):
         if (self.name not in self.params and
             self.empty_marker in self.params):
             return default
@@ -239,11 +325,23 @@ class SequenceField(Field):
                 except LookupError:
                     return default
 
-        if value is not default and \
-                not isinstance(self.node.typ, Positional):
-            if value:
-                return value[0]
-            else:
-                return default
-
         return value
+
+
+class FieldFactory(Field):
+
+    _field = ''
+
+    def __init__(self, typ, name, **kw):
+        self._field = typ
+        super(FieldFactory, self).__init__(name, **kw)
+
+    def bind(self, prefix, content, params):
+        cls = getField(self._field)
+
+        clone = cls.__new__(cls)
+        clone.__dict__.update(self.__dict__)
+        clone.content = content
+        clone.params = params
+        clone.name = '%s%s'%(prefix, self.name)
+        return clone

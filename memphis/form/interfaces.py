@@ -10,6 +10,14 @@ FORM_DISPLAY = 'form-display'
 
 required = object()
 
+
+class Invalid(Exception):
+
+    def __init__(self, field, message):
+        self.field = field
+        self.message = message
+
+
 class _null(object):
     """ Represents a null value in colander-related operations. """
     def __nonzero__(self):
@@ -50,35 +58,6 @@ class IField(interface.Interface):
     mode = interface.Attribute('Mode')
     widget = interface.Attribute('Widget Factory')
     readonly = interface.Attribute('Readonly mode')
-
-
-# ----[ Data Managers ]------------------------------------------------------
-
-class IDataManager(interface.Interface):
-    """ data manager """
-
-    def append(name, data):
-        """ append named data """
-
-    def dataset(name):
-        """ return named data """
-
-
-class IFieldDataManager(interface.Interface):
-    """Field data manager."""
-
-    def get(node):
-        """Get the value.
-
-        If no value can be found, raise an error
-        """
-
-    def query(node, default=null):
-        """Get the value.
-
-        If no value can be found, return the default value.
-        If access is forbidden, raise an error.
-        """
 
 
 # vocabulary/term interfaces
@@ -277,7 +256,7 @@ class IForm(interface.Interface):
         Add errors to errors (IErrors) object.
         '''
 
-    def extractData(setErrors=True):
+    def extract(setErrors=True):
         '''Extract the data of the form.
 
         setErrors: needs to be passed to extract() and to sub-widgets'''

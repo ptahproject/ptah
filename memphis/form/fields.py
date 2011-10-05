@@ -1,16 +1,35 @@
 """ Basic fields """
 from memphis import view
-from memphis.form.directive import widget
-from memphis.form.interfaces import _, null, required
-from memphis.form import htmlwidget
-from memphis.form.field import Field, SequenceField
-from memphis.form.error import Invalid
+from memphis.form.interfaces import _, null, required, Invalid
+from memphis.form import vocabulary
+from memphis.form.field import field, Field, SequenceField
 
 
-class TextField(htmlwidget.HTMLTextInputWidget, Field):
+class InputField(Field, view.View):
+
+    title = None
+    lang = None
+    disabled = None
+    tabindex = None
+    lang = None
+    disabled = None
+    readonly = None
+    alt = None
+    accesskey = None
+    size = None
+    maxlength = None
+
+    def serialize(self, value):
+        return value
+
+    def deserialize(self, value):
+        return value
+
+
+class TextField(InputField):
     __doc__ = _(u'HTML Text input widget')
 
-    widget('text', _(u'Text widget'))
+    field('text')
 
     klass = u'text-widget'
     value = u''
@@ -21,10 +40,69 @@ class TextField(htmlwidget.HTMLTextInputWidget, Field):
         "memphis.form:templates/fields/text_display.pt")
 
 
-class TextAreaField(htmlwidget.HTMLTextAreaWidget, Field):
+class Number(object):
+
+    num = None
+
+    def serialize(self, value):
+        if value is null:
+            return null
+
+        try:
+            return str(self.num(value))
+        except Exception:
+            raise Invalid(self,
+                          _('"${val}" is not a number',
+                            mapping={'val': value}),
+                          )
+
+    def deserialize(self, value):
+        if value != 0 and not value:
+            return null
+
+        try:
+            return self.num(value)
+        except Exception:
+            raise Invalid(
+                self, _('"${val}" is not a number', mapping={'val':value}))
+
+
+class IntegerField(Number, TextField):
+    __doc__ = _(u'Integer input widget')
+
+    field('int')
+
+    klass = u'int-widget'
+    value = 0
+
+    num = int
+
+
+class FloatField(Number, TextField):
+    __doc__ = _(u'Float input widget')
+
+    field('float')
+
+    klass = u'float-widget'
+
+    num = float
+
+
+class Decimal(Number):
+    __doc__ = _(u'Decimal input widget')
+
+    field('decimal')
+
+    klass = u'decimal-widget'
+
+    def num(self, val):
+        return decimal.Decimal(str(val))
+
+
+class TextAreaField(TextField):
     __doc__ = _(u'HTML Text Area input widget')
 
-    widget('textarea', _(u'TextArea widget'))
+    field('textarea')
 
     klass = u'textarea-widget'
     value = u''
@@ -41,7 +119,7 @@ class TextAreaField(htmlwidget.HTMLTextAreaWidget, Field):
 class FileField(TextField):
     __doc__ = _(u'HTML File input widget')
 
-    widget('file', _(u'File widget'))
+    field('file')
     klass = u'input-file'
 
     tmpl_input = view.template(
@@ -49,7 +127,9 @@ class FileField(TextField):
     tmpl_display = view.template(
         "memphis.form:templates/fields/file_display.pt")
 
-    def extract(self, params, value):
+    def extract(self, default=null):
+        value = self.params.get(self.name, default)
+
         if hasattr(value, 'file'):
             data = {}
             data['fp'] = value.file
@@ -57,17 +137,14 @@ class FileField(TextField):
             data['mimetype'] = value.type
             data['size'] = value.length
             return data
-        else:
-            if self.missing is required:
-                raise Invalid(self, _('Required'))
 
-            return self.missing
+        return default
 
 
 class TinymceField(TextAreaField):
     __doc__ = _(u'TinyMCE Text Area input widget')
 
-    widget('tinymce', _(u'TinyMCE widget'))
+    field('tinymce')
 
     klass = u'tinymce-widget'
 
@@ -79,14 +156,17 @@ class TinymceField(TextAreaField):
         "memphis.form:templates/fields/tinymce_input.pt")
 
 
-class TextLinesField(TextAreaField):
+class LinesField(TextAreaField):
     __doc__ = _('Text area based widget, each line is treated as '
                 'sequence element.')
 
-    widget('textlines', _('Text lines widget'))
+    field('lines')
 
-    def extract(self, params, default = null):
-        value = params.get(self.name, default)
+    def serialize(self, value):
+        return u'\n'.join(value)
+
+    def extract(self, default = null):
+        value = self.params.get(self.name, default)
         if value is not default:
             return value.split(u'\n')
         return value
@@ -100,7 +180,7 @@ class TextLinesField(TextAreaField):
 class PasswordField(TextField):
     __doc__ = _('HTML Password input widget.')
 
-    widget('password', _('Password Widget'))
+    field('password')
 
     klass = u'password-widget'
 
@@ -110,7 +190,7 @@ class PasswordField(TextField):
         "memphis.form:templates/fields/password_display.pt")
 
 
-class CheckBoxField(htmlwidget.HTMLInputWidget, SequenceField):
+class CheckBoxField(SequenceField):
     """Input type checkbox widget implementation."""
 
     klass = u'checkbox-widget'
@@ -161,10 +241,10 @@ class SingleCheckBoxField(CheckBoxField):
         return self.terms
 
 
-class DateField(htmlwidget.HTMLTextInputWidget, Field):
+class DateField(InputField):
     __doc__ = _(u'Date input widget with JQuery Datepicker.')
 
-    widget('date', 'Date widget')
+    field('date')
 
     klass = u'date-widget'
     value = u''
@@ -179,10 +259,10 @@ class DateField(htmlwidget.HTMLTextInputWidget, Field):
         "memphis.form:templates/fields/date_display.pt")
 
 
-class DatetimeField(htmlwidget.HTMLTextInputWidget, Field):
+class DatetimeField(InputField):
     __doc__ = _(u'DateTime input widget with JQuery Datepicker.')
 
-    widget('datetime', 'DateTime widget')
+    field('datetime')
 
     klass = u'datetime-widget'
     value = u''
@@ -251,10 +331,10 @@ class DatetimeField(htmlwidget.HTMLTextInputWidget, Field):
         return dt.replace(tzinfo=self.tzinfo).isoformat()
 
 
-class RadioField(htmlwidget.HTMLInputWidget, SequenceField):
+class RadioField(SequenceField, InputField):
     __doc__ = _('HTML Radio input widget.')
 
-    widget('radio', _('Radio widget'))
+    field('radio')
 
     klass = u'radio-widget'
     items = ()
@@ -281,22 +361,42 @@ class RadioField(htmlwidget.HTMLInputWidget, SequenceField):
                 {'id':id, 'name':self.name, 'value':term.token,
                  'label':label, 'checked':checked})
 
+    def extract(self, params, default=null):
+        value = super(RadioField, self).extract(params, default)
+        if value is not default:
+            return value[0]
+        return value
+
 
 class HorizontalRadioField(RadioField):
     __doc__ = _('HTML Radio input widget.')
-    widget('radio-horizontal', _('Horizontal Radio widget'))
+
+    field('radio-horizontal')
 
     tmpl_input = view.template(
         "memphis.form:templates/fields/radiohoriz_input.pt")
 
 
-class SelectField(htmlwidget.HTMLSelectWidget, SequenceField):
+class BoolField(HorizontalRadioField):
+    __doc__ = _('Boolean input widget.')
+
+    field('bool')
+
+    terms = vocabulary.SimpleVocabulary(
+        vocabulary.SimpleTerm(True, 'true',  _('yes')),
+        vocabulary.SimpleTerm(False, 'false',  _('no')))
+
+
+class SelectField(SequenceField, InputField):
     __doc__ = _('HTML Select input widget.')
 
     klass = u'select-widget'
     prompt = False
 
-    widget('select', _('Select widget'))
+    multiple = None
+    size = 1
+
+    field('select')
 
     noValueMessage = _('no value')
     promptMessage = _('select a value ...')
@@ -345,4 +445,4 @@ class MultiSelectField(SelectField):
     size = 5
     multiple = 'multiple'
 
-    widget('multiselect', _('Multi select widget'))
+    field('multiselect')
