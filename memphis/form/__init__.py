@@ -44,7 +44,9 @@ from memphis.form.fields import PasswordField
 from memphis.form.fields import CheckBoxField
 from memphis.form.fields import SingleCheckBoxField
 from memphis.form.fields import DateField
-from memphis.form.fields import DatetimeField
+from memphis.form.fields import DateTimeField
+from memphis.form.fields import JSDateField
+from memphis.form.fields import JSDateTimeField
 from memphis.form.fields import RadioField
 from memphis.form.fields import HorizontalRadioField
 from memphis.form.fields import BoolField

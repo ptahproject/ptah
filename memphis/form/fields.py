@@ -330,7 +330,7 @@ class DateTimeField(InputField):
         return result
 
 
-class DatetimeField(DateTimeField):
+class JSDateTimeField(DateTimeField):
     __doc__ = _(u'DateTime input widget with JQuery Datepicker.')
 
     field('datetime')
