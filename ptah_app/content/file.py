@@ -7,8 +7,6 @@ from memphis import view, form
 import ptah, ptah_cms, ptah_app
 from ptah_app.permissions import AddFile
 
-from interfaces import IFile
-
 
 FileSchema = ptah_cms.ContentSchema + form.Fieldset(
 
@@ -20,7 +18,6 @@ FileSchema = ptah_cms.ContentSchema + form.Fieldset(
 
 
 class File(ptah_cms.Content):
-    interface.implements(IFile)
 
     __tablename__ = 'ptah_app_files'
 
@@ -64,18 +61,9 @@ class File(ptah_cms.Content):
                 'data': blob.read()}
 
 
-class FileView(view.View):
-    view.pyramidView(context=IFile,
-                     permission=ptah_cms.View,
-                     template=view.template('ptah_app:templates/file.pt'))
-
-    def update(self):
-        self.resolve = ptah.resolve
-
-
 class FileDownloadView(view.View):
-    view.pyramidView('download.html', IFile, layout=None,
-                     permission=ptah_cms.View)
+    view.pyramidView('download.html', File, layout=None,
+                     permission = ptah_cms.View)
 
     def render(self):
         data = self.context.data()
@@ -87,6 +75,25 @@ class FileDownloadView(view.View):
             'filename="%s"'%data['filename'].encode('utf-8')}
         response.body = data['data']
         return response
+
+
+class FileView(FileDownloadView):
+    view.pyramidView(context = File,
+                     permission = ptah_cms.View)
+
+    template = view.template('ptah_app:templates/file.pt')
+
+    def update(self):
+        self.resolve = ptah.resolve
+
+    def render(self):
+        if self.request.url.endswith('/'):
+            return self.template(
+                view = self,
+                context = self.context,
+                request = self.request)
+
+        return super(FileView, self).render()
 
 
 class FileAddForm(ptah_app.AddForm):

@@ -8,7 +8,3 @@ class IFolder(IContainer):
 
 class IPage(IContent):
     """ page """
-
-
-class IFile(IContent):
-    """ file """
