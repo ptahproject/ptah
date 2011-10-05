@@ -336,7 +336,7 @@ class JSDateTimeField(DateTimeField):
         self.date_name = '%s.date'%self.name
         self.time_name = '%s.time'%self.name
 
-        super(DatetimeField, self).update(request)
+        super(DateTimeField, self).update(request)
 
         self.date_part = self.params.get(self.date_name, null)
         self.time_part = self.params.get(self.time_name, null)
