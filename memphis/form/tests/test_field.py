@@ -17,9 +17,9 @@ class TestField(Base):
 
     def test_field(self):
         from memphis.form.field import Field
-        
+
         field = Field(node)
-        
+
         self.assertEqual(field.name, 'test')
         self.assertFalse(field.readonly)
         self.assertEqual(repr(field), "<Field 'test'>")
@@ -29,12 +29,12 @@ class TestFieldset(Base):
 
     def test_fieldset_name_title(self):
         fieldset = form.Fieldset(node)
-        
+
         self.assertEqual(fieldset.name, 'test')
         self.assertEqual(fieldset.legend, 'Test node')
 
         fieldset = form.Fieldset(node, name='othername', legend='Other name')
-        
+
         self.assertEqual(fieldset.name, 'othername')
         self.assertEqual(fieldset.legend, 'Other name')
 
@@ -67,7 +67,7 @@ class TestFieldset(Base):
         fields = list(fieldset.fields())
         self.assertIs(fields[0].node, node)
         self.assertIs(fields[1].node, node1)
-        
+
         self.assertRaises(ValueError, fieldset.append, schema)
 
     def test_fieldset_fiedset(self):
@@ -95,7 +95,7 @@ class TestFieldset(Base):
         fs = fieldset['schema2']
         self.assertIsInstance(fs, form.Fieldset)
         self.assertIn('test', fs)
-        
+
         self.assertRaises(ValueError, fieldset.append, schema)
 
     def test_fieldset_append_fieldset(self):
@@ -150,7 +150,7 @@ class TestFields(Base):
 
     def test_fields(self):
         self.assertRaises(TypeError, form.Fields, object())
-        
+
         class Schema(colander.Schema):
 
             test = colander.SchemaNode(

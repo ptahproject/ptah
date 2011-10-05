@@ -17,6 +17,9 @@ class Invalid(Exception):
         self.field = field
         self.message = message
 
+    def __str__(self):
+        return 'Invalid: %s: <%s>'%(self.field, self.message)
+
 
 class _null(object):
     """ Represents a null value in colander-related operations. """

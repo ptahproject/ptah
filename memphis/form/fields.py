@@ -1,8 +1,10 @@
 """ Basic fields """
+import datetime, iso8601
 from memphis import view
-from memphis.form.interfaces import _, null, required, Invalid
+from memphis.view import formatter
 from memphis.form import vocabulary
 from memphis.form.field import field, Field, SequenceField
+from memphis.form.interfaces import _, null, required, Invalid, ITerm
 
 
 class InputField(Field, view.View):
@@ -208,9 +210,9 @@ class CheckBoxField(SequenceField):
     def isChecked(self, term):
         return term.token in self.value
 
-    def update(self):
+    def update(self, request):
         """See z3c.form.interfaces.IWidget."""
-        super(CheckBoxWidget, self).update()
+        super(CheckBoxWidget, self).update(request)
 
         self.items = []
         for count, term in enumerate(self.terms):
@@ -242,6 +244,40 @@ class SingleCheckBoxField(CheckBoxField):
 
 
 class DateField(InputField):
+    __doc__ = _(u'Simple date input field.')
+
+    def serialize(self, value):
+        if value is null:
+            return null
+
+        if isinstance(value, datetime.datetime):
+            value = value.date()
+
+        if not isinstance(value, datetime.date):
+            raise Invalid(self,
+                          _('"${val}" is not a date object',
+                            mapping={'val': value}))
+
+        return value.isoformat()
+
+    def deserialize(self, value):
+        if not value:
+            return null
+        try:
+            result = iso8601.parse_date(value)
+            result = result.date()
+        except (iso8601.ParseError, TypeError):
+            try:
+                year, month, day = map(int, value.split('-', 2))
+                result = datetime.date(year, month, day)
+            except Exception, e:
+                raise Invalid(
+                    self, _('Invalid date', mapping={'val': value, 'err': e}))
+
+        return result
+
+
+class JSDateField(DateField):
     __doc__ = _(u'Date input widget with JQuery Datepicker.')
 
     field('date')
@@ -249,26 +285,58 @@ class DateField(InputField):
     klass = u'date-widget'
     value = u''
 
-    __fname__ = 'date'
-    __title__ = _(u'Date widget')
-    __description__ = _(u'Date input widget with JQuery Datepicker.')
-
     tmpl_input = view.template(
         "memphis.form:templates/fields/date_input.pt")
     tmpl_display = view.template(
         "memphis.form:templates/fields/date_display.pt")
 
 
-class DatetimeField(InputField):
+class DateTimeField(InputField):
+
+    default_tzinfo = iso8601.iso8601.Utc()
+
+    def serialize(self, value):
+        if value is null or value is None:
+            return null
+
+        if type(value) is datetime.date: # cant use isinstance; dt subs date
+            value = datetime.datetime.combine(value, datetime.time())
+
+        if not isinstance(value, datetime.datetime):
+            raise Invalid(
+                self, _('"${val}" is not a datetime object',
+                        mapping={'val':value}))
+
+        if value.tzinfo is None:
+            value = value.replace(tzinfo=self.default_tzinfo)
+
+        return value.isoformat()
+
+    def deserialize(self, value):
+        if not value:
+            return null
+
+        try:
+            result = iso8601.parse_date(
+                value, default_timezone=self.default_tzinfo)
+        except (iso8601.ParseError, TypeError), e:
+            try:
+                year, month, day = map(int, value.split('-', 2))
+                result = datetime.datetime(year, month, day,
+                                           tzinfo=self.default_tzinfo)
+            except Exception, e:
+                raise Invalid(self, _('Invalid date',
+                                      mapping={'val': value, 'err':e}))
+        return result
+
+
+class DatetimeField(DateTimeField):
     __doc__ = _(u'DateTime input widget with JQuery Datepicker.')
 
     field('datetime')
 
     klass = u'datetime-widget'
     value = u''
-
-    __fname__ = 'datetime'
-    __title__ = _(u'DateTime widget')
 
     time_part = null
     date_part = null
@@ -279,11 +347,11 @@ class DatetimeField(InputField):
     tmpl_display = view.template(
         "memphis.form:templates/fields/datetime_display.pt")
 
-    def update(self):
+    def update(self, request):
         self.date_name = '%s.date'%self.name
         self.time_name = '%s.time'%self.name
 
-        super(DatetimeWidget, self).update()
+        super(DatetimeField, self).update(request)
 
         self.date_part = self.params.get(self.date_name, null)
         self.time_part = self.params.get(self.time_name, null)
@@ -345,10 +413,10 @@ class RadioField(SequenceField, InputField):
         "memphis.form:templates/fields/radio_display.pt")
 
     def isChecked(self, term):
-        return term.token in self.value
+        return term.token == self.value
 
-    def update(self):
-        super(RadioWidget, self).update()
+    def update(self, request):
+        super(RadioField, self).update(request)
 
         self.items = []
         for count, term in enumerate(self.terms):
@@ -361,8 +429,8 @@ class RadioField(SequenceField, InputField):
                 {'id':id, 'name':self.name, 'value':term.token,
                  'label':label, 'checked':checked})
 
-    def extract(self, params, default=null):
-        value = super(RadioField, self).extract(params, default)
+    def extract(self, default=null):
+        value = super(RadioField, self).extract(default)
         if value is not default:
             return value[0]
         return value

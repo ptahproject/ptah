@@ -320,12 +320,12 @@ class SequenceField(Field):
 
         return self.terms
 
-    def update(self):
+    def update(self, request):
         self.empty_marker = '%s-empty-marker'%self.name
 
         # Create terms first, since we need them for the generic update.
         self.updateTerms()
-        super(SequenceWidget, self).update()
+        super(SequenceField, self).update(request)
 
     def extract(self, default=null):
         if (self.name not in self.params and
