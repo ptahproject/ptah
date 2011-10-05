@@ -143,21 +143,6 @@ class FileField(TextField):
         return default
 
 
-class TinymceField(TextAreaField):
-    __doc__ = _(u'TinyMCE Text Area input widget')
-
-    field('tinymce')
-
-    klass = u'tinymce-widget'
-
-    width = '400px'
-    height = '300px'
-    theme = "advanced"
-
-    tmpl_input = view.template(
-        "memphis.form:templates/fields/tinymce_input.pt")
-
-
 class LinesField(TextAreaField):
     __doc__ = _('Text area based widget, each line is treated as '
                 'sequence element.')

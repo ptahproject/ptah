@@ -38,7 +38,6 @@ from memphis.form.fields import FloatField
 from memphis.form.fields import Decimal
 from memphis.form.fields import TextAreaField
 from memphis.form.fields import FileField
-from memphis.form.fields import TinymceField
 from memphis.form.fields import LinesField
 from memphis.form.fields import PasswordField
 from memphis.form.fields import CheckBoxField
@@ -60,6 +59,12 @@ from memphis.form.form import DisplayForm
 from memphis.form.form import FormWidgets
 from memphis.form.form import setCsrfUtility
 
+# form pagelets
+from memphis.form.form import FORM_VIEW
+from memphis.form.form import FORM_ACTIONS
+from memphis.form.form import FORM_WIDGET
+from memphis.form.form import FORM_DISPLAY_WIDGET
+
 # button
 from memphis.form.button import button
 from memphis.form.button import Button
@@ -69,9 +74,3 @@ from memphis.form.button import AC_PRIMARY
 from memphis.form.button import AC_DANGER
 from memphis.form.button import AC_SUCCESS
 from memphis.form.button import AC_INFO
-
-# form pagelets
-from memphis.form.pagelets import FORM_VIEW
-from memphis.form.pagelets import FORM_ACTIONS
-from memphis.form.pagelets import FORM_WIDGET
-from memphis.form.pagelets import FORM_DISPLAY_WIDGET

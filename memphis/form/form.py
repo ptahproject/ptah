@@ -8,9 +8,8 @@ from pyramid.httpexceptions import HTTPForbidden
 from webob.multidict import UnicodeMultiDict, MultiDict
 
 from memphis import view, config
-from memphis.form.field import Fieldset
+from memphis.form.field import Field, Fieldset
 from memphis.form.button import Buttons, Actions
-from memphis.form.pagelets import FORM_VIEW
 from memphis.form.interfaces import _, Invalid, FORM_INPUT, FORM_DISPLAY
 from memphis.form.interfaces import IForm, IInputForm, IDisplayForm, IWidgets
 
@@ -209,3 +208,40 @@ class DisplayForm(Form):
 
     def getParams(self):
         return self.empty
+
+
+FORM_VIEW = 'form-view'
+FORM_ACTIONS = 'form-actions'
+FORM_WIDGET = 'form-widget'
+FORM_DISPLAY_WIDGET = 'form-display-widget'
+
+
+view.pageletType(FORM_VIEW, IForm, 'Form view')
+view.pageletType(FORM_ACTIONS, IForm, 'Form actions')
+view.pageletType(FORM_WIDGET, Field, 'Form widget')
+view.pageletType(FORM_DISPLAY_WIDGET, Field, 'Form display widget')
+
+
+view.registerPagelet(
+    'form-view', IInputForm,
+    template = view.template('memphis.form:templates/form.pt'))
+
+
+view.registerPagelet(
+    'form-view', IDisplayForm,
+    template = view.template('memphis.form:templates/displayform.pt'))
+
+
+view.registerPagelet(
+    'form-actions', IInputForm,
+    template = view.template('memphis.form:templates/form-actions.pt'))
+
+
+view.registerPagelet(
+    'form-widget', Field,
+    template = view.template('memphis.form:templates/widget.pt'))
+
+
+view.registerPagelet(
+    'form-display-widget', Field,
+    template = view.template('memphis.form:templates/widget-display.pt'))
