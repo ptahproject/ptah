@@ -15,8 +15,7 @@ FileSchema = ptah_cms.ContentSchema + form.Fieldset(
     form.FieldFactory(
         'file',
         'data',
-        title = 'Data',
-        widget = 'file')
+        title = 'Data')
     )
 
 

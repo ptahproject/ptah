@@ -17,7 +17,7 @@ class AddForm(form.Form):
     name_show = True
     name_suffix = ''
     name_widgets = None
-    name_fields = form.Fieldset(ptah_cms.ContentNameSchema)
+    name_fields = ptah_cms.ContentNameSchema
 
     def __init__(self, context, request):
         self.container = context
@@ -81,7 +81,6 @@ class AddForm(form.Form):
 
     def extract(self, setErrors=True):
         data, errors = self.widgets.extract(setErrors)
-        print (data, errors)
 
         if self.name_show:
             name_data, name_errors = self.name_widgets.extract(setErrors)
