@@ -32,7 +32,7 @@ class EditRecord(form.Form):
 
     @form.button('Modify', actype=form.AC_PRIMARY)
     def modify(self):
-        data, errors = self.extractData()
+        data, errors = self.extract()
 
         if errors:
             self.message(errors, 'form-error')
@@ -71,7 +71,7 @@ class AddRecord(form.Form):
 
     @form.button('Create', actype=form.AC_PRIMARY)
     def create(self):
-        data, errors = self.extractData()
+        data, errors = self.extract()
 
         if errors:
             self.message(errors, 'form-error')
@@ -88,7 +88,7 @@ class AddRecord(form.Form):
 
     @form.button('Save & Create new', actype=form.AC_PRIMARY)
     def create_multiple(self):
-        data, errors = self.extractData()
+        data, errors = self.extract()
 
         if errors:
             self.message(errors, 'form-error')

@@ -7,9 +7,9 @@ import ptah
 from ptah.events import PrincipalAddedEvent
 
 from ptah.crowd import _
+from module import CrowdModule
 from provider import CrowdUser, Session
 from schemas import UserSchema, ManagerChangePasswordSchema
-from module import CrowdModule, ICrowdUser
 
 
 class CreateUserForm(form.Form):
@@ -19,11 +19,11 @@ class CreateUserForm(form.Form):
 
     csrf = True
     label = _('Create new user')
-    fields = form.Fieldset(UserSchema).omit('id', 'joined')
+    fields = UserSchema.omit('id', 'joined')
 
     @form.button(_('Create'), actype=form.AC_PRIMARY)
     def create(self):
-        data, errors = self.extractData()
+        data, errors = self.extract()
 
         if errors:
             self.message(errors, 'form-error')
@@ -54,7 +54,7 @@ class CreateUserForm(form.Form):
 
 
 class UserInfo(form.Form):
-    view.pyramidView(context=ICrowdUser)
+    view.pyramidView(context=CrowdUser)
 
     __intr_path__ = '/ptah-manage/crowd/${user}/index.html'
 
@@ -91,7 +91,7 @@ class UserInfo(form.Form):
 
 
 class ChangePassword(form.Form):
-    view.pyramidView('password.html', ICrowdUser)
+    view.pyramidView('password.html', CrowdUser)
 
     __intr_path__ = '/ptah-manage/crowd/${user}/password.html'
 
@@ -103,7 +103,7 @@ class ChangePassword(form.Form):
 
     @form.button(_('Change'), actype=form.AC_PRIMARY)
     def change(self):
-        data, errors = self.extractData()
+        data, errors = self.extract()
 
         if errors:
             self.message(errors, 'form-error')

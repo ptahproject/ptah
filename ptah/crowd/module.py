@@ -1,6 +1,5 @@
 """ introspect module """
 import ptah
-import colander
 import sqlalchemy as sqla
 from zope import interface
 from pyramid.httpexceptions import HTTPFound
@@ -47,17 +46,6 @@ view.registerPagelet(
     template = view.template('ptah.crowd:templates/ptah-actions.pt'))
 
 
-class SearchSchema(colander.Schema):
-    """ search users """
-
-    term = colander.SchemaNode(
-        colander.Str(),
-        title = _(u'Search term'),
-        description = _('Ptah searches users by login and email'),
-        missing = u'',
-        default = u'')
-
-
 class SearchUsers(form.Form):
     view.pyramidView(
         context = CrowdModule,
@@ -67,7 +55,14 @@ class SearchUsers(form.Form):
     __intr_path__ = '/ptah-manage/crowd/search.html'
 
     csrf = True
-    fields = form.Fieldset(SearchSchema)
+    fields = form.Fieldset(
+        form.TextField(
+            'term',
+            title = _(u'Search term'),
+            description = _('Ptah searches users by login and email'),
+            missing = u'',
+            default = u'')
+        )
 
     users = None
     page = ptah.Pagination(15)
@@ -130,7 +125,7 @@ class SearchUsers(form.Form):
 
     @form.button(_('Search'), actype=form.AC_PRIMARY)
     def search(self):
-        data, error = self.extractData()
+        data, error = self.extract()
 
         if not data['term']:
             self.message('Please specify search term', 'warning')

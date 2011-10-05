@@ -1,5 +1,5 @@
 """ schemas """
-import colander
+from memphis import form
 from ptah import passwordTool
 
 from ptah.crowd import _
@@ -14,86 +14,88 @@ def lower(s):
 
 def checkLogin(node, login):
     if login and CrowdUser.get(login) is not None:
-        raise colander.Invalid(node, _('Login already is in use.'))
+        raise form.Invalid(node, _('Login already is in use.'))
 
 
 def passwordValidator(node, appstruct):
     err = passwordTool.validatePassword(appstruct)
     if err is not None:
-        raise colander.Invalid(node, err)
+        raise form.Invalid(node, err)
 
 
-class RegistrationSchema(colander.Schema):
+RegistrationSchema = form.Fieldset(
 
-    name = colander.SchemaNode(
-        colander.Str(),
+    form.TextField(
+        'name',
         title=_('Full Name'),
         description=_(u"e.g. John Smith. This is how users "
                       u"on the site will identify you."),
-        )
+        ),
 
-    login = colander.SchemaNode(
-        colander.Str(),
+    form.TextField(
+        'login',
         title = _(u'E-mail/Login'),
         description = _(u'This is the username you will use to log in. '
                         'It must be an email address. <br /> Your email address '
                         'will not be displayed to any user or be shared with '
                         'anyone else.'),
         preparer = lower,
-        validator = colander.All(colander.Email(), checkLogin),
+        validator = form.All(form.Email(), checkLogin),
         )
+    )
 
 
-class ResetPasswordSchema(colander.Schema):
-    """ reset password """
+ResetPasswordSchema = form.Fieldset(
 
-    login = colander.SchemaNode(
-        colander.Str(),
+    form.TextField(
+        'login',
         title = _(u'Login Name'),
         description = _('Login names are not case sensitive.'),
         missing = u'',
         default = u'')
+    )
 
 
-class UserSchema(colander.Schema):
+UserSchema = form.Fieldset(
 
-    id = colander.SchemaNode(
-        colander.Int(),
-        title=_('Id'))
+    form.fields.TextField(
+        'id', title=_('Id')),
 
-    name = colander.SchemaNode(
-        colander.Str(),
+    form.fields.TextField(
+        'name',
         title=_('Full Name'),
         description=_(u"e.g. John Smith. This is how users "
                       u"on the site will identify you."),
-        )
+        ),
 
-    login = colander.SchemaNode(
-        colander.Str(),
+    form.fields.TextField(
+        'login',
         title = _(u'E-mail/Login'),
         description = _(u'This is the username you will use to log in. '
                         'It must be an email address. <br /> Your email address '
                         'will not be displayed to any user or be shared with '
                         'anyone else.'),
         preparer = lower,
-        validator = colander.All(colander.Email(), checkLogin),
-        )
+        validator = form.All(form.Email(), checkLogin),
+        ),
 
-    password = colander.SchemaNode(
-        colander.Str(),
+    form.fields.PasswordField(
+        'password',
         title = _(u'New password'),
         description = _(u'Enter new password. '\
                         u'No spaces or special characters, should contain '\
                         u'digits and letters in mixed case.'),
         validator = passwordValidator)
+    )
 
 
-class ManagerChangePasswordSchema(colander.Schema):
+ManagerChangePasswordSchema = form.Fieldset(
 
-    password = colander.SchemaNode(
-        colander.Str(),
+    form.PasswordField(
+        'password',
         title = _(u'New password'),
         description = _(u'Enter new password. '\
                         u'No spaces or special characters, should contain '\
                         u'digits and letters in mixed case.'),
         validator = passwordValidator)
+    )

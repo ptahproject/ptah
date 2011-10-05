@@ -1,5 +1,4 @@
 """ reset password form """
-import colander
 from datetime import datetime
 from memphis import config, form, view
 from pyramid import security
@@ -18,24 +17,20 @@ view.registerRoute('ptah-resetpassword', '/resetpassword.html')
 view.registerRoute('ptah-resetpassword-form', '/resetpasswordform.html')
 
 
-class ResetPasswordSchema(colander.Schema):
-    """ reset password """
-
-    login = colander.SchemaNode(
-        colander.Str(),
-        title = _(u'Login Name'),
-        description = _('Login names are not case sensitive.'),
-        missing = u'',
-        default = u'')
-
-
 class ResetPassword(form.Form):
     view.pyramidView(
         route = 'ptah-resetpassword', layout='ptah-security',
         template = view.template('ptah.crowd:templates/resetpassword.pt'))
 
     csrf = True
-    fields = form.Fieldset(ResetPasswordSchema)
+    fields = form.Fieldset(
+        form.FieldFactory(
+            'text',
+            'login',
+            title = _(u'Login Name'),
+            description = _('Login names are not case sensitive.'),
+            missing = u'',
+            default = u''))
 
     def getContent(self):
         return {'login': self.request.params.get('login', '')}
@@ -50,7 +45,7 @@ class ResetPassword(form.Form):
     def reset(self):
         request = self.request
         registry = request.registry
-        data, errors = self.extractData()
+        data, errors = self.extract()
 
         login = data.get('login')
         if login:
@@ -85,7 +80,7 @@ class ResetPasswordForm(form.Form):
         template=view.template('ptah.crowd:templates/resetpasswordform.pt'))
 
     csrf = True
-    fields = form.Fieldset(PasswordSchema)
+    fields = PasswordSchema
 
     def update(self):
         request = self.request
@@ -105,7 +100,7 @@ class ResetPasswordForm(form.Form):
 
     @form.button(_("Change password and login"), actype=form.AC_PRIMARY)
     def changePassword(self):
-        data, errors = self.extractData()
+        data, errors = self.extract()
 
         if errors:
             self.message(errors, 'form-error')

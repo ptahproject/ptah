@@ -1,5 +1,4 @@
 """ login form """
-import colander
 from memphis import view, form
 from pyramid import security
 from pyramid.httpexceptions import HTTPFound
@@ -44,7 +43,7 @@ class LoginForm(form.Form):
     def handleLogin(self):
         request = self.request
 
-        data, errors = self.extractData()
+        data, errors = self.extract()
         if errors:
             self.message(errors, 'form-error')
             return

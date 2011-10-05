@@ -6,9 +6,8 @@ from hashlib import sha1
 from base64 import urlsafe_b64encode, urlsafe_b64decode
 from datetime import timedelta
 
-import colander
 from zope import interface
-from memphis import config
+from memphis import config, form
 
 import ptah
 from ptah import token
@@ -132,42 +131,39 @@ class PasswordTool(object):
 passwordTool = PasswordTool()
 
 
-def passwordSchemaValidator(node, appstruct):
-    if appstruct['password'] is colander.required or \
-           appstruct['confirm_password'] is colander.required:
+def passwordSchemaValidator(field, appstruct):
+    if appstruct['password'] is form.required or \
+           appstruct['confirm_password'] is form.required:
         return
 
     if appstruct['password'] and appstruct['confirm_password']:
         if appstruct['password'] != appstruct['confirm_password']:
-            raise colander.Invalid(
+            raise form.Invalid(
                 node, _("Password and Confirm Password should be the same."))
 
         err = passwordTool.validatePassword(appstruct['password'])
         if err is not None:
-            raise colander.Invalid(node, err)
+            raise form.Invalid(node, err)
 
 
-PasswordSchema = colander.SchemaNode(
-    colander.Mapping(),
+PasswordSchema = form.Fieldset(
 
-    colander.SchemaNode(
-        colander.Str(),
-        name = 'password',
+    form.FieldFactory(
+        'password',
+        'password',
         title = _(u'Password'),
         description = _(u'Enter password. '\
                         u'No spaces or special characters, should contain '\
                         u'digits and letters in mixed case.'),
-        default = u'',
-        widget = 'password'),
+        default = u''),
 
-    colander.SchemaNode(
-        colander.Str(),
-        name = 'confirm_password',
+    form.FieldFactory(
+        'password',
+        'confirm_password',
         title = _(u'Confirm password'),
         description = _(u'Re-enter the password. '
                         u'Make sure the passwords are identical.'),
-        default = u'',
-        widget = 'password'),
+        default = u''),
 
     validator = passwordSchemaValidator
 )

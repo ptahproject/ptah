@@ -1,4 +1,3 @@
-import colander
 from memphis import config, view
 
 view.registerLayout(

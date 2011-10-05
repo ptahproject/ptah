@@ -58,7 +58,7 @@ class Registration(form.Form):
 
     @form.button(_(u"Register"), actype=form.AC_PRIMARY)
     def handleRegister(self):
-        data, errors = self.extractData()
+        data, errors = self.extract()
         if errors:
             self.message(errors, 'form-error')
             return
