@@ -7,5 +7,5 @@
   Size: ${view.format.size(blob.size)}<br />
   Mimetype: ${blob.mimetype}<br />
   Original filename: ${blob.filename}<br />
-  <a href="${request.resource_url(context)}download.html">Download</a>
+  <a href="${request.resource_url(context)[:-1]}">Download</a>
 </div>
