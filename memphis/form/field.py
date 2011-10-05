@@ -99,7 +99,7 @@ class Fieldset(OrderedDict):
     def validate(self, data):
         self.validator(self, data)
 
-    def bind(self, content, params):
+    def bind(self, content=None, params={}):
         clone = Fieldset(
             name = self.name,
             legend = self.legend,
@@ -128,8 +128,15 @@ class Fieldset(OrderedDict):
             value = field.missing
             try:
                 form = field.extract()
+
                 value = field.deserialize(form)
-                value = field.validate(value)
+                if value is null:
+                    value = field.missing
+
+                field.validate(value)
+
+                if field.preparer is not None:
+                    value = field.preparer(value)
             except Invalid, error:
                 errors.append(error)
 
@@ -141,7 +148,7 @@ class Fieldset(OrderedDict):
             except Invalid, error:
                 errors.append(error)
 
-        return data, errors
+        return data, FieldsetErrors(self, errors)
 
     def __add__(self, fieldset):
         if not isinstance(fieldset, Fieldset):
@@ -150,13 +157,32 @@ class Fieldset(OrderedDict):
         return self.__class__(self, fieldset)
 
 
+class FieldsetErrors(list):
+
+    def __init__(self, fieldset, *args):
+        super(FieldsetErrors, self).__init__(*args)
+
+        self.fieldset = fieldset
+
+    @property
+    def message(self):
+        return self.as_dict()
+
+    def as_dict(self):
+        r = {}
+        for err in self:
+            r[err.field.name] = err.message
+
+        return r
+
+
 class Field(object):
     """Widget base class."""
 
     __field_name__ = ''
 
     name = ''
-    label = u''
+    title = u''
     description = u''
     required = False
 
@@ -175,7 +201,7 @@ class Field(object):
 
     def __init__(self, name, **kw):
         self.name = name
-        self.label = kw.get('title', name.capitalize())
+        self.title = kw.get('title', name.capitalize())
         self.description = kw.get('description', u'')
         self.readonly = kw.get('readonly', None)
         self.default = kw.get('missing', null)
@@ -223,19 +249,11 @@ class Field(object):
         raise NotImplemented
 
     def validate(self, value):
-        if value is null:
-            value = self.missing
-            if value is required:
-                raise Invalid(self, _('Required'))
-            return value
+        if value is required:
+            raise Invalid(self, _('Required'))
 
         if self.validator is not None:
             self.validator(self, value)
-
-        if self.preparer is not None:
-            value = self.preparer(value)
-
-        return value
 
     def extract(self, default=null):
         value = self.params.get(self.name, default)
@@ -330,14 +348,18 @@ class SequenceField(Field):
 
 class FieldFactory(Field):
 
-    _field = ''
+    __field_name__ = ''
 
     def __init__(self, typ, name, **kw):
-        self._field = typ
+        self.__field_name__ = typ
+
         super(FieldFactory, self).__init__(name, **kw)
 
     def bind(self, prefix, content, params):
-        cls = getField(self._field)
+        cls = getField(self.__field_name__)
+        if cls is None:
+            raise TypeError(
+                "Can't find field implementation for '%s'"%cls.__field_name__)
 
         clone = cls.__new__(cls)
         clone.__dict__.update(self.__dict__)

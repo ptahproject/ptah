@@ -2,7 +2,7 @@
      tal:define="error context.error">
   <label tal:attributes="for context.id;
 			 title context.description">
-    ${context.label}
+    ${context.title}
     <tal:block condition="context.required">*</tal:block>
   </label>
   <div class="input" tal:on-error="nothing">
