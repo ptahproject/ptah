@@ -11,12 +11,14 @@ from ptah_app.permissions import AddFile
 from interfaces import IFile
 
 
-class FileSchema(ptah_cms.ContentSchema):
+FileSchema = ptah_cms.ContentSchema + form.Fieldset(
 
-    data = colander.SchemaNode(
-        colander.Str(),
+    form.FieldFactory(
+        'file',
+        'data',
         title = 'Data',
         widget = 'file')
+    )
 
 
 class File(ptah_cms.Content):
@@ -27,7 +29,7 @@ class File(ptah_cms.Content):
     __type__ = ptah_cms.Type(
         'file', 'File',
         add = 'addfile.html',
-        schema = FileSchema,
+        fieldset = FileSchema,
         description = 'A file in the site.',
         permission = AddFile,
         )
@@ -37,7 +39,7 @@ class File(ptah_cms.Content):
     @ptah_cms.action(permission=ptah_cms.ModifyContent)
     def update(self, **data):
         """ Update file content. """
-        fd = data['data']
+        fd = data.get('data')
         if fd:
             blob = ptah.resolve(self.blobref)
             if blob is None:
@@ -93,7 +95,6 @@ class FileAddForm(ptah_app.AddForm):
     view.pyramidView('addfile.html', ptah_cms.IContainer)
 
     tinfo = File.__type__
-    fields = form.Fieldset(FileSchema)
 
     def chooseName(self, **kw):
         filename = kw['data']['filename']

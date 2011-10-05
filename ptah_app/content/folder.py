@@ -23,4 +23,3 @@ class AddFolderForm(ptah_app.AddForm):
     view.pyramidView('addfolder.html', ptah_cms.IContainer)
 
     tinfo = Folder.__type__
-    fields = form.Fieldset(Folder.__type__.schema)

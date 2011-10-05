@@ -22,7 +22,14 @@ class SharingForm(form.Form):
         template = view.template('ptah_app:templates/sharing.pt'))
 
     csrf = True
-    fields = form.Fieldset(SearchSchema)
+    fields = form.Fieldset(
+        form.FieldFactory(
+            'text',
+            'term',
+            title = u'Search term',
+            description = 'Searches users by login and email',
+            missing = u'',
+            default = u''))
 
     users = None
     bsize = 15
@@ -67,7 +74,7 @@ class SharingForm(form.Form):
 
     @form.button('Search', actype=form.AC_PRIMARY)
     def search(self):
-        data, error = self.extractData()
+        data, error = self.extract()
 
         if not data['term']:
             self.message('Please specify search term', 'warning')

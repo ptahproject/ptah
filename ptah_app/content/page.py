@@ -11,14 +11,6 @@ from ptah_app.permissions import AddPage
 from interfaces import IPage
 
 
-class PageSchema(ptah_cms.ContentSchema):
-
-    text = colander.SchemaNode(
-        colander.Str(),
-        title = 'Text',
-        widget = 'tinymce')
-
-
 class Page(ptah_cms.Content):
     interface.implements(IPage)
 
@@ -27,13 +19,13 @@ class Page(ptah_cms.Content):
     __type__ = ptah_cms.Type(
         'page', 'Page',
         add = 'addpage.html',
-        schema = PageSchema,
         description = 'A page in the site.',
         permission = AddPage,
         name_suffix = '.html',
         )
 
-    text = sqla.Column(sqla.Unicode)
+    text = sqla.Column(sqla.Unicode,
+                       info = {'field_type': 'tinymce'})
 
 
 view.registerView(context=IPage,
@@ -44,4 +36,4 @@ class AddPageForm(AddForm):
     view.pyramidView('addpage.html', ptah_cms.IContainer, permission=AddPage)
 
     tinfo = Page.__type__
-    fields = form.Fieldset(PageSchema)
+

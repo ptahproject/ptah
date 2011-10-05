@@ -26,7 +26,7 @@ class AddForm(form.Form):
 
     @reify
     def fields(self):
-        return form.Fieldset(self.tinfo.schema)
+        return self.tinfo.fieldset
 
     @reify
     def label(self):
@@ -64,7 +64,7 @@ class AddForm(form.Form):
 
         if self.name_show:
             self.name_widgets = \
-                form.FieldWidgets(self.name_fields, self, self.request)
+                   form.FormWidgets(self.name_fields, self, self.request)
             self.name_widgets.mode = self.mode
             self.name_widgets.update()
 
@@ -76,12 +76,13 @@ class AddForm(form.Form):
 
             name = data['__name__']
             if name in self.container.keys():
-                error = colander.Invalid(
+                error = form.Invalid(
                     self.name_fields['__name__'].node, 'Name already in use')
                 errors.append(error)
 
-    def extractData(self, setErrors=True):
+    def extract(self, setErrors=True):
         data, errors = self.widgets.extract(setErrors)
+        print (data, errors)
 
         if self.name_show:
             name_data, name_errors = self.name_widgets.extract(setErrors)
@@ -97,14 +98,14 @@ class AddForm(form.Form):
         if not name:
             name = self.chooseName(**data)
 
-        content = ptah_cms.cms(self.container).create(self.tinfo.__uri__, name)
-        ptah_cms.cms(content).update(**data)
+        content = ptah_cms.cms(self.container).create(
+            self.tinfo.__uri__, name, **data)
 
         return content
 
     @form.button('Add', actype=form.AC_PRIMARY)
     def saveHandler(self):
-        data, errors = self.extractData()
+        data, errors = self.extract()
 
         if errors:
             self.message(errors, 'form-error')
@@ -137,10 +138,14 @@ class EditForm(form.Form):
 
     @reify
     def fields(self):
-        return form.Fieldset(self.tinfo.schema)
+        return self.tinfo.fieldset
 
     def getContent(self):
-        return self.context
+        data = {}
+        for name, field in self.tinfo.fieldset.items():
+            data[name] = getattr(self.context, name, field.default)
+
+        return data
 
     def update(self):
         self.tinfo = self.context.__type__
@@ -152,7 +157,7 @@ class EditForm(form.Form):
 
     @form.button('Save', actype=form.AC_PRIMARY)
     def saveHandler(self):
-        data, errors = self.extractData()
+        data, errors = self.extract()
 
         if errors:
             self.message(errors, 'form-error')

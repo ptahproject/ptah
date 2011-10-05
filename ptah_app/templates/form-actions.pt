@@ -3,6 +3,6 @@
 </tal:block>
 <div class="actions" tal:condition="context.actions.values()">
   <tal:block tal:repeat="action context.actions.values()"
-             tal:content="structure view.pagelet(action.mode, action)">
+             tal:content="structure action.render()">
   </tal:block>
 </div>
