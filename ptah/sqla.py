@@ -170,8 +170,7 @@ def buildSqlaFieldset(table, fieldNames=None, skipPrimaryKey=False):
 
         field = form.FieldFactory(typ, name = cl.name)
 
-        for name in ('missing', 'title', 'description',
-                     'widget', 'vocabulary'):
+        for name in ('missing', 'title', 'description', 'vocabulary'):
             if name in cl.info:
                 setattr(field, name, cl.info[name])
 

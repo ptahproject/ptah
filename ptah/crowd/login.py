@@ -35,8 +35,7 @@ class LoginForm(form.Form):
             title = _(u'Password'),
             description = _('Case sensitive, make sure caps '\
                                 'lock is not enabled.'),
-            default = u'',
-            widget = 'password'),
+            default = u''),
         )
 
     @form.button(_(u"Log in"), actype=form.AC_PRIMARY)
