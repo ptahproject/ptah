@@ -16,7 +16,7 @@ from ptah_cms.permissions import View, DeleteContent, ModifyContent
 
 
 class Content(Node):
-    """ Base class for content objects. Class has to inherit from `Content` 
+    """ Base class for content objects. Class has to inherit from `Content`
     to participat in content hiararchy.
 
     .. attribute:: __path__

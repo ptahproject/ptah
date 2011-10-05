@@ -1,6 +1,6 @@
 # ptah_cms api
 
-# 
+#
 from ptah_cms.cms import cms, action
 from ptah_cms.interfaces import Error, NotFound, Forbidden
 

@@ -139,7 +139,7 @@ class Container(Content):
         item.__parent__ = self
         item.__parent_uri__ = self.__uri__
         item.__path__ = '%s%s/'%(self.__path__, key)
-        
+
         if item not in Session:
             Session.add(item)
 

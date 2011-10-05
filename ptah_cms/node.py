@@ -126,8 +126,8 @@ def load(uri, permission=None):
 
 
 def loadParents(node):
-    """ Load and initialize `__parent__` attribute for node. 
-    Returns list of loaded parents. 
+    """ Load and initialize `__parent__` attribute for node.
+    Returns list of loaded parents.
     """
     parents = []
     parent = node

@@ -385,7 +385,7 @@ class TestContainer(Base):
         self.assertEqual(container.keys(), ['test'])
 
         self.assertRaises(
-            ptah_cms.Error, container.create, 
+            ptah_cms.Error, container.create,
             tname, 'test', title = 'Test title')
 
         tinfo.permission = ptah.NOT_ALLOWED

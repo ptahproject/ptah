@@ -5,8 +5,6 @@ import sqlalchemy as sqla
 from memphis import config
 from zope import interface
 
-from ptah.sqlfields import generateFieldset
-
 from node import Session
 from content import Content
 from container import Container
@@ -137,7 +135,7 @@ def registerType(
 
     if fieldset is None:
         # generate schema
-        fieldset = generateFieldset(cls, fieldNames=fieldNames)
+        fieldset = ptah.generateFieldset(cls, fieldNames=fieldNames)
 
     if 'global_allow' not in kw and not issubclass(cls, Content):
         kw['global_allow'] = False

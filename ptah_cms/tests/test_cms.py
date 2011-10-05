@@ -105,7 +105,7 @@ class TestWrapper(Base):
             @ptah_cms.action
             def update(self, **data): # pragma: no cover
                 pass
-        
+
         wrapper = NodeWrapper(Test())
         self.assertRaises(
             ptah_cms.NotFound, wrapper.__getattr__, 'unknown')

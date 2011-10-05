@@ -180,7 +180,7 @@ def containerNodeInfo(content, request, *args):
                     ('created', item.created),
                     ('modified', item.modified),
                     )))
-        
+
     info['__contents__'] = contents
     return info
 

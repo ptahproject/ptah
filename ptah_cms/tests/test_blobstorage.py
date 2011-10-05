@@ -96,10 +96,10 @@ class TestBlob(Base):
             StringIO('blob data'), filename='test.txt', mimetype='text/plain')
 
         request = DummyRequest()
-        
+
         response = blobData(blob, request)
         self.assertEqual(response.body, 'blob data')
         self.assertEqual(
             response.headerlist,
-            [('Content-Disposition', 'filename="test.txt"'), 
+            [('Content-Disposition', 'filename="test.txt"'),
              ('Content-Length', '9')])

@@ -12,14 +12,14 @@ class RestBase(Base):
     _allow = True
 
     def _check_perm(self, perm, content, request=None, throw=False):
-        return self._allow 
+        return self._allow
 
     def _setup_memphis(self):
         pass
 
     def setUp(self):
         super(RestBase, self).setUp()
-        
+
         self.orig_checkPermission = ptah.checkPermission
         ptah.checkPermission = self._check_perm
 
@@ -34,12 +34,12 @@ class TestRestApi(RestBase):
 
     def test_rest_srv(self):
         import ptah.rest
-        
+
         self.assertIn('cms', ptah.rest.services)
 
         srv = ptah.rest.services['cms']
         self.assertEqual(srv.title, 'Ptah CMS API')
-        self.assertEqual(srv.actions.keys(), 
+        self.assertEqual(srv.actions.keys(),
                          ['content', 'applications', 'apidoc', 'types'])
 
     def test_rest_applications(self):
@@ -57,7 +57,7 @@ class TestRestApi(RestBase):
         self.assertEqual(len(info), 1)
         self.assertEqual(info[0]['__name__'], 'root')
         self.assertEqual(info[0]['__mount__'], 'test')
-        self.assertEqual(info[0]['__link__'], 
+        self.assertEqual(info[0]['__link__'],
                          'http://localhost:8080/content:%s/%s/'%(
                 info[0]['__mount__'], info[0]['__uri__']))
 
@@ -130,7 +130,7 @@ class TestCMSRestAction(RestBase):
 
     def test_rest_cms_action(self):
         from ptah_cms.rest import IRestAction, IRestActionClassifier
-    
+
         @ptah_cms.restAction('my-update', Content, ptah_cms.View)
         def update(content, request, *args):
             """ doc string """
@@ -140,7 +140,7 @@ class TestCMSRestAction(RestBase):
         adapters = config.registry.adapters
 
         action = adapters.lookup(
-            (IRestActionClassifier, interface.implementedBy(Content)), 
+            (IRestActionClassifier, interface.implementedBy(Content)),
             IRestAction, name='my-update')
 
         self.assertEqual(action.callable, update)
@@ -168,13 +168,13 @@ class TestCMSRestAction(RestBase):
         info = rest.nodeInfo(content, request)
 
         self.assertEqual(info['__uri__'], content.__uri__)
-        self.assertEqual(info['__link__'], 
+        self.assertEqual(info['__link__'],
                          '%s%s/'%(request.application_url, content.__uri__))
 
     def test_rest_cms_apidoc(self):
         from ptah_cms import rest
         self._init_memphis()
-        
+
         content = Content()
         request = self._makeRequest()
         info = rest.apidocAction(content, request)
@@ -191,15 +191,15 @@ class TestCMSRestAction(RestBase):
 
         container = Container()
         container['content'] = Content()
-        
+
         request = self._makeRequest()
         info = rest.containerNodeInfo(container, request)
 
         self.assertEqual(info['__uri__'], container.__uri__)
-        self.assertEqual(info['__link__'], 
+        self.assertEqual(info['__link__'],
                          '%s%s/'%(request.application_url, container.__uri__))
         self.assertEqual(len(info['__contents__']), 1)
-        self.assertEqual(info['__contents__'][0]['__uri__'], 
+        self.assertEqual(info['__contents__'][0]['__uri__'],
                          container['content'].__uri__)
 
     def test_rest_cms_delete(self):
@@ -208,7 +208,7 @@ class TestCMSRestAction(RestBase):
 
         container = Container()
         container['content'] = Content()
-        
+
         request = self._makeRequest()
         rest.deleteAction(container['content'], request)
         self.assertEqual(container.keys(), [])
@@ -226,8 +226,8 @@ class TestCMSRestAction(RestBase):
         request = DummyRequest(params = {'title':'New title'})
 
         info = rest.updateAction(content, request)
-        self.assertEqual( 
-            info['__link__'], 
+        self.assertEqual(
+            info['__link__'],
             '%s%s/'%(request.application_url, content.__uri__))
         self.assertEqual(content.title, 'New title')
 

@@ -11,7 +11,7 @@ class TestNameSchema(Base):
 
         fieldset = ContentNameSchema.bind(
             params = {'__name__': '/asdfasdfadf'})
-        
+
         data, errors = fieldset.extract()
         self.assertTrue(errors)
 

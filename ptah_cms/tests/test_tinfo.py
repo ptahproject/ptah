@@ -160,7 +160,7 @@ class TestTypeInfo(Base):
         self._init_memphis()
 
         self.assertEqual(
-            MyContent.__mapper_args__['polymorphic_identity'], 
+            MyContent.__mapper_args__['polymorphic_identity'],
             'cms+type:mycontent')
 
         self.assertTrue(

@@ -115,7 +115,7 @@ ContentSchema = form.Fieldset(
         title = 'Title'),
 
     form.FieldFactory(
-        'text',
+        'textarea',
         'description',
         title = 'Description',
         missing = u'',
