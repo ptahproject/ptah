@@ -1,81 +1,55 @@
-import colander
 import sqlalchemy as sqla
-from zope import interface
-from memphis import config
+from memphis import form
 
 
-def generateSchema(model, schemaNodes = None, skipPrimaryKey=True):
+def generateFieldset(model, fieldNames = None, skipPrimaryKey=True):
     if '__tablename__' not in model.__dict__:
         return
 
     table = model.__mapper__.local_table
-    return buildSchema(table, schemaNodes, skipPrimaryKey)
+    return buildFields(table, fieldNames, skipPrimaryKey)
 
 
-class IField(interface.Interface):
-    pass
-
-@config.adapter(sqla.Unicode)
-@config.adapter(sqla.UnicodeText)
-@interface.implementer(IField)
-def strNode(cl):
-    return colander.Str()
-
-@config.adapter(sqla.Integer)
-@interface.implementer(IField)
-def intNode(cl):
-    return colander.Int()
-
-@config.adapter(sqla.Float)
-@interface.implementer(IField)
-def intNode(cl):
-    return colander.Float()
-
-@config.adapter(sqla.Date)
-@interface.implementer(IField)
-def dateNode(cl):
-    return colander.Date()
-
-@config.adapter(sqla.DateTime)
-@interface.implementer(IField)
-def datetimeNode(cl):
-    return colander.DateTime()
-
-@config.adapter(sqla.Boolean)
-@interface.implementer(IField)
-def boolNode(cl):
-    return colander.Bool()
+mapping = {
+    sqla.Unicode: 'text',
+    sqla.UnicodeText: 'text',
+    sqla.Integer: 'int',
+    sqla.Float: 'float',
+    sqla.Date: 'date',
+    sqla.DateTime: 'datetime',
+    sqla.Boolean: 'bool',
+}
 
 
-def buildSchema(table, schemaNodes=None, skipPrimaryKey=False):
-    nodes = []
+def buildFields(table, fieldNames=None, skipPrimaryKey=False):
+    fields = []
 
     for cl in table.columns:
-        if schemaNodes is not None and cl.name not in schemaNodes:
+        if fieldNames is not None and cl.name not in fieldNames:
             continue
 
-        if 'node' in cl.info:
-            node = cl.info['node']
-            if not node.name:
-                node.name = cl.name
-            nodes.append(node)
+        if 'field' in cl.info:
+            field = cl.info['field']
+            fields.append(field)
             continue
-        
+
         if cl.primary_key and skipPrimaryKey:
             continue
 
-        typ = IField(cl.type, None)
-        if typ is not None:
-            node = colander.SchemaNode(typ, name = cl.name)
+        typ = mapping.get(cl.type, cl.info.get('field_type'))
+        if typ is None:
+            continue
+        
+        field = form.FieldFactory(typ, name = cl.name)
 
         for name in ('missing', 'title', 'description',
                      'widget', 'vocabulary'):
             if name in cl.info:
-                setattr(node, name, cl.info[name])
+                setattr(field, name, cl.info[name])
 
-        if cl.primary_key and isinstance(node.typ, colander.Int):
-            node.readonly = True
+        if cl.primary_key and (typ == 'int'):
+            field.readonly = True
 
-        nodes.append(node)
+        fields.append(field)
 
-    return config.SchemaNode(colander.Mapping(), *nodes)
+    return form.Fieldset(*fields)

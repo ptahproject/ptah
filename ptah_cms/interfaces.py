@@ -1,6 +1,6 @@
 """ interfaces """
-import colander
 from zope import interface
+from memphis import form
 from pyramid.httpexceptions import HTTPNotFound, HTTPForbidden, HTTPServerError
 
 
@@ -107,34 +107,37 @@ class IBlobStorage(interface.Interface):
         """ remove blob """
 
 
-class ContentSchema(colander.Schema):
-    """ base content schema """
+ContentSchema = form.Fieldset(
 
-    title = colander.SchemaNode(
-        colander.Str(),
-        title = 'Title')
+    form.FieldFactory(
+        'text',
+        'title',
+        title = 'Title'),
 
-    description = colander.SchemaNode(
-        colander.Str(),
+    form.FieldFactory(
+        'text',
+        'description',
         title = 'Description',
         missing = u'',
-        widget = 'textarea')
+        widget = 'textarea'),
+    )
 
 
 def specialSymbols(node, appstruct):
     if '/' in appstruct:
-        raise colander.Invalid(node, "Names cannot contain '/'")
+        raise form.Invalid(node, "Names cannot contain '/'")
     if appstruct.startswith(' '):
-        raise colander.Invalid(node, "Names cannot starts with ' '")
+        raise form.Invalid(node, "Names cannot starts with ' '")
 
 
-class ContentNameSchema(colander.Schema):
-    """ name schema """
+ContentNameSchema = form.Fieldset(
 
-    __name__ = colander.SchemaNode(
-        colander.Str(),
+    form.FieldFactory(
+        'text',
+        '__name__',
         title = 'Short Name',
         description = 'Short name is the part that shows up in '\
                             'the URL of the item.',
         missing = u'',
         validator = specialSymbols)
+    )

@@ -1,9 +1,8 @@
 """ rest api for cms """
-import colander
-from collections import OrderedDict
 from zope import interface
 from zope.interface import providedBy
 from memphis import config, form
+from collections import OrderedDict
 
 import ptah
 import ptah_cms
@@ -30,6 +29,8 @@ def cmsApplications(request, *args):
         try:
             info = cms(root).info()
         except (AttributeError, CmsException):
+            import traceback
+            traceback.print_exc()
             continue
 
         info['__mount__'] = name
@@ -58,23 +59,23 @@ def typeInfo(tinfo, request):
          ('title', tinfo.title),
          ('description', tinfo.description),
          ('permission', tinfo.permission),
-         ('schema', []),
+         ('fieldset', []),
          ))
 
-    schema = info['schema']
+    fieldset = info['fieldset']
 
-    for node in tinfo.schema.children:
-        widget = node.widget
-        if not widget:
-            widget = form.getDefaultWidgetName(node)
+    for node in tinfo.fieldset.fields():
+        fname = node.__field_name__
+        if not fname:
+            continue
 
-        schema.append(
+        fieldset.append(
             OrderedDict(
                 (('name', node.name),
                  ('title', node.title),
                  ('description', node.description),
                  ('required', node.required),
-                 ('widget', widget),
+                 ('widget', fname),
                  )))
 
     return info
@@ -225,24 +226,14 @@ def moveAction(content, request, *args):
     """Move content"""
 
 
-class Form(form.Form):
-
-    def __init__(self, tinfo, context, request):
-        super(Form, self).__init__(context, request)
-        self.fields = form.Fieldset(tinfo.schema)
-
-
 @restAction('update', IContent, ModifyContent)
 def updateAction(content, request, *args):
     """Update content"""
     tinfo = content.__type__
 
-    form = Form(tinfo, content, request)
-    form.update()
-
-    data, errors = form.extractData()
+    fieldset = tinfo.fieldset.bind(None, request.POST)
+    data, errors = fieldset.extract()
     if errors:
-        print errors
         request.response.status = 500
         return {'errors': ''}
 
@@ -258,10 +249,8 @@ def createContentAction(content, request, *args):
 
     tinfo = ptah.resolve(tinfo)
 
-    form = Form(tinfo, content, request)
-    form.update()
-
-    data, errors = form.extractData()
+    fieldset = tinfo.fieldset.bind(None, request.POST)
+    data, errors = fieldset.extract()
     if errors:
         request.response.status = 500
         return {'errors': ''}

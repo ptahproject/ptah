@@ -1,10 +1,9 @@
 """ Base content class """
-import colander
 import sqlalchemy as sqla
 from sqlalchemy.ext.hybrid import hybrid_property
 
 from zope import interface
-from memphis import config
+from memphis import config, form
 from collections import OrderedDict
 
 import ptah
@@ -121,17 +120,17 @@ class Content(Node):
         if self.__type__:
             tinfo = self.__type__
 
-            for node in tinfo.schema:
+            for node in tinfo.fieldset.fields():
                 val = data.get(node.name, node.default)
-                if val is not colander.null:
+                if val is not form.null:
                     setattr(self, node.name, val)
 
             config.notify(events.ContentModifiedEvent(self))
 
     def _extra_info(self, info):
         if self.__type__:
-            for node in self.__type__.schema:
-                val = getattr(self, node.name, node.missing)
+            for node in self.__type__.fieldset.fields():
+                val = getattr(self, node.name, node.default)
                 try:
                     info[node.name] = node.serialize(val)
                 except:

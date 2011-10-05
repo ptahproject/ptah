@@ -1,6 +1,6 @@
 """ type implementation """
+import sys
 import ptah
-import sys, colander
 import sqlalchemy as sqla
 from memphis import config
 from zope import interface
@@ -12,7 +12,7 @@ from events import ContentCreatedEvent
 from interfaces import Forbidden
 from interfaces import ContentSchema, ITypeInformation
 from permissions import AddContent
-from sqlschema import generateSchema
+from sqlschema import generateFieldset
 from cms import buildClassActions
 
 
@@ -30,14 +30,14 @@ class TypeInformation(object):
     description = u''
     permission = AddContent
 
-    schema = None
-    schemaNodes = None
+    fieldset = None
+    fieldNames = None
 
     filter_content_types = False
     allowed_content_types = ()
     global_allow = True
 
-    def __init__(self, cls, name, title, schema=ContentSchema(), **kw):
+    def __init__(self, cls, name, title, fieldset=ContentSchema, **kw):
         self.__dict__.update(kw)
 
         self.__uri__ = 'cms+type:%s'%name
@@ -45,7 +45,7 @@ class TypeInformation(object):
         self.cls = cls
         self.name = name
         self.title = title
-        self.schema = schema
+        self.fieldset = fieldset
 
     def create(self, **data):
         content = self.cls(**data)
@@ -96,15 +96,12 @@ def resolveContent(uri):
     return _sql_get.first(uri=uri)
 
 
-def Type(name, title, schema = None, **kw):
+def Type(name, title, fieldset = None, **kw):
     info = config.DirectiveInfo(allowed_scope=('class',))
 
-    if isinstance(schema, colander._SchemaMeta):
-        schema = schema()
-
     kwargs = {}
-    if schema is not None:
-        kwargs['schema'] = schema
+    if fieldset is not None:
+        kwargs['fieldset'] = fieldset
 
     typeinfo = TypeInformation(None, name, title, **kwargs)
 
@@ -126,7 +123,7 @@ def Type(name, title, schema = None, **kw):
     info.attach(
         config.ClassAction(
             registerType,
-            (typeinfo, name, schema), kw,
+            (typeinfo, name, fieldset), kw,
             discriminator = ('ptah-cms:type', name))
         )
 
@@ -134,20 +131,20 @@ def Type(name, title, schema = None, **kw):
 
 
 def registerType(
-    cls, tinfo, name, schema,
-    permission = ptah.NOT_ALLOWED, schemaNodes=None, **kw):
+    cls, tinfo, name, fieldset,
+    permission = ptah.NOT_ALLOWED, fieldNames=None, **kw):
 
-    if schema is None:
+    if fieldset is None:
         # generate schema
-        schema = generateSchema(cls, schemaNodes=schemaNodes)
+        fieldset = generateFieldset(cls, fieldNames=fieldNames)
 
     if 'global_allow' not in kw and not issubclass(cls, Content):
         kw['global_allow'] = False
 
     tinfo.__dict__.update(kw)
 
-    if schema:
-        tinfo.schema = schema
+    if fieldset:
+        tinfo.fieldset = fieldset
 
     tinfo.cls = cls
     tinfo.permission = permission

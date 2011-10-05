@@ -1,4 +1,5 @@
-import unittest, colander
+import unittest
+from memphis import form
 
 
 class TestNameSchema(unittest.TestCase):
@@ -8,13 +9,13 @@ class TestNameSchema(unittest.TestCase):
         schema = ContentNameSchema()
 
         self.assertRaises(
-            colander.Invalid,
+            form.Invalid,
             schema.deserialize, {'__name__': '/asdfasdfadf'})
 
         self.assertRaises(
-            colander.Invalid,
+            form.Invalid,
             schema.deserialize, {'__name__': 'asdfasdf/adf'})
 
         self.assertRaises(
-            colander.Invalid,
+            form.Invalid,
             schema.deserialize, {'__name__': ' asdfasdfadf'})
