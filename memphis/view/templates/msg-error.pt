@@ -1,0 +1,4 @@
+<div class="alert-message error">
+  <a class="close" href="#">×</a>
+  <p>${message}</p>
+</div>
