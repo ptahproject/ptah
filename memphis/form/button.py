@@ -132,18 +132,17 @@ class Actions(OrderedDict):
     prefix = 'buttons.'
 
     def __init__(self, form, request):
-        super(Actions, self).__init__()
-
         self.form = form
         self.request = request
         self.localizer = get_localizer(request)
+
+        super(Actions, self).__init__()
 
     def update(self):
         form = self.form
         content = self.content = form.getContent()
         params = form.getParams()
         request = self.request
-        registry = config.registry
 
         # Create a unique prefix.
         prefix = '%s%s'%(form.prefix, self.prefix)
