@@ -4,6 +4,7 @@ Ptah CMS
 .. toctree::
    :maxdepth: 2
 
+   overview.rst
    api.rst
 
 Indices and tables
