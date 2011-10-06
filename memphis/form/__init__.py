@@ -8,6 +8,7 @@ from memphis.form.interfaces import Invalid
 from memphis.form.field import Field
 from memphis.form.field import FieldFactory
 from memphis.form.field import Fieldset
+from memphis.form.field import FieldsetErrors
 from memphis.form.field import SequenceField
 
 # field registration
@@ -16,7 +17,8 @@ from memphis.form.field import getField
 from memphis.form.field import registerField
 
 # vocabulary
-from memphis.form.vocabulary import SimpleTerm, SimpleVocabulary
+from memphis.form.vocabulary import SimpleTerm
+from memphis.form.vocabulary import SimpleVocabulary
 
 # widget mode
 from memphis.form.interfaces import FORM_INPUT
@@ -51,7 +53,6 @@ from memphis.form.fields import HorizontalRadioField
 from memphis.form.fields import BoolField
 from memphis.form.fields import SelectField
 from memphis.form.fields import MultiSelectField
-
 
 # forms
 from memphis.form.form import Form

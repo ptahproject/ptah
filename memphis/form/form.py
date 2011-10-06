@@ -40,6 +40,7 @@ class FormErrorMessage(view.Message):
 
 class FormWidgets(OrderedDict):
 
+    mode = FORM_INPUT
     prefix = 'widgets.'
     fieldsets = ()
 
@@ -64,6 +65,8 @@ class FormWidgets(OrderedDict):
             widgets = []
 
             for widget in fieldset.fields():
+                if widget.mode is None:
+                    widget.mode = self.mode
                 widget.localizer = self.localizer
                 widget.id = ('%s%s'%(prefix, widget.name)).replace('.', '-')
                 widget.update(self.request)
@@ -136,6 +139,7 @@ class Form(view.View):
 
     def updateWidgets(self):
         self.widgets = FormWidgets(self.fields, self, self.request)
+        self.widgets.mode = self.mode
         self.widgets.update()
 
     def updateActions(self):

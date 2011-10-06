@@ -50,10 +50,13 @@ class Fieldset(OrderedDict):
         self.prefix = '%s.'%self.name if self.name else ''
         self.lprefix = len(self.prefix)
 
-        self.validator = All()
         validator = kwargs.pop('validator', None)
-        if validator is not None:
-            self.validator.validators.append(validator)
+        if type(validator) is list:
+            self.validator = All(*validator)
+        else:
+            self.validator = All()
+            if validator is not None:
+                self.validator.validators.append(validator)
 
         self.append(*args, **kwargs)
 
@@ -104,7 +107,7 @@ class Fieldset(OrderedDict):
             name = self.name,
             legend = self.legend,
             prefix = self.prefix,
-            validator = self.validator)
+            validator = self.validator.validators)
 
         if content is None:
             content = {}
@@ -119,7 +122,7 @@ class Fieldset(OrderedDict):
 
     def extract(self):
         data = {}
-        errors = []
+        errors = FieldsetErrors(self)
 
         for field in self.fields():
             if field.mode == FORM_DISPLAY:
@@ -148,7 +151,7 @@ class Fieldset(OrderedDict):
             except Invalid, error:
                 errors.append(error)
 
-        return data, FieldsetErrors(self, errors)
+        return data, errors
 
     def __add__(self, fieldset):
         if not isinstance(fieldset, Fieldset):
@@ -160,7 +163,7 @@ class Fieldset(OrderedDict):
 class FieldsetErrors(list):
 
     def __init__(self, fieldset, *args):
-        super(FieldsetErrors, self).__init__(*args)
+        super(FieldsetErrors, self).__init__(args)
 
         self.fieldset = fieldset
 
@@ -188,7 +191,7 @@ class Field(object):
     params = {}
     localizer = None
     value = null
-    mode = FORM_INPUT
+    mode = None
 
     id = None
     klass = None
@@ -197,11 +200,13 @@ class Field(object):
     tmpl_display = None
 
     def __init__(self, name, **kw):
+        self.__dict__.update(kw)
+        
         self.name = name
         self.title = kw.get('title', name.capitalize())
         self.description = kw.get('description', u'')
         self.readonly = kw.get('readonly', None)
-        self.default = kw.get('missing', null)
+        self.default = kw.get('default', null)
         self.missing = kw.get('missing', required)
         self.preparer = kw.get('preparer', None)
         self.validator = kw.get('validator', None)
@@ -218,7 +223,11 @@ class Field(object):
     def update(self, request):
         self.request = request
 
-        value = null
+        if self.mode is None:
+            if self.readonly:
+                self.mode = FORM_DISPLAY
+            else:
+                self.mode = FORM_INPUT
 
         # Step 1.1: extract from request
         widget_value = self.extract()
@@ -226,24 +235,25 @@ class Field(object):
             self.value = widget_value
             return
 
-        # Step 1.2: get from content
-        if value is null:
-            if self.content is not null:
-                value = self.content
+        value = null
 
-            # Step 1.2.2: default
-            if value is null:
-                value = self.default
+        # Step 1.2: get from content
+        if self.content is not null:
+            value = self.content
+
+        # Step 1.2.2: default
+        if value is null:
+            value = self.default
 
         # Step 1.4: Convert the value to one that the widget can understand
         if value is not null:
             self.value = self.serialize(value)
 
     def serialize(self, value):
-        raise NotImplemented
+        raise NotImplementedError()
 
     def deserialize(self, value):
-        raise NotImplemented
+        raise NotImplementedError()
 
     def validate(self, value):
         if value is required:
@@ -254,32 +264,21 @@ class Field(object):
 
     def extract(self, default=null):
         value = self.params.get(self.name, default)
-        if not value:
-            return null
+        if value is default or not value:
+            return default
         return value
 
     def render(self, request):
-        try:
-            if self.mode == FORM_DISPLAY:
-                return self.tmpl_display(
-                    view = view,
-                    context = self,
-                    request = self.request)
-            else:
-                return self.tmpl_input(
-                    view = self,
-                    context = self,
-                    request = self.request)
-        except:
-            import traceback
-            traceback.print_exc()
-
-    def addClass(self, klass):
-        if not self.klass:
-            self.klass = klass
+        if self.mode == FORM_DISPLAY:
+            return self.tmpl_display(
+                view = view,
+                context = self,
+                request = request)
         else:
-            if klass not in self.klass:
-                self.klass = u'%s %s'%(self.klass, klass)
+            return self.tmpl_input(
+                view = self,
+                context = self,
+                request = request)
 
     def __repr__(self):
         return '<%s %r>' % (self.__class__.__name__, self.name)
@@ -290,7 +289,7 @@ class SequenceField(Field):
 
     value = ()
     terms = None
-    empty_marker = ''
+    vocabulary = None
 
     noValueToken = '--NOVALUE--'
 
@@ -308,37 +307,33 @@ class SequenceField(Field):
                 value.append(term.value)
         return value
 
-    def updateTerms(self):
+    def updateTerms(self, context):
         if self.terms is None:
-            self.terms = getattr(self.node, 'vocabulary', None)
+            self.terms = self.vocabulary
             if self.terms is None:
                 self.terms = config.registry.getMultiAdapter(
-                    (self.node, self.typ, self), IVocabulary)
+                    (context, self), IVocabulary)
 
         return self.terms
 
     def update(self, request):
-        self.empty_marker = '%s-empty-marker'%self.name
-
         # Create terms first, since we need them for the generic update.
-        self.updateTerms()
+        self.updateTerms(None)
+        
         super(SequenceField, self).update(request)
 
     def extract(self, default=null):
-        if (self.name not in self.params and
-            self.empty_marker in self.params):
+        if self.name not in self.params:
             return default
 
-        value = self.params.getall(self.name) or default
-        if value != default:
-            # do some kind of validation, at least only use existing values
-            for token in value:
-                if token == self.noValueToken:
-                    continue
-                try:
-                    self.terms.getTermByToken(token)
-                except LookupError:
-                    return default
+        value = self.params.getall(self.name)
+        for token in value:
+            if token == self.noValueToken:
+                continue
+            try:
+                self.terms.getTermByToken(token)
+            except LookupError:
+                return default
 
         return value
 
@@ -356,7 +351,7 @@ class FieldFactory(Field):
         cls = getField(self.__field__)
         if cls is None:
             raise TypeError(
-                "Can't find field implementation for '%s'"%cls.__field__)
+                "Can't find field implementation for '%s'"%self.__field__)
 
         clone = cls.__new__(cls)
         clone.__dict__.update(self.__dict__)

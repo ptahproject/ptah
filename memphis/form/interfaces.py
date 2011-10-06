@@ -1,4 +1,4 @@
-""" Form and Widget Framework Interfaces """
+""" Form and Field Interfaces """
 from zope import interface
 from zope.interface.common import mapping
 from translationstring import TranslationStringFactory
@@ -32,36 +32,7 @@ class _null(object):
 null = _null()
 
 
-# ----[ Errors ]--------------------------------------------------------------
-
-class IError(interface.Interface):
-    """ for widget error """
-
-    error = interface.Attribute('Origin error')
-
-    message = interface.Attribute('Error message')
-
-
-class IWidgetError(IError):
-    """ A special error, for can return additional errors and explicitly
-    set to which widget this error should be appied. """
-
-    widget = interface.Attribute('Widget')
-
-
-# ----[ Fields ]--------------------------------------------------------------
-
-class IField(interface.Interface):
-    """Field wrapping a schema field used in the form."""
-
-    name = interface.Attribute('Title')
-    node = interface.Attribute('Schema node')
-    typ = interface.Attribute('Schema type')
-    prefix = interface.Attribute('Prefix')
-    mode = interface.Attribute('Mode')
-    widget = interface.Attribute('Widget Factory')
-    readonly = interface.Attribute('Readonly mode')
-
+# ----[ Vocabulary ]----------------------------------------------------------
 
 # vocabulary/term interfaces
 class ITerm(interface.Interface):
@@ -144,15 +115,11 @@ class IWidget(interface.Interface):
         If there is no value to extract, the default is to be returned.
         """
 
-    def update():
+    def update(request):
         """Setup all of the widget information used for displaying."""
 
     def render(request):
         """Render form widget. First it tring to use template. If template is
-        not set then it uses one of the pagelets."""
-
-    def renderWidget(request):
-        """Render html widget. First it tring to use template. If template is
         not set then it uses one of the pagelets."""
 
     def serialize(value):
