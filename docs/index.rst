@@ -5,6 +5,7 @@ Ptah CMS
    :maxdepth: 2
 
    overview.rst
+   install.rst
    unique.rst
    api.rst
 
