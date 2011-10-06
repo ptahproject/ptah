@@ -37,13 +37,13 @@ from memphis.form.validator import OneOf
 from memphis.form.fields import TextField
 from memphis.form.fields import IntegerField
 from memphis.form.fields import FloatField
-from memphis.form.fields import Decimal
+from memphis.form.fields import DecimalField
 from memphis.form.fields import TextAreaField
 from memphis.form.fields import FileField
 from memphis.form.fields import LinesField
 from memphis.form.fields import PasswordField
-from memphis.form.fields import CheckBoxField
-from memphis.form.fields import SingleCheckBoxField
+from memphis.form.fields import CheckboxField
+from memphis.form.fields import CheckboxsField
 from memphis.form.fields import DateField
 from memphis.form.fields import DateTimeField
 from memphis.form.fields import JSDateField

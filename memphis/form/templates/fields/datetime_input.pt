@@ -7,7 +7,7 @@
 
 <input id="" name="" class="" title="" lang="" disabled=""
        readonly="" alt="" tabindex="" accesskey="" size="" maxlength=""
-       style="" value="" type="text"
+       value="" type="text"
        tal:attributes="id '%s-date'%context.id;
                        name context.date_name;
                        class 'small %s'%context.klass;
@@ -24,7 +24,7 @@
 
 <input id="" name="" class="" title="" lang="" disabled=""
        readonly="" alt="" tabindex="" accesskey="" size="" maxlength=""
-       style="" value="" type="text"
+       value="" type="text"
        tal:attributes="id '%s-time'%context.id;
                        name context.time_name;
                        class 'mini %s'%context.klass;

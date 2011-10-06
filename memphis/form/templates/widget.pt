@@ -5,7 +5,7 @@
     ${context.title}
     <tal:block condition="context.required">*</tal:block>
   </label>
-  <div class="input" tal:on-error="nothing">
+  <div class="input">
     <tal:block tal:content="structure context.render(request)" />
     <span class="help-inline"
 	  tal:condition="error"

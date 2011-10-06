@@ -1,6 +1,5 @@
 <span class="uneditable-input">
-  <span id="" class=""
-        tal:attributes="id context.id;
+  <span tal:attributes="id context.id;
                         class context.klass;
                         title context.title;
                         lang context.lang;">

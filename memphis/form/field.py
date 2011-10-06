@@ -2,7 +2,8 @@ from memphis import config, view
 from collections import OrderedDict
 
 from validator import All
-from interfaces import _, null, required, Invalid, FORM_INPUT, FORM_DISPLAY
+from interfaces import _, null, required
+from interfaces import Invalid, FORM_INPUT, FORM_DISPLAY
 
 
 fields = {}
@@ -311,8 +312,7 @@ class SequenceField(Field):
         if self.terms is None:
             self.terms = self.vocabulary
             if self.terms is None:
-                self.terms = config.registry.getMultiAdapter(
-                    (context, self), IVocabulary)
+                raise ValueError("Vocabulary is not specified")
 
         return self.terms
 

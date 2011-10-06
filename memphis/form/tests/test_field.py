@@ -121,7 +121,7 @@ class TestFieldset(Base):
 
     def _makeOne(self, name, **kw):
         class MyField(form.Field):
-            def serialize(self, value):
+            def serialize(self, value): # pragma: no cover
                 return value
             def deserialize(self, value):
                 return value
@@ -328,7 +328,7 @@ class TestField(Base):
         class MyField(form.Field):
             def serialize(self, value):
                 return value
-            def deserialize(self, value):
+            def deserialize(self, value): # pragma: no cover
                 return value
 
         request = object()

@@ -1,5 +1,5 @@
 """ Basic fields """
-import datetime, iso8601
+import datetime, iso8601, decimal
 from memphis import view
 from memphis.view import formatter
 from memphis.form import vocabulary
@@ -90,7 +90,7 @@ class FloatField(Number, TextField):
     num = float
 
 
-class Decimal(Number):
+class DecimalField(Number, TextField):
     __doc__ = _(u'Decimal input widget')
 
     field('decimal')
@@ -148,20 +148,31 @@ class LinesField(TextAreaField):
                 'sequence element.')
 
     field('lines')
+    klass = u'textlines-widget'
 
     def serialize(self, value):
-        return u'\n'.join(value)
+        if value is null or not value:
+            return null
 
-    def extract(self, default = null):
-        value = self.params.get(self.name, default)
-        if value is not default:
-            return value.split(u'\n')
-        return value
+        try:
+            return u'\n'.join(value)
+        except Exception:
+            raise Invalid(self,
+                          _('"${val}" is not a list',
+                            mapping={'val': value}),
+                          )
 
-    tmpl_input = view.template(
-        "memphis.form:templates/fields/textlines_input.pt")
-    tmpl_display = view.template(
-        "memphis.form:templates/fields/textlines_display.pt")
+    def deserialize(self, value):
+        if not value:
+            return null
+
+        try:
+            return [s.strip() for s in value.split()]
+        except Exception:
+            raise Invalid(self,
+                          _('"${val}" is not a list',
+                            mapping={'val': value}),
+                          )
 
 
 class PasswordField(TextField):
@@ -177,15 +188,13 @@ class PasswordField(TextField):
         "memphis.form:templates/fields/password_display.pt")
 
 
-class CheckBoxField(SequenceField):
-    """Input type checkbox widget implementation."""
+class CheckboxsField(SequenceField):
+    __doc__ = _('HTML Checkboxs input based widget.')
 
-    klass = u'checkbox-widget'
+    field('checkboxs')
+
+    klass = u'checkboxs-widget'
     items = ()
-
-    __fname__ = 'checkbox'
-    __title__ = _('Checkbox widget')
-    __description__ = _('HTML Checkbox input based widget.')
 
     tmpl_input = view.template(
         "memphis.form:templates/fields/checkbox_input.pt")
@@ -196,8 +205,7 @@ class CheckBoxField(SequenceField):
         return term.token in self.value
 
     def update(self, request):
-        """See z3c.form.interfaces.IWidget."""
-        super(CheckBoxWidget, self).update(request)
+        super(CheckboxsField, self).update(request)
 
         self.items = []
         for count, term in enumerate(self.terms):
@@ -211,14 +219,11 @@ class CheckBoxField(SequenceField):
                  'label':label, 'checked':checked})
 
 
-class SingleCheckBoxField(CheckBoxField):
-    """Single Input type checkbox widget implementation."""
+class CheckboxField(CheckboxsField):
+    __doc__ = _('Single checkbox widget.')
 
+    field('checkbox')
     klass = u'single-checkbox-widget'
-
-    __fname__ = 'singlecheckbox'
-    __title__ = _('Single checkbox')
-    __description__ = _('Single checkbox widget.')
 
     def updateTerms(self):
         if self.terms is None:

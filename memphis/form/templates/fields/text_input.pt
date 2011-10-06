@@ -1,6 +1,4 @@
-<input id="" name="" class="" title="" lang="" disabled=""
-       readonly="" alt="" tabindex="" accesskey="" size="" maxlength=""
-       style="" value="" type="text"
+<input type="text" 
        tal:attributes="id context.id;
                        name context.name;
                        class context.klass;
