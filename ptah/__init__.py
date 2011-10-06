@@ -141,7 +141,7 @@ def make_wsgi_app(global_config, **settings):
 
 # initialize memphis
 def initialize(package, pyramid_config, settings):
-    """ Initialize memphis.config package.
+    """ Initialize memphis package.
     Load all memphis packages and intialize memphis settings system.
 
     This function automatically called by :py:func:`make_wsgi_app` function.
