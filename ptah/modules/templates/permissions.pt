@@ -1,7 +1,7 @@
 <tal:block tal:repeat="acl view.acls">
   <div class="page-header">
     <h2>${acl.title} <small>${acl.name}</small></h2>
-    <p>Definded: 
+    <p>Defined: 
       <a href="${request.application_url}/ptah-manage/introspect/source.html?pkg=${acl.directiveInfo.module.__name__}#sl-${acl.directiveInfo.codeinfo[1]}">${acl.directiveInfo.module.__name__}</a></p>
     <p>${acl.description}
   </div>
