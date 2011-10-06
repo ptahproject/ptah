@@ -16,10 +16,10 @@ class All(object):
             try:
                 validator(field, value)
             except Invalid, e:
-                msgs.append(e.message)
+                msgs.append(e.msg)
 
         if msgs:
-            raise Invalid(field, message)
+            raise Invalid(field, msgs)
 
 
 class Function(object):

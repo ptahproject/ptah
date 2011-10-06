@@ -13,12 +13,12 @@ required = object()
 
 class Invalid(Exception):
 
-    def __init__(self, field, message):
+    def __init__(self, field, msg):
         self.field = field
-        self.message = message
+        self.msg = msg
 
     def __str__(self):
-        return 'Invalid: %s: <%s>'%(self.field, self.message)
+        return 'Invalid: %s: <%s>'%(self.field, self.msg)
 
 
 class _null(object):

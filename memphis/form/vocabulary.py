@@ -69,7 +69,7 @@ class SimpleVocabulary(object):
     def fromValues(cls, *values):
         """Construct a vocabulary from a simple list. """
         terms = [cls.createTerm(value) for value in values]
-        return cls(terms)
+        return cls(*terms)
 
     @classmethod
     def createTerm(cls, *args):

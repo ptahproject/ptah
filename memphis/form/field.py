@@ -165,13 +165,10 @@ class FieldsetErrors(list):
         self.fieldset = fieldset
 
     @property
-    def message(self):
-        return self.as_dict()
-
-    def as_dict(self):
+    def msg(self):
         r = {}
         for err in self:
-            r[err.field.name] = err.message
+            r[err.field.name] = err.msg
 
         return r
 

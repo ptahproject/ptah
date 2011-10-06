@@ -11,7 +11,7 @@ from memphis import view, config
 from memphis.form.field import Field, Fieldset
 from memphis.form.button import Buttons, Actions
 from memphis.form.interfaces import _, Invalid, FORM_INPUT, FORM_DISPLAY
-from memphis.form.interfaces import IForm, IInputForm, IDisplayForm, IWidgets
+from memphis.form.interfaces import IForm, IInputForm, IDisplayForm
 
 CSRF = None
 
@@ -52,13 +52,11 @@ class FormWidgets(OrderedDict):
         super(FormWidgets, self).__init__()
 
     def update(self):
-        # Create a unique prefix.
-        prefix = '%s%s'%(self.form.prefix, self.prefix)
-
-        request = self.request
         params = self.form.getParams()
         content = self.form.getContent()
-        self.fieldset = fieldset = self.fields.bind(content, params)
+        prefix = '%s%s'%(self.form.prefix, self.prefix)
+        
+        self.fieldset = self.fields.bind(content, params)
         self.fieldsets = fieldsets = []
 
         # Walk through each field, making a widget out of it.
@@ -68,9 +66,7 @@ class FormWidgets(OrderedDict):
             for widget in fieldset.fields():
                 widget.localizer = self.localizer
                 widget.id = ('%s%s'%(prefix, widget.name)).replace('.', '-')
-                widget.__name__ = widget.name
-                widget.__parent__ = self
-                widget.update(request)
+                widget.update(self.request)
                 widgets.append(widget)
                 self[widget.name] = widget
 
@@ -81,25 +77,16 @@ class FormWidgets(OrderedDict):
                  'widgets': widgets})
 
     def extract(self, setErrors=True):
-        data = {}
-        errors = []
-
         data, errors = self.fieldset.extract()
 
-        # form validation
+        # additional form validation
         self.form.validate(data, errors)
-
-        # set errors
-        for error in errors:
-            if setErrors and error.field is not None \
-                   and error.field.error is None:
-                error.field.error = error
 
         return data, errors
 
 
 class Form(view.View):
-    """A base form."""
+    """A form"""
     interface.implements(IForm, IInputForm)
 
     fields = Fieldset()
@@ -124,15 +111,15 @@ class Form(view.View):
     csrf = False
     csrfname = 'csrf-token'
 
-    @property
+    @reify
     def action(self):
         return self.request.url
 
-    @property
+    @reify
     def name(self):
         return self.prefix.strip('.')
 
-    @property
+    @reify
     def id(self):
         return self.name.replace('.', '-')
 
@@ -149,7 +136,6 @@ class Form(view.View):
 
     def updateWidgets(self):
         self.widgets = FormWidgets(self.fields, self, self.request)
-        self.widgets.mode = self.mode
         self.widgets.update()
 
     def updateActions(self):
@@ -215,32 +201,26 @@ FORM_ACTIONS = 'form-actions'
 FORM_WIDGET = 'form-widget'
 FORM_DISPLAY_WIDGET = 'form-display-widget'
 
-
 view.pageletType(FORM_VIEW, IForm, 'Form view')
 view.pageletType(FORM_ACTIONS, IForm, 'Form actions')
 view.pageletType(FORM_WIDGET, Field, 'Form widget')
 view.pageletType(FORM_DISPLAY_WIDGET, Field, 'Form display widget')
 
-
 view.registerPagelet(
     'form-view', IInputForm,
     template = view.template('memphis.form:templates/form.pt'))
-
 
 view.registerPagelet(
     'form-view', IDisplayForm,
     template = view.template('memphis.form:templates/displayform.pt'))
 
-
 view.registerPagelet(
     'form-actions', IInputForm,
     template = view.template('memphis.form:templates/form-actions.pt'))
 
-
 view.registerPagelet(
     'form-widget', Field,
     template = view.template('memphis.form:templates/widget.pt'))
-
 
 view.registerPagelet(
     'form-display-widget', Field,

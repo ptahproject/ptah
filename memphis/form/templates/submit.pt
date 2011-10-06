@@ -4,7 +4,7 @@
                        name context.name;
                        class context.klass;
                        lang context.lang;
-                       value context.value;
+                       value context.title;
                        disabled context.disabled;
                        tabindex context.tabindex;
                        readonly context.readonly;
