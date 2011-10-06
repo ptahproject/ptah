@@ -1,0 +1,9 @@
+<div class="field">
+  <label class="discreet"
+	 tal:attributes="for context.id;
+			 title context.field.description"
+	 tal:content="context.title">The Label</label>
+  <div tal:content="structure context.render()">
+    <input type="text" style="width:100%" />
+  </div>
+</div>

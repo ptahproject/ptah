@@ -1,0 +1,17 @@
+<div class="${'clearfix error' if error else 'clearfix'}"
+     tal:define="error context.error">
+  <label tal:attributes="for context.id;
+			 title context.description">
+    ${context.title}
+    <tal:block condition="context.required">*</tal:block>
+  </label>
+  <div class="input">
+    <tal:block tal:content="structure context.render(request)" />
+    <span class="help-inline"
+	  tal:condition="error"
+	  tal:content="structure error.message"></span>
+    <span class="help-block"
+	  tal:condition="context.description"
+	  tal:content="structure context.description"></span>
+  </div>
+</div>

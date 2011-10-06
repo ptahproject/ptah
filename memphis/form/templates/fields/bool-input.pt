@@ -1,0 +1,19 @@
+<div class="inline-inputs">
+  <tal:block tal:repeat="item context.items">
+    <input type="radio"
+           tal:define="checked item['checked']"
+           tal:attributes="id item['id'];
+                           name item['name'];
+                           class context.klass;
+                           value item['value'];
+                           title context.title;
+                           lang context.lang;
+                           disabled context.disabled;
+                           tabindex context.tabindex;
+                           readonly context.readonly;
+                           alt context.alt;
+                           accesskey context.accesskey;
+                           checked checked and 'checked' or None" />
+    ${item['label']}
+  </tal:block>
+</div>

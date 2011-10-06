@@ -1,0 +1,12 @@
+<input id="" name="" class="" value=""
+       accesskey="" type="submit" 
+       tal:attributes="id context.id;
+                       name context.name;
+                       class context.klass;
+                       lang context.lang;
+                       value context.title;
+                       disabled context.disabled;
+                       tabindex context.tabindex;
+                       readonly context.readonly;
+                       alt context.alt;
+                       accesskey context.accesskey;" />

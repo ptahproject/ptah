@@ -1,0 +1,14 @@
+<input type="file" id="" name="" class="" title="" lang="" disabled=""
+       readonly="" alt="" tabindex="" accesskey="" size="" maxlength=""
+       tal:attributes="id context.id;
+                       name context.name;
+                       class context.klass;
+                       title context.title;
+                       lang context.lang;
+                       disabled context.disabled;
+                       tabindex context.tabindex;
+                       readonly context.readonly;
+                       alt context.alt;
+                       accesskey context.accesskey;
+                       size context.size;
+                       maxlength context.maxlength" />
