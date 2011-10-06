@@ -5,6 +5,7 @@ Ptah CMS
    :maxdepth: 2
 
    overview.rst
+   unique.rst
    api.rst
 
 Indices and tables
