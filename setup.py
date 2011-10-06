@@ -48,5 +48,9 @@ setup(name='memphis',
         'console_scripts': [
             'settings = memphis.config.commands:settingsCommand',
             ],
+        'paste.global_paster_command': [
+            'static = memphis.view.commands:StaticCommand',
+            'templates = memphis.view.commands:TemplatesCommand',
+            ],
         },
       )

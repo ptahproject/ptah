@@ -79,5 +79,5 @@ class TestCommand(BaseTesting):
         sys.stdout = stdout
 
         val = out.getvalue().strip()
-        self.assertEqual(
-            val, '[DEFAULT]\ngroup1.node = test\ngroup2.node = test')
+        self.assertIn('group1.node = test', val)
+        self.assertIn('group2.node = test', val)

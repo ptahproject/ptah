@@ -147,7 +147,10 @@ class _GlobalLayerManager(object):
 
         if os.path.isdir(path):
             pkg_data = tmpl.registry[pkg]
-            items = dict((f, 1) for f in os.listdir(path))
+            try:
+                items = dict((f, 1) for f in os.listdir(path))
+            except os.OSError: # pragma: no cover
+                return
 
             for fn, (p,t,d,t,pkg) in pkg_data.items():
                 if fn in items and t.custom is None:

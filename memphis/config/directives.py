@@ -261,7 +261,7 @@ def scan(package, seen, exclude_filter=None):
         results = walk_packages(package.__path__, package.__name__+'.')
 
         for importer, modname, ispkg in results:
-            if modname in seen:
+            if modname in seen: # pragma: no cover
                 continue
 
             seen.add(modname)

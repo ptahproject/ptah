@@ -37,6 +37,7 @@ class TestShutdownHandlers(unittest.TestCase):
             pass
 
         self.assertFalse(isinstance(e, ValueError))
+        shutdown.handlers[:] = []
 
     def test_shutdown_sigterm(self):
         shutdownExecuted = []
