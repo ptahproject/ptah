@@ -10,7 +10,7 @@ Ptah is loosely affiliated with the Pyramid, Django, Drupal and Zope/Plone commu
 Support and Documentation
 -------------------------
 
-Use github until `Ptah Project website <http://ptahproject.org/>`_ is online.
+Use github until `Ptah Project website <http://ptahproject.org/ >`_ is online.
 
 License
 -------
@@ -19,5 +19,5 @@ Ptah is offered under the BSD3 license included in all packages.
 
 Authors
 -------
-Ptah is a joint effort between the USA and USSR.
+Ptah is the culmuination of many hours at Dirks coffee.
 
