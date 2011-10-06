@@ -28,3 +28,17 @@ class TinymceField(form.TextAreaField):
 
     tmpl_input = view.template(
         "ptah_app:templates/tinymce_input.pt")
+
+
+@form.fieldPreview(TinymceField)
+def tinemcePreview(request):
+    field = TinymceField(
+        'TinymceField',
+        title = 'TinyMCE field',
+        description = 'TinymceMCE field preview description',
+        default = 'Test text in text area field.',
+        width = '200px')
+
+    widget = field.bind('preview.', form.null, {})
+    widget.update(request)
+    return widget.pagelet('form-widget', widget)
