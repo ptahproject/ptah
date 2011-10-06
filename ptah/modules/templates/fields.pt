@@ -1,0 +1,21 @@
+<div class="page-header">
+    <h1>Form fields</h1>
+</div>
+
+<table class="zebra-striped">
+  <tbody>
+    <tr tal:repeat="field view.fields">
+      <td>
+	<h4>${field['name']}</h4>
+	<p>${field['doc']}</p>
+      </td>
+      <td>
+	<form tal:condition="field['preview'] is not None">
+	  <fieldset>
+	    ${field['preview'](request)}
+	  </fieldset>
+	</form>
+      </td>
+    </tr>
+  <tbody>
+</table>
