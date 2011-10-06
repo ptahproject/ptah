@@ -1,0 +1,8 @@
+<span tal:attributes="id context.id;
+                      class context.klass;
+                      title context.title;
+                      lang context.lang;">
+  <span tal:condition="context.value">
+    ${context.vocabulary.getTermByToken(context.value).title}
+  </span>
+</span>

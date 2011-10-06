@@ -187,6 +187,10 @@ class TestFieldsetErrors(Base):
         self.assertIs(errors.fieldset, fieldset)
         self.assertEqual(errors.msg, {'test': 'error1', 'test1': 'error2'})
 
+        self.assertEqual(str(err1), "Invalid: <TextField 'test'>: <error1>")
+        self.assertEqual(repr(err1), "Invalid(<TextField 'test'>: <error1>)")
+        self.assertEqual(str(form.null), '<widget.null>')
+
 
 class TestField(Base):
 

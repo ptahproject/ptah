@@ -20,6 +20,9 @@ class Invalid(Exception):
     def __str__(self):
         return 'Invalid: %s: <%s>'%(self.field, self.msg)
 
+    def __repr__(self):
+        return 'Invalid(%s: <%s>)'%(self.field, self.msg)
+
 
 class _null(object):
     """ Represents a null value in colander-related operations. """

@@ -8,17 +8,14 @@
                         multiple context.multiple;
                         size context.size">
   <tal:block repeat="item context.items">
-    <option id="" value="" selected="selected"
-	    tal:condition="item['selected']"
+    <option selected="selected"
+	    tal:condition="item['checked']"
 	    tal:attributes="id item['id'];
-                            value item['value']"
-            tal:content="item['content']">label</option>
-    <option id="" value=""
-            tal:condition="not item['selected']"
+			    value item['value']"
+            tal:content="item['label']">label</option>
+    <option tal:condition="not item['checked']"
             tal:attributes="id item['id'];
                             value item['value']"
-            tal:content="item['content']">label</option>
+	    tal:content="item['label']">label</option>
   </tal:block>
 </select>
-<input name="field-empty-marker" type="hidden" value="1"
-       tal:attributes="name string:${context.name}-empty-marker" />

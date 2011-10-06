@@ -7,6 +7,8 @@ from interfaces import Invalid, FORM_INPUT, FORM_DISPLAY
 
 
 fields = {}
+previews = {}
+
 
 def field(name, layer=''):
     info = config.DirectiveInfo(allowed_scope=('class',))
@@ -31,6 +33,24 @@ def registerField(cls, name, layer=''):
             (cls, name),
             discriminator = discriminator)
         )
+
+
+def fieldPreview(cls):
+    info = config.DirectiveInfo()
+
+    def wrapper(func):
+        previews[cls] = func
+
+        info.attach(
+            config.Action(
+                lambda cls, func: previews.update({cls: func}),
+                (cls, func),
+                discriminator = ('memphis.form:field-preview', cls))
+            )
+        return func
+
+    return wrapper
+
 
 def registerFieldImpl(cls, name):
     fields[name] = cls
@@ -190,7 +210,6 @@ class Field(object):
     error = None
     content = None
     params = {}
-    localizer = None
     value = null
     mode = None
 
@@ -219,6 +238,7 @@ class Field(object):
         clone.content = content
         clone.params = params
         clone.name = '%s%s'%(prefix, self.name)
+        clone.id = clone.name.replace('.', '-')
         return clone
 
     def update(self, request):
@@ -283,59 +303,6 @@ class Field(object):
 
     def __repr__(self):
         return '<%s %r>' % (self.__class__.__name__, self.name)
-
-
-class SequenceField(Field):
-    """ sequence field """
-
-    value = ()
-    terms = None
-    vocabulary = None
-
-    noValueToken = '--NOVALUE--'
-
-    @property
-    def displayValue(self):
-        value = []
-        for token in self.value:
-            # Ignore no value entries. They are in the request only.
-            if token == self.noValueToken:
-                continue
-            term = self.terms.getTermByToken(token)
-            if ITerm.providedBy(term):
-                value.append(self.localizer.translate(term.title))
-            else:
-                value.append(term.value)
-        return value
-
-    def updateTerms(self, context):
-        if self.terms is None:
-            self.terms = self.vocabulary
-            if self.terms is None:
-                raise ValueError("Vocabulary is not specified")
-
-        return self.terms
-
-    def update(self, request):
-        # Create terms first, since we need them for the generic update.
-        self.updateTerms(None)
-        
-        super(SequenceField, self).update(request)
-
-    def extract(self, default=null):
-        if self.name not in self.params:
-            return default
-
-        value = self.params.getall(self.name)
-        for token in value:
-            if token == self.noValueToken:
-                continue
-            try:
-                self.terms.getTermByToken(token)
-            except LookupError:
-                return default
-
-        return value
 
 
 class FieldFactory(Field):

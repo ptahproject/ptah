@@ -21,7 +21,7 @@ class SimpleVocabularyTests(unittest.TestCase):
 
     list_vocab = vocabulary.SimpleVocabulary.fromValues(1, 2, 3)
     items_vocab = vocabulary.SimpleVocabulary.fromItems(
-        ('one', 1), ('two', 2), ('three', 3), ('fore!', 4))
+        (1, 'one'), (2, 'two'), (3, 'three'), (4, 'fore!'))
 
     def test_simple_term(self):
         t = vocabulary.SimpleTerm(1)
@@ -86,10 +86,10 @@ class SimpleVocabularyTests(unittest.TestCase):
             ValueError, vocabulary.SimpleVocabulary.fromValues, 2, '2')
         self.assertRaises(
             ValueError, vocabulary.SimpleVocabulary.fromItems, 
-            (1, 'one'), ('1', 'another one'))
+            ('one', 1), ('another one', '1'))
         self.assertRaises(
             ValueError, vocabulary.SimpleVocabulary.fromItems,
-            (0, 'one'), (1, 'one'))
+            ('one', 0), ('one', 1))
 
     def test_nonunique_token_message(self):
         try:
@@ -99,7 +99,7 @@ class SimpleVocabularyTests(unittest.TestCase):
 
     def test_nonunique_token_messages(self):
         try:
-            vocabulary.SimpleVocabulary.fromItems((0, 'one'), (1, 'one'))
+            vocabulary.SimpleVocabulary.fromItems(('one', 0), ('one', 1))
         except ValueError, e:
             self.assertEquals(str(e), "term values must be unique: 'one'")
 

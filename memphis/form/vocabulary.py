@@ -13,15 +13,15 @@
 ##############################################################################
 """ vocabulary implementation from zope.schema """
 from zope import interface
-from memphis import config
-from memphis.form.interfaces import _, ITerm, IVocabulary, IWidget
+from memphis.form.interfaces import _, ITerm, IVocabulary
 
 
 class SimpleTerm(object):
     """Simple tokenized term used by SimpleVocabulary."""
     interface.implements(ITerm)
 
-    def __init__(self, value, token=None, title=None):
+    def __init__(self, value, token=None, 
+                 title=None, description=None):
         """Create a term for value and token. If token is omitted,
         str(value) is used for the token.  If title is provided,
         term implements ITitledTokenizedTerm.
@@ -31,6 +31,7 @@ class SimpleTerm(object):
             token = value
         self.token = str(token)
         self.title = title
+        self.description = description
 
 
 class SimpleVocabulary(object):
@@ -42,9 +43,6 @@ class SimpleVocabulary(object):
 
         The vocabulary keeps a reference to the list of terms passed
         in; it should never be modified while the vocabulary is used.
-
-        One or more interfaces may also be provided so that alternate
-        widgets may be bound without subclassing.
         """
         self.by_value = {}
         self.by_token = {}
@@ -62,7 +60,7 @@ class SimpleVocabulary(object):
     @classmethod
     def fromItems(cls, *items):
         """Construct a vocabulary from a list of (token, value) pairs. """
-        terms = [cls.createTerm(value, token) for (token, value) in items]
+        terms = [cls.createTerm(*rec) for rec in items]
         return cls(*terms)
 
     @classmethod

@@ -38,3 +38,19 @@ class TestFieldset(Base):
             form.field('my-field')
 
         self.assertRaises(config.ConflictError, self._init_memphis)
+
+    def test_decl_preview(self):
+        global MyField
+
+        class MyField(form.Field):
+            form.field('my-field')
+
+        @form.fieldPreview(MyField)
+        def preview(request):
+            """ """
+
+        self._init_memphis()
+
+        from memphis.form.field import previews
+        self.assertIn(MyField, previews)
+        self.assertIs(previews[MyField], preview)

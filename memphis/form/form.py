@@ -2,7 +2,6 @@
 from zope import interface
 from collections import OrderedDict
 from pyramid import security
-from pyramid.i18n import get_localizer
 from pyramid.decorator import reify
 from pyramid.httpexceptions import HTTPForbidden
 from webob.multidict import UnicodeMultiDict, MultiDict
@@ -48,7 +47,6 @@ class FormWidgets(OrderedDict):
         self.fields = fields
         self.form = form
         self.request = request
-        self.localizer = get_localizer(request)
 
         super(FormWidgets, self).__init__()
 
@@ -67,7 +65,6 @@ class FormWidgets(OrderedDict):
             for widget in fieldset.fields():
                 if widget.mode is None:
                     widget.mode = self.mode
-                widget.localizer = self.localizer
                 widget.id = ('%s%s'%(prefix, widget.name)).replace('.', '-')
                 widget.update(self.request)
                 widgets.append(widget)
@@ -84,6 +81,11 @@ class FormWidgets(OrderedDict):
 
         # additional form validation
         self.form.validate(data, errors)
+
+        if setErrors:
+            for err in errors:
+                if isinstance(err.field, Field) and err.field.error is None:
+                    err.field.error = err
 
         return data, errors
 
@@ -216,7 +218,7 @@ view.registerPagelet(
 
 view.registerPagelet(
     'form-view', IDisplayForm,
-    template = view.template('memphis.form:templates/displayform.pt'))
+    template = view.template('memphis.form:templates/form-display.pt'))
 
 view.registerPagelet(
     'form-actions', IInputForm,

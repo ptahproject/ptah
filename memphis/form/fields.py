@@ -3,7 +3,7 @@ import datetime, iso8601, decimal
 from memphis import view
 from memphis.view import formatter
 from memphis.form import vocabulary
-from memphis.form.field import field, Field, SequenceField
+from memphis.form.field import field, Field
 from memphis.form.interfaces import _, null, required, Invalid, ITerm
 
 
@@ -28,6 +28,136 @@ class InputField(Field, view.View):
         return value
 
 
+class VocabularyField(InputField):
+
+    vocabulary = None
+    noValueToken = '--NOVALUE--'
+
+    def __init__(self, name, **kw):
+        super(VocabularyField, self).__init__(name, **kw)
+
+        if self.vocabulary is None:
+            raise ValueError("Vocabulary is not specified.")
+
+    def isChecked(self, term):
+        raise NotImplementedError()
+
+    def updateItems(self):
+        self.items = []
+        for count, term in enumerate(self.vocabulary):
+            checked = self.isChecked(term)
+            id = '%s-%i' % (self.id, count)
+            label = term.token
+            desc = None
+            if ITerm.providedBy(term):
+                label = term.title
+                desc = term.description
+            self.items.append(
+                {'id':id, 'name': self.name, 'value': term.token,
+                 'label':label, 'description': desc, 'checked': checked})
+
+
+class BaseChoiceField(VocabularyField):
+    """ choice field """
+
+    tmpl_display = view.template(
+        "memphis.form:templates/fields/basechoice-display.pt")
+
+    def serialize(self, value):
+        if value is null:
+            return null
+
+        try:
+            return self.vocabulary.getTerm(value).token
+        except Exception:
+            raise Invalid(
+                self, _('"${val}" is not in vocabulary', mapping={'val':value}))
+
+    def deserialize(self, value):
+        if not value:
+            return null
+
+        try:
+            return self.vocabulary.getTermByToken(value).value
+        except Exception:
+            raise Invalid(
+                self, _('"${val}" is not in vocabulary', mapping={'val':value}))
+
+    def extract(self, default=null):
+        value = self.params.get(self.name, default)
+        if value is default:
+            return default
+
+        if value == self.noValueToken:
+            return default
+
+        return value
+
+    def isChecked(self, term):
+        return term.token == self.value
+
+    def update(self, request):
+        super(BaseChoiceField, self).update(request)
+
+        self.updateItems()
+
+
+class BaseMultiChoiceField(VocabularyField):
+    """ multi choice field """
+
+    tmpl_display = view.template(
+        "memphis.form:templates/fields/basemultichoice-display.pt")
+
+    def serialize(self, value):
+        if value is null:
+            return null
+        try:
+            res = []
+            for val in value:
+                res.append(self.vocabulary.getTerm(val).token)
+            return res
+        except (LookupError, TypeError):
+            raise Invalid(
+                self, _('"${val}" is not in vocabulary', mapping={'val':value}))
+
+    def deserialize(self, value):
+        if not value:
+            return null
+        try:
+            res = []
+            for val in value:
+                res.append(self.vocabulary.getTermByToken(val).value)
+            return res
+        except Exception:
+            raise Invalid(
+                self, _('"${val}" is not in vocabulary', mapping={'val':value}))
+
+    def extract(self, default=null):
+        if self.name not in self.params:
+            return default
+
+        value = []
+        tokens = self.params.getall(self.name)
+        for token in tokens:
+            if token == self.noValueToken:
+                continue
+
+            value.append(token)
+
+        return value
+
+    def isChecked(self, term):
+        return term.token in self.value
+
+    def update(self, request):
+        super(BaseMultiChoiceField, self).update(request)
+
+        if self.value is null:
+            self.value = []
+
+        self.updateItems()
+
+
 class TextField(InputField):
     __doc__ = _(u'HTML Text input widget')
 
@@ -37,9 +167,9 @@ class TextField(InputField):
     value = u''
 
     tmpl_input = view.template(
-        "memphis.form:templates/fields/text_input.pt")
+        "memphis.form:templates/fields/text-input.pt")
     tmpl_display = view.template(
-        "memphis.form:templates/fields/text_display.pt")
+        "memphis.form:templates/fields/text-display.pt")
 
 
 class Number(object):
@@ -113,9 +243,7 @@ class TextAreaField(TextField):
     cols = 40
 
     tmpl_input = view.template(
-        "memphis.form:templates/fields/textarea_input.pt")
-    tmpl_display = view.template(
-        "memphis.form:templates/fields/textarea_display.pt")
+        "memphis.form:templates/fields/textarea-input.pt")
 
 
 class FileField(TextField):
@@ -125,9 +253,7 @@ class FileField(TextField):
     klass = u'input-file'
 
     tmpl_input = view.template(
-        "memphis.form:templates/fields/file_input.pt")
-    tmpl_display = view.template(
-        "memphis.form:templates/fields/file_display.pt")
+        "memphis.form:templates/fields/file-input.pt")
 
     def extract(self, default=null):
         value = self.params.get(self.name, default)
@@ -183,58 +309,26 @@ class PasswordField(TextField):
     klass = u'password-widget'
 
     tmpl_input = view.template(
-        "memphis.form:templates/fields/password_input.pt")
+        "memphis.form:templates/fields/password-input.pt")
     tmpl_display = view.template(
-        "memphis.form:templates/fields/password_display.pt")
+        "memphis.form:templates/fields/password-display.pt")
 
 
-class CheckboxsField(SequenceField):
+class MultiChoiceField(BaseMultiChoiceField):
     __doc__ = _('HTML Checkboxs input based widget.')
 
-    field('checkboxs')
+    field('multichoice')
 
-    klass = u'checkboxs-widget'
-    items = ()
-
+    klass = u'multichoice-widget'
     tmpl_input = view.template(
-        "memphis.form:templates/fields/checkbox_input.pt")
-    tmpl_display = view.template(
-        "memphis.form:templates/fields/checkbox_display.pt")
-
-    def isChecked(self, term):
-        return term.token in self.value
-
-    def update(self, request):
-        super(CheckboxsField, self).update(request)
-
-        self.items = []
-        for count, term in enumerate(self.terms):
-            checked = self.isChecked(term)
-            id = '%s-%i' % (self.id, count)
-            label = term.token
-            if ITerm.providedBy(term):
-                label = self.localizer.translate(term.title)
-            self.items.append(
-                {'id':id, 'name':self.name, 'value':term.token,
-                 'label':label, 'checked':checked})
+        "memphis.form:templates/fields/multichoice-input.pt")
 
 
-class CheckboxField(CheckboxsField):
-    __doc__ = _('Single checkbox widget.')
-
-    field('checkbox')
-    klass = u'single-checkbox-widget'
-
-    def updateTerms(self):
-        if self.terms is None:
-            self.terms = vocabulary.Vocabulary()
-            self.terms.terms = vocabulary.SimpleVocabulary(
-                vocabulary.SimpleTerm('selected', 'selected', ''))
-        return self.terms
-
-
-class DateField(InputField):
+class DateField(TextField):
     __doc__ = _(u'Simple date input field.')
+
+    tmpl_display = view.template(
+        "memphis.form:templates/fields/date-display.pt")
 
     def serialize(self, value):
         if value is null:
@@ -267,23 +361,12 @@ class DateField(InputField):
         return result
 
 
-class JSDateField(DateField):
-    __doc__ = _(u'Date input widget with JQuery Datepicker.')
-
-    field('date')
-
-    klass = u'date-widget'
-    value = u''
-
-    tmpl_input = view.template(
-        "memphis.form:templates/fields/date_input.pt")
-    tmpl_display = view.template(
-        "memphis.form:templates/fields/date_display.pt")
-
-
-class DateTimeField(InputField):
+class DateTimeField(TextField):
 
     default_tzinfo = iso8601.iso8601.Utc()
+
+    tmpl_display = view.template(
+        "memphis.form:templates/fields/datetime-display.pt")
 
     def serialize(self, value):
         if value is null or value is None:
@@ -320,184 +403,57 @@ class DateTimeField(InputField):
         return result
 
 
-class JSDateTimeField(DateTimeField):
-    __doc__ = _(u'DateTime input widget with JQuery Datepicker.')
-
-    field('datetime')
-
-    klass = u'datetime-widget'
-    value = u''
-
-    time_part = null
-    date_part = null
-    tzinfo = None
-
-    tmpl_input = view.template(
-        "memphis.form:templates/fields/datetime_input.pt")
-    tmpl_display = view.template(
-        "memphis.form:templates/fields/datetime_display.pt")
-
-    def update(self, request):
-        self.date_name = '%s.date'%self.name
-        self.time_name = '%s.time'%self.name
-
-        super(DateTimeField, self).update(request)
-
-        self.date_part = self.params.get(self.date_name, null)
-        self.time_part = self.params.get(self.time_name, null)
-
-        if self.value:
-            try:
-                raw = iso8601.parse_date(self.value)
-            except:
-                pass
-            else:
-                self.tzinfo = raw.tzinfo
-                if self.date_part is null:
-                    self.date_part = raw.strftime('%m/%d/%Y')
-                if self.time_part is null:
-                    self.time_part = raw.strftime(formatter.FORMAT.time_short)
-
-        if self.date_part is null:
-            self.date_part = u''
-        if self.time_part is null:
-            self.time_part = u''
-
-    def extract(self, default=null):
-        date = self.params.get(self.date_name, default)
-        if date is default:
-            return default
-
-        if not date:
-            return ''
-
-        time = self.params.get(self.time_name, default)
-        if time is default:
-            return default
-
-        if not time:
-            return ''
-
-        format = '%s %s'%(
-            '%m/%d/%Y',
-            formatter.FORMAT.time_short)
-        try:
-            dt = datetime.strptime('%s %s'%(date, time), format)
-        except ValueError:
-            return '--------'
-
-        return dt.replace(tzinfo=self.tzinfo).isoformat()
-
-
-class RadioField(SequenceField, InputField):
+class RadioField(BaseChoiceField):
     __doc__ = _('HTML Radio input widget.')
 
     field('radio')
 
     klass = u'radio-widget'
-    items = ()
-
     tmpl_input = view.template(
-        "memphis.form:templates/fields/radio_input.pt")
-    tmpl_display = view.template(
-        "memphis.form:templates/fields/radio_display.pt")
-
-    def isChecked(self, term):
-        return term.token == self.value
-
-    def update(self, request):
-        super(RadioField, self).update(request)
-
-        self.items = []
-        for count, term in enumerate(self.terms):
-            checked = self.isChecked(term)
-            id = '%s-%i' % (self.id, count)
-            label = term.token
-            if ITerm.providedBy(term):
-                label = self.localizer.translate(term.title)
-            self.items.append(
-                {'id':id, 'name':self.name, 'value':term.token,
-                 'label':label, 'checked':checked})
-
-    def extract(self, default=null):
-        value = super(RadioField, self).extract(default)
-        if value is not default:
-            return value[0]
-        return value
+        "memphis.form:templates/fields/radio-input.pt")
 
 
-class HorizontalRadioField(RadioField):
-    __doc__ = _('HTML Radio input widget.')
-
-    field('radio-horizontal')
-
-    tmpl_input = view.template(
-        "memphis.form:templates/fields/radiohoriz_input.pt")
-
-
-class BoolField(HorizontalRadioField):
+class BoolField(BaseChoiceField):
     __doc__ = _('Boolean input widget.')
 
     field('bool')
 
-    terms = vocabulary.SimpleVocabulary(
-        vocabulary.SimpleTerm(True, 'true',  _('yes')),
-        vocabulary.SimpleTerm(False, 'false',  _('no')))
+    vocabulary = vocabulary.SimpleVocabulary.fromItems(
+        (True, 'true',  _('yes')),
+        (False, 'false',  _('no')))
+
+    tmpl_input = view.template(
+        "memphis.form:templates/fields/bool-input.pt")
 
 
-class SelectField(SequenceField, InputField):
+class ChoiceField(BaseChoiceField):
     __doc__ = _('HTML Select input widget.')
 
-    klass = u'select-widget'
-    prompt = False
+    field('choice')
 
-    multiple = None
     size = 1
-
-    field('select')
-
-    noValueMessage = _('no value')
+    klass = u'select-widget'
+    multiple = None
     promptMessage = _('select a value ...')
 
     tmpl_input = view.template(
-        "memphis.form:templates/fields/select_input.pt",
-        title="HTML Select: input template")
-    tmpl_display = view.template(
-        "memphis.form:templates/fields/select_display.pt",
-        title="HTML Select: display template")
+        "memphis.form:templates/fields/select-input.pt")
 
-    def isSelected(self, term):
-        return term.token in self.value
+    def updateItems(self):
+        super(ChoiceField, self).updateItems()
 
-    @property
-    def items(self):
-        if self.terms is None:  # update() has not been called yet
-            return ()
-        items = []
-        if (not self.required or self.prompt) and self.multiple is None:
-            message = self.noValueMessage
-            if self.prompt:
-                message = self.promptMessage
-            items.append({
-                'id': self.id + '-novalue',
-                'value': self.noValueToken,
-                'content': message,
-                'selected': self.value == []
-                })
-
-        for count, term in enumerate(self.terms):
-            selected = self.isSelected(term)
-            id = '%s-%i' % (self.id, count)
-            content = term.token
-            if ITerm.providedBy(term):
-                content = self.localizer.translate(term.title)
-            items.append(
-                {'id':id, 'value':term.token, 'content':content,
-                 'selected':selected})
-        return items
+        if not self.required:
+            self.items.insert(0, {
+                    'id': self.id + '-novalue',
+                    'name': self.name,
+                    'value': self.noValueToken,
+                    'label': self.promptMessage,
+                    'checked': self.value is null,
+                    'description': u'',
+                    })
 
 
-class MultiSelectField(SelectField):
+class MultiSelectField(ChoiceField):
     __doc__ = _('HTML Multi Select input widget.')
 
     size = 5

@@ -9,10 +9,10 @@ from memphis.form.field import Field
 from memphis.form.field import FieldFactory
 from memphis.form.field import Fieldset
 from memphis.form.field import FieldsetErrors
-from memphis.form.field import SequenceField
 
 # field registration
 from memphis.form.field import field
+from memphis.form.field import fieldPreview
 from memphis.form.field import getField
 from memphis.form.field import registerField
 
@@ -42,17 +42,18 @@ from memphis.form.fields import TextAreaField
 from memphis.form.fields import FileField
 from memphis.form.fields import LinesField
 from memphis.form.fields import PasswordField
-from memphis.form.fields import CheckboxField
-from memphis.form.fields import CheckboxsField
 from memphis.form.fields import DateField
 from memphis.form.fields import DateTimeField
-from memphis.form.fields import JSDateField
-from memphis.form.fields import JSDateTimeField
 from memphis.form.fields import RadioField
-from memphis.form.fields import HorizontalRadioField
 from memphis.form.fields import BoolField
-from memphis.form.fields import SelectField
+from memphis.form.fields import ChoiceField
+from memphis.form.fields import MultiChoiceField
 from memphis.form.fields import MultiSelectField
+
+# helper field classes
+from memphis.form.fields import VocabularyField
+from memphis.form.fields import BaseChoiceField
+from memphis.form.fields import BaseMultiChoiceField
 
 # forms
 from memphis.form.form import Form
