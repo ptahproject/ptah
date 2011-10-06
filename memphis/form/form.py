@@ -44,12 +44,12 @@ class FormWidgets(OrderedDict):
     fieldsets = ()
 
     def __init__(self, fields, form, request):
-        super(FormWidgets, self).__init__()
-
         self.fields = fields
         self.form = form
         self.request = request
         self.localizer = get_localizer(request)
+
+        super(FormWidgets, self).__init__()
 
     def update(self):
         # Create a unique prefix.
