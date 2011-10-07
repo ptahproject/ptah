@@ -79,6 +79,7 @@ from ptah.sqla import JsonListType
 from ptah.sqla import generateFieldset
 from ptah.sqla import buildSqlaFieldset
 
+
 # create wsgi app
 class WSGIAppInitialized(object):
     """ This event is beeing sent after new wsgi app is created by
@@ -101,14 +102,15 @@ class WSGIAppInitialized(object):
 
 def make_wsgi_app(global_config, **settings):
     """ Create wsgi application, this function initialize
-    `memphis` and sends :py:class:`WSGIAppInitialized` event.
-    It is possible to use this function as entry point to paster based
+    `ptah` and sends :py:class:`WSGIAppInitialized` event.
+    It is possible to use this function as entry point for paster based
     deployment::
 
       [app:myapp]
       use = egg:ptah#app
 
     """
+    import memphis
     import transaction
     import pyramid_sqla
     from pyramid import path
@@ -136,17 +138,19 @@ def make_wsgi_app(global_config, **settings):
     # commit possible transaction
     transaction.commit()
 
+    # send ApplicationStarting event
+    memphis.config.start(config)
+
     return app
 
 
 # initialize memphis
 def initialize(package, pyramid_config, settings):
-    """ Initialize memphis package.
+    """ Initialize memphis packages.
     Load all memphis packages and intialize memphis settings system.
 
     This function automatically called by :py:func:`make_wsgi_app` function.
     """
-
     from memphis import config
 
     pyramid_config.begin()
