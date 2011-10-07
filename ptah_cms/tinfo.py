@@ -1,6 +1,5 @@
 """ type implementation """
-import sys
-import ptah
+import ptah, sys, logging
 import sqlalchemy as sqla
 from memphis import config
 from zope import interface
@@ -11,6 +10,8 @@ from container import Container
 from cms import buildClassActions
 from events import ContentCreatedEvent
 from interfaces import Forbidden, ContentSchema, ITypeInformation
+
+log = logging.getLogger('ptah_cms')
 
 
 Types = {}
@@ -151,6 +152,7 @@ def registerType(
     if fieldset is None:
         fieldset = ptah.generateFieldset(
             cls, fieldNames=fieldNames, namesFilter=namesFilter)
+        log.info("Generating fieldset for %s content type.", cls)
 
     if 'global_allow' not in kw and not issubclass(cls, Content):
         kw['global_allow'] = False
