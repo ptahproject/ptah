@@ -86,12 +86,11 @@ def viewDirective(
 
     if inspect.isclass(factory):
         isclass = True
-        name, context, rendr, template, route, layout, \
-            permission, default, decorator = action.args
+        name, context, template, route, layout, permission = action.args
     else:
         isclass = False
-        factory, name, context, rendr, template, layout, permission, route, \
-            default, decorator = action.args
+        factory, name, context, template, layout, permission, route, \
+            = action.args
 
     if route:
         if name:
@@ -130,30 +129,6 @@ def routeDirective(
         return ''
 
 
-def adapterDirective(
-    action, request,
-    lineno = lineno,
-    template=view.template('ptah.modules:templates/directive-adapter.pt')):
-
-    context = action.info.context
-
-    if inspect.isclass(context):
-        isclass = True
-        requires, name = action.args[:2]
-    else:
-        context = action.args[1]
-        requires = action.args[2]
-        name = action.kw['name']
-
-    provided = list(interface.implementedBy(context))
-    if len(provided):
-        iface = provided[0]
-    else:
-        iface = 'unknown'
-
-    return template(**locals())
-
-
 def handlerDirective(
     action, request,
     lineno = lineno,
@@ -174,42 +149,15 @@ def handlerDirective(
     return template(**locals())
 
 
-def eventDirective(
-    action, request,
-    lineno = lineno,
-    template=view.template('ptah.modules:templates/directive-event.pt')):
-
-    event = directives.events[action.info.context]
-
-    return template(**locals())
-
-
-def pageletTypeDirective(
-    action, request,
-    lineno = lineno,
-    template=view.template('ptah.modules:templates/directive-ptype.pt')):
-
-    name = action.args[0]
-    ptype = sys.modules['memphis.view.pagelet'].ptypes[name]
-
-    return template(**locals())
-
-
 renderers = {
     'memphis.view:view': viewDirective,
     'memphis.view:route': routeDirective,
-    'memphis.view:pageletType': pageletTypeDirective,
-    'memphis.config:adapter': adapterDirective,
     'memphis.config:subscriber': handlerDirective,
-    'memphis.config:event': eventDirective,
     }
 
 types = {
     'memphis.view:view': ('View', 'Pyramid views'),
     'memphis.view:route': ('Route', 'Pyramid routes'),
-    'memphis.view:pageletType': ('Pagelet Type', 'Memphis pagelet types'),
-    'memphis.config:event': ('Events', 'event declarations'),
-    'memphis.config:adapter': ('Adapters','zca adapter registrations'),
     'memphis.config:subscriber': ('Event listeners',
                                'zca event handler registrations'),
     }
@@ -458,4 +406,86 @@ class UriIntrospection(object):
             resolvers = resolvers,
             resolversTitle = resolversTitle,
             actions = actions,
+            request = self.request)
+
+
+class EventDirective(object):
+    """ zca event declarations """
+
+    title = 'Events'
+    ptah.introspection('memphis.config:event')
+
+    actions = view.template('ptah.modules:templates/directive-event.pt')
+
+    def __init__(self, request):
+        self.request = request
+
+    def renderAction(self, action):
+        pass
+
+    def renderActions(self, *actions):
+        return self.actions(
+            actions = actions,
+            events = directives.events,
+            request = self.request)
+
+
+class AdapterDirective(object):
+    """ zca adapter registrations """
+
+    title = 'Adapters'
+    ptah.introspection('memphis.config:adapter')
+
+    actions = view.template('ptah.modules:templates/directive-adapter.pt')
+
+    def __init__(self, request):
+        self.request = request
+
+    def renderAction(self, action):
+        pass
+
+    def getInfo(self, action):
+        context = action.info.context
+
+        if inspect.isclass(context):
+            isclass = True
+            requires, name = action.args[:2]
+        else:
+            context = action.args[1]
+            requires = action.args[2]
+            name = action.kw['name']
+
+        provided = list(interface.implementedBy(context))
+        if len(provided):
+            iface = provided[0]
+        else:
+            iface = 'unknown'
+        return locals()
+
+    def renderActions(self, *actions):
+        return self.actions(
+            actions = actions,
+            getInfo = self.getInfo,
+            request = self.request)
+
+
+class PageletTypeDirective(object):
+    """ memphis pagelet types """
+
+    title = 'Pagelet Types'
+    ptah.introspection('memphis.view:pageletType')
+
+    actions = view.template('ptah.modules:templates/directive-ptype.pt')
+
+    def __init__(self, request):
+        self.request = request
+
+    def renderAction(self, action):
+        pass
+
+    def renderActions(self, *actions):
+        return self.actions(
+            actions = actions,
+            ptypes = sys.modules['memphis.view.pagelet'].ptypes,
+            events = directives.events,
             request = self.request)

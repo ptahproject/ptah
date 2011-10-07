@@ -1,9 +1,15 @@
-<h5>${event.title}</h5>
-<p>
-  <a href="../source.html?pkg=${event.instance.__module__}#sl-${lineno(event.instance)}" tal:content="event.instance" />
-  <tal:block condition="event.__doc__">
-    <br />
-    <br />
-    <em tal:content="event.__doc__" />
-  </tal:block>
-</p>
+<table class="zebra-striped" tal:define="url request.application_url">
+  <tbody>
+    <tr tal:repeat="action actions">
+      <td tal:define="ev events[action.info.context]">
+	<h4>${ev.title} 
+	  <small>
+	    <a href="${url}/ptah-manage/introspect/source.html?pkg=${action.info.context.__module__}#sl-${action.info.codeinfo[1]}">
+	      ${ev.instance.__module__}.${ev.instance.__name__}</a>
+	  </small>
+	</h4>
+	<p tal:condition="ev.instance.__doc__">${ev.instance.__doc__}</p>
+      </td>
+    </tr>
+  </tbody>
+</table>

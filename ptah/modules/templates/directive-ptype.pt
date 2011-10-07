@@ -1,9 +1,16 @@
-<h5>${ptype.title or ptype.name}</h5>
-<p>
-  Context: <tal:block content="ptype.context" />
-  <tal:block condition="ptype.description">
-    <br />
-    <br />
-    <em tal:content="ptype.description" />
-  </tal:block>
-</p>
+<table class="zebra-striped" tal:define="url request.application_url">
+  <tbody>
+    <tr tal:repeat="action actions">
+      <td tal:define="name action.args[0];
+		      pt ptypes[name]">
+	<h4>
+	  <a href="${url}/ptah-manage/introspect/source.html?pkg=${action.info.module.__name__}#sl-${action.info.codeinfo[1]}">
+	    ${pt.title or pt.name}</a>
+	  <small>for</small>
+	  ${pt.context.__module__}.${pt.context.__name__}
+	</h4>
+	<p tal:condition="pt.description">${pt.description}</p>
+      </td>
+    </tr>
+  </tbody>
+</table>
