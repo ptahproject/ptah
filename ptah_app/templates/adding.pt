@@ -3,14 +3,12 @@
 </div>
 
 <div>
-  <table class="zebra-striped">
-    <tr tal:repeat="info view.types">
-      <td>
-	<a href="${view.url}${info.add if info.add else '+/%s'%info.name}">
-	  ${info.title}
-	</a>
-	<p>${info.description}</p>
-      </td>
-    </tr>
-  </table>
+  <ul>
+    <li tal:repeat="info view.types">
+      <a href="${view.url}${info.addview if info.addview else '+/%s'%info.name}">
+	${info.title}
+      </a>
+      <p>${info.description}</p>
+    </li>
+  </ul>
 </div>

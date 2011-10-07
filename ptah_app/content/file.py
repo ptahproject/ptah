@@ -6,28 +6,22 @@ import ptah, ptah_cms, ptah_app
 from ptah_app.permissions import AddFile
 
 
-FileSchema = ptah_cms.ContentSchema + form.Fieldset(
-
-    form.FieldFactory(
-        'file',
-        'data',
-        title = 'Data')
-    )
-
-
 class File(ptah_cms.Content):
 
     __tablename__ = 'ptah_app_files'
 
     __type__ = ptah_cms.Type(
-        'file', 'File',
-        add = 'addfile.html',
-        fieldset = FileSchema,
+        'file',
+        title = 'File',
         description = 'A file in the site.',
         permission = AddFile,
+        addview = 'addfile.html',
         )
 
-    blobref = sqla.Column(sqla.Unicode)
+    blobref = sqla.Column(
+        sqla.Unicode,
+        info = {'title': 'Data',
+                'field_type': 'file'})
 
     @ptah_cms.action(permission=ptah_cms.ModifyContent)
     def update(self, **data):

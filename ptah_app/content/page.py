@@ -11,7 +11,8 @@ class Page(ptah_cms.Content):
     __tablename__ = 'ptah_app_pages'
 
     __type__ = ptah_cms.Type(
-        'page', 'Page',
+        'page',
+        title = 'Page',
         description = 'A page in the site.',
         permission = AddPage,
         name_suffix = '.html',
