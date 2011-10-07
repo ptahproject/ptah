@@ -79,11 +79,11 @@ class AddForm(form.Form):
                     self.name_fields['__name__'].node, 'Name already in use')
                 errors.append(error)
 
-    def extract(self, setErrors=True):
-        data, errors = self.widgets.extract(setErrors)
+    def extract(self):
+        data, errors = self.widgets.extract()
 
         if self.name_show:
-            name_data, name_errors = self.name_widgets.extract(setErrors)
+            name_data, name_errors = self.name_widgets.extract()
             if name_errors:
                 errors.extend(name_errors)
 
