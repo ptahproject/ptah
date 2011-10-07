@@ -3,7 +3,9 @@ Pyramid & Ptah Startup
 
 Requirements
 ------------
-You or ptah must create a Pyramid Configurtor
+You or ptah must create a Pyramid Configurtor before invoking
+memphis.config.initialize and memphis.config.initializeSettings. Making a
+WSGI app can be done by Ptah or you can do it yourself.
 
 config.initialize
 -----------------
