@@ -1,9 +1,6 @@
 Ptah CMS API
 ------------
 
-Public APIs
-~~~~~~~~~~~
-
 .. automodule:: ptah_cms
 
 Content classes
@@ -20,7 +17,7 @@ Content classes
 Content loading
 ~~~~~~~~~~~~~~~
 
-  .. autofunction:: loadNode
+  .. autofunction:: load
 
   .. autofunction:: loadParents
 
@@ -32,27 +29,19 @@ Type system
 
   .. py:data:: Types
 
-     All registered types in system
+     Dictionary `Types` contains all registered types in system.
 
   .. autoclass:: TypeInformation
-
-
-Content action
-~~~~~~~~~~~~~~
-
-  .. autofunction:: listActions
-
-  .. autofunction:: contentAction
 
 
 Application Root/Factory/Policy
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  .. py:class:: ApplicationRoot
+  .. autoclass:: ApplicationRoot
 
-  .. py:class:: ApplicationPolicy
+  .. autoclass:: ApplicationPolicy
 
-  .. py:class:: ApplicationFactory
+  .. autoclass:: ApplicationFactory
 
 Blob api
 ~~~~~~~~
@@ -92,14 +81,14 @@ Permissions
 Events
 ~~~~~~
 
-  .. py:class:: ContentEvent
+  .. autoclass:: ContentEvent
 
-  .. py:class:: ContentCreatedEvent
+  .. autoclass:: ContentCreatedEvent
 
-  .. py:class:: ContentAddedEvent
+  .. autoclass:: ContentAddedEvent
 
-  .. py:class:: ContentMovedEvent
+  .. autoclass:: ContentMovedEvent
 
-  .. py:class:: ContentModifiedEvent
+  .. autoclass:: ContentModifiedEvent
 
-  .. py:class:: ContentDeletingEvent
+  .. autoclass:: ContentDeletingEvent

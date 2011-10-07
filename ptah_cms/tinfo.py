@@ -91,6 +91,15 @@ def resolveContent(uri):
 
 
 def Type(name, title, fieldset = None, **kw):
+    """ Declare new type. This function has to be call within
+    content class declaration.::
+
+        class MyContent(ptah_cms.Content):
+
+            __type__ = Type('My content')
+
+    """
+    
     info = config.DirectiveInfo(allowed_scope=('class',))
 
     fs = ContentSchema if fieldset is None else fieldset
