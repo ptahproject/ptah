@@ -1,7 +1,5 @@
 """ file content implementation """
 import sqlalchemy as sqla
-
-from zope import interface
 from memphis import view, form
 
 import ptah, ptah_cms, ptah_app

@@ -51,10 +51,10 @@ class Base(unittest.TestCase):
         self.p_config = testing.setUp(request=request)
         self.p_config.get_routes_mapper()
 
-    def _setup_memphis(self):
+    def _setup_memphis(self): # pragma: no cover
         self._init_memphis()
 
-    def _setRequest(self, request):
+    def _setRequest(self, request): # pragma: no cover
         self.request = request
         self.p_config.end()
         self.p_config.begin(request)

@@ -1,6 +1,7 @@
 """ various fields """
 import datetime
 from memphis import form, view
+from memphis.view import formatter
 
 
 class JSDateField(form.DateField):
@@ -39,17 +40,13 @@ class JSDateTimeField(form.DateTimeField):
         self.date_part = self.params.get(self.date_name, form.null)
         self.time_part = self.params.get(self.time_name, form.null)
 
-        if self.value:
-            try:
-                raw = iso8601.parse_date(self.value)
-            except:
-                pass
-            else:
-                self.tzinfo = raw.tzinfo
-                if self.date_part is form.null:
-                    self.date_part = raw.strftime('%m/%d/%Y')
-                if self.time_part is form.null:
-                    self.time_part = raw.strftime(formatter.FORMAT.time_short)
+        if self.content:
+            raw = self.content
+            self.tzinfo = raw.tzinfo
+            if self.date_part is form.null:
+                self.date_part = raw.strftime('%m/%d/%Y')
+            if self.time_part is form.null:
+                self.time_part = raw.strftime(formatter.FORMAT.time_short)
 
         if self.date_part is form.null:
             self.date_part = u''
