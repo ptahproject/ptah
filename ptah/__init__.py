@@ -120,7 +120,11 @@ def make_wsgi_app(global_config, **settings):
     config = Configurator(settings=settings)
 
     # initialization
-    initialize(None, config, global_config)
+    try:
+        initialize(None, config, global_config)
+    except memphis.config.StopException:
+        memphis.config.shutdown()
+        raise
 
     # create wsgi app
     app = config.make_wsgi_app()
