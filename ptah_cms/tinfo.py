@@ -17,7 +17,7 @@ Types = {}
 
 @ptah.resolver('cms+type', 'Type resolver')
 def typeInfoResolver(uri):
-    return Types.get(uri[9:])
+    return Types.get(uri)
 
 
 class TypeInformation(object):
@@ -27,7 +27,7 @@ class TypeInformation(object):
     description = u''
     permission = ptah.NOT_ALLOWED
 
-    add = None # add action, path relative to current container
+    addview = None # addview action, path relative to current container
     filter_content_types = False
     allowed_content_types = ()
     global_allow = True
@@ -69,7 +69,7 @@ class TypeInformation(object):
         if self.filter_content_types:
             for tinfo in self.allowed_content_types:
                 if isinstance(tinfo, basestring):
-                    tinfo = Types.get(tinfo)
+                    tinfo = Types.get('cms+type:%s'%tinfo)
 
                 if tinfo and tinfo.isAllowed(container):
                     types.append(tinfo)
@@ -90,7 +90,7 @@ def resolveContent(uri):
     return _sql_get.first(uri=uri)
 
 
-def Type(name, title, fieldset = None, **kw):
+def Type(name, title=None, fieldset=None, **kw):
     """ Declare new type. This function has to be call within
     content class declaration.::
 
@@ -99,10 +99,12 @@ def Type(name, title, fieldset = None, **kw):
             __type__ = Type('My content')
 
     """
-    
     info = config.DirectiveInfo(allowed_scope=('class',))
 
     fs = ContentSchema if fieldset is None else fieldset
+    
+    if title is None:
+        title = name.capitalize()
 
     typeinfo = TypeInformation(None, name, title, fs, **kw)
 
@@ -110,7 +112,7 @@ def Type(name, title, fieldset = None, **kw):
     if '__mapper_args__' not in f_locals:
         f_locals['__mapper_args__'] = {'polymorphic_identity': typeinfo.__uri__}
     if '__id__' not in f_locals and '__tablename__' in f_locals:
-        f_locals['__id__'] = sqla.Column( #pragma: no cover
+        f_locals['__id__'] = sqla.Column(
             'id', sqla.Integer,
             sqla.ForeignKey('ptah_cms_content.id'), primary_key=True)
     if '__uri_generator__' not in f_locals:
@@ -161,7 +163,7 @@ def registerType(
     tinfo.cls = cls
     tinfo.permission = permission
 
-    Types[name] = tinfo
+    Types[tinfo.__uri__] = tinfo
 
     # build cms actions
     buildClassActions(cls)
