@@ -229,7 +229,7 @@ def updateAction(content, request, *args):
     data, errors = fieldset.extract()
     if errors:
         request.response.status = 500
-        return {'errors': errors.message}
+        return {'errors': errors.msg}
 
     content.update(**data)
     return nodeInfo(content, request)
@@ -247,7 +247,7 @@ def createContentAction(content, request, *args):
     data, errors = fieldset.extract()
     if errors:
         request.response.status = 500
-        return {'errors': errors.message}
+        return {'errors': errors.msg}
 
     item = cms(content).create(tinfo.__uri__, name, **data)
     return nodeInfo(item, request)
