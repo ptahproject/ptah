@@ -302,7 +302,7 @@ Container
       page.delete()
       import transaction; transaction.commit()
 
-    There are several other approachs.  One could be del container.page
+    There are several other approachs.  One could be del container['page.html']
 
 URIs
 ====
