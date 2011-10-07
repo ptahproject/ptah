@@ -512,7 +512,6 @@ class TestSubpathView(BaseView):
             sp, self.test_view_subpath_err, sys._getframe(1))
 
 
-
 class TestRouteRegistration(BaseView):
 
     def test_view_route(self):
@@ -537,3 +536,14 @@ class TestRouteRegistration(BaseView):
         view.registerRoute('test-route', '/test/')
         view.registerRoute('test-route', '/test2/')
         self.assertRaises(config.ConflictError, self._init_memphis)
+
+
+class TestViewView(BaseView):
+
+    def test_view_render(self):
+
+        class MyView(view.View):
+            def template(self, **kw):
+                return 'MyView rendered'
+
+        self.assertEqual(MyView(None, None).render(), 'MyView rendered')

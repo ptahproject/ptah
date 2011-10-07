@@ -264,7 +264,7 @@ def initialize(*args):
 
 @config.shutdownHandler
 def shutdown():
-    if TEMPLATE._watcher is not None:
+    if TEMPLATE._watcher is not None: # pragma: no cover
         TEMPLATE._watcher.stop()
         TEMPLATE._watcher = None
 

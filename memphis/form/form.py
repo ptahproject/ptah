@@ -76,16 +76,16 @@ class FormWidgets(OrderedDict):
                  'legend': fieldset.legend,
                  'widgets': widgets})
 
-    def extract(self, setErrors=True):
+    def extract(self):
         data, errors = self.fieldset.extract()
 
         # additional form validation
         self.form.validate(data, errors)
 
-        if setErrors:
-            for err in errors:
-                if isinstance(err.field, Field) and err.field.error is None:
-                    err.field.error = err
+        # set errors to fields
+        for err in errors:
+            if isinstance(err.field, Field) and err.field.error is None:
+                err.field.error = err
 
         return data, errors
 
@@ -116,6 +116,8 @@ class Form(view.View):
     csrf = False
     csrfname = 'csrf-token'
 
+    empty_params = UnicodeMultiDict(MultiDict({}), 'utf-8')
+
     @reify
     def action(self):
         return self.request.url
@@ -137,7 +139,7 @@ class Form(view.View):
         elif self.method == 'get':
             return self.request.GET
         else:
-            return {}
+            return self.empty_params
 
     def updateWidgets(self):
         self.widgets = FormWidgets(self.fields, self, self.request)
@@ -172,8 +174,8 @@ class Form(view.View):
 
             raise HTTPForbidden("Form authenticator is not found.")
 
-    def extract(self, setErrors=True):
-        return self.widgets.extract(setErrors)
+    def extract(self):
+        return self.widgets.extract()
 
     def update(self):
         self.updateWidgets()
@@ -196,10 +198,9 @@ class DisplayForm(Form):
     interface.implements(IDisplayForm)
 
     mode = FORM_DISPLAY
-    empty = UnicodeMultiDict(MultiDict({}), 'utf-8')
 
     def getParams(self):
-        return self.empty
+        return self.empty_params
 
 
 FORM_VIEW = 'form-view'
