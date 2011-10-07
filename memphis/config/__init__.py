@@ -5,6 +5,9 @@ registry = None
 from memphis.config.api import initialize
 from memphis.config.api import notify
 
+from memphis.config.api import start
+from memphis.config.api import ApplicationStarting
+
 from memphis.config.api import cleanUp
 from memphis.config.api import addCleanup
 

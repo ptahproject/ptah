@@ -83,15 +83,8 @@ def initializeSettings(settings,
                 settings.update(parser.items(section, vars={'here': here}))
 
     Settings.init(loader, settings)
-    try:
-        api.notify(SettingsInitializing(config))
-    except Exception, e: # pragma: no cover
-        log.exception("Exception during settings initializing")
-
-    try:
-        api.notify(SettingsInitialized(config))
-    except Exception, e: # pragma: no cover
-        log.exception("Exception after settings initialized")
+    api.notify(SettingsInitializing(config))
+    api.notify(SettingsInitialized(config))
 
 
 def registerSettings(name, *nodes, **kw):

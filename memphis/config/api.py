@@ -5,6 +5,16 @@ from zope.interface.interface import adapter_hooks
 from zope.interface.interfaces import IObjectEvent
 
 
+class ApplicationStarting(object):
+    """ Memphis sends this event when application is ready to start. """
+    directives.event('Application starting event')
+
+    config = None
+
+    def __init__(self, config):
+        self.config = config
+
+
 def initialize(packages=None, excludes=(), reg=None):
     """ Load memphis packages, scan and execute all configuration
     directives. """
@@ -38,6 +48,10 @@ def initialize(packages=None, excludes=(), reg=None):
     actions = directives.resolveConflicts(actions)
     for action in actions:
         action()
+
+
+def start(cfg):
+    notify(ApplicationStarting(cfg))
 
 
 def exclude(modname, excludes=()):

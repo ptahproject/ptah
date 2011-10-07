@@ -30,6 +30,11 @@ registry = {}
 dirs = {}
 
 def static(name, path, layer=''):
+    """ Register new static assets directory
+
+    :param name: Resource name
+    :param path: Filesystem path
+    """
     abspath, pkg = tmpl.path(path)
     data = registry[name] = [abspath, pkg]
 

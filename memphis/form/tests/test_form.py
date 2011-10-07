@@ -14,6 +14,8 @@ class TestFormWidgets(unittest.TestCase):
         self.assertEqual(inst.form, form)
         self.assertEqual(inst.request, request)
 
+
+
 class DummyRequest(object):
     def __init__(self):
         self.params = {}

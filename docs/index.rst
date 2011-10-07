@@ -8,7 +8,7 @@ Memphis
 
    config-api.rst
    form-api.rst
-
+   static.rst
 
 Indices and tables
 ------------------
