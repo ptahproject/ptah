@@ -5,7 +5,7 @@ Ptah CMS
 The ptah_cms package depends on the ptah package and contains no policy or
 user interface.  The pixels you see on the screen resulting from the
 install.rst document is ptah_app.  The kernel of the CMS exists in ptah_cms.  
-If you want an alternative datastore fork this package and change the models 
+If you want an alternative datastore fork ptah_cms package and change the models 
 to use mongo, zodb, etc.
 
 The package is responsible for permissions, base content models, blob,
