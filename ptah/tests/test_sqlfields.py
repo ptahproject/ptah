@@ -35,9 +35,7 @@ class TestSqlSchema(Base):
         self.assertEqual(fieldset['date'].__field__, 'date')
         self.assertEqual(fieldset['datetime'].__field__, 'datetime')
         self.assertEqual(fieldset['boolean'].__field__, 'bool')
-
         self.assertEqual(fieldset['name'].title, 'Name')
-
 
         fieldset = ptah.generateFieldset(Test, fieldNames=('name', 'count'))
         self.assertEqual(len(fieldset), 2)
@@ -55,7 +53,8 @@ class TestSqlSchema(Base):
         class TestNoTable(Test):
             pass
 
-        self.assertIsNone(ptah.generateFieldset(TestNoTable))
+        fieldset = ptah.generateFieldset(TestNoTable)
+        self.assertEqual(len(fieldset), 6)
 
     def test_sqlschema_extra_fields(self):
         import ptah

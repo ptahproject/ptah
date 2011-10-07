@@ -205,7 +205,8 @@ class EditRecord(form.Form):
 
     @reify
     def fields(self):
-        return ptah.buildSqlaFieldset(self.context.table)
+        return ptah.buildSqlaFieldset(
+            [(cl.name, cl) for cl in self.context.table.columns])
 
     def getContent(self):
         data = {}
@@ -255,7 +256,8 @@ class AddRecord(form.Form):
 
     @reify
     def fields(self):
-        return ptah.buildSqlaFieldset(self.context.table)
+        return ptah.buildSqlaFieldset(
+            [(cl.name, cl) for cl in self.context.table.columns])
 
     @form.button('Create', actype=form.AC_PRIMARY)
     def create(self):

@@ -126,12 +126,42 @@ def JsonListType():
     return MutationList.as_mutable(JsonType)
 
 
-def generateFieldset(model, fieldNames = None, skipPrimaryKey=True):
-    if '__tablename__' not in model.__dict__:
-        return
+def columnOrder(mapper):
+    if mapper.inherits is not None:
+        order = columnOrder(mapper.inherits)
+    else:
+        order = []
 
-    table = model.__mapper__.local_table
-    return buildSqlaFieldset(table, fieldNames, skipPrimaryKey)
+    table = mapper.local_table
+    for cl in table.columns:
+        order.append((table.name, cl.name))
+
+    return order
+
+
+def generateFieldset(model, fieldNames=None, namesFilter=None,
+                     skipPrimaryKey=True):
+    mapper = model.__mapper__
+    order = columnOrder(mapper)
+
+    columns = []
+    for attr in list(mapper.class_manager.attributes):
+        cl = attr.__clause_element__()
+        if isinstance(cl, sqla.Column):
+            if fieldNames is not None and attr.key not in fieldNames:
+                continue
+
+            if namesFilter is not None and \
+                    not namesFilter(attr.key, fieldNames):
+                continue
+
+            idx = order.index((cl.table.name, cl.name))
+            columns.append((idx, attr.key, cl))
+
+    columns.sort()
+    columns = [(name, cl) for i, name, cl in columns]
+
+    return buildSqlaFieldset(columns, skipPrimaryKey)
 
 
 mapping = {
@@ -144,13 +174,10 @@ mapping = {
 }
 
 
-def buildSqlaFieldset(table, fieldNames=None, skipPrimaryKey=False):
+def buildSqlaFieldset(columns, skipPrimaryKey=False):
     fields = []
 
-    for cl in table.columns:
-        if fieldNames is not None and cl.name not in fieldNames:
-            continue
-
+    for name, cl in columns:
         if 'field' in cl.info:
             field = cl.info['field']
             fields.append(field)
@@ -168,15 +195,15 @@ def buildSqlaFieldset(table, fieldNames=None, skipPrimaryKey=False):
         if typ is None:
             continue
 
-        field = form.FieldFactory(typ, name = cl.name)
-
-        for name in ('missing', 'title', 'description', 'vocabulary'):
-            if name in cl.info:
-                setattr(field, name, cl.info[name])
+        kwargs = {}
+        for attr in ('missing', 'title', 'description', 'vocabulary'):
+            if attr in cl.info:
+                kwargs[attr] = cl.info[attr]
 
         if cl.primary_key and (typ == 'int'):
-            field.readonly = True
+            kwargs['readonly'] = True
 
+        field = form.FieldFactory(typ, name, **kwargs)
         fields.append(field)
 
     return form.Fieldset(*fields)
