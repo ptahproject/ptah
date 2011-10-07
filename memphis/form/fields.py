@@ -1,7 +1,6 @@
 """ Basic fields """
 import datetime, iso8601, decimal
 from memphis import view
-from memphis.view import formatter
 from memphis.form import vocabulary
 from memphis.form.field import field, Field
 from memphis.form.interfaces import _, null, required, Invalid, ITerm
