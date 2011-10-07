@@ -20,8 +20,6 @@ class Page(ptah_cms.Content):
     text = sqla.Column(sqla.Unicode,
                        info = {'field_type': 'tinymce'})
 
-    test_title = sqla.Column(sqla.Unicode)
-
 
 memphis.view.registerView(
     context = Page,
