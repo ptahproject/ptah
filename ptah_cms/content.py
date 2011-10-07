@@ -63,7 +63,8 @@ class Content(Node):
     __name_id__ = sqla.Column('name', sqla.Unicode(255))
 
     title = sqla.Column(sqla.Unicode, default=u'')
-    description = sqla.Column(sqla.Unicode, default=u'')
+    description = sqla.Column(sqla.Unicode, default=u'',
+                              info = {'missing': u'', 'field_type': 'textarea'})
     view = sqla.Column(sqla.Unicode, default=u'')
 
     created = sqla.Column(sqla.DateTime)

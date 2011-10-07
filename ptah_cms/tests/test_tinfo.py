@@ -210,6 +210,10 @@ class TestTypeInfo(Base):
 
         tinfo = MyContent.__type__
         self.assertIn('test', tinfo.fieldset)
+        self.assertIn('title', tinfo.fieldset)
+        self.assertIn('description', tinfo.fieldset)
+        self.assertNotIn('__owner__', tinfo.fieldset)
+        self.assertEqual(len(tinfo.fieldset), 3)
 
     def test_tinfo_type_resolver(self):
         import ptah, ptah_cms
@@ -224,3 +228,17 @@ class TestTypeInfo(Base):
 
         self.assertEqual(tinfo_uri, 'cms+type:mycontent2')
         self.assertIs(ptah.resolve(tinfo_uri), MyContent.__type__)
+
+    def test_names_filter(self):
+        from ptah_cms.tinfo import namesFilter
+
+        self.assertFalse(namesFilter('_test'))
+        self.assertFalse(namesFilter('__test__'))
+        self.assertTrue(namesFilter('__test__', ('__test__',)))
+        
+        excludeNames = ('expires', 'contributors', 'creators', 
+                        'view', 'subjects',
+                        'publisher', 'effective', 'created', 'modified')
+        for name in excludeNames:
+            self.assertFalse(namesFilter(name))
+            self.assertTrue(namesFilter(name, (name,)))

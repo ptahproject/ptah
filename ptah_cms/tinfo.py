@@ -129,13 +129,26 @@ def Type(name, title, fieldset = None, **kw):
     return typeinfo
 
 
+excludeNames = ('expires', 'contributors', 'creators', 'view', 'subjects',
+                'publisher', 'effective', 'created', 'modified')
+def namesFilter(name, fieldNames=None):
+    if fieldNames is not None and name in fieldNames:
+        return True
+
+    if name in excludeNames:
+        return False
+
+    return not name.startswith('_')
+
+
 def registerType(
     cls, tinfo, name, fieldset,
     permission = ptah.NOT_ALLOWED, fieldNames=None, **kw):
 
     # generate schema
     if fieldset is None:
-        fieldset = ptah.generateFieldset(cls, fieldNames=fieldNames)
+        fieldset = ptah.generateFieldset(
+            cls, fieldNames=fieldNames, namesFilter=namesFilter)
 
     if 'global_allow' not in kw and not issubclass(cls, Content):
         kw['global_allow'] = False
