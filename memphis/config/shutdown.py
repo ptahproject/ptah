@@ -15,17 +15,22 @@ _handler_term = signal.getsignal(SIGTERM)
 log = logging.getLogger('memphis.config')
 
 
-def processShutdown(sig, frame):
+def shutdown():
     global _shutdown
 
     if not _shutdown:
         _shutdown = True
+
         for handler in handlers:
             try:
                 handler()
             except:
                 #log.exception("Showndown handler: %s"%handler)
                 pass
+
+
+def processShutdown(sig, frame):
+    shutdown()
 
     if sig == SIGINT and callable(_handler_int):
         _handler_int(sig, frame)

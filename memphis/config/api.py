@@ -5,6 +5,16 @@ from zope.interface.interface import adapter_hooks
 from zope.interface.interfaces import IObjectEvent
 
 
+class StopException(Exception):
+    """ Special initialization exception means stop execution """
+
+    def __init__(self, exc=None):
+        self.exc = exc
+
+    def __str__(self):
+        return str(self.exc)
+
+
 class ApplicationStarting(object):
     """ Memphis sends this event when application is ready to start. """
     directives.event('Application starting event')

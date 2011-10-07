@@ -7,6 +7,7 @@ from memphis.config.api import notify
 
 from memphis.config.api import start
 from memphis.config.api import ApplicationStarting
+from memphis.config.api import StopException
 
 from memphis.config.api import cleanUp
 from memphis.config.api import addCleanup
@@ -29,6 +30,7 @@ from memphis.config.settings import SettingsInitialized
 from memphis.config.settings import SettingsInitializing
 from memphis.config.settings import SettingsGroupModified
 
+from memphis.config.shutdown import shutdown
 from memphis.config.shutdown import shutdownHandler
 
 from memphis.config.schema import SchemaNode

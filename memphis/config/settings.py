@@ -83,8 +83,12 @@ def initializeSettings(settings,
                 settings.update(parser.items(section, vars={'here': here}))
 
     Settings.init(loader, settings)
-    api.notify(SettingsInitializing(config))
-    api.notify(SettingsInitialized(config))
+
+    try:
+        api.notify(SettingsInitializing(config))
+        api.notify(SettingsInitialized(config))
+    except Exception, e:
+        raise api.StopException(e)
 
 
 def registerSettings(name, *nodes, **kw):
