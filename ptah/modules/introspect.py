@@ -21,10 +21,14 @@ class IntrospectModule(ptah.PtahModule):
     title = 'Introspect'
     ptah.manageModule('introspect')
 
-    packages = loadPackages()
-    packages.sort()
-    packages = [pkg_resources.get_distribution(pkg) for pkg in packages]
-    packagesDict = dict((p.project_name.replace('-', '_'), p) for p in packages)
+    def __init__(self, manager, request):
+        super(IntrospectModule, self).__init__(manager, request)
+        packages = loadPackages()
+        packages.sort()
+        self.packages = [pkg_resources.get_distribution(pkg) for
+                         pkg in packages]
+        self.packagesDict = dict((p.project_name.replace('-', '_'), p)
+                                 for p in self.packages)
 
     def __getitem__(self, key):
         key = key.replace('-','_')

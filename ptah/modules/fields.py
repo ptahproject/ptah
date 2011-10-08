@@ -1,5 +1,4 @@
 """ memphis.form fields """
-from zope import interface
 from memphis import view, form
 from memphis.form.field import fields, previews
 
