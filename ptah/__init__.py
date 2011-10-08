@@ -81,7 +81,7 @@ from ptah.sqla import buildSqlaFieldset
 
 
 # create wsgi app
-class WSGIAppInitialized(object):
+class AppInitialized(object):
     """ This event is beeing sent after new wsgi app is created by
     :py:func:`ptah.make_wsgi_app`.
 
@@ -102,7 +102,7 @@ class WSGIAppInitialized(object):
 
 def make_wsgi_app(global_config, **settings):
     """ Create wsgi application, this function initialize
-    `ptah` and sends :py:class:`WSGIAppInitialized` event.
+    `ptah` and sends :py:class:`AppInitialized` event.
     It is possible to use this function as entry point for paster based
     deployment::
 
@@ -133,17 +133,19 @@ def make_wsgi_app(global_config, **settings):
     Base = pyramid_sqla.get_base()
     Base.metadata.create_all()
 
-    # event
     config.begin()
-    config.registry.notify(WSGIAppInitialized(app, config))
+
+    # send ApplicationStarting event
+    memphis.config.start(config)
+
+    # app initialized
+    config.registry.notify(AppInitialized(app, config))
+
     config.end()
     config.commit()
 
     # commit possible transaction
     transaction.commit()
-
-    # send ApplicationStarting event
-    memphis.config.start(config)
 
     return app
 
