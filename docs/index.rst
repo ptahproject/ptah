@@ -9,6 +9,7 @@ Ptah CMS
    unique.rst
    startup.rst
    content.rst
+   ptah_app_vs_manage.rst
    api.rst
 
 Indices and tables
