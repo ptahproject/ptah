@@ -1,0 +1,33 @@
+<table class="zebra-striped" tal:define="url request.application_url">
+  <tbody>
+    <tr tal:repeat="action actions">
+      <td tal:define="info getInfo(action);
+		      obj info['obj'];
+		      factory info['factory'];
+		      event info['event']">
+	<h4>
+	  <a href="../source.html?pkg=${factory.__module__}#sl-${action.info.codeinfo[1]}">
+	    ${info['factoryInfo']}
+	  </a>
+	</h4>
+	<div>
+	  listen to:
+	  <div>
+	    <tal:block condition="obj">
+	      <tal:block tal:content="obj" />
+	    </tal:block>
+	      
+	    <a tal:condition="event" href="../events.html?ev=${event.name}">
+	      ${event.title}</a>
+	    <tal:block tal:condition="not event" tal:content="info['klass']"/>
+	  </div>
+	    
+	  <tal:block condition="factory.__doc__">
+	    <br />
+	    <em tal:content="factory.__doc__" />
+	  </tal:block>
+	</div>
+      </td>
+    </tr>
+  </tbody>
+</table>

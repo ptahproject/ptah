@@ -72,97 +72,6 @@ view.registerPagelet(
     template = view.template('ptah.modules:templates/introspect-actions.pt'))
 
 
-def lineno(ob):
-    if ob is not None:
-        return inspect.getsourcelines(ob)[-1]
-
-
-def viewDirective(
-    action, request,
-    lineno = lineno,
-    renderer = view.template('ptah.modules:templates/directive-view.pt')):
-    info = action.info
-    factory = action.info.context
-
-    if inspect.isclass(factory):
-        isclass = True
-        name, context, template, route, layout, permission = action.args
-    else:
-        isclass = False
-        factory, name, context, template, layout, permission, route, \
-            = action.args
-
-    if route:
-        if name:
-            view = '"%s" route: "%s"'%(name, route)
-        else:
-            view = 'route: "%s"'%route
-    else:
-        view = '"%s"'%name
-
-    if isclass:
-        factoryInfo = '%s.%s'%(factory.__module__, factory.__name__)
-    else:
-        factoryInfo = '%s.%s'%(info.module.__name__, factory.__name__)
-
-    if template:
-        template = template.spec
-    else:
-        template = ''
-
-    return renderer(**locals())
-
-
-def routeDirective(
-    action, request,
-    lineno = lineno,
-    template = view.template('ptah.modules:templates/directive-route.pt')):
-
-    name, pattern, factory = action.args[:3]
-
-    if not factory:
-        factory = 'DefaultRootFactory'
-
-    try:
-        return template(**locals())
-    except:
-        return ''
-
-
-def handlerDirective(
-    action, request,
-    lineno = lineno,
-    template=view.template('ptah.modules:templates/directive-handler.pt')):
-
-    factory, ifaces = action.args[1:]
-    factoryInfo = '%s.%s'%(action.info.module.__name__, factory.__name__)
-
-    if len(action.args[2]) > 1:
-        obj = action.args[2][0]
-        klass = action.args[2][-1]
-        event = directives.events.get(action.args[2][-1], None)
-    else:
-        obj = None
-        klass = action.args[2][0]
-        event = directives.events.get(action.args[2][0], None)
-
-    return template(**locals())
-
-
-renderers = {
-    'memphis.view:view': viewDirective,
-    'memphis.view:route': routeDirective,
-    'memphis.config:subscriber': handlerDirective,
-    }
-
-types = {
-    'memphis.view:view': ('View', 'Pyramid views'),
-    'memphis.view:route': ('Route', 'Pyramid routes'),
-    'memphis.config:subscriber': ('Event listeners',
-                               'zca event handler registrations'),
-    }
-
-
 class PackageView(view.View):
     view.pyramidView(
         context = Package,
@@ -170,9 +79,6 @@ class PackageView(view.View):
 
     __doc__ = 'Package introspection page.'
     __intr_path__ = '/ptah-manage/introspect/${pkg}/index.html'
-
-    renderers = renderers
-    types = types
 
     def update(self):
         self.data = self.context.actions()
@@ -271,13 +177,13 @@ class RoutesView(view.View):
                             isclass = True
                             name = action.args[0]
                             context = action.args[1]
-                            route = action.args[4]
+                            route = action.args[3]
                         else:
                             isclass = False
                             factory = action.args[0]
                             name = action.args[1]
                             context = action.args[2]
-                            route = action.args[5]
+                            route = action.args[4]
                         if route:
                             viewactions.append(
                                 (route, name, context, factory, action))
@@ -292,7 +198,10 @@ class RoutesView(view.View):
 
             # attach views to routes
             for route, name, context, factory, action in viewactions:
-                rdata = routes[route][3]
+                try:
+                    rdata = routes[route][3]
+                except:
+                    continue
                 rdata.append([getattr(factory, '__intr_path__', name),
                               action.info.module.__name__, lineno(factory),
                               factory, action.discriminator[-1]])
@@ -488,4 +397,112 @@ class PageletTypeDirective(object):
             actions = actions,
             ptypes = sys.modules['memphis.view.pagelet'].ptypes,
             events = directives.events,
+            request = self.request)
+
+
+class RouteDirective(object):
+    """ pyramid routes """
+
+    title = 'Routes'
+    ptah.introspection('memphis.view:route')
+
+    actions = view.template('ptah.modules:templates/directive-route.pt')
+
+    def __init__(self, request):
+        self.request = request
+
+    def renderAction(self, action):
+        pass
+
+    def renderActions(self, *actions):
+        return self.actions(
+            actions = actions,
+            request = self.request)
+
+
+class SubscriberDirective(object):
+    """ zca event subscribers """
+
+    title = 'Event subscribers'
+    ptah.introspection('memphis.config:subscriber')
+
+    actions = view.template('ptah.modules:templates/directive-subscriber.pt')
+
+    def __init__(self, request):
+        self.request = request
+
+    def renderAction(self, action):
+        pass
+
+    def getInfo(self, action):
+        factory, ifaces = action.args[1:]
+        factoryInfo = '%s.%s'%(action.info.module.__name__, factory.__name__)
+
+        if len(action.args[2]) > 1:
+            obj = action.args[2][0]
+            klass = action.args[2][-1]
+            event = directives.events.get(action.args[2][-1], None)
+        else:
+            obj = None
+            klass = action.args[2][0]
+            event = directives.events.get(action.args[2][0], None)
+
+        return locals()
+
+    def renderActions(self, *actions):
+        return self.actions(
+            getInfo = self.getInfo,
+            actions = actions,
+            request = self.request)
+
+
+class ViewDirective(object):
+    """ pyramid views """
+
+    title = 'Views'
+    ptah.introspection('memphis.view:view')
+
+    actions = view.template('ptah.modules:templates/directive-view.pt')
+
+    def __init__(self, request):
+        self.request = request
+
+    def renderAction(self, action):
+        pass
+
+    def getInfo(self, action):
+        info = action.info
+        factory = action.info.context
+
+        if inspect.isclass(factory):
+            isclass = True
+            name,context,template,route,layout,permission = action.args
+        else:
+            isclass = False
+            factory,name,context,template,route,layout,permission = action.args
+
+        if route:
+            if name:
+                view = 'view: "%s" route: "%s"'%(name, route)
+            else:
+                view = 'route: "%s"'%route
+        else:
+            view = 'view: %s'%name
+
+        if isclass:
+            factoryInfo = '%s.%s'%(factory.__module__, factory.__name__)
+        else:
+            factoryInfo = '%s.%s'%(info.module.__name__, factory.__name__)
+
+        if template:
+            template = template.spec
+        else:
+            template = ''
+
+        return locals()
+
+    def renderActions(self, *actions):
+        return self.actions(
+            getInfo = self.getInfo,
+            actions = actions,
             request = self.request)

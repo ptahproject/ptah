@@ -1,10 +1,8 @@
 from memphis import config, view
 from collections import OrderedDict
 from pyramid.location import lineage
-from pyramid.security import ACLDenied
-from pyramid.security import Allow, Deny
-from pyramid.security import ALL_PERMISSIONS
-from pyramid.security import NO_PERMISSION_REQUIRED
+from pyramid.security import ACLDenied, Allow, Deny
+from pyramid.security import ALL_PERMISSIONS, NO_PERMISSION_REQUIRED
 from pyramid.interfaces import IAuthorizationPolicy
 from pyramid.httpexceptions import HTTPForbidden
 

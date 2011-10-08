@@ -1,7 +1,16 @@
-<h5>${name}: ${pattern}</h5>
-<p>
-  Factory: 
-  <a tal:condition="not isinstance(factory, str)"
-     href="../source.html?pkg=${factory.__module__}#sl-${lineno(factory)}" tal:content="factory"/>
-  <tal:block condition="isinstance(factory, str)">${factory}</tal:block>
-</p>
+<table class="zebra-striped" tal:define="url request.application_url">
+  <tbody>
+    <tr tal:repeat="action actions">
+      <td tal:define="name action.args[0];
+		      pattern action.args[1];
+		      factory action.args[2]">
+	<h4>
+	  ${name}: ${pattern}
+	  <a href="${url}/ptah-manage/introspect/source.html?pkg=${action.info.module.__name__}#sl-${action.info.codeinfo[1]}">
+	     <tal:block content="factory"/></a>
+	</h4>
+	<p>${factory}</p>
+      </td>
+    </tr>
+  </tbody>
+</table>
