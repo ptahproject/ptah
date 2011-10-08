@@ -20,7 +20,7 @@ Until we have a better way; lets just create a file, link.py in the
 src/devapp/devapp directory.  and inside the initialize module just
 import link,
 
-Our model::
+A simple model::
 
     import sqlalchemy as sqla
     from pyramid.httpexceptions import HTTPFound
@@ -50,17 +50,68 @@ Our model::
             vform = form.DisplayForm(context, request)
             vform.fields = Link.__type__.fieldset
             vform.update()
-            #return vform.render()
+            return vform.render()
             
             """
-            [TEST] this will render the display form with layout applied
+            This does not yet work as it should.
+            This will render the display form with layout applied
             The layout is the "wrapping HTML" e.g. ptah_app layout you
             see at http://localhost:8080/
-            """
 
             layout = view.queryLayout('', context, request) 
             layout.update()  
             return layout.render(vform.render())
+            """
             
         raise HTTPFound(location=context.href)
 
+Before querying your model in REST, check out the base REST call::
+
+    $ curl http://localhost:8080/__rest__/cms/
+
+    ...
+    json results
+    ...
+
+
+You can now query for this model using REST::
+
+    $ curl http://localhost:8080/__rest__/cms/types
+
+ ...
+ {
+  "__uri__": "cms+type:link",
+  "name": "link",
+  "title": "Link",
+  "description": "",
+  "permission": "ptah-cms:Add",
+  "fieldset": [
+   {
+    "type": "text",
+    "name": "title",
+    "title": "Title",
+    "description": "",
+    "required": true
+   },
+   {
+    "type": "textarea",
+    "name": "description",
+    "title": "Description",
+    "description": "",
+    "required": false
+   },
+   {
+    "type": "text",
+    "name": "href",
+    "title": "Href",
+    "description": "",
+    "required": true
+   }
+  ]
+ },
+ ...
+
+
+If you add a new field to your schema you will see it show up.  You can
+create, update, delete your Link items through REST calls.  See rest.py and
+devapp/ptahclient.py for examples.  
