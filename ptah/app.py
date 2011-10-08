@@ -130,8 +130,6 @@ SQL_compiled_cache = {}
 
 @config.subscriber(config.SettingsInitializing)
 def initializing(ev):
-    pconfig = ev.config
-
     # auth
     if not SECURITY.secret:
         SECURITY.secret = uuid.uuid4().get_hex()
@@ -155,12 +153,6 @@ def initializing(ev):
         config.registry.registerUtility(
             ACLAuthorizationPolicy(), IAuthorizationPolicy)
 
-    if pconfig is not None:
-        # session
-        session_factory = pyramid_beaker \
-            .session_factory_from_settings(SESSION)
-        pconfig.set_session_factory(session_factory)
-
 
 @config.subscriber(config.SettingsInitializing)
 def sqla_initializing(ev):
@@ -172,3 +164,11 @@ def sqla_initializing(ev):
                 {'compiled_cache': SQL_compiled_cache}
         pyramid_sqla.add_engine(
             {'sqlalchemy.url': url}, **engine_args)
+
+
+@config.subscriber(config.ApplicationStarting)
+def start(ev):
+    # session
+    session_factory = pyramid_beaker \
+       .session_factory_from_settings(SESSION)
+    ev.config.set_session_factory(session_factory)
