@@ -8,6 +8,7 @@ Ptah CMS
    install.rst
    unique.rst
    startup.rst
+   content.rst
    api.rst
 
 Indices and tables
