@@ -38,8 +38,7 @@ class BaseLayerTest(Base):
         shutil.rmtree(self.dir1)
         shutil.rmtree(self.dir2)
 
-        for handler in shutdown.handlers:
-            handler()
+        config.shutdown()
 
 
 class TestGlobalCustomizeManagement(BaseLayerTest):

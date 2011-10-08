@@ -46,7 +46,7 @@ class TestTextField(Base):
 
         field.mode = form.FORM_DISPLAY
         self.assertEqual(strip(field.render(request)),
-                         '<span class="uneditable-input"> <span title="Test" id="test" class="text-widget"> content </span> </span>')
+                         '<span class="uneditable-input" id="test" title="Test"> content </span>')
 
         
         field = self._makeOne('test')
@@ -58,7 +58,7 @@ class TestTextField(Base):
 
         field.mode = form.FORM_DISPLAY
         self.assertEqual(strip(field.render(request)),
-                         '<span class="uneditable-input"> <span title="Test" id="test" class="text-widget"> form </span> </span>')
+                         '<span class="uneditable-input" id="test" title="Test"> form </span>')
 
 
 class TestIntegerField(Base):

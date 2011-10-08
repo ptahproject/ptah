@@ -1,9 +1,14 @@
-<div class="field">
-  <label class="discreet"
-	 tal:attributes="for context.id;
-			 title context.field.description"
-	 tal:content="context.title">The Label</label>
-  <div tal:content="structure context.render()">
-    <input type="text" style="width:100%" />
+<div class="clearfix">
+  <label tal:attributes="for context.id;
+			 title context.description">
+    ${context.title}
+    <tal:block condition="context.required">*</tal:block>
+  </label>
+
+  <div class="input">
+    <tal:block tal:content="structure context.render(request)" />
+    <span class="help-block"
+	  tal:condition="context.description"
+	  tal:content="structure context.description"></span>
   </div>
 </div>

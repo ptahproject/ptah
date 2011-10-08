@@ -1,3 +1,4 @@
+import sys
 import unittest, signal
 from memphis import config
 
@@ -11,7 +12,7 @@ class TestShutdownHandlers(unittest.TestCase):
         def shutdown():
             shutdownExecuted.append(True)
 
-        from memphis.config import shutdown
+        shutdown = sys.modules['memphis.config.shutdown']
         shutdown._shutdown = False
 
         try:
@@ -37,7 +38,6 @@ class TestShutdownHandlers(unittest.TestCase):
             pass
 
         self.assertFalse(isinstance(e, ValueError))
-        shutdown.handlers[:] = []
 
     def test_shutdown_sigterm(self):
         shutdownExecuted = []
@@ -46,8 +46,7 @@ class TestShutdownHandlers(unittest.TestCase):
         def shutdown():
             shutdownExecuted.append(True)
 
-        from memphis.config import shutdown
-
+        shutdown = sys.modules['memphis.config.shutdown']
         shutdown._shutdown = False
         try:
             shutdown.processShutdown(signal.SIGTERM, None)

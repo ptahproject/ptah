@@ -28,6 +28,8 @@ def shutdown():
                 #log.exception("Showndown handler: %s"%handler)
                 pass
 
+    handlers[:] = []
+
 
 def processShutdown(sig, frame):
     shutdown()

@@ -1,17 +1,10 @@
-<div class="form-display">
-  <h1 class="documentFirstHeading" i18n:translate=""
-      tal:condition="context.label"
-      tal:content="context.label">Do something</h1>
-  <div class="form-description" i18n:translate=""
-       tal:condition="context.description"
-       tal:content="context.description"></div>
+<h2 tal:condition="context.label">${context.label}</h2>
+<p tal:condition="context.description">${context.description}</p>
 
-  <fieldset class="formPanel" tal:condition="context.widgets">
+<form>
+  <fieldset tal:condition="context.widgets">
     <tal:block tal:repeat="widget context.widgets.values()"
                tal:content="structure 
 			    view.pagelet('form-display-widget',widget)" />
   </fieldset>
-
-  <tal:block tal:repeat="subform context.subforms"
-             tal:content="structure view.pagelet('form-view', subform)" />
-</div>
+</form>

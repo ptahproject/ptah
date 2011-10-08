@@ -26,6 +26,15 @@ class InputField(Field, view.View):
     def deserialize(self, value):
         return value
 
+    def update(self, request):
+        super(InputField, self).update(request)
+
+        if self.readonly:
+            self.addCssClass('disabled')
+
+    def addCssClass(self, css):
+        self.klass = '%s %s'%(self.klass, css)
+
 
 class VocabularyField(InputField):
 
