@@ -85,7 +85,7 @@ class Node(Base):
 
         try:
             self.__uri__ = self.__uri_generator__()
-        except TypeError: # pragma: no cover
+        except TypeError:
             raise TypeError(
                 'Subclass of Node has to override __uri_generator__')
 
@@ -132,7 +132,7 @@ def loadParents(node):
     parents = []
     parent = node
     while parent is not None:
-        if not isinstance(parent, Node): # pragma: no cover
+        if not isinstance(parent, Node):
             break
 
         if parent.__parent__ is None:

@@ -25,14 +25,27 @@ class TestTypeInfo(Base):
 
         self._init_memphis()
 
-        self.assertTrue('mycontent' in ptah_cms.Types)
+        self.assertTrue('cms+type:mycontent' in ptah_cms.Types)
 
-        tinfo = ptah_cms.Types['mycontent']
+        tinfo = ptah_cms.Types['cms+type:mycontent']
 
         self.assertEqual(tinfo.__uri__, 'cms+type:mycontent')
         self.assertEqual(tinfo.name, 'mycontent')
         self.assertEqual(tinfo.title, 'MyContent')
         self.assertEqual(tinfo.cls, MyContent)
+
+    def test_tinfo_title(self):
+        import ptah_cms
+
+        class MyContent(ptah_cms.Content):
+            __type__ = ptah_cms.Type('mycontent')
+
+        self.assertEqual(MyContent.__type__.title, 'Mycontent')
+
+        class MyContent(ptah_cms.Content):
+            __type__ = ptah_cms.Type('mycontent', 'MyContent')
+
+        self.assertEqual(MyContent.__type__.title, 'MyContent')
 
     def test_tinfo_checks(self):
         import ptah_cms
@@ -143,7 +156,7 @@ class TestTypeInfo(Base):
 
         self._init_memphis()
 
-        content = ptah_cms.Types['mycontent'].create(title='Test content')
+        content = ptah_cms.Types['cms+type:mycontent'].create(title='Test content')
 
         self.assertTrue(isinstance(content, MyContent))
         self.assertEqual(content.title, 'Test content')

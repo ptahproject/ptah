@@ -235,7 +235,7 @@ class TestCMSRestAction(RestBase):
         from ptah_cms import rest
         from ptah_cms import tinfo
         self._init_memphis()
-        tinfo.Types[Content.__type__.name] = Content.__type__
+        tinfo.Types[Content.__type__.__uri__] = Content.__type__
 
         container = Container()
 

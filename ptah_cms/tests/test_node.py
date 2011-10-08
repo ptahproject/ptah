@@ -7,11 +7,11 @@ from base import Base
 
 class TestNode(Base):
 
-    def test_node_instance(self):
+    def test_node_ctor(self):
         import ptah_cms
 
         # it not possible to instatiate Node
-        self.assertRaises(ptah_cms.Node)
+        self.assertRaises(TypeError, ptah_cms.Node)
 
     def test_node(self):
         import ptah_cms
