@@ -6,7 +6,7 @@ The UI isnt great right now.  We currently use twitter bootstrap.  If you are a 
 Overview
 --------
 
-By installing ptah you get 2 applications which have UI.  One is called "ptah-manage" or the Management UI and the other is the "ptah-app".  Ptah App is the default implementaiton of the CMS.  It is a default implementation of the Ptah CMS.  We are currently using Ptah App to prototype and it will be unstable for awhile.  Ptah Manage is fairly stable and existed long before Ptah App.
+By installing ptah you get 2 applications which have UI.  One is called "ptah-manage" or the Management UI and the other is the "ptah-app".  Ptah App is the default implementation of the CMS.  Ptah Manage is fairly stable and existed long before Ptah App.
 
 Ptah Manage
 -----------
