@@ -30,6 +30,7 @@ class Base(unittest.TestCase):
         config.initialize(('memphis.view', self.__class__.__module__),
                           reg = Components('test'))
         config.initializeSettings(settings, self.p_config)
+        config.start(self.p_config)
 
     def _setup_pyramid(self):
         self.request = request = testing.DummyRequest()

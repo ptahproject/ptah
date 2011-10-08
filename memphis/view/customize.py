@@ -259,7 +259,8 @@ def initialize(*args):
 
     if chameleon_template:
         chameleon_template.AUTO_RELOAD = TEMPLATE.chameleon_reload
-        chameleon_template.BaseTemplateFile.auto_reload = TEMPLATE.chameleon_reload
+        chameleon_template.BaseTemplateFile.auto_reload = \
+            TEMPLATE.chameleon_reload
 
 
 @config.shutdownHandler

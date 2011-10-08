@@ -86,26 +86,25 @@ def buildTree(path, not_allowed=re.compile('^[.~$#]')):
     return data
 
 
-@config.subscriber(config.SettingsInitializing)
+@config.subscriber(config.ApplicationStarting)
 def initialize(ev):
-    if ev.config is not None:
-        url = STATIC.url
-        if urlparse(url)[0]:
-            # it's a URL
-            STATIC.isurl = True
-            for name, data in registry.items():
-                dirs[name] = (0, urljoin(url, name))
+    url = STATIC.url
+    if urlparse(url)[0]:
+        # it's a URL
+        STATIC.isurl = True
+        for name, data in registry.items():
+            dirs[name] = (0, urljoin(url, name))
 
-        else:
-            for name, (abspath, pkg) in registry.items():
-                prefix = '%s/%s'%(url, name)
-                rname = '%s-%s'%(url, name)
-                pattern = '%s/*subpath'%prefix
+    else:
+        for name, (abspath, pkg) in registry.items():
+            prefix = '%s/%s'%(url, name)
+            rname = '%s-%s'%(url, name)
+            pattern = '%s/*subpath'%prefix
 
-                ev.config.add_route(rname, pattern)
-                ev.config.add_view(
-                    route_name=rname,
-                    view=StaticView(abspath, buildTree(abspath), prefix))
+            ev.config.add_route(rname, pattern)
+            ev.config.add_view(
+                route_name=rname,
+                view=StaticView(abspath, buildTree(abspath), prefix))
 
 
 class StaticView(object):
