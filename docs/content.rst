@@ -52,14 +52,13 @@ Our model::
             return vform.render()
             
             """
-            [TEST] this will render the display form with layout applied
+            this will render the display form with layout applied
             The layout is the "wrapping HTML" e.g. ptah_app layout you
             see at http://localhost:8080/
             
-            layout = view.queryLayout('', context, request) 
-            layout.update()  
-            return layout.render(vform.render())
+            layout = view.queryLayout(context, request) 
+            return layout(vform.render())
             """
-            
+
         raise HTTPFound(location=context.href)
 
