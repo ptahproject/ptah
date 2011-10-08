@@ -97,9 +97,8 @@ def jsdatetimePreview(request):
     field = JSDateTimeField(
         'JSDateTimeField',
         title = 'jQuery DateTime field',
-        description = 'jQuery DateTime field preview description',
-        default = datetime.datetime.now())
+        description = 'jQuery DateTime field preview description')
 
-    widget = field.bind('preview.', form.null, {})
+    widget = field.bind('preview.', datetime.datetime.now(), {})
     widget.update(request)
     return widget.pagelet('form-widget', widget)

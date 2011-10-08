@@ -148,3 +148,22 @@ class AddContentForm(AddForm):
 
         self.tinfo = tinfo
         self.container = form.context
+
+
+class DefaultContentView(form.DisplayForm):
+    view.pyramidView(
+        context = ptah_cms.IContent,
+        permission = ptah_cms.View,
+        template=view.template("ptah_app:templates/contentview.pt"))
+
+    @property
+    def fields(self):
+        return self.context.__type__.fieldset
+
+    def getContent(self):
+        data = {}
+        for name, field in self.context.__type__.fieldset.items():
+            data[name] = getattr(self.context, name, field.default)
+
+        return data
+

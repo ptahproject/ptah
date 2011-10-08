@@ -35,8 +35,8 @@ def tinemcePreview(request):
     field = TinymceField(
         'TinymceField',
         title = 'TinyMCE field',
-        description = 'TinymceMCE field preview description',
-        default = 'Test text in text area field.',
+        description = 'TinyMCE field preview description',
+        default = 'Test text in tinymce field.',
         width = '200px')
 
     widget = field.bind('preview.', form.null, {})
