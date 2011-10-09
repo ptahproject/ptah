@@ -148,6 +148,10 @@ class EventsView(view.View):
             self.actions = actions
 
 
+def lineno(ob):
+    if ob is not None:
+        return inspect.getsourcelines(ob)[-1]
+
 class RoutesView(view.View):
     view.pyramidView(
         'routes.html', IntrospectModule,
