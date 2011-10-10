@@ -100,7 +100,7 @@ class AppInitialized(object):
         self.config = config
 
 
-def make_wsgi_app(global_config, packages=None, **settings):
+def make_wsgi_app(global_config, **settings):
     """ Create wsgi application, this function initialize
     `ptah` and sends :py:class:`AppInitialized` event.
     It is possible to use this function as entry point for paster based
@@ -110,6 +110,7 @@ def make_wsgi_app(global_config, packages=None, **settings):
       use = egg:ptah#app
 
     """
+    import sys
     import memphis
     import transaction
     import pyramid_sqla
@@ -121,7 +122,7 @@ def make_wsgi_app(global_config, packages=None, **settings):
 
     # initialization
     try:
-        initialize(packages, config, global_config)
+        initialize(None, config, global_config)
     except memphis.config.StopException:
         memphis.config.shutdown()
         raise
