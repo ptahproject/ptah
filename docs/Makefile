@@ -83,6 +83,3 @@ epub:
 	$(SPHINXBUILD) -b epub $(ALLSPHINXOPTS) _build/epub
 	@echo
 	@echo "Build finished. The epub file is in _build/epub."
-
-#_themes:
-#	git clone git://github.com/Pylons/pylons_sphinx_theme.git _themes
