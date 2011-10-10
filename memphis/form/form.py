@@ -91,21 +91,35 @@ class FormWidgets(OrderedDict):
 
 
 class Form(view.View):
-    """A form"""
+    """A form
+
+    """
+
     interface.implements(IForm, IInputForm)
 
     fields = Fieldset()
     buttons = None
 
+    #: Form label
     label = None
+
+    #: Form description
     description = ''
 
+    #: Form prefix, it used for html elements `id` generations.
     prefix = 'form.'
 
+    #: Instance of py:class:`memphis.form.Actions` class
     actions = None
+
+    #: Instance of py:class:`FormWidgets` class
     widgets  = None
+
+    #: Form content, it should be `None` or dictionary with data for fields.
     content = None
 
+    #: Form mode. It can be py:data::`memphis.form.FORM_INPUT` or 
+    #: py:data::`memphis.form.FORM_DISPLAY`
     mode = FORM_INPUT
 
     method = 'post'
