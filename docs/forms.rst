@@ -49,4 +49,45 @@ Extracts the value from request.
 
 Field Factory
 -------------
-Expert level usage.  This is how Ptah's internals work.   
+Expert level usage.  This is how Ptah's internals work.
+
+Examples
+--------
+This is low level internal implementation note for manually working with forms.
+This example does not contain the droids you are looking for.
+
+Using form without context and request::
+
+    from pprint import pprint
+    from memphis import form
+    from ptah_app.content import Page
+
+    def action1(form):
+        print ('action1', form)
+
+    def action2(form):
+        print ('action2', form)
+
+    eform = form.Form(None, None)
+    eform.params = {}
+    eform.method = 'params'
+    eform.fields = Page.__type__.fieldset
+
+    eform.buttons.addAction('Test submit', name='ac1', action=action1)
+    eform.buttons.addAction('Test action2', name='ac2', action=action2)
+
+    print "==== execute action1 ===="
+    eform.params = {'%sbuttons.ac1'%eform.prefix: 'value'}
+    eform.update()
+
+    print
+    print "==== extract data ====="
+    data, errors = eform.extract()
+
+    print
+    print "DATA:"
+    pprint(data)
+
+    print
+    print "ERRORS:"
+    pprint(errors)
