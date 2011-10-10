@@ -122,7 +122,7 @@ class TestForm(unittest.TestCase):
         request.POST = post
 
         self.assertIs(form.getParams(), post)
-        self.assertIs(disp_form.getParams(), Form.empty_params)
+        self.assertIs(disp_form.getParams(), Form.params)
 
         get = {'get': 'info'}
         request.GET = get
@@ -131,6 +131,16 @@ class TestForm(unittest.TestCase):
 
         form.method = 'unknown'
         self.assertEqual(dict(form.getParams()), {})
+
+    def test_form_params_method(self):
+        from memphis.form.form import Form
+
+        form = Form(None, None)
+        form.method = 'params'
+        params = {'post': 'info'}
+        form.params = params
+
+        self.assertIs(form.getParams(), params)
 
     def test_form_mode(self):
         from memphis.form.form import Form, DisplayForm, \

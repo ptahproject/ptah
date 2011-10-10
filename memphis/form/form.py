@@ -116,7 +116,7 @@ class Form(view.View):
     csrf = False
     csrfname = 'csrf-token'
 
-    empty_params = UnicodeMultiDict(MultiDict({}), 'utf-8')
+    params = UnicodeMultiDict(MultiDict({}), 'utf-8')
 
     @reify
     def action(self):
@@ -138,8 +138,10 @@ class Form(view.View):
             return self.request.POST
         elif self.method == 'get':
             return self.request.GET
+        elif self.method == 'params':
+            return self.params
         else:
-            return self.empty_params
+            return self.params
 
     def updateWidgets(self):
         self.widgets = FormWidgets(self.fields, self, self.request)
@@ -200,7 +202,7 @@ class DisplayForm(Form):
     mode = FORM_DISPLAY
 
     def getParams(self):
-        return self.empty_params
+        return self.params
 
 
 FORM_VIEW = 'form-view'
