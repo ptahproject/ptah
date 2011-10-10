@@ -100,7 +100,7 @@ class AppInitialized(object):
         self.config = config
 
 
-def make_wsgi_app(global_config, **settings):
+def make_wsgi_app(global_config, package=None, **settings):
     """ Create wsgi application, this function initialize
     `ptah` and sends :py:class:`AppInitialized` event.
     It is possible to use this function as entry point for paster based
@@ -121,7 +121,7 @@ def make_wsgi_app(global_config, **settings):
 
     # initialization
     try:
-        initialize(None, config, global_config)
+        initialize(packages, config, global_config)
     except memphis.config.StopException:
         memphis.config.shutdown()
         raise
