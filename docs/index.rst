@@ -9,7 +9,11 @@ Ptah CMS
    unique.rst
    startup.rst
    content.rst
+   interactive.rst
+   views.rst
+   forms.rst
    ptah_app_vs_manage.rst
+   scripts.rst
    api.rst
 
 Indices and tables
