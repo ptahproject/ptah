@@ -60,7 +60,7 @@ class LoginForm(form.Form):
 
         if info.principal is not None:
             request.registry.notify(
-                ptah.events.LogingFailedEvent(info.principal, info.message))
+                ptah.events.LoginFailedEvent(info.principal, info.message))
 
         if info.arguments.get('suspended'):
             raise HTTPFound(

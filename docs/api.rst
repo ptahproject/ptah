@@ -60,4 +60,4 @@ misc
 
   .. autofunction:: initialize
 
-  .. autoclass:: WSGIAppInitialized
+  .. autoclass:: AppInitialized

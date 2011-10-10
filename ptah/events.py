@@ -15,9 +15,9 @@ class LoggedInEvent(PrincipalEvent):
     config.event('Logged in event')
 
 
-class LogingFailedEvent(PrincipalEvent):
-    """ User loging failed."""
-    config.event('Loging failed event')
+class LoginFailedEvent(PrincipalEvent):
+    """ User login failed."""
+    config.event('Login failed event')
 
     message = ''
 
