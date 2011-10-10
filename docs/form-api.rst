@@ -7,5 +7,4 @@ Form
 ~~~~
 
   .. autoclass:: Form
-
-     .. autodata::
+     :members:
