@@ -95,7 +95,7 @@ class Form(view.View):
     interface.implements(IForm, IInputForm)
 
     fields = Fieldset()
-    buttons = Buttons()
+    buttons = None
 
     label = None
     description = ''
@@ -117,6 +117,12 @@ class Form(view.View):
     csrfname = 'csrf-token'
 
     params = UnicodeMultiDict(MultiDict({}), 'utf-8')
+
+    def __init__(self, context, request):
+        super(Form, self).__init__(context, request)
+
+        if self.buttons is None:
+            self.buttons = Buttons()
 
     @reify
     def action(self):

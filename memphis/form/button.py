@@ -86,12 +86,30 @@ class Buttons(OrderedDict):
         buttons = []
         for arg in args:
             if isinstance(arg, Buttons):
-                buttons += arg.items()
+                buttons += arg.values()
             else:
-                buttons.append((arg.name, arg))
+                buttons.append(arg)
 
-        for name, button in buttons:
-            self[name] = button
+        self.add(*buttons)
+
+    def add(self, *btns):
+        for btn in btns:
+            if btn.name in self:
+                raise ValueError("Duplicate name", btn.name)
+
+            self[btn.name] = btn
+
+    def addAction(self, title, **kwargs):
+        # Add the title to button constructor keyword arguments
+        kwargs['title'] = title
+        if 'name' not in kwargs:
+            kwargs['name'] = createId(title)
+
+        button = Button(**kwargs)
+
+        self.add(button)
+
+        return button
 
     def __add__(self, other):
         return self.__class__(self, other)
@@ -143,25 +161,18 @@ def createId(name):
 
 
 def button(title, **kwargs):
-    # Add the title to button constructor keyword arguments
-    kwargs['title'] = title
-    if 'name' not in kwargs:
-        kwargs['name'] = createId(title)
-
-    # Create button and add it to the button manager
-    button = Button(**kwargs)
-
     # install buttons manager
     f_locals = sys._getframe(1).f_locals
 
     buttons = f_locals.get('buttons')
     if buttons is None:
-        f_locals['buttons'] = Buttons(button)
-    else:
-        buttons[button.name] = button
+        buttons = Buttons()
+        f_locals['buttons'] = buttons
+
+    btn = buttons.addAction(title, **kwargs)
 
     def createHandler(func):
-        button.actionName = func.__name__
+        btn.actionName = func.__name__
         return func
 
     return createHandler

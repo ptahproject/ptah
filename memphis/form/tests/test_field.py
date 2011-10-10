@@ -191,6 +191,9 @@ class TestFieldsetErrors(Base):
         self.assertEqual(repr(err1), "Invalid(<TextField 'test'>: <error1>)")
         self.assertEqual(str(form.null), '<widget.null>')
 
+        self.assertFalse(form.required)
+        self.assertEqual(repr(form.required), '<widget.required>')
+
 
 class TestField(Base):
 

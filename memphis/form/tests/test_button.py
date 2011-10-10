@@ -112,6 +112,39 @@ class TestButtons(unittest.TestCase):
         btn1 = form.Button(name='test1', actionName='action')
         btn2 = form.Button(name='test2', actionName='action')
 
+        btns = form.Buttons(btn1)
+
+        btns.add(btn2)
+        self.assertEqual(btns.keys(), [btn1.name, btn2.name])
+        self.assertEqual(btns.values(), [btn1, btn2])
+
+    def test_add_duplicate(self):
+        from memphis import form
+
+        btn1 = form.Button(name='test1', actionName='action')
+        btn2 = form.Button(name='test1', actionName='action')
+
+        btns = form.Buttons(btn1)
+
+        self.assertRaises(ValueError, btns.add, btn2)
+
+    def test_add_action(self):
+        from memphis import form
+
+        btns = form.Buttons()
+
+        btn1 = btns.addAction('Test action')
+        
+        self.assertIsInstance(btn1, form.Button)
+        self.assertEqual(btns.keys(), [btn1.name])
+        self.assertEqual(btns.values(), [btn1])
+
+    def test_iadd(self):
+        from memphis import form
+
+        btn1 = form.Button(name='test1', actionName='action')
+        btn2 = form.Button(name='test2', actionName='action')
+
         btns1 = form.Buttons(btn1)
         btns2 = form.Buttons(btn2)
 

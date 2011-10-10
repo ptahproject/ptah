@@ -8,8 +8,6 @@ MessageFactory = _ = TranslationStringFactory('memphis.form')
 FORM_INPUT = 'form-input'
 FORM_DISPLAY = 'form-display'
 
-required = object()
-
 
 class Invalid(Exception):
 
@@ -25,7 +23,7 @@ class Invalid(Exception):
 
 
 class _null(object):
-    """ Represents a null value in colander-related operations. """
+    """ Represents a null value in field-related operations. """
     def __nonzero__(self):
         return False
 
@@ -33,6 +31,18 @@ class _null(object):
         return '<widget.null>'
 
 null = _null()
+
+
+class _required(object):
+    """ Represents a required value in field-related operations. """
+
+    def __nonzero__(self):
+        return False
+
+    def __repr__(self):
+        return '<widget.required>'
+
+required = _required()
 
 
 # ----[ Vocabulary ]----------------------------------------------------------
