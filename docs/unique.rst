@@ -31,9 +31,10 @@ Since Ptah uses a RDBMS (via SqlAlchemY) Ptah is much much slower than your
 traditional "hello world" benchmarks.  While Pyramid may get 3000+ req/second 
 serving a response, there simply is no comparable benchmark for web 
 applications/content frameworks.  We aim to stay between 110-130 request/second
-(per single threaded python process).  Remember we are applying security and 
-doing heavily liftiung.  Python, on a whole, is reasonably fast.  Pypy should
-make us go between 1.5x and 3x faster.  
+(per single threaded python process). Today on 2010 macbook pro we get 230-240
+requests/second.  Remember we are applying security and doing heavily lifting.
+Python, on a whole, is reasonably fast.  Pypy should make us go between 
+1.5x and 3x faster.
 
 Evolution not Revolution
 ------------------------
