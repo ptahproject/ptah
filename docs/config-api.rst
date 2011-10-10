@@ -21,7 +21,7 @@ Directives
 
   .. autofunction:: adapter
 
-  .. autofunction:: handler
+  .. autofunction:: subscriber
 
 
 Settings
@@ -34,8 +34,10 @@ Settings
 Settings events
 ~~~~~~~~~~~~~~~
 
-  .. autofunction:: SettingsInitialized
+  .. autoclass:: SettingsInitialized
 
-  .. autofunction:: SettingsInitializing
+  .. autoclass:: SettingsInitializing
 
-  .. autofunction:: SettingsGroupModified
+  .. autoclass:: SettingsGroupModified
+
+  .. autoclass:: ApplicationStarting

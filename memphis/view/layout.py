@@ -13,6 +13,8 @@ log = logging.getLogger('memphis.view')
 
 
 def queryLayout(request, context, name=''):
+    """ query named layout for context """
+
     while context is not None:
         layout = config.registry.queryMultiAdapter(
             (context, request), ILayout, name)

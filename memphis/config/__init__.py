@@ -9,6 +9,8 @@ from memphis.config.api import start
 from memphis.config.api import ApplicationStarting
 from memphis.config.api import StopException
 
+from memphis.config.api import loadPackages
+
 from memphis.config.api import cleanUp
 from memphis.config.api import addCleanup
 
