@@ -50,8 +50,6 @@ def initialize(packages=None, excludes=(), reg=None):
     else:
         packages = loadPackages(packages, excludes=excludes)
 
-    print packages
-
     # scan packages and load all actions
     seen = set()
     actions = []
