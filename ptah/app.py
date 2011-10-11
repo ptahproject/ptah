@@ -166,7 +166,7 @@ def sqla_initializing(ev):
             {'sqlalchemy.url': url}, **engine_args)
 
 
-@config.subscriber(config.ApplicationStarting)
+@config.subscriber(config.AppStarting)
 def start(ev):
     # session
     session_factory = pyramid_beaker \

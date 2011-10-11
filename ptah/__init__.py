@@ -80,26 +80,6 @@ from ptah.sqla import generateFieldset
 from ptah.sqla import buildSqlaFieldset
 
 
-# create wsgi app
-class AppInitialized(object):
-    """ This event is beeing sent after new wsgi app is created by
-    :py:func:`ptah.make_wsgi_app`.
-
-    .. attribute: app
-
-       New wsgi application object.
-
-    .. attribute: config
-
-       Pyramid `Configuration` object.
-
-    """
-
-    def __init__(self, app, config):
-        self.app = app
-        self.config = config
-
-
 def includeme(config):
     config.add_directive('ptah_init', ptah_init)
 
@@ -162,9 +142,6 @@ def ptah_init(configurator):
 
     # send ApplicationStarting event
     memphis.config.start(configurator)
-
-    # app initialized
-    memphis.config.registry.notify(AppInitialized(app, configurator))
 
     # commit possible transaction
     transaction.commit()
