@@ -1,7 +1,7 @@
 Code Examples
 =============
 
-Let's `paint by numbers` with a few code examples.  These examples are aimed to be used by either environment, virtualenv or buildout.
+Let's `paint by numbers` with a few code examples.  The examples are found in the devel repo, the same mentioned in install.rst. These examples are aimed to be used by either environment, virtualenv or buildout.
 
 WSGI App in 5 Lines
 -------------------

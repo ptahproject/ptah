@@ -19,11 +19,11 @@ Create requirements
 Lets create the `pip` requirements.txt file::
 
   ~/myvirtualenv$ cat > requirements.txt
-  git+https://github.com/Pylons/colander.git#egg=colander
-  git+https://github.com/ptahproject/memphis#egg=memphis
-  git+https://github.com/ptahproject/ptah.git#egg=ptah
-  git+https://github.com/ptahproject/ptah_cms.git#egg=ptah_cms
-  git+https://github.com/ptahproject/ptah_app.git#egg=ptah_app
+  -e git+https://github.com/Pylons/colander.git#egg=colander
+  -e git+https://github.com/ptahproject/memphis#egg=memphis
+  -e git+https://github.com/ptahproject/ptah.git#egg=ptah
+  -e git+https://github.com/ptahproject/ptah_cms.git#egg=ptah_cms
+  -e git+https://github.com/ptahproject/ptah_app.git#egg=ptah_app
   ^C
 
 Install the requirements
@@ -39,6 +39,6 @@ Starting Ptah
 
 Let's create a helloptah.py file and run it::
 
-  ~/myvirtualenv$ curl -O https://raw.github.com/ptahproject/devel/master/start2.py > hello_ptah.py
+  ~/myvirtualenv$ curl -O https://raw.github.com/ptahproject/devel/master/start2.py > helloptah.py
   
   ~/myvirtualenv$ python hello_ptah.py

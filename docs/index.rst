@@ -6,8 +6,10 @@ Ptah CMS
 
    overview.rst
    install.rst
+   virtualenv.rst
    unique.rst
    startup.rst
+   examples.rst
    content.rst
    interactive.rst
    views.rst

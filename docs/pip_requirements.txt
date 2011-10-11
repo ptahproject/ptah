@@ -1,34 +1,5 @@
-Beaker==1.5.4
-Chameleon==2.5.1
-Mako==0.5.0
-MarkupSafe==0.15
-Paste==1.7.5.1
-PasteDeploy==1.5.0
-PasteScript==1.7.4.2
-Pygments==1.4
-SQLAlchemy==0.7.2
-WebOb==1.1.1
-gevent==0.13.6
-greenlet==0.3.1
-iso8601==0.1.4
-pyramid==1.2.1
-pyramid-beaker==0.5
-pyramid-sqla==1.0rc1
-pytz==2011k
-repoze.lru==0.4
-repoze.sendmail==2.3
-repoze.tm2==1.0b2
-simplejson==2.2.1
-transaction==1.1.1
-translationstring==0.4
-venusian==1.0a2
-zope.component==3.11.0
-zope.deprecation==3.5.0
-zope.event==3.5.1
-zope.interface==3.8.0
-zope.sqlalchemy==0.6.1
-git+https://github.com/Pylons/colander.git#egg=colander
-git+https://github.com/ptahproject/memphis#egg=memphis
-git+https://github.com/ptahproject/ptah.git#egg=ptah
-git+https://github.com/ptahproject/ptah_cms.git#egg=ptah_cms
-git+https://github.com/ptahproject/ptah_app.git#egg=ptah_app
+-e git+https://github.com/Pylons/colander.git#egg=colander
+-e git+https://github.com/ptahproject/memphis#egg=memphis
+-e git+https://github.com/ptahproject/ptah.git#egg=ptah
+-e git+https://github.com/ptahproject/ptah_cms.git#egg=ptah_cms
+-e git+https://github.com/ptahproject/ptah_app.git#egg=ptah_app
