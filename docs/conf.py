@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# ptah documentation build configuration file
+# ptah_cms documentation build configuration file
 #
 # This file is execfile()d with the current directory set to its containing
 # dir.
@@ -30,7 +30,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General substitutions.
-project = 'ptah'
+project = 'ptah_cms'
 
 # The default replacements for |version| and |release|, also used in various
 # other places throughout the built documents.
@@ -160,7 +160,7 @@ htmlhelp_basename = 'atemplatedoc'
 # (source start file, target name, title,
 #  author, document class [howto/manual]).
 latex_documents = [
-  ('index', 'atemplate.tex', 'Ptah Documentation',
+  ('index', 'atemplate.tex', 'Ptah CMS Documentation',
    'Developers', 'manual'),
 ]
 

@@ -1,63 +1,94 @@
-Ptah Public API
----------------
+Ptah CMS API
+------------
 
-.. automodule:: ptah
+.. automodule:: ptah_cms
 
-URI
-~~~
+Content classes
+~~~~~~~~~~~~~~~
 
-  .. autofunction:: resolve
+  .. autoclass:: Node
 
-  .. autofunction:: registerResolver(schema, resolver, title='', description='')
+  .. autoclass:: Content
 
-  .. autofunction:: extractUriSchema
-
-  .. autoclass:: UriGenerator
-     :members: __call__
+  .. autoclass:: Container
+     :members: keys, get, items, values, __contains__, __getitem__, __setitem__, __delitem__
 
 
-ACL
-~~~
+Content loading
+~~~~~~~~~~~~~~~
 
-  .. py:data:: ACLs
+  .. autofunction:: load
 
-     ACLs dictionary contains all registered acl maps in the system.
-
-  .. autoclass:: ACL
-     :members:
-
-  .. autoclass:: ACLsProperty
+  .. autofunction:: loadParents
 
 
-Roles
-~~~~~
+Type system
+~~~~~~~~~~~
 
-  .. py:data:: Roles
+  .. autofunction:: Type
 
-     Roles dictionary contains all registered roles in the system.
+  .. py:data:: Types
 
-  .. autoclass:: Role(name, title, description='')
+     Dictionary `Types` contains all registered types in system.
 
-  .. autofunction:: LocalRoles
+  .. autoclass:: TypeInformation
+
+
+Application Root/Factory/Policy
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  .. autoclass:: ApplicationRoot
+
+  .. autoclass:: ApplicationPolicy
+
+  .. autoclass:: ApplicationFactory
+
+Blob api
+~~~~~~~~
+
+  .. py:data:: blobStorage
+
+  .. py:class:: IBlob
+
+  .. py:class:: IBlobStorage
+
+Content schema
+~~~~~~~~~~~~~~
+
+  .. py:class:: ContentSchema
+
+  .. py:class:: ContentNameSchema
 
 
 Permissions
 ~~~~~~~~~~~
 
-  .. py:data:: Permissions
-     
-     Permissions dictionary contains all registered permissions in the system.
+  .. py:data:: View
 
-  .. autofunction:: Permission
+  .. py:data:: AddContent
 
-  .. autofunction:: checkPermission
+  .. py:data:: DeleteContent
+
+  .. py:data:: ModifyContent
+
+  .. py:data:: ShareContent
+
+  .. py:data:: NOT_ALLOWED
+
+  .. py:data:: ALL_PERMISSIONS
 
 
-misc
-~~~~
+Events
+~~~~~~
 
-  .. autofunction:: make_wsgi_app
+  .. autoclass:: ContentEvent
 
-  .. autofunction:: initialize
+  .. autoclass:: ContentCreatedEvent
 
-  .. autoclass:: AppInitialized
+  .. autoclass:: ContentAddedEvent
+
+  .. autoclass:: ContentMovedEvent
+
+  .. autoclass:: ContentModifiedEvent
+
+  .. autoclass:: ContentDeletingEvent
