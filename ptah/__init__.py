@@ -100,7 +100,11 @@ class AppInitialized(object):
         self.config = config
 
 
-def make_wsgi_app(global_config, **settings):
+def includeme(config):
+    config.add_directive('ptah_init', ptah_init)
+
+
+def make_wsgi_app(global_settings, **settings):
     """ Create wsgi application, this function initialize
     `ptah` and sends :py:class:`AppInitialized` event.
     It is possible to use this function as entry point for paster based
@@ -110,72 +114,57 @@ def make_wsgi_app(global_config, **settings):
       use = egg:ptah#app
 
     """
-    import sys
-    import memphis
-    import transaction
-    import pyramid_sqla
-    from pyramid import path
     from pyramid.config import Configurator
 
     # configuration
-    config = Configurator(settings=settings)
+    global_settings.update(settings)
+    config = Configurator(settings=global_settings)
 
     # initialization
-    try:
-        initialize(None, config, global_config)
-    except memphis.config.StopException:
-        memphis.config.shutdown()
-        raise
+    ptah_init(config)
 
     # create wsgi app
-    app = config.make_wsgi_app()
-
-    # create sql tables
-    Base = pyramid_sqla.get_base()
-    Base.metadata.create_all()
-
-    config.begin()
-
-    # send ApplicationStarting event
-    memphis.config.start(config)
-
-    # app initialized
-    config.registry.notify(AppInitialized(app, config))
-
-    config.end()
-    config.commit()
-
-    # commit possible transaction
-    transaction.commit()
-
-    return app
+    return config.make_wsgi_app()
 
 
 # initialize memphis
-def initialize(package, pyramid_config, settings):
+def ptah_init(configurator):
     """ Initialize memphis packages.
     Load all memphis packages and intialize memphis settings system.
 
     This function automatically called by :py:func:`make_wsgi_app` function.
     """
-    from memphis import config
+    import memphis
+    import transaction
+    import pyramid_sqla
 
-    pyramid_config.begin()
+    try:
+        settings = configurator.registry.settings
 
-    if isinstance(package, basestring):
-        package = (package,)
+        # exclude
+        excludes = []
+        if 'ptah.excludes' in settings:
+            excludes.extend(s.strip() 
+                            for s in settings['ptah.excludes'].split())
 
-    # exclude
-    excludes = []
-    if 'excludes' in pyramid_config.registry.settings:
-        excludes.extend(s.strip() for s in
-                        pyramid_config.registry.settings['excludes'].split())
+        # load packages
+        memphis.config.initialize(None, excludes, configurator.registry)
 
-    if 'excludes' in settings:
-        excludes.extend(s.strip() for s in settings['excludes'].split())
+        # load settings
+        memphis.config.initializeSettings(settings, configurator)
+    except memphis.config.StopException:
+        memphis.config.shutdown()
+        raise
 
-    # load packages
-    config.initialize(package, excludes, pyramid_config.registry)
+    # create sql tables
+    Base = pyramid_sqla.get_base()
+    Base.metadata.create_all()
 
-    # load settings
-    config.initializeSettings(settings, pyramid_config)
+    # send ApplicationStarting event
+    memphis.config.start(configurator)
+
+    # app initialized
+    memphis.config.registry.notify(AppInitialized(app, configurator))
+
+    # commit possible transaction
+    transaction.commit()
