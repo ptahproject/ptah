@@ -148,9 +148,8 @@ class TestView(BaseView):
                           template = view.template('templates/test.pt'))
         self._init_memphis()
 
-        self.assertRaises(
-            HTTPForbidden,
-            view.renderView, 'index.html', Context(), self.request)
+        resp = view.renderView('index.html', Context(), self.request)
+        self.assertIsInstance(resp, HTTPForbidden)
 
     def test_view_httpresp_from_render(self):
         class MyView(view.View):
@@ -160,9 +159,8 @@ class TestView(BaseView):
         view.registerView('index.html', MyView, Context)
         self._init_memphis()
 
-        self.assertRaises(
-            HTTPFound,
-            view.renderView, 'index.html', Context(), self.request)
+        resp = view.renderView('index.html', Context(), self.request)
+        self.assertIsInstance(resp, HTTPFound)
 
     def test_view_with_template(self):
         view.registerView(

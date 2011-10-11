@@ -61,6 +61,11 @@ def getField(name):
     return fields.get(name, None)
 
 
+@config.addCleanup
+def cleanup():
+    fields.clear()
+
+
 class Fieldset(OrderedDict):
 
     def __init__(self, *args, **kwargs):
