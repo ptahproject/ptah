@@ -27,6 +27,6 @@ This example provides a example authentication provider with URI structure.  Thi
 Doing Everything Yourself
 -------------------------
 
-We remove Ptah App, devapp and are left only with Ptah CMS.  This example is meant to demonstrate low level configuration and if you want to start using the framework with much fewer opinions.
+We remove Ptah App, devapp and are left only with Ptah CMS.  This example is meant to demonstrate low level configuration and if you want to start using the framework with much fewer opinions.  Going to http://localhost:8080/ will throw a NotFound (there is no Ptah App) but you can still reach Ptah Manage, http://localhost:8080/ptah-manage/ so you have access to all introspection services of your application.
 
   file: start4.py
