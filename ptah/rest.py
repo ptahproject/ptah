@@ -31,7 +31,7 @@ def restService(name, title, description=''):
     info.attach(
         config.Action(
             _register, (srv,),
-            discriminator = ('ptah:rest-service', id))
+            discriminator = ('ptah:rest-service', name))
         )
 
     return srv
