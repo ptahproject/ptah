@@ -1,0 +1,7 @@
+<div class="row">
+  <div class="span16 columns">
+    <tal:block content="structure view.renderMessages()" />
+
+    ${content}
+  </div>
+</div>

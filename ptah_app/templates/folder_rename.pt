@@ -1,0 +1,23 @@
+<div class="page-header">
+  <h3>Rename content</h3>
+</div>
+
+<tal:block tal:define="contents context.__children__;
+		       url request.resource_url(context)">
+  <form action="${request.url}" method="post">
+    <table class="zebra-striped">
+      <tr tal:repeat="item contents">
+	<td><input type="checkbox" name="item" value="${item.__uri__}" />
+	<td><a href="${url}${item.__name__}">${item.name or 'unknown'}</a></td>
+	<td><a href="${url}${item.__name__}">${item.title}</a></td>
+      </tr>
+    </table>
+
+    <div class="actions" tal:condition="contents">
+      <input type="submit" class="btn primary"
+	     name="form.buttons.rename" value="Rename" />
+      <input type="submit" class="btn"
+	     name="form.buttons.cancel" value="Cancel" />
+    </div>
+  </form>
+</tal:block>

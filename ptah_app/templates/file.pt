@@ -1,0 +1,11 @@
+<div class="page-header">
+  <h1>${context.title or context.__name__}</h1>
+</div>
+<p>${context.description}</p>
+
+<div class="content" tal:define="blob view.resolve(context.blobref)">
+  Size: ${view.format.size(blob.size)}<br />
+  Mimetype: ${blob.mimetype}<br />
+  Original filename: ${blob.filename}<br />
+  <a href="${request.resource_url(context)[:-1]}">Download</a>
+</div>
