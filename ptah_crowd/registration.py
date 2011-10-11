@@ -9,7 +9,7 @@ from ptah import authService
 from ptah.password import PasswordSchema
 from ptah.events import PrincipalRegisteredEvent
 
-from ptah.crowd import _
+from ptah_crowd import _
 from schemas import RegistrationSchema
 from provider import Session, CrowdUser
 

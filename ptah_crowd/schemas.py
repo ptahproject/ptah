@@ -2,7 +2,7 @@
 from memphis import form
 from ptah import passwordTool
 
-from ptah.crowd import _
+from ptah_crowd import _
 from provider import CrowdUser
 
 

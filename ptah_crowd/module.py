@@ -5,7 +5,7 @@ from zope import interface
 from pyramid.httpexceptions import HTTPFound
 from memphis import view, form, config
 
-from ptah.crowd import _
+from ptah_crowd import _
 from provider import Session
 from provider import CrowdUser as SQLUser
 from memberprops import MemberProperties
@@ -43,13 +43,13 @@ class CrowdUser(object):
 
 view.registerPagelet(
     'ptah-module-actions', CrowdModule,
-    template = view.template('ptah.crowd:templates/ptah-actions.pt'))
+    template = view.template('ptah_crowd:templates/ptah-actions.pt'))
 
 
 class SearchUsers(form.Form):
     view.pyramidView(
         context = CrowdModule,
-        template = view.template('ptah.crowd:templates/search.pt'))
+        template = view.template('ptah_crowd:templates/search.pt'))
 
     __doc__ = 'List/search users view'
     __intr_path__ = '/ptah-manage/crowd/search.html'

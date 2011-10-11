@@ -11,7 +11,7 @@ from ptah.password import PasswordSchema
 from ptah.events import ResetPasswordInitiatedEvent
 from ptah.events import PrincipalPasswordChangedEvent
 
-from ptah.crowd import _
+from ptah_crowd import _
 
 view.registerRoute('ptah-resetpassword', '/resetpassword.html')
 view.registerRoute('ptah-resetpassword-form', '/resetpasswordform.html')
@@ -20,7 +20,7 @@ view.registerRoute('ptah-resetpassword-form', '/resetpasswordform.html')
 class ResetPassword(form.Form):
     view.pyramidView(
         route = 'ptah-resetpassword', layout='ptah-security',
-        template = view.template('ptah.crowd:templates/resetpassword.pt'))
+        template = view.template('ptah_crowd:templates/resetpassword.pt'))
 
     csrf = True
     fields = form.Fieldset(
@@ -77,7 +77,7 @@ class ResetPassword(form.Form):
 class ResetPasswordForm(form.Form):
     view.pyramidView(
         route = 'ptah-resetpassword-form', layout='ptah-security',
-        template=view.template('ptah.crowd:templates/resetpasswordform.pt'))
+        template=view.template('ptah_crowd:templates/resetpasswordform.pt'))
 
     csrf = True
     fields = PasswordSchema
@@ -129,7 +129,7 @@ class ResetPasswordForm(form.Form):
 class ResetPasswordTemplate(mail.MailTemplate):
 
     subject = 'Password Reset Confirmation'
-    template = view.template('ptah.crowd:templates/resetpasswordmail.pt')
+    template = view.template('ptah_crowd:templates/resetpasswordmail.pt')
 
     def update(self):
         super(ResetPasswordTemplate, self).update()

@@ -6,7 +6,7 @@ from pyramid.httpexceptions import HTTPFound
 import ptah
 from ptah.events import PrincipalAddedEvent
 
-from ptah.crowd import _
+from ptah_crowd import _
 from module import CrowdModule
 from provider import CrowdUser, Session
 from schemas import UserSchema, ManagerChangePasswordSchema

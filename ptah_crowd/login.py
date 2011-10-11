@@ -6,7 +6,7 @@ from pyramid.httpexceptions import HTTPFound
 import ptah
 from ptah import authService
 from ptah.mail import MAIL
-from ptah.crowd import _
+from ptah_crowd import _
 
 view.registerRoute('ptah-login', '/login.html')
 view.registerRoute('ptah-logout', '/logout.html')
@@ -17,7 +17,7 @@ view.registerRoute('ptah-login-suspended', '/login-suspended.html')
 class LoginForm(form.Form):
     view.pyramidView(
         route='ptah-login', layout='ptah-security',
-        template = view.template("ptah.crowd:templates/login.pt"))
+        template = view.template("ptah_crowd:templates/login.pt"))
 
     id = 'login-form'
     title = _('Login')
@@ -87,7 +87,7 @@ class LoginSuccess(view.View):
 
     view.pyramidView(
         route = 'ptah-login-success', layout='ptah-security',
-        template = view.template("ptah.crowd:templates/login-success.pt"))
+        template = view.template("ptah_crowd:templates/login-success.pt"))
 
     def update(self):
         user = authService.getCurrentPrincipal()
@@ -110,7 +110,7 @@ class LoginSuspended(view.View):
 
     view.pyramidView(
         route = 'ptah-login-suspended', layout='ptah-security',
-        template = view.template("ptah.crowd:templates/login-suspended.pt"))
+        template = view.template("ptah_crowd:templates/login-suspended.pt"))
 
     def update(self):
         self.from_name = MAIL.from_name

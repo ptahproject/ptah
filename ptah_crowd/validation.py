@@ -61,7 +61,7 @@ def principalAdded(ev):
 class ValidationTemplate(mail.MailTemplate):
 
     subject = 'Activate Your Account'
-    template = view.template('ptah.crowd:templates/validate_email.txt')
+    template = view.template('ptah_crowd:templates/validate_email.txt')
 
     def update(self):
         super(ValidationTemplate, self).update()
