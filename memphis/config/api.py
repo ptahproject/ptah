@@ -50,6 +50,8 @@ def initialize(packages=None, excludes=(), reg=None):
     else:
         packages = loadPackages(packages, excludes=excludes)
 
+    print packages
+
     # scan packages and load all actions
     seen = set()
     actions = []
@@ -97,7 +99,12 @@ def loadPackage(name, seen, first=True):
         distmap = pkg_resources.get_entry_map(dist, 'memphis')
         ep = distmap.get('package')
         if ep is not None:
-            packages.append(ep.module_name)
+            if dist.has_metadata('top_level.txt'):
+                packages.extend(
+                    [p.strip() for p in 
+                     dist.get_metadata('top_level.txt').split()])
+            else:
+                packages.append(ep.module_name)
     except pkg_resources.DistributionNotFound:
         pass
 
