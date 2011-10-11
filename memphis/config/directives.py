@@ -182,6 +182,8 @@ class DirectiveInfo(object):
         self.module = module
         self.codeinfo = codeinfo
 
+        api.mods.add(self.module.__name__)
+
     @property
     def context(self):
         if self.scope == 'module':

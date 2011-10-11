@@ -4,6 +4,8 @@ from zope.interface.registry import Components
 from zope.interface.interface import adapter_hooks
 from zope.interface.interfaces import IObjectEvent
 
+mods = set()
+
 
 class StopException(Exception):
     """ Special initialization exception means stop execution """
@@ -36,22 +38,21 @@ def initialize(packages=None, excludes=(), reg=None):
     sys.modules['memphis.config'].registry = reg
     sys.modules['memphis.config.api'].registry = reg
 
-    # list all packages
-    if packages is None:
-        packages = loadPackages(excludes=excludes)
-    else:
-        packages = loadPackages(packages, excludes=excludes)
-
-    packages.append('__main__')
-
-    # scan packages and load all actions
-    seen = set()
-    actions = []
-
     def exclude_filter(modname):
         if modname in packages:
             return True
         return exclude(modname, excludes)
+
+    # list all packages
+    if packages is None:
+        packages = loadPackages(excludes=excludes)
+        packages.extend([mod for mod in mods if exclude_filter(mod)])
+    else:
+        packages = loadPackages(packages, excludes=excludes)
+
+    # scan packages and load all actions
+    seen = set()
+    actions = []
 
     for pkg in packages:
         actions.extend(directives.scan(pkg, seen, exclude_filter))
@@ -87,7 +88,6 @@ def loadPackage(name, seen, first=True):
 
     try:
         dist = pkg_resources.get_distribution(name)
-
         for req in dist.requires():
             pkg = req.project_name
             if pkg in seen:
@@ -156,6 +156,8 @@ def addCleanup(handler):
 
 
 def cleanUp(*modIds):
+    mods.clear()
+    
     for h in _cleanups:
         h()
 

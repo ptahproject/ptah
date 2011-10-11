@@ -415,3 +415,33 @@ class TestExtraDirective(BaseTesting):
 
         packages = api.loadPackage('memphis.config', seen)
         self.assertEqual(packages, [])
+
+
+class BadicTesting(unittest.TestCase):
+
+    def test_exclude_test(self):
+        from memphis.config import api
+
+        self.assertFalse(api.exclude('blah.test'))
+        self.assertFalse(api.exclude('blah.ftest'))
+        self.assertFalse(api.exclude('blah.subpkg', ('blah.',)))
+        self.assertTrue(api.exclude('blah.subpkg'))
+        
+    def test_loadpackages(self):
+        from memphis.config import api
+        
+        self.assertEqual(
+            api.loadPackages(('memphis',), excludes=('memphis',)), [])
+
+        self.assertEqual(api.loadPackages(), ['memphis'])
+        self.assertEqual(api.loadPackages(excludes=('memphis',)), [])
+
+    def test_stop_exc(self):
+        from memphis.config import api
+
+        err = ValueError('test')
+
+        exc = api.StopException(err)
+        self.assertIs(exc.exc, err)
+        self.assertEqual(str(exc), 'test')
+        
