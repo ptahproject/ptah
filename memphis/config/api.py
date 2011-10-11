@@ -17,7 +17,7 @@ class StopException(Exception):
         return str(self.exc)
 
 
-class ApplicationStarting(object):
+class AppStarting(object):
     """ Memphis sends this event when application is ready to start. """
     directives.event('Application starting event')
 
@@ -64,7 +64,7 @@ def initialize(packages=None, excludes=(), reg=None):
 
 
 def start(cfg):
-    notify(ApplicationStarting(cfg))
+    notify(AppStarting(cfg))
 
 
 def exclude(modname, excludes=()):

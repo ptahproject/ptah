@@ -86,7 +86,7 @@ def buildTree(path, not_allowed=re.compile('^[.~$#]')):
     return data
 
 
-@config.subscriber(config.ApplicationStarting)
+@config.subscriber(config.AppStarting)
 def initialize(ev):
     url = STATIC.url
     if urlparse(url)[0]:

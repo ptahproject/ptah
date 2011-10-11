@@ -6,7 +6,7 @@ from memphis.config.api import initialize
 from memphis.config.api import notify
 
 from memphis.config.api import start
-from memphis.config.api import ApplicationStarting
+from memphis.config.api import AppStarting
 from memphis.config.api import StopException
 
 from memphis.config.api import loadPackages
