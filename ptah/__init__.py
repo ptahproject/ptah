@@ -118,6 +118,8 @@ def ptah_init(configurator):
     import transaction
     import pyramid_sqla
 
+    configurator.include('pyramid_tm')
+
     try:
         settings = configurator.registry.settings
 
