@@ -1,6 +1,7 @@
 """ renderers """
 import simplejson
 from zope import interface
+from pyramid.httpexceptions import WSGIHTTPException
 from memphis.view.layout import queryLayout
 from memphis.view.interfaces import IRenderer
 
@@ -30,7 +31,11 @@ class SimpleRenderer(BaseRenderer):
         if not factory:
             factory = self.factory
 
-        view, result = factory(context, request)
+        try:
+            view, result = factory(context, request)
+        except WSGIHTTPException, resp:
+            return resp
+
         if result is response:
             return response
 
@@ -61,7 +66,10 @@ class Renderer(BaseRenderer):
         if not factory:
             factory = self.factory
 
-        view, params = factory(context, request)
+        try:
+            view, params = factory(context, request)
+        except WSGIHTTPException, resp:
+            return resp
 
         kwargs = {'view': view,
                   'context': context,
