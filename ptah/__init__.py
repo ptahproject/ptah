@@ -142,8 +142,12 @@ def ptah_init(configurator):
     Base = pyramid_sqla.get_base()
     Base.metadata.create_all()
 
-    # send AppStarting event
-    memphis.config.start(configurator)
+    try:
+        # send AppStarting event
+        memphis.config.start(configurator)
+    except Exception, e:
+        memphis.config.shutdown()
+        raise
 
     # commit possible transaction
     transaction.commit()
