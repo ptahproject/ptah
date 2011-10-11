@@ -35,7 +35,7 @@ class Base(unittest.TestCase):
     def _init_memphis(self, settings=None, handler=None, *args, **kw):
         if settings is None:
             settings = self._settings
-        config.initialize(('ptah_cms', self.__class__.__module__),
+        config.initialize(('ptah', self.__class__.__module__),
                           reg = Components('test'))
         config.initializeSettings(settings, self.p_config)
 
