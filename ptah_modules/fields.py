@@ -15,7 +15,7 @@ class FieldsModule(ptah.PtahModule):
 class FieldsView(view.View):
     view.pyramidView(
         context = FieldsModule,
-        template = view.template('ptah.modules:templates/fields.pt'))
+        template = view.template('ptah_modules:templates/fields.pt'))
 
     def update(self):
         data = []

@@ -14,7 +14,7 @@ class MainView(view.View):
     view.pyramidView(
         context = SettingsModule,
         template = view.template(
-            'ptah.modules:templates/settings.pt', nolayer=True))
+            'ptah_modules:templates/settings.pt', nolayer=True))
 
     __doc__ = "Settings page."
     __intr_path__ = '/ptah-manage/settings/index.html'

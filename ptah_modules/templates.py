@@ -16,7 +16,7 @@ class TemplatesModule(ptah.PtahModule):
 view.registerPagelet(
     'ptah-module-actions', TemplatesModule,
     template = view.template(
-        'ptah.modules:templates/customize-actions.pt', nolayer = True))
+        'ptah_modules:templates/customize-actions.pt', nolayer = True))
 
 
 class TemplatesManagement(view.View):
@@ -24,7 +24,7 @@ class TemplatesManagement(view.View):
     view.pyramidView(
         context = TemplatesModule,
         template = view.template(
-            'ptah.modules:templates/customize.pt', nolayer=True))
+            'ptah_modules:templates/customize.pt', nolayer=True))
 
     __intr_path__ = '/ptah-module/templates/index.html'
 
@@ -60,7 +60,7 @@ class ViewTemplate(view.View):
     view.pyramidView(
         'view.html', TemplatesModule,
         template = view.template(
-            'ptah.modules:templates/template.pt', nolayer=True))
+            'ptah_modules:templates/template.pt', nolayer=True))
 
     __intr_path__ = '/ptah-module/templates/view.html'
 
@@ -142,7 +142,7 @@ class CustomTemplate(view.View):
     view.pyramidView(
         'customized.html', TemplatesModule,
         template = view.template(
-            'ptah.modules:templates/customized.pt', nolayer=True))
+            'ptah_modules:templates/customized.pt', nolayer=True))
 
     __intr_path__ = '/ptah-module/templates/customized.html'
 

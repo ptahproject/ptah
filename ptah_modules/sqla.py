@@ -77,7 +77,7 @@ class Record(object):
 class MainView(view.View):
     view.pyramidView(
         context = SQLAModule,
-        template = view.template('ptah.modules:templates/sqla-index.pt'))
+        template = view.template('ptah_modules:templates/sqla-index.pt'))
 
     __doc__ = "sqlalchemy tables listing page."
     __intr_path__ = '/ptah-manage/sqla/index.html'
@@ -127,7 +127,7 @@ class MainView(view.View):
 class TableView(form.Form):
     view.pyramidView(
         context = Table,
-        template = view.template('ptah.modules:templates/sqla-table.pt'))
+        template = view.template('ptah_modules:templates/sqla-table.pt'))
 
     __doc__ = "List table records."
     __intr_path__ = '/ptah-manage/sqla/${table}/index.html'

@@ -1,9 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head tal:define="static view.static_url('ptah')">
+  <head>
     <title>Ptah</title>
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
-    <link rel="shortcut icon" href="${static}/favicon.ico" />
 
     ${view.include('jquery')}
     ${view.include('bootstrap')}

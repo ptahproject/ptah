@@ -151,8 +151,6 @@ view.registerRoute(
     'ptah-manage','/ptah-manage/*traverse',
     PtahManageRoute, use_global_views=True)
 
-view.static('ptah', 'ptah:templates/static')
-
 view.registerLayout(
     '', IPtahManageRoute, parent='page',
     template=view.template("ptah:templates/ptah-layout.pt"))

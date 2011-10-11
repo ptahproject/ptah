@@ -66,7 +66,7 @@ class Package(object):
 class MainView(view.View):
     view.pyramidView(
         context = IntrospectModule,
-        template = view.template('ptah.modules:templates/introspect.pt'))
+        template = view.template('ptah_modules:templates/introspect.pt'))
 
     __doc__ = 'Introspection module view.'
     __intr_path__ = '/ptah-manage/introspect/index.html'
@@ -77,13 +77,13 @@ class MainView(view.View):
 
 view.registerPagelet(
     'ptah-module-actions', IntrospectModule,
-    template = view.template('ptah.modules:templates/introspect-actions.pt'))
+    template = view.template('ptah_modules:templates/introspect-actions.pt'))
 
 
 class PackageView(view.View):
     view.pyramidView(
         context = Package,
-        template = view.template('ptah.modules:templates/introspect-pkg.pt'))
+        template = view.template('ptah_modules:templates/introspect-pkg.pt'))
 
     __doc__ = 'Package introspection page.'
     __intr_path__ = '/ptah-manage/introspect/${pkg}/index.html'
@@ -111,7 +111,7 @@ class PackageView(view.View):
 class EventsView(view.View):
     view.pyramidView(
         'events.html', IntrospectModule,
-        template = view.template('ptah.modules:templates/introspect-events.pt'))
+        template = view.template('ptah_modules:templates/introspect-events.pt'))
 
     __doc__ = 'Events introspection page.'
     __intr_path__ = '/ptah-manage/introspect/events.html'
@@ -159,7 +159,7 @@ def lineno(ob):
 class RoutesView(view.View):
     view.pyramidView(
         'routes.html', IntrospectModule,
-        template = view.template('ptah.modules:templates/introspect-routes.pt'))
+        template = view.template('ptah_modules:templates/introspect-routes.pt'))
 
     __doc__ = 'Routes introspection page.'
     __intr_path__ = '/ptah-manage/introspect/routes.html'
@@ -253,7 +253,7 @@ class RoutesView(view.View):
 class SourceView(view.View):
     view.pyramidView(
         'source.html', IntrospectModule,
-        template = view.template('ptah.modules:templates/introspect-source.pt'))
+        template = view.template('ptah_modules:templates/introspect-source.pt'))
 
     __doc__ = 'Source introspection page.'
     __intr_path__ = '/ptah-manage/introspect/source.html'
@@ -314,7 +314,7 @@ class UriIntrospection(object):
     title = 'Uri resolver'
     ptah.introspection('ptah:uri-resolver')
 
-    actions = view.template('ptah.modules:templates/directive-uriresolver.pt')
+    actions = view.template('ptah_modules:templates/directive-uriresolver.pt')
 
     def __init__(self, request):
         self.request = request
@@ -336,7 +336,7 @@ class EventDirective(object):
     title = 'Events'
     ptah.introspection('memphis.config:event')
 
-    actions = view.template('ptah.modules:templates/directive-event.pt')
+    actions = view.template('ptah_modules:templates/directive-event.pt')
 
     def __init__(self, request):
         self.request = request
@@ -357,7 +357,7 @@ class AdapterDirective(object):
     title = 'Adapters'
     ptah.introspection('memphis.config:adapter')
 
-    actions = view.template('ptah.modules:templates/directive-adapter.pt')
+    actions = view.template('ptah_modules:templates/directive-adapter.pt')
 
     def __init__(self, request):
         self.request = request
@@ -396,7 +396,7 @@ class PageletTypeDirective(object):
     title = 'Pagelet Types'
     ptah.introspection('memphis.view:pageletType')
 
-    actions = view.template('ptah.modules:templates/directive-ptype.pt')
+    actions = view.template('ptah_modules:templates/directive-ptype.pt')
 
     def __init__(self, request):
         self.request = request
@@ -418,7 +418,7 @@ class RouteDirective(object):
     title = 'Routes'
     ptah.introspection('memphis.view:route')
 
-    actions = view.template('ptah.modules:templates/directive-route.pt')
+    actions = view.template('ptah_modules:templates/directive-route.pt')
 
     def __init__(self, request):
         self.request = request
@@ -438,7 +438,7 @@ class SubscriberDirective(object):
     title = 'Event subscribers'
     ptah.introspection('memphis.config:subscriber')
 
-    actions = view.template('ptah.modules:templates/directive-subscriber.pt')
+    actions = view.template('ptah_modules:templates/directive-subscriber.pt')
 
     def __init__(self, request):
         self.request = request
@@ -474,7 +474,7 @@ class ViewDirective(object):
     title = 'Views'
     ptah.introspection('memphis.view:view')
 
-    actions = view.template('ptah.modules:templates/directive-view.pt')
+    actions = view.template('ptah_modules:templates/directive-view.pt')
 
     def __init__(self, request):
         self.request = request
