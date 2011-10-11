@@ -31,7 +31,7 @@ Install the requirements
 
 Let's run pip's installer to grab all of our software::
 
-  ~/myvirtualenv$ bin/pip install requirements.txt
+  ~/myvirtualenv$ bin/pip install -r requirements.txt
   ... a lot of text while system resolves dependencies and installs software
 
 Starting Ptah
