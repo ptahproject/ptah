@@ -21,8 +21,9 @@ class IntrospectModule(ptah.PtahModule):
     title = 'Introspect'
     ptah.manageModule('introspect')
 
-    def __init__(self, manager, request):
-        super(IntrospectModule, self).__init__(manager, request)
+    packagesDict = None
+
+    def _init_packages(self):
         packages = loadPackages()
         packages.sort()
         self.packages = [pkg_resources.get_distribution(pkg) for
@@ -31,6 +32,9 @@ class IntrospectModule(ptah.PtahModule):
                                  for p in self.packages)
 
     def __getitem__(self, key):
+        if self.packagesDict is None:
+            self._init_packages()
+
         key = key.replace('-','_')
         return Package(self.packagesDict[key], self, self.request)
 
