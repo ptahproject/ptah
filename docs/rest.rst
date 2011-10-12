@@ -1,17 +1,17 @@
 REST
 ====
 
-REST is first class citizen in Ptah.  If you use the Content model then you get REST for free.  If you want 'low-level' Node interface you need to do more work.   
+REST is first class citizen in Ptah.  If you use the Content model then you get REST for free.  If you want 'low-level' Node interface you need to do more work.   The follow relies on Ptah App.  
 
 You will need curl and ptah running for this example.
 
 Overview
 --------
-REST API is flat and not heirarchical.  It does take content heirarchy into consideration when computing security.  But the API is flat.  Twillio & github are inspirations.
+REST API is flat.  If your content participates in heirarchy the system will take this into account when computing security. 
 
-Note that all __link__, __uri__ will change based on data in the database.  identifiers in this example will not match with yours.  We presume you can figure this out.  For clarity we just use data available from our session.  
+Note that in the following values for __link__, __uri__ will be different in than what you will see.  You can figure this out.  For clarity we just use data available from our session.  
 
-Also to note there is a ptahclient.py and a rest.py which support programatic usage of the REST API from python.  You do not need to fiddle with cURL ;-)  We just use it for these examples.
+Also to note there is a ptahclient.py and a rest.py which support programatic usage of the REST API from python.  You do not need to use cURL.  We just use it for these examples.
 
 Basics
 ------
@@ -131,7 +131,7 @@ Now lets see the application.  Note in future the default will not show children
      ]
     }
 
-Lets look at the apidoc for the application.  These are the REST actions that are available.  By default Anonymous can create a Page, therefore create is an action::
+Lets look at the apidoc for the application.  These are the REST actions that are available.  By default Anonymous can create a Page, therefore create is an available action (recognized its not a sensible default and will be changed in future)::
 
     $ curl http://localhost:8080/__rest__/cms/content:/cms+app:c24d0e245edc413980a75f035ee3c8b2/apidoc
     [
@@ -162,7 +162,7 @@ Lets look at the apidoc for the application.  These are the REST actions that ar
 Login
 -----
 
-To login via REST you need to get a AUTH-TOKEN, we do this by doing FORM Post with curl.
+To login via REST you need to get a AUTH-TOKEN, we do this by issueing a GET::
 
     $ curl -d "login=admin&password=12345" http://localhost:8080/__rest__/login
     {
@@ -184,93 +184,214 @@ Authenticated Example
 Content actions can be protected by permissions.  Let us presume that our CMS root's __uri__ is `cms+app:c24d0e245edc413980a75f035ee3c8b2` and it's __link__ is `http://localhost:8080/__rest__/cms/content:/cms+app:c24d0e245edc413980a75f035ee3c8b2/`
 .  Let's look at APIDOC not logged in::
 
-    $ curl http://localhost:8080/__rest__/cms/content:/cms+app:c24d0e245edc413980a7
-5f035ee3c8b2/apidoc
-[
- {
-  "name": "info",
-  "link": "http://localhost:8080/__rest__/cms/content:/cms+app:c24d0e245edc41398
-0a75f035ee3c8b2/",
-  "title": "",
-  "description": "Container information"
- },
- {
-  "name": "apidoc",
-  "link": "http://localhost:8080/__rest__/cms/content:/cms+app:c24d0e245edc41398
-0a75f035ee3c8b2/apidoc",
-  "title": "apidoc",
-  "description": "api doc"
- },
- {
-  "name": "create",
-  "link": "http://localhost:8080/__rest__/cms/content:/cms+app:c24d0e245edc41398
-0a75f035ee3c8b2/create",
-  "title": "create",
-  "description": "Create content"
- }
-]
+    $ curl http://localhost:8080/__rest__/cms/content:/cms+app:c24d0e245edc413980a75f035ee3c8b2/apidoc
 
-Now let's look at APIDOC as a logged in user.
+    [
+     {
+      "name": "info",
+      "link": "http://localhost:8080/__rest__/cms/content:/cms+app:c24d0e245edc413980a75f035ee3c8b2/",
+      "title": "",
+      "description": "Container information"
+     },
+     {
+      "name": "apidoc",
+      "link": "http://localhost:8080/__rest__/cms/content:/cms+app:c24d0e245edc413980a75f035ee3c8b2/apidoc",
+      "title": "apidoc",
+      "description": "api doc"
+     },
+     {
+      "name": "create",
+      "link": "http://localhost:8080/__rest__/cms/content:/cms+app:c24d0e245edc413980a75f035ee3c8b2/create",
+      "title": "create",
+      "description": "Create content"
+     }
+    ]
 
-$ curl -H "X_AUTH_TOKEN:8725da7fdf14e1442f1ed4670f3b61614e95a6bcuser%2Bcrowd%3A
-9a529386a61c4f20a2481da6a9f455cc" http://localhost:8080/__rest__/cms/content:/c
-ms+app:c24d0e245edc413980a75f035ee3c8b2/apidoc
-[
- {
-  "name": "info",
-  "link": "http://localhost:8080/__rest__/cms/content:/cms+app:c24d0e245edc41398
-0a75f035ee3c8b2/",
-  "title": "",
-  "description": "Container information"
- },
- {
-  "name": "apidoc",
-  "link": "http://localhost:8080/__rest__/cms/content:/cms+app:c24d0e245edc41398
-0a75f035ee3c8b2/apidoc",
-  "title": "apidoc",
-  "description": "api doc"
- },
- {
-  "name": "create",
-  "link": "http://localhost:8080/__rest__/cms/content:/cms+app:c24d0e245edc41398
-0a75f035ee3c8b2/create",
-  "title": "create",
-  "description": "Create content"
- },
- {
-  "name": "delete",
-  "link": "http://localhost:8080/__rest__/cms/content:/cms+app:c24d0e245edc41398
-0a75f035ee3c8b2/delete",
-  "title": "delete",
-  "description": "Delete content"
- },
- {
-  "name": "move",
-  "link": "http://localhost:8080/__rest__/cms/content:/cms+app:c24d0e245edc41398
-0a75f035ee3c8b2/move",
-  "title": "move",
-  "description": "Move content"
- },
- {
-  "name": "update",
-  "link": "http://localhost:8080/__rest__/cms/content:/cms+app:c24d0e245edc41398
-0a75f035ee3c8b2/update",
-  "title": "update",
-  "description": "Update content"
- }
-]
+Now let's look at APIDOC as a logged in user::
+
+    $ curl -H "X_AUTH_TOKEN:8725da7fdf14e1442f1ed4670f3b61614e95a6bcuser%2Bcrowd%3A9a529386a61c4f20a2481da6a9f455cc" \
+      http://localhost:8080/__rest__/cms/content:/cms+app:c24d0e245edc413980a75f035ee3c8b2/apidoc
+      
+    [
+     {
+      "name": "info",
+      "link": "http://localhost:8080/__rest__/cms/content:/cms+app:c24d0e245edc413980a75f035ee3c8b2/",
+      "title": "",
+      "description": "Container information"
+     },
+     {
+      "name": "apidoc",
+      "link": "http://localhost:8080/__rest__/cms/content:/cms+app:c24d0e245edc413980a75f035ee3c8b2/apidoc",
+      "title": "apidoc",
+      "description": "api doc"
+     },
+     {
+      "name": "create",
+      "link": "http://localhost:8080/__rest__/cms/content:/cms+app:c24d0e245edc413980a75f035ee3c8b2/create",
+      "title": "create",
+      "description": "Create content"
+     },
+     {
+      "name": "delete",
+      "link": "http://localhost:8080/__rest__/cms/content:/cms+app:c24d0e245edc413980a75f035ee3c8b2/delete",
+      "title": "delete",
+      "description": "Delete content"
+     },
+     {
+      "name": "move",
+      "link": "http://localhost:8080/__rest__/cms/content:/cms+app:c24d0e245edc41398
+      "title": "move",
+      "description": "Move content"
+     },
+     {
+      "name": "update",
+      "link": "http://localhost:8080/__rest__/cms/content:/cms+app:c24d0e245edc413980a75f035ee3c8b2/update",
+      "title": "update",
+      "description": "Update content"
+     }
+    ]
+
+Available Types
+---------------
+
+We can see a list of all available types available in the system.  The `Type`
+information contains:
+
+   * __uri__, this is a resolvable string which is unique to the type information
+   
+   * name, this is the internal type name which does not have to be unique
+   
+   * title, human readable title of the type information
+   
+   * permission, permission to create models of this type
+   
+   * fieldset, schema of the type. if you do not define one the system 
+   will create one by introspecting your model.
+
+Let's see all registered types::
+
+    $ curl http://localhost:8080/__rest__/cms/types/
+    [
+     {
+      "__uri__": "cms+type:app",
+      "name": "app",
+      "title": "Application",
+      "description": "",
+      "permission": "__not_allowed__",
+      "fieldset": [
+       {
+        "type": "text",
+        "name": "title",
+        "title": "Title",
+        "description": "",
+        "required": true
+       },
+       {
+        "type": "textarea",
+        "name": "description",
+        "title": "Description",
+        "description": "",
+        "required": false
+       }
+      ]
+     },
+     {
+      "__uri__": "cms+type:file",
+      "name": "file",
+      "title": "File",
+      "description": "A file in the site.",
+      "permission": "ptah-app: Add file",
+      "fieldset": [
+       {
+        "type": "text",
+        "name": "title",
+        "title": "Title",
+        "description": "",
+        "required": true
+       },
+       {
+        "type": "textarea",
+        "name": "description",
+        "title": "Description",
+        "description": "",
+        "required": false
+       },
+       {
+        "type": "file",
+        "name": "blobref",
+        "title": "Data",
+        "description": "",
+        "required": true
+       }
+      ]
+     },
+     {
+      "__uri__": "cms+type:folder",
+      "name": "folder",
+      "title": "Folder",
+      "description": "A folder which can contain other items.",
+      "permission": "ptah-app: Add folder",
+      "fieldset": [
+       {
+        "type": "text",
+        "name": "title",
+        "title": "Title",
+        "description": "",
+        "required": true
+       },
+       {
+        "type": "textarea",
+        "name": "description",
+        "title": "Description",
+        "description": "",
+        "required": false
+       }
+      ]
+     },
+     {
+      "__uri__": "cms+type:page",
+      "name": "page",
+      "title": "Page",
+      "description": "A page in the site.",
+      "permission": "ptah-app: Add page",
+      "fieldset": [
+       {
+        "type": "text",
+        "name": "title",
+        "title": "Title",
+        "description": "",
+        "required": true
+       },
+       {
+        "type": "textarea",
+        "name": "description",
+        "title": "Description",
+        "description": "",
+        "required": false
+       },
+       {
+        "type": "tinymce",
+        "name": "text",
+        "title": "Text",
+        "description": "",
+        "required": true
+       }
+      ]
+     }
+    ]
+
+
 
 Create content
 --------------
 
-Let us create a Page whose name is 'foobar.html'.  Create 
+Let us create a Page whose name is 'foobar.html'. 
 
-There is a special feature of `container.create REST action` which allow you to create type and update all values in one operation.  
+There is a special feature of `container.create REST action` which allow you to create type 
+and update all values in one operation. Here is example of creating ptah_app.content.Page::
 
-    $ curl -H "X_AUTH_TOKEN:8725da7fdf14e14
-    42f1ed4670f3b61614e95a6bcuser%2Bcrowd%3A9a529386a61c4f20a2481da6a9f455cc" --url
-     "http://localhost:8080/__rest__/cms/content:/cms+app:c24d0e245edc413980a75D5D5
-    f035ee3c8b2/create?tinfo=cms+type:page&name=foobar.html"
+    $ curl -H "X_AUTH_TOKEN:8725da7fdf14e1442f1ed4670f3b61614e95a6bcuser%2Bcrowd%3A9a529386a61c4f20a2481da6a9f455cc" \
+      --url "http://localhost:8080/__rest__/cms/content:/cms+app:c24d0e245edc413980a75D5D5f035ee3c8b2/create?tinfo=cms+type:page&name=foobar.html"
     {
      "message": "cms+page:032e6b19a99c40fba264c1aeeaf08254"
     }
@@ -281,7 +402,7 @@ There is a special feature of `container.create REST action` which allow you to 
    - cms+type:folder
    - cms+type:file
    
-The response of the message is the new URI for the content item.  Let's just CURL the item.
+The response of the message is the new URI for the content item.  Let's just CURL the item::
 
     $ curl http://localhost:8080/__rest__/cms/content:/cms+page:032e6b19a99c40fba264c1aeeaf08254
     {
@@ -301,8 +422,7 @@ The response of the message is the new URI for the content item.  Let's just CUR
      "modified": "2011-10-12T14:44:02.669000",
      "effective": null,
      "expires": null,
-     "__link__": "http://localhost:8080/__rest__/cms/content:/cms+page:032e6b19a99c4
-    0fba264c1aeeaf08254/"
+     "__link__": "http://localhost:8080/__rest__/cms/content:/cms+page:032e6b19a99c40fba264c1aeeaf08254/"
     }
     
 Python REST Client
