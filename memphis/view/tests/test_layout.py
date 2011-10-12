@@ -56,18 +56,6 @@ class LayoutPagelet(Base):
 
         self.assertTrue(isinstance(layout, MyLayout))
 
-    def test_layout_register_custom_class_reuse(self):
-        # can't reuse same class
-        class MyLayout(view.Layout):
-            pass
-
-        view.registerLayout('test1', klass=MyLayout)
-        view.registerLayout('test2', klass=MyLayout)
-
-        self.assertRaises(
-            ValueError,
-            self._init_memphis)
-
     def test_layout_simple_view(self):
         class View(view.View):
             def __call__(self):
