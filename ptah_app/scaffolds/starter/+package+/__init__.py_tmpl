@@ -36,7 +36,7 @@ def main(global_config, **settings):
     if 'front-page' not in root.keys():
         page = Page(title=u'Welcome to Ptah')
         page.text = open(
-            abspath_from_asset_spec('{{package}}:welcome.pt')[0], 'rb').read()
+            abspath_from_asset_spec('{{package}}:welcome.pt'), 'rb').read()
 
         root['front-page'] = page
 
