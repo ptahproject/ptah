@@ -14,6 +14,16 @@ providers = {}
 searchers = {}
 
 
+class ManagerPrincipal(object):
+
+    def __init__(self):
+        self.uri = 'ptah+auth:superuser'
+        self.login = ''
+        self.name = 'Manager'
+
+MANAGER = ManagerPrincipal()
+
+
 def registerAuthChecker(checker):
     checkers.append(checker)
 

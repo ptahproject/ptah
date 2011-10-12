@@ -522,12 +522,13 @@ class TestCheckPermission(Base):
         content = Content(acl=[DENY_ALL])
 
         self.assertRaises(
-            HTTPForbidden, ptah.checkPermission, 'View', content)
+            HTTPForbidden, ptah.checkPermission, 'View', content, throw=True)
 
         content = Content(acl=[(Allow, ptah.Everyone.id, ALL_PERMISSIONS)])
 
         self.assertRaises(
-            HTTPForbidden, ptah.checkPermission, ptah.NOT_ALLOWED, content)
+            HTTPForbidden, ptah.checkPermission,
+            ptah.NOT_ALLOWED, content, throw=True)
 
     def test_checkpermission_authenticated(self):
         import ptah

@@ -19,6 +19,7 @@ from ptah.authentication import registerAuthChecker
 from ptah.authentication import registerProvider
 from ptah.authentication import registerSearcher
 from ptah.authentication import searchPrincipals
+from ptah.authentication import MANAGER
 
 from ptah.interfaces import IPrincipal
 from ptah.interfaces import IAuthProvider
@@ -95,6 +96,8 @@ def make_wsgi_app(global_settings, **settings):
 
     """
     from pyramid.config import Configurator
+
+    authService.setUserId(MANAGER.uri)
 
     # configuration
     global_settings.update(settings)

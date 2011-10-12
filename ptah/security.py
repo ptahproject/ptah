@@ -260,7 +260,7 @@ Owner = Role(
 NOT_ALLOWED = Permission('__not_allowed__', 'Special permission')
 
 
-def checkPermission(permission, context, request=None, throw=True):
+def checkPermission(permission, context, request=None, throw=False):
     """ Check `permission` withing `context`.
 
     :param permission: Permission

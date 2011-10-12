@@ -53,8 +53,7 @@ class TypeInformation(object):
             return False
 
         if self.permission:
-            return ptah.checkPermission(
-                self.permission, container, throw=False)
+            return ptah.checkPermission(self.permission, container)
         return True
 
     def checkContext(self, container):
