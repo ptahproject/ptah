@@ -19,6 +19,7 @@ from ptah.authentication import registerAuthChecker
 from ptah.authentication import registerProvider
 from ptah.authentication import registerSearcher
 from ptah.authentication import searchPrincipals
+from ptah.authentication import SUPERUSER_URI
 
 from ptah.interfaces import IPrincipal
 from ptah.interfaces import IAuthProvider
@@ -96,6 +97,8 @@ def make_wsgi_app(global_settings, **settings):
     """
     from pyramid.config import Configurator
 
+    authService.setUserId(SUPERUSER_URI)
+
     # configuration
     global_settings.update(settings)
     config = Configurator(settings=global_settings)
@@ -138,11 +141,11 @@ def ptah_init(configurator):
         memphis.config.shutdown()
         raise
 
-    # create sql tables
-    Base = pyramid_sqla.get_base()
-    Base.metadata.create_all()
-
     try:
+        # create sql tables
+        Base = pyramid_sqla.get_base()
+        Base.metadata.create_all()
+
         # send AppStarting event
         memphis.config.start(configurator)
     except Exception, e:

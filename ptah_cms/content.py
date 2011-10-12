@@ -91,6 +91,12 @@ class Content(Node):
         lambda: Session.query(Content)
             .filter(Content.__uri__ == sqla.sql.bindparam('parent')))
 
+    def __init__(self, **kw):
+        super(Content, self).__init__(**kw)
+
+        if self.__name__ and self.__parent__ is not None:
+            self.__path__ = '%s%s/'%(self.__parent__.__path__, self.__name__)
+
     @hybrid_property
     def __name__(self):
         return self.__name_id__

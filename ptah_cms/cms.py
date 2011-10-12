@@ -31,7 +31,7 @@ class NodeWrapper(object):
 
         fname, permission = self._actions[action]
         if permission:
-            if not ptah.checkPermission(permission, self._content, throw=False):
+            if not ptah.checkPermission(permission, self._content):
                 raise Forbidden(action)
 
         return ActionWrapper(self._content, fname)

@@ -75,7 +75,7 @@ class ContainerListing(view.View):
         registry = request.registry
 
         self.deleteContent = ptah.checkPermission(
-            ptah_cms.DeleteContent, context, throw=False)
+            ptah_cms.DeleteContent, context)
 
         # cms(uri).read()
         # cms(uri).create(type)
