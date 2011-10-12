@@ -35,6 +35,8 @@ Create directory where sqlite will store its file.
 Create .ini file
 ~~~~~~~~~~~~~~~~
 
+Until we get paster rolling, lets manually create .ini file::
+
     ~/myvirtualenv$ cat > ptah.ini
   
     [DEFAULT]
