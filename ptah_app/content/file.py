@@ -26,7 +26,7 @@ class File(ptah_cms.Content):
     @ptah_cms.action(permission=ptah_cms.ModifyContent)
     def update(self, **data):
         """ Update file content. """
-        fd = data.get('data')
+        fd = data.get('blobref')
         if fd:
             blob = ptah.resolve(self.blobref)
             if blob is None:
@@ -94,7 +94,7 @@ class FileAddForm(ptah_app.AddForm):
     tinfo = File.__type__
 
     def chooseName(self, **kw):
-        filename = kw['data']['filename']
+        filename = kw['blobref']['filename']
         name = filename.split('\\')[-1].split('/')[-1]
 
         i = 1
