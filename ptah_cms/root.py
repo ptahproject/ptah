@@ -39,12 +39,17 @@ Factories = {}
 
 class ApplicationFactory(object):
 
-    def __init__(self, path, name, title,
-                 tinfo = ApplicationRoot.__type__, policy = ApplicationPolicy):
+    def __init__(self, path='', name='', title='',
+                 tinfo = ApplicationRoot.__type__, 
+                 policy = ApplicationPolicy, default_root = None):
         self.id = '-'.join(part for part in path.split('/') if part)
         self.path = path if path.endswith('/') else '%s/'%path
         self.name = name
         self.title = title
+
+        self.default_root = default_root
+        if not path and default_root is None:
+            self.default_root = True
 
         if isinstance(tinfo, type) and issubclass(tinfo, Node):
             tinfo = tinfo.__type__
@@ -76,6 +81,7 @@ class ApplicationFactory(object):
 
         root.__root_path__ = self.path
         root.__parent__ = policy = self.policy(request)
+        root.__default_root__ = self.default_root
 
         setPolicy(policy)
 

@@ -33,5 +33,8 @@ setup(name='ptah',
         'memphis': ['package = ptah'],
         'paste.app_factory': [
             'app = ptah:make_wsgi_app'],
+        'paste.paster_create_template': [
+            'ptahdemo = ptah_app.scaffolds:StarterProjectTemplate',
+            ]
         },
       )

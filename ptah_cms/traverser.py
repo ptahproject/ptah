@@ -5,6 +5,7 @@ from zope import interface
 from memphis import config
 from pyramid.interfaces import ITraverser
 from pyramid.traversal import traversal_path, quote_path_segment
+from pyramid.traversal import ResourceTreeTraverser
 
 from node import Session
 from content import Content
@@ -22,8 +23,11 @@ class ContentTraverser(object):
 
     def __call__(self, request, queries=_path_queries):
         environ = request.environ
-
         context = root = self.root
+
+        if root.__default_root__ and 'bfg.routes.route' in environ:
+            return ResourceTreeTraverser(root)(request)
+
         path = '/%s/'%'/'.join(traversal_path(environ.get('PATH_INFO','/')))
 
         vroot_tuple = ()
