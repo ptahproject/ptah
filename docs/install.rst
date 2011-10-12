@@ -23,7 +23,7 @@ Grab buildout::
   
   ~$ cd devel
   
-  ~/devel$ python2.7 bootstrap.py
+  ~/devel$ python2.7 bootstrap.py -c devel.cfg
   You will see it download setuptools & will create bin directory
   
   ~/devel$ bin/buildout -c devel.cfg
