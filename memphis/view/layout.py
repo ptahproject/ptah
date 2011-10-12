@@ -102,9 +102,6 @@ def registerLayout(
 
 
 def registerLayoutImpl(klass, name, context, template, parent, route_name):
-    if klass in _registered:
-        raise ValueError("Class can't be reused for different layouts")
-
     if not parent:
         layout = None
     elif parent == '.':
@@ -121,7 +118,6 @@ def registerLayoutImpl(klass, name, context, template, parent, route_name):
 
     if issubclass(klass, Layout) and klass is not Layout:
         layout_class = klass
-        _registered.append(klass)
         for attr, value in cdict.items():
             setattr(layout_class, attr, value)
     else:
@@ -130,14 +126,8 @@ def registerLayoutImpl(klass, name, context, template, parent, route_name):
     # register layout
     request_iface = IRequest
     if route_name is not None:
-        request_iface = config.registry.getUtility(IRouteRequest,name=route_name)
+        request_iface = config.registry.getUtility(
+            IRouteRequest, name=route_name)
 
     config.registry.registerAdapter(
         layout_class, (context, request_iface), ILayout, name)
-
-
-_registered = []
-
-@config.addCleanup
-def cleanUp():
-    _registered[:] = []
