@@ -37,11 +37,15 @@ Let's run pip's installer to grab all of our software::
 Create ptah app
 ~~~~~~~~~~~~~~~
 
+Let's create ptah app with paster::
+
      ~$ ./bin/paster create -t ptahdemo myapp
      ~$ cd myapp
      ~$ ../bin/python2.7 ./setup.py develop
 
 Start app
 ~~~~~~~~~
+
+Start paster server::
 
      ~$ ../bin/paster serve development.ini

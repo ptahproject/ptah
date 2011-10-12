@@ -58,6 +58,4 @@ misc
 
   .. autofunction:: make_wsgi_app
 
-  .. autofunction:: initialize
-
-  .. autoclass:: AppInitialized
+  .. autofunction:: ptah_init
