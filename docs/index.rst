@@ -14,6 +14,7 @@ Ptah CMS
    interactive.rst
    views.rst
    forms.rst
+   rest.rst
    ptah_app_vs_manage.rst
    scripts.rst
    api.rst
