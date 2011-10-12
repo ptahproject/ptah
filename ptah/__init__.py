@@ -138,11 +138,11 @@ def ptah_init(configurator):
         memphis.config.shutdown()
         raise
 
-    # create sql tables
-    Base = pyramid_sqla.get_base()
-    Base.metadata.create_all()
-
     try:
+        # create sql tables
+        Base = pyramid_sqla.get_base()
+        Base.metadata.create_all()
+
         # send AppStarting event
         memphis.config.start(configurator)
     except Exception, e:
