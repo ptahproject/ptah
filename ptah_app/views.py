@@ -9,17 +9,16 @@ from ptah_cms import tinfo, interfaces, events
 
 from forms import AddForm
 from uiactions import listUIActions
-from interfaces import IPtahAppRoot
 
 
 page_tmpl = view.template("ptah_app:templates/layoutpage.pt")
 
-view.registerLayout('page', IPtahAppRoot, template = page_tmpl)
 view.registerLayout('page', view.INavigationRoot, template = page_tmpl)
+view.registerLayout('page', ptah_cms.ApplicationRoot, template = page_tmpl)
 
 
 class LayoutWorkspace(view.Layout):
-    view.layout('workspace', IPtahAppRoot, parent="page")
+    view.layout('workspace', ptah_cms.ApplicationRoot, parent="page")
 
     template=view.template("ptah_app:templates/layoutworkspace.pt")
 

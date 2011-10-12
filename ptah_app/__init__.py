@@ -1,7 +1,5 @@
 # ptah_app api
 
-from ptah_app.interfaces import IPtahAppRoot
-
 # forms
 from ptah_app.forms import AddForm
 from ptah_app.forms import EditForm
