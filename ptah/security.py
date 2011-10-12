@@ -7,6 +7,7 @@ from pyramid.interfaces import IAuthorizationPolicy
 from pyramid.httpexceptions import HTTPForbidden
 
 from ptah import authService
+from ptah import SUPERUSER_URI
 from ptah.interfaces import IOwnersAware
 from ptah.interfaces import ILocalRolesAware
 
@@ -276,6 +277,10 @@ def checkPermission(permission, context, request=None, throw=False):
             raise HTTPForbidden()
         return False
 
+    userid = authService.getUserId()
+    if userid == SUPERUSER_URI:
+        return True
+
     global AUTHZ
     try:
         AUTHZ
@@ -284,7 +289,6 @@ def checkPermission(permission, context, request=None, throw=False):
 
     principals = [Everyone.id]
 
-    userid = authService.getUserId()
     if userid is not None:
         principals.extend((Authenticated.id, userid))
 

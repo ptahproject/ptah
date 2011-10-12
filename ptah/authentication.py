@@ -5,7 +5,7 @@ from pyramid.interfaces import INewRequest
 from pyramid.security import authenticated_userid
 from pyramid.threadlocal import get_current_request
 
-from ptah.uri import resolve
+from ptah.uri import resolve, resolver
 from ptah.util import tldata
 from ptah.interfaces import IAuthInfo, IAuthentication
 
@@ -14,14 +14,20 @@ providers = {}
 searchers = {}
 
 
-class ManagerPrincipal(object):
+class _Superuser(object):
 
     def __init__(self):
         self.uri = 'ptah+auth:superuser'
         self.login = ''
         self.name = 'Manager'
 
-MANAGER = ManagerPrincipal()
+SUPERUSER = _Superuser()
+SUPERUSER_URI = 'ptah+auth:superuser'
+
+@resolver('ptah+auth', 'System super user')
+def useruserResolver(uri):
+    if uri == SUPERUSER_URI:
+        return SUPERUSER
 
 
 def registerAuthChecker(checker):
