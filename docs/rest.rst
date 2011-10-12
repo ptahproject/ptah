@@ -274,7 +274,13 @@ There is a special feature of `container.create REST action` which allow you to 
     {
      "message": "cms+page:032e6b19a99c40fba264c1aeeaf08254"
     }
+    
+`tinfo` is the type's __uri__.  You can get a list of available types by querying __rest__/cms/types for instance, the default types available with ptah_app are:
 
+   - cms+type:page
+   - cms+type:folder
+   - cms+type:file
+   
 The response of the message is the new URI for the content item.  Let's just CURL the item.
 
     $ curl http://localhost:8080/__rest__/cms/content:/cms+page:032e6b19a99c40fba264c1aeeaf08254
@@ -298,3 +304,8 @@ The response of the message is the new URI for the content item.  Let's just CUR
      "__link__": "http://localhost:8080/__rest__/cms/content:/cms+page:032e6b19a99c4
     0fba264c1aeeaf08254/"
     }
+    
+Python REST Client
+------------------
+
+Two files are of interst.  devapp/ptahclient.py which is a python REST client for Ptah. And rest.py which utilizes ptahclient.py.  
