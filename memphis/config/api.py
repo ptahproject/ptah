@@ -101,8 +101,6 @@ def loadPackage(name, seen, first=True):
                 packages.extend(
                     [p.strip() for p in 
                      dist.get_metadata('top_level.txt').split()])
-            else:
-                packages.append(ep.module_name)
     except pkg_resources.DistributionNotFound:
         pass
 

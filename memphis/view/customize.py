@@ -50,7 +50,10 @@ class _ViewLayersManager(object):
 
     def register(self, layer, discriminator):
         data = self.layers.setdefault(discriminator, [])
-        data.append(layer)
+        if not layer:
+            data.insert(0, layer)
+        else:
+            data.append(layer)
 
     def enabled(self, layer, discriminator):
         data = self.layers.get(discriminator)

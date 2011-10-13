@@ -1,5 +1,6 @@
 """ renderers tests """
 from pyramid.response import Response
+from pyramid.httpexceptions import HTTPFound
 
 from memphis import config, view
 from memphis.view.renderers import Renderer, JSONRenderer, SimpleRenderer
@@ -24,6 +25,26 @@ class TestSimpleRenderer(Base):
         self.assertEqual(res.body, 'test')
         self.assertEqual(res.status, '200 OK')
         self.assertEqual(res.content_type, 'text/html')
+
+    def test_renderer_simple_return_response(self):
+        resp = HTTPFound()
+        def viewFactory(context, request):
+            return None, resp
+
+        r = SimpleRenderer()
+        res = r(Context(), self.request, viewFactory)
+
+        self.assertIs(res, resp)
+
+    def test_renderer_simple_raise_response(self):
+        resp = HTTPFound()
+        def viewFactory(context, request):
+            raise resp
+
+        r = SimpleRenderer()
+        res = r(Context(), self.request, viewFactory)
+
+        self.assertIs(res, resp)
 
     def test_renderer_simple_bind(self):
         def viewFactory(context, request):
@@ -121,6 +142,32 @@ class TestTmplRenderer(RendererBase):
         self.assertEqual(res.body, '<div>My pagelet</div>\n')
         self.assertEqual(res.status, '200 OK')
         self.assertEqual(res.content_type, 'text/html')
+
+    def test_renderer_tmpl_return_response(self):
+        resp = Response()
+        def viewFactory(context, request):
+            return None, resp
+
+        def template(**kw):
+            """ """
+
+        r = Renderer(template=template)
+        res = r(Context(), self.request, viewFactory)
+
+        self.assertIs(res, resp)
+
+    def test_renderer_tmpl_raise_response(self):
+        resp = HTTPFound()
+        def viewFactory(context, request):
+            raise resp
+
+        def template(**kw):
+            """ """
+        
+        r = Renderer(template=template)
+        res = r(Context(), self.request, viewFactory)
+
+        self.assertIs(res, resp)
 
     def test_renderer_tmpl_extra_params(self):
         def viewFactory(context, request):
