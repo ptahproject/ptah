@@ -50,5 +50,5 @@ class PrincipalAddedEvent(PrincipalEvent):
     """ Principal added event """
 
 
-class PrincipalRegisteredEvent(PrincipalAddedEvent):
+class PrincipalRegisteredEvent(PrincipalEvent):
     """ Principal registered event """

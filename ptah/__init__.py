@@ -3,7 +3,7 @@
 # uri
 from ptah.uri import resolve
 from ptah.uri import resolver
-from ptah.uri import registerResolver
+from ptah.uri import register_uri_resolver
 from ptah.uri import extract_uri_schema
 from ptah.uri import UriGenerator
 

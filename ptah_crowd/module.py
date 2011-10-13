@@ -7,7 +7,7 @@ from memphis import view, form, config
 
 from settings import _
 from provider import Session, CrowdUser
-from memberprops import MemberProperties
+from memberprops import get_properties, MemberProperties
 
 
 class CrowdModule(ptah.PtahModule):
@@ -44,7 +44,7 @@ class SearchUsers(form.Form):
         template = view.template('ptah_crowd:templates/search.pt'))
 
     __doc__ = 'List/search users view'
-    __intr_path__ = '/ptah-manage/crowd/search.html'
+    __intr_path__ = '/ptah-manage/crowd/'
 
     csrf = True
     fields = form.Fieldset(
@@ -63,7 +63,7 @@ class SearchUsers(form.Form):
         return {'term': self.request.session.get('ptah-search-term', '')}
 
     def get_props(self, uri):
-        return MemberProperties.get(uri)
+        return get_properties(uri)
 
     def update(self):
         super(SearchUsers, self).update()

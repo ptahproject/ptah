@@ -59,7 +59,7 @@ def resolver(schema, title=''):
     return wrapper
 
 
-def registerResolver(schema, resolver, title='', depth=1):
+def register_uri_resolver(schema, resolver, title='', depth=1):
     """ Register resolver for given schema
 
     :param schema: Uri schema

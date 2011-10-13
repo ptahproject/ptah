@@ -327,8 +327,8 @@ done by registering a URI resolver.  We do this so we can load a record.
 
 An example::
 
-  >> from ptah.uri import registerResolver
-  >> registerResolver('mycustom+record', customRecordResolver)
+  >> from ptah.uri import register_uri_resolver
+  >> register_uri_resolver('mycustom+record', custom_record_resolver)
 
 Your custom models will need to supply a UUIDGenerator, which a
 default implementation exists in ptah.uri.UUIDGenerator.  On your models

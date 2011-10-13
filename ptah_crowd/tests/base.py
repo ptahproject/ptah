@@ -40,10 +40,9 @@ class Base(unittest.TestCase):
         # create sql tables
         Base = pyramid_sqla.get_base()
         Base.metadata.drop_all()
-        transaction.commit()
         Base.metadata.create_all()
         transaction.commit()
-
+        
     def _setup_pyramid(self):
         self.request = request = self._makeRequest()
         self.p_config = testing.setUp(request=request)
@@ -53,12 +52,17 @@ class Base(unittest.TestCase):
         self.request = request
         self.p_config.end()
         self.p_config.begin(request)
+        request.registry = self.p_config.registry
 
     def setUp(self):
         self._setup_pyramid()
+        self._init_memphis()
 
     def tearDown(self):
         config.cleanUp()
         sm = self.p_config
         sm.__init__('base')
         testing.tearDown()
+
+        Session = pyramid_sqla.get_session()
+        Session.expunge_all()

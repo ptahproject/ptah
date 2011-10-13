@@ -58,7 +58,7 @@ class IAuthentication(interface.Interface):
     def getUserId():
         """ get current user """
 
-    def getCurrentPrincipal():
+    def get_current_principal():
         """ """
 
     def get_principal_bylogin(login):

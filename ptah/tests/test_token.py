@@ -21,7 +21,7 @@ class TestTokenType(Base):
         transaction.commit()
 
         self.assertEqual(token.service.get(t), 'data')
-        self.assertEqual(token.service.getByData(tt, 'data'), t)
+        self.assertEqual(token.service.get_bydata(tt, 'data'), t)
 
         token.service.remove(t)
         self.assertEqual(token.service.get(t), None)

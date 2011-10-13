@@ -8,7 +8,7 @@ import ptah
 from ptah import token, mail
 
 from settings import CROWD
-from memberprops import MemberProperties
+from memberprops import get_properties, query_properties
 
 TOKEN_TYPE = token.TokenType(
     'cd51f14e9b2842608ccadf1a240046c1', timedelta(hours=24))
@@ -16,14 +16,13 @@ TOKEN_TYPE = token.TokenType(
 
 def initiate_validation(principal, request):
     t = token.service.generate(TOKEN_TYPE, principal.uri)
-    template = ValidationTemplate(principal, request)
-    template.token = t
+    template = ValidationTemplate(principal, request, token = t)
     template.send()
 
 
 @ptah.register_auth_checker
 def validationAndSuspendedChecker(info):
-    props = MemberProperties.get(info.principal.uri)
+    props = get_properties(info.principal.uri)
     if props.suspended:
         info.message = u'Account is suspended.'
         info.arguments['suspended'] = True
@@ -45,18 +44,18 @@ def validationAndSuspendedChecker(info):
 
 @config.subscriber(ptah.events.PrincipalRegisteredEvent)
 def principalRegistered(ev):
-    user = MemberProperties.get(ev.principal.uri)
-    user.joined = datetime.now()
+    props = get_properties(ev.principal.uri)
+    props.joined = datetime.now()
 
     if not CROWD['validation']:
-        user.validated = True
+        props.validated = True
 
 
-@config.subscriber(ptah.events.PrincipalRegisteredEvent)
+@config.subscriber(ptah.events.PrincipalAddedEvent)
 def principalAdded(ev):
-    user = MemberProperties.get(ev.principal.uri)
-    user.joined = datetime.now()
-    user.validated = True
+    props = get_properties(ev.principal.uri)
+    props.joined = datetime.now()
+    props.validated = True
 
 
 class ValidationTemplate(mail.MailTemplate):
@@ -83,16 +82,16 @@ def validate(request):
 
     data = token.service.get(t)
     if data is not None:
-        user = MemberProperties.get(data)
-        if user is not None:
-            user.validated = True
+        props = query_properties(data)
+        if props is not None:
+            props.validated = True
             token.service.remove(t)
             view.addMessage(request, "Account has been successfully validated.")
 
             config.notify(
-                ptah.events.PrincipalValidatedEvent(ptah.resolve(user.uri)))
+                ptah.events.PrincipalValidatedEvent(ptah.resolve(props.uri)))
 
-            headers = remember(request, user.uri)
+            headers = remember(request, props.uri)
             raise HTTPFound(location=request.application_url, headers=headers)
 
     view.addMessage(request, "Can't validate email address.", 'warning')

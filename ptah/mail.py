@@ -244,7 +244,9 @@ class MailTemplate(object):
     errors_address = ''
 
 
-    def __init__(self, context, request):
+    def __init__(self, context, request, **kwargs):
+        self.__dict__.update(kwargs)
+
         self.context = context
         self.request = request
 

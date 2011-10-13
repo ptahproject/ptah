@@ -26,7 +26,7 @@ class LayoutWorkspace(view.Layout):
 
     def update(self):
         self.root = getattr(self.request, 'root', None)
-        self.user = authService.getCurrentPrincipal()
+        self.user = authService.get_current_principal()
         self.isAnon = self.user is None
         self.ptahManager = manage.ACCESS_MANAGER(authService.getUserId())
 

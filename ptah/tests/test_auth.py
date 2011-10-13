@@ -102,12 +102,12 @@ class TestAuthentication(Base):
             if uri == 'test:1':
                 return principal
 
-        ptah.registerResolver('test', resolver)
+        ptah.register_uri_resolver('test', resolver)
 
-        self.assertEqual(ptah.authService.getCurrentPrincipal(), None)
+        self.assertEqual(ptah.authService.get_current_principal(), None)
 
         ptah.authService.setUserId('test:1')
-        self.assertEqual(ptah.authService.getCurrentPrincipal(), principal)
+        self.assertEqual(ptah.authService.get_current_principal(), principal)
 
     def test_auth_principal_login(self):
         import ptah

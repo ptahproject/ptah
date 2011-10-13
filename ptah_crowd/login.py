@@ -92,7 +92,7 @@ class LoginSuccess(view.View):
         template = view.template("ptah_crowd:templates/login-success.pt"))
 
     def update(self):
-        user = ptah.authService.getCurrentPrincipal()
+        user = ptah.authService.get_current_principal()
         if user is None:
             headers = []
             request = self.request

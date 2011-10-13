@@ -34,7 +34,7 @@ class CSRFService(object):
         '1c49d2aacf844557a7aff3dbf09c0740', timedelta(minutes=30))
 
     def generate(self, data):
-        t = token.service.getByData(self.TOKEN_TYPE, data)
+        t = token.service.get_bydata(self.TOKEN_TYPE, data)
         if t is not None:
             return t
         return token.service.generate(self.TOKEN_TYPE, data)

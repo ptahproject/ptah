@@ -14,8 +14,8 @@ class TestUri(Base):
         def resolver2(uri):
             return 'Resolved2'
 
-        ptah.registerResolver('test1', resolver1)
-        ptah.registerResolver('test2', resolver2)
+        ptah.register_uri_resolver('test1', resolver1)
+        ptah.register_uri_resolver('test2', resolver2)
 
         self.assertEqual(ptah.resolve('test1:uri'), 'Resolved1')
         self.assertEqual(ptah.resolve('test2:uri'), 'Resolved2')
@@ -44,8 +44,8 @@ class TestUri(Base):
 
     def test_uri_registration_conflicts(self):
         import ptah
-        ptah.registerResolver('test', None)
-        ptah.registerResolver('test', None)
+        ptah.register_uri_resolver('test', None)
+        ptah.register_uri_resolver('test', None)
 
         self.assertRaises(config.ConflictError, self._init_memphis)
 

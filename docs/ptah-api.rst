@@ -8,9 +8,9 @@ URI
 
   .. autofunction:: resolve
 
-  .. autofunction:: registerResolver(schema, resolver, title='', description='')
+  .. autofunction:: register_uri_resolver(schema, resolver, title='', description='')
 
-  .. autofunction:: extractUriSchema
+  .. autofunction:: extract_uri_schema
 
   .. autoclass:: UriGenerator
      :members: __call__

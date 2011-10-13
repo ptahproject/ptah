@@ -21,9 +21,6 @@ class CrowdProvider(object):
         return CrowdUser.get_bylogin(login)
 
 
-URI_gen = ptah.UriGenerator('user+crowd')
-
-
 class CrowdUser(Base):
 
     __tablename__ = 'ptah_crowd'
@@ -34,15 +31,16 @@ class CrowdUser(Base):
     login = sqla.Column(sqla.Unicode(255), unique=True)
     email = sqla.Column(sqla.Unicode(255), unique=True)
     password = sqla.Column(sqla.Unicode(255))
+    _uri_gen = ptah.UriGenerator('user+crowd')
 
     def __init__(self, name, login, email, password=u''):
-        super(Base, self).__init__()
+        super(CrowdUser, self).__init__()
 
         self.name = name
-        self.uri = URI_gen()
         self.login = login
         self.email = email
         self.password = password
+        self.uri = self._uri_gen()
 
     _sql_get = ptah.QueryFreezer(
         lambda: Session.query(CrowdUser)\
@@ -72,7 +70,7 @@ class CrowdUser(Base):
         return self.name
 
     def __repr__(self):
-        return '%s <%s>'%(self.name, self.uri)
+        return 'CrowdUser<%s:%s>'%(self.name, self.uri)
 
 
 _sql_search = ptah.QueryFreezer(
@@ -81,6 +79,7 @@ _sql_search = ptah.QueryFreezer(
         sqla.sql.or_(CrowdUser.email.contains(sqla.sql.bindparam('term')),
                      CrowdUser.name.contains(sqla.sql.bindparam('term'))))\
     .order_by(sqla.sql.asc('name')))
+
 
 def search(term):
     for user in _sql_search.all(term = '%%%s%%'%term):
@@ -93,6 +92,6 @@ def change_pwd(principal, password):
 
 ptah.register_principal_searcher('user+crowd', search)
 ptah.register_auth_provider('user+crowd', CrowdProvider())
+ptah.register_uri_resolver('user+crowd', CrowdUser.get_byuri,
+                           'Crowd principal resolver')
 ptah.passwordTool.registerPasswordChanger('user+crowd', change_pwd)
-ptah.registerResolver('user+crowd', CrowdUser.get_byuri,
-                      'Crowd principal resolver')

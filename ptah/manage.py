@@ -165,7 +165,7 @@ class LayoutPage(view.Layout):
                 template=view.template("ptah:templates/ptah-page.pt"))
 
     def update(self):
-        self.user = authService.getCurrentPrincipal()
+        self.user = authService.get_current_principal()
 
         mod = self.viewcontext
         while not IPtahModule.providedBy(mod):

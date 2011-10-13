@@ -162,8 +162,11 @@ def sqla_initializing(ev):
         if SQLA.cache:
             engine_args['execution_options'] = \
                 {'compiled_cache': SQL_compiled_cache}
-        pyramid_sqla.add_engine(
-            {'sqlalchemy.url': url}, **engine_args)
+        try:
+            engine = pyramid_sqla.get_engine()
+        except:
+            pyramid_sqla.add_engine(
+                {'sqlalchemy.url': url}, **engine_args)
 
 
 @config.subscriber(config.AppStarting)

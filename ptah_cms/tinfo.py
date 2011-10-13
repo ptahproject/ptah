@@ -118,7 +118,7 @@ def Type(name, title=None, fieldset=None, **kw):
     if '__uri_generator__' not in f_locals:
         f_locals['__uri_generator__'] = ptah.UriGenerator('cms+%s'%name)
 
-        ptah.registerResolver(
+        ptah.register_uri_resolver(
             'cms+%s'%name, resolveContent,
             title = 'CMS Content resolver for %s type'%title, depth = 2)
 

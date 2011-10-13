@@ -25,7 +25,7 @@ SUPERUSER = _Superuser()
 SUPERUSER_URI = 'ptah+auth:superuser'
 
 @resolver('ptah+auth', 'System super user')
-def useruserResolver(uri):
+def superuser_resolver(uri):
     if uri == SUPERUSER_URI:
         return SUPERUSER
 
@@ -120,7 +120,7 @@ class Authentication(object):
             return tldata.get(USER_KEY)
         return uid
 
-    def getCurrentPrincipal(self):
+    def get_current_principal(self):
         uid = self.getUserId()
         if uid:
             return resolve(uid)

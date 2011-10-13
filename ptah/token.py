@@ -2,14 +2,15 @@
 import datetime, uuid
 import pyramid_sqla as psa
 import sqlalchemy as sqla
-from zope import interface
 from memphis import config
 from sqla import QueryFreezer
 
 __all__ = ['TokenType', 'service']
 
 
-class ITokenType(interface.Interface):
+types = {}
+
+class TokenType(object):
     """ Token type interface
 
     ``id`` unique token type id. Token service uses this id
@@ -17,36 +18,6 @@ class ITokenType(interface.Interface):
 
     ``timeout`` token timout, it has to be timedelta instance.
     """
-
-    id = interface.Attribute('Unique type id')
-
-    timeout = interface.Attribute('Token timeout')
-
-
-class ITokenService(interface.Interface):
-    """ Token management service """
-
-    def generate(type, data):
-        """ Generate and return string token.
-
-        ``type`` object implemented ITokenType interface.
-
-        ``data`` token type specific data, it must be python string. """
-
-    def get(token):
-        """ Get data for token """
-
-    def getByData(type, data):
-        """ Get token for data """
-
-    def remove(token):
-        """ Remove token """
-
-
-types = {}
-
-class TokenType(object):
-    interface.implements(ITokenType)
 
     def __init__(self, id, timeout, title='', description=''):
         self.id = id
@@ -62,8 +33,9 @@ class TokenType(object):
                 None, discriminator = ('ptah:token-type', id))
             )
 
+
 class TokenService(object):
-    interface.implements(ITokenService)
+    """ Token management service """
 
     _sql_get = QueryFreezer(
         lambda: Session.query(Token).filter(
@@ -75,22 +47,31 @@ class TokenService(object):
                           Token.typ==sqla.sql.bindparam('typ'))))
 
     def generate(self, typ, data):
+        """ Generate and return string token.
+
+        ``type`` object implemented ITokenType interface.
+
+        ``data`` token type specific data, it must be python string. """
+
         t = Token(typ, data)
         Session.add(t)
         Session.flush()
         return t.token
 
     def get(self, token):
+        """ Get data for token """
         t = self._sql_get.first(token=token)
         if t is not None:
             return t.data
 
-    def getByData(self, typ, data):
+    def get_bydata(self, typ, data):
+        """ Get token for data """
         t = self._sql_get_by_data.first(data=data, typ=typ.id)
         if t is not None:
             return t.token
 
     def remove(self, token):
+        """ Remove token """
         Session.query(Token).filter(
             sqla.sql.or_(Token.token == token,
                          Token.valid > datetime.datetime.now())).delete()
