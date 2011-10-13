@@ -537,7 +537,7 @@ class TestCheckPermission(Base):
 
         self.assertFalse(ptah.checkPermission('View', content, throw=False))
 
-        ptah.authService.setUserId('test-user')
+        ptah.authService.set_userid('test-user')
         self.assertTrue(ptah.checkPermission('View', content, throw=False))
 
     def test_checkpermission_user(self):
@@ -545,7 +545,7 @@ class TestCheckPermission(Base):
 
         content = Content(acl=[(Allow, 'test-user', 'View')])
 
-        ptah.authService.setUserId('test-user')
+        ptah.authService.set_userid('test-user')
         self.assertTrue(ptah.checkPermission('View', content, throw=False))
 
     def test_checkpermission_local_roles(self):
@@ -555,7 +555,7 @@ class TestCheckPermission(Base):
             iface=ptah.ILocalRolesAware,
             acl=[(Allow, 'role:test', 'View')])
 
-        ptah.authService.setUserId('test-user')
+        ptah.authService.set_userid('test-user')
         self.assertFalse(ptah.checkPermission('View', content, throw=False))
 
         content.__local_roles__['test-user'] = ['role:test']

@@ -93,7 +93,7 @@ def make_wsgi_app(global_settings, **settings):
     """
     from pyramid.config import Configurator
 
-    authService.setUserId(SUPERUSER_URI)
+    authService.set_userid(SUPERUSER_URI)
 
     # configuration
     global_settings.update(settings)

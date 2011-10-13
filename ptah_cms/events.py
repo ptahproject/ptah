@@ -48,7 +48,7 @@ def createdHandler(ev):
     ev.object.created = now
     ev.object.modified = now
 
-    user = ptah.authService.getUserId()
+    user = ptah.authService.get_userid()
     if user:
         ev.object.__owner__ = user
 

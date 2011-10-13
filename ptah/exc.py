@@ -28,7 +28,7 @@ class Forbidden(view.View):
 
         self.__parent__ = context
 
-        user = authService.getUserId()
+        user = authService.get_userid()
         if user is None:
             loginurl = PTAH_CONFIG.login
             if loginurl and not loginurl.startswith(('http://', 'https://')):

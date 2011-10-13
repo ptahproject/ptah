@@ -80,7 +80,7 @@ class TestContent(Base):
 
         self.assertEqual(content.__owner__, None)
 
-        ptah.authService.setUserId('user')
+        ptah.authService.set_userid('user')
         config.notify(ptah_cms.ContentCreatedEvent(content))
 
         self.assertEqual(content.__owner__, 'user')

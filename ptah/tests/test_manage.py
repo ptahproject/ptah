@@ -31,7 +31,7 @@ class TestManageModule(Base):
 
         self.assertRaises(HTTPForbidden, PtahManageRoute, request)
 
-        ptah.authService.setUserId('test-user')
+        ptah.authService.set_userid('test-user')
 
         self.assertRaises(HTTPForbidden, PtahManageRoute, request)
 
@@ -87,7 +87,7 @@ class TestManageModule(Base):
             return True
 
         ptah.set_access_manager(accessManager)
-        ptah.authService.setUserId('test-user')
+        ptah.authService.set_userid('test-user')
 
         self._init_memphis()
 

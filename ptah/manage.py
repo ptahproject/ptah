@@ -125,7 +125,7 @@ class PtahManageRoute(object):
     def __init__(self, request):
         self.request = request
 
-        userid = authService.getUserId()
+        userid = authService.get_userid()
         if not userid:
             raise HTTPForbidden()
 

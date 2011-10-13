@@ -28,7 +28,7 @@ class LayoutWorkspace(view.Layout):
         self.root = getattr(self.request, 'root', None)
         self.user = authService.get_current_principal()
         self.isAnon = self.user is None
-        self.ptahManager = manage.ACCESS_MANAGER(authService.getUserId())
+        self.ptahManager = manage.ACCESS_MANAGER(authService.get_userid())
 
 
 class ContentLayout(view.Layout):

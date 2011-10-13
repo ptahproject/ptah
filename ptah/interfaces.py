@@ -52,10 +52,10 @@ class IAuthentication(interface.Interface):
     def authenticatePrincipal(principal):
         """ check principal restrictions """
 
-    def setUserId(uri):
+    def set_userid(uri):
         """ set current user """
 
-    def getUserId():
+    def get_userid():
         """ get current user """
 
     def get_current_principal():

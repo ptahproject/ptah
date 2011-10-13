@@ -4,6 +4,7 @@ from pyramid import security
 from pyramid.httpexceptions import HTTPFound
 
 import ptah
+import ptah_crowd
 from settings import _, CROWD
 
 view.registerRoute('ptah-login', '/login.html')
@@ -78,7 +79,7 @@ class LoginForm(form.Form):
         else:
             self.joinurl = '%s/join.html'%self.app_url
 
-        if ptah.authService.getUserId():
+        if ptah.authService.get_userid():
             raise HTTPFound(location = '%s/login-success.html'%self.app_url)
 
         super(LoginForm, self).update()
@@ -94,11 +95,8 @@ class LoginSuccess(view.View):
     def update(self):
         user = ptah.authService.get_current_principal()
         if user is None:
-            headers = []
             request = self.request
-            uid = security.authenticated_userid(request)
-            if uid:
-                headers = security.forget(request)
+            headers = security.forget(request)
 
             raise HTTPFound(
                 headers = headers,
@@ -115,6 +113,14 @@ class LoginSuspended(view.View):
         template = view.template("ptah_crowd:templates/login-suspended.pt"))
 
     def update(self):
+        uid = ptah.authService.get_userid()
+        if not uid:
+            raise HTTPFound(location=self.request.application_url)
+
+        props = ptah_crowd.get_properties(uid)
+        if not props.suspended:
+            raise HTTPFound(location=self.request.application_url)
+
         self.from_name = ptah.mail.MAIL.from_name
         self.from_address = ptah.mail.MAIL.from_address
         self.full_address = ptah.mail.MAIL.full_from_address
@@ -123,10 +129,10 @@ class LoginSuspended(view.View):
 @view.pyramidView(route='ptah-logout')
 def logout(request):
     """Logout action"""
-    ptah.authService.setUserId(None)
-    uid = security.authenticated_userid(request)
+    uid = ptah.authService.get_userid()
 
     if uid is not None:
+        ptah.authService.set_userid(None)
         request.registry.notify(
             ptah.events.LoggedOutEvent(ptah.resolve(uid)))
 

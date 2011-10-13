@@ -176,7 +176,7 @@ class Api(object):
                 userid = None
 
             if userid:
-                ptah.authService.setUserId(userid)
+                ptah.authService.set_userid(userid)
 
         # search service and action
         service = request.matchdict['service']

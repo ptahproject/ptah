@@ -107,23 +107,21 @@ class Authentication(object):
         info.status = True
         return info
 
-    def setUserId(self, uid):
+    def set_userid(self, uid):
         tldata.set(USER_KEY, uid)
 
-    def getUserId(self):
+    def get_userid(self):
         uid = tldata.get(USER_KEY, _not_set)
         if uid is _not_set:
             try:
-                self.setUserId(authenticated_userid(get_current_request()))
+                self.set_userid(authenticated_userid(get_current_request()))
             except: # pragma: no cover
-                self.setUserId(None)
+                self.set_userid(None)
             return tldata.get(USER_KEY)
         return uid
 
     def get_current_principal(self):
-        uid = self.getUserId()
-        if uid:
-            return resolve(uid)
+        return resolve(self.get_userid())
 
     def get_principal_bylogin(self, login):
         for pname, provider in providers.items():
