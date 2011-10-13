@@ -49,3 +49,15 @@ Start app
 Start paster server::
 
      ~$ ../bin/paster serve development.ini
+
+Login
+~~~~~
+
+A default user is created for you. login: admin and password: 12345
+
+Open your browser to see Ptah App, http://localhost:6543/
+
+You can see Ptah Manage, http://localhost:6543/ptah-manage/
+
+These are 2 separate wsgi apps.  They are both optional.  The "DT" tab
+on the right hand side of the screen is the Debug Toolbar from Pyramid.
