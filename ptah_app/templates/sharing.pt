@@ -19,7 +19,7 @@
       </thead>
       <tbody>
 	<tal:block tal:repeat="data view.local_roles.items()">
-	  <tr tal:define="principal view.getPrincipal(data[0])"
+	  <tr tal:define="principal view.get_principal(data[0])"
 	      tal:condition="principal is not None">
 	    <td>${principal.name}</td>
 	    <td tal:repeat="role view.roles">

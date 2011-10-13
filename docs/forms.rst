@@ -73,8 +73,8 @@ Using form without context and request::
     eform.method = 'params'
     eform.fields = Page.__type__.fieldset
 
-    eform.buttons.addAction('Test submit', name='ac1', action=action1)
-    eform.buttons.addAction('Test action2', name='ac2', action=action2)
+    eform.buttons.add_action('Test submit', name='ac1', action=action1)
+    eform.buttons.add_action('Test action2', name='ac2', action=action2)
 
     print "==== execute action1 ===="
     eform.params = {'%sbuttons.ac1'%eform.prefix: 'value'}

@@ -30,7 +30,7 @@ class TinymceField(form.TextAreaField):
         "ptah_app:templates/tinymce_input.pt")
 
 
-@form.fieldPreview(TinymceField)
+@form.fieldpreview(TinymceField)
 def tinemcePreview(request):
     field = TinymceField(
         'TinymceField',

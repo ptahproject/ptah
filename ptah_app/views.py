@@ -152,7 +152,7 @@ class DefaultContentView(form.DisplayForm):
     def fields(self):
         return self.context.__type__.fieldset
 
-    def getContent(self):
+    def form_content(self):
         data = {}
         for name, field in self.context.__type__.fieldset.items():
             data[name] = getattr(self.context, name, field.default)

@@ -79,7 +79,7 @@ class JSDateTimeField(form.DateTimeField):
         return dt.replace(tzinfo=self.tzinfo).isoformat()
 
 
-@form.fieldPreview(JSDateField)
+@form.fieldpreview(JSDateField)
 def jsdatePreview(request):
     field = JSDateField(
         'JSDateField',
@@ -92,7 +92,7 @@ def jsdatePreview(request):
     return widget.pagelet('form-widget', widget)
 
 
-@form.fieldPreview(JSDateTimeField)
+@form.fieldpreview(JSDateTimeField)
 def jsdatetimePreview(request):
     field = JSDateTimeField(
         'JSDateTimeField',

@@ -58,8 +58,8 @@ class AddForm(form.Form):
         self.tinfo.checkContext(self.container)
         super(AddForm, self).update()
 
-    def updateWidgets(self):
-        super(AddForm, self).updateWidgets()
+    def update_widgets(self):
+        super(AddForm, self).update_widgets()
 
         if self.name_show:
             self.name_widgets = \
@@ -76,7 +76,7 @@ class AddForm(form.Form):
             name = data['__name__']
             if name in self.container.keys():
                 error = form.Invalid(
-                    self.name_fields['__name__'].node, 'Name already in use')
+                    self.name_fields['__name__'].field, 'Name already in use')
                 errors.append(error)
 
     def extract(self):
@@ -138,7 +138,7 @@ class EditForm(form.Form):
     def fields(self):
         return self.tinfo.fieldset
 
-    def getContent(self):
+    def form_content(self):
         data = {}
         for name, field in self.tinfo.fieldset.items():
             data[name] = getattr(self.context, name, field.default)

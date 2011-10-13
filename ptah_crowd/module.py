@@ -59,7 +59,7 @@ class SearchUsers(form.Form):
     users = None
     page = ptah.Pagination(15)
 
-    def getContent(self):
+    def form_content(self):
         return {'term': self.request.session.get('ptah-search-term', '')}
 
     def get_props(self, uri):

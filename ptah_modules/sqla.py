@@ -174,7 +174,7 @@ class TableView(form.Form):
 
     @form.button('Remove', actype=form.AC_DANGER)
     def remove(self):
-        self.validateToken()
+        self.validate_csrf_token()
 
         ids = []
         for id in self.request.POST.getall('rowid'):
@@ -208,7 +208,7 @@ class EditRecord(form.Form):
         return ptah.buildSqlaFieldset(
             [(cl.name, cl) for cl in self.context.table.columns])
 
-    def getContent(self):
+    def form_content(self):
         data = {}
         for field in self.fields.fields():
             data[field.name] = getattr(
@@ -234,7 +234,7 @@ class EditRecord(form.Form):
 
     @form.button('Remove', actype=form.AC_DANGER)
     def remove(self):
-        self.validateToken()
+        self.validate_csrf_token()
 
         self.context.table.delete(
             self.context.pcolumn == self.context.__name__).execute()

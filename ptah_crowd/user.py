@@ -52,7 +52,7 @@ class UserInfo(form.Form):
     label = 'Update user'
     fields = form.Fieldset(UserSchema).omit('id')
 
-    def getContent(self):
+    def form_content(self):
         user = self.context.user
         return {'name': user.name,
                 'login': user.login,

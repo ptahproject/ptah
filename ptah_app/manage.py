@@ -60,10 +60,10 @@ class SharingForm(form.Form):
     users = None
     bsize = 15
 
-    def getContent(self):
+    def form_content(self):
         return {'term': self.request.session.get('sharing-term', '')}
 
-    def getPrincipal(self, id):
+    def get_principal(self, id):
         return ptah.resolve(id)
 
     def update(self):

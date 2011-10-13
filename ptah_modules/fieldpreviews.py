@@ -1,13 +1,13 @@
 import decimal
 from memphis import form
 
-vocabulary = form.SimpleVocabulary.fromItems(
+vocabulary = form.SimpleVocabulary.from_items(
     (1, 'one', 'One', 'One description'),
     (2, 'two', 'Two', 'Two description'),
     (3, 'three', 'Three', 'Three description'))
 
 
-@form.fieldPreview(form.MultiChoiceField)
+@form.fieldpreview(form.MultiChoiceField)
 def multiChoicePreview(request):
     field = form.MultiChoiceField(
         'MultiChoiceField',
@@ -21,7 +21,7 @@ def multiChoicePreview(request):
     return widget.pagelet('form-widget', widget)
 
 
-@form.fieldPreview(form.ChoiceField)
+@form.fieldpreview(form.ChoiceField)
 def choicePreview(request):
     field = form.ChoiceField(
         'ChoiceField',
@@ -35,7 +35,7 @@ def choicePreview(request):
     return widget.pagelet('form-widget', widget)
 
 
-@form.fieldPreview(form.BoolField)
+@form.fieldpreview(form.BoolField)
 def boolPreview(request):
     field = form.BoolField(
         'BoolField',
@@ -48,7 +48,7 @@ def boolPreview(request):
     return widget.pagelet('form-widget', widget)
 
 
-@form.fieldPreview(form.RadioField)
+@form.fieldpreview(form.RadioField)
 def radioPreview(request):
     field = form.RadioField(
         'RadioField',
@@ -62,7 +62,7 @@ def radioPreview(request):
     return widget.pagelet('form-widget', widget)
 
 
-@form.fieldPreview(form.TextAreaField)
+@form.fieldpreview(form.TextAreaField)
 def textareaPreview(request):
     field = form.TextAreaField(
         'TextAreaField',
@@ -75,7 +75,7 @@ def textareaPreview(request):
     return widget.pagelet('form-widget', widget)
 
 
-@form.fieldPreview(form.LinesField)
+@form.fieldpreview(form.LinesField)
 def linesPreview(request):
     field = form.LinesField(
         'LinesField',
@@ -88,7 +88,7 @@ def linesPreview(request):
     return widget.pagelet('form-widget', widget)
 
 
-@form.fieldPreview(form.TextField)
+@form.fieldpreview(form.TextField)
 def textPreview(request):
     field = form.TextField(
         'TextField',
@@ -101,7 +101,7 @@ def textPreview(request):
     return widget.pagelet('form-widget', widget)
 
 
-@form.fieldPreview(form.IntegerField)
+@form.fieldpreview(form.IntegerField)
 def intPreview(request):
     field = form.IntegerField(
         'IntegerField',
@@ -114,7 +114,7 @@ def intPreview(request):
     return widget.pagelet('form-widget', widget)
 
 
-@form.fieldPreview(form.FloatField)
+@form.fieldpreview(form.FloatField)
 def floatPreview(request):
     field = form.FloatField(
         'FloatField',
@@ -127,7 +127,7 @@ def floatPreview(request):
     return widget.pagelet('form-widget', widget)
 
 
-@form.fieldPreview(form.DecimalField)
+@form.fieldpreview(form.DecimalField)
 def decimalPreview(request):
     field = form.DecimalField(
         'DecimalField',
@@ -140,7 +140,7 @@ def decimalPreview(request):
     return widget.pagelet('form-widget', widget)
 
 
-@form.fieldPreview(form.PasswordField)
+@form.fieldpreview(form.PasswordField)
 def passwordPreview(request):
     field = form.PasswordField(
         'PasswordField',
