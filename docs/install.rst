@@ -14,8 +14,20 @@ available which is currently Python 2.7.2.
   * Python 2.7.2
   * git
 
-Instructions
-------------
+virtualenv & pip
+~~~~~~~~~~~~~~~~
+
+This is recommended for the public.
+
+See the documentation at::
+
+  https://github.com/ptahproject/ptah/blob/master/docs/virtualenv.rst
+
+
+buildout
+~~~~~~~~
+
+This is not recommended for public.
 
 Grab buildout::
 
