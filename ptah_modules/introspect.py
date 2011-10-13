@@ -30,7 +30,11 @@ class IntrospectModule(ptah.PtahModule):
         return self.packages
 
     def __getitem__(self, key):
-        return Package(key, self, self.request)
+        packages = self.list_packages()
+        if key in packages:
+            return Package(key, self, self.request)
+
+        raise KeyError(key)
 
 
 class Package(object):
@@ -149,6 +153,7 @@ def lineno(ob):
     if ob is not None:
         return inspect.getsourcelines(ob)[-1]
 
+
 class RoutesView(view.View):
     view.pyramidView(
         'routes.html', IntrospectModule,
@@ -257,6 +262,7 @@ class SourceView(view.View):
     def update(self):
         name = self.request.params.get('pkg')
 
+        dist = None
         pkg_name = name
         while 1:
             try:
