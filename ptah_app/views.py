@@ -158,4 +158,3 @@ class DefaultContentView(form.DisplayForm):
             data[name] = getattr(self.context, name, field.default)
 
         return data
-

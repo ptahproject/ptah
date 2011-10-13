@@ -11,7 +11,7 @@ from ptah.password import PasswordSchema
 from ptah.events import ResetPasswordInitiatedEvent
 from ptah.events import PrincipalPasswordChangedEvent
 
-from ptah_crowd import _
+from settings import _
 
 view.registerRoute('ptah-resetpassword', '/resetpassword.html')
 view.registerRoute('ptah-resetpassword-form', '/resetpasswordform.html')
@@ -49,7 +49,7 @@ class ResetPassword(form.Form):
 
         login = data.get('login')
         if login:
-            principal = authService.getPrincipalByLogin(login)
+            principal = authService.get_principal_bylogin(login)
 
             if principal is not None and \
                    passwordTool.hasPasswordChanger(principal.uri):

@@ -1,17 +1,16 @@
-""" site registration form """
-from zope import interface
-from memphis import view, form
+""" user registration form """
+from memphis import config, view, form
 from pyramid import security
 from pyramid.httpexceptions import HTTPFound, HTTPForbidden
 
 import ptah
-from ptah import authService
 from ptah.password import PasswordSchema
 from ptah.events import PrincipalRegisteredEvent
 
-from ptah_crowd import _
+from settings import _, CROWD
 from schemas import RegistrationSchema
 from provider import Session, CrowdUser
+from validation import initiate_validation
 
 
 view.registerRoute('ptah-join', '/join.html')
@@ -26,18 +25,8 @@ class Registration(form.Form):
     autocomplete = 'off'
 
     def update(self):
-        if not ptah.PTAH_CONFIG.registration:
+        if not CROWD.join:
             raise HTTPForbidden('Site registraion is disabled.')
-
-        sm = self.request.registry
-
-        fieldsets = []
-        self.props = props = []
-        #for name, prop in sm.getUtilitiesFor(IPreferencesGroup):
-        #    props.append(prop)
-        #    fieldsets.append(form.Fieldset(prop.schema))
-
-        self.fields = form.Fieldset(RegistrationSchema,PasswordSchema,*fieldsets)
 
         super(Registration, self).update()
 
@@ -46,13 +35,9 @@ class Registration(form.Form):
         user = CrowdUser(data['name'], data['login'], data['login'])
 
         # set password
-        user.password = ptah.passwordtool.encodePassword(data['password'])
+        user.password = ptah.passwordTool.encodePassword(data['password'])
         Session.add(user)
         Session.flush()
-
-        for prop in self.props:
-            propdata = data.get(prop.name)
-            prop.create(user.id, **propdata)
 
         return user
 
@@ -64,11 +49,15 @@ class Registration(form.Form):
             return
 
         user = self.create(data)
+        config.notify(PrincipalRegisteredEvent(user))
 
-        sm = self.request.registry
-        sm.notify(PrincipalRegisteredEvent(user))
+        # validation
+        if CROWD.validation:
+            initiate_validation(user, self.request)
+            self.message('Validation email has been sent.')
 
-        principal = authService.authenticate(
+        # authenticate
+        principal = ptah.authService.authenticate(
             {'login': data['name'], 'password': data['password']})
         if principal is not None:
             headers = security.remember(self.request, user.uri)

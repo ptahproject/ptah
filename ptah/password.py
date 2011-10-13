@@ -84,7 +84,7 @@ class PasswordTool(object):
         self._changers[typ] = changer
 
     def hasPasswordChanger(self, uri):
-        return ptah.extractUriSchema(uri) in self._changers
+        return ptah.extract_uri_schema(uri) in self._changers
 
     def getPrincipal(self, passcode):
         data = token.service.get(passcode)
@@ -104,7 +104,7 @@ class PasswordTool(object):
         self.removePasscode(passcode)
 
         if principal is not None:
-            changer = self._changers.get(ptah.extractUriType(principal.uri))
+            changer = self._changers.get(ptah.extract_uri_schema(principal.uri))
             if changer is not None:
                 changer(principal, self.encodePassword(password))
                 return True
@@ -131,6 +131,12 @@ class PasswordTool(object):
 passwordTool = PasswordTool()
 
 
+def passwordValidator(field, appstruct):
+    err = passwordTool.validatePassword(appstruct)
+    if err is not None:
+        raise form.Invalid(field, err)
+
+
 def passwordSchemaValidator(field, appstruct):
     if appstruct['password'] is form.required or \
            appstruct['confirm_password'] is form.required:
@@ -141,9 +147,7 @@ def passwordSchemaValidator(field, appstruct):
             raise form.Invalid(
                 node, _("Password and Confirm Password should be the same."))
 
-        err = passwordTool.validatePassword(appstruct['password'])
-        if err is not None:
-            raise form.Invalid(node, err)
+        passwordValidator(field, appstruct['password'])
 
 
 PasswordSchema = form.Fieldset(

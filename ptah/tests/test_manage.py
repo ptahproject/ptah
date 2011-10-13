@@ -38,7 +38,7 @@ class TestManageModule(Base):
         def accessManager(id):
             return True
 
-        ptah.setAccessManager(accessManager)
+        ptah.set_access_manager(accessManager)
 
         route = PtahManageRoute(request)
         mod = route['test-module']
@@ -86,7 +86,7 @@ class TestManageModule(Base):
         def accessManager(id):
             return True
 
-        ptah.setAccessManager(accessManager)
+        ptah.set_access_manager(accessManager)
         ptah.authService.setUserId('test-user')
 
         self._init_memphis()

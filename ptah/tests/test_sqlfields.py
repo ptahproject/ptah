@@ -110,5 +110,5 @@ class TestSqlSchema(Base):
             json = sqla.Column(ptah.JsonListType())
 
         fieldset = ptah.generateFieldset(Test2)
-        
+
         self.assertNotIn('json', fieldset)

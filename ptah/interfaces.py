@@ -61,7 +61,7 @@ class IAuthentication(interface.Interface):
     def getCurrentPrincipal():
         """ """
 
-    def getPrincipalByLogin(login):
+    def get_principal_bylogin(login):
         """ """
 
 
@@ -79,7 +79,7 @@ class IAuthProvider(interface.Interface):
     def authenticate(credentials):
         """ authenticate credentials """
 
-    def getPrincipalByLogin(login):
+    def get_principal_bylogin(login):
         """ return principal object """
 
 

@@ -30,16 +30,17 @@ def useruserResolver(uri):
         return SUPERUSER
 
 
-def registerAuthChecker(checker):
+def register_auth_checker(checker):
     checkers.append(checker)
 
     info = config.DirectiveInfo()
     info.attach(
         config.Action(None, discriminator = ('ptah:auth-checker', checker))
         )
+    return checker
 
 
-def registerProvider(name, provider):
+def register_auth_provider(name, provider):
     providers[name] = provider
 
     info = config.DirectiveInfo()
@@ -48,7 +49,7 @@ def registerProvider(name, provider):
         )
 
 
-def registerSearcher(name, searcher):
+def register_principal_searcher(name, searcher):
     searchers[name] = searcher
 
     info = config.DirectiveInfo()
@@ -124,9 +125,9 @@ class Authentication(object):
         if uid:
             return resolve(uid)
 
-    def getPrincipalByLogin(self, login):
+    def get_principal_bylogin(self, login):
         for pname, provider in providers.items():
-            principal = provider.getPrincipalByLogin(login)
+            principal = provider.get_principal_bylogin(login)
             if principal is not None:
                 return principal
 

@@ -29,7 +29,7 @@ def resolve(uri):
     return None
 
 
-def extractUriSchema(uri):
+def extract_uri_schema(uri):
     """ Extract schema of given uri """
     if uri:
         try:

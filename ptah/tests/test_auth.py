@@ -32,7 +32,7 @@ class TestAuthentication(Base):
                 if creds['login'] == 'user':
                     return Principal('1', 'user', 'user')
 
-        ptah.registerProvider('test-provider', Provider())
+        ptah.register_auth_provider('test-provider', Provider())
 
         info = ptah.authService.authenticate(
             {'login': 'user', 'password': '12345'})
@@ -42,6 +42,7 @@ class TestAuthentication(Base):
 
     def test_auth_checker(self):
         import ptah
+        self._init_memphis()
 
         principal = Principal('1', 'user', 'user')
 
@@ -56,14 +57,14 @@ class TestAuthentication(Base):
                 if creds['login'] == 'user':
                     return Principal('1', 'user', 'user')
 
-        ptah.registerProvider('test-provider', Provider())
+        ptah.register_auth_provider('test-provider', Provider())
 
         def checker(info):
             info.message = 'Suspended'
             info.arguments['additional'] = 'test'
             return False
 
-        ptah.registerAuthChecker(checker)
+        ptah.register_auth_checker(checker)
 
         info = ptah.authService.authenticate(
             {'login': 'user', 'password': '12345'})
@@ -113,17 +114,17 @@ class TestAuthentication(Base):
 
         principal = Principal('1', 'user', 'user')
         class Provider(object):
-            def getPrincipalByLogin(self, login):
+            def get_principal_bylogin(self, login):
                 if login == 'user':
                     return principal
 
-        ptah.registerProvider('test-provider', Provider())
+        ptah.register_auth_provider('test-provider', Provider())
 
         self.assertEqual(
-            ptah.authService.getPrincipalByLogin('user2'), None)
+            ptah.authService.get_principal_bylogin('user2'), None)
 
         self.assertEqual(
-            ptah.authService.getPrincipalByLogin('user'), principal)
+            ptah.authService.get_principal_bylogin('user'), principal)
 
 
 class TestPrincipalSearcher(Base):
@@ -136,5 +137,5 @@ class TestPrincipalSearcher(Base):
             if term == 'user':
                 yield principal
 
-        ptah.registerSearcher('test-provider', search)
+        ptah.register_principal_searcher('test-provider', search)
         self.assertEqual(list(ptah.searchPrincipals('user')), [principal])

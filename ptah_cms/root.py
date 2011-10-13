@@ -40,7 +40,7 @@ Factories = {}
 class ApplicationFactory(object):
 
     def __init__(self, path='', name='', title='',
-                 tinfo = ApplicationRoot.__type__, 
+                 tinfo = ApplicationRoot.__type__,
                  policy = ApplicationPolicy, default_root = None):
         self.id = '-'.join(part for part in path.split('/') if part)
         self.path = path if path.endswith('/') else '%s/'%path

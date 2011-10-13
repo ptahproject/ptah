@@ -1,4 +1,5 @@
 # ptah_crowd package
-import translationstring
 
-_ = translationstring.TranslationStringFactory('ptah_crowd')
+from ptah_crowd.settings import CROWD as CONFIG
+from ptah_crowd.validation import initiate_validation
+from ptah_crowd.memberprops import MemberProperties

@@ -4,9 +4,7 @@ from pyramid import security
 from pyramid.httpexceptions import HTTPFound
 
 import ptah
-from ptah import authService
-from ptah.mail import MAIL
-from ptah_crowd import _
+from settings import _, CROWD
 
 view.registerRoute('ptah-login', '/login.html')
 view.registerRoute('ptah-logout', '/logout.html')
@@ -47,7 +45,7 @@ class LoginForm(form.Form):
             self.message(errors, 'form-error')
             return
 
-        info = authService.authenticate(data)
+        info = ptah.authService.authenticate(data)
 
         if info.status:
             request.registry.notify(
@@ -73,11 +71,15 @@ class LoginForm(form.Form):
         self.message(_('You enter wrong login or password.'), 'error')
 
     def update(self):
-        self.registration = ptah.PTAH_CONFIG.registration
+        self.app_url = self.request.application_url
+        self.join = CROWD.join
+        if CROWD.joinurl:
+            self.joinurl = CROWD.joinurl
+        else:
+            self.joinurl = '%s/join.html'%self.app_url
 
-        if authService.getUserId():
-            app_url = self.request.application_url
-            raise HTTPFound(location = '%s/login-success.html'%app_url)
+        if ptah.authService.getUserId():
+            raise HTTPFound(location = '%s/login-success.html'%self.app_url)
 
         super(LoginForm, self).update()
 
@@ -90,7 +92,7 @@ class LoginSuccess(view.View):
         template = view.template("ptah_crowd:templates/login-success.pt"))
 
     def update(self):
-        user = authService.getCurrentPrincipal()
+        user = ptah.authService.getCurrentPrincipal()
         if user is None:
             headers = []
             request = self.request
@@ -113,15 +115,15 @@ class LoginSuspended(view.View):
         template = view.template("ptah_crowd:templates/login-suspended.pt"))
 
     def update(self):
-        self.from_name = MAIL.from_name
-        self.from_address = MAIL.from_address
-        self.full_address = MAIL.full_from_address
+        self.from_name = ptah.mail.MAIL.from_name
+        self.from_address = ptah.mail.MAIL.from_address
+        self.full_address = ptah.mail.MAIL.full_from_address
 
 
 @view.pyramidView(route='ptah-logout')
 def logout(request):
     """Logout action"""
-    authService.setUserId(None)
+    ptah.authService.setUserId(None)
     uid = security.authenticated_userid(request)
 
     if uid is not None:

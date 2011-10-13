@@ -4,26 +4,22 @@
 from ptah.uri import resolve
 from ptah.uri import resolver
 from ptah.uri import registerResolver
-from ptah.uri import extractUriSchema
+from ptah.uri import extract_uri_schema
 from ptah.uri import UriGenerator
 
 # manage
 from ptah.manage import PtahModule
 from ptah.manage import manageModule
-from ptah.manage import setAccessManager
+from ptah.manage import set_access_manager
 from ptah.manage import introspection
 
 # security
 from ptah.authentication import authService
-from ptah.authentication import registerAuthChecker
-from ptah.authentication import registerProvider
-from ptah.authentication import registerSearcher
+from ptah.authentication import register_auth_checker
+from ptah.authentication import register_auth_provider
+from ptah.authentication import register_principal_searcher
 from ptah.authentication import searchPrincipals
 from ptah.authentication import SUPERUSER_URI
-
-from ptah.interfaces import IPrincipal
-from ptah.interfaces import IAuthProvider
-from ptah.interfaces import IPasswordChanger
 
 from ptah.interfaces import IACLsAware
 from ptah.interfaces import IOwnersAware
@@ -129,7 +125,7 @@ def ptah_init(configurator):
         # exclude
         excludes = []
         if 'ptah.excludes' in settings:
-            excludes.extend(s.strip() 
+            excludes.extend(s.strip()
                             for s in settings['ptah.excludes'].split())
 
         # load packages

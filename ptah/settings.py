@@ -20,34 +20,6 @@ PTAH_CONFIG = config.registerSettings(
         default = ''),
 
     config.SchemaNode(
-        colander.Bool(),
-        name = 'registration',
-        title = 'Site registration',
-        description = 'Enable/Disable site registration',
-        default = True),
-
-    config.SchemaNode(
-        colander.Bool(),
-        name = 'password',
-        title = 'User password',
-        description = 'Allow use to select password during registration',
-        default = False),
-
-    config.SchemaNode(
-        colander.Bool(),
-        name = 'validation',
-        title = 'Email validation',
-        description = 'Validate user account by email.',
-        default = True),
-
-    config.SchemaNode(
-        colander.Bool(),
-        name = 'allow-unvalidated',
-        title = 'Allow un validation',
-        description = 'Allow login for un Validated users.',
-        default = True),
-
-    config.SchemaNode(
         colander.Str(),
         name = 'pwdmanager',
         title = 'Password manager',

@@ -6,10 +6,11 @@ from pyramid.httpexceptions import HTTPFound
 import ptah
 from ptah.events import PrincipalAddedEvent
 
-from ptah_crowd import _
+from settings import _
 from module import CrowdModule
 from provider import CrowdUser, Session
 from schemas import UserSchema, ManagerChangePasswordSchema
+from module import UserWrapper
 
 
 class CreateUserForm(form.Form):
@@ -42,29 +43,20 @@ class CreateUserForm(form.Form):
         raise HTTPFound(location='./')
 
 
-#class Info(object):
-#    config.utility(name='user-info')
-#    interface.implements(IManageUserAction)
-
-#    title = _('Information')
-#    action = 'index.html'
-
-#    def available(self, principal):
-#        return True
-
-
 class UserInfo(form.Form):
-    view.pyramidView(context=CrowdUser)
+    view.pyramidView(context=UserWrapper)
 
-    __intr_path__ = '/ptah-manage/crowd/${user}/index.html'
+    __intr_path__ = '/ptah-manage/crowd/${user}/'
 
+    csrf = True
     label = 'Update user'
-
-    #fields = form.Fieldset(UserSchema)
-    #fields['id'].readonly = True
+    fields = form.Fieldset(UserSchema).omit('id')
 
     def getContent(self):
-        return self.context.user
+        user = self.context.user
+        return {'name': user.name,
+                'login': user.login,
+                'password': ''}
 
     @form.button(_('Modify'), actype=form.AC_PRIMARY)
     def modify(self):
@@ -78,20 +70,13 @@ class UserInfo(form.Form):
         #self.message("Account  has been validated.", 'info')
         pass
 
-
-#class ChangePasswordAction(object):
-#    config.utility(name='user-password')
-#    interface.implements(IManageUserAction)
-
-#    title = _('Change password')
-#    action = 'password.html'
-
-#    def available(self, principal):
-#        return True
+    @form.button(_('Back'))
+    def back(self):
+        raise HTTPFound(location='..')
 
 
 class ChangePassword(form.Form):
-    view.pyramidView('password.html', CrowdUser)
+    view.pyramidView('password.html', UserWrapper)
 
     __intr_path__ = '/ptah-manage/crowd/${user}/password.html'
 

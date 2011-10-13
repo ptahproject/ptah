@@ -3,42 +3,44 @@ from datetime import timedelta, datetime
 from memphis import view, config
 from pyramid.security import remember
 from pyramid.httpexceptions import HTTPFound
-from pyramid.threadlocal import get_current_request
 
 import ptah
 from ptah import token, mail
 
+from settings import CROWD
 from memberprops import MemberProperties
 
 TOKEN_TYPE = token.TokenType(
     'cd51f14e9b2842608ccadf1a240046c1', timedelta(hours=24))
 
 
-@ptah.registerAuthChecker
-def validationAndSuspendedChecker(info):
-    props = MemberProperties.get(info.principal.uri)
-    if props.suspended:
-        info.message = 'Account is suspended.'
-        info.arguments['suspended'] = True
-        return False
-
-    if not ptah.PTAH_CONFIG['validation']:
-        return True
-
-    if ptah.PTAH_CONFIG['allow-unvalidated'] or props.validated:
-        return True
-
-    info.message = 'Account is not validated.'
-    info.arguments['validation'] = False
-    return False
-
-
-def initiateValidation(principal, request):
-    view.addMessage(request, 'Validation email has been sent.')
+def initiate_validation(principal, request):
     t = token.service.generate(TOKEN_TYPE, principal.uri)
     template = ValidationTemplate(principal, request)
     template.token = t
     template.send()
+
+
+@ptah.register_auth_checker
+def validationAndSuspendedChecker(info):
+    props = MemberProperties.get(info.principal.uri)
+    if props.suspended:
+        info.message = u'Account is suspended.'
+        info.arguments['suspended'] = True
+        return False
+
+    if props.validated:
+        return True
+
+    if not CROWD['validation']:
+        return True
+
+    if CROWD['allow-unvalidated'] or props.validated:
+        return True
+
+    info.message = u'Account is not validated.'
+    info.arguments['validation'] = False
+    return False
 
 
 @config.subscriber(ptah.events.PrincipalRegisteredEvent)
@@ -46,9 +48,8 @@ def principalRegistered(ev):
     user = MemberProperties.get(ev.principal.uri)
     user.joined = datetime.now()
 
-    #if ptah.PTAH_CONFIG.validation and \
-    #        IPrincipalWithEmail.providedBy(ev.principal):
-    #    initiateValidation(ev.principal, get_current_request())
+    if not CROWD['validation']:
+        user.validated = True
 
 
 @config.subscriber(ptah.events.PrincipalRegisteredEvent)
@@ -88,9 +89,8 @@ def validate(request):
             token.service.remove(t)
             view.addMessage(request, "Account has been successfully validated.")
 
-            request.registry.notify(
-                ptah.events.PrincipalValidatedEvent(
-                    ptah.resolve(user.uri)))
+            config.notify(
+                ptah.events.PrincipalValidatedEvent(ptah.resolve(user.uri)))
 
             headers = remember(request, user.uri)
             raise HTTPFound(location=request.application_url, headers=headers)

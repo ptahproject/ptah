@@ -5,16 +5,9 @@ from zope import interface
 from pyramid.httpexceptions import HTTPFound
 from memphis import view, form, config
 
-from ptah_crowd import _
-from provider import Session
-from provider import CrowdUser as SQLUser
+from settings import _
+from provider import Session, CrowdUser
 from memberprops import MemberProperties
-
-
-class ICrowdUser(interface.Interface):
-    """ wrapper for actual user """
-
-    user = interface.Attribute('Wrapped user object')
 
 
 class CrowdModule(ptah.PtahModule):
@@ -25,15 +18,14 @@ class CrowdModule(ptah.PtahModule):
 
     def __getitem__(self, key):
         if key:
-            user = SQLUser.getById(key)
+            user = CrowdUser.get(key)
             if user is not None:
-                return CrowdUser(user, self)
+                return UserWrapper(user, self)
 
         raise KeyError(key)
 
 
-class CrowdUser(object):
-    interface.implements(ICrowdUser)
+class UserWrapper(object):
 
     def __init__(self, user, parent):
         self.user = user
@@ -70,6 +62,9 @@ class SearchUsers(form.Form):
     def getContent(self):
         return {'term': self.request.session.get('ptah-search-term', '')}
 
+    def get_props(self, uri):
+        return MemberProperties.get(uri)
+
     def update(self):
         super(SearchUsers, self).update()
 
@@ -78,7 +73,7 @@ class SearchUsers(form.Form):
 
         if 'activate' in request.POST and uids:
             Session.query(MemberProperties)\
-                .filter( MemberProperties.uri.in_(uids))\
+                .filter(MemberProperties.uri.in_(uids))\
                 .update({'suspended': False}, False)
             self.message("Selected accounts have been activated.", 'info')
 
@@ -96,11 +91,11 @@ class SearchUsers(form.Form):
 
         term = request.session.get('ptah-search-term', '')
         if term:
-            self.users = Session.query(SQLUser) \
-                .filter(SQLUser.email.contains('%%%s%%'%term))\
+            self.users = Session.query(CrowdUser) \
+                .filter(CrowdUser.email.contains('%%%s%%'%term))\
                 .order_by(sqla.sql.asc('name')).all()
         else:
-            self.size = Session.query(SQLUser).count()
+            self.size = Session.query(CrowdUser).count()
 
             try:
                 current = int(request.params.get('batch', None))
@@ -120,7 +115,7 @@ class SearchUsers(form.Form):
             self.pages, self.prev, self.next = self.page(self.size,self.current)
 
             offset, limit = self.page.offset(current)
-            self.users = Session.query(SQLUser)\
+            self.users = Session.query(CrowdUser)\
                     .offset(offset).limit(limit).all()
 
     @form.button(_('Search'), actype=form.AC_PRIMARY)

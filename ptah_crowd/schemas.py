@@ -1,8 +1,9 @@
 """ schemas """
 from memphis import form
 from ptah import passwordTool
+from ptah.password import passwordValidator
 
-from ptah_crowd import _
+from settings import _
 from provider import CrowdUser
 
 
@@ -15,12 +16,6 @@ def lower(s):
 def checkLogin(node, login):
     if login and CrowdUser.get(login) is not None:
         raise form.Invalid(node, _('Login already is in use.'))
-
-
-def passwordValidator(node, appstruct):
-    err = passwordTool.validatePassword(appstruct)
-    if err is not None:
-        raise form.Invalid(node, err)
 
 
 RegistrationSchema = form.Fieldset(

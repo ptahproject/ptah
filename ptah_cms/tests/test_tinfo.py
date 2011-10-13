@@ -248,8 +248,8 @@ class TestTypeInfo(Base):
         self.assertFalse(namesFilter('_test'))
         self.assertFalse(namesFilter('__test__'))
         self.assertTrue(namesFilter('__test__', ('__test__',)))
-        
-        excludeNames = ('expires', 'contributors', 'creators', 
+
+        excludeNames = ('expires', 'contributors', 'creators',
                         'view', 'subjects',
                         'publisher', 'effective', 'created', 'modified')
         for name in excludeNames:

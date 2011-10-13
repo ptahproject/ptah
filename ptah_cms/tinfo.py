@@ -102,7 +102,7 @@ def Type(name, title=None, fieldset=None, **kw):
     info = config.DirectiveInfo(allowed_scope=('class',))
 
     fs = ContentSchema if fieldset is None else fieldset
-    
+
     if title is None:
         title = name.capitalize()
 

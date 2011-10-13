@@ -12,7 +12,7 @@ class ContentEvent(ObjectEvent):
 
 
 class ContentCreatedEvent(ContentEvent):
-    """ Event thrown by 
+    """ Event thrown by
         :py:class:`ptah_cms.TypeInformation` """
     config.event('Content created event')
 

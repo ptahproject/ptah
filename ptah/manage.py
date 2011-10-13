@@ -101,7 +101,7 @@ def PtahAccessManager(id):
 
 ACCESS_MANAGER = PtahAccessManager
 
-def setAccessManager(func):
+def set_access_manager(func):
     global ACCESS_MANAGER
     ACCESS_MANAGER = func
 

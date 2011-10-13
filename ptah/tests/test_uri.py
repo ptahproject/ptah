@@ -65,9 +65,9 @@ class TestUri(Base):
     def test_uri_extract_type(self):
         import ptah
 
-        self.assertEqual(ptah.extractUriSchema('test:uri'), 'test')
-        self.assertEqual(ptah.extractUriSchema('test'), None)
-        self.assertEqual(ptah.extractUriSchema(None), None)
+        self.assertEqual(ptah.extract_uri_schema('test:uri'), 'test')
+        self.assertEqual(ptah.extract_uri_schema('test'), None)
+        self.assertEqual(ptah.extract_uri_schema(None), None)
 
     def test_uri_uri_generator(self):
         import ptah
