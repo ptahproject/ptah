@@ -30,7 +30,7 @@ def main(global_config, **settings):
     if user.uri not in root.__local_roles__:
         root.__local_roles__[user.uri] = [ptah_app.Manager.id]
     
-    ptah.authService.set_uuserid(user.uri)
+    ptah.authService.set_userid(user.uri)
 
     # create default page
     if 'front-page' not in root.keys():
