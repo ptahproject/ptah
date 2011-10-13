@@ -1,7 +1,133 @@
 Views and Layouts
 =================
 
-Ptah views are Pyramid views.  Familiarize yourself with Pyramid views (URL).  The decoration for memphis.views is different than pyramid but this is because its internally consistent (using memphis.config).  Layouts are Ptah specific.
+This is similiar to how Pyramid resolves views but using templates/layouts.
+This is independent of Ptah App we just use it as example.  We use Chameleon but this can work with Jinja and Mako.
+
+Conceptual Model
+----------------
+
+Let's use Ptah App as an example.  There is a `front-page` content, its
+class is ptah_app.content.Page.  The default view for this page is::
+
+    memphis.view.registerView(
+        context = Page,
+        layout = u'', # empty string means `default layout`
+        permission = ptah_cms.View,
+        template = memphis.view.template('ptah_app:templates/page.pt'))
+
+So if you render this view::
+    >>> from pyramid.requests import Request
+    >>> from ptah_cms import Factories    
+    >>> import memphis
+    >>> root = Factories['root']()
+    >>> request = Request.blank('/')
+    >>> request.root = root
+    >>> request.registry = # put registry
+    >>> full_html = memphis.view.renderView('', root['front-page'], request) 
+    ... the entire html page with all layout applied
+
+This is ptah_app/templates/page.pt rendered against the page.  This page
+does not contain *any* layout.  Then the memphis.view machinery walks up
+the layout chain calling each layout with the previous html rendered.
+
+System queries layout for this view::
+
+    >>> snipper = '<div>The result of a view without layout</div>.'
+    >>> layout = memphis.view.queryLayout(request, root['front-page'], u'')
+    >>> layout
+    <ptah_app.views.ContentLayout object at ...>
+    >>> layout.template
+    <PageTemplateFile .. \ptah_app\templates\layoutcontent.pt>
+    >>> layout.update() # Since layouts have behavior; you must initialize
+    >>> layout.render(snippet)
+    .. This will show the layout and substiute ${content} with the snippet.
+    >>> layout.(snippet)
+    .. this will walk the layout chain and render the full HTML
+
+If we want to walk the layout chain upwards we would see that the ContentLayout's parent essentially is WorkspaceLayout.  Let's take a look
+at it by opening ptah_app\views.py and see ContentLayout::
+
+    class ContentLayout(view.Layout):
+        """ interface.IContent can be replaced with ptah_cms.Content """
+        view.layout('', interfaces.IContent, parent="workspace",
+                template=view.template("ptah_app:templates/layoutcontent.pt"))
+
+        def update(self):
+            self.actions = listUIActions(self.context, self.request)
+
+You will notice that the parent attribute for the layout is `workspace`.
+So the layout engine continues walking up the Layout lineage doing this
+same thing::
+
+    snippet = layout.render(snippet)
+    p_layout = layout.layout # will be renamed in future
+    parent = memphis.view.queryLayout(request, root['front-page'], p_layout)
+    snippet = parent.render(snippet)
+    ...
+    continues until there is no parent on a layout.  the top level parent
+    will have the <html></html>
+
+Great.  We have reinvented jinja inheritance or METAL.  Not so fast.  It
+is true that if you use Pyramid routes and you are not using __parent__ in
+your models; the Layout system is of little value.  
+
+Layout's can use Content Heirarchy
+----------------------------------
+
+Keep calm and carry on through this section and you will realize why layout
+exists.
+
+Presumably in a complex website you have different layouts which depend on
+the heirarchy of the website.  For instance, top-level sections will have
+a "branded" elements to know you are in the top-level section.  
+
+This is where the layout system comes into play.  Ran out of time. 
+Pseudo-code::
+
+  view = pyramid.render_view('/path/to/some/view')
+  snippet = templateengine.render(view.__template__(model))
+  layout = queryLayout(request, model, '')
+  while 1:
+      snippet = layout.render(snippet)
+      layout = queryLayout(request, model, layout.parent)
+      if layout is None:
+          break
+  snippet is the full HTML.
+  
+Let's presume we have the following content model heriarchy::
+
+    / 
+    -- section1
+      -- page1
+    -- section2
+      -- page2
+
+Presume we have defined layouts like this::
+
+    PageLayout, this has the <html><body>
+      -- WorkspaceLayout, this has <div class="container">
+        -- ADiscreteLayout, turtles all the way down
+
+We want to see different HTML in section1 and section2::
+
+    class Section1Layout(view.Layout):
+        view.layout('workspace', Section1Model, parent="page")
+    
+    class Section2Layout(view.Layout):
+        view.layout('workspace', Section2Model, parent='page')
+
+Now let's see what happens when we follow layout rendering.  This
+happens when rendering page1 and page2::
+
+    page1 model/template gets rendered into snippet.
+    layout = queryLayout(request, page1, 'workspace') 
+    print layout
+    <Section1Layout...>
+    page2 model/template gets rendered into snippet.
+    layout = queryLayout(request, page2, 'workspace')
+    print layout
+    <Section2Layout...>    
 
 Views
 -----
