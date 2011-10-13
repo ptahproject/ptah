@@ -112,7 +112,7 @@ class ResetPasswordForm(form.Form):
                 PrincipalPasswordChangedEvent(principal))
 
             # check if principal can be authenticated
-            info = authService.authenticatePrincipal(principal)
+            info = authService.authenticate_principal(principal)
 
             if info.status:
                 headers = security.remember(self.request, self.principal.uri)

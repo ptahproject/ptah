@@ -37,7 +37,7 @@ class LoginForm(form.Form):
             default = u''),
         )
 
-    @form.button(_(u"Log in"), actype=form.AC_PRIMARY)
+    @form.button(_(u"Log in"), name=u'login', actype=form.AC_PRIMARY)
     def handleLogin(self):
         request = self.request
 

@@ -35,7 +35,9 @@ def register_auth_checker(checker):
 
     info = config.DirectiveInfo()
     info.attach(
-        config.Action(None, discriminator = ('ptah:auth-checker', checker))
+        config.Action(
+            lambda c: checkers.append(c), (checker,), 
+            discriminator = ('ptah:auth-checker', checker))
         )
     return checker
 
@@ -45,7 +47,9 @@ def register_auth_provider(name, provider):
 
     info = config.DirectiveInfo()
     info.attach(
-        config.Action(None, discriminator = ('ptah:auth-provider', name))
+        config.Action(
+            lambda n, p: providers.update({n:p}), (name, provider), 
+            discriminator = ('ptah:auth-provider', name))
         )
 
 
@@ -95,7 +99,7 @@ class Authentication(object):
 
         return info
 
-    def authenticatePrincipal(self, principal):
+    def authenticate_principal(self, principal):
         info = AuthInfo()
         info.uri = principal.uri
         info.principal = principal

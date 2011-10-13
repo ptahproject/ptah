@@ -548,6 +548,17 @@ class TestCheckPermission(Base):
         ptah.authService.set_userid('test-user')
         self.assertTrue(ptah.checkPermission('View', content, throw=False))
 
+    def test_checkpermission_superuser(self):
+        import ptah
+        from pyramid import security
+
+        content = Content(
+            acl=[(Deny, ptah.SUPERUSER_URI, security.ALL_PERMISSIONS)])
+
+        ptah.authService.set_userid(ptah.SUPERUSER_URI)
+        self.assertTrue(ptah.checkPermission('View', content))
+        self.assertFalse(ptah.checkPermission(ptah.NOT_ALLOWED, content))
+
     def test_checkpermission_local_roles(self):
         import ptah
 

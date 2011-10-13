@@ -49,7 +49,7 @@ class IAuthentication(interface.Interface):
     def authenticate(credentials):
         """ authenticate credentials """
 
-    def authenticatePrincipal(principal):
+    def authenticate_principal(principal):
         """ check principal restrictions """
 
     def set_userid(uri):

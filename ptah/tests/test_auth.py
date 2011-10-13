@@ -46,7 +46,7 @@ class TestAuthentication(Base):
 
         principal = Principal('1', 'user', 'user')
 
-        info = ptah.authService.authenticatePrincipal(principal)
+        info = ptah.authService.authenticate_principal(principal)
         self.assertTrue(info.status)
         self.assertEqual(info.uri, '1')
         self.assertEqual(info.message, '')
@@ -76,7 +76,7 @@ class TestAuthentication(Base):
 
         principal = Principal('1', 'user', 'user')
 
-        info = ptah.authService.authenticatePrincipal(principal)
+        info = ptah.authService.authenticate_principal(principal)
         self.assertFalse(info.status)
         self.assertEqual(info.uri, '1')
         self.assertEqual(info.message, 'Suspended')
@@ -139,3 +139,15 @@ class TestPrincipalSearcher(Base):
 
         ptah.register_principal_searcher('test-provider', search)
         self.assertEqual(list(ptah.searchPrincipals('user')), [principal])
+
+
+class TestSuperUser(Base):
+
+    def test_superuser_resolver(self):
+        import ptah
+        from ptah.authentication import SUPERUSER
+        self._init_memphis()
+
+        user = ptah.resolve(ptah.SUPERUSER_URI)
+        self.assertIs(user, SUPERUSER)
+        self.assertIsNone(ptah.resolve('ptah+auth:unknown'))
