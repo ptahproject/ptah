@@ -155,6 +155,8 @@ def registerViewImpl(factory, name, context, template, route_name,
         renderer = SimpleRenderer(layout=layout).bind(
             viewMapper(factory, 'render'))
 
+    factory.__renderer__ = renderer
+
     # add 'subpath' support
     if inspect.isclass(factory):
         subpath_traverse = getattr(factory, '__subpath_traverse__', None)
