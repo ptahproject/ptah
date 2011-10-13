@@ -21,36 +21,29 @@ class IntrospectModule(ptah.PtahModule):
     title = 'Introspect'
     ptah.manageModule('introspect')
 
-    packagesDict = None
+    packages = None
 
-    def _init_packages(self):
-        packages = loadPackages()
-        packages.sort()
-        self.packages = [pkg_resources.get_distribution(pkg) for
-                         pkg in packages]
-        self.packagesDict = dict((p.project_name.replace('-', '_'), p)
-                                 for p in self.packages)
+    def list_packages(self):
+        if self.packages is None:
+            self.packages = loadPackages()
+            self.packages.sort()
+        return self.packages
 
     def __getitem__(self, key):
-        if self.packagesDict is None:
-            self._init_packages()
-
-        key = key.replace('-','_')
-        return Package(self.packagesDict[key], self, self.request)
+        return Package(key, self, self.request)
 
 
 class Package(object):
 
     def __init__(self, pkg, mod, request):
-        self.__name__ = pkg.project_name
+        self.__name__ = pkg
         self.__parent__ = mod
 
         self.pkg = pkg
         self.request = request
 
     def actions(self):
-        pkg = self.pkg.project_name.replace('-', '_')
-        actions = directives.scan(pkg, set(), exclude)
+        actions = directives.scan(self.pkg, set(), exclude)
 
         info = {}
 
@@ -72,7 +65,7 @@ class MainView(view.View):
     __intr_path__ = '/ptah-manage/introspect/index.html'
 
     def update(self):
-        self.packages = self.context.packages
+        self.packages = self.context.list_packages()
 
 
 view.registerPagelet(

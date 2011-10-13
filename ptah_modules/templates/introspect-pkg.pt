@@ -1,5 +1,5 @@
 <div class="page-header">
-  <h2>Package: ${context.__name__} <small>${context.pkg.version}</small></h2>
+  <h2>Package: ${context.__name__} </h2>
 </div>
 
 <div class="row" tal:repeat="itype view.itypes">
