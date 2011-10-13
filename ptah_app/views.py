@@ -11,16 +11,18 @@ from forms import AddForm
 from uiactions import listUIActions
 
 
-page_tmpl = view.template("ptah_app:templates/layoutpage.pt")
+view.registerLayout(
+    'page', ptah_cms.ApplicationRoot,
+    template = view.template("ptah_app:templates/layoutpage.pt"))
 
-view.registerLayout('page', view.INavigationRoot, template = page_tmpl)
-view.registerLayout('page', ptah_cms.ApplicationRoot, template = page_tmpl)
+view.registerLayout(
+    'ptah-security', ptah_cms.ApplicationRoot, parent='workspace',
+    template = view.template("ptah_app:templates/layout-ptahsecurity.pt"))
 
 
 class LayoutWorkspace(view.Layout):
-    view.layout('workspace', ptah_cms.ApplicationRoot, parent="page")
-
-    template=view.template("ptah_app:templates/layoutworkspace.pt")
+    view.layout('workspace', ptah_cms.ApplicationRoot, parent="page",
+                template=view.template("ptah_app:templates/layoutworkspace.pt"))
 
     def update(self):
         self.root = getattr(self.request, 'root', None)
@@ -35,15 +37,6 @@ class ContentLayout(view.Layout):
 
     def update(self):
         self.actions = listUIActions(self.context, self.request)
-
-
-class LayoutWorkspacePtah(LayoutWorkspace):
-    view.layout('workspace', view.INavigationRoot, parent="page")
-
-
-view.registerLayout(
-    'ptah-security', view.INavigationRoot, parent='workspace',
-    template = view.template("ptah_app:templates/layout-ptahsecurity.pt"))
 
 
 def defaultView(renderer):
