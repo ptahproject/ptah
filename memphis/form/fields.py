@@ -30,9 +30,9 @@ class InputField(Field, view.View):
         super(InputField, self).update(request)
 
         if self.readonly:
-            self.addCssClass('disabled')
+            self.add_css_class('disabled')
 
-    def addCssClass(self, css):
+    def add_css_class(self, css):
         self.klass = '%s %s'%(self.klass, css)
 
 
@@ -47,13 +47,13 @@ class VocabularyField(InputField):
         if self.vocabulary is None:
             raise ValueError("Vocabulary is not specified.")
 
-    def isChecked(self, term):
+    def is_checked(self, term):
         raise NotImplementedError()
 
-    def updateItems(self):
+    def update_items(self):
         self.items = []
         for count, term in enumerate(self.vocabulary):
-            checked = self.isChecked(term)
+            checked = self.is_checked(term)
             id = '%s-%i' % (self.id, count)
             label = term.token
             desc = None
@@ -76,7 +76,7 @@ class BaseChoiceField(VocabularyField):
             return null
 
         try:
-            return self.vocabulary.getTerm(value).token
+            return self.vocabulary.get_term(value).token
         except Exception:
             raise Invalid(
                 self, _('"${val}" is not in vocabulary', mapping={'val':value}))
@@ -86,7 +86,7 @@ class BaseChoiceField(VocabularyField):
             return null
 
         try:
-            return self.vocabulary.getTermByToken(value).value
+            return self.vocabulary.get_term_bytoken(value).value
         except Exception:
             raise Invalid(
                 self, _('"${val}" is not in vocabulary', mapping={'val':value}))
@@ -101,13 +101,13 @@ class BaseChoiceField(VocabularyField):
 
         return value
 
-    def isChecked(self, term):
+    def is_checked(self, term):
         return term.token == self.value
 
     def update(self, request):
         super(BaseChoiceField, self).update(request)
 
-        self.updateItems()
+        self.update_items()
 
 
 class BaseMultiChoiceField(VocabularyField):
@@ -122,7 +122,7 @@ class BaseMultiChoiceField(VocabularyField):
         try:
             res = []
             for val in value:
-                res.append(self.vocabulary.getTerm(val).token)
+                res.append(self.vocabulary.get_term(val).token)
             return res
         except (LookupError, TypeError):
             raise Invalid(
@@ -134,7 +134,7 @@ class BaseMultiChoiceField(VocabularyField):
         try:
             res = []
             for val in value:
-                res.append(self.vocabulary.getTermByToken(val).value)
+                res.append(self.vocabulary.get_term_bytoken(val).value)
             return res
         except Exception:
             raise Invalid(
@@ -154,7 +154,7 @@ class BaseMultiChoiceField(VocabularyField):
 
         return value
 
-    def isChecked(self, term):
+    def is_checked(self, term):
         return term.token in self.value
 
     def update(self, request):
@@ -163,7 +163,7 @@ class BaseMultiChoiceField(VocabularyField):
         if self.value is null:
             self.value = []
 
-        self.updateItems()
+        self.update_items()
 
 
 class TextField(InputField):
@@ -426,7 +426,7 @@ class BoolField(BaseChoiceField):
 
     field('bool')
 
-    vocabulary = vocabulary.SimpleVocabulary.fromItems(
+    vocabulary = vocabulary.SimpleVocabulary.from_items(
         (True, 'true',  _('yes')),
         (False, 'false',  _('no')))
 
@@ -447,8 +447,8 @@ class ChoiceField(BaseChoiceField):
     tmpl_input = view.template(
         "memphis.form:templates/fields/select-input.pt")
 
-    def updateItems(self):
-        super(ChoiceField, self).updateItems()
+    def update_items(self):
+        super(ChoiceField, self).update_items()
 
         if not self.required:
             self.items.insert(0, {

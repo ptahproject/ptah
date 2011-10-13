@@ -13,17 +13,17 @@ class TestFieldset(Base):
             form.field('my-field')
 
         self._init_memphis()
-        self.assertIs(form.getField('my-field'), MyField)
+        self.assertIs(form.get_field_factory('my-field'), MyField)
 
     def test_decl_register(self):
 
         class MyField(form.Field):
             """ """
             
-        form.registerField(MyField, 'my-field')
+        form.register_field_factory(MyField, 'my-field')
 
         self._init_memphis()
-        self.assertIs(form.getField('my-field'), MyField)
+        self.assertIs(form.get_field_factory('my-field'), MyField)
 
     def test_decl_conflict(self):
         global MyField, MyField2
@@ -45,7 +45,7 @@ class TestFieldset(Base):
         class MyField(form.Field):
             form.field('my-field')
 
-        @form.fieldPreview(MyField)
+        @form.fieldpreview(MyField)
         def preview(request):
             """ """
 

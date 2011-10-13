@@ -12,9 +12,9 @@ from memphis.form.field import FieldsetErrors
 
 # field registration
 from memphis.form.field import field
-from memphis.form.field import fieldPreview
-from memphis.form.field import getField
-from memphis.form.field import registerField
+from memphis.form.field import fieldpreview
+from memphis.form.field import get_field_factory
+from memphis.form.field import register_field_factory
 
 # vocabulary
 from memphis.form.vocabulary import SimpleTerm

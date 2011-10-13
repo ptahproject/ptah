@@ -99,11 +99,11 @@ class Buttons(OrderedDict):
 
             self[btn.name] = btn
 
-    def addAction(self, title, **kwargs):
+    def add_action(self, title, **kwargs):
         # Add the title to button constructor keyword arguments
         kwargs['title'] = title
         if 'name' not in kwargs:
-            kwargs['name'] = createId(title)
+            kwargs['name'] = create_btn_id(title)
 
         button = Button(**kwargs)
 
@@ -128,7 +128,7 @@ class Actions(OrderedDict):
 
     def update(self):
         form = self.form
-        params = form.getParams()
+        params = form.form_params()
 
         # Create a unique prefix.
         prefix = '%s%s'%(form.prefix, self.prefix)
@@ -154,7 +154,7 @@ class Actions(OrderedDict):
 
 _identifier = re.compile('[A-Za-z][a-zA-Z0-9_]*$')
 
-def createId(name):
+def create_btn_id(name):
     if _identifier.match(name):
         return str(name).lower()
     return name.encode('utf-8').encode('hex')
@@ -169,7 +169,7 @@ def button(title, **kwargs):
         buttons = Buttons()
         f_locals['buttons'] = buttons
 
-    btn = buttons.addAction(title, **kwargs)
+    btn = buttons.add_action(title, **kwargs)
 
     def createHandler(func):
         btn.actionName = func.__name__

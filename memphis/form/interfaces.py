@@ -59,20 +59,20 @@ class ITerm(interface.Interface):
 class IVocabulary(interface.Interface):
     """ vocabulary """
 
-    def getTerm(value):
+    def get_term(value):
         """Return an ITitledTokenizedTerm object for the given value
 
         LookupError is raised if the value isn't in the source
         """
 
-    def getTermByToken(token):
+    def get_term_bytoken(token):
         """Return an ITokenizedTerm for the passed-in token.
 
         If `token` is not represented in the vocabulary, `LookupError`
         is raised.
         """
 
-    def getValue(token):
+    def get_value(token):
         """Return a value for a given identifier token
 
         LookupError is raised if there isn't a value in the source.
@@ -220,13 +220,13 @@ class IForm(interface.Interface):
     fields = interface.Attribute('Fields')
     buttons = interface.Attribute('Buttons')
 
-    def getParams():
+    def form_params():
         '''Return the request params dict.'''
 
-    def getContent():
+    def form_content():
         '''Return the content to be displayed and/or edited.'''
 
-    def updateWidgets():
+    def update_widgets():
         '''Update the widgets for the form.
 
         This method is commonly called from the ``update()`` method and is

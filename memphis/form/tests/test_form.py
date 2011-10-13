@@ -36,17 +36,17 @@ class TestForm(unittest.TestCase):
 
         self.assertEqual(form.id, 'my-test-form')
 
-    def test_getContent(self):
+    def test_form_content(self):
         from memphis.form.form import Form
 
         request = DummyRequest()
         form = Form(None, request)
 
-        self.assertIsNone(form.getContent())
+        self.assertIsNone(form.form_content())
 
         form_content = {}
         form.content = form_content
-        self.assertIs(form.getContent(), form_content)
+        self.assertIs(form.form_content(), form_content)
 
     def test_csrf_token(self):
         from memphis.form import form
@@ -72,19 +72,19 @@ class TestForm(unittest.TestCase):
 
         token = form_ob.token
         self.assertIsNotNone(token)
-        self.assertIsNone(form_ob.validateToken())
+        self.assertIsNone(form_ob.validate_csrf_token())
 
         request.POST = {}
 
         form_ob.csrf = True
-        self.assertRaises(HTTPForbidden, form_ob.validateToken)
+        self.assertRaises(HTTPForbidden, form_ob.validate_csrf_token)
         self.assertRaises(HTTPForbidden, form_ob.validate, {}, [])
 
         request.POST = {form_ob.csrfname: token}
-        self.assertRaises(HTTPForbidden, form_ob.validateToken)
+        self.assertRaises(HTTPForbidden, form_ob.validate_csrf_token)
 
         retData = True
-        self.assertIsNone(form_ob.validateToken())
+        self.assertIsNone(form_ob.validate_csrf_token())
 
     def test_csrf_tokenData(self):
         from memphis.form import form
@@ -108,7 +108,7 @@ class TestForm(unittest.TestCase):
 
         form.security.authenticated_userid = orig_func
 
-    def test_getParams(self):
+    def test_form_params(self):
         from memphis.form.form import Form, DisplayForm
 
         request = DummyRequest()
@@ -121,16 +121,16 @@ class TestForm(unittest.TestCase):
         post = {'post': 'info'}
         request.POST = post
 
-        self.assertIs(form.getParams(), post)
-        self.assertIs(disp_form.getParams(), Form.params)
+        self.assertIs(form.form_params(), post)
+        self.assertIs(disp_form.form_params(), Form.params)
 
         get = {'get': 'info'}
         request.GET = get
         form.method = 'get'
-        self.assertIs(form.getParams(), get)
+        self.assertIs(form.form_params(), get)
 
         form.method = 'unknown'
-        self.assertEqual(dict(form.getParams()), {})
+        self.assertEqual(dict(form.form_params()), {})
 
     def test_form_params_method(self):
         from memphis.form.form import Form
@@ -140,7 +140,7 @@ class TestForm(unittest.TestCase):
         params = {'post': 'info'}
         form.params = params
 
-        self.assertIs(form.getParams(), params)
+        self.assertIs(form.form_params(), params)
 
     def test_form_mode(self):
         from memphis.form.form import Form, DisplayForm, \
@@ -226,9 +226,9 @@ class DummyRequest(object):
 
 class DummyForm(object):
     prefix = 'prefix'
-    def getParams(self): # pragma: no cover
+    def form_params(self): # pragma: no cover
         return None
-    def getContent(self): # pragma: no cover
+    def form_content(self): # pragma: no cover
         return None
 
 

@@ -58,19 +58,19 @@ class SimpleVocabulary(object):
             self.by_token[term.token] = term
 
     @classmethod
-    def fromItems(cls, *items):
+    def from_items(cls, *items):
         """Construct a vocabulary from a list of (token, value) pairs. """
-        terms = [cls.createTerm(*rec) for rec in items]
+        terms = [cls.create_term(*rec) for rec in items]
         return cls(*terms)
 
     @classmethod
-    def fromValues(cls, *values):
+    def from_values(cls, *values):
         """Construct a vocabulary from a simple list. """
-        terms = [cls.createTerm(value) for value in values]
+        terms = [cls.create_term(value) for value in values]
         return cls(*terms)
 
     @classmethod
-    def createTerm(cls, *args):
+    def create_term(cls, *args):
         """Create a single term from data."""
         return SimpleTerm(*args)
 
@@ -81,20 +81,20 @@ class SimpleVocabulary(object):
             # sometimes values are not hashable
             return False
 
-    def getTerm(self, value):
+    def get_term(self, value):
         try:
             return self.by_value[value]
         except KeyError:
             raise LookupError(value)
 
-    def getTermByToken(self, token):
+    def get_term_bytoken(self, token):
         try:
             return self.by_token[token]
         except KeyError:
             raise LookupError(token)
 
-    def getValue(self, token):
-        return self.getTermByToken(token).value
+    def get_value(self, token):
+        return self.get_term_bytoken(token).value
 
     def __iter__(self):
         return iter(self._terms)

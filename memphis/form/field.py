@@ -22,7 +22,7 @@ def field(name, layer=''):
         )
 
 
-def registerField(cls, name, layer=''):
+def register_field_factory(cls, name, layer=''):
     info = config.DirectiveInfo()
 
     discriminator = ('memphis.form:field', name, layer)
@@ -35,7 +35,7 @@ def registerField(cls, name, layer=''):
         )
 
 
-def fieldPreview(cls):
+def fieldpreview(cls):
     info = config.DirectiveInfo()
 
     def wrapper(func):
@@ -57,7 +57,7 @@ def registerFieldImpl(cls, name):
     cls.__field__ = name
 
 
-def getField(name):
+def get_field_factory(name):
     return fields.get(name, None)
 
 
@@ -320,7 +320,7 @@ class FieldFactory(Field):
         super(FieldFactory, self).__init__(name, **kw)
 
     def bind(self, prefix, content, params):
-        cls = getField(self.__field__)
+        cls = get_field_factory(self.__field__)
         if cls is None:
             raise TypeError(
                 "Can't find field implementation for '%s'"%self.__field__)

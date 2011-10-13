@@ -165,7 +165,7 @@ class TestVocabularyField(Base):
     def test_vocabulary_field(self):
         request = DummyRequest()
 
-        voc = form.SimpleVocabulary.fromItems(
+        voc = form.SimpleVocabulary.from_items(
             (1, 'one', 'One'),
             (2, 'two', 'Two'),
             (3, 'three', 'Three'))
@@ -173,22 +173,22 @@ class TestVocabularyField(Base):
         self.assertRaises(ValueError, form.VocabularyField, 'test')
         self.assertRaises(
             NotImplementedError, 
-            form.VocabularyField('test', vocabulary=voc).isChecked,
-            voc.getTerm(1))
+            form.VocabularyField('test', vocabulary=voc).is_checked,
+            voc.get_term(1))
 
         class MyVocabularyField(form.VocabularyField):
-            def isChecked(self, term):
+            def is_checked(self, term):
                 return term.token == self.value
 
         field = MyVocabularyField('test', vocabulary=voc)
         field.value = 'one'
         
-        self.assertTrue(field.isChecked(voc.getTerm(1)))
-        self.assertFalse(field.isChecked(voc.getTerm(2)))
+        self.assertTrue(field.is_checked(voc.get_term(1)))
+        self.assertFalse(field.is_checked(voc.get_term(2)))
 
         field.id = 'test'
         field.value = form.null
-        field.updateItems()
+        field.update_items()
 
         self.assertEqual(field.items,
                          [{'checked': False,
@@ -211,7 +211,7 @@ class TestVocabularyField(Base):
                            'value': 'three'}])
 
         field.value = 'one'
-        field.updateItems()
+        field.update_items()
         self.assertEqual(field.items,
                          [{'checked': True,
                            'description': None,
@@ -241,7 +241,7 @@ class TestBaseChoiceField(Base):
     def test_basechoice(self):
         request = DummyRequest()
 
-        voc = form.SimpleVocabulary.fromItems(
+        voc = form.SimpleVocabulary.from_items(
             (1, 'one', 'One'),
             (2, 'two', 'Two'),
             (3, 'three', 'Three'))
@@ -279,7 +279,7 @@ class TestBaseMultiChoiceField(Base):
 
         self.assertRaises(ValueError, self._makeOne, 'test')
 
-        voc = form.SimpleVocabulary.fromItems(
+        voc = form.SimpleVocabulary.from_items(
             (1, 'one', 'One'),
             (2, 'two', 'Two'),
             (3, 'three', 'Three'))
@@ -321,7 +321,7 @@ class TestChoiceField(Base):
     def test_vocabulary_field(self):
         request = DummyRequest()
 
-        voc = form.SimpleVocabulary.fromItems(
+        voc = form.SimpleVocabulary.from_items(
             (1, 'one', 'One'),
             (2, 'two', 'Two'))
 
@@ -378,7 +378,7 @@ class TestMultiChoiceField(Base):
     def test_fields_decimal(self):
         request = DummyRequest()
 
-        voc = form.SimpleVocabulary.fromItems(
+        voc = form.SimpleVocabulary.from_items(
             (1, 'one', 'One'),
             (2, 'two', 'Two'),
             (3, 'three', 'Three'))

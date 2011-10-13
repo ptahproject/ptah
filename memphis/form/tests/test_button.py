@@ -133,7 +133,7 @@ class TestButtons(unittest.TestCase):
 
         btns = form.Buttons()
 
-        btn1 = btns.addAction('Test action')
+        btn1 = btns.add_action('Test action')
         
         self.assertIsInstance(btn1, form.Button)
         self.assertEqual(btns.keys(), [btn1.name])
@@ -188,10 +188,10 @@ class TestButtonDecorator(unittest.TestCase):
         self.assertEqual(btn2.actionName, 'handler2')
 
     def test_create_id(self):
-        from memphis.form.button import createId
+        from memphis.form.button import create_btn_id
 
-        self.assertEqual(createId('Test'), 'test')
-        self.assertEqual(createId('Test title'), u'Test title'.encode('hex'))
+        self.assertEqual(create_btn_id('Test'), 'test')
+        self.assertEqual(create_btn_id('Test title'), u'Test title'.encode('hex'))
 
 
 class TestActions(unittest.TestCase):
@@ -254,5 +254,5 @@ class DummyForm(object):
     params = {}
     def __init__(self):
         self.buttons = {}
-    def getParams(self):
+    def form_params(self):
         return self.params

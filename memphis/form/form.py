@@ -51,8 +51,8 @@ class FormWidgets(OrderedDict):
         super(FormWidgets, self).__init__()
 
     def update(self):
-        params = self.form.getParams()
-        content = self.form.getContent()
+        params = self.form.form_params()
+        content = self.form.form_content()
         prefix = '%s%s'%(self.form.prefix, self.prefix)
         
         self.fieldset = self.fields.bind(content, params)
@@ -150,10 +150,10 @@ class Form(view.View):
     def id(self):
         return self.name.replace('.', '-')
 
-    def getContent(self):
+    def form_content(self):
         return self.content
 
-    def getParams(self):
+    def form_params(self):
         if self.method == 'post':
             return self.request.POST
         elif self.method == 'get':
@@ -163,12 +163,12 @@ class Form(view.View):
         else:
             return self.params
 
-    def updateWidgets(self):
+    def update_widgets(self):
         self.widgets = FormWidgets(self.fields, self, self.request)
         self.widgets.mode = self.mode
         self.widgets.update()
 
-    def updateActions(self):
+    def update_actions(self):
         self.actions = Actions(self, self.request)
         self.actions.update()
 
@@ -183,12 +183,12 @@ class Form(view.View):
                            security.authenticated_userid(self.request))
 
     def validate(self, data, errors):
-        self.validateToken()
+        self.validate_csrf_token()
 
-    def validateToken(self):
+    def validate_csrf_token(self):
         # check csrf token
         if self.csrf:
-            token = self.getParams().get(self.csrfname, None)
+            token = self.form_params().get(self.csrfname, None)
             if token is not None:
                 if CSRF is not None:
                     if CSRF.get(token) == self.tokenData:
@@ -200,8 +200,8 @@ class Form(view.View):
         return self.widgets.extract()
 
     def update(self):
-        self.updateWidgets()
-        self.updateActions()
+        self.update_widgets()
+        self.update_actions()
 
         self.actions.execute()
 
@@ -221,7 +221,7 @@ class DisplayForm(Form):
 
     mode = FORM_DISPLAY
 
-    def getParams(self):
+    def form_params(self):
         return self.params
 
 

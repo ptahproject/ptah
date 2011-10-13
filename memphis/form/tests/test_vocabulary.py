@@ -19,8 +19,8 @@ from memphis.form import vocabulary
 
 class SimpleVocabularyTests(unittest.TestCase):
 
-    list_vocab = vocabulary.SimpleVocabulary.fromValues(1, 2, 3)
-    items_vocab = vocabulary.SimpleVocabulary.fromItems(
+    list_vocab = vocabulary.SimpleVocabulary.from_values(1, 2, 3)
+    items_vocab = vocabulary.SimpleVocabulary.from_items(
         (1, 'one'), (2, 'two'), (3, 'three'), (4, 'fore!'))
 
     def test_simple_term(self):
@@ -62,48 +62,48 @@ class SimpleVocabularyTests(unittest.TestCase):
     def test_iter_and_get_term(self):
         for v in (self.list_vocab, self.items_vocab):
             for term in v:
-                self.assert_(v.getTerm(term.value) is term)
-                self.assert_(v.getTermByToken(term.token) is term)
+                self.assert_(v.get_term(term.value) is term)
+                self.assert_(v.get_term_bytoken(term.token) is term)
 
     def test_getvalue(self):
-        self.assertEqual(self.items_vocab.getValue('one'), 1)
-        self.assertRaises(LookupError, self.items_vocab.getValue, 'unknown')
+        self.assertEqual(self.items_vocab.get_value('one'), 1)
+        self.assertRaises(LookupError, self.items_vocab.get_value, 'unknown')
 
     def test_getterm(self):
-        term = self.items_vocab.getTerm(1)
+        term = self.items_vocab.get_term(1)
         self.assertEqual(term.token, 'one')
-        self.assertRaises(LookupError, self.items_vocab.getTerm, 500)
+        self.assertRaises(LookupError, self.items_vocab.get_term, 500)
 
     def test_getterm_bytoken(self):
-        term = self.items_vocab.getTermByToken('one')
+        term = self.items_vocab.get_term_bytoken('one')
         self.assertEqual(term.token, 'one')
         self.assertEqual(term.value, 1)
         self.assertRaises(LookupError,
-                          self.items_vocab.getTermByToken, 'unknown')
+                          self.items_vocab.get_term_bytoken, 'unknown')
 
     def test_nonunique_tokens(self):
         self.assertRaises(
-            ValueError, vocabulary.SimpleVocabulary.fromValues, 2, '2')
+            ValueError, vocabulary.SimpleVocabulary.from_values, 2, '2')
         self.assertRaises(
-            ValueError, vocabulary.SimpleVocabulary.fromItems, 
+            ValueError, vocabulary.SimpleVocabulary.from_items, 
             ('one', 1), ('another one', '1'))
         self.assertRaises(
-            ValueError, vocabulary.SimpleVocabulary.fromItems,
+            ValueError, vocabulary.SimpleVocabulary.from_items,
             ('one', 0), ('one', 1))
 
     def test_nonunique_token_message(self):
         try:
-            vocabulary.SimpleVocabulary.fromValues(2, '2')
+            vocabulary.SimpleVocabulary.from_values(2, '2')
         except ValueError, e:
             self.assertEquals(str(e), "term tokens must be unique: '2'")
 
     def test_nonunique_token_messages(self):
         try:
-            vocabulary.SimpleVocabulary.fromItems(('one', 0), ('one', 1))
+            vocabulary.SimpleVocabulary.from_items(('one', 0), ('one', 1))
         except ValueError, e:
             self.assertEquals(str(e), "term values must be unique: 'one'")
 
-    def test_overriding_createTerm(self):
+    def test_overriding_create_term(self):
         class MyTerm(object):
             def __init__(self, value):
                 self.value = value
@@ -111,10 +111,10 @@ class SimpleVocabularyTests(unittest.TestCase):
                 self.nextvalue = value + 1
 
         class MyVocabulary(vocabulary.SimpleVocabulary):
-            def createTerm(cls, value):
+            def create_term(cls, value):
                 return MyTerm(value)
-            createTerm = classmethod(createTerm)
+            create_term = classmethod(create_term)
 
-        vocab = MyVocabulary.fromValues(1, 2, 3)
+        vocab = MyVocabulary.from_values(1, 2, 3)
         for term in vocab:
             self.assertEqual(term.value + 1, term.nextvalue)
