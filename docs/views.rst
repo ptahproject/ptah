@@ -33,7 +33,7 @@ the layout chain calling each layout with the previous html rendered.
 
 System queries layout for this view::
 
-    >>> snipper = '<div>The result of a view without layout</div>.'
+    >>> snippet = '<div>The result of a view without layout</div>.'
     >>> layout = memphis.view.query_layout(request, root['front-page'], u'')
     >>> layout
     <ptah_app.views.ContentLayout object at ...>
