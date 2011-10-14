@@ -33,8 +33,10 @@ setup(name='{{project}}',
       tests_require=requires,
       test_suite="{{package}}",
       entry_points = """\
-      [paste.app_factory]
-      main = {{package}}:main
+        [paste.app_factory]
+        main = {{package}}:main
+        [memphis]
+        package = {{package}}
       """,
       paster_plugins=['pyramid'],
       )
