@@ -581,6 +581,23 @@ class TestSettingsInitialization(BaseTesting):
 
         self.assertTrue(isinstance(config.Settings.loader, FileStorage))
 
+    def test_settings_initialize_events_exceptions(self):
+        sm = config.registry
+
+        events = []
+        err = TypeError()
+        def h1(ev):
+            raise err
+
+        sm.registerHandler(h1, (config.SettingsInitializing,))
+        try:
+            config.initialize_settings({}, object())
+        except Exception, exc:
+            pass
+
+        self.assertIsInstance(exc, config.StopException)
+        self.assertIs(exc.exc, err)
+
     def test_settings_initialize_only_once(self):
         config.initialize_settings({})
 
