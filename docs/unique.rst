@@ -96,7 +96,8 @@ it is flat.  We have 2 attributes we use for mapping on to heirarchies:
 ptah_cms_nodes.parent_uri and the ptah_cms_content.path columns.  The path
 attribute is how we efficiently do fast look ups.  Walking parent/children 
 relationships in a RDBMS is inefficient, say, compared to graph databases such
-as ZODB or Neo4J. RDBMS arent graphs.
+as ZODB or Neo4J. RDBMS arent graphs.  The REST API is another example of this
+mantra.
 
 REST as First Class Citizen
 ---------------------------
@@ -132,13 +133,14 @@ Easy to Fork
 A goal to keep the software small is to encourage people to fork Ptah and
 use it with different storages.  Until we are convinced otherwise the Ptah
 project will use a relational database.  Please fork Ptah and replace
-RDBMS with Mongo or some other persistence system and tell us your story.
+RDBMS with Mongo or some other persistence system and tell us.
 
-Readibility
+Readability
 -----------
 
 When there is a decision to be made between legiblity of source code and
-performance we will take the readibility avenue. 
+performance we will opt for the readibility avenue.  Follow pep8 guidelines and
+consistent naming.
 
 Future Proof
 ------------
@@ -157,4 +159,18 @@ Ptah will still work by running simply 1 server (HTTP) but it will be
 recommended to run a second server dedicated to websockets.  We aim to provide
 facilities which will make developing security interactive web applications
 pleasant.
-  
+
+Exclusion over Inclusion
+------------------------
+We know this is controversial and possible anti-Pyramid but hear us out.
+Pyramid requires the developer to be explicit and you specifically say you
+want to load a package.  Ptah *does not* do this.  If you have a package
+in your PYTHONPATH that has a entry-point for `memphis`; it will get loaded.
+This is the default behavior and, of course, you can manually Configure your
+usage of Ptah the same way you configure Pyramid.  
+
+But why?  Because the goal of Ptah is to support a class of developer who
+wants to casually experiment with the system.  They should be able to install
+a egg and restart service and have it work.  We do understand that this goes
+against the Pyramid culture - so we will strive to document and support the
+Pyramid way.
