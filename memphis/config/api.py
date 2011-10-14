@@ -45,10 +45,10 @@ def initialize(packages=None, excludes=(), reg=None):
 
     # list all packages
     if packages is None:
-        packages = loadPackages(excludes=excludes)
+        packages = list_packages(excludes=excludes)
         packages.extend([mod for mod in mods if exclude_filter(mod)])
     else:
-        packages = loadPackages(packages, excludes=excludes)
+        packages = list_packages(packages, excludes=excludes)
 
     # scan packages and load all actions
     seen = set()
@@ -110,7 +110,7 @@ def loadPackage(name, seen, first=True):
     return packages
 
 
-def loadPackages(include_packages=None, excludes=None):
+def list_packages(include_packages=None, excludes=None):
     seen = set()
     packages = []
 
@@ -153,12 +153,12 @@ adapter_hooks.append(adapterHook)
 
 _cleanups = set()
 
-def addCleanup(handler):
+def cleanup(handler):
     _cleanups.add(handler)
     return handler
 
 
-def cleanUp(*modIds):
+def cleanup_system(*modIds):
     mods.clear()
     
     for h in _cleanups:

@@ -51,9 +51,9 @@ class SettingsGroupModified(ObjectEvent):
 
 _marker = object()
 
-def initializeSettings(settings,
-                       config=None, loader=None, watcherFactory=_marker,
-                       section=ConfigParser.DEFAULTSECT):
+def initialize_settings(settings,
+                        config=None, loader=None, watcherFactory=_marker,
+                        section=ConfigParser.DEFAULTSECT):
     if Settings.initialized:
         raise RuntimeError("initializeSettings has been called more than once.")
 
@@ -91,7 +91,7 @@ def initializeSettings(settings,
         raise api.StopException(e)
 
 
-def registerSettings(name, *nodes, **kw):
+def register_settings(name, *nodes, **kw):
     title = kw.get('title', '')
     description = kw.get('description', '')
     validator = kw.get('validator', None)
@@ -129,13 +129,13 @@ def registerSettings(name, *nodes, **kw):
 
         info.attach(
             Action(
-                _registerSettingsImpl, (group, node),
+                _register_settings_impl, (group, node),
                 discriminator = ('memphis.config:setting', node.name, name)))
 
     return group
 
 
-def _registerSettingsImpl(group, node):
+def _register_settings_impl(group, node):
     Settings.register(group)
     group.register(node)
 
@@ -490,13 +490,13 @@ class iNotifyWatcher(object):
             del self.notifier
 
 
-@shutdown.shutdownHandler
+@shutdown.shutdown_handler
 def shutdown():
     if Settings.loader is not None:
         Settings.loader.close()
 
 
-@api.addCleanup
+@api.cleanup
 def cleanup():
     if Settings.loader is not None:
         Settings.loader.close()

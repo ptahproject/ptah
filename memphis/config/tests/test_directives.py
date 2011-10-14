@@ -16,7 +16,7 @@ class BaseTesting(unittest.TestCase):
                           reg=newReg)
 
     def tearDown(self):
-        config.cleanUp(self.__class__.__module__)
+        config.cleanup_system(self.__class__.__module__)
 
         global TestClass, testAdapter, testHandler
         try:
@@ -145,7 +145,7 @@ class TestAdaptsDirective(BaseTesting):
         self._init_memphis()
 
         # reinstall
-        config.cleanUp()
+        config.cleanup_system()
 
         sm = config.registry
         sm.__init__('base')
@@ -254,7 +254,7 @@ class TestAdapterDirective(BaseTesting):
         self._init_memphis()
 
         # reinstall
-        config.cleanUp()
+        config.cleanup_system()
 
         sm = config.registry
         sm.__init__('base')
@@ -341,7 +341,7 @@ class TestSubscriberDirective(BaseTesting):
         self._init_memphis()
 
         # reinstall
-        config.cleanUp()
+        config.cleanup_system()
 
         sm = config.registry
         sm.__init__('base')
@@ -431,10 +431,10 @@ class BadicTesting(unittest.TestCase):
         from memphis.config import api
         
         self.assertEqual(
-            api.loadPackages(('memphis',), excludes=('memphis',)), [])
+            api.list_packages(('memphis',), excludes=('memphis',)), [])
 
-        self.assertEqual(api.loadPackages(), ['memphis'])
-        self.assertEqual(api.loadPackages(excludes=('memphis',)), [])
+        self.assertEqual(api.list_packages(), ['memphis'])
+        self.assertEqual(api.list_packages(excludes=('memphis',)), [])
 
     def test_stop_exc(self):
         from memphis.config import api

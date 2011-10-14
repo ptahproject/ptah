@@ -9,10 +9,10 @@ from memphis.config.api import start
 from memphis.config.api import AppStarting
 from memphis.config.api import StopException
 
-from memphis.config.api import loadPackages
+from memphis.config.api import list_packages
 
-from memphis.config.api import cleanUp
-from memphis.config.api import addCleanup
+from memphis.config.api import cleanup
+from memphis.config.api import cleanup_system
 
 from memphis.config.directives import event
 from memphis.config.directives import action
@@ -26,14 +26,14 @@ from memphis.config.directives import ConflictError
 
 from memphis.config.settings import Settings
 from memphis.config.settings import FileStorage
-from memphis.config.settings import registerSettings
-from memphis.config.settings import initializeSettings
+from memphis.config.settings import register_settings
+from memphis.config.settings import initialize_settings
 from memphis.config.settings import SettingsInitialized
 from memphis.config.settings import SettingsInitializing
 from memphis.config.settings import SettingsGroupModified
 
 from memphis.config.shutdown import shutdown
-from memphis.config.shutdown import shutdownHandler
+from memphis.config.shutdown import shutdown_handler
 
 from memphis.config.schema import SchemaNode
 from memphis.config.schema import Mapping

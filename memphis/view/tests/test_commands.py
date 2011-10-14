@@ -111,7 +111,7 @@ class TestTemplatesCommand(unittest.TestCase):
     def tearDown(self):
         self.stdout = self._stdout
         shutil.rmtree(self.dir)
-        config.cleanUp()
+        config.cleanup_system()
 
     def _run(self):
         try:

@@ -212,7 +212,7 @@ class TestTmplRenderer(RendererBase):
         self.assertEqual(res.body, '<div>My snippet</div>\n')
 
         # layout is 'test'
-        config.cleanUp()
+        config.cleanup_system()
         r = Renderer(view.template('templates/test.pt'), 'test')
         res = r(Context(), self.request, viewFactory)
         self.assertEqual(res.body, '<html><div>My snippet</div>\n</html>')

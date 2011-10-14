@@ -61,7 +61,7 @@ def get_field_factory(name):
     return fields.get(name, None)
 
 
-@config.addCleanup
+@config.cleanup
 def cleanup():
     fields.clear()
 

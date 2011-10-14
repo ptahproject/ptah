@@ -8,7 +8,7 @@ class TestShutdownHandlers(unittest.TestCase):
     def test_shutdown_handler(self):
         shutdownExecuted = []
 
-        @config.shutdownHandler
+        @config.shutdown_handler
         def shutdown():
             shutdownExecuted.append(True)
 
@@ -26,7 +26,7 @@ class TestShutdownHandlers(unittest.TestCase):
     def test_shutdown_exception_in_handler(self):
         shutdownExecuted = []
 
-        @config.shutdownHandler
+        @config.shutdown_handler
         def shutdown():
             raise ValueError()
 
@@ -42,7 +42,7 @@ class TestShutdownHandlers(unittest.TestCase):
     def test_shutdown_sigterm(self):
         shutdownExecuted = []
 
-        @config.shutdownHandler
+        @config.shutdown_handler
         def shutdown():
             shutdownExecuted.append(True)
 

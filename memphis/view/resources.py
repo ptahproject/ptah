@@ -8,7 +8,7 @@ from memphis.view import tmpl
 from memphis.view.customize import LayerWrapper
 
 
-STATIC = config.registerSettings(
+STATIC = config.register_settings(
     'static',
 
     config.SchemaNode(
@@ -147,6 +147,6 @@ class StaticView(object):
         return exc.wsgi_application(environ, start_response)
 
 
-@config.addCleanup
+@config.cleanup
 def cleanup():
     registry.clear()

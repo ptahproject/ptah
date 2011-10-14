@@ -27,9 +27,9 @@ Directives
 Settings
 ~~~~~~~~
 
-  .. autofunction:: initializeSettings
+  .. autofunction:: initialize_settings
 
-  .. autofunction:: registerSettings
+  .. autofunction:: register_settings
 
 Settings events
 ~~~~~~~~~~~~~~~

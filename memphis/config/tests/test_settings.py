@@ -17,7 +17,7 @@ class BaseTesting(unittest.TestCase):
             reg = Components('test'))
 
     def tearDown(self):
-        config.cleanUp(self.__class__.__module__)
+        config.cleanup_system(self.__class__.__module__)
 
 
 class TestSettings(BaseTesting):
@@ -25,7 +25,7 @@ class TestSettings(BaseTesting):
     def test_settings_register_errs(self):
         self.assertRaises(
             RuntimeError,
-            config.registerSettings,
+            config.register_settings,
             'section',
             colander.SchemaNode(
                 colander.Str(),
@@ -38,7 +38,7 @@ class TestSettings(BaseTesting):
                 name = 'node',
                 default = 'test')
 
-        group = config.registerSettings(
+        group = config.register_settings(
             'group1', node,
             title = 'Section title',
             description = 'Section description',
@@ -78,7 +78,7 @@ class TestSettings(BaseTesting):
             name = 'node',
             default = 'test')
 
-        group = config.registerSettings(
+        group = config.register_settings(
             'group1', node,
             title = 'Section title',
             description = 'Section description',
@@ -89,7 +89,7 @@ class TestSettings(BaseTesting):
             name = 'node2',
             default = 'test2')
 
-        group2 = config.registerSettings(
+        group2 = config.register_settings(
             'group1', node2,
             title = 'Section title',
             description = 'Section description',
@@ -106,7 +106,7 @@ class TestSettings(BaseTesting):
                 name = 'node',
                 default = 'test')
 
-        group = config.registerSettings(
+        group = config.register_settings(
             'group2', node, validator=validator)
 
         self._init_memphis()
@@ -134,7 +134,7 @@ class TestSettings(BaseTesting):
                 name = 'node2',
                 default = 'test')
 
-        group = config.registerSettings(
+        group = config.register_settings(
             'group3', node1, node2, validator=(validator1, validator2))
 
         self._init_memphis()
@@ -160,7 +160,7 @@ class TestSettings(BaseTesting):
                 name = 'node2',
                 default = 'test')
 
-        group = config.registerSettings('group4', node1, node2)
+        group = config.register_settings('group4', node1, node2)
 
         self._init_memphis()
 
@@ -187,7 +187,7 @@ class TestSettings(BaseTesting):
                 name = 'node2',
                 default = 10)
 
-        group = config.registerSettings('group', node1, node2)
+        group = config.register_settings('group', node1, node2)
         self._init_memphis()
 
         group.clear()
@@ -548,7 +548,7 @@ class TestFileStorage(BaseTesting):
 class TestSettingsInitialization(BaseTesting):
 
     def setUp(self):
-        config.cleanUp()
+        config.cleanup_system()
         BaseTesting.setUp(self)
         self.dir = tempfile.mkdtemp()
 
@@ -571,7 +571,7 @@ class TestSettingsInitialization(BaseTesting):
         self.assertTrue(config.Settings.loader is None)
 
         conf = object()
-        config.initializeSettings({}, conf)
+        config.initialize_settings({}, conf)
 
         self.assertTrue(isinstance(events[0], config.SettingsInitializing))
         self.assertTrue(isinstance(events[1], config.SettingsInitialized))
@@ -582,11 +582,11 @@ class TestSettingsInitialization(BaseTesting):
         self.assertTrue(isinstance(config.Settings.loader, FileStorage))
 
     def test_settings_initialize_only_once(self):
-        config.initializeSettings({})
+        config.initialize_settings({})
 
         self.assertRaises(
             RuntimeError,
-            config.initializeSettings, {})
+            config.initialize_settings, {})
 
     def test_settings_initialize_load_default(self):
         node1 = config.SchemaNode(
@@ -599,10 +599,10 @@ class TestSettingsInitialization(BaseTesting):
                 name = 'node2',
                 default = 10)
 
-        group = config.registerSettings('group', node1, node2)
+        group = config.register_settings('group', node1, node2)
         self._init_memphis()
 
-        config.initializeSettings({'group.node1': 'setting from ini'})
+        config.initialize_settings({'group.node1': 'setting from ini'})
 
         self.assertEqual(group['node1'], 'setting from ini')
         self.assertEqual(group['node2'], 10)
@@ -623,10 +623,10 @@ class TestSettingsInitialization(BaseTesting):
                 name = 'node2',
                 default = 10)
 
-        group = config.registerSettings('group', node1, node2)
+        group = config.register_settings('group', node1, node2)
         self._init_memphis()
 
-        config.initializeSettings({'defaults': path})
+        config.initialize_settings({'defaults': path})
 
         self.assertEqual(group['node1'], 'value')
         self.assertEqual(group['node2'], 10)
@@ -648,10 +648,10 @@ class TestSettingsInitialization(BaseTesting):
                 name = 'node2',
                 default = 10)
 
-        group = config.registerSettings('group', node1, node2)
+        group = config.register_settings('group', node1, node2)
         self._init_memphis()
 
-        config.initializeSettings({'settings': path})
+        config.initialize_settings({'settings': path})
 
         self.assertEqual(group['node1'], 'value')
         self.assertEqual(group['node2'], 10)
@@ -672,10 +672,10 @@ class TestSettingsInitialization(BaseTesting):
                 name = 'node2',
                 default = 10)
 
-        group = config.registerSettings('group', node1, node2)
+        group = config.register_settings('group', node1, node2)
         self._init_memphis()
 
-        config.initializeSettings({'include': path})
+        config.initialize_settings({'include': path})
 
         self.assertEqual(group['node1'], 'value')
         self.assertEqual(group['node2'], 10)
@@ -691,7 +691,7 @@ class TestSettingsInitialization(BaseTesting):
                 name = 'node1',
                 default = 'default1')
 
-        group = config.registerSettings('group', node1)
+        group = config.register_settings('group', node1)
         self._init_memphis()
 
         class Config(object):
@@ -700,7 +700,7 @@ class TestSettingsInitialization(BaseTesting):
             def end(self):
                 pass
 
-        config.initializeSettings({'settings': path}, config=Config())
+        config.initialize_settings({'settings': path}, config=Config())
 
         self.assertTrue(
             isinstance(config.Settings.loader.watcher, iNotifyWatcher))

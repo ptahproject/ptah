@@ -11,7 +11,7 @@ class BaseTesting(unittest.TestCase):
         config.initialize(('memphis.config', self.__class__.__module__))
 
     def tearDown(self):
-        config.cleanUp(self.__class__.__module__)
+        config.cleanup_system(self.__class__.__module__)
 
 
 class TestCommand(BaseTesting):
@@ -22,13 +22,13 @@ class TestCommand(BaseTesting):
                 name = 'node',
                 default = 'test')
 
-        group = config.registerSettings(
+        group = config.register_settings(
             'group1', node,
             title = 'Section1',
             description = 'Description1',
             )
 
-        group = config.registerSettings(
+        group = config.register_settings(
             'group2', node,
             title = 'Section2',
             description = 'Description2',

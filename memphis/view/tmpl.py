@@ -80,6 +80,6 @@ def path(spec, package_name=None):
     return abspath, package_name
 
 
-@config.addCleanup
+@config.cleanup
 def cleanup():
     registry.clear()

@@ -29,7 +29,7 @@ class Base(unittest.TestCase):
     def _init_memphis(self, settings={}, handler=None, *args, **kw):
         config.initialize(('memphis.view', self.__class__.__module__),
                           reg = Components('test'))
-        config.initializeSettings(settings, self.p_config)
+        config.initialize_settings(settings, self.p_config)
         config.start(self.p_config)
 
     def _setup_pyramid(self):
@@ -51,7 +51,7 @@ class Base(unittest.TestCase):
         self._setup_memphis()
 
     def tearDown(self):
-        config.cleanUp(self.__class__.__module__)
+        config.cleanup_system(self.__class__.__module__)
         sm = self.p_config
         sm.__init__('base')
         testing.tearDown()

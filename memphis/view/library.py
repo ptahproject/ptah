@@ -150,6 +150,6 @@ class Library(object):
         return '<memphis.view.library.Library "%s">'%self.name
 
 
-@config.addCleanup
+@config.cleanup
 def cleanup():
     _libraries.clear()

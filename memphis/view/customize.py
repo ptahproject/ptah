@@ -13,7 +13,7 @@ from memphis.view import tmpl
 log = logging.getLogger('memphis.view')
 
 
-TEMPLATE = config.registerSettings(
+TEMPLATE = config.register_settings(
     'template',
 
     config.SchemaNode(
@@ -266,14 +266,14 @@ def initialize(*args):
             TEMPLATE.chameleon_reload
 
 
-@config.shutdownHandler
+@config.shutdown_handler
 def shutdown():
     if TEMPLATE._watcher is not None: # pragma: no cover
         TEMPLATE._watcher.stop()
         TEMPLATE._watcher = None
 
 
-@config.addCleanup
+@config.cleanup
 def cleanup():
     _Manager.layers.clear()
     #_layersManager.layers.clear()

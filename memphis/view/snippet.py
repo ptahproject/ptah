@@ -74,8 +74,8 @@ def snippet_type_impl(name, context, title, description):
 
 _registered = []
 
-@config.addCleanup
-def cleanUp():
+@config.cleanup
+def cleanup():
     _registered[:] = []
 
 

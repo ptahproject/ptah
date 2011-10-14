@@ -58,7 +58,7 @@ class Timezone(colander.SchemaType):
                 node, _('"${val}" is not a timezone', mapping={'val':cstruct}))
 
 
-FORMAT = config.registerSettings(
+FORMAT = config.register_settings(
     'format',
 
     config.SchemaNode(

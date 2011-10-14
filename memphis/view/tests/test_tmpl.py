@@ -7,7 +7,7 @@ from memphis.view import tmpl as tapi
 class TestTmplCommand(unittest.TestCase):
 
     def tearDown(self):
-        config.cleanUp()
+        config.cleanup_system()
 
     def test_tmpl_err1(self):
         self.assertRaises(

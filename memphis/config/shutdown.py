@@ -4,7 +4,7 @@ from signal import SIGINT, SIGTERM
 
 handlers = []
 
-def shutdownHandler(handler):
+def shutdown_handler(handler):
     handlers.append(handler)
     return handler
 
