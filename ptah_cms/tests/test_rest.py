@@ -26,7 +26,7 @@ class RestBase(Base):
     def tearDown(self):
         ptah.checkPermission = self.orig_checkPermission
 
-        config.cleanUp(self.__class__.__module__)
+        config.cleanup_system(self.__class__.__module__)
         super(RestBase, self).tearDown()
 
 

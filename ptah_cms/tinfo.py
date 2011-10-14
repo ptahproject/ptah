@@ -170,6 +170,6 @@ def registerType(
     buildClassActions(cls)
 
 
-@config.addCleanup
-def cleanUp():
+@config.cleanup
+def cleanup():
     Types.clear()

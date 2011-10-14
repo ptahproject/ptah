@@ -10,7 +10,7 @@ view.register_layout(
     template = view.template('ptah_crowd:templates/layout.pt'))
 
 
-CROWD = config.registerSettings(
+CROWD = config.register_settings(
     'ptah-crowd',
 
     config.SchemaNode(

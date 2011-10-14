@@ -15,7 +15,7 @@ from repoze.sendmail.delivery import DirectMailDelivery
 from memphis import config
 
 
-MAIL = config.registerSettings(
+MAIL = config.register_settings(
     'mail',
 
     config.SchemaNode(

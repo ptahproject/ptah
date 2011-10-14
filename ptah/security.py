@@ -308,7 +308,7 @@ def checkPermission(permission, context, request=None, throw=False):
 view.set_checkpermission(checkPermission)
 
 
-@config.addCleanup
+@config.cleanup
 def cleanup():
     DEFAULT_ACL[:] = []
     ACLs.clear()

@@ -4,7 +4,7 @@ Pyramid & Ptah Startup
 Requirements
 ------------
 You must pass a pyramid Configurator.registry object into 
-memphis.config.initialize and  memphis.config.initializeSettings. You can
+memphis.config.initialize and  memphis.config.initialize_settings. You can
 manually create WSGI App and initialize it or Ptah can perform this for you.
 
 config.initialize
@@ -25,10 +25,10 @@ This function is found at, memphis.config.initialize
     
   - Checks for configuration conflicts
 
-config.initializeSettings
--------------------------
+config.initialize_settings
+--------------------------
 
-This function, memphis.config.initializeSettings(/path/to/settings.ini)
+This function, memphis.config.initialize_settings(/path/to/settings.ini)
 
   - consumes the .ini file and parses it
   - makes all values available in memphis.config.Settings dict

@@ -98,6 +98,6 @@ class Pagination(object):
         return pages, prevLink, nextLink
 
 
-@config.addCleanup
+@config.cleanup
 def cleanup():
     tldata.clear()

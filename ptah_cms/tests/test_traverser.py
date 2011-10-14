@@ -9,7 +9,7 @@ from base import Base
 class TestTraverser(Base):
 
     def tearDown(self):
-        config.cleanUp(self.__class__.__module__)
+        config.cleanup_system(self.__class__.__module__)
         super(TestTraverser, self).tearDown()
 
     def _create_content(self):

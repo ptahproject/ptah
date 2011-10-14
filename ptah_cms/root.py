@@ -90,6 +90,6 @@ class ApplicationFactory(object):
         return root
 
 
-@config.addCleanup
-def cleanUp():
+@config.cleanup
+def cleanup():
     Factories.clear()

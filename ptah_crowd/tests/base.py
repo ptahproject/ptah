@@ -35,7 +35,7 @@ class Base(unittest.TestCase):
         if settings is None:
             settings = self._settings
         config.initialize(('ptah', self.__class__.__module__))
-        config.initializeSettings(settings, self.p_config)
+        config.initialize_settings(settings, self.p_config)
 
         # create sql tables
         Base = pyramid_sqla.get_base()
@@ -59,7 +59,7 @@ class Base(unittest.TestCase):
         self._init_memphis()
 
     def tearDown(self):
-        config.cleanUp()
+        config.cleanup_system()
         sm = self.p_config
         sm.__init__('base')
         testing.tearDown()
