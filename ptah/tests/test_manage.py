@@ -11,7 +11,7 @@ from base import Base
 class TestManageModule(Base):
 
     def tearDown(self):
-        config.cleanUp(self.__class__.__module__)
+        config.cleanup_system(self.__class__.__module__)
         super(TestManageModule, self).tearDown()
 
     def test_manage_module(self):
@@ -130,7 +130,7 @@ class TestManageModule(Base):
 class TestInstrospection(Base):
 
     def tearDown(self):
-        config.cleanUp(self.__class__.__module__)
+        config.cleanup_system(self.__class__.__module__)
         super(TestInstrospection, self).tearDown()
 
     def test_manage_module(self):

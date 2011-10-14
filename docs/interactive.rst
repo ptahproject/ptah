@@ -9,7 +9,7 @@ You can use any Python interpreter to import and start Ptah easily. Starting up 
 
   >>> from mephis import config
   >>> config.initialize() # scans for all packages in sys.path
-  >>> config.initializeSettings( {'settings':'/path/to/ptah_settings.ini'} )
+  >>> config.initialize_settings( {'settings':'/path/to/ptah_settings.ini'} )
 
 Voila your interpreter is fully initialized.  We do not have any convienance
 functionality at this time.  The public API will be enough.

@@ -11,7 +11,7 @@ from base import Base
 class TestRestRegistrations(Base):
 
     def tearDown(self):
-        config.cleanUp(self.__class__.__module__)
+        config.cleanup_system(self.__class__.__module__)
         super(TestRestRegistrations, self).tearDown()
 
     def test_rest_registerService(self):
@@ -93,7 +93,7 @@ class Provider(object):
 class TestRestView(Base):
 
     def tearDown(self):
-        config.cleanUp(self.__class__.__module__)
+        config.cleanup_system(self.__class__.__module__)
         super(TestRestView, self).tearDown()
 
     def test_rest_login(self):

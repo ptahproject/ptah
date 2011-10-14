@@ -9,7 +9,7 @@ from base import Base
 class TestAction(Base):
 
     def tearDown(self):
-        config.cleanUp(self.__class__.__module__)
+        config.cleanup_system(self.__class__.__module__)
         super(TestAction, self).tearDown()
 
     def test_cms_action_reg(self):
@@ -94,7 +94,7 @@ class TestAction(Base):
 class TestWrapper(Base):
 
     def tearDown(self):
-        config.cleanUp(self.__class__.__module__)
+        config.cleanup_system(self.__class__.__module__)
         super(TestWrapper, self).tearDown()
 
     def test_cms_wrapper_not_found(self):
@@ -140,7 +140,7 @@ class TestWrapper(Base):
 class TestCms(Base):
 
     def tearDown(self):
-        config.cleanUp(self.__class__.__module__)
+        config.cleanup_system(self.__class__.__module__)
         super(TestCms, self).tearDown()
 
     def test_cms_not_found(self):

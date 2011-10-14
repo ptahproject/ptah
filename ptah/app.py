@@ -18,7 +18,7 @@ types = {
     'auth_tkt': (AuthTktAuthenticationPolicy, ('secret',), ('callback',)),
 }
 
-SECURITY = config.registerSettings(
+SECURITY = config.register_settings(
     'auth',
 
     config.SchemaNode(
@@ -51,7 +51,7 @@ SECURITY = config.registerSettings(
 SECURITY['callback'] = LocalRoles
 
 
-SESSION = config.registerSettings(
+SESSION = config.register_settings(
     'session',
 
     config.SchemaNode(
@@ -104,7 +104,7 @@ SESSION = config.registerSettings(
                  config.RequiredWithDependency('secret', 'type', default='')),
 )
 
-SQLA = config.registerSettings(
+SQLA = config.register_settings(
     'sqla',
 
     config.SchemaNode(

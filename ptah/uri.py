@@ -109,7 +109,7 @@ class UriGenerator(object):
         return '%s:%s'%(self.schema, uuid.uuid4().get_hex())
 
 
-@config.addCleanup
+@config.cleanup
 def cleanup():
     resolvers.clear()
     resolversTitle.clear()

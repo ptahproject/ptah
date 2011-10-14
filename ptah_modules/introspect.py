@@ -9,7 +9,7 @@ from zope.interface.interface import InterfaceClass
 
 from memphis import config, view
 from memphis.config import directives
-from memphis.config.api import exclude, loadPackages
+from memphis.config.api import exclude, list_packages
 
 from ptah.manage import INTROSPECTIONS
 from ptah.uri import resolvers, resolversTitle
@@ -25,7 +25,7 @@ class IntrospectModule(ptah.PtahModule):
 
     def list_packages(self):
         if self.packages is None:
-            self.packages = loadPackages()
+            self.packages = list_packages()
             self.packages.sort()
         return self.packages
 
@@ -132,7 +132,7 @@ class EventsView(view.View):
             events.sort()
             self.events = [ev for _t, ev in events]
         else:
-            pkgs = loadPackages()
+            pkgs = list_packages()
             evinst = event.instance
 
             seen = set()
@@ -167,7 +167,7 @@ class RoutesView(view.View):
         self.route = route = None #directives.events.get(ev)
 
         if route is None:
-            packages = loadPackages()
+            packages = list_packages()
 
             viewactions = []
 

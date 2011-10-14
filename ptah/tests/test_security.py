@@ -32,7 +32,7 @@ class TestPermission(Base):
 class TestACL(Base):
 
     def tearDown(self):
-        config.cleanUp(self.__class__.__module__)
+        config.cleanup_system(self.__class__.__module__)
         super(TestACL, self).tearDown()
 
     def test_acl_register(self):

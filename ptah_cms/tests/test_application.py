@@ -104,7 +104,7 @@ class TestApplicationFactoryCustom(Base):
         ptah_cms.ApplicationFactory._sql_get_root.reset()
 
     def tearDown(self):
-        config.cleanUp(self.__class__.__module__)
+        config.cleanup_system(self.__class__.__module__)
         super(TestApplicationFactoryCustom, self).tearDown()
 
     def test_app_factory_custom_app(self):

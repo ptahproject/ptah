@@ -132,7 +132,7 @@ def ptah_init(configurator):
         memphis.config.initialize(None, excludes, configurator.registry)
 
         # load settings
-        memphis.config.initializeSettings(settings, configurator)
+        memphis.config.initialize_settings(settings, configurator)
     except memphis.config.StopException:
         memphis.config.shutdown()
         raise

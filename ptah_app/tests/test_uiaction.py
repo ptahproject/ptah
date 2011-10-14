@@ -9,7 +9,7 @@ from base import Base
 class TestUIAction(Base):
 
     def tearDown(self):
-        config.cleanUp(self.__class__.__module__)
+        config.cleanup_system(self.__class__.__module__)
         super(TestUIAction, self).tearDown()
 
     def _setup_memphis(self):

@@ -2,7 +2,7 @@
 import colander
 from memphis import config
 
-PTAH_CONFIG = config.registerSettings(
+PTAH_CONFIG = config.register_settings(
     'ptah',
 
     config.SchemaNode(

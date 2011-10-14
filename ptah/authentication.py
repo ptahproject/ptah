@@ -142,7 +142,7 @@ def searchPrincipals(term):
             yield principal
 
 
-@config.addCleanup
+@config.cleanup
 def cleanup():
     checkers[:] = []
     providers.clear()
