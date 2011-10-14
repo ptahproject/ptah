@@ -19,12 +19,15 @@ view.registerRoute('ptah-join', '/join.html')
 class Registration(form.Form):
     view.pyramidView(route = 'ptah-join', layout='ptah-security')
 
-    csrf = True
     label = _("Registration")
     fields = form.Fieldset(RegistrationSchema, PasswordSchema)
     autocomplete = 'off'
 
     def update(self):
+        uri = ptah.authService.get_userid()
+        if uri is not None:
+            raise HTTPFound(location = self.request.application_url)
+
         if not CROWD.join:
             raise HTTPForbidden('Site registraion is disabled.')
 
