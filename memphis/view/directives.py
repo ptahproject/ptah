@@ -4,8 +4,8 @@ from pyramid.interfaces import IRequest
 
 from memphis import config
 from memphis.view.customize import LayerWrapper
-from memphis.view.view import unset, registerViewImpl
-from memphis.view.layout import registerLayoutImpl
+from memphis.view.view import unset, register_view_impl
+from memphis.view.layout import register_layout_impl
 from memphis.view.snippet import register_snippet_impl
 
 
@@ -23,7 +23,7 @@ def snippet(snippetType, context=None, template=None, layer=''):
         )
 
 
-def pyramidView(name=u'', context=None, route=None,
+def pyramidview(name=u'', context=None, route=None,
                 template=None, layout=unset,
                 permission='__no_permission_required__', layer=''):
 
@@ -36,7 +36,7 @@ def pyramidView(name=u'', context=None, route=None,
         def wrapper(factory):
             info.attach(
                 config.Action(
-                    LayerWrapper(registerViewImpl, discriminator),
+                    LayerWrapper(register_view_impl, discriminator),
                     (factory, name, context, template, route,
                      layout, permission),
                     discriminator = discriminator)
@@ -47,7 +47,7 @@ def pyramidView(name=u'', context=None, route=None,
         # class decorator
         info.attach(
             config.ClassAction(
-                LayerWrapper(registerViewImpl, discriminator),
+                LayerWrapper(register_view_impl, discriminator),
                 (name, context, template, route, layout, permission),
                 discriminator = discriminator)
             )
@@ -60,7 +60,7 @@ def layout(name='',context=None,parent='',route=None,template=None,layer=''):
 
     info.attach(
         config.ClassAction(
-            LayerWrapper(registerLayoutImpl, discriminator),
+            LayerWrapper(register_layout_impl, discriminator),
             (name, context, template, parent, route),
             discriminator = discriminator)
         )

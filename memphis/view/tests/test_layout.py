@@ -5,7 +5,7 @@ from pyramid.httpexceptions import HTTPNotFound
 
 from memphis import config, view
 from memphis.view.view import View, viewMapper
-from memphis.view.layout import Layout, queryLayout
+from memphis.view.layout import Layout, query_layout
 from memphis.view.renderers import Renderer, SimpleRenderer
 
 from base import Base
@@ -25,14 +25,14 @@ class LayoutSnippet(Base):
         pass
 
     def test_layout_register_class_errors(self):
-        self.assertRaises(ValueError, view.registerLayout, 'test', klass=None)
+        self.assertRaises(ValueError, view.register_layout, 'test', klass=None)
 
         class Layout(object):
             pass
-        self.assertRaises(ValueError, view.registerLayout, 'test', klass=Layout)
+        self.assertRaises(ValueError, view.register_layout, 'test', klass=Layout)
 
     def test_layout_register_simple(self):
-        view.registerLayout('test')
+        view.register_layout('test')
         self._init_memphis()
 
         layout = config.registry.getMultiAdapter(
@@ -48,7 +48,7 @@ class LayoutSnippet(Base):
         class MyLayout(view.Layout):
             pass
 
-        view.registerLayout('test', klass=MyLayout)
+        view.register_layout('test', klass=MyLayout)
         self._init_memphis()
 
         layout = config.registry.getMultiAdapter(
@@ -64,13 +64,13 @@ class LayoutSnippet(Base):
             def render(self, rendered):
                 return '<html>%s</html>'%rendered
 
-        view.registerLayout('test', klass=Layout)
+        view.register_layout('test', klass=Layout)
         self._init_memphis()
 
         v = View(Context(), self.request)
 
         # find layout for view
-        layout = queryLayout(self.request, v.context, 'test')
+        layout = query_layout(self.request, v.context, 'test')
         self.assertTrue(isinstance(layout, Layout))
 
         layout.update()
@@ -92,7 +92,7 @@ class LayoutSnippet(Base):
 
         v = View(Context(), self.request)
 
-        layout = queryLayout(self.request, v.context, 'test')
+        layout = query_layout(self.request, v.context, 'test')
         self.assertTrue(isinstance(layout, Layout))
 
         layout.update()
@@ -101,7 +101,7 @@ class LayoutSnippet(Base):
 
     def test_layout_simple_notfound(self):
         v = view.View(Context(Context()), self.request)
-        layout = queryLayout(self.request, v.context, 'test')
+        layout = query_layout(self.request, v.context, 'test')
         self.assertTrue(layout is None)
 
     def test_layout_simple_context(self):
@@ -113,13 +113,13 @@ class LayoutSnippet(Base):
             def render(self, content):
                 return '<html>%s</html>'%content
 
-        view.registerLayout('test', klass=Layout, context=Context)
+        view.register_layout('test', klass=Layout, context=Context)
         self._init_memphis()
 
         v = View(Context(), self.request)
 
         # find layout for view
-        layout = queryLayout(self.request, v.context, 'test')
+        layout = query_layout(self.request, v.context, 'test')
         self.assertTrue(isinstance(layout, Layout))
 
         layout.update()
@@ -133,7 +133,7 @@ class LayoutSnippet(Base):
             def render(self, content):
                 return '<html>%s</html>'%content
 
-        view.registerLayout('', klass=Layout, context=Root)
+        view.register_layout('', klass=Layout, context=Root)
         self._init_memphis()
 
         root = Root()
@@ -141,7 +141,7 @@ class LayoutSnippet(Base):
         v = View(context, self.request)
 
         # find layout for view
-        layout = queryLayout(self.request, context, '')
+        layout = query_layout(self.request, context, '')
         self.assertTrue(isinstance(layout, Layout))
 
         renderer = SimpleRenderer(layout='')
@@ -159,7 +159,7 @@ class LayoutSnippet(Base):
         tmpl.write('<html>${content}</html>')
         tmpl.close()
 
-        view.registerLayout('test', template = view.template(fn))
+        view.register_layout('test', template = view.template(fn))
         self._init_memphis()
 
         renderer = SimpleRenderer(layout='test')
@@ -182,8 +182,8 @@ class LayoutSnippet(Base):
             def render(self, content):
                 return '<html>%s</html>'%content
 
-        view.registerLayout('', klass=LayoutPage, parent=None)
-        view.registerLayout('test', klass=LayoutTest, parent='.')
+        view.register_layout('', klass=LayoutPage, parent=None)
+        view.register_layout('test', klass=LayoutTest, parent='.')
         self._init_memphis()
 
         context = Context()
@@ -205,8 +205,8 @@ class LayoutSnippet(Base):
             def render(self, content):
                 return '<html>%s</html>'%content
 
-        view.registerLayout('', klass=LayoutPage, context=Root, parent=None)
-        view.registerLayout('test', klass=LayoutTest, parent='.')
+        view.register_layout('', klass=LayoutPage, context=Root, parent=None)
+        view.register_layout('test', klass=LayoutTest, parent='.')
         self._init_memphis()
 
         root = Root()
@@ -218,13 +218,13 @@ class LayoutSnippet(Base):
 
         self.assertTrue('<html><div>View: test</div></html>' in res.body)
 
-        layout = queryLayout(self.request, v.context, 'test')
+        layout = query_layout(self.request, v.context, 'test')
         self.assertTrue(isinstance(layout, LayoutTest))
 
-        rootlayout = queryLayout(self.request, context, '')
+        rootlayout = query_layout(self.request, context, '')
         self.assertTrue(isinstance(rootlayout, LayoutPage))
 
-        rootlayout = queryLayout(self.request, root, '')
+        rootlayout = query_layout(self.request, root, '')
         self.assertTrue(isinstance(rootlayout, LayoutPage))
 
     def test_layout_chain_same_layer_id_on_different_levels(self):
@@ -240,8 +240,8 @@ class LayoutSnippet(Base):
             def render(self, content):
                 return '<html>%s</html>'%content
 
-        view.registerLayout('', klass=Layout1, context=Context, parent='.')
-        view.registerLayout('', klass=Layout2, context=Root, parent=None)
+        view.register_layout('', klass=Layout1, context=Context, parent='.')
+        view.register_layout('', klass=Layout2, context=Root, parent=None)
         self._init_memphis()
 
         root = Root()
@@ -262,7 +262,7 @@ class LayoutSnippet(Base):
             def render(self, content):
                 return '<div>%s</div>'%content
 
-        view.registerLayout('', klass=Layout, context=Context, parent='page')
+        view.register_layout('', klass=Layout, context=Context, parent='page')
         self._init_memphis()
 
         root = Root()
@@ -278,12 +278,12 @@ class LayoutSnippet(Base):
             def render(self):
                 return 'test'
 
-        view.registerLayout('test')
+        view.register_layout('test')
         self._init_memphis()
 
         v = View(Context(), self.request)
 
-        layout = queryLayout(self.request, v.context, 'test')
+        layout = query_layout(self.request, v.context, 'test')
         layout.update()
         self.assertTrue('test' == layout.render(v.render()))
 

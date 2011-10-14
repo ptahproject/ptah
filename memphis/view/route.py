@@ -13,11 +13,11 @@ from memphis.view.interfaces import INavigationRoot
 interface.classImplements(DefaultRootFactory, INavigationRoot)
 
 
-def registerRoute(name, pattern=None, factory=None, header=None,
-                  traverse=None, pregenerator=None, use_global_views=False,
-                  xhr=False, request_method=None,
-                  path_info=None, request_param=None,
-                  accept=None, custom_predicates=()):
+def register_route(name, pattern=None, factory=None, header=None,
+                   traverse=None, pregenerator=None, use_global_views=False,
+                   xhr=False, request_method=None,
+                   path_info=None, request_param=None,
+                   accept=None, custom_predicates=()):
 
     # these are route predicates; if they do not match, the next route
     # in the routelist will be tried
@@ -34,14 +34,14 @@ def registerRoute(name, pattern=None, factory=None, header=None,
     info = config.DirectiveInfo()
     info.attach(
         config.Action(
-            registerRouteImpl,
+            register_route_impl,
             (name,pattern,factory,predicates,pregenerator,use_global_views),
             discriminator = ('memphis.view:route', name),
             order = 1))
 
 
-def registerRouteImpl(name, pattern, factory,
-                      predicates, pregenerator, use_global_views):
+def register_route_impl(name, pattern, factory,
+                        predicates, pregenerator, use_global_views):
     request_iface = config.registry.queryUtility(IRouteRequest, name=name)
     if request_iface is None:
         if use_global_views:

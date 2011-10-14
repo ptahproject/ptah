@@ -63,7 +63,7 @@ class TestSimpleRenderer(Base):
             def render(self, content):
                 return '<html>%s</html>'%content
 
-        view.registerLayout('test', klass=Layout)
+        view.register_layout('test', klass=Layout)
         self._init_memphis()
 
         def viewFactory(context, request):
@@ -200,7 +200,7 @@ class TestTmplRenderer(RendererBase):
             def render(self, content):
                 return '<html>%s</html>'%content
 
-        view.registerLayout('test', klass=Layout)
+        view.register_layout('test', klass=Layout)
         self._init_memphis()
 
         def viewFactory(context, request):

@@ -12,7 +12,7 @@ from memphis.view.customize import LayerWrapper
 log = logging.getLogger('memphis.view')
 
 
-def queryLayout(request, context, name=''):
+def query_layout(request, context, name=''):
     """ query named layout for context """
     assert IRequest.providedBy(request), u"must pass in a request object"
 
@@ -66,7 +66,7 @@ class Layout(View):
         parent = getattr(view, '__parent__', self.context)
 
         if self.name != self.layout:
-            layout = queryLayout(self.request, parent, self.layout)
+            layout = query_layout(self.request, parent, self.layout)
             if layout is not None:
                 return layout(result, layout=self, view=view)
         else:
@@ -76,7 +76,7 @@ class Layout(View):
                 context = self.context
             parent = getattr(context, '__parent__', None)
             if parent is not None:
-                layout = queryLayout(self.request, parent, self.layout)
+                layout = query_layout(self.request, parent, self.layout)
                 if layout is not None:
                     return layout(result, view=view)
 
@@ -84,7 +84,7 @@ class Layout(View):
         return self.render(result)
 
 
-def registerLayout(
+def register_layout(
     name='', context=None, parent='',
     klass=Layout, template = None, route=None, layer=''):
 
@@ -96,13 +96,13 @@ def registerLayout(
     info = config.DirectiveInfo()
     info.attach(
         config.Action(
-            LayerWrapper(registerLayoutImpl, discriminator),
+            LayerWrapper(register_layout_impl, discriminator),
             (klass, name, context, template, parent, route),
             discriminator = discriminator)
         )
 
 
-def registerLayoutImpl(klass, name, context, template, parent, route_name):
+def register_layout_impl(klass, name, context, template, parent, route_name):
     if not parent:
         layout = None
     elif parent == '.':

@@ -17,20 +17,19 @@ from memphis.view.snippet import render_snippet
 from memphis.view.snippet import register_snippet
 
 # route
-from memphis.view.route import registerRoute
+from memphis.view.route import register_route
 
 # layout
 from memphis.view.layout import Layout
-from memphis.view.layout import queryLayout
-from memphis.view.layout import registerLayout
+from memphis.view.layout import query_layout
+from memphis.view.layout import register_layout
 
 # view
 from memphis.view.view import chained
 from memphis.view.view import subpath
-from memphis.view.view import renderView
-from memphis.view.view import registerView
-from memphis.view.view import registerDefaultView
-from memphis.view.view import setCheckPermission
+from memphis.view.view import render_view
+from memphis.view.view import register_view
+from memphis.view.view import set_checkpermission
 
 # renderers
 from memphis.view.renderers import Renderer
@@ -53,7 +52,7 @@ from memphis.view.library import render_includes
 # directives
 from memphis.view.directives import layout
 from memphis.view.directives import snippet
-from memphis.view.directives import pyramidView
+from memphis.view.directives import pyramidview
 
 # status message
 from memphis.view.message import Message

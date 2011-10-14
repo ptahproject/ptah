@@ -19,7 +19,7 @@ from memphis.view.customize import LayerWrapper
 from memphis.view.renderers import Renderer, SimpleRenderer
 
 
-def renderView(name, context, request):
+def render_view(name, context, request):
     adapters = config.registry.adapters
 
     view_callable = adapters.lookup(
@@ -43,11 +43,11 @@ def defaultCheckPermission(permission, context, request=None, throw=False):
     principals = AUTH.effective_principals(request)
     return AUTHZ.permits(context, principals, permission)
 
-def setCheckPermission(func):
+def set_checkpermission(func):
     global checkPermission
     checkPermission = func
 
-setCheckPermission(defaultCheckPermission)
+set_checkpermission(defaultCheckPermission)
 
 
 chained = object()
@@ -119,7 +119,7 @@ class subpath(object):
 
 unset = object()
 
-def registerView(
+def register_view(
     name=u'', factory=View, context=None, template=None, route=None,
     layout=unset, permission='__no_permission_required__', layer=''):
 
@@ -131,13 +131,13 @@ def registerView(
     info = config.DirectiveInfo()
     info.attach(
         config.Action(
-            LayerWrapper(registerViewImpl, discriminator),
+            LayerWrapper(register_view_impl, discriminator),
             (factory, name, context, template, route, layout, permission),
             discriminator = discriminator)
         )
 
 
-def registerViewImpl(factory, name, context, template, route_name,
+def register_view_impl(factory, name, context, template, route_name,
                      layout, permission):
 
     if layout is unset:
@@ -171,7 +171,7 @@ def registerViewImpl(factory, name, context, template, route_name,
     sm = config.registry
 
     if callable(permission):
-        def pyramidView(context, request):
+        def pyramidview(context, request):
             if permission(context, request):
                 return renderer(context, request)
 
@@ -179,7 +179,7 @@ def registerViewImpl(factory, name, context, template, route_name,
                           'Unauthorized: %s failed permission check'%factory)
             raise HTTPForbidden(msg)
     elif permission:
-        def pyramidView(context, request):
+        def pyramidview(context, request):
             if checkPermission(permission, context, request):
                 return renderer(context, request)
 
@@ -187,7 +187,7 @@ def registerViewImpl(factory, name, context, template, route_name,
                           'Unauthorized: %s failed permission check'%factory)
             raise HTTPForbidden(msg)
     else:
-        pyramidView = renderer
+        pyramidview = renderer
 
     # register view
     if context is None:
@@ -205,26 +205,7 @@ def registerViewImpl(factory, name, context, template, route_name,
         request_iface = sm.getUtility(IRouteRequest, name=route_name)
 
     sm.registerAdapter(
-        pyramidView, (view_classifier, request_iface, context), IView, name)
-
-
-def registerDefaultView(name, context=interface.Interface, request=IRequest):
-    info = config.DirectiveInfo()
-    info.attach(
-        config.Action(
-            registerDefaultViewImpl,
-            (name, context, request),
-            discriminator = ('memphis.view:defaultView', name, context)))
-
-
-def registerDefaultViewImpl(
-    name, context=interface.Interface, request_iface=IRequest, view=None):
-    if view is None:
-        def view(context, request):
-            return renderView(name, context, request)
-
-    config.registry.registerAdapter(
-        view, (IViewClassifier, request_iface, context), IView, '')
+        pyramidview, (view_classifier, request_iface, context), IView, name)
 
 
 def viewMapper(view, attr=None):

@@ -38,17 +38,17 @@ class TestView(BaseView):
 
     def test_view_register_errs(self):
         self.assertRaises(
-            ValueError, view.registerView, 'test.html', None)
+            ValueError, view.register_view, 'test.html', None)
 
         self.assertRaises(
-            ValueError, view.registerView, 'test.html', {})
+            ValueError, view.register_view, 'test.html', {})
 
     def test_view_register_view(self):
         class MyView(view.View):
             def render(self):
                 return '<html>view</html>'
 
-        view.registerView('index.html', MyView)
+        view.register_view('index.html', MyView)
         self._init_memphis()
 
         context = Context()
@@ -61,7 +61,7 @@ class TestView(BaseView):
         global MyView
 
         class MyView(view.View):
-            view.pyramidView('index.html')
+            view.pyramidview('index.html')
 
             def render(self):
                 return '<html>view</html>'
@@ -79,12 +79,12 @@ class TestView(BaseView):
         class MyView(view.View):
             pass
 
-        view.registerView('index.html', MyView, Context)
+        view.register_view('index.html', MyView, Context)
         self._init_memphis()
 
         context = Context()
         self.assertTrue(
-            view.renderView('index.html', context,
+            view.render_view('index.html', context,
                             self.request).content_length ==0)
 
     def test_view_register_view_layout(self):
@@ -96,12 +96,12 @@ class TestView(BaseView):
             def render(self):
                 return 'test'
 
-        view.registerView('index.html', MyView, Context)
-        view.registerLayout('', Context, klass=MyLayout)
+        view.register_view('index.html', MyView, Context)
+        view.register_layout('', Context, klass=MyLayout)
         self._init_memphis()
 
         context = Context()
-        res = view.renderView('index.html', context, self.request)
+        res = view.render_view('index.html', context, self.request)
         self.assertTrue('<html>test</html>' in res.body)
 
     def test_view_register_view_disable_layout1(self):
@@ -113,12 +113,12 @@ class TestView(BaseView):
             def render(self):
                 return 'test'
 
-        view.registerView('index.html', MyView, Context, layout=None)
-        view.registerLayout('', Context, klass=MyLayout)
+        view.register_view('index.html', MyView, Context, layout=None)
+        view.register_layout('', Context, klass=MyLayout)
         self._init_memphis()
 
         context = Context()
-        res = view.renderView('index.html', context, self.request)
+        res = view.render_view('index.html', context, self.request)
         self.assertEqual(res.body, 'test')
 
         v = MyView(None, self.request)
@@ -132,10 +132,10 @@ class TestView(BaseView):
                 response.status = '202'
                 return 'test'
 
-        view.registerView('index.html', MyView, Context)
+        view.register_view('index.html', MyView, Context)
         self._init_memphis()
 
-        res = view.renderView('index.html', Context(), self.request)
+        res = view.render_view('index.html', Context(), self.request)
         self.assertEqual(res.status, '202 Accepted')
         self.assertEqual(res.body, 'test')
 
@@ -144,11 +144,11 @@ class TestView(BaseView):
             def update(self):
                 raise HTTPForbidden()
 
-        view.registerView('index.html', MyView, Context,
+        view.register_view('index.html', MyView, Context,
                           template = view.template('templates/test.pt'))
         self._init_memphis()
 
-        resp = view.renderView('index.html', Context(), self.request)
+        resp = view.render_view('index.html', Context(), self.request)
         self.assertIsInstance(resp, HTTPForbidden)
 
     def test_view_httpresp_from_render(self):
@@ -156,20 +156,20 @@ class TestView(BaseView):
             def render(self):
                 raise HTTPFound()
 
-        view.registerView('index.html', MyView, Context)
+        view.register_view('index.html', MyView, Context)
         self._init_memphis()
 
-        resp = view.renderView('index.html', Context(), self.request)
+        resp = view.render_view('index.html', Context(), self.request)
         self.assertIsInstance(resp, HTTPFound)
 
     def test_view_with_template(self):
-        view.registerView(
+        view.register_view(
             'index.html', view.View, Context,
             template=view.template('memphis.view.tests:templates/test.pt'))
 
         self._init_memphis()
 
-        res = view.renderView('index.html', Context(), self.request)
+        res = view.render_view('index.html', Context(), self.request)
         self.assertEqual(res.body, '<div>My snippet</div>\n')
 
     def test_view_with_decorator(self):
@@ -182,11 +182,11 @@ class TestView(BaseView):
 
         @deco
         class DecoView(view.View):
-            view.pyramidView('index.html', Context)
+            view.pyramidview('index.html', Context)
 
         self._init_memphis()
 
-        res = view.renderView('index.html', Context(), self.request)
+        res = view.render_view('index.html', Context(), self.request)
         self.assertEqual(res.body, 'decorator')
 
     def test_view_register_view_class_requestonly(self):
@@ -197,7 +197,7 @@ class TestView(BaseView):
             def render(self):
                 return '<html>view: %s</html>'%(self.request is not None)
 
-        view.registerView('index.html', MyView)
+        view.register_view('index.html', MyView)
         self._init_memphis()
 
         context = Context()
@@ -208,7 +208,7 @@ class TestView(BaseView):
         def render(context, request):
             return '<html>context: %s</html>'%(context is not None)
 
-        view.registerView('index.html', render)
+        view.register_view('index.html', render)
         self._init_memphis()
 
         context = Context()
@@ -219,7 +219,7 @@ class TestView(BaseView):
         def render(request):
             return '<html>request: %s</html>'%(request is not None)
 
-        view.registerView('index.html', render)
+        view.register_view('index.html', render)
         self._init_memphis()
 
         context = Context()
@@ -230,7 +230,7 @@ class TestView(BaseView):
         def render(context, request):
             return {}
 
-        view.registerView('index.html', render,
+        view.register_view('index.html', render,
                           template = view.template('templates/test.pt'))
         self._init_memphis()
 
@@ -242,7 +242,7 @@ class TestView(BaseView):
         def render(request):
             return {}
 
-        view.registerView('index.html', render,
+        view.register_view('index.html', render,
                           template = view.template('templates/test.pt'))
         self._init_memphis()
 
@@ -258,7 +258,7 @@ class TestView(BaseView):
         def checkPermission(context, request):
             return allowed
 
-        view.registerView('index.html', render,
+        view.register_view('index.html', render,
                           permission = checkPermission)
 
         self._init_memphis()
@@ -275,7 +275,7 @@ class TestView(BaseView):
         def render(request):
             return '<html>Secured view</html>'
 
-        view.registerView('index.html', render,
+        view.register_view('index.html', render,
                           permission = 'Protected')
 
         class SimpleAuth(object):
@@ -306,23 +306,8 @@ class TestView(BaseView):
         v = self._view('index.html', context, self.request)
         self.assertEqual(v.body, '<html>Secured view</html>')
 
-    def test_view_register_default_view_seperate_reg(self):
-        def render(request):
-            return '<html>content</html>'
-
-        view.registerView('index.html', render)
-        view.registerDefaultView('index.html')
-        self._init_memphis()
-
-        context = Context()
-        v = self._view('index.html', context, self.request)
-        self.assertEqual(v.body, '<html>content</html>')
-
-        v = self._view('', context, self.request)
-        self.assertEqual(v.body, '<html>content</html>')
-
     def test_view_function(self):
-        @view.pyramidView('index.html')
+        @view.pyramidview('index.html')
         def render(request):
             return '<html>content</html>'
 
@@ -335,7 +320,7 @@ class TestView(BaseView):
     def test_view_custom_class(self):
         global View
         class View(object):
-            view.pyramidView('index.html')
+            view.pyramidview('index.html')
 
             def __init__(self, request):
                 self.request = request
@@ -352,7 +337,7 @@ class TestView(BaseView):
         self.assertEqual(v.body, 'True')
 
     def test_view_for_exception(self):
-        @view.pyramidView(context=HTTPForbidden)
+        @view.pyramidview(context=HTTPForbidden)
         def render(request):
             return '<html>Forbidden</html>'
 
@@ -372,9 +357,9 @@ class TestView(BaseView):
         self.assertEqual(v.body, '<html>Forbidden</html>')
 
     def test_view_for_route(self):
-        view.registerRoute('test-route', '/test/')
+        view.register_route('test-route', '/test/')
 
-        @view.pyramidView(route='test-route')
+        @view.pyramidview(route='test-route')
         def render(request):
             return '<html>Route view</html>'
 
@@ -400,7 +385,7 @@ class TestSubpathView(BaseView):
             def render(self):
                 return 'Render method'
 
-        view.registerView('index.html', MyView, Context)
+        view.register_view('index.html', MyView, Context)
         self._init_memphis()
 
         v = self._view('index.html', Context(), self.request)
@@ -420,7 +405,7 @@ class TestSubpathView(BaseView):
             def render(self):
                 return 'Render method'
 
-        view.registerView('index.html', MyView, Context)
+        view.register_view('index.html', MyView, Context)
         self._init_memphis()
 
         v = self._view('index.html', Context(), self.request)
@@ -437,7 +422,7 @@ class TestSubpathView(BaseView):
             def validate(self):
                 return {'text': 'Validate method'}
 
-        view.registerView('index.html', MyView, Context)
+        view.register_view('index.html', MyView, Context)
         self._init_memphis()
 
         self.request.subpath = ('validate',)
@@ -454,7 +439,7 @@ class TestSubpathView(BaseView):
             def render(self):
                 return 'Render method'
 
-        view.registerView('index.html', MyView, Context)
+        view.register_view('index.html', MyView, Context)
         self._init_memphis()
 
         self.request.subpath = ('validate',)
@@ -479,7 +464,7 @@ class TestSubpathView(BaseView):
             def render(self):
                 return 'Render method'
 
-        view.registerView('index.html', MyView, Context)
+        view.register_view('index.html', MyView, Context)
         self._init_memphis()
 
         v = self._view('index.html', Context(), self.request)
@@ -496,7 +481,7 @@ class TestSubpathView(BaseView):
             def validate(self):
                 return {}
 
-        view.registerView('index.html', MyView, Context)
+        view.register_view('index.html', MyView, Context)
         self._init_memphis()
 
         self.request.subpath = ('validate',)
@@ -513,7 +498,7 @@ class TestSubpathView(BaseView):
 class TestRouteRegistration(BaseView):
 
     def test_view_route(self):
-        view.registerRoute('test-route', '/test/')
+        view.register_route('test-route', '/test/')
         self._init_memphis()
 
         request_iface = config.registry.getUtility(
@@ -522,7 +507,7 @@ class TestRouteRegistration(BaseView):
         self.assertIsNotNone(request_iface)
 
     def test_view_route_global_view(self):
-        view.registerRoute('test-route', '/test/', use_global_views=True)
+        view.register_route('test-route', '/test/', use_global_views=True)
         self._init_memphis()
 
         request_iface = config.registry.getUtility(
@@ -531,8 +516,8 @@ class TestRouteRegistration(BaseView):
         self.assertTrue(request_iface.isOrExtends(IRequest))
 
     def test_view_route_conflict(self):
-        view.registerRoute('test-route', '/test/')
-        view.registerRoute('test-route', '/test2/')
+        view.register_route('test-route', '/test/')
+        view.register_route('test-route', '/test2/')
         self.assertRaises(config.ConflictError, self._init_memphis)
 
 

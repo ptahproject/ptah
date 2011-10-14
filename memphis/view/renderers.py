@@ -3,7 +3,7 @@ import simplejson
 from zope import interface
 from pyramid.response import Response
 from pyramid.httpexceptions import WSGIHTTPException
-from memphis.view.layout import queryLayout
+from memphis.view.layout import query_layout
 from memphis.view.interfaces import IRenderer
 
 
@@ -41,7 +41,7 @@ class SimpleRenderer(BaseRenderer):
             return result
 
         if self.layout is not None:
-            layout = queryLayout(request, context, self.layout)
+            layout = query_layout(request, context, self.layout)
             if layout is not None:
                 result = layout(result, view=view)
 
@@ -85,7 +85,7 @@ class Renderer(BaseRenderer):
         result = self.template(**kwargs)
 
         if self.layout is not None:
-            layout = queryLayout(request, context, self.layout)
+            layout = query_layout(request, context, self.layout)
             if layout is not None:
                 result = layout(result, view=view)
 

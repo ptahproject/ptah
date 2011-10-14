@@ -132,7 +132,7 @@ class _GlobalLayerManager(object):
                         pkg_data[item][3].setCustom(
                             tmpl.getRenderer(os.path.join(path, item)))
 
-    def reloadPackage(self, pkg):
+    def reload_package(self, pkg):
         if pkg not in tmpl.registry:
             return
 
@@ -201,7 +201,7 @@ class iNotifyWatcher(object):
 
         dir, pkg = os.path.split(ev.path)
         if self.directory == dir:
-            self.manager.reloadPackage(pkg)
+            self.manager.reload_package(pkg)
 
     def start(self):
         if pyinotify:
