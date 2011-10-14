@@ -6,7 +6,7 @@ from memphis import config
 import ptah
 from ptah_cms import events
 from ptah_cms.cms import action
-from ptah_cms.node import Node, Session, loadParents
+from ptah_cms.node import Node, Session, load_parents
 from ptah_cms.content import Content
 from ptah_cms.permissions import DeleteContent
 from ptah_cms.interfaces import IContainer, NotFound, Error
@@ -123,7 +123,7 @@ class Container(Content):
         if item.__uri__ == self.__uri__:
             raise ValueError("Can't set to it self")
 
-        parents = [p.__uri__ for p in loadParents(self)]
+        parents = [p.__uri__ for p in load_parents(self)]
         if item.__uri__ in parents:
             raise TypeError("Can't itself to chidlren")
 

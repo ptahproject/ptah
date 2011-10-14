@@ -129,7 +129,7 @@ class Action(object):
         self.permission = permission
 
 
-def restAction(name, context, permission):
+def restaction(name, context, permission):
     info = config.DirectiveInfo()
 
     def _register(callable, name, context, permission):
@@ -149,14 +149,14 @@ def restAction(name, context, permission):
     return wrapper
 
 
-@restAction('', IContent, View)
+@restaction('', IContent, View)
 def nodeInfo(content, request, *args):
     info = cms(content).info()
     info['__link__'] = '%s%s/'%(request.application_url, content.__uri__)
     return info
 
 
-@restAction('', IContainer, View)
+@restaction('', IContainer, View)
 def containerNodeInfo(content, request, *args):
     """Container information"""
     info = nodeInfo(content, request)
@@ -184,7 +184,7 @@ def containerNodeInfo(content, request, *args):
     return info
 
 
-@restAction('apidoc', INode, View)
+@restaction('apidoc', INode, View)
 def apidocAction(content, request, *args):
     """api doc"""
     actions = []
@@ -208,18 +208,18 @@ def apidocAction(content, request, *args):
     return [action for _t, _n, action in actions]
 
 
-@restAction('delete', IContent, DeleteContent)
+@restaction('delete', IContent, DeleteContent)
 def deleteAction(content, request, *args):
     """Delete content"""
     content.delete()
 
 
-@restAction('move', IContent, ModifyContent)
+@restaction('move', IContent, ModifyContent)
 def moveAction(content, request, *args):
     """Move content"""
 
 
-@restAction('update', IContent, ModifyContent)
+@restaction('update', IContent, ModifyContent)
 def updateAction(content, request, *args):
     """Update content"""
     tinfo = content.__type__
@@ -234,7 +234,7 @@ def updateAction(content, request, *args):
     return nodeInfo(content, request)
 
 
-@restAction('create', IContainer, View)
+@restaction('create', IContainer, View)
 def createContentAction(content, request, *args):
     """Create content"""
     name = request.GET.get('name')
@@ -252,7 +252,7 @@ def createContentAction(content, request, *args):
     return nodeInfo(item, request)
 
 
-@restAction('data', IBlob, View)
+@restaction('data', IBlob, View)
 def blobData(content, request, *args):
     """Download blob"""
     response = request.response

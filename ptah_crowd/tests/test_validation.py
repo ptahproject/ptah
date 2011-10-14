@@ -139,7 +139,7 @@ class TestValidation(Base):
 
         request = self._makeRequest()
 
-        validation.initiate_validation(user.email, user, request)
+        validation.initiate_email_validation(user.email, user, request)
         self.assertEqual(Stub.status, 'Email has been sended')
         self.assertIsNotNone(Stub.token)
 

@@ -14,7 +14,7 @@ TOKEN_TYPE = token.TokenType(
     'cd51f14e9b2842608ccadf1a240046c1', timedelta(hours=24))
 
 
-def initiate_validation(email, principal, request):
+def initiate_email_validation(email, principal, request):
     """ initiate principal email validation """
     t = token.service.generate(TOKEN_TYPE, principal.uri)
     template = ValidationTemplate(principal, request, email=email, token = t)

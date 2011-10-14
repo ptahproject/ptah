@@ -1,14 +1,14 @@
 """ default actions """
 import ptah, ptah_cms, ptah_app
 
-ptah_app.uiAction(
+ptah_app.uiaction(
     ptah_cms.IContent, **{'id': 'view',
                           'title': 'View',
                           'action': '',
                           'permission': ptah_cms.View,
                           'sortWeight': 0.5})
 
-ptah_app.uiAction(
+ptah_app.uiaction(
     ptah_cms.IContent, **{'id': 'edit',
                           'title': 'Edit',
                           'action': 'edit.html',
@@ -16,7 +16,7 @@ ptah_app.uiAction(
                           'sortWeight': 0.6})
 
 
-ptah_app.uiAction(
+ptah_app.uiaction(
     ptah_cms.IContainer, **{'id': 'adding',
                             'title': 'Add content',
                             'action': '+/',
@@ -24,7 +24,7 @@ ptah_app.uiAction(
                             'sortWeight': 5.0})
 
 
-ptah_app.uiAction(
+ptah_app.uiaction(
     ptah.ILocalRolesAware, **{'id': 'sharing',
                               'title': 'Sharing',
                               'action': 'sharing.html',

@@ -131,7 +131,7 @@ class TestCMSRestAction(RestBase):
     def test_rest_cms_action(self):
         from ptah_cms.rest import IRestAction, IRestActionClassifier
 
-        @ptah_cms.restAction('my-update', Content, ptah_cms.View)
+        @ptah_cms.restaction('my-update', Content, ptah_cms.View)
         def update(content, request, *args):
             """ doc string """
 
@@ -149,11 +149,11 @@ class TestCMSRestAction(RestBase):
         self.assertEqual(action.permission, ptah_cms.View)
 
     def test_rest_cms_action_conflicts(self):
-        @ptah_cms.restAction('my-update', Content, ptah_cms.View)
+        @ptah_cms.restaction('my-update', Content, ptah_cms.View)
         def update1(content, request, *args):
             """ doc string """
 
-        @ptah_cms.restAction('my-update', Content, ptah_cms.View)
+        @ptah_cms.restaction('my-update', Content, ptah_cms.View)
         def update2(content, request, *args):
             """ doc string """
 

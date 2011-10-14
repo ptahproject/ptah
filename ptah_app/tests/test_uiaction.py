@@ -21,12 +21,12 @@ class TestUIAction(Base):
         class Content(object):
             __name__ = ''
 
-        ptah_app.uiAction(Content, 'action1', 'Action 1')
+        ptah_app.uiaction(Content, 'action1', 'Action 1')
         self._init_memphis()
 
         request = self._makeRequest()
 
-        actions = ptah_app.listUIActions(Content(), request)
+        actions = ptah_app.list_uiactions(Content(), request)
 
         self.assertEqual(len(actions), 1)
         self.assertEqual(actions[0]['id'], 'action1')
@@ -37,8 +37,8 @@ class TestUIAction(Base):
         class Content(object):
             __name__ = ''
 
-        ptah_app.uiAction(Content, 'action1', 'Action 1')
-        ptah_app.uiAction(Content, 'action1', 'Action 1')
+        ptah_app.uiaction(Content, 'action1', 'Action 1')
+        ptah_app.uiaction(Content, 'action1', 'Action 1')
         self.assertRaises(config.ConflictError, self._init_memphis)
 
     def test_uiaction_url(self):
@@ -47,12 +47,12 @@ class TestUIAction(Base):
         class Content(object):
             __name__ = ''
 
-        ptah_app.uiAction(Content, 'action1', 'Action 1',
+        ptah_app.uiaction(Content, 'action1', 'Action 1',
                                action='test.html')
         self._init_memphis()
         request = self._makeRequest()
 
-        actions = ptah_app.listUIActions(Content(), request)
+        actions = ptah_app.list_uiactions(Content(), request)
         self.assertEqual(actions[0]['url'], 'http://localhost:8080/test.html')
 
     def test_uiaction_absolute_url(self):
@@ -61,12 +61,12 @@ class TestUIAction(Base):
         class Content(object):
             __name__ = ''
 
-        ptah_app.uiAction(Content, 'action1', 'Action 1',
+        ptah_app.uiaction(Content, 'action1', 'Action 1',
                                action='/content/about.html')
         self._init_memphis()
         request = self._makeRequest()
 
-        actions = ptah_app.listUIActions(Content(), request)
+        actions = ptah_app.list_uiactions(Content(), request)
         self.assertEqual(actions[0]['url'],
                          'http://localhost:8080/content/about.html')
 
@@ -79,12 +79,12 @@ class TestUIAction(Base):
         def customAction(content, request):
             return 'http://github.com/ptahproject'
 
-        ptah_app.uiAction(Content, 'action1', 'Action 1',
+        ptah_app.uiaction(Content, 'action1', 'Action 1',
                                action=customAction)
         self._init_memphis()
         request = self._makeRequest()
 
-        actions = ptah_app.listUIActions(Content(), request)
+        actions = ptah_app.list_uiactions(Content(), request)
         self.assertEqual(actions[0]['url'], 'http://github.com/ptahproject')
 
     def test_uiaction_condition(self):
@@ -97,17 +97,17 @@ class TestUIAction(Base):
         def condition(content, request):
             return allow
 
-        ptah_app.uiAction(
+        ptah_app.uiaction(
             Content, 'action1', 'Action 1',
             action='test.html', condition=condition)
         self._init_memphis()
         request = self._makeRequest()
 
-        actions = ptah_app.listUIActions(Content(), request)
+        actions = ptah_app.list_uiactions(Content(), request)
         self.assertEqual(len(actions), 0)
 
         allow = True
-        actions = ptah_app.listUIActions(Content(), request)
+        actions = ptah_app.list_uiactions(Content(), request)
         self.assertEqual(len(actions), 1)
 
     def test_uiaction_permission(self):
@@ -120,7 +120,7 @@ class TestUIAction(Base):
         def checkPermission(permission, content, request=None, throw=False):
             return allow
 
-        ptah_app.uiAction(
+        ptah_app.uiaction(
             Content, 'action1', 'Action 1', permission='View')
         self._init_memphis()
         request = self._makeRequest()
@@ -128,11 +128,11 @@ class TestUIAction(Base):
         orig_cp = ptah.checkPermission
         ptah.checkPermission = checkPermission
 
-        actions = ptah_app.listUIActions(Content(), request)
+        actions = ptah_app.list_uiactions(Content(), request)
         self.assertEqual(len(actions), 0)
 
         allow = True
-        actions = ptah_app.listUIActions(Content(), request)
+        actions = ptah_app.list_uiactions(Content(), request)
         self.assertEqual(len(actions), 1)
 
         ptah.checkPermission = orig_cp
@@ -143,13 +143,13 @@ class TestUIAction(Base):
         class Content(object):
             __name__ = ''
 
-        ptah_app.uiAction(Content, 'view', 'View', sortWeight=1.0)
-        ptah_app.uiAction(Content, 'action', 'Action', sortWeight=2.0)
+        ptah_app.uiaction(Content, 'view', 'View', sortWeight=1.0)
+        ptah_app.uiaction(Content, 'action', 'Action', sortWeight=2.0)
         self._init_memphis()
 
         request = self._makeRequest()
 
-        actions = ptah_app.listUIActions(Content(), request)
+        actions = ptah_app.list_uiactions(Content(), request)
 
         self.assertEqual(actions[0]['id'], 'view')
         self.assertEqual(actions[1]['id'], 'action')
@@ -160,11 +160,11 @@ class TestUIAction(Base):
         class Content(object):
             __name__ = ''
 
-        ptah_app.uiAction(Content, 'view', 'View', testinfo='test')
+        ptah_app.uiaction(Content, 'view', 'View', testinfo='test')
         self._init_memphis()
 
         request = self._makeRequest()
 
-        actions = ptah_app.listUIActions(Content(), request)
+        actions = ptah_app.list_uiactions(Content(), request)
 
         self.assertEqual(actions[0]['data'], {'testinfo': 'test'})

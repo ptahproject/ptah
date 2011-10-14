@@ -54,7 +54,7 @@ at it by opening ptah_app\views.py and see ContentLayout::
                 template=view.template("ptah_app:templates/layoutcontent.pt"))
 
         def update(self):
-            self.actions = listUIActions(self.context, self.request)
+            self.actions = list_uiactions(self.context, self.request)
 
 You will notice that the parent attribute for the layout is `workspace`.
 So the layout engine continues walking up the Layout lineage doing this

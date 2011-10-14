@@ -138,7 +138,7 @@ class TestPrincipalSearcher(Base):
                 yield principal
 
         ptah.register_principal_searcher('test-provider', search)
-        self.assertEqual(list(ptah.searchPrincipals('user')), [principal])
+        self.assertEqual(list(ptah.search_principals('user')), [principal])
 
 
 class TestSuperUser(Base):

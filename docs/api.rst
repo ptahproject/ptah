@@ -19,7 +19,7 @@ Content loading
 
   .. autofunction:: load
 
-  .. autofunction:: loadParents
+  .. autofunction:: load_parents
 
 
 Type system

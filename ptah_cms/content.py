@@ -9,7 +9,7 @@ from collections import OrderedDict
 import ptah
 from ptah_cms import events
 from ptah_cms.cms import action
-from ptah_cms.node import Node, Session, loadParents
+from ptah_cms.node import Node, Session, load_parents
 from ptah_cms.interfaces import Error
 from ptah_cms.interfaces import IContent
 from ptah_cms.permissions import View, DeleteContent, ModifyContent

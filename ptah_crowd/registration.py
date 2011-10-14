@@ -10,7 +10,7 @@ from ptah.events import PrincipalRegisteredEvent
 from settings import _, CROWD
 from schemas import RegistrationSchema
 from provider import Session, CrowdUser
-from validation import initiate_validation
+from validation import initiate_email_validation
 
 
 view.register_route('ptah-join', '/join.html')
@@ -56,7 +56,7 @@ class Registration(form.Form):
 
         # validation
         if CROWD.validation:
-            initiate_validation(user.email, user, self.request)
+            initiate_email_validation(user.email, user, self.request)
             self.message('Validation email has been sent.')
             if not CROWD['allow-unvalidated']:
                 raise HTTPFound(location=self.request.application_url)

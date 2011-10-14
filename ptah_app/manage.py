@@ -77,7 +77,7 @@ class SharingForm(form.Form):
 
         term = request.session.get('sharing-term', '')
         if term:
-            self.users = list(ptah.searchPrincipals(term))
+            self.users = list(ptah.search_principals(term))
 
         if 'form.buttons.save' in request.POST:
             users = []

@@ -50,7 +50,7 @@ def _contentAction(id, context, ac):
     config.registry.registerAdapter(ac, (context,), IAction, id)
 
 
-def uiAction(context, id, title,
+def uiaction(context, id, title,
              description = '',
              action='', condition=None, permission=None,
              sortWeight = 1.0, **kw):
@@ -78,7 +78,7 @@ def uiAction(context, id, title,
         )
 
 
-def listUIActions(content, request):
+def list_uiactions(content, request):
     url = request.resource_url(content)
 
     actions = []

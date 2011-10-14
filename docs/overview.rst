@@ -352,17 +352,17 @@ up the tree to the ApplicationRoot.  While this is obvious if you have
 object/graph database background it is important concept to understand since
 we are working with heirachies.
 
-  See :py:class:`ptah_cms.loadParents`
+  See :py:class:`ptah_cms.load_parents`
 
 Security, Lineage, URL Dispatch
 ===============================
 
     Since the ApplicationPolicy defines ACLs for an ApplicationRoot, which
-    contains your data model.  It will be required for us to ```loadParents``` to
+    contains your data model.  It will be required for us to ```load_parents``` to
     walk __parent__ until we reach ApplicationRoot; then we will have all
     security roles to satisfy Pyramid authorization security model.
 
-    The fact is you *do not* need to ```loadParents``` every single time to
+    The fact is you *do not* need to ```load_parents``` every single time to
     aggregate security settings.  You only need this in ad-hoc security delegation
     applications which users can assign Roles to other users on Content.  While
     this model is standard in heirarchical/collaboration systems it is not particularly

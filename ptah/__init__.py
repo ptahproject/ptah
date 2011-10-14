@@ -18,7 +18,7 @@ from ptah.authentication import authService
 from ptah.authentication import register_auth_checker
 from ptah.authentication import register_auth_provider
 from ptah.authentication import register_principal_searcher
-from ptah.authentication import searchPrincipals
+from ptah.authentication import search_principals
 from ptah.authentication import SUPERUSER_URI
 
 from ptah.interfaces import IACLsAware

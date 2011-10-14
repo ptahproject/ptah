@@ -100,19 +100,19 @@ data is a dictionary which contains python builtins since the Form machinery has
 Now lets use the form system to set attributes on the page.
   >>> TODO
 
-load and loadParents
+load and load_parents
 
-These two functions can be found in ptah_cms.node.load and ptah_cms.node.loadParents.  This API is useful when you want to work with heirarchies or security. 
+These two functions can be found in ptah_cms.node.load and ptah_cms.node.load_parents.  This API is useful when you want to work with heirarchies or security. 
 
 First lets show non-initialized node
   >>> p=Session.query(Content).filter_by(title='Manually created').first()
   >>> p.__parent__
   >>>
 
-This is because there is no parent.  We can loadParents to get __parent__.
+This is because there is no parent.  We can load_parents to get __parent__.
 
-  >>> from ptah_cms import load, loadParents
-  >>> loadParents(p)
+  >>> from ptah_cms import load, load_parents
+  >>> load_parents(p)
   [<ptah_cms.root.ApplicationRoot at 0x3df04b0>]
   >>> p.__parent__
   <ptah_cms.root.ApplicationRoot at 0x3df04b0>

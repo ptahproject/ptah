@@ -8,7 +8,7 @@ from ptah import authService, manage
 from ptah_cms import tinfo, interfaces, events
 
 from forms import AddForm
-from uiactions import listUIActions
+from uiactions import list_uiactions
 
 
 view.register_layout(
@@ -36,7 +36,7 @@ class ContentLayout(view.Layout):
                 template=view.template("ptah_app:templates/layoutcontent.pt"))
 
     def update(self):
-        self.actions = listUIActions(self.context, self.request)
+        self.actions = list_uiactions(self.context, self.request)
 
 
 def defaultView(renderer):

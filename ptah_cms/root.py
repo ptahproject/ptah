@@ -5,7 +5,7 @@ from zope import interface
 from memphis import config
 
 from tinfo import Type
-from node import Node, Session, setPolicy
+from node import Node, Session, set_policy
 from container import Container
 from interfaces import IApplicationRoot
 from interfaces import IApplicationPolicy
@@ -83,7 +83,7 @@ class ApplicationFactory(object):
         root.__parent__ = policy = self.policy(request)
         root.__default_root__ = self.default_root
 
-        setPolicy(policy)
+        set_policy(policy)
 
         if request is not None:
             request.root = root

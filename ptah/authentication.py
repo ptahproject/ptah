@@ -136,7 +136,7 @@ class Authentication(object):
 authService = Authentication()
 
 
-def searchPrincipals(term):
+def search_principals(term):
     for name, searcher in searchers.items():
         for principal in searcher(term):
             yield principal

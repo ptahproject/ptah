@@ -7,8 +7,8 @@ from ptah_cms.interfaces import Error, NotFound, Forbidden
 # base content classes
 from ptah_cms.node import Node
 from ptah_cms.node import load
-from ptah_cms.node import loadParents
-from ptah_cms.node import getPolicy, setPolicy
+from ptah_cms.node import load_parents
+from ptah_cms.node import get_policy, set_policy
 
 from ptah_cms.content import Content
 from ptah_cms.container import Container
@@ -61,4 +61,4 @@ from ptah_cms.events import ContentModifiedEvent
 from ptah_cms.events import ContentDeletingEvent
 
 # cms rest
-from ptah_cms.rest import restAction
+from ptah_cms.rest import restaction

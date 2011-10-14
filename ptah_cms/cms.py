@@ -11,7 +11,7 @@ def cms(content):
     if isinstance(content, basestring):
         content = ptah_cms.load(content)
     else:
-        ptah_cms.loadParents(content)
+        ptah_cms.load_parents(content)
 
     if content is None:
         raise NotFound()

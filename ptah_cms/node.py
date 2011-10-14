@@ -28,7 +28,7 @@ class Node(Base):
     .. attribute:: __parent__
 
        Parent of node. Ptah doesn't load `__parent__` automatically.
-       To load node parents use :py:func:`ptah_cms.loadParents` function.
+       To load node parents use :py:func:`ptah_cms.load_parents` function.
 
     .. attribute:: __owner__
 
@@ -95,7 +95,7 @@ class Node(Base):
             (('__type__', self.__type_id__),
              ('__content__', False),
              ('__uri__', self.__uri__),
-             ('__parents__', [p.__uri__ for p in loadParents(self)]),
+             ('__parents__', [p.__uri__ for p in load_parents(self)]),
              ))
 
         return info
@@ -114,7 +114,7 @@ def load(uri, permission=None):
     item = ptah.resolve(uri)
 
     if item is not None:
-        loadParents(item)
+        load_parents(item)
 
         if permission is not None:
             if not ptah.checkPermission(permission, item):
@@ -125,7 +125,7 @@ def load(uri, permission=None):
     return item
 
 
-def loadParents(node):
+def load_parents(node):
     """ Load and initialize `__parent__` attribute for node.
     Returns list of loaded parents.
     """
@@ -145,7 +145,7 @@ def loadParents(node):
     root = node if not parents else parents[-1]
     if not IApplicationPolicy.providedBy(root):
         try:
-            root.__parent__ = getPolicy()
+            root.__parent__ = get_policy()
         except AttributeError:
             # __parent__ is read onl
             pass
@@ -155,8 +155,8 @@ def loadParents(node):
 
 KEY = '__ptahcms_policy__'
 
-def getPolicy():
+def get_policy():
     return ptah.tldata.get(KEY)
 
-def setPolicy(policy):
+def set_policy(policy):
     return ptah.tldata.set(KEY, policy)
