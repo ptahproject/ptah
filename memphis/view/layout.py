@@ -14,6 +14,7 @@ log = logging.getLogger('memphis.view')
 
 def queryLayout(request, context, name=''):
     """ query named layout for context """
+    assert IRequest.providedBy(request), u"must pass in a request object"
 
     while context is not None:
         layout = config.registry.queryMultiAdapter(
