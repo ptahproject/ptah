@@ -30,7 +30,7 @@
 <div style="margin-top: 60px;">
   <div class="inner">
     <div class="container">
-      <img src="${view.static_url('{{package}}', 'repoze.gif')}" />
+      <img src="${view.static_url('{{package}}', 'python-logo.gif')}" />
     
       <tal:block content="structure view.render_messages()" />
       
