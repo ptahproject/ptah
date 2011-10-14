@@ -365,7 +365,7 @@ Security, Lineage, URL Dispatch
     The fact is you *do not* need to ```loadParents``` every single time to
     aggregate security settings.  You only need this in ad-hoc security delegation
     applications which users can assign Roles to other users on Content.  While
-    this model is standard in high heirarchical/collaboration systems it is not particularly
+    this model is standard in heirarchical/collaboration systems it is not particularly
     useful for a many types of applications.
 
     See How-to Ptah with URL Dispatch.
