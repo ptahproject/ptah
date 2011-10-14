@@ -89,7 +89,7 @@ def jsdatePreview(request):
 
     widget = field.bind('preview.', form.null, {})
     widget.update(request)
-    return widget.pagelet('form-widget', widget)
+    return widget.snippet('form-widget', widget)
 
 
 @form.fieldpreview(JSDateTimeField)
@@ -101,4 +101,4 @@ def jsdatetimePreview(request):
 
     widget = field.bind('preview.', datetime.datetime.now(), {})
     widget.update(request)
-    return widget.pagelet('form-widget', widget)
+    return widget.snippet('form-widget', widget)

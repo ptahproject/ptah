@@ -141,7 +141,7 @@ class PtahManageRoute(object):
         raise KeyError(key)
 
 
-view.pageletType('ptah-module-actions', IPtahModule)
+view.snippettype('ptah-module-actions', IPtahModule)
 
 view.registerRoute(
     'ptah-manage-view','/ptah-manage',
@@ -155,7 +155,7 @@ view.registerLayout(
     '', IPtahManageRoute, parent='page',
     template=view.template("ptah:templates/ptah-layout.pt"))
 
-view.registerPagelet(
+view.register_snippet(
     'ptah-module-actions',
     template = view.template('ptah:templates/moduleactions.pt'))
 

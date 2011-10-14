@@ -32,7 +32,7 @@
     <div class="container">
       <img src="${view.static_url('{{package}}', 'repoze.gif')}" />
     
-      <tal:block content="structure view.renderMessages()" />
+      <tal:block content="structure view.render_messages()" />
       
       ${content}
     </div>

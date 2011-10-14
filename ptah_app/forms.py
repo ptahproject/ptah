@@ -123,7 +123,7 @@ class AddForm(form.Form):
         return self.request.resource_url(content)
 
 
-view.registerPagelet(
+view.register_snippet(
     'form-actions', AddForm,
     template = view.template('ptah_app:templates/form-actions.pt'))
 

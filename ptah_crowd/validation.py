@@ -87,7 +87,7 @@ def validate(request):
         if props is not None:
             props.validated = True
             token.service.remove(t)
-            view.addMessage(request, "Account has been successfully validated.")
+            view.add_message(request, "Account has been successfully validated.")
 
             config.notify(
                 ptah.events.PrincipalValidatedEvent(ptah.resolve(props.uri)))
@@ -95,5 +95,5 @@ def validate(request):
             headers = remember(request, props.uri)
             raise HTTPFound(location=request.application_url, headers=headers)
 
-    view.addMessage(request, "Can't validate email address.", 'warning')
+    view.add_message(request, "Can't validate email address.", 'warning')
     raise HTTPFound(location=request.application_url)

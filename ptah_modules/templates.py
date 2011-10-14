@@ -13,7 +13,7 @@ class TemplatesModule(ptah.PtahModule):
     ptah.manageModule('templates')
 
 
-view.registerPagelet(
+view.register_snippet(
     'ptah-module-actions', TemplatesModule,
     template = view.template(
         'ptah_modules:templates/customize-actions.pt', nolayer = True))

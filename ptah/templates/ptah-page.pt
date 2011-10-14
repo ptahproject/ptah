@@ -6,7 +6,7 @@
 
     ${view.include('jquery')}
     ${view.include('bootstrap')}
-    <tal:block content="structure view.renderIncludes()" />
+    <tal:block content="structure view.render_includes()" />
   </head>
   <body>
     <div class="topbar" tal:define="app_url request.application_url">
@@ -16,7 +16,7 @@
 	  <tal:block 
 	     condition="view.module"
 	     content="structure 
-		      view.pagelet('ptah-module-actions',view.module)" />
+		      view.snippet('ptah-module-actions',view.module)" />
 	  
 	  <ul class="nav secondary-nav">
 	    <li>

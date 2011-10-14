@@ -2,7 +2,7 @@
   <tbody>
     <tr tal:repeat="action actions">
       <td tal:define="name action.args[0];
-		      pt ptypes[name]">
+		      pt stypes[name]">
 	<h4>
 	  <a href="${url}/ptah-manage/introspect/source.html?pkg=${action.info.module.__name__}#sl-${action.info.codeinfo[1]}">
 	    ${pt.title or pt.name}</a>

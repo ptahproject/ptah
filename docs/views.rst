@@ -182,6 +182,6 @@ Messages
 --------
 This is a reimplementation of pyramid flashmessages.  This could probably be removed.
 
-Pagelets
+Snippets
 --------
 We will either rename this or remove it.  I hate this name.

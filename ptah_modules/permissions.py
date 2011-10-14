@@ -14,7 +14,7 @@ class PermissionsModule(ptah.PtahModule):
     ptah.manageModule('permissions')
 
 
-view.registerPagelet(
+view.register_snippet(
     'ptah-module-actions', PermissionsModule,
     template = view.template('ptah_modules:templates/permissions-actions.pt'))
 

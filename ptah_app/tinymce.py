@@ -41,4 +41,4 @@ def tinemcePreview(request):
 
     widget = field.bind('preview.', form.null, {})
     widget.update(request)
-    return widget.pagelet('form-widget', widget)
+    return widget.snippet('form-widget', widget)

@@ -136,7 +136,7 @@ def logout(request):
         request.registry.notify(
             ptah.events.LoggedOutEvent(ptah.resolve(uid)))
 
-        view.addMessage(request, _('Logout successful!'), 'info')
+        view.add_message(request, _('Logout successful!'), 'info')
         headers = security.forget(request)
         raise HTTPFound(
             headers = headers,

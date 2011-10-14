@@ -72,7 +72,7 @@ class MainView(view.View):
         self.packages = self.context.list_packages()
 
 
-view.registerPagelet(
+view.register_snippet(
     'ptah-module-actions', IntrospectModule,
     template = view.template('ptah_modules:templates/introspect-actions.pt'))
 
@@ -389,11 +389,11 @@ class AdapterDirective(object):
             request = self.request)
 
 
-class PageletTypeDirective(object):
-    """ memphis pagelet types """
+class SnippetTypeDirective(object):
+    """ memphis snippet types """
 
-    title = 'Pagelet Types'
-    ptah.introspection('memphis.view:pageletType')
+    title = 'Snippet Types'
+    ptah.introspection('memphis.view:snippettype')
 
     actions = view.template('ptah_modules:templates/directive-ptype.pt')
 
@@ -406,7 +406,7 @@ class PageletTypeDirective(object):
     def renderActions(self, *actions):
         return self.actions(
             actions = actions,
-            ptypes = sys.modules['memphis.view.pagelet'].ptypes,
+            stypes = sys.modules['memphis.view.snippet'].stypes,
             events = directives.events,
             request = self.request)
 

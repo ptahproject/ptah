@@ -33,7 +33,7 @@ class UserWrapper(object):
         self.__parent__ = parent
 
 
-view.registerPagelet(
+view.register_snippet(
     'ptah-module-actions', CrowdModule,
     template = view.template('ptah_crowd:templates/ptah-actions.pt'))
 

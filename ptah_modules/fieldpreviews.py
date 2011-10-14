@@ -18,7 +18,7 @@ def multiChoicePreview(request):
 
     widget = field.bind('preview.', form.null, {})
     widget.update(request)
-    return widget.pagelet('form-widget', widget)
+    return widget.snippet('form-widget', widget)
 
 
 @form.fieldpreview(form.ChoiceField)
@@ -32,7 +32,7 @@ def choicePreview(request):
 
     widget = field.bind('preview.', form.null, {})
     widget.update(request)
-    return widget.pagelet('form-widget', widget)
+    return widget.snippet('form-widget', widget)
 
 
 @form.fieldpreview(form.BoolField)
@@ -45,7 +45,7 @@ def boolPreview(request):
 
     widget = field.bind('preview.', form.null, {})
     widget.update(request)
-    return widget.pagelet('form-widget', widget)
+    return widget.snippet('form-widget', widget)
 
 
 @form.fieldpreview(form.RadioField)
@@ -59,7 +59,7 @@ def radioPreview(request):
 
     widget = field.bind('preview.', form.null, {})
     widget.update(request)
-    return widget.pagelet('form-widget', widget)
+    return widget.snippet('form-widget', widget)
 
 
 @form.fieldpreview(form.TextAreaField)
@@ -72,7 +72,7 @@ def textareaPreview(request):
 
     widget = field.bind('preview.', form.null, {})
     widget.update(request)
-    return widget.pagelet('form-widget', widget)
+    return widget.snippet('form-widget', widget)
 
 
 @form.fieldpreview(form.LinesField)
@@ -85,7 +85,7 @@ def linesPreview(request):
 
     widget = field.bind('preview.', form.null, {})
     widget.update(request)
-    return widget.pagelet('form-widget', widget)
+    return widget.snippet('form-widget', widget)
 
 
 @form.fieldpreview(form.TextField)
@@ -98,7 +98,7 @@ def textPreview(request):
 
     widget = field.bind('preview.', form.null, {})
     widget.update(request)
-    return widget.pagelet('form-widget', widget)
+    return widget.snippet('form-widget', widget)
 
 
 @form.fieldpreview(form.IntegerField)
@@ -111,7 +111,7 @@ def intPreview(request):
 
     widget = field.bind('preview.', form.null, {})
     widget.update(request)
-    return widget.pagelet('form-widget', widget)
+    return widget.snippet('form-widget', widget)
 
 
 @form.fieldpreview(form.FloatField)
@@ -124,7 +124,7 @@ def floatPreview(request):
 
     widget = field.bind('preview.', form.null, {})
     widget.update(request)
-    return widget.pagelet('form-widget', widget)
+    return widget.snippet('form-widget', widget)
 
 
 @form.fieldpreview(form.DecimalField)
@@ -137,7 +137,7 @@ def decimalPreview(request):
 
     widget = field.bind('preview.', form.null, {})
     widget.update(request)
-    return widget.pagelet('form-widget', widget)
+    return widget.snippet('form-widget', widget)
 
 
 @form.fieldpreview(form.PasswordField)
@@ -149,4 +149,4 @@ def passwordPreview(request):
 
     widget = field.bind('preview.', form.null, {})
     widget.update(request)
-    return widget.pagelet('form-widget', widget)
+    return widget.snippet('form-widget', widget)

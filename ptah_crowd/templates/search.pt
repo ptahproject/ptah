@@ -45,4 +45,4 @@
   <h3>Search users</h3>
 </div>
 
-<tal:block content="structure view.pagelet('form-view', view)" />
+<tal:block content="structure view.snippet('form-view', view)" />

@@ -51,7 +51,7 @@
 	</ul>
       </div>
 
-      <tal:block content="structure view.pagelet('form-actions', view)" />
+      <tal:block content="structure view.snippet('form-actions', view)" />
     </form>
   </div>
 </div>
