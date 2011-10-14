@@ -129,7 +129,7 @@ view.register_snippet(
     template = view.template('ptah:templates/moduleactions.pt'))
 
 view.register_layout(
-    '', PtahManageRoute, parent='page-manage',
+    '', PtahManageRoute, parent='ptah-manage',
     template=view.template("ptah:templates/ptah-layout.pt"))
 
 
@@ -153,7 +153,7 @@ class ManageView(view.View):
     """List ptah modules"""
     view.pyramidview(
         context = PtahManageRoute,
-        route = 'ptah-manage', layout='page-manage',
+        route = 'ptah-manage', layout='ptah-manage',
         template = view.template('ptah:templates/manage.pt'))
 
     __intr_path__ = '/ptah-manage/'
