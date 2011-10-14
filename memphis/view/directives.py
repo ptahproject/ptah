@@ -9,16 +9,15 @@ from memphis.view.layout import register_layout_impl
 from memphis.view.snippet import register_snippet_impl
 
 
-def snippet(snippetType, context=None, template=None, layer=''):
+def snippet(name, context=None, template=None, layer=''):
     info = config.DirectiveInfo(allowed_scope=('class',))
 
-    # register view in layer
-    discriminator = ('memphis.view:snippet', snippetType, context, layer)
+    discriminator = ('memphis.view:snippet', name, context, layer)
 
     info.attach(
         config.ClassAction(
             LayerWrapper(register_snippet_impl, discriminator),
-            (snippetType, context, template),
+            (name, context, template),
             discriminator = discriminator)
         )
 

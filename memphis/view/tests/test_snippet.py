@@ -30,28 +30,16 @@ class TestSnippet(Base):
         self.assertEqual(st.name, 'test')
         self.assertEqual(st.context, Context)
 
-    def test_snippet_register_errors(self):
+    def test_snippet_register_no_stype(self):
         class TestSnippet(view.Snippet):
             pass
 
-        view.snippettype('test1', Context)
-        view.snippettype('test2', Context)
+        view.register_snippet('unknown', Context, TestSnippet)
+        self._init_memphis()
 
-        view.register_snippet('test1', Context, TestSnippet)
-        view.register_snippet('test2', Context, TestSnippet)
-
-        self.assertRaises(ValueError, self._init_memphis)
-
-    def test_snippet_register_nopt(self):
-        class ITestSnippet(interface.Interface):
-            pass
-
-        class TestSnippet(view.Snippet):
-            pass
-
-        view.register_snippet(ITestSnippet, Context, TestSnippet)
-
-        self.assertRaises(LookupError, self._init_memphis)
+        snippet = config.registry.getMultiAdapter(
+            (Context(), None), ISnippet, name='unknown')
+        self.assertIsInstance(snippet, TestSnippet)
 
     def test_snippet_register(self):
         class TestSnippet(view.Snippet):
@@ -95,7 +83,7 @@ class TestSnippet(Base):
 
         self.assertEqual(
             render_snippet('test', Context(), self.request),
-            'context|format|request|view')
+            'context|request|view')
 
     def test_snippet_register_without_class(self):
         view.snippettype('test', Context)

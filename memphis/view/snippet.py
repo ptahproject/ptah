@@ -6,7 +6,6 @@ from pyramid.httpexceptions import HTTPNotFound
 from memphis import config
 from memphis.view.base import View
 from memphis.view.customize import LayerWrapper
-from memphis.view.formatter import format
 from memphis.view.interfaces import ISnippet
 
 log = logging.getLogger('memphis.view')
@@ -24,8 +23,7 @@ class Snippet(View):
         kwargs = self._params or {}
         kwargs.update({'view': self,
                        'context': self.context,
-                       'request': self.request,
-                       'format': format})
+                       'request': self.request})
 
         return self.template(**kwargs)
 
@@ -56,65 +54,45 @@ def render_snippet(stype, context, request):
         raise
 
 
-def snippettype(name, context, title='', description=''):
-    stypes[name] = SnippetType(name, context, title, description)
+def snippettype(name, context=None, title='', description=''):
+    stype = SnippetType(name, context, title, description)
+    stypes[name] = stype
 
     info = config.DirectiveInfo()
     info.attach(
         config.Action(
-            snippet_type_impl,
-            (name, context, title, description),
+            lambda name, stype: stypes.update({name: stype}),
+            (name, stype,),
             discriminator = ('memphis.view:snippettype', name),
             order = 1))
 
 
-def snippet_type_impl(name, context, title, description):
-    stypes[name] = SnippetType(name, context, title, description)
-
-
-_registered = []
-
-@config.cleanup
-def cleanup():
-    _registered[:] = []
-
-
-def register_snippet(pt, context=None, klass=None, template=None, layer=''):
+def register_snippet(name, context=None, klass=None, template=None, layer=''):
     info = config.DirectiveInfo()
 
-    discriminator = ('memphis.view:snippet', pt, context, layer)
+    discriminator = ('memphis.view:snippet', name, context, layer)
 
     info.attach(
         config.Action(
             LayerWrapper(register_snippet_impl, discriminator),
-            (klass, pt, context, template),
+            (klass, name, context, template),
             discriminator = discriminator)
         )
 
 
 def register_snippet_impl(klass, stype, context, template):
-
-    if klass is not None and klass in _registered:
-        raise ValueError("Class can be used for snippet only once.")
-
     cdict = {}
     if template is not None:
         cdict['template'] = template
 
     # find SnippetType info
     if stype not in stypes:
-        raise KeyError("Can't find SnippetType %s for %s"%(stype, klass))
+        log.warning("Can't find SnippetType %s", stype)
 
-    st = stypes[stype]
-
-    if context is None:
-        requires = [st.context, interface.Interface]
-    else:
-        requires = [context, interface.Interface]
+    requires = [context, interface.Interface]
 
     # Build a new class
     if klass is not None and issubclass(klass, Snippet):
-        _registered.append(klass)
         snippet_class = klass
         for attr, value in cdict.items():
             setattr(snippet_class, attr, value)
@@ -129,4 +107,4 @@ def register_snippet_impl(klass, stype, context, template):
 
     # register snippet
     config.registry.registerAdapter(
-        snippet_class, requires, ISnippet, name = st.name)
+        snippet_class, requires, ISnippet, name = stype)
