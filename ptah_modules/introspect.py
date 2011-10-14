@@ -395,7 +395,7 @@ class SnippetTypeDirective(object):
     title = 'Snippet Types'
     ptah.introspection('memphis.view:snippettype')
 
-    actions = view.template('ptah_modules:templates/directive-ptype.pt')
+    actions = view.template('ptah_modules:templates/directive-stype.pt')
 
     def __init__(self, request):
         self.request = request

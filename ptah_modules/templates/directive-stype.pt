@@ -6,8 +6,7 @@
 	<h4>
 	  <a href="${url}/ptah-manage/introspect/source.html?pkg=${action.info.module.__name__}#sl-${action.info.codeinfo[1]}">
 	    ${pt.title or pt.name}</a>
-	  <small>for</small>
-	  ${pt.context.__module__}.${pt.context.__name__}
+	  <small>for</small> ${pt.context or 'Anything'}
 	</h4>
 	<p tal:condition="pt.description">${pt.description}</p>
       </td>
