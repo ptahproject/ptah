@@ -1,5 +1,4 @@
 from memphis import view, config
-from zope import interface
 from pyramid.security import authenticated_userid
 from pyramid.httpexceptions import HTTPFound, HTTPForbidden
 
@@ -8,36 +7,14 @@ from ptah.settings import PTAH_CONFIG
 from ptah.authentication import authService
 
 
-class IPtahRoute(interface.Interface):
-    """ ptah route """
-
-
-class IPtahManageRoute(view.INavigationRoot):
-    """ user management route """
-
-
-class IPtahModule(interface.Interface):
-    """ module """
-
-    name = interface.Attribute('Module name')
-    title = interface.Attribute('Module title')
-
-    def url(request):
-        """ return url to this module """
-
-    def bind(manager, request):
-        """ bind module to context """
-
-    def available(request):
-        """ is module available """
-
-
 MODULES = {}
 
 class PtahModule(object):
-    interface.implements(IPtahModule)
 
+    #: Module name (also is used for url generation)
     name = ''
+
+    #: Module title
     title = ''
 
     def __init__(self, manager, request):
@@ -45,6 +22,7 @@ class PtahModule(object):
         self.request = request
 
     def url(self):
+        """ return url to this module """
         return '%s/'%self.name
 
     @property
@@ -52,6 +30,7 @@ class PtahModule(object):
         return self.name
 
     def available(self):
+        """ is module available """
         return True
 
 
@@ -106,21 +85,15 @@ def set_access_manager(func):
     ACCESS_MANAGER = func
 
 
-class DefaultRoot(object):
-    interface.implements(view.INavigationRoot)
-
-    __name__ = None
-    __parent__ = None
-
-    def __init__(self, request=None):
-        self.request = request
+def get_access_manager():
+    return ACCESS_MANAGER
 
 
 class PtahManageRoute(object):
-    interface.implements(IPtahManageRoute)
+    """ ptah management route """
 
     __name__ = 'ptah-manage'
-    __parent__ = DefaultRoot()
+    __parent__ = None
 
     def __init__(self, request):
         self.request = request
@@ -141,8 +114,6 @@ class PtahManageRoute(object):
         raise KeyError(key)
 
 
-view.snippettype('ptah-module-actions', IPtahModule)
-
 view.register_route(
     'ptah-manage-view','/ptah-manage',
     PtahManageRoute)
@@ -151,24 +122,26 @@ view.register_route(
     'ptah-manage','/ptah-manage/*traverse',
     PtahManageRoute, use_global_views=True)
 
-view.register_layout(
-    '', IPtahManageRoute, parent='page',
-    template=view.template("ptah:templates/ptah-layout.pt"))
+view.snippettype('ptah-module-actions', PtahModule)
 
 view.register_snippet(
-    'ptah-module-actions',
+    'ptah-module-actions', PtahModule,
     template = view.template('ptah:templates/moduleactions.pt'))
 
+view.register_layout(
+    '', PtahManageRoute, parent='ptah-manage',
+    template=view.template("ptah:templates/ptah-layout.pt"))
 
-class LayoutPage(view.Layout):
-    view.layout('page', IPtahManageRoute,
-                template=view.template("ptah:templates/ptah-page.pt"))
+
+class LayoutManage(view.Layout):
+    view.layout('ptah-manage', PtahManageRoute,
+                template=view.template("ptah:templates/ptah-manage.pt"))
 
     def update(self):
         self.user = authService.get_current_principal()
 
         mod = self.viewcontext
-        while not IPtahModule.providedBy(mod):
+        while not isinstance(mod, PtahModule):
             mod = getattr(mod, '__parent__', None)
             if mod is None: # pragma: no cover
                 break
@@ -179,11 +152,11 @@ class LayoutPage(view.Layout):
 class ManageView(view.View):
     """List ptah modules"""
     view.pyramidview(
-        context = IPtahManageRoute,
-        route = 'ptah-manage', layout='page',
+        context = PtahManageRoute,
+        route = 'ptah-manage', layout='ptah-manage',
         template = view.template('ptah:templates/manage.pt'))
 
-    __intr_path__ = '/ptah-manage/index.html'
+    __intr_path__ = '/ptah-manage/'
 
     def update(self):
         context = self.context
@@ -197,6 +170,6 @@ class ManageView(view.View):
         self.modules = [mod(context, request) for _t, mod in mods]
 
 
-@view.pyramidview(context = IPtahManageRoute, route = 'ptah-manage-view')
+@view.pyramidview(context = PtahManageRoute, route = 'ptah-manage-view')
 def redirectToManage(request):
     raise HTTPFound(location = '%s/'%request.url) # pragma: no cover

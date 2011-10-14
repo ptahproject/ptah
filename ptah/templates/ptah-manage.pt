@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Ptah</title>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+
+    ${view.include('jquery')}
+    ${view.include('bootstrap')}
+    <tal:block content="structure view.render_includes()" />
+  </head>
+  <body>
+    <div class="topbar" tal:define="app_url request.application_url">
+      <div class="fill">
+	<div class="container">
+	  <h3><a href="${app_url}/ptah-manage/">Ptah</a></h3>
+	  <tal:block 
+	     condition="view.module"
+	     content="structure 
+		      view.snippet('ptah-module-actions',view.module)" />
+	  
+	  <ul class="nav secondary-nav">
+	    <li>
+	      <h5 class="active">
+		<a href="${app_url}">
+		  ${unicode(view.user)}:
+		</a>
+	      </h5>
+	    </li>
+	    <li class="active">
+	      <a href="${app_url}/logout.html">Logout</a>
+	    </li>
+	  </ul>
+	</div>
+      </div>
+    </div>
+
+    <div style="margin-top: 60px;">
+      <div class="container">
+	<tal:block tal:content="structure content" />
+      </div>
+    </div>
+  </body>
+</html>

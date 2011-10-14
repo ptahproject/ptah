@@ -18,8 +18,6 @@ Create requirements
 
 Lets create the `pip` requirements.txt file with the contents::
 
-    Chameleon == 2.4.5
-    zope.interface >= 3.8.0
     -e git+https://github.com/ptahproject/memphis#egg=memphis
     -e git+https://github.com/ptahproject/ptah.git#egg=ptah
 

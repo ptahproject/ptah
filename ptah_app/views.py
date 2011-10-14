@@ -16,7 +16,7 @@ view.register_layout(
     template = view.template("ptah_app:templates/layoutpage.pt"))
 
 view.register_layout(
-    'ptah-security', ptah_cms.ApplicationRoot, parent='workspace',
+    'ptah-page', ptah_cms.ApplicationRoot, parent='workspace', layer='ptah_app',
     template = view.template("ptah_app:templates/layout-ptahsecurity.pt"))
 
 
