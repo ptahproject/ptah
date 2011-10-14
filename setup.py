@@ -27,6 +27,8 @@ setup(name='ptah',
                           'repoze.sendmail',
                           'Pygments',
                           ],
+      tests_require = ['nose'],
+      test_suite = 'nose.collector',
       include_package_data = True,
       zip_safe = False,
       entry_points = {
