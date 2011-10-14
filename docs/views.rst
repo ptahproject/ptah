@@ -129,6 +129,15 @@ happens when rendering page1 and page2::
     print layout
     <Section2Layout...>    
 
+Layout API
+~~~~~~~~~~
+
+from memphis.view import layout
+from memphis.view import Layout
+from memphis.view import query_layout
+from memphis.view import register_layout
+
+
 Views
 -----
 Really no different at all in Pyramid other than configuration statements. There are 2 ways to customize a view.  Override the entire View or you can override the template on a view.
@@ -147,30 +156,118 @@ Ptah App and Ptah Manage both use Layouts to generate their structure and render
 
 Layout in Ptah is based on the context in which the template is being rendered.  It is not really a replacement for template composition available inside of the different template implementations.  It is more 
 
-Comparison with PT/METAL
-~~~~~~~~~~~~~~~~~~~~~~~~
-TODO - REMEMBER YOU CAN STILL USE NATIVE TEMPLATE COMPOSITION
+Snippets
+--------
 
-Comparison with Jinja Inheritance
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-TODO - REMEMBER YOU CAN STILL USE NATIVE TEMPLATE COMPOSITION
+An example of Snippet usage can be found in Ptah Manage. If you goto the Introspect module, in the top bar, you see: Introspect, Routes, Events.
+If you goto Settings module, in the top bar, you see: Settings.  
 
-Comparison with Mako
-~~~~~~~~~~~~~~~~~~~~
-TODO - REMEMBER YOU CAN STILL USE NATIVE TEMPLATE COMPOSITION
+You can not use a function to override a snippet.  You can use either a template or a class.  Let's keep it simple and just override the Settings module's snippet.
+
+First let's find the name:
+  - Open up Ptah Manage
+  - Click on Introspect, then click on ptah
+  - Look for `Snippet Types`
+  - The name is `ptah-module-actions`
+  - If you click on it the hyperlink you will be brought to the definition in source code.  Look for the register_snippet and we see:
+  
+  view.register_snippet(
+    'ptah-module-actions',
+    template = view.template('ptah:templates/moduleactions.pt'))
+
+Now lets override the snippet for the Settings module:
+
+  - Unfotunately at this time we dont have introspection on the Ptah Modules.  This is using Pyramid routes/views.  So lets go and look at source:.
+  - Open ptah/ptah_modules/settings.py
+  
+  - We see the name of the Module, SettingsModule and registration of it ptah.manageModule('settings')
+  
+Now lets override the snippet in myapp:
+  - Copy the ptah/ptah_app/templates/moduleactions.pt into myapp/templates/settings-snippet.pt
+  - Edit the .pt and add a <li>Modified</li> in the HTML snippet
+  - Now open up myapp/views.py and add::
+      from memphis import view
+      from ptah_modules.settings import SettingsModule
+      view.register_snippet(
+          'ptah-module-actions',
+          context = SettingsModule,
+          template = view.template('myapp:templates/settings-snippet.pt'))
+
+Restart and goto ptah-manage and then click on settings.  Look at the
+upper left hand side of the screen.
 
 Static Resources
 ----------------
 
-memphis static resources always are served from /static/ in your URL.  This "static resource prefix" is configurable but the idea is that all static assets are served the same way.  Whether you want it to be /static/ or /assets/ all resources are locatable through this prefix.
+By using myapp paster template you will see a 'static' folder.  Inside it there is a repoze.gif.  
 
-since memphis supports this configuration directive for static resources its also possible to introspect them keeping their identity.  it is core behavior to know where a given resource is defined in the code base.
+Looking at myapp/view.py you see::
 
-lastly there is additional funcitonality which allows the framework to consolidate all of the static resources into a set of files/folders which can be served from a different server.  e.g.  before production code push you can "re-dump" all static assets and move them to nginx.
+    view.static('myapp', 'myapp:static')
+
+Let's address it in the URL by going to http://localhost:8080/static/myapp/repoze.gif
+
+You can put anything in there and it will be served and it supports subfolders and assets in those subfolders.  Currently you need to restart the process to see new assets show up but not changes to such assets.  Just the registration.
+
+Changing the `prefix`
+~~~~~~~~~~~~~~~~~~~~~
+
+By default the default settings are set for `static`.  If you open up the development.ini you will not see a definition for `static`.  So execute the bin/settings script to see a list of all settings (default and customized).  This is important since there are quite a few defaults and if you had all of these registered in the .ini file it would become unwieldly.
+
+The relevant output from bin/settings::
+
+  * Static resources management
+
+  - static.url: Url (String: static)
+
+  - static.cache_max_age: Cache Max Age (Integer: 0)
+
+If you want to change this edit your .ini file and put static.url=assets then you will be able to see all assets at /assets/myapp/repoze.gif.  Also static.url can be fully qualified. 
+
+Packing static resources
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+There is a packing mechanism which will copy all registered static assets into a single directory.  This is very useful during production.
+Let's do it::
+
+  $ bin/paster static -d staticassets
+  $ ls staticassets
+  bootstrap  jquery  myapp  tiny_mce
+
+If you had a custom domain for static assets you can change your production.ini and change static.url=http://media.domain.com/assets/
+Your production application when generating urls will use the static.url and you can serve the packed assets efficiently.
 
 Libraries
 ---------
-If you want to include something in the HEAD; libraries are used for this.
+This name may change.  Main idea is that if your Snippet needs tags inserted into the HEAD you can use the library feature to ensure those HTML supporting assets exist.  An example:
+
+  - The TinyMCE widget is a form field and when it is rendered it does have access to HEAD.
+  - In an editor open up ptah/ptah_app/tinymce.py
+
+Definition of Library::
+
+    # TinyMCE
+    view.static(
+        'tiny_mce', 'ptah_app:static/tiny_mce')
+
+    view.library(
+        "tiny_mce",
+        resource="tiny_mce", # same as view.static name
+        path=('tiny_mce.js', 'jquery.tinymce.js'),
+        type="js",
+        require='jquery')
+
+So this widget uses another library called jquery.  You can imagine that you will extend TinyMCE with behaviors and inside of your extension you create a library which will require="tiny_mce" which will guarantee that the tinymce assets are available.
+
+Inside of Python if you want to include a library into a request. 
+
+Usage of Library, include::
+
+    from memphis import view
+    view.include('tiny_mce', request)
+
+And your request will get all assets for the library.
+
 
 Formatters
 ----------
@@ -182,6 +279,3 @@ Messages
 --------
 This is a reimplementation of pyramid flashmessages.  This could probably be removed.
 
-Snippets
---------
-We will either rename this or remove it.  I hate this name.
