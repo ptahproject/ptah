@@ -16,15 +16,12 @@ First install virtualenv::
 Create requirements
 -------------------
 
-Lets create the `pip` requirements.txt file::
+Lets create the `pip` requirements.txt file with the contents::
 
-    ~/myvirtualenv$ cat > requirements.txt
     Chameleon == 2.4.5
     zope.interface >= 3.8.0
-    -e git+https://github.com/Pylons/colander.git#egg=colander
     -e git+https://github.com/ptahproject/memphis#egg=memphis
     -e git+https://github.com/ptahproject/ptah.git#egg=ptah
-    ^C
 
 Install the requirements
 ------------------------
@@ -84,3 +81,8 @@ Run myapp tests::
 
     ~$ cd myapp
     myapp$ ../bin/python setup.py test
+
+Summary
+~~~~~~~
+
+Look inside myapp/__init__.py and you will see the application configuration.
