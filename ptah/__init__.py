@@ -10,8 +10,9 @@ from ptah.uri import UriGenerator
 # manage
 from ptah.manage import PtahModule
 from ptah.manage import manageModule
-from ptah.manage import set_access_manager
 from ptah.manage import introspection
+from ptah.manage import set_access_manager
+from ptah.manage import get_access_manager
 
 # security
 from ptah.authentication import authService

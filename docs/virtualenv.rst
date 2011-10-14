@@ -19,9 +19,6 @@ Create requirements
 Lets create the `pip` requirements.txt file::
 
     ~/myvirtualenv$ cat > requirements.txt
-    Chameleon == 2.4.5
-    zope.interface >= 3.8.0
-    -e git+https://github.com/Pylons/colander.git#egg=colander
     -e git+https://github.com/ptahproject/memphis#egg=memphis
     -e git+https://github.com/ptahproject/ptah.git#egg=ptah
     ^C

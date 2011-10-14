@@ -3,20 +3,25 @@ import urllib
 from memphis import view
 from pyramid.httpexceptions import HTTPFound, HTTPForbidden, HTTPNotFound
 
+import ptah
 from ptah import authService
-from ptah.manage import DefaultRoot
 from ptah.mail import MAIL
 from ptah.settings import PTAH_CONFIG
 
 
-view.register_layout(
-    'ptah-exception', parent='.',
-    template = view.template('ptah:templates/ptah-exception.pt'))
+class LayoutPage(view.Layout):
+    view.layout('ptah-page',
+                template=view.template("ptah:templates/ptah-page.pt"))
+
+    def update(self):
+        self.root = getattr(self.request, 'root', None)
+        self.user = authService.get_current_principal()
+        self.isanon = self.user is None
+        self.ptahmanager = ptah.get_access_manager()(authService.get_userid())
 
 
 class Forbidden(view.View):
-    view.pyramidview(context=HTTPForbidden,
-                     layout='ptah-exception',
+    view.pyramidview(context=HTTPForbidden, layout='ptah-page',
                      template=view.template('ptah:templates/forbidden.pt'))
 
     def update(self):
@@ -49,8 +54,7 @@ class Forbidden(view.View):
 
 
 class NotFound(view.View):
-    view.pyramidview(context=HTTPNotFound,
-                     layout='ptah-exception',
+    view.pyramidview(context=HTTPNotFound, layout='ptah-page',
                      template=view.template('ptah:templates/notfound.pt'))
 
     def update(self):

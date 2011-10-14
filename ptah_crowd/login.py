@@ -15,7 +15,7 @@ view.register_route('ptah-login-suspended', '/login-suspended.html')
 
 class LoginForm(form.Form):
     view.pyramidview(
-        route='ptah-login', layout='ptah-security',
+        route='ptah-login', layout='ptah-page',
         template = view.template("ptah_crowd:templates/login.pt"))
 
     id = 'login-form'
@@ -89,7 +89,7 @@ class LoginSuccess(view.View):
     """ Login successful information page. """
 
     view.pyramidview(
-        route = 'ptah-login-success', layout='ptah-security',
+        route = 'ptah-login-success', layout='ptah-page',
         template = view.template("ptah_crowd:templates/login-success.pt"))
 
     def update(self):
@@ -109,7 +109,7 @@ class LoginSuspended(view.View):
     """ Suspended account information page. """
 
     view.pyramidview(
-        route = 'ptah-login-suspended', layout='ptah-security',
+        route = 'ptah-login-suspended', layout='ptah-page',
         template = view.template("ptah_crowd:templates/login-suspended.pt"))
 
     def update(self):

@@ -100,7 +100,7 @@ class TestManageModule(Base):
         self.assertIsInstance(view.modules[-1], TestModule)
 
     def test_manage_layout(self):
-        from ptah.manage import PtahManageRoute, LayoutPage
+        from ptah.manage import PtahManageRoute, LayoutManage
 
         global TestModule
         class TestModule(ptah.PtahModule):
@@ -120,7 +120,7 @@ class TestManageModule(Base):
         content = Content()
         content.__parent__ = mod
 
-        layout = LayoutPage(mod, request)
+        layout = LayoutManage(mod, request)
         layout.viewcontext = content
         layout.update()
 
