@@ -22,7 +22,7 @@ class Page(ptah_cms.Content):
                        info = {'field_type': 'tinymce'})
 
 
-memphis.view.registerView(
+memphis.view.register_view(
     context = Page,
     permission = ptah_cms.View,
     template = memphis.view.template('ptah_app:templates/page.pt'))

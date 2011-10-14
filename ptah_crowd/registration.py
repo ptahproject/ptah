@@ -13,11 +13,11 @@ from provider import Session, CrowdUser
 from validation import initiate_validation
 
 
-view.registerRoute('ptah-join', '/join.html')
+view.register_route('ptah-join', '/join.html')
 
 
 class Registration(form.Form):
-    view.pyramidView(route = 'ptah-join', layout='ptah-security')
+    view.pyramidview(route = 'ptah-join', layout='ptah-security')
 
     label = _("Registration")
     fields = form.Fieldset(RegistrationSchema, PasswordSchema)

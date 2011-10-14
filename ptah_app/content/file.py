@@ -54,7 +54,7 @@ class File(ptah_cms.Content):
 
 
 class FileDownloadView(view.View):
-    view.pyramidView('download.html', File, layout=None,
+    view.pyramidview('download.html', File, layout=None,
                      permission = ptah_cms.View)
 
     def render(self):
@@ -70,7 +70,7 @@ class FileDownloadView(view.View):
 
 
 class FileView(FileDownloadView):
-    view.pyramidView(context = File,
+    view.pyramidview(context = File,
                      permission = ptah_cms.View)
 
     template = view.template('ptah_app:templates/file.pt')
@@ -89,7 +89,7 @@ class FileView(FileDownloadView):
 
 
 class FileAddForm(ptah_app.AddForm):
-    view.pyramidView('addfile.html', ptah_cms.IContainer)
+    view.pyramidview('addfile.html', ptah_cms.IContainer)
 
     tinfo = File.__type__
 

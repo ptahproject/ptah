@@ -305,7 +305,7 @@ def checkPermission(permission, context, request=None, throw=False):
         return False
     return True
 
-view.setCheckPermission(checkPermission)
+view.set_checkpermission(checkPermission)
 
 
 @config.addCleanup

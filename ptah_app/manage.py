@@ -17,7 +17,7 @@ class ApplicationsModule(ptah.PtahModule):
 
 
 class ApplicationsModuleView(view.View):
-    view.pyramidView(
+    view.pyramidview(
         context=ApplicationsModule,
         template=view.template('ptah_app:templates/module-apps.pt'))
 
@@ -41,7 +41,7 @@ class AppFactory(object):
 
 
 class SharingForm(form.Form):
-    view.pyramidView(
+    view.pyramidview(
         context = AppFactory,
         template = view.template('ptah_app:templates/module-apps-sharing.pt'))
 

@@ -104,10 +104,10 @@ class ServiceAPIDoc(object):
         return info
 
 
-view.registerRoute(
+view.register_route(
     'ptah-rest-login', '/__rest__/login')
 
-view.registerRoute(
+view.register_route(
     'ptah-rest', '/__rest__/{service}/*subpath', use_global_views=True)
 
 
@@ -116,7 +116,7 @@ def dthandler(obj):
 
 
 class Login(object):
-    view.pyramidView(route='ptah-rest-login', layout=None)
+    view.pyramidview(route='ptah-rest-login', layout=None)
 
     def __init__(self, request):
         self.request = request
@@ -157,7 +157,7 @@ class Login(object):
 
 
 class Api(object):
-    view.pyramidView(route='ptah-rest', layout=None)
+    view.pyramidview(route='ptah-rest', layout=None)
 
     def __init__(self, request):
         self.request = request

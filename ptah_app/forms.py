@@ -129,7 +129,7 @@ view.register_snippet(
 
 
 class EditForm(form.Form):
-    view.pyramidView('edit.html', IContent, permission=ModifyContent)
+    view.pyramidview('edit.html', IContent, permission=ModifyContent)
 
     @reify
     def label(self):

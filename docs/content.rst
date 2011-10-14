@@ -34,7 +34,7 @@ A simple model::
         __type__ = ptah_cms.Type('link', permission=ptah_cms.AddContent)
         href = sqla.Column(sqla.Unicode)
 
-    @view.pyramidView(context=Link, permission=ptah_cms.View, layout='page')
+    @view.pyramidview(context=Link, permission=ptah_cms.View, layout='page')
     def link_view(context, request):
         """ This is a default view for a Link model.
             If you have permission to edit it it will display the form.
@@ -54,7 +54,7 @@ A simple model::
             # Uncomment below if you do not want the layout wrapper
             #return vform.render()
 
-            layout = view.queryLayout(request, context)
+            layout = view.query_layout(request, context)
             return layout(vform.render())
 
         raise HTTPFound(location=context.href)

@@ -4,7 +4,7 @@ from pyramid.httpexceptions import HTTPFound
 
 
 class SharingForm(form.Form):
-    view.pyramidView(
+    view.pyramidview(
         'sharing.html', ptah.ILocalRolesAware,
         permission = ptah_cms.ShareContent,
         template = view.template('ptah_app:templates/sharing.pt'))

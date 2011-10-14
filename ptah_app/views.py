@@ -11,11 +11,11 @@ from forms import AddForm
 from uiactions import listUIActions
 
 
-view.registerLayout(
+view.register_layout(
     'page', ptah_cms.ApplicationRoot,
     template = view.template("ptah_app:templates/layoutpage.pt"))
 
-view.registerLayout(
+view.register_layout(
     'ptah-security', ptah_cms.ApplicationRoot, parent='workspace',
     template = view.template("ptah_app:templates/layout-ptahsecurity.pt"))
 
@@ -47,7 +47,7 @@ def defaultView(renderer):
                 return renderer(context, request)
 
             request.context = item
-            return view.renderView('', item, request)
+            return view.render_view('', item, request)
 
         view = renderer(context, request)
         view.update()
@@ -58,7 +58,7 @@ def defaultView(renderer):
 listing_template = view.template("ptah_app:templates/listing.pt")
 
 class ContainerListing(view.View):
-    view.pyramidView('listing.html', interfaces.IContainer,
+    view.pyramidview('listing.html', interfaces.IContainer,
                      template = listing_template)
 
     def update(self):
@@ -94,18 +94,18 @@ class ContainerListing(view.View):
 #@defaultView
 
 class ViewContainer(ContainerListing):
-    view.pyramidView(context = interfaces.IContainer,
+    view.pyramidview(context = interfaces.IContainer,
                      template = listing_template)
 
 
 class RenameForm(view.View):
-    view.pyramidView(
+    view.pyramidview(
         'rename.html', interfaces.IContainer,
         template=view.template("ptah_app:templates/folder_rename.pt"))
 
 
 class Adding(view.View):
-    view.pyramidView('+', interfaces.IContainer)
+    view.pyramidview('+', interfaces.IContainer)
 
     template=view.template("ptah_app:templates/adding.pt")
 
@@ -143,7 +143,7 @@ class AddContentForm(AddForm):
 
 
 class DefaultContentView(form.DisplayForm):
-    view.pyramidView(
+    view.pyramidview(
         context = ptah_cms.IContent,
         permission = ptah_cms.View,
         template=view.template("ptah_app:templates/contentview.pt"))

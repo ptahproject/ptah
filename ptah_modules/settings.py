@@ -11,7 +11,7 @@ class SettingsModule(ptah.PtahModule):
 
 
 class MainView(view.View):
-    view.pyramidView(
+    view.pyramidview(
         context = SettingsModule,
         template = view.template(
             'ptah_modules:templates/settings.pt', nolayer=True))

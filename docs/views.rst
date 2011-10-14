@@ -10,7 +10,7 @@ Conceptual Model
 Let's use Ptah App as an example.  There is a `front-page` content, its
 class is ptah_app.content.Page.  The default view for this page is::
 
-    memphis.view.registerView(
+    memphis.view.register_view(
         context = Page,
         layout = u'', # empty string means `default layout`
         permission = ptah_cms.View,
@@ -24,7 +24,7 @@ So if you render this view::
     >>> request = Request.blank('/')
     >>> request.root = root
     >>> request.registry = # put registry
-    >>> full_html = memphis.view.renderView('', root['front-page'], request) 
+    >>> full_html = memphis.view.render_view('', root['front-page'], request) 
     ... the entire html page with all layout applied
 
 This is ptah_app/templates/page.pt rendered against the page.  This page
@@ -34,7 +34,7 @@ the layout chain calling each layout with the previous html rendered.
 System queries layout for this view::
 
     >>> snipper = '<div>The result of a view without layout</div>.'
-    >>> layout = memphis.view.queryLayout(request, root['front-page'], u'')
+    >>> layout = memphis.view.query_layout(request, root['front-page'], u'')
     >>> layout
     <ptah_app.views.ContentLayout object at ...>
     >>> layout.template
@@ -62,7 +62,7 @@ same thing::
 
     snippet = layout.render(snippet)
     p_layout = layout.layout # will be renamed in future
-    parent = memphis.view.queryLayout(request, root['front-page'], p_layout)
+    parent = memphis.view.query_layout(request, root['front-page'], p_layout)
     snippet = parent.render(snippet)
     ...
     continues until there is no parent on a layout.  the top level parent
@@ -87,10 +87,10 @@ Pseudo-code::
 
   view = pyramid.render_view('/path/to/some/view')
   snippet = templateengine.render(view.__template__(model))
-  layout = queryLayout(request, model, '')
+  layout = query_layout(request, model, '')
   while 1:
       snippet = layout.render(snippet)
-      layout = queryLayout(request, model, layout.parent)
+      layout = query_layout(request, model, layout.parent)
       if layout is None:
           break
   snippet is the full HTML.
@@ -121,11 +121,11 @@ Now let's see what happens when we follow layout rendering.  This
 happens when rendering page1 and page2::
 
     page1 model/template gets rendered into snippet.
-    layout = queryLayout(request, page1, 'workspace') 
+    layout = query_layout(request, page1, 'workspace') 
     print layout
     <Section1Layout...>
     page2 model/template gets rendered into snippet.
-    layout = queryLayout(request, page2, 'workspace')
+    layout = query_layout(request, page2, 'workspace')
     print layout
     <Section2Layout...>    
 

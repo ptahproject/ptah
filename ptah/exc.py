@@ -9,13 +9,13 @@ from ptah.mail import MAIL
 from ptah.settings import PTAH_CONFIG
 
 
-view.registerLayout(
+view.register_layout(
     'ptah-exception', parent='.',
     template = view.template('ptah:templates/ptah-exception.pt'))
 
 
 class Forbidden(view.View):
-    view.pyramidView(context=HTTPForbidden,
+    view.pyramidview(context=HTTPForbidden,
                      layout='ptah-exception',
                      template=view.template('ptah:templates/forbidden.pt'))
 
@@ -49,7 +49,7 @@ class Forbidden(view.View):
 
 
 class NotFound(view.View):
-    view.pyramidView(context=HTTPNotFound,
+    view.pyramidview(context=HTTPNotFound,
                      layout='ptah-exception',
                      template=view.template('ptah:templates/notfound.pt'))
 

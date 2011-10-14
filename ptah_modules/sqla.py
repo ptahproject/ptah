@@ -75,7 +75,7 @@ class Record(object):
 
 
 class MainView(view.View):
-    view.pyramidView(
+    view.pyramidview(
         context = SQLAModule,
         template = view.template('ptah_modules:templates/sqla-index.pt'))
 
@@ -125,7 +125,7 @@ class MainView(view.View):
 
 
 class TableView(form.Form):
-    view.pyramidView(
+    view.pyramidview(
         context = Table,
         template = view.template('ptah_modules:templates/sqla-table.pt'))
 
@@ -192,7 +192,7 @@ class TableView(form.Form):
 
 
 class EditRecord(form.Form):
-    view.pyramidView(context = Record)
+    view.pyramidview(context = Record)
 
     __doc__ = "Edit table record."
     __intr_path__ = '/ptah-manage/sqla/${table}/${record}/index.html'
@@ -244,7 +244,7 @@ class EditRecord(form.Form):
 
 class AddRecord(form.Form):
     """ Add new table record. """
-    view.pyramidView('add.html', Table)
+    view.pyramidview('add.html', Table)
 
     __intr_path__ = '/ptah-manage/sqla/${table}/add.html'
 

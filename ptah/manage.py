@@ -143,15 +143,15 @@ class PtahManageRoute(object):
 
 view.snippettype('ptah-module-actions', IPtahModule)
 
-view.registerRoute(
+view.register_route(
     'ptah-manage-view','/ptah-manage',
     PtahManageRoute)
 
-view.registerRoute(
+view.register_route(
     'ptah-manage','/ptah-manage/*traverse',
     PtahManageRoute, use_global_views=True)
 
-view.registerLayout(
+view.register_layout(
     '', IPtahManageRoute, parent='page',
     template=view.template("ptah:templates/ptah-layout.pt"))
 
@@ -178,7 +178,7 @@ class LayoutPage(view.Layout):
 
 class ManageView(view.View):
     """List ptah modules"""
-    view.pyramidView(
+    view.pyramidview(
         context = IPtahManageRoute,
         route = 'ptah-manage', layout='page',
         template = view.template('ptah:templates/manage.pt'))
@@ -197,6 +197,6 @@ class ManageView(view.View):
         self.modules = [mod(context, request) for _t, mod in mods]
 
 
-@view.pyramidView(context = IPtahManageRoute, route = 'ptah-manage-view')
+@view.pyramidview(context = IPtahManageRoute, route = 'ptah-manage-view')
 def redirectToManage(request):
     raise HTTPFound(location = '%s/'%request.url) # pragma: no cover

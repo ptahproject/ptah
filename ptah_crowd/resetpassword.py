@@ -13,12 +13,12 @@ from ptah.events import PrincipalPasswordChangedEvent
 
 from settings import _
 
-view.registerRoute('ptah-resetpassword', '/resetpassword.html')
-view.registerRoute('ptah-resetpassword-form', '/resetpasswordform.html')
+view.register_route('ptah-resetpassword', '/resetpassword.html')
+view.register_route('ptah-resetpassword-form', '/resetpasswordform.html')
 
 
 class ResetPassword(form.Form):
-    view.pyramidView(
+    view.pyramidview(
         route = 'ptah-resetpassword', layout='ptah-security',
         template = view.template('ptah_crowd:templates/resetpassword.pt'))
 
@@ -75,7 +75,7 @@ class ResetPassword(form.Form):
 
 
 class ResetPasswordForm(form.Form):
-    view.pyramidView(
+    view.pyramidview(
         route = 'ptah-resetpassword-form', layout='ptah-security',
         template=view.template('ptah_crowd:templates/resetpasswordform.pt'))
 

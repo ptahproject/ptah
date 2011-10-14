@@ -13,7 +13,7 @@ class FieldsModule(ptah.PtahModule):
 
 
 class FieldsView(view.View):
-    view.pyramidView(
+    view.pyramidview(
         context = FieldsModule,
         template = view.template('ptah_modules:templates/fields.pt'))
 

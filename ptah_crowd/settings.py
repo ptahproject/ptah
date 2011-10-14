@@ -5,7 +5,7 @@ from memphis import config, view
 _ = translationstring.TranslationStringFactory('ptah_crowd')
 
 
-view.registerLayout(
+view.register_layout(
     'ptah-security', parent='.',
     template = view.template('ptah_crowd:templates/layout.pt'))
 

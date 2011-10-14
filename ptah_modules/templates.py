@@ -21,7 +21,7 @@ view.register_snippet(
 
 class TemplatesManagement(view.View):
     """List templates"""
-    view.pyramidView(
+    view.pyramidview(
         context = TemplatesModule,
         template = view.template(
             'ptah_modules:templates/customize.pt', nolayer=True))
@@ -57,7 +57,7 @@ class TemplatesManagement(view.View):
 
 class ViewTemplate(view.View):
     """View template"""
-    view.pyramidView(
+    view.pyramidview(
         'view.html', TemplatesModule,
         template = view.template(
             'ptah_modules:templates/template.pt', nolayer=True))
@@ -139,7 +139,7 @@ class ViewTemplate(view.View):
 
 class CustomTemplate(view.View):
     """List customized templates"""
-    view.pyramidView(
+    view.pyramidview(
         'customized.html', TemplatesModule,
         template = view.template(
             'ptah_modules:templates/customized.pt', nolayer=True))
