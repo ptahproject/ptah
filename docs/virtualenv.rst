@@ -61,3 +61,26 @@ You can see Ptah Manage, http://localhost:6543/ptah-manage/
 
 These are 2 separate wsgi apps.  They are both optional.  The "DT" tab
 on the right hand side of the screen is the Debug Toolbar from Pyramid.
+
+Run Tests
+~~~~~~~~~
+
+We use the `nose` test runner to collect which tests to run.  You can
+read up how to use coverage integration.  
+
+Run memphis tests::
+
+    ~$ cd src/memphis
+    memphis$ ../bin/python setup.py develop
+    memphis$ ../bin/python setup.py test
+
+Run ptah tests::
+
+    ~$ cd src/ptah
+    ptah$ ../bin/python setup.py develop
+    ptah$ ../bin/python setup.py test
+
+Run myapp tests::
+
+    ~$ cd myapp
+    myapp$ ../bin/python setup.py test
