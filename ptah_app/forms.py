@@ -76,7 +76,8 @@ class AddForm(form.Form):
             name = data['__name__']
             if name in self.container.keys():
                 error = form.Invalid(
-                    self.name_fields['__name__'].field, 'Name already in use')
+                    self.name_widgets['__name__'], 'Name already in use')
+                error.field = self.name_widgets['__name__']
                 errors.append(error)
 
     def extract(self):

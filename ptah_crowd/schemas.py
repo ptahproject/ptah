@@ -1,10 +1,10 @@
 """ schemas """
 from memphis import form
-from ptah import passwordTool
+
+import ptah
 from ptah.password import passwordValidator
 
 from settings import _
-from provider import CrowdUser
 
 
 def lower(s):
@@ -13,8 +13,11 @@ def lower(s):
     return s
 
 
-def checkLogin(node, login):
-    if login and CrowdUser.get(login) is not None:
+def checkLoginValidator(node, login):
+    if getattr(node, 'content', None) == login:
+        return
+
+    if ptah.authService.get_principal_bylogin(login) is not None:
         raise form.Invalid(node, _('Login already is in use.'))
 
 
@@ -35,7 +38,7 @@ RegistrationSchema = form.Fieldset(
                         'will not be displayed to any user or be shared with '
                         'anyone else.'),
         preparer = lower,
-        validator = form.All(form.Email(), checkLogin),
+        validator = form.All(form.Email(), checkLoginValidator),
         )
     )
 
@@ -71,7 +74,7 @@ UserSchema = form.Fieldset(
                         'will not be displayed to any user or be shared with '
                         'anyone else.'),
         preparer = lower,
-        validator = form.All(form.Email(), checkLogin),
+        validator = form.All(form.Email(), checkLoginValidator),
         ),
 
     form.fields.PasswordField(
