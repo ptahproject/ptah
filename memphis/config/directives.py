@@ -124,7 +124,7 @@ def _getProvides(factory):
             "and no provided interface was specified.")
 
 
-ACTIONS = {}
+ATTACH_ATTR = '__memphis_callbacks__'
 
 class Action(object):
 
@@ -194,7 +194,11 @@ class DirectiveInfo(object):
     def attach(self, action):
         action.info = self
 
-        data = ACTIONS.setdefault(self.module.__name__, [])
+        data = getattr(self.module, ATTACH_ATTR, None)
+        if data is None:
+            data = []
+            setattr(self.module, ATTACH_ATTR, data)
+
         data.append(action)
 
 
@@ -256,8 +260,8 @@ def scan(package, seen, exclude_filter=None):
 
     seen.add(pkgname)
 
-    if pkgname in ACTIONS:
-        actions.extend(ACTIONS[pkgname])
+    if hasattr(package, ATTACH_ATTR):
+        actions.extend(getattr(package, ATTACH_ATTR))
 
     if hasattr(package, '__path__'): # package, not module
         results = walk_packages(package.__path__, package.__name__+'.')
@@ -278,8 +282,8 @@ def scan(package, seen, exclude_filter=None):
                 if module_type in (imp.PY_SOURCE, imp.PKG_DIRECTORY):
                     __import__(modname)
                     module = sys.modules[modname]
-                    if modname in ACTIONS:
-                        actions.extend(ACTIONS[modname])
+                    if hasattr(module, ATTACH_ATTR):
+                        actions.extend(getattr(module, ATTACH_ATTR))
 
     return actions
 

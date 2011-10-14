@@ -165,5 +165,6 @@ def cleanup_system(*modIds):
         h()
 
     for modId in modIds:
-        if modId in directives.ACTIONS:
-            del directives.ACTIONS[modId]
+        mod = sys.modules[modId]
+        if hasattr(mod, directives.ATTACH_ATTR):
+            delattr(mod, directives.ATTACH_ATTR)
