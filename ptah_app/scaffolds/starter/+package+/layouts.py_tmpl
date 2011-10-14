@@ -1,4 +1,4 @@
-import ptah_cms
+import ptah, ptah_cms
 from memphis import view 
 
 

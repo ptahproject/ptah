@@ -30,6 +30,8 @@
 <div style="margin-top: 60px;">
   <div class="inner">
     <div class="container">
+      <img src="${view.static_url('{{package}}', 'repoze.gif')}" />
+    
       <tal:block content="structure view.renderMessages()" />
       
       ${content}
