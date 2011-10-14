@@ -139,7 +139,7 @@ class TestValidation(Base):
 
         request = self._makeRequest()
 
-        validation.initiate_validation(user, request)
+        validation.initiate_validation(user.email, user, request)
         self.assertEqual(Stub.status, 'Email has been sended')
         self.assertIsNotNone(Stub.token)
 
@@ -158,7 +158,7 @@ class TestValidation(Base):
         request = self._makeRequest()
         
         template = validation.ValidationTemplate(
-            user, request, token = 'test-token')
+            user, request, email = user.email, token = 'test-token')
         template.update()
 
         self.assertEqual(template.render(),

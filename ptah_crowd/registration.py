@@ -45,7 +45,7 @@ class Registration(form.Form):
         return user
 
     @form.button(_(u"Register"), actype=form.AC_PRIMARY)
-    def handleRegister(self):
+    def register_handler(self):
         data, errors = self.extract()
         if errors:
             self.message(errors, 'form-error')
@@ -56,16 +56,18 @@ class Registration(form.Form):
 
         # validation
         if CROWD.validation:
-            initiate_validation(user, self.request)
+            initiate_validation(user.email, user, self.request)
             self.message('Validation email has been sent.')
+            if not CROWD['allow-unvalidated']:
+                raise HTTPFound(location=self.request.application_url)
 
         # authenticate
-        principal = ptah.authService.authenticate(
-            {'login': data['name'], 'password': data['password']})
-        if principal is not None:
+        info = ptah.authService.authenticate(
+            {'login': user.login, 'password': user.password})
+        if info.status:
             headers = security.remember(self.request, user.uri)
             raise HTTPFound(
                 location='%s/login-success.html'%self.request.application_url,
                 headers = headers)
         else:
-            raise HTTPFound(location=self.request.application_url)
+            self.message(info.message) # pragma: no cover

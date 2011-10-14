@@ -14,9 +14,10 @@ TOKEN_TYPE = token.TokenType(
     'cd51f14e9b2842608ccadf1a240046c1', timedelta(hours=24))
 
 
-def initiate_validation(principal, request):
+def initiate_validation(email, principal, request):
+    """ initiate principal email validation """
     t = token.service.generate(TOKEN_TYPE, principal.uri)
-    template = ValidationTemplate(principal, request, token = t)
+    template = ValidationTemplate(principal, request, email=email, token = t)
     template.send()
 
 
@@ -70,7 +71,7 @@ class ValidationTemplate(mail.MailTemplate):
             self.request.application_url, self.token)
 
         principal = self.context
-        self.to_address = mail.formataddr((principal.name, principal.email))
+        self.to_address = mail.formataddr((principal.name, self.email))
 
 
 view.registerRoute('ptah-principal-validate', '/validateaccount.html')

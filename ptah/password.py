@@ -138,14 +138,10 @@ def passwordValidator(field, appstruct):
 
 
 def passwordSchemaValidator(field, appstruct):
-    if appstruct['password'] is form.required or \
-           appstruct['confirm_password'] is form.required:
-        return
-
     if appstruct['password'] and appstruct['confirm_password']:
         if appstruct['password'] != appstruct['confirm_password']:
             raise form.Invalid(
-                node, _("Password and Confirm Password should be the same."))
+                field, _("Password and Confirm Password should be the same."))
 
         passwordValidator(field, appstruct['password'])
 
