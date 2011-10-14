@@ -1,0 +1,19 @@
+<div class="page-header">
+  <h2>Add-ons</h2>
+</div>
+
+<div class="columns">
+  <form method="post" action="${request.url}">
+    <h3>Packages</h3>
+    <fieldset>
+      <div tal:repeat="pkg view.addons">
+	<input type="checkbox" name="addon" value="${pkg.project_name}" />
+	${pkg}
+      </div>
+    </fieldset>
+    <div class="actions">
+      <input type="submit" class="btn primary" value="Install"
+	     name="form.button.install" />
+    </div>
+  </form>
+</div>
