@@ -11,6 +11,10 @@ requires = [
     'pyramid', 
     'pyramid_debugtoolbar']
 
+test_requiers = [
+    'nose',
+    'ptah',
+    'pyramid',]
 
 setup(name='{{project}}',
       version='0.0',
@@ -30,8 +34,8 @@ setup(name='{{project}}',
       include_package_data=True,
       zip_safe=False,
       install_requires=requires,
-      tests_require=requires,
-      test_suite="{{package}}",
+      tests_require=test_requires,
+      test_suite = 'nose.collector',
       entry_points = """\
         [paste.app_factory]
         main = {{package}}:main
