@@ -4,9 +4,9 @@ from zope import interface
 from memphis import config
 from memphis.view.formatter import format
 from memphis.view.resources import static, static_url
-from memphis.view.message import addMessage, renderMessages
-from memphis.view.library import library, include, renderIncludes
-from memphis.view.interfaces import IPagelet, IMemphisView, INavigationRoot
+from memphis.view.message import add_message, render_messages
+from memphis.view.library import library, include, render_includes
+from memphis.view.interfaces import ISnippet, IMemphisView, INavigationRoot
 
 log = logging.getLogger('memphis.view')
 
@@ -44,27 +44,27 @@ class View(object):
     def include(self, name):
         include(name, self.request)
 
-    def renderIncludes(self):
-        return renderIncludes(self.request)
+    def render_includes(self):
+        return render_includes(self.request)
 
     def message(self, msg, type='info'):
-        return addMessage(self.request, msg, type)
+        return add_message(self.request, msg, type)
 
-    def renderMessages(self):
-        return renderMessages(self.request)
+    def render_messages(self):
+        return render_messages(self.request)
 
     def static_url(self, name, path=''):
         return static_url(name, path, self.request)
 
-    def pagelet(self, ptype, context=None):
+    def snippet(self, stype, context=None):
         if context is None:
             context = self.context
 
         try:
-            pagelet = config.registry.queryMultiAdapter(
-                (context, self.request), IPagelet, ptype)
-            if pagelet is not None:
-                return pagelet()
+            snippet = config.registry.queryMultiAdapter(
+                (context, self.request), ISnippet, stype)
+            if snippet is not None:
+                return snippet()
         except Exception, e:
             log.exception(str(e))
 

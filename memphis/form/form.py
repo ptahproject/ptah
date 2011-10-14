@@ -207,7 +207,7 @@ class Form(view.View):
 
     def render(self):
         if self.template is None:
-            return self.pagelet(FORM_VIEW, self)
+            return self.snippet(FORM_VIEW, self)
 
         kwargs = {'view': self,
                   'context': self.context,
@@ -230,27 +230,27 @@ FORM_ACTIONS = 'form-actions'
 FORM_WIDGET = 'form-widget'
 FORM_DISPLAY_WIDGET = 'form-display-widget'
 
-view.pageletType(FORM_VIEW, IForm, 'Form view')
-view.pageletType(FORM_ACTIONS, IForm, 'Form actions')
-view.pageletType(FORM_WIDGET, Field, 'Form widget')
-view.pageletType(FORM_DISPLAY_WIDGET, Field, 'Form display widget')
+view.snippettype(FORM_VIEW, IForm, 'Form view')
+view.snippettype(FORM_ACTIONS, IForm, 'Form actions')
+view.snippettype(FORM_WIDGET, Field, 'Form widget')
+view.snippettype(FORM_DISPLAY_WIDGET, Field, 'Form display widget')
 
-view.registerPagelet(
+view.register_snippet(
     'form-view', IInputForm,
     template = view.template('memphis.form:templates/form.pt'))
 
-view.registerPagelet(
+view.register_snippet(
     'form-view', IDisplayForm,
     template = view.template('memphis.form:templates/form-display.pt'))
 
-view.registerPagelet(
+view.register_snippet(
     'form-actions', IInputForm,
     template = view.template('memphis.form:templates/form-actions.pt'))
 
-view.registerPagelet(
+view.register_snippet(
     'form-widget', Field,
     template = view.template('memphis.form:templates/widget.pt'))
 
-view.registerPagelet(
+view.register_snippet(
     'form-display-widget', Field,
     template = view.template('memphis.form:templates/widget-display.pt'))

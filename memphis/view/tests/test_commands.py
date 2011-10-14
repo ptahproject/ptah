@@ -205,7 +205,7 @@ class TestTemplatesCommand(unittest.TestCase):
         self.assertTrue('Test template description' in val)
         self.assertTrue('Package:  memphis.view' in val)
         self.assertTrue('Template: test.pt' in val)
-        self.assertTrue('<div>My pagelet</div>' in val)
+        self.assertTrue('<div>My snippet</div>' in val)
 
     def test_commands_template_customize_error1(self):
         sys.argv[:] = ['paste', 'templates', '-c', 'wrongformat']
@@ -262,7 +262,7 @@ class TestTemplatesCommand(unittest.TestCase):
             "Template 'memphis.view:test.pt' has been customized" in val)
         self.assertEqual(
             open(os.path.join(self.dir, 'memphis.view', 'test.pt'),'rb').read(),
-            '<div>My pagelet</div>\n')
+            '<div>My snippet</div>\n')
 
     def test_commands_template_skip_existing(self):
         tmpl = view.template('memphis.view:/tests/templates/test.pt')
@@ -294,4 +294,4 @@ class TestTemplatesCommand(unittest.TestCase):
         self.assertTrue("Overrids: Template 'memphis.view:test.pt' has been customized." in val)
         self.assertEqual(
             open(os.path.join(self.dir, 'memphis.view', 'test.pt'),'rb').read(),
-            '<div>My pagelet</div>\n')
+            '<div>My snippet</div>\n')

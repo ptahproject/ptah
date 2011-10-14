@@ -11,7 +11,7 @@ from memphis.view.renderers import Renderer, SimpleRenderer
 from base import Base
 
 
-class LayoutPagelet(Base):
+class LayoutSnippet(Base):
 
     def setUp(self):
         Base.setUp(self)

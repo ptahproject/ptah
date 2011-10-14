@@ -61,7 +61,7 @@ from memphis.form.form import DisplayForm
 from memphis.form.form import FormWidgets
 from memphis.form.form import setCsrfUtility
 
-# form pagelets
+# form snippets
 from memphis.form.form import FORM_VIEW
 from memphis.form.form import FORM_ACTIONS
 from memphis.form.form import FORM_WIDGET

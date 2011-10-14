@@ -6,19 +6,19 @@ from memphis import config
 from memphis.view.customize import LayerWrapper
 from memphis.view.view import unset, registerViewImpl
 from memphis.view.layout import registerLayoutImpl
-from memphis.view.pagelet import registerPageletImpl
+from memphis.view.snippet import register_snippet_impl
 
 
-def pagelet(pageletType, context=None, template=None, layer=''):
+def snippet(snippetType, context=None, template=None, layer=''):
     info = config.DirectiveInfo(allowed_scope=('class',))
 
     # register view in layer
-    discriminator = ('memphis.view:pagelet', pageletType, context, layer)
+    discriminator = ('memphis.view:snippet', snippetType, context, layer)
 
     info.attach(
         config.ClassAction(
-            LayerWrapper(registerPageletImpl, discriminator),
-            (pageletType, context, template),
+            LayerWrapper(register_snippet_impl, discriminator),
+            (snippetType, context, template),
             discriminator = discriminator)
         )
 

@@ -1,4 +1,4 @@
-""" pagelet implementation """
+""" snippet implementation """
 import sys, logging
 from zope import interface
 from pyramid.httpexceptions import HTTPNotFound
@@ -7,15 +7,15 @@ from memphis import config
 from memphis.view.base import View
 from memphis.view.customize import LayerWrapper
 from memphis.view.formatter import format
-from memphis.view.interfaces import IPagelet
+from memphis.view.interfaces import ISnippet
 
 log = logging.getLogger('memphis.view')
 
-ptypes = {}
+stypes = {}
 
 
-class Pagelet(View):
-    interface.implements(IPagelet)
+class Snippet(View):
+    interface.implements(ISnippet)
 
     template = None
     _params = None
@@ -34,7 +34,7 @@ class Pagelet(View):
         return self.render()
 
 
-class PageletType(object):
+class SnippetType(object):
 
     def __init__(self, name, context, title, description):
         self.name = name
@@ -43,33 +43,33 @@ class PageletType(object):
         self.description = description
 
 
-def renderPagelet(ptype, context, request):
-    pagelet = config.registry.queryMultiAdapter(
-        (context, request), IPagelet, ptype)
-    if pagelet is None:
+def render_snippet(stype, context, request):
+    snippet = config.registry.queryMultiAdapter(
+        (context, request), ISnippet, stype)
+    if snippet is None:
         raise HTTPNotFound
 
     try:
-        return pagelet()
+        return snippet()
     except Exception, e:
         log.exception(str(e))
         raise
 
 
-def pageletType(name, context, title='', description=''):
-    ptypes[name] = PageletType(name, context, title, description)
+def snippettype(name, context, title='', description=''):
+    stypes[name] = SnippetType(name, context, title, description)
 
     info = config.DirectiveInfo()
     info.attach(
         config.Action(
-            pageletTypeImpl,
+            snippet_type_impl,
             (name, context, title, description),
-            discriminator = ('memphis.view:pageletType', name),
+            discriminator = ('memphis.view:snippettype', name),
             order = 1))
 
 
-def pageletTypeImpl(name, context, title, description):
-    ptypes[name] = PageletType(name, context, title, description)
+def snippet_type_impl(name, context, title, description):
+    stypes[name] = SnippetType(name, context, title, description)
 
 
 _registered = []
@@ -79,54 +79,54 @@ def cleanUp():
     _registered[:] = []
 
 
-def registerPagelet(pt, context=None, klass=None, template=None, layer=''):
+def register_snippet(pt, context=None, klass=None, template=None, layer=''):
     info = config.DirectiveInfo()
 
-    discriminator = ('memphis.view:pagelet', pt, context, layer)
+    discriminator = ('memphis.view:snippet', pt, context, layer)
 
     info.attach(
         config.Action(
-            LayerWrapper(registerPageletImpl, discriminator),
+            LayerWrapper(register_snippet_impl, discriminator),
             (klass, pt, context, template),
             discriminator = discriminator)
         )
 
 
-def registerPageletImpl(klass, ptype, context, template):
+def register_snippet_impl(klass, stype, context, template):
 
     if klass is not None and klass in _registered:
-        raise ValueError("Class can be used for pagelet only once.")
+        raise ValueError("Class can be used for snippet only once.")
 
     cdict = {}
     if template is not None:
         cdict['template'] = template
 
-    # find PageletType info
-    if ptype not in ptypes:
-        raise KeyError("Can't find pageletType %s for %s"%(ptype, klass))
+    # find SnippetType info
+    if stype not in stypes:
+        raise KeyError("Can't find SnippetType %s for %s"%(stype, klass))
 
-    pt = ptypes[ptype]
+    st = stypes[stype]
 
     if context is None:
-        requires = [pt.context, interface.Interface]
+        requires = [st.context, interface.Interface]
     else:
         requires = [context, interface.Interface]
 
     # Build a new class
-    if klass is not None and issubclass(klass, Pagelet):
+    if klass is not None and issubclass(klass, Snippet):
         _registered.append(klass)
-        pagelet_class = klass
+        snippet_class = klass
         for attr, value in cdict.items():
-            setattr(pagelet_class, attr, value)
+            setattr(snippet_class, attr, value)
     else:
         # Build a new class
         if klass is None:
-            bases = (Pagelet,)
+            bases = (Snippet,)
         else:
-            bases = (klass, Pagelet)
+            bases = (klass, Snippet)
 
-        pagelet_class = type('Pagelet %s'%klass, bases, cdict)
+        snippet_class = type('Snippet %s'%klass, bases, cdict)
 
-    # register pagelet
+    # register snippet
     config.registry.registerAdapter(
-        pagelet_class, requires, IPagelet, name = pt.name)
+        snippet_class, requires, ISnippet, name = st.name)

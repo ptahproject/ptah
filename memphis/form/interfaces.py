@@ -24,6 +24,7 @@ class Invalid(Exception):
 
 class _null(object):
     """ Represents a null value in field-related operations. """
+
     def __nonzero__(self):
         return False
 
@@ -133,7 +134,7 @@ class IWidget(interface.Interface):
 
     def render(request):
         """Render form widget. First it tring to use template. If template is
-        not set then it uses one of the pagelets."""
+        not set then it uses one of the snippets."""
 
     def serialize(value):
         """ serialize value into widget compatible form """

@@ -5,6 +5,6 @@
   <fieldset tal:condition="context.widgets">
     <tal:block tal:repeat="widget context.widgets.values()"
                tal:content="structure 
-			    view.pagelet('form-display-widget',widget)" />
+                            view.snippet('form-display-widget',widget)" />
   </fieldset>
 </form>

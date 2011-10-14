@@ -12,10 +12,10 @@
       
     </tal:block>
     <tal:block tal:repeat="widget fieldset['widgets']"
-	       tal:content="structure view.pagelet('form-widget',widget)" />
+               tal:content="structure view.snippet('form-widget',widget)" />
   </fieldset>
   
-  <tal:block content="structure view.pagelet('form-actions')" />
+  <tal:block content="structure view.snippet('form-actions')" />
 
   <input type="hidden" tal:condition="context.csrf" 
 	 name="${context.csrfname}" value="${context.token}" />

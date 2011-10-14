@@ -8,7 +8,7 @@ from memphis.view.tmpl import template as get_template
 from memphis.view.interfaces import IMessage, IStatusMessage
 
 
-def addMessage(request, msg, type='info'):
+def add_message(request, msg, type='info'):
     srv = IStatusMessage(request, None)
     if srv is not None:
         srv.add(msg, type)
@@ -106,7 +106,7 @@ def getMessageService(request):
     return service
 
 
-def renderMessages(request):
+def render_messages(request):
     service = IStatusMessage(request, None)
     if service is not None:
         messages = service.clear()

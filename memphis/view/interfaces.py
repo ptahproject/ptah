@@ -13,14 +13,14 @@ class IMemphisView(IPyramidView):
     request = interface.Attribute('Request')
 
     def update():
-        """Update the pagelet data."""
+        """Update the snippet data."""
 
     def __call__():
         """ render view """
 
 
-class IPagelet(interface.Interface):
-    """ pagelet """
+class ISnippet(interface.Interface):
+    """ snippet """
 
     context = interface.Attribute('Context')
 
@@ -29,13 +29,13 @@ class IPagelet(interface.Interface):
     template = interface.Attribute('Template')
 
     def update():
-        """Update the pagelet data."""
+        """Update the snippet data."""
 
     def render():
-        """Render the pagelet content w/o o-wrap."""
+        """Render the snippet."""
 
     def __call__():
-        """Update and render pagelet"""
+        """Update and render snippet"""
 
 
 class ILayout(interface.Interface):

@@ -47,8 +47,8 @@ class TestStatusMessages(Base):
 
         service = IStatusMessage(self.request)
 
-        # addMessage
-        view.addMessage(self.request, 'message')
+        # add_message
+        view.add_message(self.request, 'message')
 
         self.assertEqual(service.clear(),
                          [u'<div class="alert-message info">\n  <a class="close" href="#">\xd7</a>\n  <p>message</p>\n</div>\n'])
@@ -117,12 +117,12 @@ class TestStatusMessages(Base):
     def test_messages_render(self):
         self._init_memphis()
 
-        view.addMessage(self.request, 'message')
-        msg = view.renderMessages(self.request)
+        view.add_message(self.request, 'message')
+        msg = view.render_messages(self.request)
         self.assertEqual(msg, u'<div class="alert-message info">\n  <a class="close" href="#">\xd7</a>\n  <p>message</p>\n</div>\n')
         self.assertEqual(type(msg), unicode)
 
-        msg = view.renderMessages(self.request)
+        msg = view.render_messages(self.request)
         self.assertEqual(msg, '')
 
     def test_messages_View(self):
@@ -138,6 +138,6 @@ class TestStatusMessages(Base):
             service.messages(),
             [u'<div class="alert-message info">\n  <a class="close" href="#">\xd7</a>\n  <p>message</p>\n</div>\n'])
         self.assertEqual(
-            v.renderMessages(),
+            v.render_messages(),
             u'<div class="alert-message info">\n  <a class="close" href="#">\xd7</a>\n  <p>message</p>\n</div>\n')
         self.assertEqual(service.messages(), ())

@@ -139,7 +139,7 @@ class TestTmplRenderer(RendererBase):
         res = r(Context(), self.request, viewFactory)
 
         self.assertTrue(isinstance(res, Response))
-        self.assertEqual(res.body, '<div>My pagelet</div>\n')
+        self.assertEqual(res.body, '<div>My snippet</div>\n')
         self.assertEqual(res.status, '200 OK')
         self.assertEqual(res.content_type, 'text/html')
 
@@ -186,7 +186,7 @@ class TestTmplRenderer(RendererBase):
 
         r = Renderer(template=view.template('templates/test.pt'))
         res = r(Context(), self.request, viewFactory)
-        self.assertEqual(res.body, '<div>My pagelet</div>\n')
+        self.assertEqual(res.body, '<div>My snippet</div>\n')
 
     def test_renderer_tmpl_extra_params_non_dict(self):
         def viewFactory(context, request):
@@ -209,13 +209,13 @@ class TestTmplRenderer(RendererBase):
         # renderer layout is different
         r = Renderer(view.template('templates/test.pt'), '')
         res = r(Context(), self.request, viewFactory)
-        self.assertEqual(res.body, '<div>My pagelet</div>\n')
+        self.assertEqual(res.body, '<div>My snippet</div>\n')
 
         # layout is 'test'
         config.cleanUp()
         r = Renderer(view.template('templates/test.pt'), 'test')
         res = r(Context(), self.request, viewFactory)
-        self.assertEqual(res.body, '<html><div>My pagelet</div>\n</html>')
+        self.assertEqual(res.body, '<html><div>My snippet</div>\n</html>')
 
     def test_renderer_tmpl_change_response_attrs(self):
         def viewFactory(context, request):
@@ -226,6 +226,6 @@ class TestTmplRenderer(RendererBase):
         r = Renderer(view.template('templates/test.pt'))
         res = r(Context(), self.request, viewFactory)
 
-        self.assertEqual(res.body, '<div>My pagelet</div>\n')
+        self.assertEqual(res.body, '<div>My snippet</div>\n')
         self.assertEqual(res.status, '202 Accepted')
         self.assertEqual(res.content_type, 'text/plain')

@@ -54,7 +54,7 @@ def include(name, request):
     request.__includes = libs
 
 
-def renderIncludes(request):
+def render_includes(request):
     seen = set()
     libraries = []
 
