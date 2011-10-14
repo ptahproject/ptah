@@ -16,6 +16,9 @@ class is ptah_app.content.Page.  The default view for this page is::
         permission = ptah_cms.View,
         template = memphis.view.template('ptah_app:templates/page.pt'))
 
+NOTE: The layout '' means default.  You can also pass None which means no layout.  If you want
+to return a file from a view (you dont need a layout).
+
 So if you render this view::
     >>> from pyramid.requests import Request
     >>> from ptah_cms import Factories    
@@ -131,15 +134,17 @@ happens when rendering page1 and page2::
 
 Layout API
 ~~~~~~~~~~
-
 from memphis.view import layout
 from memphis.view import Layout
 from memphis.view import query_layout
 from memphis.view import register_layout
 
-
 Views
 -----
+memphis.view.View is the base class for all views.  If you use this as your base class then the
+renderer will automatically use layout='' (default layout).  If you use function or do not inherient
+from memphis.view.View then the default value for layout = None.
+
 Really no different at all in Pyramid other than configuration statements. There are 2 ways to customize a view.  Override the entire View or you can override the template on a view.
 
 View Templates
