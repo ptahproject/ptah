@@ -11,10 +11,11 @@ requires = [
     'pyramid', 
     'pyramid_debugtoolbar']
 
-test_requiers = [
+test_requires = [
     'nose',
     'ptah',
     'pyramid',]
+
 
 setup(name='{{project}}',
       version='0.0',
