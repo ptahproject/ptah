@@ -54,9 +54,6 @@ class RoleIntrospection(object):
     def __init__(self, request):
         self.request = request
 
-    def renderAction(self, action):
-        pass
-
     def renderActions(self, *actions):
         return self.actions(
             roles = ptah.Roles,
@@ -74,9 +71,6 @@ class PermissionIntrospection(object):
 
     def __init__(self, request):
         self.request = request
-
-    def renderAction(self, action):
-        pass
 
     def renderActions(self, *actions):
         return self.actions(

@@ -318,9 +318,6 @@ class UriIntrospection(object):
     def __init__(self, request):
         self.request = request
 
-    def renderAction(self, action):
-        pass
-
     def renderActions(self, *actions):
         return self.actions(
             resolvers = resolvers,
@@ -340,9 +337,6 @@ class EventDirective(object):
     def __init__(self, request):
         self.request = request
 
-    def renderAction(self, action):
-        pass
-
     def renderActions(self, *actions):
         return self.actions(
             actions = actions,
@@ -360,9 +354,6 @@ class AdapterDirective(object):
 
     def __init__(self, request):
         self.request = request
-
-    def renderAction(self, action):
-        pass
 
     def getInfo(self, action):
         context = action.info.context
@@ -400,9 +391,6 @@ class SnippetTypeDirective(object):
     def __init__(self, request):
         self.request = request
 
-    def renderAction(self, action):
-        pass
-
     def renderActions(self, *actions):
         return self.actions(
             actions = actions,
@@ -422,9 +410,6 @@ class RouteDirective(object):
     def __init__(self, request):
         self.request = request
 
-    def renderAction(self, action):
-        pass
-
     def renderActions(self, *actions):
         return self.actions(
             actions = actions,
@@ -441,9 +426,6 @@ class SubscriberDirective(object):
 
     def __init__(self, request):
         self.request = request
-
-    def renderAction(self, action):
-        pass
 
     def getInfo(self, action):
         factory, ifaces = action.args[1:]
@@ -477,9 +459,6 @@ class ViewDirective(object):
 
     def __init__(self, request):
         self.request = request
-
-    def renderAction(self, action):
-        pass
 
     def getInfo(self, action):
         info = action.info
