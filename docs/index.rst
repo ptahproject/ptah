@@ -17,6 +17,7 @@ Ptah CMS
    rest.rst
    ptah_app_vs_manage.rst
    scripts.rst
+   authentication.rst
    api.rst
 
 Indices and tables
