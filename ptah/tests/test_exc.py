@@ -22,3 +22,83 @@ class TestExceptions(Base):
 
         self.assertIs(excview.__parent__, request.root)
         self.assertEqual(request.response.status, '404 Not Found')
+
+    def test_forbidden(self):
+        from ptah.exc import Forbidden
+
+        class Context(object):
+            """ """
+
+        request = DummyRequest()
+        request.url = u'http://example.com'
+        request.application_url = u'http://example.com'
+        request.root = Context()
+
+        excview = Forbidden(HTTPForbidden(), request)
+        excview.update()
+
+        res = request.response
+
+        self.assertIs(excview.__parent__, request.root)
+        self.assertEqual(res.status, '302 Found')
+        self.assertEqual(
+            res.headers['location'],
+            'http://example.com/login.html?came_from=http%3A%2F%2Fexample.com')
+
+    def test_forbidden_user(self):
+        from ptah.exc import Forbidden
+
+        class Context(object):
+            """ """
+            __name__ = 'test'
+
+        request = DummyRequest()
+        request.root = Context()
+        ptah.authService.set_userid('user')
+
+        res = Forbidden.__renderer__(HTTPForbidden(), request)
+        self.assertEqual(res.status, '403 Forbidden')
+
+    def test_forbidden_custom_login(self):
+        from ptah.exc import Forbidden
+
+        class Context(object):
+            """ """
+
+        request = DummyRequest()
+        request.url = u'http://example.com'
+        request.root = Context()
+        ptah.PTAH_CONFIG.login = '/custom-login.html'
+
+        excview = Forbidden(HTTPForbidden(), request)
+        excview.update()
+
+        res = request.response
+
+        self.assertIs(excview.__parent__, request.root)
+        self.assertEqual(res.status, '302 Found')
+        self.assertEqual(
+            res.headers['location'],
+            'http://example.com/custom-login.html?came_from=http%3A%2F%2Fexample.com')
+
+    def test_forbidden_custom_login_domain(self):
+        from ptah.exc import Forbidden
+
+        class Context(object):
+            """ """
+
+        request = DummyRequest()
+        request.url = u'http://example.com'
+        request.root = Context()
+        ptah.PTAH_CONFIG.login = 'http://login.example.com'
+
+        excview = Forbidden(HTTPForbidden(), request)
+        excview.update()
+
+        res = request.response
+
+        self.assertIs(excview.__parent__, request.root)
+        self.assertEqual(res.status, '302 Found')
+        self.assertEqual(
+            res.headers['location'],
+            'http://login.example.com?came_from=http%3A%2F%2Fexample.com')

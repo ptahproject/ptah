@@ -38,7 +38,7 @@ class Forbidden(view.View):
             loginurl = PTAH_CONFIG.login
             if loginurl and not loginurl.startswith(('http://', 'https://')):
                 loginurl = request.application_url + loginurl
-            else:
+            elif not loginurl:
                 loginurl = request.application_url + '/login.html'
 
             location = '%s?%s'%(

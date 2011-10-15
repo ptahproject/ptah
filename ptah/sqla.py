@@ -81,7 +81,7 @@ class MutationList(Mutable, list):
         if not isinstance(value, MutationList):
             if isinstance(value, list):
                 return MutationList(value)
-            return Mutable.coerce(key, value)
+            return Mutable.coerce(key, value) # pragma: no cover
         else:
             return value
 
@@ -90,11 +90,11 @@ class MutationList(Mutable, list):
         self.changed()
 
     def __setitem__(self, key, value):
-        list[key] = value
+        list.__setitem__(self, key, value)
         self.changed()
 
     def __delitem__(self, key):
-        del list[key]
+        list.__delitem__(self, key)
         self.changed()
 
 
@@ -105,7 +105,7 @@ class MutationDict(Mutable, dict):
         if not isinstance(value, MutationDict):
             if isinstance(value, dict):
                 return MutationDict(value)
-            return Mutable.coerce(key, value)
+            return Mutable.coerce(key, value) # pragma: no cover
         else:
             return value
 

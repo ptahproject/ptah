@@ -33,17 +33,16 @@ class Base(unittest.TestCase):
         return environ
 
     def _init_memphis(self, settings=None, handler=None, *args, **kw):
-        # create sql tables
-        Base = pyramid_sqla.get_base()
-        Base.metadata.drop_all()
-        Base.metadata.create_all()
-
         if settings is None:
             settings = self._settings
         config.initialize(('ptah', self.__class__.__module__),
                           reg = Components('test'))
         config.initialize_settings(settings, self.p_config)
-        
+
+        # create sql tables
+        Base = pyramid_sqla.get_base()
+        Base.metadata.drop_all()
+        Base.metadata.create_all()
         transaction.commit()
 
     def _setup_pyramid(self):

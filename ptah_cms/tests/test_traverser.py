@@ -15,10 +15,6 @@ class TestTraverser(Base):
     def _create_content(self):
         import ptah_cms
 
-        for c in ptah_cms.Session.query(ptah_cms.Content).all():
-            ptah_cms.Session.delete(c)
-        transaction.commit()
-
         factory = ptah_cms.ApplicationFactory('/test', 'root', 'Root App')
         self.factory = factory
 
@@ -62,6 +58,23 @@ class TestTraverser(Base):
         info = traverser(request)
         self.assertTrue(info['context'] is root)
         self.assertEqual(info['view_name'], 'index.html')
+
+    def test_traverser_default_root(self):
+        import ptah_cms
+        from ptah_cms.traverser import ContentTraverser
+
+        request = self._makeRequest(
+            {'PATH_INFO': '/test/index.html',
+             'bfg.routes.route': {}})
+
+        factory = ptah_cms.ApplicationFactory('', 'root', 'Root App')
+        root = factory(request)
+
+        traverser = ITraverser(root)
+
+        info = traverser(request)
+        self.assertTrue(info['context'] is root)
+        self.assertEqual(info['view_name'], 'test')
 
     def test_traverser_root_no_view(self):
         import ptah_cms

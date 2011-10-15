@@ -42,6 +42,9 @@ class TestApplicationFactoryRegistration(Base):
         root = ptah.resolve(r_uri)
         self.assertEqual(root.__uri__, r_uri)
 
+        factory = ptah_cms.ApplicationFactory('', 'root', 'Root App')
+        self.assertTrue(factory.default_root)
+
     def test_app_factory_mutiple(self):
         import ptah_cms
 

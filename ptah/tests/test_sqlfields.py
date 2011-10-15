@@ -1,3 +1,4 @@
+import transaction
 import pyramid_sqla
 import sqlalchemy as sqla
 from memphis import config, form
@@ -112,3 +113,154 @@ class TestSqlSchema(Base):
         fieldset = ptah.generateFieldset(Test2)
 
         self.assertNotIn('json', fieldset)
+
+
+class TestQueryFreezer(Base):
+
+    def test_freezer_one(self):
+        import ptah
+
+        class Test(SqlaBase):
+            __tablename__ = 'test10'
+
+            id = sqla.Column('id', sqla.Integer, primary_key=True)
+            name = sqla.Column(sqla.Unicode())
+
+        SqlaBase.metadata.create_all()
+        transaction.commit()
+
+        sql_get = ptah.QueryFreezer(
+            lambda: Session.query(Test)
+            .filter(Test.name == sqla.sql.bindparam('name')))
+
+        self.assertRaises(
+            sqla.orm.exc.NoResultFound, sql_get.one, name='test')
+
+        rec = Test()
+        rec.name = 'test'
+        Session.add(rec)
+        Session.flush()
+        
+        rec = sql_get.one(name='test')
+        self.assertEqual(rec.name, 'test')
+
+
+        rec = Test()
+        rec.name = 'test'
+        Session.add(rec)
+        Session.flush()
+
+        self.assertRaises(
+            sqla.orm.exc.MultipleResultsFound, sql_get.one, name='test')
+
+    def test_freezer_first(self):
+        import ptah
+
+        class Test(SqlaBase):
+            __tablename__ = 'test12'
+
+            id = sqla.Column('id', sqla.Integer, primary_key=True)
+            name = sqla.Column(sqla.Unicode())
+
+        SqlaBase.metadata.create_all()
+        transaction.commit()
+
+        sql_get = ptah.QueryFreezer(
+            lambda: Session.query(Test)
+            .filter(Test.name == sqla.sql.bindparam('name')))
+
+        self.assertIsNone(sql_get.first(name='test'))
+
+        rec = Test()
+        rec.name = 'test'
+        Session.add(rec)
+        Session.flush()
+        
+        rec = sql_get.one(name='test')
+        self.assertEqual(rec.name, 'test')
+
+        sql_get.reset()
+        rec = sql_get.one(name='test')
+        self.assertEqual(rec.name, 'test')
+
+
+class TestJsonDict(Base):
+
+    def test_jsondict(self):
+        import ptah
+
+        class Test(SqlaBase):
+            __tablename__ = 'test14'
+
+            id = sqla.Column('id', sqla.Integer, primary_key=True)
+            data = sqla.Column(ptah.JsonDictType())
+
+        SqlaBase.metadata.create_all()
+        transaction.commit()
+
+        rec = Test()
+        rec.data = {'test': 'val'}
+        Session.add(rec)
+        Session.flush()
+        id = rec.id
+        transaction.commit()
+
+        rec = Session.query(Test).filter_by(id = id).one()
+        self.assertEqual(rec.data, {'test': 'val'})
+
+        rec.data['test2'] = 'val2'
+        transaction.commit()
+
+        rec = Session.query(Test).filter_by(id = id).one()
+        self.assertEqual(rec.data,
+                         {'test': 'val', 'test2': 'val2'})
+
+        del rec.data['test']
+        transaction.commit()
+
+        rec = Session.query(Test).filter_by(id = id).one()
+        self.assertEqual(rec.data, {'test2': 'val2'})
+        
+
+class TestJsonList(Base):
+
+    def test_jsonlist(self):
+        import ptah
+
+        class Test(SqlaBase):
+            __tablename__ = 'test15'
+
+            id = sqla.Column('id', sqla.Integer, primary_key=True)
+            data = sqla.Column(ptah.JsonListType())
+
+        SqlaBase.metadata.create_all()
+        transaction.commit()
+
+        rec = Test()
+        rec.data = ['test']
+        Session.add(rec)
+        Session.flush()
+        id = rec.id
+        transaction.commit()
+
+        rec = Session.query(Test).filter_by(id = id).one()
+        self.assertEqual(rec.data, ['test'])
+
+        rec.data[0] = 'test2'
+        transaction.commit()
+
+        rec = Session.query(Test).filter_by(id = id).one()
+        self.assertEqual(rec.data, ['test2'])
+
+        rec.data.append('test')
+        transaction.commit()
+
+        rec = Session.query(Test).filter_by(id = id).one()
+        self.assertEqual(rec.data, ['test2', 'test'])
+
+        del rec.data[rec.data.index('test2')]
+        transaction.commit()
+
+        rec = Session.query(Test).filter_by(id = id).one()
+        self.assertEqual(rec.data, ['test'])
+        
