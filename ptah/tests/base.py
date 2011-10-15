@@ -40,7 +40,6 @@ class Base(unittest.TestCase):
         # create sql tables
         Base = pyramid_sqla.get_base()
         Base.metadata.drop_all()
-        transaction.commit()
         Base.metadata.create_all()
         transaction.commit()
 

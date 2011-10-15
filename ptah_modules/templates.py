@@ -19,7 +19,7 @@ view.register_snippet(
         'ptah_modules:templates/customize-actions.pt', nolayer = True))
 
 
-class TemplatesManagement(view.View):
+class TemplatesView(view.View):
     """List templates"""
     view.pyramidview(
         context = TemplatesModule,

@@ -66,7 +66,7 @@ def radioPreview(request):
 def textareaPreview(request):
     field = form.TextAreaField(
         'TextAreaField',
-        title = 'Textarea field',
+        title = 'TextArea field',
         description = 'TextArea field preview description',
         default = 'Test text in text area field.')
 

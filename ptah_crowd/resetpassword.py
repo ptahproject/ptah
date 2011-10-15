@@ -32,7 +32,7 @@ class ResetPassword(form.Form):
             missing = u'',
             default = u''))
 
-    def getContent(self):
+    def form_content(self):
         return {'login': self.request.params.get('login', '')}
 
     def update(self):
