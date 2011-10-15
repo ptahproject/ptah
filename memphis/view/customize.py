@@ -74,7 +74,7 @@ class LayerWrapper(object):
 
     def __call__(self, *args, **kw):
         if not _layersManager.enabled(self.layer, self.discriminator):
-            return
+            return # pragma: no cover
 
         self.callable(*args, **kw)
 
@@ -97,7 +97,7 @@ class _TemplateLayersManager(object):
                 continue
 
             if filter is not None and filter != pkg:
-                continue
+                continue # pragma: no cover
 
             for fn, (p,t,d,t,_pkg) in pkg_data.items():
 
@@ -160,7 +160,7 @@ class _GlobalLayerManager(object):
                     t.setCustom(tmpl.getRenderer(os.path.join(path, fn)))
                 else:
                     if t.custom is not None:
-                        t.setCustom(None)
+                        t.setCustom(None) # pragma: no cover
 
     def unload(self):
         for n, pkg_data in tmpl.registry.items():

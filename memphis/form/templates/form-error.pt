@@ -10,7 +10,7 @@
   <p><strong>${message}</strong>
     <ul>
       <li tal:repeat="err errors"
-	  tal:content="structure err.message">
+	  tal:content="structure err.msg">
       </li>
     </ul>
   </p>

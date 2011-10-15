@@ -27,13 +27,12 @@ class FormErrorMessage(view.Message):
     template = view.template('memphis.form:templates/form-error.pt')
 
     def render(self, message):
-        self.errors = [
-            err for err in message
-            if not isinstance(err, Invalid) or err.field is None]
+        errors = [err for err in message
+                  if isinstance(err, Invalid) and err.field is None]
 
         return self.template(
+            errors = errors,
             message = self.formErrorsMessage,
-            errors = self.errors,
             request = self.request)
 
 

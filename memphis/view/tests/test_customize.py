@@ -238,3 +238,30 @@ class TestTemplateLayer(BaseLayerTest):
 
         self.assertEqual(tmpl1(), '<div>Test template 2</div>')
         self.assertEqual(tmpl2(), '<div>Test template 1</div>')
+
+
+class TestViewLayersManager(unittest.TestCase):
+
+    def test_register(self):
+        from memphis.view.customize import _ViewLayersManager
+
+        manager = _ViewLayersManager()
+
+        manager.register('test', (1,))
+        manager.register('test2', (1,))
+        manager.register('', (1,))
+
+        self.assertEqual(manager.layers[(1,)], ['', 'test', 'test2'])
+
+    def test_enabled(self):
+        from memphis.view.customize import _ViewLayersManager
+
+        manager = _ViewLayersManager()
+
+        manager.register('test', (1,))
+        manager.register('test2', (1,))
+        manager.register('', (1,))
+
+        self.assertFalse(manager.enabled('test', (1,)))
+        self.assertTrue(manager.enabled('test2', (1,)))
+        self.assertFalse(manager.enabled('test', (2,)))

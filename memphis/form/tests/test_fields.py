@@ -26,6 +26,27 @@ def strip(str):
     return ' '.join(s.strip() for s in str.split())
 
 
+class TestInputField(Base):
+
+    def _makeOne(self, name, **kw):
+        from memphis.form.fields import InputField
+        return InputField(name, **kw)
+
+    def test_fields_text(self):
+        request = DummyRequest()
+
+        field = self._makeOne('test')
+        field = field.bind('', u'content', {})
+        field.update(request)
+
+        self.assertEqual(field.klass, None)
+
+        field.readonly = True
+        field.update(request)
+
+        self.assertEqual(field.klass, 'disabled')
+
+
 class TestTextField(Base):
 
     def _makeOne(self, name, **kw):
@@ -581,3 +602,36 @@ class TestDate(unittest.TestCase):
         iso = dt.isoformat()
         result = typ.deserialize(iso)
         self.assertEqual(result.isoformat(), dt.date().isoformat())
+
+
+class TestFileField(Base):
+
+    def _makeOne(self, name, **kw):
+        from memphis.form.fields import FileField
+        return FileField(name, **kw)
+
+    def test_fields_text(self):
+        request = DummyRequest()
+
+        field = self._makeOne('test')
+        field = field.bind('', u'content', {})
+        field.update(request)
+
+        self.assertIs(field.extract(), form.null)
+
+        class FileStorage:
+
+            def __init__(self, fp, filename, mt, s):
+                self.file = fp
+                self.filename = filename
+                self.type = mt
+                self.length = s
+
+        fs = FileStorage(object(), 'test.jpg', 'image/jpeg', 1024)
+        
+        field = field.bind('', u'content', {'test': fs})
+        field.update(request)
+
+        res = field.extract()
+        self.assertIs(type(res), dict)
+        self.assertEqual(res['filename'], 'test.jpg')

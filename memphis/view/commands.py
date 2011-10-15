@@ -123,7 +123,7 @@ class TemplatesCommand(Command):
 
                 data = _Manager.layers.get(name)
                 if data:
-                    for pkgname, abspath, path in data:
+                    for pkgname, abspath, path in data: # pragma: no cover
                         if os.path.exists(os.path.join(abspath, filename)):
                             print overWrap.fill(
                                 'overriden by: %s (%s)'%(pkgname, path))

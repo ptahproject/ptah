@@ -70,7 +70,7 @@ class Layout(View):
             if layout is not None:
                 return layout(result, layout=self, view=view)
         else:
-            if layout is not None:
+            if layout is not None: # pragma: no cover
                 context = layout.context
             else:
                 context = self.context

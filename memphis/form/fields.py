@@ -33,7 +33,7 @@ class InputField(Field, view.View):
             self.add_css_class('disabled')
 
     def add_css_class(self, css):
-        self.klass = '%s %s'%(self.klass, css)
+        self.klass = ('%s %s'%(self.klass or '', css)).strip()
 
 
 class VocabularyField(InputField):

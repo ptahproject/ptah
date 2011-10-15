@@ -17,6 +17,26 @@ class TestFormWidgets(unittest.TestCase):
         self.assertEqual(inst.request, request)
 
 
+class TestFormErrors(unittest.TestCase):
+
+    def test_form_errors(self):
+        from memphis.form import Invalid, TextField
+        from memphis.form.form import FormErrorMessage
+        request = DummyRequest()
+
+        form_errors = FormErrorMessage(request)
+
+        err1 = Invalid(None, 'Error1')
+        err2 = Invalid(None, 'Error2')
+
+        err2.field = TextField('text')
+
+        res = form_errors.render([err1, err2])
+        self.assertIn('Error1', res)
+        self.assertNotIn('Error2', res)
+        self.assertIn('Please fix indicated errors.', res)
+
+
 class TestForm(unittest.TestCase):
 
     def test_basics(self):

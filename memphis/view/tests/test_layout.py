@@ -1,6 +1,7 @@
 """ layout tests """
 import os, unittest, tempfile, shutil
 from zope import interface
+from pyramid.interfaces import IRouteRequest
 from pyramid.httpexceptions import HTTPNotFound
 
 from memphis import config, view
@@ -11,7 +12,7 @@ from memphis.view.renderers import Renderer, SimpleRenderer
 from base import Base
 
 
-class LayoutSnippet(Base):
+class TestLayout(Base):
 
     def setUp(self):
         Base.setUp(self)
@@ -25,11 +26,11 @@ class LayoutSnippet(Base):
         pass
 
     def test_layout_register_class_errors(self):
-        self.assertRaises(ValueError, view.register_layout, 'test', klass=None)
+        self.assertRaises(ValueError, view.register_layout, 'test',klass=None)
 
         class Layout(object):
             pass
-        self.assertRaises(ValueError, view.register_layout, 'test', klass=Layout)
+        self.assertRaises(ValueError, view.register_layout, 'test',klass=Layout)
 
     def test_layout_register_simple(self):
         view.register_layout('test')
@@ -286,6 +287,21 @@ class LayoutSnippet(Base):
         layout = query_layout(self.request, v.context, 'test')
         layout.update()
         self.assertTrue('test' == layout.render(v.render()))
+
+    def test_layout_for_route(self):
+        view.register_route('test-route', '/test/', use_global_views=True)
+        view.register_layout('test', route = 'test-route')
+        self._init_memphis()
+
+        layout = query_layout(self.request, Context(), 'test')
+        self.assertIsNone(layout)
+
+        request_iface = config.registry.getUtility(
+            IRouteRequest, name='test-route')
+        interface.directlyProvides(self.request, request_iface)
+
+        layout = query_layout(self.request, Context(), 'test')
+        self.assertIsNotNone(layout)
 
 
 class Context(object):
