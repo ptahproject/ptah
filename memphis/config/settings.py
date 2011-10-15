@@ -55,7 +55,8 @@ def initialize_settings(settings,
                         config=None, loader=None, watcherFactory=_marker,
                         section=ConfigParser.DEFAULTSECT):
     if Settings.initialized:
-        raise RuntimeError("initializeSettings has been called more than once.")
+        raise RuntimeError(
+            "initialize_settings has been called more than once.")
 
     log.info('Initializing memphis settings')
 
