@@ -262,6 +262,14 @@ Definition of Library::
         type="js",
         require='jquery')
 
+library parameters:
+  identifier, name of the library,
+  resource, a static resource registered by view.static() call
+  path, list of files to be included in HEAD when library called
+  type, whether its JS, CSS, etc.
+  require, identifier/name of other library used for dependency resolution
+
+  
 So this widget uses another library called jquery.  You can imagine that you will extend TinyMCE with behaviors and inside of your extension you create a library which will require="tiny_mce" which will guarantee that the tinymce assets are available.
 
 Inside of Python if you want to include a library into a request. 
@@ -273,6 +281,24 @@ Usage of Library, include::
 
 And your request will get all assets for the library.
 
+view.render_includes
+~~~~~~~~~~~~~~~~~~~~
+
+If you want to manually render items in head, use render_includes in your
+Layout class.
+
+If you want to add dojo, on myapp.layouts.PageLayout add render_includes::
+
+    def render_includes(self):
+        includes = super(PageLayout, self).render_includes()
+        
+        includes += """
+        <script src="/static/newapp/dojo/dojo.js" 
+        data-dojo-config="isDebug: true,parseOnLoad: true">
+        </script>
+        """
+ 
+        return includes
 
 Formatters
 ----------
