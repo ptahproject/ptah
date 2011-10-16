@@ -24,8 +24,9 @@ class _Superuser(object):
 SUPERUSER = _Superuser()
 SUPERUSER_URI = 'ptah+auth:superuser'
 
-@resolver('ptah+auth', 'System super user')
+@resolver('ptah+auth')
 def superuser_resolver(uri):
+    """System super user"""
     if uri == SUPERUSER_URI:
         return SUPERUSER
 

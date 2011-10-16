@@ -2,9 +2,7 @@
 import uuid
 from memphis import config
 
-resolvers = {}
-resolversTitle = {}
-
+RESOLVER_ID = 'ptah:uri-resolver'
 
 def resolve(uri):
     """ Resolve uri, return resolved object.
@@ -22,7 +20,7 @@ def resolve(uri):
         return None
 
     try:
-        return resolvers[schema](uri)
+        return config.registry.storage[RESOLVER_ID][schema](uri)
     except KeyError:
         pass
 
@@ -41,17 +39,17 @@ def extract_uri_schema(uri):
     return None
 
 
-def resolver(schema, title=''):
+def resolver(schema):
+    """ Register resolver for given schema
+    """
     info = config.DirectiveInfo()
 
     def wrapper(func):
-        resolvers[schema] = func
-        resolversTitle[schema] = title or schema
-
         info.attach(
             config.Action(
-                _register_uri_resolver, (schema, func, title),
-                discriminator = ('ptah:uri-resolver', schema))
+                _register_uri_resolver, (schema, func),
+                id = RESOLVER_ID,
+                discriminator = (RESOLVER_ID, schema))
             )
 
         return func
@@ -59,7 +57,7 @@ def resolver(schema, title=''):
     return wrapper
 
 
-def register_uri_resolver(schema, resolver, title='', depth=1):
+def register_uri_resolver(schema, resolver, depth=1):
     """ Register resolver for given schema
 
     :param schema: Uri schema
@@ -73,20 +71,17 @@ def register_uri_resolver(schema, resolver, title='', depth=1):
          def __call__(self, uri):
              return content
     """
-    resolvers[schema] = resolver
-    resolversTitle[schema] = title or schema
-
     info = config.DirectiveInfo(depth=depth)
     info.attach(
         config.Action(
-            _register_uri_resolver, (schema, resolver, title),
-            discriminator = ('ptah:uri-resolver', schema))
+            _register_uri_resolver, (schema, resolver),
+            id = RESOLVER_ID,
+            discriminator = (RESOLVER_ID, schema))
         )
 
 
-def _register_uri_resolver(config, schema, resolver, title):
-    resolvers[schema] = resolver
-    resolversTitle[schema] = title or schema
+def _register_uri_resolver(config, schema, resolver):
+    config.storage[RESOLVER_ID][schema] = resolver
 
 
 class UriGenerator(object):
@@ -107,9 +102,3 @@ class UriGenerator(object):
     def __call__(self):
         """ Generate new uri using supplied schema """
         return '%s:%s'%(self.schema, uuid.uuid4().get_hex())
-
-
-@config.cleanup
-def cleanup():
-    resolvers.clear()
-    resolversTitle.clear()

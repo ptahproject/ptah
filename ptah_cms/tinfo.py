@@ -16,8 +16,9 @@ log = logging.getLogger('ptah_cms')
 
 Types = {}
 
-@ptah.resolver('cms+type', 'Type resolver')
+@ptah.resolver('cms+type')
 def typeInfoResolver(uri):
+    """Type resolver"""
     return Types.get(uri)
 
 
@@ -86,9 +87,6 @@ _sql_get = ptah.QueryFreezer(
     lambda: Session.query(Content)
     .filter(Content.__uri__ == sqla.sql.bindparam('uri')))
 
-def resolveContent(uri):
-    return _sql_get.first(uri=uri)
-
 
 def Type(name, title=None, fieldset=None, **kw):
     """ Declare new type. This function has to be call within
@@ -118,9 +116,13 @@ def Type(name, title=None, fieldset=None, **kw):
     if '__uri_generator__' not in f_locals:
         f_locals['__uri_generator__'] = ptah.UriGenerator('cms+%s'%name)
 
+        def resolve_content(uri):
+            return _sql_get.first(uri=uri)
+
+        resolve_content.__doc__ = 'CMS Content resolver for %s type'%title
+
         ptah.register_uri_resolver(
-            'cms+%s'%name, resolveContent,
-            title = 'CMS Content resolver for %s type'%title, depth = 2)
+            'cms+%s'%name, resolve_content, depth = 2)
 
     info.attach(
         config.ClassAction(

@@ -11,8 +11,8 @@ from memphis import config, view
 from memphis.config import directives
 from memphis.config.api import exclude, list_packages
 
+from ptah.uri import RESOLVER_ID
 from ptah.manage import INTROSPECTIONS
-from ptah.uri import resolvers, resolversTitle
 
 
 class IntrospectModule(ptah.PtahModule):
@@ -320,8 +320,7 @@ class UriIntrospection(object):
 
     def renderActions(self, *actions):
         return self.actions(
-            resolvers = resolvers,
-            resolversTitle = resolversTitle,
+            resolvers = config.registry.storage[RESOLVER_ID],
             actions = actions,
             request = self.request)
 
@@ -340,7 +339,7 @@ class EventDirective(object):
     def renderActions(self, *actions):
         return self.actions(
             actions = actions,
-            events = directives.events,
+            events = config.registry.storage[directives.EVENT_ID],
             request = self.request)
 
 
@@ -392,10 +391,11 @@ class SnippetTypeDirective(object):
         self.request = request
 
     def renderActions(self, *actions):
+        STYPE_ID = sys.modules['memphis.view.snippet'].STYPE_ID
+        stypes = config.registry.storage[STYPE_ID]
         return self.actions(
             actions = actions,
-            stypes = sys.modules['memphis.view.snippet'].stypes,
-            events = directives.events,
+            stypes = stypes,
             request = self.request)
 
 
@@ -434,11 +434,13 @@ class SubscriberDirective(object):
         if len(action.args[2]) > 1:
             obj = action.args[2][0]
             klass = action.args[2][-1]
-            event = directives.events.get(action.args[2][-1], None)
+            event = config.registry.storage[directives.EVENT_ID].get(
+                action.args[2][-1], None)
         else:
             obj = None
             klass = action.args[2][0]
-            event = directives.events.get(action.args[2][0], None)
+            event = config.registry.storage[directives.EVENT_ID].get(
+                action.args[2][0], None)
 
         return locals()
 

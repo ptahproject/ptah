@@ -1,14 +1,14 @@
 """ simple token service """
 import datetime, uuid
-import pyramid_sqla as psa
+import sqlahelper as psa
 import sqlalchemy as sqla
 from memphis import config
 from sqla import QueryFreezer
 
 __all__ = ['TokenType', 'service']
 
+TOKEN_TYPE = 'ptah:token-type'
 
-types = {}
 
 class TokenType(object):
     """ Token type interface
@@ -25,12 +25,13 @@ class TokenType(object):
         self.title = title
         self.description = description
 
-        types[id] = self
-
         info = config.DirectiveInfo()
         info.attach(
             config.Action(
-                None, discriminator = ('ptah:token-type', id))
+                lambda config, id, tp: \
+                    config.storage[TOKEN_TYPE].update({id: tp}),
+                (id, self),
+                id = TOKEN_TYPE, discriminator = (TOKEN_TYPE, id))
             )
 
 

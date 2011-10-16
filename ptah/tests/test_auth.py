@@ -103,6 +103,7 @@ class TestAuthentication(Base):
                 return principal
 
         ptah.register_uri_resolver('test', resolver)
+        self._init_memphis()
 
         self.assertEqual(ptah.authService.get_current_principal(), None)
 

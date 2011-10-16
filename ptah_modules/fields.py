@@ -1,6 +1,6 @@
 """ memphis.form fields """
-from memphis import view, form
-from memphis.form.field import fields, previews
+from memphis import view, form, config
+from memphis.form.field import FIELD_ID, PREVIEW_ID
 
 import ptah
 
@@ -19,6 +19,9 @@ class FieldsView(view.View):
 
     def update(self):
         data = []
+
+        fields = config.registry.storage[FIELD_ID]
+        previews = config.registry.storage[PREVIEW_ID]
 
         for name, cls in fields.items():
             data.append({'name': name,

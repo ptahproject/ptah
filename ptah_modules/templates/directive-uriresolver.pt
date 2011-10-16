@@ -3,7 +3,7 @@
     <tr tal:repeat="action actions">
       <td tal:define="s action.args[0];
 		      r resolvers[s]">
-	<h4>${resolversTitle[s] or s}
+	<h4>${r.__doc__}
 	  <small>
 	    ${s}
 	  </small>
@@ -11,7 +11,6 @@
 	    <a href="${url}/ptah-manage/introspect/source.html?pkg=${action.info.module.__name__}#sl-${action.info.codeinfo[1]}">
 	      ${r.__name__}</a>
 	</small></h4>
-	<p tal:condition="r.__doc__">${r.__doc__}</p>
       </td>
     </tr>
   </tbody>

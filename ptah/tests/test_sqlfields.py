@@ -1,12 +1,12 @@
 import transaction
-import pyramid_sqla
+import sqlahelper
 import sqlalchemy as sqla
 from memphis import config, form
 
 from base import Base
 
-SqlaBase = pyramid_sqla.get_base()
-Session = pyramid_sqla.get_session()
+SqlaBase = sqlahelper.get_base()
+Session = sqlahelper.get_session()
 
 
 class TestSqlSchema(Base):

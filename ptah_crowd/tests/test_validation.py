@@ -165,7 +165,7 @@ class TestValidation(Base):
                          """Hi!
 
 You're close to completing the registration process.  Once you click this link,
-your login and password will be activated.
+your login and password will be activated. 
 
 http://localhost:8080/validateaccount.html?token=test-token
 

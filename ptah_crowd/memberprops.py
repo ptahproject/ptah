@@ -1,7 +1,7 @@
 """ member properties """
 import ptah
 import sqlalchemy as sqla
-import pyramid_sqla as psa
+import sqlahelper as psa
 from datetime import datetime
 
 Base = psa.get_base()

@@ -8,6 +8,10 @@ from base import Base
 
 class TestExceptions(Base):
 
+    def tearDown(self):
+        config.cleanup_system(self.__class__.__module__)
+        super(TestExceptions, self).tearDown()
+
     def test_not_found(self):
         from ptah.exc import NotFound
 
@@ -47,6 +51,8 @@ class TestExceptions(Base):
 
     def test_forbidden_user(self):
         from ptah.exc import Forbidden
+        self._init_memphis()
+        config.start(self.p_config)
 
         class Context(object):
             """ """

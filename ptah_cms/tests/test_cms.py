@@ -139,6 +139,9 @@ class TestWrapper(Base):
 
 class TestCms(Base):
 
+    def _setup_memphis(self):
+        pass
+
     def tearDown(self):
         config.cleanup_system(self.__class__.__module__)
         super(TestCms, self).tearDown()
@@ -181,6 +184,8 @@ class TestCms(Base):
         @ptah.resolver('test')
         def res(uri):
             return t
+
+        self._init_memphis()
 
         wrapper = ptah_cms.cms('test:1')
         self.assertIsInstance(wrapper, NodeWrapper)

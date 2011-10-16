@@ -1,6 +1,6 @@
 """ base class """
 import unittest
-import pyramid_sqla
+import sqlahelper
 import transaction
 from memphis import config
 from pyramid import testing
@@ -38,7 +38,7 @@ class Base(unittest.TestCase):
         config.initialize_settings(settings, self.p_config)
 
         # create sql tables
-        Base = pyramid_sqla.get_base()
+        Base = sqlahelper.get_base()
         Base.metadata.drop_all()
         Base.metadata.create_all()
         transaction.commit()

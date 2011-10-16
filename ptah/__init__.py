@@ -127,7 +127,7 @@ def ptah_init(configurator):
     """
     import memphis
     import transaction
-    import pyramid_sqla
+    import sqlahelper
 
     configurator.include('pyramid_tm')
 
@@ -145,18 +145,18 @@ def ptah_init(configurator):
 
         # load settings
         memphis.config.initialize_settings(settings, configurator)
-    except memphis.config.StopException, e:
-        memphis.config.shutdown()
-        raise
 
-    try:
         # create sql tables
-        Base = pyramid_sqla.get_base()
+        Base = sqlahelper.get_base()
         Base.metadata.create_all()
 
         # send AppStarting event
         memphis.config.start(configurator)
     except Exception, e:
+        if not isinstance(e, memphis.config.StopException):
+            memphis.config.shutdown()
+            raise memphis.config.StopException(e)
+
         memphis.config.shutdown()
         raise
 

@@ -4,8 +4,8 @@ from memphis import config
 from pyramid.testing import DummyRequest
 from pyramid.httpexceptions import HTTPFound, HTTPForbidden
 
-from memphis import form
-from memphis.form.field import previews
+from memphis import form, config
+from memphis.form.field import PREVIEW_ID
 from ptah_modules import fieldpreviews
 
 from base import Base
@@ -14,6 +14,7 @@ from base import Base
 class TestFieldPreviews(Base):
 
     def test_multiChoicePreview(self):
+        previews = config.registry.storage[PREVIEW_ID]
         self.assertIs(previews[form.MultiChoiceField],
                       fieldpreviews.multiChoicePreview)
 
@@ -22,6 +23,7 @@ class TestFieldPreviews(Base):
         self.assertIn('Multi choice field', html)
 
     def test_choicePreview(self):
+        previews = config.registry.storage[PREVIEW_ID]
         self.assertIs(previews[form.ChoiceField],
                       fieldpreviews.choicePreview)
 
@@ -30,6 +32,7 @@ class TestFieldPreviews(Base):
         self.assertIn('Choice field', html)
 
     def test_boolPreview(self):
+        previews = config.registry.storage[PREVIEW_ID]
         self.assertIs(previews[form.BoolField],
                       fieldpreviews.boolPreview)
 
@@ -38,6 +41,7 @@ class TestFieldPreviews(Base):
         self.assertIn('Boolean field', html)
 
     def test_radioPreview(self):
+        previews = config.registry.storage[PREVIEW_ID]
         self.assertIs(previews[form.RadioField],
                       fieldpreviews.radioPreview)
 
@@ -46,6 +50,7 @@ class TestFieldPreviews(Base):
         self.assertIn('Radio field', html)
 
     def test_textareaPreview(self):
+        previews = config.registry.storage[PREVIEW_ID]
         self.assertIs(previews[form.TextAreaField],
                       fieldpreviews.textareaPreview)
 
@@ -54,6 +59,7 @@ class TestFieldPreviews(Base):
         self.assertIn('TextArea field', html)
 
     def test_linesPreview(self):
+        previews = config.registry.storage[PREVIEW_ID]
         self.assertIs(previews[form.LinesField],
                       fieldpreviews.linesPreview)
 
@@ -62,6 +68,7 @@ class TestFieldPreviews(Base):
         self.assertIn('Lines field', html)
 
     def test_textPreview(self):
+        previews = config.registry.storage[PREVIEW_ID]
         self.assertIs(previews[form.TextField],
                       fieldpreviews.textPreview)
 
@@ -70,6 +77,7 @@ class TestFieldPreviews(Base):
         self.assertIn('Text field', html)
 
     def test_intPreview(self):
+        previews = config.registry.storage[PREVIEW_ID]
         self.assertIs(previews[form.IntegerField],
                       fieldpreviews.intPreview)
 
@@ -78,6 +86,7 @@ class TestFieldPreviews(Base):
         self.assertIn('Integer field', html)
 
     def test_floatPreview(self):
+        previews = config.registry.storage[PREVIEW_ID]
         self.assertIs(previews[form.FloatField],
                       fieldpreviews.floatPreview)
 
@@ -86,6 +95,7 @@ class TestFieldPreviews(Base):
         self.assertIn('Float field', html)
 
     def test_decimalPreview(self):
+        previews = config.registry.storage[PREVIEW_ID]
         self.assertIs(previews[form.DecimalField],
                       fieldpreviews.decimalPreview)
 
@@ -94,6 +104,7 @@ class TestFieldPreviews(Base):
         self.assertIn('Decimal field', html)
 
     def test_passwordPreview(self):
+        previews = config.registry.storage[PREVIEW_ID]
         self.assertIs(previews[form.PasswordField],
                       fieldpreviews.passwordPreview)
 
@@ -127,7 +138,10 @@ class TestFieldsModule(Base):
         res = FieldsView.__renderer__(mod, request)
         self.assertEqual(res.status, '200 OK')
 
-        from memphis.form.field import fields, previews
+        from memphis.form.field import FIELD_ID, PREVIEW_ID
+
+        fields = config.registry.storage[FIELD_ID]
+        previews = config.registry.storage[PREVIEW_ID]
 
         view = FieldsView(None, request)
         view.update()

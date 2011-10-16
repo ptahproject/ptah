@@ -1,6 +1,6 @@
 """ Node implementation """
 import ptah
-import pyramid_sqla
+import sqlahelper
 import sqlalchemy as sqla
 from zope import interface
 from collections import OrderedDict
@@ -10,8 +10,8 @@ from permissions import View
 from interfaces import NotFound, Forbidden
 from interfaces import INode, IApplicationPolicy
 
-Base = pyramid_sqla.get_base()
-Session = pyramid_sqla.get_session()
+Base = sqlahelper.get_base()
+Session = sqlahelper.get_session()
 
 
 class Node(Base):

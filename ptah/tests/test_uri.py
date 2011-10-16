@@ -6,6 +6,10 @@ from base import Base
 
 class TestUri(Base):
 
+    def tearDown(self):
+        config.cleanup_system(self.__class__.__module__)
+        super(TestUri, self).tearDown()
+
     def test_uri_registration(self):
         import ptah
 
@@ -16,6 +20,7 @@ class TestUri(Base):
 
         ptah.register_uri_resolver('test1', resolver1)
         ptah.register_uri_resolver('test2', resolver2)
+        self._init_memphis()
 
         self.assertEqual(ptah.resolve('test1:uri'), 'Resolved1')
         self.assertEqual(ptah.resolve('test2:uri'), 'Resolved2')
@@ -34,6 +39,8 @@ class TestUri(Base):
         @ptah.resolver('test2')
         def resolver2(uri):
             return 'Resolved2'
+
+        self._init_memphis()
 
         self.assertEqual(ptah.resolve('test1:uri'), 'Resolved1')
         self.assertEqual(ptah.resolve('test2:uri'), 'Resolved2')

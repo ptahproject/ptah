@@ -71,6 +71,7 @@ class TestManageModule(Base):
         def principalResolver(uri):
             return principal
 
+        self._init_memphis()
         self.assertTrue(PtahAccessManager('test:user'))
 
     def test_manage_view(self):

@@ -1,6 +1,6 @@
 import ptah
 import sqlalchemy as sqla
-import pyramid_sqla as psa
+import sqlahelper as psa
 
 Base = psa.get_base()
 Session = psa.get_session()
@@ -88,8 +88,9 @@ def search(term):
         yield user
 
 
-@ptah.resolver('user+crowd', title='Crowd principal resolver')
+@ptah.resolver('user+crowd')
 def get_byuri(uri):
+    """Crowd principal resolver"""
     return CrowdUser._sql_get_uri.first(uri=uri)
 
 

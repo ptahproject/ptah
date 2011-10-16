@@ -1,7 +1,8 @@
 """ basic app settings """
 import uuid
 import colander
-import pyramid_sqla
+import sqlahelper
+import sqlalchemy
 import pyramid_beaker
 import translationstring
 from memphis import config
@@ -163,10 +164,11 @@ def sqla_initializing(ev):
             engine_args['execution_options'] = \
                 {'compiled_cache': SQL_compiled_cache}
         try:
-            engine = pyramid_sqla.get_engine()
+            engine = sqlahelper.get_engine()
         except:
-            pyramid_sqla.add_engine(
-                {'sqlalchemy.url': url}, **engine_args)
+            engine = sqlalchemy.engine_from_config(
+                {'sqlalchemy.url': url}, 'sqlalchemy.', **engine_args)
+            sqlahelper.add_engine(engine)
 
 
 @config.subscriber(config.AppStarting)

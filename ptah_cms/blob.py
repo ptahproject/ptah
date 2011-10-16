@@ -78,6 +78,7 @@ class BlobStorage(object):
         return blob
 
     def get(self, uri):
+        """SQL Blob storage resolver"""
         return self._sql_get.first(uri=uri)
 
     def getByParent(self, parent):
@@ -92,5 +93,4 @@ class BlobStorage(object):
 
 blobStorage = BlobStorage()
 
-ptah.register_uri_resolver(
-    'blob+sql', blobStorage.get, title='SQL Blob storage resolver')
+ptah.register_uri_resolver('blob+sql', blobStorage.get)
