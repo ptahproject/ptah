@@ -32,7 +32,6 @@ class EventDescriptor(object):
         self.name = '%s.%s'%(inst.__module__, inst.__name__)
 
 
-events = {}
 EVENT_ID = 'memphis.config:event'
 
 def event(title='', category=''):
@@ -49,13 +48,10 @@ def event(title='', category=''):
         )
 
 def _event(config, klass, title, category):
-    #storage = config.storage[EVENT_ID]
-    #storage = {}
+    storage = config.storage[EVENT_ID]
     ev = EventDescriptor(klass, title, category)
-    #storage[klass] = ev
-    #storage[ev.name] = ev
-    events[klass] = ev
-    events[ev.name] = ev
+    storage[klass] = ev
+    storage[ev.name] = ev
 
 
 def adapter(*required, **kw):
@@ -123,7 +119,7 @@ def _getProvides(factory):
             "and no provided interface was specified.")
 
 
-ATTACH_ATTR = '__memphis_callbacks__'
+ATTACH_ATTR = '__memphis_actions__'
 
 class Action(object):
 
@@ -329,7 +325,8 @@ def resolveConflicts(actions):
 
         output.append((order, action))
         if len(dups) > 1:
-            conflicts[discriminator] = [action.info for _i1, _i2, action in dups]
+            conflicts[discriminator] = [
+                action.info for _i1, _i2, action in dups]
 
     if conflicts:
         raise ConflictError(conflicts)

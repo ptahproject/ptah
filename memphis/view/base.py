@@ -6,7 +6,7 @@ from memphis.view.formatter import format
 from memphis.view.resources import static, static_url
 from memphis.view.message import add_message, render_messages
 from memphis.view.library import library, include, render_includes
-from memphis.view.interfaces import ISnippet, IMemphisView, INavigationRoot
+from memphis.view.interfaces import ISnippet, IMemphisView
 
 log = logging.getLogger('memphis.view')
 

@@ -14,7 +14,7 @@ class StopException(Exception):
 
     def __init__(self, exc=None):
         self.exc = exc
-        if isinstance(exc, Exception):
+        if isinstance(exc, BaseException):
             self.isexc = True
             self.exc_type, self.exc_value, self.exc_traceback = sys.exc_info()
         else:
@@ -49,6 +49,8 @@ class Config(object):
         self.registry = registry
         self.actions = actions
         self.storage = {}
+        registry.storage = self.storage
+        registry.storage['actions'] = actions
 
 
 def initialize(packages=None, excludes=(), reg=None):

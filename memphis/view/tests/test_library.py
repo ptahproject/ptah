@@ -10,6 +10,10 @@ class TestLibraryManagement(Base):
     def _setup_memphis(self):
         pass
 
+    def tearDown(self):
+        config.cleanup_system(self.__class__.__module__)
+        super(TestLibraryManagement, self).tearDown()
+
     def test_library_register_fail(self):
         # path resuired
         self.assertRaises(ValueError, view.library, 'test')
@@ -28,10 +32,13 @@ class TestLibraryManagement(Base):
 
     def test_library_simple_css(self):
         view.static('tests', 'memphis.view.tests:static/dir1')
+
+        view.library(
+            'test-lib', path='style.css', resource='tests', type='css')
         self._init_memphis()
 
-        lib = view.library(
-            'test-lib', path='style.css', resource='tests', type='css')
+        from memphis.view.library import LIBRARY_ID
+        lib = config.registry.storage[LIBRARY_ID]['test-lib']
 
         self.assertEqual(lib.name, 'test-lib')
         self.assertEqual(len(lib.entries), 1)
@@ -42,42 +49,55 @@ class TestLibraryManagement(Base):
             repr(lib), '<memphis.view.library.Library "test-lib">')
 
     def test_library_simple_js(self):
-        lib = view.library(
+        view.library(
             'test-lib', path='http://memphis.org/test.js', type='js')
+        self._init_memphis()
+        from memphis.view.library import LIBRARY_ID
+        lib = config.registry.storage[LIBRARY_ID]['test-lib']
 
         self.assertEqual(
             lib.render(self.request),
             '<script src="http://memphis.org/test.js"> </script>')
 
     def test_library_render_absurls(self):
-        lib = view.library(
+        view.library(
             'test-lib', path='http://memphis.org/style.css', type='css')
+        self._init_memphis()
+        from memphis.view.library import LIBRARY_ID
+        lib = config.registry.storage[LIBRARY_ID]['test-lib']
 
         self.assertEqual(
             lib.render(self.request),
             '<link type="text/css" rel="stylesheet" href="http://memphis.org/style.css" />')
 
     def test_library_render_with_prefix_postfix(self):
-        lib = view.library(
+        view.library(
             'test-lib', path='http://memphis.org/style.css', type='css',
             prefix='<!--[if lt IE 7 ]>', postfix='<![endif]-->')
+        self._init_memphis()
+        from memphis.view.library import LIBRARY_ID
+        lib = config.registry.storage[LIBRARY_ID]['test-lib']
 
         self.assertEqual(
             lib.render(self.request),
             '<!--[if lt IE 7 ]><link type="text/css" rel="stylesheet" href="http://memphis.org/style.css" /><![endif]-->')
 
     def test_library_render_with_extra(self):
-        lib = view.library(
+        view.library(
             'test-lib', path='http://memphis.org/test.js', type='js',
             extra={'test': "extra"})
+        self._init_memphis()
+        from memphis.view.library import LIBRARY_ID
+        lib = config.registry.storage[LIBRARY_ID]['test-lib']
 
         self.assertEqual(
             lib.render(self.request),
             '<script test="extra" src="http://memphis.org/test.js"> </script>')
 
     def test_library_include(self):
-        lib = view.library(
+        view.library(
             'test-lib', path='http://memphis.org/style.css', type='css')
+        self._init_memphis()
 
         view.include('test-lib', self.request)
         self.assertEqual(
@@ -89,7 +109,7 @@ class TestLibraryManagement(Base):
         self.assertEqual(view.render_includes(self.request), '')
 
         # include unknown
-        view.include('test-lib', self.request)
+        view.include('test-lib-test', self.request)
         self.assertEqual(view.render_includes(self.request), '')
 
     def test_library_include_recursive(self):
@@ -107,6 +127,7 @@ class TestLibraryManagement(Base):
         lib4 = view.library(
             'test-lib4', path='http://memphis.org/style4.css', type='css',
             require=('test-lib1', 'test-lib2'))
+        self._init_memphis()
 
         view.include('test-lib3', self.request)
         view.include('test-lib4', self.request)
@@ -120,10 +141,9 @@ class TestLibraryManagement(Base):
 
     def test_library_include_resource(self):
         view.static('tests2', 'memphis.view.tests:static/dir1')
-        self._init_memphis()
-
-        lib = view.library(
+        view.library(
             'test-lib', path='style.css', resource='tests2', type='css')
+        self._init_memphis()
 
         request = self._makeRequest()
 
@@ -134,8 +154,8 @@ class TestLibraryManagement(Base):
             '<link type="text/css" rel="stylesheet" href="http://localhost:8080/static/tests2/style.css" />')
 
     def test_library_View_include(self):
-        lib = view.library(
-            'test-lib', path='http://memphis.org/test.js', type='js')
+        view.library('test-lib', path='http://memphis.org/test.js', type='js')
+        self._init_memphis()
 
         base = view.View(None, self.request)
         base.include('test-lib')

@@ -49,8 +49,8 @@ def static(name, path, layer=''):
     info = config.DirectiveInfo()
     info.attach(
         config.Action(
-            LayerWrapper(lambda config, a1,a2,a3: registry.update({a1: (a2, a3)}),
-                         discriminator),
+            LayerWrapper(lambda config, a1,a2,a3: \
+                         registry.update({a1: (a2, a3)}), discriminator),
             (name, abspath, pkg),
             discriminator = discriminator))
 

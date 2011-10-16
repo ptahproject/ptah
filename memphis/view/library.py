@@ -4,6 +4,7 @@ from memphis import config
 from memphis.view.resources import static_url, registry
 
 _libraries = {}
+LIBRARY_ID = 'memphis.view:library'
 
 
 def library(name,
@@ -31,18 +32,32 @@ def library(name,
                 raise ValueError("If resource is not defined "
                                  "path has to be absolute url")
 
-    lib = _libraries.get(name)
+    info = config.DirectiveInfo()
+
+    info.attach(
+        config.Action(
+            library_impl,
+            (name, path, resource, type,
+             require, prefix, postfix, extra),
+            id = LIBRARY_ID,
+            discriminator = (LIBRARY_ID, name, path, resource))
+        )
+
+
+def library_impl(config, name, path, resource, type,
+                 require, prefix, postfix, extra):
+    data = config.storage[LIBRARY_ID]
+
+    lib = data.get(name)
     if lib is None:
         lib = Library(name)
-        _libraries[name] = lib
+        data[name] = lib
 
     if extra is None:
         extra = {}
 
     if path:
         lib.add(path, resource, type, require, prefix, postfix, extra)
-
-    return lib
 
 
 def include(name, request):
@@ -55,6 +70,8 @@ def include(name, request):
 
 
 def render_includes(request):
+    _libraries = config.registry.storage[LIBRARY_ID]
+
     seen = set()
     libraries = []
 

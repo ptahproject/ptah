@@ -67,11 +67,6 @@ class IRenderer(interface.Interface):
         """ render result """
 
 
-# navigation root
-class INavigationRoot(interface.Interface):
-    """ site root """
-
-
 # status message
 class IMessage(interface.Interface):
     """ message """

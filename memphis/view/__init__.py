@@ -61,6 +61,3 @@ from memphis.view.message import render_messages
 
 # format
 from memphis.view.formatter import format
-
-# navigation root
-from memphis.view.interfaces import INavigationRoot

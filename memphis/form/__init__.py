@@ -14,6 +14,7 @@ from memphis.form.field import FieldsetErrors
 from memphis.form.field import field
 from memphis.form.field import fieldpreview
 from memphis.form.field import get_field_factory
+from memphis.form.field import get_field_preview
 from memphis.form.field import register_field_factory
 
 # vocabulary

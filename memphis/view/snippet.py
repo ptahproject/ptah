@@ -10,7 +10,7 @@ from memphis.view.interfaces import ISnippet
 
 log = logging.getLogger('memphis.view')
 
-stypes = {}
+STYPE_ID = 'memphis.view:snippettype'
 
 
 class Snippet(View):
@@ -56,15 +56,14 @@ def render_snippet(stype, context, request):
 
 def snippettype(name, context=None, title='', description=''):
     stype = SnippetType(name, context, title, description)
-    stypes[name] = stype
 
     info = config.DirectiveInfo()
     info.attach(
         config.Action(
-            lambda config, name, stype: stypes.update({name: stype}),
+            lambda config, name, stype: \
+                config.storage[STYPE_ID].update({name: stype}),
             (name, stype,),
-            discriminator = ('memphis.view:snippettype', name),
-            order = 1))
+            id = STYPE_ID, discriminator = (STYPE_ID, name), order = 1))
 
 
 def register_snippet(name, context=None, klass=None, template=None, layer=''):
@@ -86,7 +85,7 @@ def register_snippet_impl(config, klass, stype, context, template):
         cdict['template'] = template
 
     # find SnippetType info
-    if stype not in stypes:
+    if stype not in config.storage.get(STYPE_ID, ()):
         log.warning("Can't find SnippetType %s", stype)
 
     requires = [context, interface.Interface]

@@ -1,16 +1,10 @@
 """ routes """
-from zope import interface
+from memphis import config
 from pyramid.config.util import make_predicates
 from pyramid.request import route_request_iface
 from pyramid.traversal import DefaultRootFactory
 from pyramid.urldispatch import RoutesMapper
 from pyramid.interfaces import IRequest, IRouteRequest, IRoutesMapper
-
-from memphis import config
-from memphis.view.interfaces import INavigationRoot
-
-# mark pyramid's DefaultRootFactory with INavigationRoot
-interface.classImplements(DefaultRootFactory, INavigationRoot)
 
 
 def register_route(name, pattern=None, factory=None, header=None,

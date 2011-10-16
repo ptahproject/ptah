@@ -21,7 +21,8 @@ class TestSnippet(Base):
         view.snippettype('test', Context)
         self._init_memphis()
 
-        from memphis.view.snippet import stypes
+        from memphis.view.snippet import STYPE_ID
+        stypes = config.registry.storage[STYPE_ID]
 
         self.assertTrue('test' in stypes)
 

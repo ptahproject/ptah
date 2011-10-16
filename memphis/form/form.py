@@ -1,5 +1,4 @@
 """Form implementation"""
-from zope import interface
 from collections import OrderedDict
 from pyramid import security
 from pyramid.decorator import reify
@@ -93,8 +92,6 @@ class Form(view.View):
     """A form
 
     """
-
-    interface.implements(IForm, IInputForm)
 
     fields = Fieldset()
     buttons = None
@@ -216,7 +213,6 @@ class Form(view.View):
 
 
 class DisplayForm(Form):
-    interface.implements(IDisplayForm)
 
     mode = FORM_DISPLAY
 
@@ -235,15 +231,15 @@ view.snippettype(FORM_WIDGET, Field, 'Form widget')
 view.snippettype(FORM_DISPLAY_WIDGET, Field, 'Form display widget')
 
 view.register_snippet(
-    'form-view', IInputForm,
+    'form-view', Form,
     template = view.template('memphis.form:templates/form.pt'))
 
 view.register_snippet(
-    'form-view', IDisplayForm,
+    'form-view', DisplayForm,
     template = view.template('memphis.form:templates/form-display.pt'))
 
 view.register_snippet(
-    'form-actions', IInputForm,
+    'form-actions', Form,
     template = view.template('memphis.form:templates/form-actions.pt'))
 
 view.register_snippet(

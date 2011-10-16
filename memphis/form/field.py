@@ -5,33 +5,31 @@ from validator import All
 from interfaces import _, null, required
 from interfaces import Invalid, FORM_INPUT, FORM_DISPLAY
 
-
-fields = {}
-previews = {}
+FIELD_ID = 'memphis.form:field'
+PREVIEW_ID = 'memphis.form:field-preview'
 
 
 def field(name, layer=''):
     info = config.DirectiveInfo(allowed_scope=('class',))
 
-    discriminator = ('memphis.form:field', name, layer)
+    discriminator = (FIELD_ID, name, layer)
 
     info.attach(
         config.ClassAction(
             view.LayerWrapper(register_field_impl, discriminator),
-            (name, ), discriminator = discriminator)
+            (name, ), id = FIELD_ID, discriminator = discriminator)
         )
 
 
 def register_field_factory(cls, name, layer=''):
     info = config.DirectiveInfo()
 
-    discriminator = ('memphis.form:field', name, layer)
+    discriminator = (FIELD_ID, name, layer)
 
     info.attach(
         config.Action(
             view.LayerWrapper(register_field_impl, discriminator),
-            (cls, name),
-            discriminator = discriminator)
+            (cls, name), id = FIELD_ID, discriminator = discriminator)
         )
 
 
@@ -39,13 +37,11 @@ def fieldpreview(cls):
     info = config.DirectiveInfo()
 
     def wrapper(func):
-        previews[cls] = func
-
         info.attach(
             config.Action(
-                lambda config, cls, func: previews.update({cls: func}),
-                (cls, func),
-                discriminator = ('memphis.form:field-preview', cls))
+                lambda config, cls, func:
+                    config.storage[PREVIEW_ID].update({cls: func}),
+                (cls, func), id = PREVIEW_ID, discriminator = (PREVIEW_ID, cls))
             )
         return func
 
@@ -53,17 +49,16 @@ def fieldpreview(cls):
 
 
 def register_field_impl(config, cls, name):
-    fields[name] = cls
     cls.__field__ = name
+    config.storage[FIELD_ID][name] = cls
 
 
 def get_field_factory(name):
-    return fields.get(name, None)
+    return config.registry.storage[FIELD_ID].get(name, None)
 
 
-@config.cleanup
-def cleanup():
-    fields.clear()
+def get_field_preview(cls):
+    return config.registry.storage[PREVIEW_ID].get(cls, None)
 
 
 class Fieldset(OrderedDict):
@@ -320,7 +315,11 @@ class FieldFactory(Field):
         super(FieldFactory, self).__init__(name, **kw)
 
     def bind(self, prefix, content, params):
-        cls = get_field_factory(self.__field__)
+        try:
+            cls = config.registry.storage[FIELD_ID].get(self.__field__, None)
+        except:
+            cls = None
+
         if cls is None:
             raise TypeError(
                 "Can't find field implementation for '%s'"%self.__field__)

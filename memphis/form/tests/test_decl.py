@@ -51,6 +51,8 @@ class TestFieldset(Base):
 
         self._init_memphis()
 
-        from memphis.form.field import previews
+        from memphis.form.field import PREVIEW_ID
+        previews = config.registry.storage[PREVIEW_ID]
+
         self.assertIn(MyField, previews)
         self.assertIs(previews[MyField], preview)
