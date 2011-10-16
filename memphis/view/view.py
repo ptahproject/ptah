@@ -137,7 +137,7 @@ def register_view(
         )
 
 
-def register_view_impl(factory, name, context, template, route_name,
+def register_view_impl(config, factory, name, context, template, route_name,
                      layout, permission):
 
     if layout is unset:

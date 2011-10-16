@@ -48,7 +48,7 @@ def event(title='', category=''):
             id = EVENT_ID, discriminator = descriminator)
         )
 
-def _event(klass, title, category):
+def _event(config, klass, title, category):
     #storage = config.storage[EVENT_ID]
     #storage = {}
     ev = EventDescriptor(klass, title, category)
@@ -103,12 +103,12 @@ def subscriber(*required):
     return wrapper
 
 
-def _register(methodName, *args, **kw):
+def _register(config, methodName, *args, **kw):
     method = getattr(api.registry, methodName)
     method(*args, **kw)
 
 
-def _adapts(factory, required, name):
+def _adapts(config, factory, required, name):
     api.registry.registerAdapter(factory, required, name=name)
 
 
@@ -148,10 +148,10 @@ class Action(object):
             return self._discriminator(self)
         return self._discriminator
 
-    def __call__(self):
+    def __call__(self, config):
         if self.callable:
             try:
-                self.callable(*self.args, **self.kw)
+                self.callable(config, *self.args, **self.kw)
             except: # pragma: no cover
                 log.exception(self.discriminator)
                 raise
@@ -159,9 +159,9 @@ class Action(object):
 
 class ClassAction(Action):
 
-    def __call__(self):
+    def __call__(self, config):
         try:
-            self.callable(self.info.context, *self.args, **self.kw)
+            self.callable(config, self.info.context, *self.args, **self.kw)
         except: # pragma: no cover
             log.exception(self.discriminator)
             raise

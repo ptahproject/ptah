@@ -61,7 +61,7 @@ def snippettype(name, context=None, title='', description=''):
     info = config.DirectiveInfo()
     info.attach(
         config.Action(
-            lambda name, stype: stypes.update({name: stype}),
+            lambda config, name, stype: stypes.update({name: stype}),
             (name, stype,),
             discriminator = ('memphis.view:snippettype', name),
             order = 1))
@@ -80,7 +80,7 @@ def register_snippet(name, context=None, klass=None, template=None, layer=''):
         )
 
 
-def register_snippet_impl(klass, stype, context, template):
+def register_snippet_impl(config, klass, stype, context, template):
     cdict = {}
     if template is not None:
         cdict['template'] = template

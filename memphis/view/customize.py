@@ -72,11 +72,11 @@ class LayerWrapper(object):
         self.discriminator = discriminator[:-1]
         _layersManager.register(self.layer, self.discriminator)
 
-    def __call__(self, *args, **kw):
+    def __call__(self, config, *args, **kw):
         if not _layersManager.enabled(self.layer, self.discriminator):
             return # pragma: no cover
 
-        self.callable(*args, **kw)
+        self.callable(config, *args, **kw)
 
 
 class _TemplateLayersManager(object):

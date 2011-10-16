@@ -89,7 +89,7 @@ def initialize(packages=None, excludes=(), reg=None):
     for action in actions:
         if action.id and action.id not in config.storage:
             config.storage[action.id] = {}
-        action()
+        action(config)
 
 
 def start(cfg):

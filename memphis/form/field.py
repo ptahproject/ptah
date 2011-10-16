@@ -17,7 +17,7 @@ def field(name, layer=''):
 
     info.attach(
         config.ClassAction(
-            view.LayerWrapper(registerFieldImpl, discriminator),
+            view.LayerWrapper(register_field_impl, discriminator),
             (name, ), discriminator = discriminator)
         )
 
@@ -29,7 +29,7 @@ def register_field_factory(cls, name, layer=''):
 
     info.attach(
         config.Action(
-            view.LayerWrapper(registerFieldImpl, discriminator),
+            view.LayerWrapper(register_field_impl, discriminator),
             (cls, name),
             discriminator = discriminator)
         )
@@ -43,7 +43,7 @@ def fieldpreview(cls):
 
         info.attach(
             config.Action(
-                lambda cls, func: previews.update({cls: func}),
+                lambda config, cls, func: previews.update({cls: func}),
                 (cls, func),
                 discriminator = ('memphis.form:field-preview', cls))
             )
@@ -52,7 +52,7 @@ def fieldpreview(cls):
     return wrapper
 
 
-def registerFieldImpl(cls, name):
+def register_field_impl(config, cls, name):
     fields[name] = cls
     cls.__field__ = name
 

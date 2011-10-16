@@ -140,7 +140,7 @@ def register_settings(name, *nodes, **kw):
     return group
 
 
-def _register_settings_impl(group, node):
+def _register_settings_impl(config, group, node):
     Settings.register(group)
     group.register(node)
 

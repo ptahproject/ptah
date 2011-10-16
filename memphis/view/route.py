@@ -40,7 +40,7 @@ def register_route(name, pattern=None, factory=None, header=None,
             order = 1))
 
 
-def register_route_impl(name, pattern, factory,
+def register_route_impl(config, name, pattern, factory,
                         predicates, pregenerator, use_global_views):
     request_iface = config.registry.queryUtility(IRouteRequest, name=name)
     if request_iface is None:
