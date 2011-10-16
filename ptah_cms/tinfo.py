@@ -144,7 +144,7 @@ def namesFilter(name, fieldNames=None):
 
 
 def registerType(
-    cls, tinfo, name, fieldset,
+    config, cls, tinfo, name, fieldset,
     permission = ptah.NOT_ALLOWED, fieldNames=None, **kw):
 
     # generate schema

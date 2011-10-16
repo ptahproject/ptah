@@ -14,13 +14,13 @@ class TestJoin(Base):
 
         request = DummyRequest()
         ptah.authService.set_userid('test')
-        
+
         form = Registration(None, request)
         try:
             form.update()
         except Exception, res:
             pass
-        
+
         self.assertIsInstance(res, HTTPFound)
         self.assertEqual(
             res.headers['location'], 'http://example.com')
@@ -109,7 +109,7 @@ class TestJoin(Base):
         Session.flush()
 
         ptah_crowd.CONFIG['allow-unvalidated'] = False
-        
+
         request = DummyRequest(
             POST = {'name': 'Test user',
                     'login': 'test@example.com',

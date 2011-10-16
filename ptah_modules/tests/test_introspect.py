@@ -9,7 +9,7 @@ class TestIntrospectModule(Base):
     def test_introspect_module(self):
         from ptah.manage import PtahManageRoute
         from ptah_modules.introspect import IntrospectModule, Package
-        
+
         request = DummyRequest()
 
         ptah.authService.set_userid('test')
@@ -26,7 +26,7 @@ class TestIntrospectModule(Base):
 
     def test_introspect_view(self):
         from ptah_modules.introspect import IntrospectModule, MainView
-        
+
         request = DummyRequest()
 
         mod = IntrospectModule(None, request)
@@ -41,7 +41,7 @@ class TestIntrospectModule(Base):
 
     def test_introspect_package_view(self):
         from ptah_modules.introspect import IntrospectModule, PackageView
-        
+
         request = DummyRequest()
 
         mod = IntrospectModule(None, request)

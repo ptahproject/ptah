@@ -16,11 +16,14 @@ from ptah.manage import get_access_manager
 
 # security
 from ptah.authentication import authService
+from ptah.authentication import SUPERUSER_URI
+
 from ptah.authentication import register_auth_checker
 from ptah.authentication import register_auth_provider
-from ptah.authentication import register_principal_searcher
+
 from ptah.authentication import search_principals
-from ptah.authentication import SUPERUSER_URI
+from ptah.authentication import principal_searcher
+from ptah.authentication import register_principal_searcher
 
 from ptah.interfaces import IACLsAware
 from ptah.interfaces import IOwnersAware
@@ -92,6 +95,8 @@ def make_wsgi_app(global_settings, **settings):
       use = egg:ptah#app
 
     """
+    import sys
+    import memphis
     from pyramid.config import Configurator
 
     authService.set_userid(SUPERUSER_URI)
@@ -101,7 +106,13 @@ def make_wsgi_app(global_settings, **settings):
     config = Configurator(settings=global_settings)
 
     # initialization
-    ptah_init(config)
+    try:
+        ptah_init(config)
+    except Exception, e:
+        if isinstance(e, memphis.config.StopException):
+            print e.print_tb()
+
+        sys.exit(0)
 
     # create wsgi app
     return config.make_wsgi_app()
@@ -134,7 +145,7 @@ def ptah_init(configurator):
 
         # load settings
         memphis.config.initialize_settings(settings, configurator)
-    except memphis.config.StopException:
+    except memphis.config.StopException, e:
         memphis.config.shutdown()
         raise
 

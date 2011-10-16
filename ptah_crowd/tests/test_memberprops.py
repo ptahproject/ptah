@@ -11,7 +11,7 @@ class TestMemberprops(Base):
         from ptah_crowd.memberprops import Session, MemberProperties
 
         props = ptah_crowd.get_properties('uid1')
-        
+
         self.assertIsInstance(props, MemberProperties)
         self.assertEqual(props.uri, 'uid1')
         self.assertEqual(props.validated, False)

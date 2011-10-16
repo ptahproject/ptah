@@ -46,7 +46,7 @@ class Action(object):
         return True
 
 
-def _contentAction(id, context, ac):
+def _contentAction(config, id, context, ac):
     config.registry.registerAdapter(ac, (context,), IAction, id)
 
 

@@ -33,7 +33,7 @@ def Permission(name, title, description=u''):
 
     info.attach(
         config.Action(
-            lambda p: Permissions.update({str(p): p}),
+            lambda config, p: Permissions.update({str(p): p}),
             (permission,), discriminator = ('ptah:permission', name))
         )
 
@@ -67,7 +67,7 @@ class ACL(list):
         info = config.DirectiveInfo()
         info.attach(
             config.Action(
-                lambda p: ACLs.update({name: p}),
+                lambda config, p: ACLs.update({name: p}),
                 (self,), discriminator = ('ptah:acl-map', name))
             )
         self.directiveInfo = info
@@ -198,7 +198,7 @@ class Role(object):
         info = config.DirectiveInfo()
         info.attach(
             config.Action(
-                lambda r: Roles.update({r.name: r}),
+                lambda config, r: Roles.update({r.name: r}),
                 (self,), discriminator = ('ptah:role', name))
             )
 

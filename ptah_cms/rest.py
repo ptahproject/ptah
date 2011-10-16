@@ -132,7 +132,7 @@ class Action(object):
 def restaction(name, context, permission):
     info = config.DirectiveInfo()
 
-    def _register(callable, name, context, permission):
+    def _register(config, callable, name, context, permission):
         ac = Action(callable, name, permission)
         config.registry.registerAdapter(
             ac, (IRestActionClassifier, context), IRestAction, name)

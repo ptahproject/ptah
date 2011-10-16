@@ -42,7 +42,7 @@ class Base(unittest.TestCase):
         Base.metadata.drop_all()
         Base.metadata.create_all()
         transaction.commit()
-        
+
     def _setup_pyramid(self):
         self.request = request = self._makeRequest()
         self.p_config = testing.setUp(request=request)

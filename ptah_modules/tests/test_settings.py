@@ -9,7 +9,7 @@ class TestSettingsModule(Base):
     def test_fields_module(self):
         from ptah.manage import PtahManageRoute
         from ptah_modules.settings import SettingsModule
-        
+
         request = DummyRequest()
 
         ptah.authService.set_userid('test')
@@ -21,7 +21,7 @@ class TestSettingsModule(Base):
 
     def test_fields_view(self):
         from ptah_modules.settings import SettingsModule, SettingsView
-        
+
         request = DummyRequest()
 
         mod = SettingsModule(None, request)

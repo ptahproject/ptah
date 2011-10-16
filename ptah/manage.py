@@ -37,7 +37,7 @@ class PtahModule(object):
 def manageModule(id):
     info = config.DirectiveInfo(allowed_scope=('class',))
 
-    def _complete(cls, id):
+    def _complete(config, cls, id):
         MODULES[id] = cls
 
         cls.name = id
@@ -54,7 +54,7 @@ INTROSPECTIONS = {}
 def introspection(id):
     info = config.DirectiveInfo(allowed_scope=('class',))
 
-    def _complete(cls, id):
+    def _complete(config, cls, id):
         INTROSPECTIONS[id] = cls
         cls.name = id
 

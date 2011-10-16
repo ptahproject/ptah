@@ -134,7 +134,7 @@ class TestValidation(Base):
                 Stub.token = self.token
 
         validation.ValidationTemplate = Stub
-        
+
         user = CrowdUser('name', 'login', 'email')
 
         request = self._makeRequest()
@@ -156,7 +156,7 @@ class TestValidation(Base):
         user = CrowdUser('name', 'login', 'email')
 
         request = self._makeRequest()
-        
+
         template = validation.ValidationTemplate(
             user, request, email = user.email, token = 'test-token')
         template.update()
@@ -165,7 +165,7 @@ class TestValidation(Base):
                          """Hi!
 
 You're close to completing the registration process.  Once you click this link,
-your login and password will be activated. 
+your login and password will be activated.
 
 http://localhost:8080/validateaccount.html?token=test-token
 
@@ -202,7 +202,7 @@ Thanks
         except:
             pass
         self.assertIn(
-            "Account has been successfully validated.", 
+            "Account has been successfully validated.",
             request.session['msgservice'][0])
 
         props = ptah_crowd.get_properties(user.uri)

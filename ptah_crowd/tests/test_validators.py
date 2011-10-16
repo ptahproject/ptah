@@ -20,7 +20,7 @@ class TestCheckLogin(Base):
 
         self.assertRaises(
             form.Invalid, ptah_crowd.checkLoginValidator, None, 'login')
-        
+
         class Field(object):
             """ """
 
@@ -34,8 +34,7 @@ class TestCheckLogin(Base):
 
     def test_lower(self):
         from ptah_crowd.schemas import lower
-        
+
         self.assertEqual(lower('Tttt'), 'tttt')
         self.assertEqual(lower('tttT'), 'tttt')
         self.assertEqual(lower(lower), lower)
-    

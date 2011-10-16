@@ -9,7 +9,7 @@ class TestSqlaModule(Base):
     def test_sqla_module(self):
         from ptah.manage import PtahManageRoute
         from ptah_modules.sqla import SQLAModule, Table
-        
+
         request = DummyRequest()
 
         ptah.authService.set_userid('test')
@@ -27,7 +27,7 @@ class TestSqlaModule(Base):
 
     def test_sqla_view(self):
         from ptah_modules.sqla import SQLAModule, MainView
-        
+
         request = DummyRequest()
 
         mod = SQLAModule(None, request)
@@ -37,7 +37,7 @@ class TestSqlaModule(Base):
 
     def test_table_view(self):
         from ptah_modules.sqla import SQLAModule, Table, TableView
-        
+
         request = DummyRequest()
 
         mod = SQLAModule(None, request)

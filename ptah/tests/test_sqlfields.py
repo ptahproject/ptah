@@ -140,7 +140,7 @@ class TestQueryFreezer(Base):
         rec.name = 'test'
         Session.add(rec)
         Session.flush()
-        
+
         rec = sql_get.one(name='test')
         self.assertEqual(rec.name, 'test')
 
@@ -175,7 +175,7 @@ class TestQueryFreezer(Base):
         rec.name = 'test'
         Session.add(rec)
         Session.flush()
-        
+
         rec = sql_get.one(name='test')
         self.assertEqual(rec.name, 'test')
 
@@ -220,7 +220,7 @@ class TestJsonDict(Base):
 
         rec = Session.query(Test).filter_by(id = id).one()
         self.assertEqual(rec.data, {'test2': 'val2'})
-        
+
 
 class TestJsonList(Base):
 
@@ -263,4 +263,3 @@ class TestJsonList(Base):
 
         rec = Session.query(Test).filter_by(id = id).one()
         self.assertEqual(rec.data, ['test'])
-        

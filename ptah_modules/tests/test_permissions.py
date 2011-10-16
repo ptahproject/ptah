@@ -9,7 +9,7 @@ class TestPermissionsModule(Base):
     def test_perms_module(self):
         from ptah.manage import PtahManageRoute
         from ptah_modules.permissions import PermissionsModule
-        
+
         request = DummyRequest()
 
         ptah.authService.set_userid('test')
@@ -21,7 +21,7 @@ class TestPermissionsModule(Base):
 
     def test_perms_view(self):
         from ptah_modules.permissions import PermissionsModule, PermissionsView
-        
+
         request = DummyRequest()
 
         mod = PermissionsModule(None, request)
@@ -31,7 +31,7 @@ class TestPermissionsModule(Base):
 
     def test_perms_roles(self):
         from ptah_modules.permissions import PermissionsModule, RolesView
-        
+
         request = DummyRequest()
 
         mod = PermissionsModule(None, request)

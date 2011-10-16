@@ -24,7 +24,7 @@ def restService(name, title, description=''):
     services[name] = srv
     srv.actions['apidoc'] = Action(apidoc, 'apidoc', apidoc.title)
 
-    def _register(srv):
+    def _register(config, srv):
         services[name] = srv
 
     info = config.DirectiveInfo()
@@ -55,8 +55,6 @@ class Service(object):
         self.actions = {}
 
     def action(self, name, title):
-        info = config.DirectiveInfo()
-
         def wrapper(func):
             self.actions[name] = Action(func, name, title)
             return func

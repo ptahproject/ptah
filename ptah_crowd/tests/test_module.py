@@ -12,7 +12,7 @@ class TestModule(Base):
     def test_manage_module(self):
         from ptah.manage import PtahManageRoute
         from ptah_crowd.module import CrowdModule
-        
+
         request = DummyRequest()
 
         ptah.authService.set_userid('test')
@@ -34,7 +34,7 @@ class TestModule(Base):
         mod = CrowdModule(None, DummyRequest())
 
         self.assertRaises(KeyError, mod.__getitem__, 'unkown')
-        
+
         wu = mod[str(user.pid)]
 
         self.assertIsInstance(wu, UserWrapper)

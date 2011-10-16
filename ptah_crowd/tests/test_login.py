@@ -49,7 +49,7 @@ class TestSuspended(Base):
 
         request = DummyRequest()
         res = login.LoginSuspended.__renderer__(None, request).body
-        
+
         self.assertIn('Your account is suspended', res)
 
 
@@ -78,7 +78,7 @@ class TestLogout(Base):
             login.logout(request)
         except Exception, res:
             pass
-        
+
         self.assertIsInstance(res, HTTPFound)
         self.assertIsNone(ptah.authService.get_userid())
 
@@ -118,12 +118,12 @@ class TestLogin(Base):
         from ptah_crowd import login
 
         request = DummyRequest()
-        
+
         ptah.authService.set_userid('test')
         res = login.LoginForm.__renderer__(None, request)
         self.assertEqual(res.status, '302 Found')
         self.assertEqual(
-            res.headers['location'], 
+            res.headers['location'],
             'http://example.com/login-success.html')
 
     def test_login_update(self):
@@ -175,7 +175,7 @@ class TestLogin(Base):
         data, errors = form.extract()
         self.assertEqual(len(errors), 2)
 
-        form.handleLogin()        
+        form.handleLogin()
         self.assertIn('Please fix indicated errors.',
                       request.session['msgservice'][0])
 
@@ -191,7 +191,7 @@ class TestLogin(Base):
         except Exception, res:
             pass
 
-        self.assertEqual(res.headers['location'], 
+        self.assertEqual(res.headers['location'],
                          'http://example.com/login-success.html')
 
     def test_login_wrong_login(self):
@@ -203,7 +203,7 @@ class TestLogin(Base):
         Session.add(user)
         Session.flush()
         transaction.commit()
-        
+
         request = DummyRequest(
             POST={'login': 'login1', 'password': '123456'})
 
@@ -256,5 +256,5 @@ class TestLogin(Base):
         except Exception, res:
             pass
 
-        self.assertEqual(res.headers['location'], 
+        self.assertEqual(res.headers['location'],
                          'http://example.com/login-suspended.html')

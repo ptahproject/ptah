@@ -50,7 +50,7 @@ def resolver(schema, title=''):
 
         info.attach(
             config.Action(
-                _registerResolver, (schema, func, title),
+                _register_uri_resolver, (schema, func, title),
                 discriminator = ('ptah:uri-resolver', schema))
             )
 
@@ -79,12 +79,12 @@ def register_uri_resolver(schema, resolver, title='', depth=1):
     info = config.DirectiveInfo(depth=depth)
     info.attach(
         config.Action(
-            _registerResolver, (schema, resolver, title),
+            _register_uri_resolver, (schema, resolver, title),
             discriminator = ('ptah:uri-resolver', schema))
         )
 
 
-def _registerResolver(schema, resolver, title):
+def _register_uri_resolver(config, schema, resolver, title):
     resolvers[schema] = resolver
     resolversTitle[schema] = title or schema
 

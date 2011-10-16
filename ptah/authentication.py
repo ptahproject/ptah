@@ -36,7 +36,7 @@ def register_auth_checker(checker):
     info = config.DirectiveInfo()
     info.attach(
         config.Action(
-            lambda c: checkers.append(c), (checker,), 
+            lambda config, c: checkers.append(c), (checker,),
             discriminator = ('ptah:auth-checker', checker))
         )
     return checker
@@ -48,17 +48,8 @@ def register_auth_provider(name, provider):
     info = config.DirectiveInfo()
     info.attach(
         config.Action(
-            lambda n, p: providers.update({n:p}), (name, provider), 
+            lambda config, n, p: providers.update({n:p}), (name, provider),
             discriminator = ('ptah:auth-provider', name))
-        )
-
-
-def register_principal_searcher(name, searcher):
-    searchers[name] = searcher
-
-    info = config.DirectiveInfo()
-    info.attach(
-        config.Action(None, discriminator = ('ptah:auth-searcher', name))
         )
 
 
@@ -140,6 +131,34 @@ def search_principals(term):
     for name, searcher in searchers.items():
         for principal in searcher(term):
             yield principal
+
+
+def register_principal_searcher(name, searcher):
+    searchers[name] = searcher
+
+    info = config.DirectiveInfo()
+    info.attach(
+        config.Action(None, discriminator = ('ptah:auth-searcher', name))
+        )
+
+
+def principal_searcher(name):
+    info = config.DirectiveInfo()
+
+    def wrapper(searcher):
+        searchers[name] = searcher
+
+        info.attach(
+            config.Action(
+                lambda config, name, searcher: searchers.update({name: searcher}),
+                (name, searcher),
+                discriminator = ('ptah:auth-searcher', name))
+            )
+
+        return searcher
+
+    return wrapper
+
 
 
 @config.cleanup

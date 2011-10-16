@@ -7,6 +7,7 @@ Session = psa.get_session()
 
 
 class CrowdProvider(object):
+    #ptah.auth_provider('user+crowd')
 
     def authenticate(self, creds):
         login, password = creds['login'], creds['password']
@@ -81,17 +82,20 @@ _sql_search = ptah.QueryFreezer(
     .order_by(sqla.sql.asc('name')))
 
 
+@ptah.principal_searcher('user+crowd')
 def search(term):
     for user in _sql_search.all(term = '%%%s%%'%term):
         yield user
+
+
+@ptah.resolver('user+crowd', title='Crowd principal resolver')
+def get_byuri(uri):
+    return CrowdUser._sql_get_uri.first(uri=uri)
 
 
 def change_pwd(principal, password):
     principal.password = password
 
 
-ptah.register_principal_searcher('user+crowd', search)
 ptah.register_auth_provider('user+crowd', CrowdProvider())
-ptah.register_uri_resolver('user+crowd', CrowdUser.get_byuri,
-                           'Crowd principal resolver')
 ptah.passwordTool.registerPasswordChanger('user+crowd', change_pwd)
