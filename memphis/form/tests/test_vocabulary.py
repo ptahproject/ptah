@@ -85,7 +85,7 @@ class SimpleVocabularyTests(unittest.TestCase):
         self.assertRaises(
             ValueError, vocabulary.SimpleVocabulary.from_values, 2, '2')
         self.assertRaises(
-            ValueError, vocabulary.SimpleVocabulary.from_items, 
+            ValueError, vocabulary.SimpleVocabulary.from_items,
             ('one', 1), ('another one', '1'))
         self.assertRaises(
             ValueError, vocabulary.SimpleVocabulary.from_items,

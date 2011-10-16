@@ -15,7 +15,6 @@ from memphis.config.api import cleanup
 from memphis.config.api import cleanup_system
 
 from memphis.config.directives import event
-from memphis.config.directives import action
 from memphis.config.directives import adapter
 from memphis.config.directives import subscriber
 

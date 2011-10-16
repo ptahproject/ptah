@@ -1,3 +1,5 @@
+import StringIO
+import traceback
 import sys, pkg_resources
 from memphis.config import directives
 from zope.interface.registry import Components
@@ -12,9 +14,23 @@ class StopException(Exception):
 
     def __init__(self, exc=None):
         self.exc = exc
+        if isinstance(exc, Exception):
+            self.isexc = True
+            self.exc_type, self.exc_value, self.exc_traceback = sys.exc_info()
+        else:
+            self.isexc = False
 
     def __str__(self):
         return str(self.exc)
+
+    def print_tb(self):
+        if self.isexc:
+            out = StringIO.StringIO()
+            traceback.print_exception(
+                self.exc_type, self.exc_value, self.exc_traceback, file=out)
+            return out.getvalue()
+        else:
+            return self.exc
 
 
 class AppStarting(object):
@@ -25,6 +41,14 @@ class AppStarting(object):
 
     def __init__(self, config):
         self.config = config
+
+
+class Config(object):
+
+    def __init__(self, registry, actions):
+        self.registry = registry
+        self.actions = actions
+        self.storage = {}
 
 
 def initialize(packages=None, excludes=(), reg=None):
@@ -50,16 +74,21 @@ def initialize(packages=None, excludes=(), reg=None):
     else:
         packages = list_packages(packages, excludes=excludes)
 
-    # scan packages and load all actions
+    # scan packages and load actions
     seen = set()
     actions = []
 
     for pkg in packages:
         actions.extend(directives.scan(pkg, seen, exclude_filter))
 
+    config = Config(registry, actions)
+
     # execute actions
     actions = directives.resolveConflicts(actions)
+
     for action in actions:
+        if action.id and action.id not in config.storage:
+            config.storage[action.id] = {}
         action()
 
 
@@ -99,7 +128,7 @@ def loadPackage(name, seen, first=True):
         if ep is not None:
             if dist.has_metadata('top_level.txt'):
                 packages.extend(
-                    [p.strip() for p in 
+                    [p.strip() for p in
                      dist.get_metadata('top_level.txt').split()])
     except pkg_resources.DistributionNotFound:
         pass
@@ -160,7 +189,7 @@ def cleanup(handler):
 
 def cleanup_system(*modIds):
     mods.clear()
-    
+
     for h in _cleanups:
         h()
 

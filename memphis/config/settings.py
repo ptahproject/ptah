@@ -128,10 +128,14 @@ def register_settings(name, *nodes, **kw):
                 "Node '%s' has to be instance of "
                 "memphis.config.SchemaNode"%node.name)
 
-        info.attach(
-            Action(
-                _register_settings_impl, (group, node),
-                discriminator = ('memphis.config:setting', node.name, name)))
+        ac = Action(
+            _register_settings_impl, (group, node),
+            discriminator = ('memphis.config:setting', node.name, name))
+
+        # mutate hash
+        ac.hash = info.hash + (node.name,)
+
+        info.attach(ac)
 
     return group
 

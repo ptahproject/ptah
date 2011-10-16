@@ -10,7 +10,7 @@ class DummyRequest(object):
     def __init__(self):
         self.params = {}
         self.cookies = {}
-        
+
 
 def invalid_exc(func, *arg, **kw):
     from memphis.form import Invalid
@@ -61,7 +61,7 @@ class TestTextField(Base):
 
         self.assertEqual(field.serialize(u'value'), u'value')
         self.assertEqual(field.deserialize(u'value'), u'value')
-        
+
         self.assertEqual(strip(field.render(request)),
                          '<input type="text" name="test" title="Test" value="content" id="test" class="text-widget" />')
 
@@ -69,7 +69,7 @@ class TestTextField(Base):
         self.assertEqual(strip(field.render(request)),
                          '<span class="uneditable-input" id="test" title="Test"> content </span>')
 
-        
+
         field = self._makeOne('test')
         field = field.bind('', u'content', {'test': 'form'})
         field.update(request)
@@ -193,7 +193,7 @@ class TestVocabularyField(Base):
 
         self.assertRaises(ValueError, form.VocabularyField, 'test')
         self.assertRaises(
-            NotImplementedError, 
+            NotImplementedError,
             form.VocabularyField('test', vocabulary=voc).is_checked,
             voc.get_term(1))
 
@@ -203,7 +203,7 @@ class TestVocabularyField(Base):
 
         field = MyVocabularyField('test', vocabulary=voc)
         field.value = 'one'
-        
+
         self.assertTrue(field.is_checked(voc.get_term(1)))
         self.assertFalse(field.is_checked(voc.get_term(2)))
 
@@ -628,7 +628,7 @@ class TestFileField(Base):
                 self.length = s
 
         fs = FileStorage(object(), 'test.jpg', 'image/jpeg', 1024)
-        
+
         field = field.bind('', u'content', {'test': fs})
         field.update(request)
 

@@ -2,33 +2,27 @@
 import sys, inspect, imp, logging
 from zope import interface
 from pkgutil import walk_packages
+from collections import OrderedDict
 
 import api
 
 log = logging.getLogger('memphis.config')
 
 
-def action(func):
-    """ Execute arbitrary action during configration process. """
-    info = DirectiveInfo(allowed_scope=('module', 'function call'))
-    info.attach(Action(func))
-    return func
-
-
-class IEventDescriptor(interface.Interface):
-    """ event descriptor """
-
-    name = interface.Attribute('Name')
-
-    title = interface.Attribute('Event title')
-
-    category = interface.Attribute('Event category')
-
-    instance = interface.Attribute('Event class or interface')
-
-
 class EventDescriptor(object):
-    interface.implements(IEventDescriptor)
+
+    #: Event name
+    name = ''
+
+    #: Event title
+    title = ''
+
+    #: Event category
+    category = ''
+
+    #: Event class or interface
+    instance = None
+
 
     def __init__(self, inst, title, category):
         self.instance = inst
@@ -39,22 +33,27 @@ class EventDescriptor(object):
 
 
 events = {}
+EVENT_ID = 'memphis.config:event'
 
 def event(title='', category=''):
     """ Register event object, it is used for introspection only. """
     info = DirectiveInfo(allowed_scope=('class',))
 
     def descriminator(action):
-        return ('memphis.config:event', action.info.context)
+        return (EVENT_ID, action.info.context)
 
     info.attach(
         ClassAction(
             _event, (title, category),
-            discriminator = descriminator)
+            id = EVENT_ID, discriminator = descriminator)
         )
 
 def _event(klass, title, category):
+    #storage = config.storage[EVENT_ID]
+    #storage = {}
     ev = EventDescriptor(klass, title, category)
+    #storage[klass] = ev
+    #storage[ev.name] = ev
     events[klass] = ev
     events[ev.name] = ev
 
@@ -128,14 +127,20 @@ ATTACH_ATTR = '__memphis_callbacks__'
 
 class Action(object):
 
+    hash = None
+
     def __init__(self, callable, args=(), kw={},
-                 discriminator=None, order=0, info=None):
+                 id = None, discriminator=None, order=0, info=None):
+        self.id = id
         self.callable = callable
         self.args = args
         self.kw = kw
         self.order = order
         self.info = info
         self._discriminator = discriminator
+
+    def __hash__(self):
+        return hash(self.hash)
 
     @property
     def discriminator(self):
@@ -184,6 +189,12 @@ class DirectiveInfo(object):
 
         api.mods.add(self.module.__name__)
 
+        if depth > 1:
+            _, mod, _, _, ci = getFrameInfo(sys._getframe(2))
+            self.hash = (module.__name__, codeinfo[1], mod.__name__, ci[1])
+        else:
+            self.hash = (module.__name__, codeinfo[1])
+
     @property
     def context(self):
         if self.scope == 'module':
@@ -193,13 +204,19 @@ class DirectiveInfo(object):
 
     def attach(self, action):
         action.info = self
+        if action.hash is None:
+            action.hash = self.hash
 
         data = getattr(self.module, ATTACH_ATTR, None)
         if data is None:
-            data = []
+            data = OrderedDict()
             setattr(self.module, ATTACH_ATTR, data)
 
-        data.append(action)
+        if action.hash == data:
+            raise TypeError(
+                "Directive registered twice: %s"%action.discriminator)
+
+        data[action.hash] = action
 
 
 def getFrameInfo(frame):
@@ -261,7 +278,7 @@ def scan(package, seen, exclude_filter=None):
     seen.add(pkgname)
 
     if hasattr(package, ATTACH_ATTR):
-        actions.extend(getattr(package, ATTACH_ATTR))
+        actions.extend(getattr(package, ATTACH_ATTR).values())
 
     if hasattr(package, '__path__'): # package, not module
         results = walk_packages(package.__path__, package.__name__+'.')
@@ -283,7 +300,7 @@ def scan(package, seen, exclude_filter=None):
                     __import__(modname)
                     module = sys.modules[modname]
                     if hasattr(module, ATTACH_ATTR):
-                        actions.extend(getattr(module, ATTACH_ATTR))
+                        actions.extend(getattr(module, ATTACH_ATTR).values())
 
     return actions
 

@@ -163,7 +163,7 @@ class TestTmplRenderer(RendererBase):
 
         def template(**kw):
             """ """
-        
+
         r = Renderer(template=template)
         res = r(Context(), self.request, viewFactory)
 

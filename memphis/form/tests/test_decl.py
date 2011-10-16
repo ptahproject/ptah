@@ -19,7 +19,7 @@ class TestFieldset(Base):
 
         class MyField(form.Field):
             """ """
-            
+
         form.register_field_factory(MyField, 'my-field')
 
         self._init_memphis()

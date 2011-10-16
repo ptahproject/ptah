@@ -20,7 +20,7 @@ class SimpleTerm(object):
     """Simple tokenized term used by SimpleVocabulary."""
     interface.implements(ITerm)
 
-    def __init__(self, value, token=None, 
+    def __init__(self, value, token=None,
                  title=None, description=None):
         """Create a term for value and token. If token is omitted,
         str(value) is used for the token.  If title is provided,

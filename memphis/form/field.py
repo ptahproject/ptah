@@ -226,7 +226,7 @@ class Field(object):
 
     def __init__(self, name, **kw):
         self.__dict__.update(kw)
-        
+
         self.name = name
         self.title = kw.get('title', name.capitalize())
         self.description = kw.get('description', u'')

@@ -8,7 +8,7 @@ class TestButton(unittest.TestCase):
 
         btn = form.Button(name='test', actionName='action',
                           actype = form.AC_PRIMARY)
-        
+
         self.assertEqual(btn.name, 'test')
         self.assertEqual(btn.title, 'Test')
         self.assertEqual(btn.actype, form.AC_PRIMARY)
@@ -63,7 +63,7 @@ class TestButton(unittest.TestCase):
         self.assertEqual(
             widget.render().strip(),
             """<input id="test-test" name="test.test" class="btn primary" value="Test" type="submit" />""")
-        
+
     def test_execute(self):
         from memphis import form
 
@@ -134,7 +134,7 @@ class TestButtons(unittest.TestCase):
         btns = form.Buttons()
 
         btn1 = btns.add_action('Test action')
-        
+
         self.assertIsInstance(btn1, form.Button)
         self.assertEqual(btns.keys(), [btn1.name])
         self.assertEqual(btns.values(), [btn1])
@@ -241,7 +241,7 @@ class TestActions(unittest.TestCase):
         actions.update()
         actions.execute()
         self.assertEqual(res, {'action1': True})
-        
+
 
 class DummyRequest(object):
     def __init__(self):

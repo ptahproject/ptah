@@ -44,7 +44,7 @@ class TestForm(unittest.TestCase):
 
         request = DummyRequest()
         form = Form(None, request)
-        
+
         request.url = '/test/form'
         self.assertEqual(form.action, request.url)
 
@@ -79,7 +79,7 @@ class TestForm(unittest.TestCase):
 
         self.assertIsNone(form.CSRF)
         self.assertIsNone(form_ob.token)
-        
+
         retData = False
         class CsrfService(object):
             def generate(self, data):
@@ -185,7 +185,7 @@ class TestForm(unittest.TestCase):
 
         self.assertIsInstance(form_ob.widgets, form.FormWidgets)
         self.assertEqual(form_ob.widgets.mode, form_ob.mode)
-        
+
         form_ob.mode = form.FORM_DISPLAY
         form_ob.update()
         self.assertEqual(form_ob.widgets.mode, form.FORM_DISPLAY)
@@ -229,7 +229,7 @@ class TestForm(unittest.TestCase):
         form_ob.update()
 
         html = form_ob.render()
-        
+
         def template(**data):
             return 'Form rendered'
 
@@ -242,7 +242,7 @@ class DummyRequest(object):
         self.params = {}
         self.cookies = {}
         self.POST = {}
-        
+
 
 class DummyForm(object):
     prefix = 'prefix'
@@ -262,10 +262,8 @@ class DummyFields(object):
         if fieldset is None:
             fieldset = DummyFieldset()
         self.fieldset = fieldset
-        
+
     def bind(self, content, params): # pragma: no cover
         self.content = content
         self.params = params
         return self.fieldset
-    
-

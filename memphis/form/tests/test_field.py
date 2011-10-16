@@ -112,7 +112,7 @@ class TestFieldset(Base):
     def test_fieldset_validate(self):
         def validator(fs, data):
             raise form.Invalid(fs, 'msg')
-        
+
         fieldset = form.Fieldset(field, validator=validator)
         self.assertRaises(form.Invalid, fieldset.validate, {})
 
@@ -138,7 +138,7 @@ class TestFieldset(Base):
     def test_fieldset_extract_missing(self):
         field = self._makeOne('test')
         fieldset = form.Fieldset(field).bind()
-        
+
         data, errors = fieldset.extract()
         self.assertIs(errors[0].field, fieldset['test'])
         self.assertEqual(errors[0].msg, u'Required')
@@ -146,7 +146,7 @@ class TestFieldset(Base):
     def test_fieldset_extract(self):
         field = self._makeOne('test')
         fieldset = form.Fieldset(field).bind(params={'test': 'FORM'})
-        
+
         data, errors = fieldset.extract()
         self.assertFalse(bool(errors))
         self.assertEqual(data['test'], 'FORM')
@@ -154,10 +154,10 @@ class TestFieldset(Base):
     def test_fieldset_extract_preparer(self):
         def lower(val):
             return val.lower()
-        
+
         field = self._makeOne('test', preparer=lower)
         fieldset = form.Fieldset(field).bind(params={'test': 'FORM'})
-        
+
         data, errors = fieldset.extract()
         self.assertEqual(data['test'], 'form')
 
@@ -208,7 +208,7 @@ class TestField(Base):
                                       'preparer': 'Preparer',
                                       'validator': 'validator',
                                       'custom_attr': 'Custom attr'})
-        
+
         self.assertEqual(field.name, 'test')
         self.assertEqual(field.title, 'Title')
         self.assertEqual(field.description, 'Description')
@@ -339,7 +339,7 @@ class TestField(Base):
                 return value
 
         request = object()
-        
+
         field = MyField('test')
         widget = field.bind('field.', form.null, {})
         widget.update(request)
@@ -385,7 +385,7 @@ class TestFieldFactory(Base):
         self.assertIs(widget.content, content)
         self.assertIs(widget.params, params)
         self.assertEqual(widget.name, 'field.test')
-    
+
     def test_field_faile(self):
         from memphis import form
 

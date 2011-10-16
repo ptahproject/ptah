@@ -53,7 +53,7 @@ class FormWidgets(OrderedDict):
         params = self.form.form_params()
         content = self.form.form_content()
         prefix = '%s%s'%(self.form.prefix, self.prefix)
-        
+
         self.fieldset = self.fields.bind(content, params)
         self.fieldsets = fieldsets = []
 
@@ -117,7 +117,7 @@ class Form(view.View):
     #: Form content, it should be `None` or dictionary with data for fields.
     content = None
 
-    #: Form mode. It can be py:data::`memphis.form.FORM_INPUT` or 
+    #: Form mode. It can be py:data::`memphis.form.FORM_INPUT` or
     #: py:data::`memphis.form.FORM_DISPLAY`
     mode = FORM_INPUT
 
