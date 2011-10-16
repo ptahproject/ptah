@@ -4,7 +4,7 @@ from collections import OrderedDict
 from pyramid import security
 from pyramid.decorator import reify
 from pyramid.httpexceptions import HTTPForbidden
-from webob.multidict import UnicodeMultiDict, MultiDict
+from webob.multidict import MultiDict
 
 from memphis import view, config
 from memphis.form.field import Field, Fieldset
@@ -129,7 +129,7 @@ class Form(view.View):
     csrf = False
     csrfname = 'csrf-token'
 
-    params = UnicodeMultiDict(MultiDict({}), 'utf-8')
+    params = MultiDict({})
 
     def __init__(self, context, request):
         super(Form, self).__init__(context, request)
