@@ -7,7 +7,7 @@ from base import Base
 class TestPermissionsModule(Base):
 
     def test_perms_module(self):
-        from ptah.manage import PtahManageRoute
+        from ptah.manage.manage import PtahManageRoute
         from ptah.manage.permissions import PermissionsModule
 
         request = DummyRequest()

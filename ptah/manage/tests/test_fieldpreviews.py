@@ -116,7 +116,7 @@ class TestFieldPreviews(Base):
 class TestFieldsModule(Base):
 
     def test_fields_module(self):
-        from ptah.manage import PtahManageRoute
+        from ptah.manage.manage import PtahManageRoute
         from ptah.manage.fields import FieldsModule
 
         request = DummyRequest()

@@ -7,7 +7,7 @@ from base import Base
 class TestTemplatesModule(Base):
 
     def test_tmpls_module(self):
-        from ptah.manage import PtahManageRoute
+        from ptah.manage.manage import PtahManageRoute
         from ptah.manage.templates import TemplatesModule
 
         request = DummyRequest()

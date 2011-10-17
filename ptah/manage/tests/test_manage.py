@@ -10,12 +10,15 @@ from base import Base
 
 class TestManageModule(Base):
 
+    def setUp(self):
+        self._setup_pyramid()
+
     def tearDown(self):
         config.cleanup_system(self.__class__.__module__)
         super(TestManageModule, self).tearDown()
 
     def test_manage_module(self):
-        from ptah.manage import MODULES, PtahManageRoute
+        from ptah.manage.manage import MODULES, PtahManageRoute
 
         global TestModule
         class TestModule(ptah.PtahModule):
@@ -50,8 +53,8 @@ class TestManageModule(Base):
         self.assertRaises(KeyError, route.__getitem__, 'unknown')
 
     def test_manage_access_manager(self):
-        from ptah.manage import PtahAccessManager
         from ptah.settings import PTAH_CONFIG
+        from ptah.manage.manage import PtahAccessManager
 
         PTAH_CONFIG.managers = ['*']
 
@@ -75,7 +78,7 @@ class TestManageModule(Base):
         self.assertTrue(PtahAccessManager('test:user'))
 
     def test_manage_view(self):
-        from ptah.manage import PtahManageRoute, ManageView
+        from ptah.manage.manage import PtahManageRoute, ManageView
 
         global TestModule
         class TestModule(ptah.PtahModule):
@@ -101,7 +104,7 @@ class TestManageModule(Base):
         self.assertIsInstance(view.modules[-1], TestModule)
 
     def test_manage_layout(self):
-        from ptah.manage import PtahManageRoute, LayoutManage
+        from ptah.manage.manage import PtahManageRoute, LayoutManage
 
         global TestModule
         class TestModule(ptah.PtahModule):
@@ -130,12 +133,15 @@ class TestManageModule(Base):
 
 class TestInstrospection(Base):
 
+    def setUp(self):
+        self._setup_pyramid()
+
     def tearDown(self):
         config.cleanup_system(self.__class__.__module__)
         super(TestInstrospection, self).tearDown()
 
     def test_manage_module(self):
-        from ptah.manage import INTROSPECTIONS, introspection
+        from ptah.manage.manage import INTROSPECTIONS, introspection
 
         global TestModule
         class TestModule(object):

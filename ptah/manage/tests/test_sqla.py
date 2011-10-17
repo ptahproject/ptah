@@ -7,7 +7,7 @@ from base import Base
 class TestSqlaModule(Base):
 
     def test_sqla_module(self):
-        from ptah.manage import PtahManageRoute
+        from ptah.manage.manage import PtahManageRoute
         from ptah.manage.sqla import SQLAModule, Table
 
         request = DummyRequest()

@@ -7,7 +7,7 @@ from base import Base
 class TestSettingsModule(Base):
 
     def test_fields_module(self):
-        from ptah.manage import PtahManageRoute
+        from ptah.manage.manage import PtahManageRoute
         from ptah.manage.settings import SettingsModule
 
         request = DummyRequest()
