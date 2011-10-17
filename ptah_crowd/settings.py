@@ -1,6 +1,6 @@
 import colander
 import translationstring
-from memphis import config, view
+from ptah import config, view
 
 _ = translationstring.TranslationStringFactory('ptah_crowd')
 

@@ -1,0 +1,17 @@
+<div tal:condition="not errors"
+     class="alert-message error">
+  <a class="close" href="#">×</a>
+  <p>${message}</p>
+</div>
+
+<div tal:condition="errors"
+     class="alert-message block-message error">
+  <a class="close" href="#">×</a>
+  <p><strong>${message}</strong>
+    <ul>
+      <li tal:repeat="err errors"
+	  tal:content="structure err.msg">
+      </li>
+    </ul>
+  </p>
+</div>

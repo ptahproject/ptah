@@ -1,6 +1,6 @@
 """ forbidden view """
 import urllib
-from memphis import view
+from ptah import view
 from pyramid.httpexceptions import HTTPFound, HTTPForbidden, HTTPNotFound
 
 import ptah

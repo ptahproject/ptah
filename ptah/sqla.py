@@ -1,6 +1,6 @@
 """ sqlalchemy query wrapper """
 import simplejson
-from memphis import form
+from ptah import form
 from threading import local
 
 import sqlalchemy as sqla

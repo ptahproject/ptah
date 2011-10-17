@@ -1,6 +1,6 @@
 """ cms events """
 import ptah
-from memphis import config
+from ptah import config
 from datetime import datetime
 from zope.interface.interfaces import ObjectEvent
 

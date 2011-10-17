@@ -1,6 +1,6 @@
 """ account validation/suspending """
 from datetime import timedelta, datetime
-from memphis import view, config
+from ptah import view, config
 from pyramid.security import remember
 from pyramid.httpexceptions import HTTPFound
 

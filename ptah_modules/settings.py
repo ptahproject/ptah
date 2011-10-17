@@ -1,6 +1,6 @@
 """ settings module """
 import ptah
-from memphis import config, view
+from ptah import config, view
 
 
 class SettingsModule(ptah.PtahModule):

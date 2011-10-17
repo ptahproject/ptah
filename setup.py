@@ -3,6 +3,28 @@ from setuptools import setup, find_packages
 
 version='0.1'
 
+install_requires = ['setuptools',
+                    'colander >= 0.9.4',
+                    'pytz',
+                    'iso8601',
+                    'simplejson',
+                    'chameleon == 2.4.5',
+                    'pyramid',
+                    'pyramid_tm',
+                    'pyramid_beaker',
+                    'repoze.sendmail',
+                    'zope.interface >= 3.8.0',
+                    'WebOb >= 1.2b2',
+                    'SQLAlchemy',
+                    'SQLAHelper',
+                    'Pygments',
+                    ]
+tests_require = ['nose']
+
+if sys.platform == 'linux2':
+    tests_require.append('pyinotify')
+
+
 setup(name='ptah',
       version=version,
       classifiers=[
@@ -17,22 +39,13 @@ setup(name='ptah',
       url='https://github.com/ptahproject/ptah/',
       license='BSD-derived',
       packages=find_packages(),
-      install_requires = ['setuptools',
-                          'memphis',
-                          'pyramid_tm',
-                          'pyramid_beaker',
-                          'zope.interface',
-                          'repoze.sendmail',
-                          'SQLAlchemy',
-                          'SQLAHelper',
-                          'Pygments',
-                          ],
-      tests_require = ['nose'],
+      install_requires = install_requires,
+      tests_require = tests_require,
       test_suite = 'nose.collector',
       include_package_data = True,
       zip_safe = False,
       entry_points = {
-        'memphis': ['package = ptah'],
+        'ptah': ['package = ptah'],
         'paste.app_factory': [
             'app = ptah:make_wsgi_app'],
         'paste.paster_create_template': [

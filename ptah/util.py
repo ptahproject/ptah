@@ -1,6 +1,6 @@
 import threading
 from datetime import timedelta
-from memphis import config, form
+from ptah import config, form
 from pyramid.interfaces import INewRequest
 
 from ptah import token

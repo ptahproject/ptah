@@ -12,7 +12,7 @@ from email.Charset import Charset
 from repoze.sendmail.mailer import SMTPMailer
 from repoze.sendmail.delivery import DirectMailDelivery
 
-from memphis import config
+from ptah import config
 
 
 MAIL = config.register_settings(

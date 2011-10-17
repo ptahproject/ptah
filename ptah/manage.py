@@ -1,4 +1,4 @@
-from memphis import view, config
+from ptah import view, config
 from pyramid.security import authenticated_userid
 from pyramid.httpexceptions import HTTPFound, HTTPForbidden
 

@@ -1,6 +1,6 @@
 """ ptah settings """
 import colander
-from memphis import config
+from ptah import config
 
 PTAH_CONFIG = config.register_settings(
     'ptah',

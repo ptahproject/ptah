@@ -1,6 +1,6 @@
 """ interfaces """
 from zope import interface
-from memphis import form
+from ptah import form
 from pyramid.httpexceptions import HTTPNotFound, HTTPForbidden, HTTPServerError
 
 

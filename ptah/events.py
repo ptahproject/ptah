@@ -1,4 +1,4 @@
-from memphis import config
+from ptah import config
 
 
 class PrincipalEvent(object):

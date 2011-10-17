@@ -7,9 +7,9 @@ from pyramid.interfaces import IViewClassifier, IExceptionViewClassifier
 from zope import interface
 from zope.interface.interface import InterfaceClass
 
-from memphis import config, view
-from memphis.config import directives
-from memphis.config.api import exclude, list_packages
+from ptah import config, view
+from ptah.config import directives
+from ptah.config.api import exclude, list_packages
 
 from ptah.uri import RESOLVER_ID
 from ptah.manage import INTROSPECTIONS

@@ -1,7 +1,7 @@
 """ introspect module """
 import ptah
 import sqlahelper as psa
-from memphis import config, view, form
+from ptah import config, view, form
 from pyramid.decorator import reify
 from pyramid.httpexceptions import HTTPFound
 

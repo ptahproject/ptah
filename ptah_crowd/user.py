@@ -1,6 +1,6 @@
 """ add/edit user """
 from zope import interface
-from memphis import config, view, form
+from ptah import config, view, form
 from pyramid.httpexceptions import HTTPFound
 
 import ptah

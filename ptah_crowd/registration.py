@@ -1,5 +1,5 @@
 """ user registration form """
-from memphis import config, view, form
+from ptah import config, view, form
 from pyramid import security
 from pyramid.httpexceptions import HTTPFound, HTTPForbidden
 

@@ -1,6 +1,6 @@
-""" memphis.form fields """
-from memphis import view, form, config
-from memphis.form.field import FIELD_ID, PREVIEW_ID
+""" ptah.form fields """
+from ptah import view, form, config
+from ptah .form.field import FIELD_ID, PREVIEW_ID
 
 import ptah
 

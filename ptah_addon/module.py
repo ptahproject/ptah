@@ -1,8 +1,8 @@
 """ addon system """
 import ptah
 import pkg_resources
-from memphis import config, view, form
-from memphis.config import directives
+from ptah  import config, view, form
+from ptah.config import directives
 
 from core import ADDONS
 

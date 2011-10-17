@@ -1,7 +1,7 @@
 """ rest api for cms """
 from zope import interface
 from zope.interface import providedBy
-from memphis import config, form
+from ptah import config, form
 from collections import OrderedDict
 
 import ptah

@@ -1,7 +1,7 @@
 """ type implementation """
 import ptah, sys, logging
 import sqlalchemy as sqla
-from memphis import config
+from ptah import config
 from zope import interface
 
 from node import Session

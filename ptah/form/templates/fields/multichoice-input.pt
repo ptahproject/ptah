@@ -1,0 +1,36 @@
+<ul class="inputs-list">
+  <li tal:repeat="item context.items">
+    <label tal:attributes="for item['id']">
+      <input type="checkbox" checked="checked"
+	     tal:condition="item.checked"
+             tal:attributes="id item.id;
+                             name item.name;
+                             class context.klass;
+                             value item.value;
+                             title context.title;
+                             lang context.lang;
+                             disabled context.disabled;
+                             tabindex context.tabindex;
+                             readonly context.readonly;
+                             alt context.alt;
+                             accesskey context.accesskey;" />
+      <input type="checkbox" tal:condition="not item.checked"
+             tal:attributes="id item.id;
+                             name item.name;
+                             class context.klass;
+                             value item.value;
+                             title context.title;
+                             lang context.lang;
+                             disabled context.disabled;
+                             tabindex context.tabindex;
+                             readonly context.readonly;
+                             alt context.alt;
+                             accesskey context.accesskey;" />
+      
+      <span tal:content="item.label">${item['label']}</span>
+      <span class="help-block" tal:condition="item['description']">
+          ${item['description']}
+      </span>
+    </label>
+  </li>
+</ul>

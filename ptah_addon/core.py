@@ -1,8 +1,8 @@
 """ addon system """
 import os, os.path
 import pkg_resources
-from memphis import config
-from memphis.config import directives
+from ptah  import config
+from ptah.config import directives
 
 import ptah
 

@@ -1,0 +1,23 @@
+<h2 tal:condition="context.label">${context.label}</h2>
+<p tal:condition="context.description">${context.description}</p>
+
+<form action="${context.action}" name="${context.name}" id="${context.id}"
+      method="${context.method}" enctype="${context.enctype}"
+      accept="${context.accept}" acceptCharset="${context.acceptCharset}"
+      tal:attributes="autocomplete getattr(context, 'autocomplete', None)">
+
+  <fieldset tal:repeat="fieldset context.widgets.fieldsets">
+    <legend tal:condition="fieldset['legend']">${fieldset['legend']}</legend>
+    <tal:block repeat="widget fieldset['widgets']">
+      
+    </tal:block>
+    <tal:block tal:repeat="widget fieldset['widgets']"
+               tal:content="structure view.snippet('form-widget',widget)" />
+  </fieldset>
+  
+  <tal:block content="structure view.snippet('form-actions')" />
+
+  <input type="hidden" tal:condition="context.csrf" 
+	 name="${context.csrfname}" value="${context.token}" />
+  <input type="hidden" name="__form_identity__" value="${context.id}" />
+</form>

@@ -1,5 +1,5 @@
 """ TineMCE field """
-from memphis import view, form
+from ptah import view, form
 
 
 # TinyMCE

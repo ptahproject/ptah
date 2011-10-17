@@ -1,6 +1,6 @@
 """ security ptah module """
 from zope import interface
-from memphis import config, view
+from ptah import config, view
 
 import ptah
 from ptah import Roles

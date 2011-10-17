@@ -1,6 +1,6 @@
 import threading
 from zope import interface
-from memphis import config
+from ptah import config
 from pyramid.interfaces import INewRequest
 from pyramid.security import authenticated_userid
 from pyramid.threadlocal import get_current_request

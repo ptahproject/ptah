@@ -3,7 +3,7 @@ import ptah
 import sqlalchemy as sqla
 from zope import interface
 from pyramid.httpexceptions import HTTPFound
-from memphis import view, form, config
+from ptah import view, form, config
 
 from settings import _
 from provider import Session, CrowdUser

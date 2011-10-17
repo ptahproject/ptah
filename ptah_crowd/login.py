@@ -1,5 +1,5 @@
 """ login form """
-from memphis import view, form
+from ptah import view, form
 from pyramid import security
 from pyramid.httpexceptions import HTTPFound
 

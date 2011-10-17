@@ -1,6 +1,6 @@
 """ uri resolver """
 import uuid
-from memphis import config
+from ptah import config
 
 RESOLVER_ID = 'ptah:uri-resolver'
 

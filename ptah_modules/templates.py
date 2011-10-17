@@ -1,9 +1,9 @@
 import ptah, os, os.path
 from zope import interface
 from pyramid.httpexceptions import HTTPFound
-from memphis import config, view
-from memphis.view import tmpl
-from memphis.view.customize import TEMPLATE
+from ptah import config, view
+from ptah.view import tmpl
+from ptah.view.customize import TEMPLATE
 
 
 class TemplatesModule(ptah.PtahModule):

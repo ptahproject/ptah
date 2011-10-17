@@ -1,7 +1,7 @@
 """ various fields """
 import datetime
-from memphis import form, view
-from memphis.view import formatter
+from ptah import form, view
+from ptah.view import formatter
 
 
 class JSDateField(form.DateField):

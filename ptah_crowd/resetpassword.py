@@ -1,6 +1,6 @@
 """ reset password form """
 from datetime import datetime
-from memphis import config, form, view
+from ptah import config, form, view
 from pyramid import security
 from pyramid.httpexceptions import HTTPFound
 

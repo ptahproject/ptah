@@ -1,0 +1,6 @@
+<span class="uneditable-input"
+      tal:attributes="id context.id;
+		      title context.title;
+                      lang context.lang;">
+  <tal:block tal:content="structure context.value" />
+</span>

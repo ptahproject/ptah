@@ -5,7 +5,7 @@ import sqlahelper
 import sqlalchemy
 import pyramid_beaker
 import translationstring
-from memphis import config
+from ptah import config
 from pyramid.interfaces import IAuthenticationPolicy, IAuthorizationPolicy
 from pyramid.authorization import ACLAuthorizationPolicy
 from pyramid.authentication import AuthTktAuthenticationPolicy

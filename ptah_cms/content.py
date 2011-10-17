@@ -3,7 +3,7 @@ import sqlalchemy as sqla
 from sqlalchemy.ext.hybrid import hybrid_property
 
 from zope import interface
-from memphis import config, form
+from ptah import config, form
 from collections import OrderedDict
 
 import ptah

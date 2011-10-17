@@ -1,9 +1,10 @@
 """ Base container class implementation """
 import sqlalchemy as sqla
 from zope import interface
-from memphis import config
 
 import ptah
+from ptah import config
+
 from ptah_cms import events
 from ptah_cms.cms import action
 from ptah_cms.node import Node, Session, load_parents

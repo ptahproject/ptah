@@ -1,7 +1,6 @@
 """ schemas """
-from memphis import form
-
 import ptah
+from ptah import form
 from ptah.password import passwordValidator
 
 from settings import _

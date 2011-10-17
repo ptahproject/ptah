@@ -1,5 +1,5 @@
 import inspect
-from memphis import config
+from ptah import config
 from zope.interface import providedBy, Interface, implements
 
 import ptah, ptah_cms

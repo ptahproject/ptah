@@ -2,7 +2,7 @@
 import ptah
 from sqlalchemy import sql
 from zope import interface
-from memphis import config
+from ptah import config
 from pyramid.interfaces import ITraverser
 from pyramid.traversal import traversal_path, quote_path_segment
 from pyramid.traversal import ResourceTreeTraverser

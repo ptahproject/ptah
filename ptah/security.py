@@ -1,4 +1,4 @@
-from memphis import config, view
+from ptah import config, view
 from collections import OrderedDict
 from pyramid.location import lineage
 from pyramid.security import ACLDenied, Allow, Deny

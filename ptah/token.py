@@ -2,7 +2,7 @@
 import datetime, uuid
 import sqlahelper as psa
 import sqlalchemy as sqla
-from memphis import config
+from ptah import config
 from sqla import QueryFreezer
 
 __all__ = ['TokenType', 'service']

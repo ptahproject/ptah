@@ -1,8 +1,8 @@
 """ Aplication Root """
-import ptah
 import sqlalchemy as sqla
+import ptah
+from ptah import config
 from zope import interface
-from memphis import config
 
 from tinfo import Type
 from node import Node, Session, set_policy

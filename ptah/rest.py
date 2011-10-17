@@ -9,7 +9,7 @@ from pyramid.authentication import AuthTicket
 from pyramid.httpexceptions import \
     WSGIHTTPException, HTTPServerError, HTTPNotFound
 from pyramid.interfaces import IAuthenticationPolicy
-from memphis import view, config
+from ptah import view, config
 
 import ptah
 from ptah.app import SECURITY

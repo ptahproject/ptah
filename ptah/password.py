@@ -7,7 +7,7 @@ from base64 import urlsafe_b64encode, urlsafe_b64decode
 from datetime import timedelta
 
 from zope import interface
-from memphis import config, form
+from ptah import config, form
 
 import ptah
 from ptah import token
