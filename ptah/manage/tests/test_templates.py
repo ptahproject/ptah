@@ -8,7 +8,7 @@ class TestTemplatesModule(Base):
 
     def test_tmpls_module(self):
         from ptah.manage import PtahManageRoute
-        from ptah_modules.templates import TemplatesModule
+        from ptah.manage.templates import TemplatesModule
 
         request = DummyRequest()
 
@@ -20,7 +20,7 @@ class TestTemplatesModule(Base):
         self.assertIsInstance(mod, TemplatesModule)
 
     def test_tmpls_view(self):
-        from ptah_modules.templates import TemplatesModule, TemplatesView
+        from ptah.manage.templates import TemplatesModule, TemplatesView
 
         request = DummyRequest()
 
@@ -31,9 +31,9 @@ class TestTemplatesModule(Base):
 
     # fixme: ptah.view.tmpl
     def test_tmpls_view_pkg(self):
-        from ptah_modules.templates import TemplatesModule, TemplatesView
+        from ptah.manage.templates import TemplatesModule, TemplatesView
 
-        request = DummyRequest(params={'pkg': 'ptah_modules'})
+        request = DummyRequest(params={'pkg': 'ptah.manage'})
 
         mod = TemplatesModule(None, request)
 

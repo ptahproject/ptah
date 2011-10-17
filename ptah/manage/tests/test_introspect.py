@@ -8,7 +8,7 @@ class TestIntrospectModule(Base):
 
     def test_introspect_module(self):
         from ptah.manage import PtahManageRoute
-        from ptah_modules.introspect import IntrospectModule, Package
+        from ptah.manage.introspect import IntrospectModule, Package
 
         request = DummyRequest()
 
@@ -21,11 +21,11 @@ class TestIntrospectModule(Base):
 
         self.assertRaises(KeyError, mod.__getitem__, 'unknown')
 
-        package = mod['ptah_modules']
+        package = mod['ptah.manage']
         self.assertIsInstance(package, Package)
 
     def test_introspect_view(self):
-        from ptah_modules.introspect import IntrospectModule, MainView
+        from ptah.manage.introspect import IntrospectModule, MainView
 
         request = DummyRequest()
 
@@ -40,7 +40,7 @@ class TestIntrospectModule(Base):
         self.assertTrue(bool(view.packages))
 
     def test_introspect_package_view(self):
-        from ptah_modules.introspect import IntrospectModule, PackageView
+        from ptah.manage.introspect import IntrospectModule, PackageView
 
         request = DummyRequest()
 

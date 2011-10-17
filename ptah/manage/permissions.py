@@ -16,13 +16,13 @@ class PermissionsModule(ptah.PtahModule):
 
 view.register_snippet(
     'ptah-module-actions', PermissionsModule,
-    template = view.template('ptah_modules:templates/permissions-actions.pt'))
+    template = view.template('ptah.manage:templates/permissions-actions.pt'))
 
 
 class PermissionsView(view.View):
     view.pyramidview(
         context=PermissionsModule,
-        template=view.template('ptah_modules:templates/permissions.pt'))
+        template=view.template('ptah.manage:templates/permissions.pt'))
 
     def update(self):
         self.permissions = Permissions.values()
@@ -36,7 +36,7 @@ class PermissionsView(view.View):
 class RolesView(view.View):
     view.pyramidview(
         'roles.html', PermissionsModule,
-        template=view.template('ptah_modules:templates/roles.pt'))
+        template=view.template('ptah.manage:templates/roles.pt'))
 
     def update(self):
         self.roles = Roles.values()
@@ -49,7 +49,7 @@ class RoleIntrospection(object):
     title = 'Role'
     ptah.introspection('ptah:role')
 
-    actions = view.template('ptah_modules:templates/directive-role.pt')
+    actions = view.template('ptah.manage:templates/directive-role.pt')
 
     def __init__(self, request):
         self.request = request
@@ -67,7 +67,7 @@ class PermissionIntrospection(object):
     title = 'Permission'
     ptah.introspection('ptah:permission')
 
-    actions = view.template('ptah_modules:templates/directive-permission.pt')
+    actions = view.template('ptah.manage:templates/directive-permission.pt')
 
     def __init__(self, request):
         self.request = request

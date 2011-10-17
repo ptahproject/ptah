@@ -183,7 +183,7 @@ First let's find the name:
 Now lets override the snippet for the Settings module:
 
   - Unfotunately at this time we dont have introspection on the Ptah Modules.  This is using Pyramid routes/views.  So lets go and look at source:.
-  - Open ptah/ptah_modules/settings.py
+  - Open ptah/manage/settings.py
   
   - We see the name of the Module, SettingsModule and registration of it ptah.manageModule('settings')
   
@@ -192,7 +192,7 @@ Now lets override the snippet in myapp:
   - Edit the .pt and add a <li>Modified</li> in the HTML snippet
   - Now open up myapp/views.py and add::
       from ptah import view
-      from ptah_modules.settings import SettingsModule
+      from ptah.manage.settings import SettingsModule
       view.register_snippet(
           'ptah-module-actions',
           context = SettingsModule,

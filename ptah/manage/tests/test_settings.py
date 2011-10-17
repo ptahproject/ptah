@@ -8,7 +8,7 @@ class TestSettingsModule(Base):
 
     def test_fields_module(self):
         from ptah.manage import PtahManageRoute
-        from ptah_modules.settings import SettingsModule
+        from ptah.manage.settings import SettingsModule
 
         request = DummyRequest()
 
@@ -20,7 +20,7 @@ class TestSettingsModule(Base):
         self.assertIsInstance(mod, SettingsModule)
 
     def test_fields_view(self):
-        from ptah_modules.settings import SettingsModule, SettingsView
+        from ptah.manage.settings import SettingsModule, SettingsView
 
         request = DummyRequest()
 

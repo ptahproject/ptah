@@ -12,7 +12,8 @@ from ptah.config import directives
 from ptah.config.api import exclude, list_packages
 
 from ptah.uri import RESOLVER_ID
-from ptah.manage import INTROSPECTIONS
+
+from manage import INTROSPECTIONS
 
 
 class IntrospectModule(ptah.PtahModule):
@@ -63,7 +64,7 @@ class Package(object):
 class MainView(view.View):
     view.pyramidview(
         context = IntrospectModule,
-        template = view.template('ptah_modules:templates/introspect.pt'))
+        template = view.template('ptah.manage:templates/introspect.pt'))
 
     __doc__ = 'Introspection module view.'
     __intr_path__ = '/ptah-manage/introspect/index.html'
@@ -74,13 +75,13 @@ class MainView(view.View):
 
 view.register_snippet(
     'ptah-module-actions', IntrospectModule,
-    template = view.template('ptah_modules:templates/introspect-actions.pt'))
+    template = view.template('ptah.manage:templates/introspect-actions.pt'))
 
 
 class PackageView(view.View):
     view.pyramidview(
         context = Package,
-        template = view.template('ptah_modules:templates/introspect-pkg.pt'))
+        template = view.template('ptah.manage:templates/introspect-pkg.pt'))
 
     __doc__ = 'Package introspection page.'
     __intr_path__ = '/ptah-manage/introspect/${pkg}/index.html'
@@ -108,7 +109,7 @@ class PackageView(view.View):
 class EventsView(view.View):
     view.pyramidview(
         'events.html', IntrospectModule,
-        template = view.template('ptah_modules:templates/introspect-events.pt'))
+        template = view.template('ptah.manage:templates/introspect-events.pt'))
 
     __doc__ = 'Events introspection page.'
     __intr_path__ = '/ptah-manage/introspect/events.html'
@@ -157,7 +158,7 @@ def lineno(ob):
 class RoutesView(view.View):
     view.pyramidview(
         'routes.html', IntrospectModule,
-        template = view.template('ptah_modules:templates/introspect-routes.pt'))
+        template = view.template('ptah.manage:templates/introspect-routes.pt'))
 
     __doc__ = 'Routes introspection page.'
     __intr_path__ = '/ptah-manage/introspect/routes.html'
@@ -251,7 +252,7 @@ class RoutesView(view.View):
 class SourceView(view.View):
     view.pyramidview(
         'source.html', IntrospectModule,
-        template = view.template('ptah_modules:templates/introspect-source.pt'))
+        template = view.template('ptah.manage:templates/introspect-source.pt'))
 
     __doc__ = 'Source introspection page.'
     __intr_path__ = '/ptah-manage/introspect/source.html'
@@ -313,7 +314,7 @@ class UriIntrospection(object):
     title = 'Uri resolver'
     ptah.introspection('ptah:uri-resolver')
 
-    actions = view.template('ptah_modules:templates/directive-uriresolver.pt')
+    actions = view.template('ptah.manage:templates/directive-uriresolver.pt')
 
     def __init__(self, request):
         self.request = request
@@ -331,7 +332,7 @@ class EventDirective(object):
     title = 'Events'
     ptah.introspection('ptah.config:event')
 
-    actions = view.template('ptah_modules:templates/directive-event.pt')
+    actions = view.template('ptah.manage:templates/directive-event.pt')
 
     def __init__(self, request):
         self.request = request
@@ -349,7 +350,7 @@ class AdapterDirective(object):
     title = 'Adapters'
     ptah.introspection('ptah.config:adapter')
 
-    actions = view.template('ptah_modules:templates/directive-adapter.pt')
+    actions = view.template('ptah.manage:templates/directive-adapter.pt')
 
     def __init__(self, request):
         self.request = request
@@ -385,7 +386,7 @@ class SnippetTypeDirective(object):
     title = 'Snippet Types'
     ptah.introspection('ptah.view:snippettype')
 
-    actions = view.template('ptah_modules:templates/directive-stype.pt')
+    actions = view.template('ptah.manage:templates/directive-stype.pt')
 
     def __init__(self, request):
         self.request = request
@@ -405,7 +406,7 @@ class RouteDirective(object):
     title = 'Routes'
     ptah.introspection('ptah.view:route')
 
-    actions = view.template('ptah_modules:templates/directive-route.pt')
+    actions = view.template('ptah.manage:templates/directive-route.pt')
 
     def __init__(self, request):
         self.request = request
@@ -422,7 +423,7 @@ class SubscriberDirective(object):
     title = 'Event subscribers'
     ptah.introspection('ptah.config:subscriber')
 
-    actions = view.template('ptah_modules:templates/directive-subscriber.pt')
+    actions = view.template('ptah.manage:templates/directive-subscriber.pt')
 
     def __init__(self, request):
         self.request = request
@@ -457,7 +458,7 @@ class ViewDirective(object):
     title = 'Views'
     ptah.introspection('ptah.view:view')
 
-    actions = view.template('ptah_modules:templates/directive-view.pt')
+    actions = view.template('ptah.manage:templates/directive-view.pt')
 
     def __init__(self, request):
         self.request = request

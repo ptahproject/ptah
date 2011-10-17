@@ -6,7 +6,7 @@ from pyramid.httpexceptions import HTTPFound, HTTPForbidden
 
 from ptah import form, config
 from ptah.form.field import PREVIEW_ID
-from ptah_modules import fieldpreviews
+from ptah.manage import fieldpreviews
 
 from base import Base
 
@@ -117,7 +117,7 @@ class TestFieldsModule(Base):
 
     def test_fields_module(self):
         from ptah.manage import PtahManageRoute
-        from ptah_modules.fields import FieldsModule
+        from ptah.manage.fields import FieldsModule
 
         request = DummyRequest()
 
@@ -129,7 +129,7 @@ class TestFieldsModule(Base):
         self.assertIsInstance(mod, FieldsModule)
 
     def test_fields_view(self):
-        from ptah_modules.fields import FieldsModule, FieldsView
+        from ptah.manage.fields import FieldsModule, FieldsView
 
         request = DummyRequest()
 

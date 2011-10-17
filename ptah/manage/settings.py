@@ -13,7 +13,7 @@ class SettingsModule(ptah.PtahModule):
 class SettingsView(view.View):
     view.pyramidview(
         context = SettingsModule,
-        template = view.template('ptah_modules:templates/settings.pt'))
+        template = view.template('ptah.manage:templates/settings.pt'))
 
     __doc__ = "Settings module page."
     __intr_path__ = '/ptah-manage/settings/index.html'

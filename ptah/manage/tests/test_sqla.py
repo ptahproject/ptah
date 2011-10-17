@@ -8,7 +8,7 @@ class TestSqlaModule(Base):
 
     def test_sqla_module(self):
         from ptah.manage import PtahManageRoute
-        from ptah_modules.sqla import SQLAModule, Table
+        from ptah.manage.sqla import SQLAModule, Table
 
         request = DummyRequest()
 
@@ -26,7 +26,7 @@ class TestSqlaModule(Base):
         self.assertIsInstance(table, Table)
 
     def test_sqla_view(self):
-        from ptah_modules.sqla import SQLAModule, MainView
+        from ptah.manage.sqla import SQLAModule, MainView
 
         request = DummyRequest()
 
@@ -36,7 +36,7 @@ class TestSqlaModule(Base):
         self.assertEqual(res.status, '200 OK')
 
     def test_table_view(self):
-        from ptah_modules.sqla import SQLAModule, Table, TableView
+        from ptah.manage.sqla import SQLAModule, Table, TableView
 
         request = DummyRequest()
 

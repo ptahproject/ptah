@@ -126,16 +126,16 @@ view.snippettype('ptah-module-actions', PtahModule)
 
 view.register_snippet(
     'ptah-module-actions', PtahModule,
-    template = view.template('ptah:templates/moduleactions.pt'))
+    template = view.template('ptah.manage:templates/moduleactions.pt'))
 
 view.register_layout(
     '', PtahManageRoute, parent='ptah-manage',
-    template=view.template("ptah:templates/ptah-layout.pt"))
+    template=view.template("ptah.manage:templates/ptah-layout.pt"))
 
 
 class LayoutManage(view.Layout):
     view.layout('ptah-manage', PtahManageRoute,
-                template=view.template("ptah:templates/ptah-manage.pt"))
+                template=view.template("ptah.manage:templates/ptah-manage.pt"))
 
     def update(self):
         self.user = authService.get_current_principal()
@@ -154,7 +154,7 @@ class ManageView(view.View):
     view.pyramidview(
         context = PtahManageRoute,
         route = 'ptah-manage', layout='ptah-manage',
-        template = view.template('ptah:templates/manage.pt'))
+        template = view.template('ptah.manage:templates/manage.pt'))
 
     __intr_path__ = '/ptah-manage/'
 

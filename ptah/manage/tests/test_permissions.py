@@ -8,7 +8,7 @@ class TestPermissionsModule(Base):
 
     def test_perms_module(self):
         from ptah.manage import PtahManageRoute
-        from ptah_modules.permissions import PermissionsModule
+        from ptah.manage.permissions import PermissionsModule
 
         request = DummyRequest()
 
@@ -20,7 +20,7 @@ class TestPermissionsModule(Base):
         self.assertIsInstance(mod, PermissionsModule)
 
     def test_perms_view(self):
-        from ptah_modules.permissions import PermissionsModule, PermissionsView
+        from ptah.manage.permissions import PermissionsModule, PermissionsView
 
         request = DummyRequest()
 
@@ -30,7 +30,7 @@ class TestPermissionsModule(Base):
         self.assertEqual(res.status, '200 OK')
 
     def test_perms_roles(self):
-        from ptah_modules.permissions import PermissionsModule, RolesView
+        from ptah.manage.permissions import PermissionsModule, RolesView
 
         request = DummyRequest()
 
