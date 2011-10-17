@@ -21,7 +21,7 @@ Create a requirements.txt file which contains the following two lines::
 
 Run pip install::
 
-  $ ../bin/pip install -r requiremenst.txt
+  $ ../bin/pip install -r requirements.txt
 
 Use paster to create scaffolding::
 
