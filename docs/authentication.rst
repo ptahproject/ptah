@@ -1,14 +1,14 @@
 Authentication Service
 ======================
 
-Need to integrate user logins to new authentication service?  Such as
-LDAP, OAuth, Openid, Mongo, or ZODB?  It is very easy to do this.
+Need to integrate user logins to new authentication service?  e.g. using
+LDAP, OAuth, Openid, Mongo, or ZODB to source user credentials.
 
-There are 3 required facilities and 1 optional you provide:
+There are 4 facilities of which 2 are optional:
 
   - User provider, required
   - User resolver, required
-  - Password changer, required
+  - Password changer, optional
   - User searcher, optional
 
 Example
@@ -23,9 +23,9 @@ A Principal (User) must have at least 3 attributes:
 
   * user.uri,  which must be resolvable to the User model
   
-  * user.login, which is identifier such as username
+  * user.login, which is identifier such as email
   
-  * user.name, ?
+  * user.name, human readable user name
 
 The Provider class provides 2 methods:
 
@@ -57,10 +57,11 @@ return a Principal with that uri.
 Password changer
 ----------------
 
-A function which is responsible for changing a user's password.  An example::
+A function which is responsible for changing a user's password. An example::
 
-    def change_pwd(principal, password):
-        principal.password = password
+    ptah.passwordTool.register_password_changer('user+crowd', change_pw)
+
+Password changer is optional.
 
 Principal searcher
 ------------------
@@ -77,10 +78,4 @@ Superuser
 There is another authentication service, ptah+auth which provides a sole
 superuser Principal.  The name is `superuser`.  It is a special Principal.
 You can not login with this Prinipcal.  It is useful for integration tests.
-
-Outstanding questions
----------------------
-
-1. If you do not provide these services should you raise NotImplementedError?
-   Should you just return None?
 

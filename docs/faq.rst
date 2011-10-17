@@ -30,12 +30,16 @@ Probably.  Ptah is very new and once functionality is understood by both communi
 Why does Ptah not use deform?
 -----------------------------
 
-It's too decomposed for our taste.  memphis.form is simpler and most importantly it will work with our add-on story.  We want fields and widgets to be redistributable.  We believe memphis.form can support this story more easily than deform.
+Because we do not use colander for form schema.
 
-Why does Ptah not use colander?
--------------------------------
+Why we do not use colander for forms
+------------------------------------
 
-We *do* use colander inside of memphis.settings.  At one point, memphis.form *did* use colander.  We felt it added too much complexity to the API.  Ptah strives for API simplicity at all costs.
+Colander is nice general schema language.  We use it for settings management.  In many cases when you are working with forms you want to work logically with a Field (schemanode and widget).  It is the case with colander that responsibilities are separated in which (de)serialization is done with colander and the widget turns that into internal structure for the widget.  If you make your own widget you will need to keep in mind how colander schemas can use your widget and you may end up having to keep a colander schemanode in sync with your widget.  We believe that most people desire a tighter coupling between widget and schema when working with widgets; they would like to see everything in one place.  
+
+If you understand colander, memphis.form will be familiar.  After all we sort of forked it and folded it into memphis.form.  The big difference is we have removed some additional flexibility from colander, such as nesting of schema nodes.  memphis.form.fields has both schema and field definition in one class, Field.
+
+We are open to moving back to colander as long as it doesnt add more indirection for the widget creator.
 
 Why does Ptah use a Folder paradigm?
 ------------------------------------
