@@ -13,10 +13,10 @@ from pyramid.interfaces import IAuthorizationPolicy
 from pyramid.interfaces import IAuthenticationPolicy
 from pyramid.httpexceptions import HTTPForbidden
 
-from memphis import config
-from memphis.view.base import View
-from memphis.view.customize import LayerWrapper
-from memphis.view.renderers import Renderer, SimpleRenderer
+from ptah import config
+from ptah.view.base import View
+from ptah.view.customize import LayerWrapper
+from ptah.view.renderers import Renderer, SimpleRenderer
 
 
 def render_view(name, context, request):
@@ -126,7 +126,7 @@ def register_view(
     if factory is None or not callable(factory):
         raise ValueError('view factory is required')
 
-    discriminator = ('memphis.view:view', name, context, route, layer)
+    discriminator = ('ptah.view:view', name, context, route, layer)
 
     info = config.DirectiveInfo()
     info.attach(

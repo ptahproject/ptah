@@ -3,7 +3,7 @@ from zope import interface
 from zope.interface.common import mapping
 from translationstring import TranslationStringFactory
 
-MessageFactory = _ = TranslationStringFactory('memphis.form')
+MessageFactory = _ = TranslationStringFactory('ptah.form')
 
 FORM_INPUT = 'form-input'
 FORM_DISPLAY = 'form-display'

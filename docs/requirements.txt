@@ -1,2 +1,1 @@
--e git+https://github.com/ptahproject/memphis#egg=memphis
 -e git+https://github.com/ptahproject/ptah.git#egg=ptah

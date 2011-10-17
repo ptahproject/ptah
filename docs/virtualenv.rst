@@ -22,7 +22,6 @@ Create requirements
 Now you will create a file called requirements.txt.  In that file you will
 have 2 lines, those lines will be::
 
-    -e git+https://github.com/ptahproject/memphis#egg=memphis
     -e git+https://github.com/ptahproject/ptah.git#egg=ptah
 
 Install the requirements
@@ -68,12 +67,6 @@ Run Tests
 We use the `nose` test runner to collect which tests to run.  You can
 read up how to use coverage integration.  This is standard python usage
 of the the nose library; nothing fancy.
-
-Run memphis tests::
-
-    ~$ cd src/memphis
-    memphis$ ../bin/python setup.py develop
-    memphis$ ../bin/python setup.py test
 
 Run ptah tests::
 

@@ -1,1 +1,1 @@
-""" memphis.config tests """
+""" ptah.config tests """

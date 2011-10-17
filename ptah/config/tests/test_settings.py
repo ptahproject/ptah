@@ -4,16 +4,16 @@ from zope.interface.registry import Components
 from zope.interface.interface import InterfaceClass
 from zope.interface.interfaces import IObjectEvent
 
-from memphis import config
-from memphis.config.api import objectEventNotify
-from memphis.config.settings import FileStorage, iNotifyWatcher , shutdown
+from ptah import config
+from ptah.config.api import objectEventNotify
+from ptah.config.settings import FileStorage, iNotifyWatcher , shutdown
 
 
 class BaseTesting(unittest.TestCase):
 
-    def _init_memphis(self, settings={}, *args, **kw):
+    def _init_ptah(self, settings={}, *args, **kw):
         config.initialize(
-            ('memphis.config', self.__class__.__module__),
+            ('ptah.config', self.__class__.__module__),
             reg = Components('test'))
 
     def tearDown(self):
@@ -50,7 +50,7 @@ class TestSettings(BaseTesting):
         self.assertEqual(len(group.schema.children), 0)
         self.assertTrue(isinstance(group.category, InterfaceClass))
 
-        self._init_memphis()
+        self._init_ptah()
 
         self.assertEqual(len(group.schema.children), 1)
         self.assertTrue(group.schema.children[0] is node)
@@ -109,7 +109,7 @@ class TestSettings(BaseTesting):
         group = config.register_settings(
             'group2', node, validator=validator)
 
-        self._init_memphis()
+        self._init_ptah()
 
         try:
             group.schema.deserialize({'group2.node': 'value'})
@@ -137,7 +137,7 @@ class TestSettings(BaseTesting):
         group = config.register_settings(
             'group3', node1, node2, validator=(validator1, validator2))
 
-        self._init_memphis()
+        self._init_ptah()
 
         try:
             group.schema.deserialize({
@@ -162,7 +162,7 @@ class TestSettings(BaseTesting):
 
         group = config.register_settings('group4', node1, node2)
 
-        self._init_memphis()
+        self._init_ptah()
 
         # changed settings
         self.assertEqual(config.Settings.export(), {})
@@ -188,7 +188,7 @@ class TestSettings(BaseTesting):
                 default = 10)
 
         group = config.register_settings('group', node1, node2)
-        self._init_memphis()
+        self._init_ptah()
 
         group.clear()
         return group
@@ -617,7 +617,7 @@ class TestSettingsInitialization(BaseTesting):
                 default = 10)
 
         group = config.register_settings('group', node1, node2)
-        self._init_memphis()
+        self._init_ptah()
 
         config.initialize_settings({'group.node1': 'setting from ini'})
 
@@ -641,7 +641,7 @@ class TestSettingsInitialization(BaseTesting):
                 default = 10)
 
         group = config.register_settings('group', node1, node2)
-        self._init_memphis()
+        self._init_ptah()
 
         config.initialize_settings({'defaults': path})
 
@@ -666,7 +666,7 @@ class TestSettingsInitialization(BaseTesting):
                 default = 10)
 
         group = config.register_settings('group', node1, node2)
-        self._init_memphis()
+        self._init_ptah()
 
         config.initialize_settings({'settings': path})
 
@@ -690,14 +690,14 @@ class TestSettingsInitialization(BaseTesting):
                 default = 10)
 
         group = config.register_settings('group', node1, node2)
-        self._init_memphis()
+        self._init_ptah()
 
         config.initialize_settings({'include': path})
 
         self.assertEqual(group['node1'], 'value')
         self.assertEqual(group['node2'], 10)
 
-    @unittest.skipUnless(sys.platform == 'linex2', 'linux specific')
+    @unittest.skipUnless(sys.platform == 'linux2', 'linux specific')
     def test_settings_fs_watcher(self):
         path = os.path.join(self.dir, 'settings.cfg')
         f = open(path, 'wb')
@@ -710,7 +710,7 @@ class TestSettingsInitialization(BaseTesting):
                 default = 'default1')
 
         group = config.register_settings('group', node1)
-        self._init_memphis()
+        self._init_ptah()
 
         class Config(object):
             def begin(self):

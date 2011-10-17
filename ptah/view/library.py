@@ -1,10 +1,10 @@
 """ resource library """
 from urlparse import urlparse
-from memphis import config
-from memphis.view.resources import static_url, registry
+from ptah import config
+from ptah.view.resources import static_url, registry
 
 _libraries = {}
-LIBRARY_ID = 'memphis.view:library'
+LIBRARY_ID = 'ptah.view:library'
 
 
 def library(name,
@@ -164,7 +164,7 @@ class Library(object):
         return '\n'.join(entry.render(request) for entry in self.entries)
 
     def __repr__(self):
-        return '<memphis.view.library.Library "%s">'%self.name
+        return '<ptah.view.library.Library "%s">'%self.name
 
 
 @config.cleanup

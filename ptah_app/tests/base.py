@@ -2,7 +2,7 @@
 import unittest
 import sqlahelper
 import transaction
-from memphis import config
+from ptah import config
 from pyramid import testing
 from pyramid.threadlocal import manager
 from zope.interface.registry import Components
@@ -31,7 +31,7 @@ class Base(unittest.TestCase):
         environ.update(extras)
         return environ
 
-    def _init_memphis(self, settings=None, handler=None, *args, **kw):
+    def _init_ptah(self, settings=None, handler=None, *args, **kw):
         if settings is None:
             settings = self._settings
         config.initialize(('ptah_cms', self.__class__.__module__),
@@ -51,8 +51,8 @@ class Base(unittest.TestCase):
         self.p_config = testing.setUp(request=request)
         self.p_config.get_routes_mapper()
 
-    def _setup_memphis(self): # pragma: no cover
-        self._init_memphis()
+    def _setup_ptah(self): # pragma: no cover
+        self._init_ptah()
 
     def _setRequest(self, request): # pragma: no cover
         self.request = request
@@ -61,7 +61,7 @@ class Base(unittest.TestCase):
 
     def setUp(self):
         self._setup_pyramid()
-        self._setup_memphis()
+        self._setup_ptah()
 
     def tearDown(self):
         config.cleanup_system()

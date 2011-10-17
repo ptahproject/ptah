@@ -3,13 +3,13 @@ import sys, logging
 from zope import interface
 from pyramid.interfaces import IRequest, IRouteRequest
 
-from memphis import config
-from memphis.view.base import View
-from memphis.view.formatter import format
-from memphis.view.interfaces import ILayout
-from memphis.view.customize import LayerWrapper
+from ptah import config
+from ptah.view.base import View
+from ptah.view.formatter import format
+from ptah.view.interfaces import ILayout
+from ptah.view.customize import LayerWrapper
 
-log = logging.getLogger('memphis.view')
+log = logging.getLogger('ptah.view')
 
 
 def query_layout(request, context, name=''):
@@ -91,7 +91,7 @@ def register_layout(
     if not klass or not issubclass(klass, Layout):
         raise ValueError("klass has to inherit from Layout class")
 
-    discriminator = ('memphis.view:layout', name, context, route, layer)
+    discriminator = ('ptah.view:layout', name, context, route, layer)
 
     info = config.DirectiveInfo()
     info.attach(

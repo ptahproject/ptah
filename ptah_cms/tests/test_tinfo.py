@@ -1,6 +1,6 @@
 import transaction
 import sqlalchemy as sqla
-from memphis import config, form
+from ptah import config, form
 from pyramid.httpexceptions import HTTPForbidden
 
 from base import Base
@@ -12,7 +12,7 @@ class TestTypeInfo(Base):
         config.cleanup_system(self.__class__.__module__)
         super(TestTypeInfo, self).tearDown()
 
-    def _setup_memphis(self):
+    def _setup_ptah(self):
         pass
 
     def test_tinfo(self):
@@ -23,7 +23,7 @@ class TestTypeInfo(Base):
 
             __type__ = ptah_cms.Type('mycontent', 'MyContent')
 
-        self._init_memphis()
+        self._init_ptah()
 
         self.assertTrue('cms+type:mycontent' in ptah_cms.Types)
 
@@ -55,7 +55,7 @@ class TestTypeInfo(Base):
             __type__ = ptah_cms.Type('mycontent', 'Content', permission=None)
         class MyContainer(ptah_cms.Container):
             __type__ = ptah_cms.Type('mycontainer', 'Container')
-        self._init_memphis()
+        self._init_ptah()
 
         content = MyContent()
         container = MyContainer()
@@ -83,7 +83,7 @@ class TestTypeInfo(Base):
             __type__ = ptah_cms.Type('mycontent', 'Content', permission=None)
         class MyContainer(ptah_cms.Container):
             __type__ = ptah_cms.Type('mycontainer', 'Container')
-        self._init_memphis()
+        self._init_ptah()
 
         content = MyContent()
         container = MyContainer()
@@ -110,7 +110,7 @@ class TestTypeInfo(Base):
         class MyContainer(ptah_cms.Node):
             __type__ = ptah_cms.Type('mycontainer', 'Container',
                                      global_allow = True)
-        self._init_memphis()
+        self._init_ptah()
 
         self.assertFalse(MyContent.__type__.global_allow)
         self.assertTrue(MyContainer.__type__.global_allow)
@@ -125,7 +125,7 @@ class TestTypeInfo(Base):
             __type__ = ptah_cms.Type(
                 'mycontainer', 'Container', filter_content_types=True)
 
-        self._init_memphis()
+        self._init_ptah()
 
         content = MyContent()
         container = MyContainer()
@@ -145,7 +145,7 @@ class TestTypeInfo(Base):
             __type__ = ptah_cms.Type('mycontent2', 'MyContent')
 
         self.assertRaises(
-            config.ConflictError, self._init_memphis)
+            config.ConflictError, self._init_ptah)
 
     def test_tinfo_create(self):
         import ptah_cms
@@ -154,7 +154,7 @@ class TestTypeInfo(Base):
         class MyContent(ptah_cms.Content):
             __type__ = ptah_cms.Type('mycontent', 'MyContent')
 
-        self._init_memphis()
+        self._init_ptah()
 
         content = ptah_cms.Types['cms+type:mycontent'].create(title='Test content')
 
@@ -170,7 +170,7 @@ class TestTypeInfo(Base):
             __tablename__ = "test_mycontents"
             __type__ = ptah_cms.Type('mycontent', 'MyContent')
 
-        self._init_memphis()
+        self._init_ptah()
 
         self.assertEqual(
             MyContent.__mapper_args__['polymorphic_identity'],
@@ -186,7 +186,7 @@ class TestTypeInfo(Base):
         class MyContent(ptah_cms.Content):
             __type__ = ptah_cms.Type('mycontent2', 'MyContent')
 
-        self._init_memphis()
+        self._init_ptah()
 
         content = MyContent.__type__.create(title='Test content')
         c_uri = content.__uri__
@@ -219,7 +219,7 @@ class TestTypeInfo(Base):
 
             test = sqla.Column(sqla.Unicode())
 
-        self._init_memphis()
+        self._init_ptah()
 
         tinfo = MyContent.__type__
         self.assertIn('test', tinfo.fieldset)
@@ -235,7 +235,7 @@ class TestTypeInfo(Base):
         class MyContent(ptah_cms.Content):
             __type__ = ptah_cms.Type('mycontent2', 'MyContent')
 
-        self._init_memphis()
+        self._init_ptah()
 
         tinfo_uri = MyContent.__type__.__uri__
 

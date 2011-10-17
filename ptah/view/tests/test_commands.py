@@ -4,7 +4,7 @@ import unittest
 import tempfile, shutil
 from cStringIO import StringIO
 from paste.script.command import run
-from memphis import config, view
+from ptah import config, view
 
 
 class TestStaticCommand(unittest.TestCase):
@@ -20,7 +20,7 @@ class TestStaticCommand(unittest.TestCase):
         shutil.rmtree(self.dir)
 
     def test_commands_static_list(self):
-        view.static('tests', 'memphis.view.tests:static')
+        view.static('tests', 'ptah.view.tests:static')
 
         _out = sys.stdout
 
@@ -38,10 +38,10 @@ class TestStaticCommand(unittest.TestCase):
 
         val = out.getvalue()
         self.assertTrue('* tests' in val)
-        self.assertTrue('by: memphis.view.tests' in val)
+        self.assertTrue('by: ptah.view.tests' in val)
 
     def test_commands_static_dump_errors(self):
-        view.static('tests', 'memphis.view.tests:static/dir2')
+        view.static('tests', 'ptah.view.tests:static/dir2')
 
         _out = sys.stdout
 
@@ -64,7 +64,7 @@ class TestStaticCommand(unittest.TestCase):
         self.assertTrue('Output path is not directory.' in val)
 
     def test_commands_static_dump(self):
-        view.static('tests', 'memphis.view.tests:static/dir2')
+        view.static('tests', 'ptah.view.tests:static/dir2')
 
         dir = os.path.join(self.dir, 'subdir')
 
@@ -75,13 +75,13 @@ class TestStaticCommand(unittest.TestCase):
             pass
 
         val = self.out.getvalue()
-        self.assertTrue("* Coping from 'memphis.view.tests'" in val)
+        self.assertTrue("* Coping from 'ptah.view.tests'" in val)
         files = os.listdir(os.path.join(dir, 'tests'))
         files.sort()
         self.assertTrue(files == ['style.css', 'text.txt'])
 
     def test_commands_static_dump_skipping_existing(self):
-        view.static('tests', 'memphis.view.tests:static/dir2')
+        view.static('tests', 'ptah.view.tests:static/dir2')
 
         os.makedirs(os.path.join(self.dir, 'tests'))
         file = os.path.join(self.dir, 'tests', 'text.txt')
@@ -96,14 +96,14 @@ class TestStaticCommand(unittest.TestCase):
             pass
 
         val = self.out.getvalue()
-        self.assertTrue("skipping ../memphis.view.tests/text.txt" in val)
+        self.assertTrue("skipping ../ptah.view.tests/text.txt" in val)
         self.assertTrue('test existing file' == open(file, 'r').read())
 
 
 class TestTemplatesCommand(unittest.TestCase):
 
     def setUp(self):
-        self.tmpl = view.template('memphis.view.tests:/templates/test.pt')
+        self.tmpl = view.template('ptah.view.tests:/templates/test.pt')
         self.out = StringIO()
         self._stdout = sys.stdout
         sys.stdout = self.out
@@ -125,45 +125,45 @@ class TestTemplatesCommand(unittest.TestCase):
         sys.argv[:] = ['paste', 'templates', '-a']
 
         val = self._run()
-        self.assertTrue('* memphis.view.tests' in val)
+        self.assertTrue('* ptah.view.tests' in val)
 
-        name = os.path.join('..', 'memphis', 'view', 'tests', 
+        name = os.path.join('..', 'ptah', 'view', 'tests', 
             'templates', 'test.pt')
         self.assertTrue(
             '- test.pt: %s'%name in val)
 
     def test_commands_template_all_several_pkg(self):
-        tmpl = view.template('memphis.view:/tests/templates/test.pt')
+        tmpl = view.template('ptah.view:/tests/templates/test.pt')
 
         sys.argv[:] = ['paste', 'templates', '-a']
 
         val = self._run()
 
-        self.assertTrue('* memphis.view' in val)
-        self.assertTrue('* memphis.view.tests' in val)
+        self.assertTrue('* ptah.view' in val)
+        self.assertTrue('* ptah.view.tests' in val)
 
-        name = os.path.join('..', 'memphis', 'view', 'tests', 
+        name = os.path.join('..', 'ptah', 'view', 'tests', 
             'templates', 'test.pt')
         self.assertTrue(
             '- test.pt: %s'%name in val)
 
     def test_commands_template_list(self):
-        tmpl = view.template('memphis.view:/tests/templates/test.pt',
+        tmpl = view.template('ptah.view:/tests/templates/test.pt',
                              title='Test template title',
                              description = 'Test template description')
 
-        sys.argv[:] = ['paste', 'templates', '-l', 'memphis.view']
+        sys.argv[:] = ['paste', 'templates', '-l', 'ptah.view']
 
         val = self._run()
 
-        self.assertTrue('* memphis.view' in val)
-        self.assertTrue('* memphis.view.tests' not in val)
+        self.assertTrue('* ptah.view' in val)
+        self.assertTrue('* ptah.view.tests' not in val)
         self.assertTrue('Test template title' in val)
         self.assertTrue('Test template description' in val)
 
     # fixme: doesnt work
     def test_commands_template_custom_layer_name(self):
-        tmpl = view.template('memphis.view:/tests/templates/test.pt',
+        tmpl = view.template('ptah.view:/tests/templates/test.pt',
                              layer = 'test-unknown')
 
         sys.argv[:] = ['paste', 'templates', '-l', 'test-unknown']
@@ -172,7 +172,7 @@ class TestTemplatesCommand(unittest.TestCase):
 
         #self.assertTrue('* test-unknown' in val)
         #self.assertTrue(
-        #    '- test.pt: ../memphis/view/tests/templates/test.pt' in val)
+        #    '- test.pt: ../ptah/view/tests/templates/test.pt' in val)
 
     # fixme: implement
     def test_commands_template_list_with_ovveriden(self):
@@ -186,7 +186,7 @@ class TestTemplatesCommand(unittest.TestCase):
         self.assertTrue('Template path format is wrong' in val)
 
     def test_commands_template_print_error2(self):
-        tmpl = view.template('memphis.view:/tests/templates/test.pt')
+        tmpl = view.template('ptah.view:/tests/templates/test.pt')
         sys.argv[:] = ['paste', 'templates', '-p', 'unknownpkg:filename']
 
         val = self._run()
@@ -194,23 +194,23 @@ class TestTemplatesCommand(unittest.TestCase):
         self.assertTrue("Can't find package 'unknownpkg'" in val)
 
     def test_commands_template_print_error3(self):
-        tmpl = view.template('memphis.view:/tests/templates/test.pt')
-        sys.argv[:] = ['paste', 'templates', '-p', 'memphis.view:filename']
+        tmpl = view.template('ptah.view:/tests/templates/test.pt')
+        sys.argv[:] = ['paste', 'templates', '-p', 'ptah.view:filename']
 
         val = self._run()
         self.assertTrue("Can't find template 'filename'" in val)
 
     def test_commands_template_print(self):
-        tmpl = view.template('memphis.view:/tests/templates/test.pt',
+        tmpl = view.template('ptah.view:/tests/templates/test.pt',
                              title='Test template title',
                              description = 'Test template description')
 
-        sys.argv[:] = ['paste', 'templates', '-p', 'memphis.view:test.pt']
+        sys.argv[:] = ['paste', 'templates', '-p', 'ptah.view:test.pt']
 
         val = self._run()
         self.assertTrue('Test template title' in val)
         self.assertTrue('Test template description' in val)
-        self.assertTrue('Package:  memphis.view' in val)
+        self.assertTrue('Package:  ptah.view' in val)
         self.assertTrue('Template: test.pt' in val)
         self.assertTrue('<div>My snippet</div>' in val)
 
@@ -222,7 +222,7 @@ class TestTemplatesCommand(unittest.TestCase):
         self.assertTrue('Template path format is wrong' in val)
 
     def test_commands_template_customize_error2(self):
-        tmpl = view.template('memphis.view:/tests/templates/test.pt')
+        tmpl = view.template('ptah.view:/tests/templates/test.pt')
         sys.argv[:] = ['paste', 'templates', '-c', 'unknownpkg:filename']
 
         val = self._run()
@@ -230,75 +230,75 @@ class TestTemplatesCommand(unittest.TestCase):
         self.assertTrue("Can't find package 'unknownpkg'" in val)
 
     def test_commands_template_customize_error3(self):
-        tmpl = view.template('memphis.view:/tests/templates/test.pt')
-        sys.argv[:] = ['paste', 'templates', '-c', 'memphis.view:filename']
+        tmpl = view.template('ptah.view:/tests/templates/test.pt')
+        sys.argv[:] = ['paste', 'templates', '-c', 'ptah.view:filename']
 
         val = self._run()
         self.assertTrue("Can't find template 'filename'" in val)
 
     def test_commands_template_customize_error4(self):
-        tmpl = view.template('memphis.view:/tests/templates/test.pt')
-        sys.argv[:] = ['paste', 'templates', '-c', 'memphis.view:test.pt']
+        tmpl = view.template('ptah.view:/tests/templates/test.pt')
+        sys.argv[:] = ['paste', 'templates', '-c', 'ptah.view:test.pt']
 
         val = self._run()
         self.assertTrue("Output directory is required, use -o CUSTOMDIR" in val)
 
     def test_commands_template_customize_error5(self):
-        tmpl = view.template('memphis.view:/tests/templates/test.pt')
+        tmpl = view.template('ptah.view:/tests/templates/test.pt')
 
         file = os.path.join(self.dir, 'file')
         f = open(file, 'wb')
         f.write(' ')
         f.close()
 
-        sys.argv[:] = ['paste', 'templates', '-c', 'memphis.view:test.pt',
+        sys.argv[:] = ['paste', 'templates', '-c', 'ptah.view:test.pt',
                        '-o', file]
 
         val = self._run()
         self.assertTrue("Custom path is not a directory:" in val)
 
     def test_commands_template_customize(self):
-        tmpl = view.template('memphis.view:/tests/templates/test.pt')
+        tmpl = view.template('ptah.view:/tests/templates/test.pt')
 
-        sys.argv[:] = ['paste', 'templates', '-c', 'memphis.view:test.pt',
+        sys.argv[:] = ['paste', 'templates', '-c', 'ptah.view:test.pt',
                        '-o', self.dir]
 
         val = self._run()
 
         self.assertTrue(
-            "Template 'memphis.view:test.pt' has been customized" in val)
+            "Template 'ptah.view:test.pt' has been customized" in val)
         self.assertEqual(
-            open(os.path.join(self.dir, 'memphis.view', 'test.pt'),'rb').read(),
+            open(os.path.join(self.dir, 'ptah.view', 'test.pt'),'rb').read(),
             '<div>My snippet</div>\n')
 
     def test_commands_template_skip_existing(self):
-        tmpl = view.template('memphis.view:/tests/templates/test.pt')
+        tmpl = view.template('ptah.view:/tests/templates/test.pt')
 
-        os.makedirs(os.path.join(self.dir, 'memphis.view'))
-        open(os.path.join(self.dir, 'memphis.view', 'test.pt'),'wb').write(
+        os.makedirs(os.path.join(self.dir, 'ptah.view'))
+        open(os.path.join(self.dir, 'ptah.view', 'test.pt'),'wb').write(
             'my customized template')
 
-        sys.argv[:] = ['paste', 'templates', '-c', 'memphis.view:test.pt',
+        sys.argv[:] = ['paste', 'templates', '-c', 'ptah.view:test.pt',
                        '-o', self.dir]
 
         val = self._run()
         self.assertTrue("Custom file 'test.pt' already exists" in val)
         self.assertEqual(
-            open(os.path.join(self.dir, 'memphis.view', 'test.pt'),'rb').read(),
+            open(os.path.join(self.dir, 'ptah.view', 'test.pt'),'rb').read(),
             'my customized template')
 
     def test_commands_template_force_override(self):
-        tmpl = view.template('memphis.view:/tests/templates/test.pt')
+        tmpl = view.template('ptah.view:/tests/templates/test.pt')
 
-        os.makedirs(os.path.join(self.dir, 'memphis.view'))
-        open(os.path.join(self.dir, 'memphis.view', 'test.pt'),'w').write(
+        os.makedirs(os.path.join(self.dir, 'ptah.view'))
+        open(os.path.join(self.dir, 'ptah.view', 'test.pt'),'w').write(
             'my customized template')
 
-        sys.argv[:] = ['paste', 'templates', '-c', 'memphis.view:test.pt',
+        sys.argv[:] = ['paste', 'templates', '-c', 'ptah.view:test.pt',
                        '-o', self.dir, '--force']
 
         val = self._run()
-        self.assertTrue("Overrids: Template 'memphis.view:test.pt' has been customized." in val)
+        self.assertTrue("Overrids: Template 'ptah.view:test.pt' has been customized." in val)
         self.assertEqual(
-            open(os.path.join(self.dir, 'memphis.view', 'test.pt'),'rb').read(),
+            open(os.path.join(self.dir, 'ptah.view', 'test.pt'),'rb').read(),
             '<div>My snippet</div>\n')

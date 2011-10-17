@@ -4,15 +4,15 @@ from zope import interface
 from zope.interface.registry import Components
 from zope.interface.interfaces import IObjectEvent
 
-from memphis import config
-from memphis.config import directives
-from memphis.config.api import objectEventNotify
+from ptah import config
+from ptah.config import directives
+from ptah.config.api import objectEventNotify
 
 
 class BaseTesting(unittest.TestCase):
 
-    def _init_memphis(self, settings={}, newReg=None, *args, **kw):
-        config.initialize(('memphis.config', self.__class__.__module__),
+    def _init_ptah(self, settings={}, newReg=None, *args, **kw):
+        config.initialize(('ptah.config', self.__class__.__module__),
                           reg=newReg)
 
     def tearDown(self):
@@ -59,13 +59,13 @@ class TestAdaptsDirective(BaseTesting):
             interface.implements(IAdapter)
 
         try:
-            self._init_memphis()
+            self._init_ptah()
         except Exception, e:
             pass
 
         s = str(e)
         self.assertTrue(isinstance(e, config.ConflictError))
-        self.assertTrue('memphis.config:adapter' in s)
+        self.assertTrue('ptah.config:adapter' in s)
         self.assertTrue('test_directives.py' in s)
 
     def test_adapts(self):
@@ -78,7 +78,7 @@ class TestAdaptsDirective(BaseTesting):
             def __init__(self, context):
                 pass
 
-        self._init_memphis()
+        self._init_ptah()
 
         sm = config.registry
         adapters = sm.adapters.lookupAll((IContext,), IAdapter)
@@ -97,7 +97,7 @@ class TestAdaptsDirective(BaseTesting):
             config.adapter(IContext, name='test')
             interface.implements(IAdapter)
 
-        self._init_memphis()
+        self._init_ptah()
 
         sm = config.registry
         adapters = sm.adapters.lookupAll((IContext,), IAdapter)
@@ -112,7 +112,7 @@ class TestAdaptsDirective(BaseTesting):
             config.adapter(IContext, IContext2)
             interface.implements(IAdapter)
 
-        self._init_memphis()
+        self._init_ptah()
 
         sm = config.registry
         adapters = sm.adapters.lookupAll((IContext, IContext2), IAdapter)
@@ -127,7 +127,7 @@ class TestAdaptsDirective(BaseTesting):
             config.adapter(IContext, IContext2, name='test')
             interface.implements(IAdapter)
 
-        self._init_memphis()
+        self._init_ptah()
 
         sm = config.registry
         adapters = sm.adapters.lookupAll((IContext, IContext2), IAdapter)
@@ -142,7 +142,7 @@ class TestAdaptsDirective(BaseTesting):
             config.adapter(IContext)
             interface.implements(IAdapter)
 
-        self._init_memphis()
+        self._init_ptah()
 
         # reinstall
         config.cleanup_system()
@@ -152,7 +152,7 @@ class TestAdaptsDirective(BaseTesting):
         adapters = sm.adapters.lookupAll((IContext,), IAdapter)
         self.assertTrue(len(adapters) == 0)
 
-        self._init_memphis()
+        self._init_ptah()
 
         sm = config.registry
         adapters = sm.adapters.lookupAll((IContext,), IAdapter)
@@ -172,7 +172,7 @@ class TestAdapterDirective(BaseTesting):
         def testAdapter(context): # pragma: no cover
             pass
 
-        self._init_memphis()
+        self._init_ptah()
 
         sm = config.registry
         adapters = sm.adapters.lookupAll((IContext,), IAdapter)
@@ -193,7 +193,7 @@ class TestAdapterDirective(BaseTesting):
         def testAdapter(context): # pragma: no cover
             pass
 
-        self._init_memphis()
+        self._init_ptah()
 
         sm = config.registry
         adapters = sm.adapters.lookupAll((IContext,), IAdapter)
@@ -210,7 +210,7 @@ class TestAdapterDirective(BaseTesting):
         def testAdapter(context): # pragma: no cover
             pass
 
-        self._init_memphis()
+        self._init_ptah()
 
         sm = config.registry
         adapters = sm.adapters.lookupAll((IContext, IContext2), IAdapter)
@@ -240,7 +240,7 @@ class TestAdapterDirective(BaseTesting):
         def testAdapter(context):  # pragma: no cover
             pass
 
-        self.assertRaises(config.ConflictError, self._init_memphis)
+        self.assertRaises(config.ConflictError, self._init_ptah)
 
     def test_adapter_reinitialize(self):
         global testAdapter
@@ -251,7 +251,7 @@ class TestAdapterDirective(BaseTesting):
         def testAdapter(context): # pragma: no cover
             pass
 
-        self._init_memphis()
+        self._init_ptah()
 
         # reinstall
         config.cleanup_system()
@@ -259,7 +259,7 @@ class TestAdapterDirective(BaseTesting):
         sm = config.registry
         sm.__init__('base')
 
-        self._init_memphis(newReg=config.registry)
+        self._init_ptah(newReg=config.registry)
 
         adapters = sm.adapters.lookupAll((IContext,), IAdapter)
 
@@ -283,7 +283,7 @@ class TestSubscriberDirective(BaseTesting):
         def testHandler(*args):
             events.append(args)
 
-        self._init_memphis()
+        self._init_ptah()
 
         sm = config.registry
         sm.subscribers((Context(IContext),), None)
@@ -303,7 +303,7 @@ class TestSubscriberDirective(BaseTesting):
         def testHandler(*args):
             events.append(args)
 
-        self._init_memphis()
+        self._init_ptah()
 
         sm = config.registry
         sm.subscribers((Context(IContext),), None)
@@ -321,7 +321,7 @@ class TestSubscriberDirective(BaseTesting):
         def testSubscriber(*args):
             events.append(args)
 
-        self._init_memphis()
+        self._init_ptah()
 
         sm = config.registry
         sm.subscribers((ObjectEvent(Context(IContext)),), None)
@@ -338,7 +338,7 @@ class TestSubscriberDirective(BaseTesting):
         def testSubscriber(*args):
             events.append(args)
 
-        self._init_memphis()
+        self._init_ptah()
 
         # reinstall
         config.cleanup_system()
@@ -346,7 +346,7 @@ class TestSubscriberDirective(BaseTesting):
         sm = config.registry
         sm.__init__('base')
 
-        self._init_memphis()
+        self._init_ptah()
 
         sm = config.registry
         sm.subscribers((Context(IContext),), None)
@@ -407,20 +407,20 @@ class TestExtraDirective(BaseTesting):
         self.assertTrue(len(processed) == 1)
 
     def test_api_loadpackage(self):
-        from memphis.config import api
+        from ptah.config import api
 
         seen = set()
-        packages = api.loadPackage('memphis.config', seen)
-        self.assertEqual(packages, ['memphis.config'])
+        packages = api.loadPackage('ptah.config', seen)
+        self.assertEqual(packages, ['ptah.config'])
 
-        packages = api.loadPackage('memphis.config', seen)
+        packages = api.loadPackage('ptah.config', seen)
         self.assertEqual(packages, [])
 
 
 class BadicTesting(unittest.TestCase):
 
     def test_exclude_test(self):
-        from memphis.config import api
+        from ptah.config import api
 
         self.assertFalse(api.exclude('blah.test'))
         self.assertFalse(api.exclude('blah.ftest'))
@@ -428,16 +428,16 @@ class BadicTesting(unittest.TestCase):
         self.assertTrue(api.exclude('blah.subpkg'))
 
     def test_loadpackages(self):
-        from memphis.config import api
+        from ptah.config import api
 
         self.assertEqual(
-            api.list_packages(('memphis',), excludes=('memphis',)), [])
+            api.list_packages(('ptah',), excludes=('ptah',)), [])
 
-        self.assertEqual(api.list_packages(), ['memphis'])
-        self.assertEqual(api.list_packages(excludes=('memphis',)), [])
+        self.assertIn('ptah', api.list_packages())
+        self.assertEqual(api.list_packages(excludes=('ptah',)), [])
 
     def test_stop_exc(self):
-        from memphis.config import api
+        from ptah.config import api
 
         err = ValueError('test')
 

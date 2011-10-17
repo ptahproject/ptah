@@ -2,7 +2,7 @@
 import unittest
 import colander, pytz
 from datetime import datetime, timedelta
-from memphis.view import formatter
+from ptah.view import formatter
 
 from base import Base
 

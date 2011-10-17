@@ -3,8 +3,8 @@ import simplejson
 from zope import interface
 from pyramid.response import Response
 from pyramid.httpexceptions import WSGIHTTPException
-from memphis.view.layout import query_layout
-from memphis.view.interfaces import IRenderer
+from ptah.view.layout import query_layout
+from ptah.view.interfaces import IRenderer
 
 
 class BaseRenderer(object):

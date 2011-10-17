@@ -1,7 +1,7 @@
 """ Form buttons """
 import sys, re
 from collections import OrderedDict
-from memphis import config, view
+from ptah import config, view
 
 AC_DEFAULT = 0
 AC_PRIMARY = 1
@@ -27,7 +27,7 @@ class Button(object):
     tabindex = None
     klass = u'btn'
 
-    template = view.template("memphis.form:templates/submit.pt")
+    template = view.template("ptah.form:templates/submit.pt")
 
     def __init__(self, name='submit', title=None, action=None, actionName=None,
                  actype=AC_DEFAULT, condition=None, **kw):

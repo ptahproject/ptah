@@ -25,7 +25,7 @@ A simple model::
     import sqlalchemy as sqla
     from pyramid.httpexceptions import HTTPFound
 
-    from memphis import view, form
+    from ptah import view, form
     import ptah_cms
     from ptah import checkPermission
     

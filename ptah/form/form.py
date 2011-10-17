@@ -5,11 +5,11 @@ from pyramid.decorator import reify
 from pyramid.httpexceptions import HTTPForbidden
 from webob.multidict import MultiDict
 
-from memphis import view, config
-from memphis.form.field import Field, Fieldset
-from memphis.form.button import Buttons, Actions
-from memphis.form.interfaces import _, Invalid, FORM_INPUT, FORM_DISPLAY
-from memphis.form.interfaces import IForm, IInputForm, IDisplayForm
+from ptah import view, config
+from ptah.form.field import Field, Fieldset
+from ptah.form.button import Buttons, Actions
+from ptah.form.interfaces import _, Invalid, FORM_INPUT, FORM_DISPLAY
+from ptah.form.interfaces import IForm, IInputForm, IDisplayForm
 
 CSRF = None
 
@@ -23,7 +23,7 @@ class FormErrorMessage(view.Message):
 
     formErrorsMessage = _(u'Please fix indicated errors.')
 
-    template = view.template('memphis.form:templates/form-error.pt')
+    template = view.template('ptah.form:templates/form-error.pt')
 
     def render(self, message):
         errors = [err for err in message
@@ -105,7 +105,7 @@ class Form(view.View):
     #: Form prefix, it used for html elements `id` generations.
     prefix = 'form.'
 
-    #: Instance of py:class:`memphis.form.Actions` class
+    #: Instance of py:class:`ptah.form.Actions` class
     actions = None
 
     #: Instance of py:class:`FormWidgets` class
@@ -114,8 +114,8 @@ class Form(view.View):
     #: Form content, it should be `None` or dictionary with data for fields.
     content = None
 
-    #: Form mode. It can be py:data::`memphis.form.FORM_INPUT` or
-    #: py:data::`memphis.form.FORM_DISPLAY`
+    #: Form mode. It can be py:data::`ptah.form.FORM_INPUT` or
+    #: py:data::`ptah.form.FORM_DISPLAY`
     mode = FORM_INPUT
 
     method = 'post'
@@ -232,20 +232,20 @@ view.snippettype(FORM_DISPLAY_WIDGET, Field, 'Form display widget')
 
 view.register_snippet(
     'form-view', Form,
-    template = view.template('memphis.form:templates/form.pt'))
+    template = view.template('ptah.form:templates/form.pt'))
 
 view.register_snippet(
     'form-view', DisplayForm,
-    template = view.template('memphis.form:templates/form-display.pt'))
+    template = view.template('ptah.form:templates/form-display.pt'))
 
 view.register_snippet(
     'form-actions', Form,
-    template = view.template('memphis.form:templates/form-actions.pt'))
+    template = view.template('ptah.form:templates/form-actions.pt'))
 
 view.register_snippet(
     'form-widget', Field,
-    template = view.template('memphis.form:templates/widget.pt'))
+    template = view.template('ptah.form:templates/widget.pt'))
 
 view.register_snippet(
     'form-display-widget', Field,
-    template = view.template('memphis.form:templates/widget-display.pt'))
+    template = view.template('ptah.form:templates/widget-display.pt'))

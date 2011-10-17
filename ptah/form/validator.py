@@ -29,20 +29,20 @@ class Function(object):
     If the function returns anything falsy (``None``, ``False``, the
     empty string, ``0``, an object with a ``__nonzero__`` that returns
     ``False``, etc) when called during validation, an
-    :exc:`memphis.form.Invalid` exception is raised (validation fails);
+    :exc:`ptah.form.Invalid` exception is raised (validation fails);
     its msg will be the value of the ``message`` argument passed to
     this class' constructor.
 
     If the function returns a stringlike object (a ``str`` or
     ``unicode`` object) that is *not* the empty string , a
-    :exc:`memphis.form.Invalid` exception is raised using the stringlike
+    :exc:`ptah.form.Invalid` exception is raised using the stringlike
     value returned from the function as the exeption message
     (validation fails).
 
     If the function returns anything *except* a stringlike object
     object which is truthy (e.g. ``True``, the integer ``1``, an
     object with a ``__nonzero__`` that returns ``True``, etc), an
-    :exc:`memphis.form.Invalid` exception is *not* raised (validation
+    :exc:`ptah.form.Invalid` exception is *not* raised (validation
     succeeds).
 
     The default value for the ``message`` when not provided via the
@@ -76,7 +76,7 @@ class Regex(object):
         result of ``re.compile``) instead of a string.
 
         When calling, if ``value`` matches the regular expression,
-        validation succeeds; otherwise, :exc:`memphis.form.Invalid` is
+        validation succeeds; otherwise, :exc:`ptah.form.Invalid` is
         raised with the ``msg`` error message.
     """
 
@@ -97,7 +97,7 @@ class Regex(object):
 
 class Email(Regex):
     """ Email address validator. If ``msg`` is supplied, it will be
-        the error message to be used when raising :exc:`memphis.form.Invalid`;
+        the error message to be used when raising :exc:`ptah.form.Invalid`;
         otherwise, defaults to 'Invalid email address'.
     """
 
@@ -117,7 +117,7 @@ class Range(object):
     no upper bound exists.
 
     ``min_err`` is used to form the ``msg`` of the
-    :exc:`memphis.form.Invalid` error when reporting a validation failure
+    :exc:`ptah.form.Invalid` error when reporting a validation failure
     caused by a value not meeting the minimum.  If ``min_err`` is
     specified, it must be a string.  The string may contain the
     replacement targets ``${min}`` and ``${val}``, representing the
@@ -126,7 +126,7 @@ class Range(object):
     ${min}'``.
 
     ``max_err`` is used to form the ``msg`` of the
-    :exc:`memphis.form.Invalid` error when reporting a validation failure
+    :exc:`ptah.form.Invalid` error when reporting a validation failure
     caused by a value exceeding the maximum.  If ``max_err`` is
     specified, it must be a string.  The string may contain the
     replacement targets ``${max}`` and ``${val}``, representing the

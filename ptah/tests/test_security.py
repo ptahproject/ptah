@@ -1,6 +1,6 @@
 """ role """
 from zope import interface
-from memphis import config
+from ptah import config
 from pyramid.security import Allow, Deny, ALL_PERMISSIONS, DENY_ALL
 from pyramid.security import NO_PERMISSION_REQUIRED
 from pyramid.httpexceptions import HTTPForbidden
@@ -26,7 +26,7 @@ class TestPermission(Base):
         perm = ptah.Permission('perm', 'Permission1')
         perm2 = ptah.Permission('perm', 'Permission2')
 
-        self.assertRaises(config.ConflictError, self._init_memphis)
+        self.assertRaises(config.ConflictError, self._init_ptah)
 
 
 class TestACL(Base):
@@ -51,7 +51,7 @@ class TestACL(Base):
         pmap1 = ptah.ACL('map', 'acl1')
         pmap2 = ptah.ACL('map', 'acl2')
 
-        self.assertRaises(config.ConflictError, self._init_memphis)
+        self.assertRaises(config.ConflictError, self._init_ptah)
 
     def test_acl_allow(self):
         import ptah
@@ -284,7 +284,7 @@ class TestRole(Base):
         role1 = ptah.Role('myrole', 'MyRole1')
         role2 = ptah.Role('myrole', 'MyRole2')
 
-        self.assertRaises(config.ConflictError, self._init_memphis)
+        self.assertRaises(config.ConflictError, self._init_ptah)
 
     def test_role_roles(self):
         import ptah
@@ -351,7 +351,7 @@ class TestDefaultRoles(Base):
 
     def test_role_defaults(self):
         import ptah
-        self._init_memphis()
+        self._init_ptah()
 
         roles = list(ptah.Roles.keys())
         roles.sort()
@@ -496,7 +496,7 @@ class TestCheckPermission(Base):
 
     def setUp(self):
         super(TestCheckPermission, self).setUp()
-        self._init_memphis()
+        self._init_ptah()
 
     def test_checkpermission_allow(self):
         import ptah

@@ -1,7 +1,7 @@
 Memphis form  API
 -----------------
 
-.. automodule:: memphis.form
+.. automodule:: ptah.form
 
 Form
 ~~~~

@@ -17,7 +17,7 @@ except ImportError:
 import api, schema, shutdown
 from directives import event, DirectiveInfo, Action
 
-log = logging.getLogger('memphis.config')
+log = logging.getLogger('ptah.config')
 
 
 class SettingsInitializing(object):
@@ -31,7 +31,7 @@ class SettingsInitializing(object):
 
 
 class SettingsInitialized(object):
-    """ Memphis sends this event when settings initialization is completed. """
+    """ ptah sends this event when settings initialization is completed. """
     event('Settings initialized event')
 
     config = None
@@ -41,7 +41,7 @@ class SettingsInitialized(object):
 
 
 class SettingsGroupModified(ObjectEvent):
-    """ Memphis sends this event when settings group is modified. """
+    """ ptah sends this event when settings group is modified. """
     event('Settings group modified event')
 
     def __init__(self, group, config):
@@ -58,7 +58,7 @@ def initialize_settings(settings,
         raise RuntimeError(
             "initialize_settings has been called more than once.")
 
-    log.info('Initializing memphis settings')
+    log.info('Initializing ptah settings')
 
     Settings.config = config
     Settings.initialized = True
@@ -104,7 +104,7 @@ def register_settings(name, *nodes, **kw):
     category = InterfaceClass(
         'SettingsGroup:%s'%iname.upper(), (),
         __doc__='Settings group: %s' %name,
-        __module__='memphis.config.settings')
+        __module__='ptah.config.settings')
 
     if name in Settings:
         group = Settings[name]
@@ -126,11 +126,11 @@ def register_settings(name, *nodes, **kw):
         if not isinstance(node, schema.SchemaNode):
             raise RuntimeError(
                 "Node '%s' has to be instance of "
-                "memphis.config.SchemaNode"%node.name)
+                "ptah.config.SchemaNode"%node.name)
 
         ac = Action(
             _register_settings_impl, (group, node),
-            discriminator = ('memphis.config:setting', node.name, name))
+            discriminator = ('ptah.config:setting', node.name, name))
 
         # mutate hash
         ac.hash = info.hash + (node.name,)

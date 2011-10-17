@@ -1,7 +1,7 @@
 """ role """
 import transaction
 import ptah, ptah_crowd
-from memphis import config
+from ptah import config
 
 from base import Base
 

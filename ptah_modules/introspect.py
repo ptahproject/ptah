@@ -16,7 +16,7 @@ from ptah.manage import INTROSPECTIONS
 
 
 class IntrospectModule(ptah.PtahModule):
-    """ Introspection various aspects of memphis & ptah. """
+    """ Introspection various aspects of ptah & ptah. """
 
     title = 'Introspect'
     ptah.manageModule('introspect')
@@ -139,7 +139,7 @@ class EventsView(view.View):
             actions = []
             for pkg in pkgs:
                 for action in directives.scan(pkg, seen, exclude):
-                    if action.discriminator[0] == 'memphis.config:subscriber':
+                    if action.discriminator[0] == 'ptah.config:subscriber':
                         required = action.args[2]
                         if len(required) == 2 and required[1] == evinst:
                             actions.append(action)
@@ -178,10 +178,10 @@ class RoutesView(view.View):
 
                 for action in actions:
                     d = action.discriminator[0]
-                    if d == 'memphis.view:route':
+                    if d == 'ptah.view:route':
                         name, pattern, factory = action.args[:3]
                         routes[name] = (pattern, name, factory, [])
-                    elif d == 'memphis.view:view':
+                    elif d == 'ptah.view:view':
                         factory = action.info.context
                         if inspect.isclass(factory):
                             isclass = True
@@ -329,7 +329,7 @@ class EventDirective(object):
     """ zca event declarations """
 
     title = 'Events'
-    ptah.introspection('memphis.config:event')
+    ptah.introspection('ptah.config:event')
 
     actions = view.template('ptah_modules:templates/directive-event.pt')
 
@@ -347,7 +347,7 @@ class AdapterDirective(object):
     """ zca adapter registrations """
 
     title = 'Adapters'
-    ptah.introspection('memphis.config:adapter')
+    ptah.introspection('ptah.config:adapter')
 
     actions = view.template('ptah_modules:templates/directive-adapter.pt')
 
@@ -380,10 +380,10 @@ class AdapterDirective(object):
 
 
 class SnippetTypeDirective(object):
-    """ memphis snippet types """
+    """ ptah snippet types """
 
     title = 'Snippet Types'
-    ptah.introspection('memphis.view:snippettype')
+    ptah.introspection('ptah.view:snippettype')
 
     actions = view.template('ptah_modules:templates/directive-stype.pt')
 
@@ -391,7 +391,7 @@ class SnippetTypeDirective(object):
         self.request = request
 
     def renderActions(self, *actions):
-        STYPE_ID = sys.modules['memphis.view.snippet'].STYPE_ID
+        STYPE_ID = sys.modules['ptah.view.snippet'].STYPE_ID
         stypes = config.registry.storage[STYPE_ID]
         return self.actions(
             actions = actions,
@@ -403,7 +403,7 @@ class RouteDirective(object):
     """ pyramid routes """
 
     title = 'Routes'
-    ptah.introspection('memphis.view:route')
+    ptah.introspection('ptah.view:route')
 
     actions = view.template('ptah_modules:templates/directive-route.pt')
 
@@ -420,7 +420,7 @@ class SubscriberDirective(object):
     """ zca event subscribers """
 
     title = 'Event subscribers'
-    ptah.introspection('memphis.config:subscriber')
+    ptah.introspection('ptah.config:subscriber')
 
     actions = view.template('ptah_modules:templates/directive-subscriber.pt')
 
@@ -455,7 +455,7 @@ class ViewDirective(object):
     """ pyramid views """
 
     title = 'Views'
-    ptah.introspection('memphis.view:view')
+    ptah.introspection('ptah.view:view')
 
     actions = view.template('ptah_modules:templates/directive-view.pt')
 

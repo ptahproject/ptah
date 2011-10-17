@@ -1,9 +1,9 @@
 """ tests for customize """
 import unittest, signal
 import sys, os, tempfile, shutil, time
-from memphis import config, view
-from memphis.view import customize
-from memphis.config import shutdown
+from ptah import config, view
+from ptah.view import customize
+from ptah.config import shutdown
 
 from base import Base
 
@@ -13,7 +13,7 @@ class BaseLayerTest(Base):
     file1 = "<div>Test template 1</div>"
     file2 = "<div>Test template 2</div>"
 
-    def _setup_memphis(self):
+    def _setup_ptah(self):
         pass
 
     def _mkfile1(self, content):
@@ -22,14 +22,14 @@ class BaseLayerTest(Base):
         f.close()
 
     def _mkfile2(self, content, name='file.pt'):
-        f = open(os.path.join(self.dir2, 'memphis.view.tests', name), 'wb')
+        f = open(os.path.join(self.dir2, 'ptah.view.tests', name), 'wb')
         f.write(content)
         f.close()
 
     def setUp(self):
         self.dir1 = tempfile.mkdtemp()
         self.dir2 = tempfile.mkdtemp()
-        os.makedirs(os.path.join(self.dir2, 'memphis.view.tests'))
+        os.makedirs(os.path.join(self.dir2, 'ptah.view.tests'))
         Base.setUp(self)
 
     def tearDown(self):
@@ -44,7 +44,7 @@ class BaseLayerTest(Base):
 class TestGlobalCustomizeManagement(BaseLayerTest):
 
     def test_customize_global_disabled(self):
-        self._init_memphis()
+        self._init_ptah()
 
         self.assertEqual('', customize.TEMPLATE.custom)
 
@@ -57,7 +57,7 @@ class TestGlobalCustomizeManagement(BaseLayerTest):
         self.assertEqual(tmpl(), '<div>Test template 1</div>')
 
         # enable custom folder
-        self._init_memphis({'template.custom': self.dir2})
+        self._init_ptah({'template.custom': self.dir2})
 
         self.assertEqual(tmpl(), '<div>Test template 2</div>')
 
@@ -74,7 +74,7 @@ class TestGlobalCustomizeManagement(BaseLayerTest):
         f.close()
 
         # enable custom folder
-        self._init_memphis({'template.custom': self.dir2})
+        self._init_ptah({'template.custom': self.dir2})
 
         self.assertEqual(tmpl(), '<div>Test template 2</div>')
 
@@ -91,7 +91,7 @@ class TestGlobalCustomizeManagement(BaseLayerTest):
         self.assertEqual(tmpl(), '<div>Test template 1</div>')
 
         # load without watcher
-        self._init_memphis({'template.custom': os.path.join(self.dir2, 'test')})
+        self._init_ptah({'template.custom': os.path.join(self.dir2, 'test')})
 
         self.assertTrue(customize.TEMPLATE._manager is None)
         self.assertTrue(customize.TEMPLATE._watcher is None)
@@ -116,7 +116,7 @@ class TestGlobalCustomizeManagement(BaseLayerTest):
         self.assertEqual(tmpl(), '<div>Test template 1</div>')
 
         # enable custom folder
-        self._init_memphis({'template.custom': self.dir2})
+        self._init_ptah({'template.custom': self.dir2})
         self.assertEqual(tmpl(), '<div>Test template 2</div>')
 
         customize.TEMPLATE['custom'] = ''
@@ -136,13 +136,13 @@ class TestGlobalCustomizeManagement(BaseLayerTest):
         self.dir2 = os.path.join(self.dir2, 'test')
 
         # enable custom folder
-        self._init_memphis({'template.custom': self.dir2})
+        self._init_ptah({'template.custom': self.dir2})
 
         self.assertTrue(os.path.isdir(self.dir2))
         self.assertEqual(tmpl(), '<div>Test template 1</div>')
 
         # create new custom resource
-        os.mkdir(os.path.join(self.dir2, 'memphis.view.tests'))
+        os.mkdir(os.path.join(self.dir2, 'ptah.view.tests'))
         self._mkfile2(self.file2)
         time.sleep(0.1)
 
@@ -150,7 +150,7 @@ class TestGlobalCustomizeManagement(BaseLayerTest):
         self.assertEqual(tmpl(), '<div>Test template 2</div>')
 
         # remove template
-        shutil.rmtree(os.path.join(self.dir2, 'memphis.view.tests'))
+        shutil.rmtree(os.path.join(self.dir2, 'ptah.view.tests'))
 
         time.sleep(0.1)
         self.assertEqual(tmpl(), '<div>Test template 1</div>')
@@ -163,7 +163,7 @@ class TestGlobalCustomizeManagement(BaseLayerTest):
         customize.iNotifyWatcher.start = start
 
         # enable custom folder
-        self._init_memphis({'template.custom': self.dir2})
+        self._init_ptah({'template.custom': self.dir2})
         self.assertTrue(not customize.TEMPLATE._watcher._started)
 
         customize.iNotifyWatcher.start = orig
@@ -190,8 +190,8 @@ class TestTemplateLayer(BaseLayerTest):
         self.assertEqual(tmpl2(), '<div>Test template 2</div>')
 
         # layers
-        view.layer('memphis.view.tests', self.dir2)
-        view.layer('memphis.view.tests', self.dir3)
+        view.layer('ptah.view.tests', self.dir2)
+        view.layer('ptah.view.tests', self.dir3)
 
         # override file.pt
         f = open(os.path.join(self.dir2, 'file.pt'), 'wb')
@@ -248,7 +248,7 @@ class TestTemplateLayer(BaseLayerTest):
 class TestViewLayersManager(unittest.TestCase):
 
     def test_register(self):
-        from memphis.view.customize import _ViewLayersManager
+        from ptah.view.customize import _ViewLayersManager
 
         manager = _ViewLayersManager()
 
@@ -259,7 +259,7 @@ class TestViewLayersManager(unittest.TestCase):
         self.assertEqual(manager.layers[(1,)], ['', 'test', 'test2'])
 
     def test_enabled(self):
-        from memphis.view.customize import _ViewLayersManager
+        from ptah.view.customize import _ViewLayersManager
 
         manager = _ViewLayersManager()
 

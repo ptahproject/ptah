@@ -1,6 +1,6 @@
 import sys
 import unittest, signal
-from memphis import config
+from ptah import config
 
 
 class TestShutdownHandlers(unittest.TestCase):
@@ -12,7 +12,7 @@ class TestShutdownHandlers(unittest.TestCase):
         def shutdown():
             shutdownExecuted.append(True)
 
-        shutdown = sys.modules['memphis.config.shutdown']
+        shutdown = sys.modules['ptah.config.shutdown']
         shutdown._shutdown = False
 
         try:
@@ -30,7 +30,7 @@ class TestShutdownHandlers(unittest.TestCase):
         def shutdown():
             raise ValueError()
 
-        from memphis.config import shutdown
+        from ptah.config import shutdown
         shutdown._shutdown = False
         try:
             shutdown.processShutdown(signal.SIGINT, None)
@@ -46,7 +46,7 @@ class TestShutdownHandlers(unittest.TestCase):
         def shutdown():
             shutdownExecuted.append(True)
 
-        shutdown = sys.modules['memphis.config.shutdown']
+        shutdown = sys.modules['ptah.config.shutdown']
         shutdown._shutdown = False
         try:
             shutdown.processShutdown(signal.SIGTERM, None)

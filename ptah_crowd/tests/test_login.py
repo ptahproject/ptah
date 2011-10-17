@@ -1,6 +1,6 @@
 import transaction
 import ptah, ptah_crowd
-from memphis import config
+from ptah import config
 from pyramid.testing import DummyRequest
 from pyramid.httpexceptions import HTTPFound
 

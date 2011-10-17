@@ -2,16 +2,16 @@
 import sys, unittest
 from zope import interface
 from pyramid.httpexceptions import HTTPNotFound
-from memphis import config, view
-from memphis.config import api
-from memphis.view.snippet import ISnippet, Snippet, SnippetType, render_snippet
+from ptah import config, view
+from ptah.config import api
+from ptah.view.snippet import ISnippet, Snippet, SnippetType, render_snippet
 
 from base import Base
 
 
 class TestSnippet(Base):
 
-    def _setup_memphis(self):
+    def _setup_ptah(self):
         pass
 
     def test_snippettype_register(self):
@@ -19,9 +19,9 @@ class TestSnippet(Base):
             pass
 
         view.snippettype('test', Context)
-        self._init_memphis()
+        self._init_ptah()
 
-        from memphis.view.snippet import STYPE_ID
+        from ptah.view.snippet import STYPE_ID
         stypes = config.registry.storage[STYPE_ID]
 
         self.assertTrue('test' in stypes)
@@ -36,7 +36,7 @@ class TestSnippet(Base):
             pass
 
         view.register_snippet('unknown', Context, TestSnippet)
-        self._init_memphis()
+        self._init_ptah()
 
         snippet = config.registry.getMultiAdapter(
             (Context(), None), ISnippet, name='unknown')
@@ -49,7 +49,7 @@ class TestSnippet(Base):
 
         view.snippettype('test', Context)
         view.register_snippet('test', Context, TestSnippet)
-        self._init_memphis()
+        self._init_ptah()
 
         self.assertEqual(
             render_snippet('test', Context(), self.request), 'test snippet')
@@ -65,7 +65,7 @@ class TestSnippet(Base):
             def render(self):
                 return 'test'
 
-        self._init_memphis()
+        self._init_ptah()
 
         self.assertEqual(render_snippet('pt', Context(), self.request), 'test')
 
@@ -80,7 +80,7 @@ class TestSnippet(Base):
 
         view.snippettype('test', Context)
         view.register_snippet('test', klass=TestSnippet, template = template)
-        self._init_memphis()
+        self._init_ptah()
 
         self.assertEqual(
             render_snippet('test', Context(), self.request),
@@ -89,14 +89,14 @@ class TestSnippet(Base):
     def test_snippet_register_without_class(self):
         view.snippettype('test', Context)
         view.register_snippet('test', Context)
-        self._init_memphis()
+        self._init_ptah()
 
         snippet = config.registry.getMultiAdapter(
             (Context(), self.request), ISnippet, 'test')
 
         self.assertTrue(isinstance(snippet, Snippet))
         self.assertEqual(str(snippet.__class__),
-                         "<class 'memphis.view.snippet.Snippet None'>")
+                         "<class 'ptah.view.snippet.Snippet None'>")
 
     def test_snippet_register_with_not_Snippet_class(self):
         class TestSnippet(object):
@@ -104,7 +104,7 @@ class TestSnippet(Base):
 
         view.snippettype('test', Context)
         view.register_snippet('test', Context, TestSnippet)
-        self._init_memphis()
+        self._init_ptah()
 
         snippet = config.registry.getMultiAdapter(
             (Context(), self.request), ISnippet, 'test')
@@ -113,7 +113,7 @@ class TestSnippet(Base):
         self.assertTrue(isinstance(snippet, TestSnippet))
 
     def test_snippet_rendersnippet_not_found(self):
-        self._init_memphis()
+        self._init_ptah()
 
         self.assertRaises(
             HTTPNotFound,
@@ -126,7 +126,7 @@ class TestSnippet(Base):
 
         view.snippettype('test', Context)
         view.register_snippet('test', Context, TestSnippet)
-        self._init_memphis()
+        self._init_ptah()
 
         self.assertRaises(
             ValueError,
@@ -144,7 +144,7 @@ class TestSnippet(Base):
 
         view.snippettype('test', Context)
         view.register_snippet('test', klass=TestSnippet, template = template)
-        self._init_memphis()
+        self._init_ptah()
 
         self.assertTrue(
             'param1|param2|' in render_snippet('test', Context(), self.request))
@@ -156,7 +156,7 @@ class TestSnippet(Base):
 
         view.snippettype('test', Context)
         view.register_snippet('test', Context, TestSnippet)
-        self._init_memphis()
+        self._init_ptah()
 
         base = view.View(None, self.request)
 
@@ -176,7 +176,7 @@ class TestSnippet(Base):
 
         view.snippettype('test', Context)
         view.register_snippet('test', Context, TestSnippet)
-        self._init_memphis()
+        self._init_ptah()
 
         base = view.View(None, self.request)
         self.assertEqual(base.snippet('test', Context()), '')

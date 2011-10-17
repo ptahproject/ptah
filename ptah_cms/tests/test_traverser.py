@@ -1,6 +1,6 @@
 import ptah
 import transaction
-from memphis import config
+from ptah import config
 from pyramid.interfaces import ITraverser
 
 from base import Base

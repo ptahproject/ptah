@@ -1,6 +1,6 @@
 import transaction
 from zope import interface
-from memphis import config
+from ptah import config
 from pyramid.httpexceptions import HTTPForbidden
 
 from base import Base
@@ -139,7 +139,7 @@ class TestWrapper(Base):
 
 class TestCms(Base):
 
-    def _setup_memphis(self):
+    def _setup_ptah(self):
         pass
 
     def tearDown(self):
@@ -185,7 +185,7 @@ class TestCms(Base):
         def res(uri):
             return t
 
-        self._init_memphis()
+        self._init_ptah()
 
         wrapper = ptah_cms.cms('test:1')
         self.assertIsInstance(wrapper, NodeWrapper)

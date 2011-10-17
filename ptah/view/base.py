@@ -1,18 +1,18 @@
 """ base view class with access to various api's """
 import logging
 from zope import interface
-from memphis import config
-from memphis.view.formatter import format
-from memphis.view.resources import static, static_url
-from memphis.view.message import add_message, render_messages
-from memphis.view.library import library, include, render_includes
-from memphis.view.interfaces import ISnippet, IMemphisView
+from ptah import config
+from ptah.view.formatter import format
+from ptah.view.resources import static, static_url
+from ptah.view.message import add_message, render_messages
+from ptah.view.library import library, include, render_includes
+from ptah.view.interfaces import ISnippet, IPtahView
 
-log = logging.getLogger('memphis.view')
+log = logging.getLogger('ptah.view')
 
 
 class View(object):
-    interface.implements(IMemphisView)
+    interface.implements(IPtahView)
 
     __name__ = ''
     __parent__ = None
@@ -71,7 +71,7 @@ class View(object):
         return u''
 
 
-static('jquery', 'memphis.view:static/jquery')
+static('jquery', 'ptah.view:static/jquery')
 
 library(
     'jquery',
@@ -93,7 +93,7 @@ library(
     type='css')
 
 
-static('bootstrap', 'memphis.view:static/bootstrap')
+static('bootstrap', 'ptah.view:static/bootstrap')
 
 library(
     'lesscss',

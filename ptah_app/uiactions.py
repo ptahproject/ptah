@@ -1,6 +1,6 @@
 """ ui actions """
 import ptah
-from memphis import config
+from ptah import config
 from zope import interface
 
 

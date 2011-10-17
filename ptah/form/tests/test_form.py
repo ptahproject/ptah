@@ -4,7 +4,7 @@ from pyramid.httpexceptions import HTTPForbidden
 
 class TestFormWidgets(unittest.TestCase):
     def _makeOne(self, fields, form, request):
-        from memphis.form.form import FormWidgets
+        from ptah.form.form import FormWidgets
         return FormWidgets(fields, form, request)
 
     def test_ctor(self):
@@ -20,8 +20,8 @@ class TestFormWidgets(unittest.TestCase):
 class TestFormErrors(unittest.TestCase):
 
     def test_form_errors(self):
-        from memphis.form import Invalid, TextField
-        from memphis.form.form import FormErrorMessage
+        from ptah.form import Invalid, TextField
+        from ptah.form.form import FormErrorMessage
         request = DummyRequest()
 
         form_errors = FormErrorMessage(request)
@@ -40,7 +40,7 @@ class TestFormErrors(unittest.TestCase):
 class TestForm(unittest.TestCase):
 
     def test_basics(self):
-        from memphis.form.form import Form
+        from ptah.form.form import Form
 
         request = DummyRequest()
         form = Form(None, request)
@@ -57,7 +57,7 @@ class TestForm(unittest.TestCase):
         self.assertEqual(form.id, 'my-test-form')
 
     def test_form_content(self):
-        from memphis.form.form import Form
+        from ptah.form.form import Form
 
         request = DummyRequest()
         form = Form(None, request)
@@ -69,7 +69,8 @@ class TestForm(unittest.TestCase):
         self.assertIs(form.form_content(), form_content)
 
     def test_csrf_token(self):
-        from memphis.form import form
+        from ptah.form import form
+        form.setCsrfUtility(None)
 
         class MyForm(form.Form):
             pass
@@ -107,7 +108,7 @@ class TestForm(unittest.TestCase):
         self.assertIsNone(form_ob.validate_csrf_token())
 
     def test_csrf_tokenData(self):
-        from memphis.form import form
+        from ptah.form import form
 
         class MyForm(form.Form):
             pass
@@ -129,7 +130,7 @@ class TestForm(unittest.TestCase):
         form.security.authenticated_userid = orig_func
 
     def test_form_params(self):
-        from memphis.form.form import Form, DisplayForm
+        from ptah.form.form import Form, DisplayForm
 
         request = DummyRequest()
 
@@ -153,7 +154,7 @@ class TestForm(unittest.TestCase):
         self.assertEqual(dict(form.form_params()), {})
 
     def test_form_params_method(self):
-        from memphis.form.form import Form
+        from ptah.form.form import Form
 
         form = Form(None, None)
         form.method = 'params'
@@ -163,7 +164,7 @@ class TestForm(unittest.TestCase):
         self.assertIs(form.form_params(), params)
 
     def test_form_mode(self):
-        from memphis.form.form import Form, DisplayForm, \
+        from ptah.form.form import Form, DisplayForm, \
             FORM_INPUT, FORM_DISPLAY
 
         request = DummyRequest()
@@ -175,7 +176,7 @@ class TestForm(unittest.TestCase):
         self.assertEqual(form.mode, FORM_DISPLAY)
 
     def test_form_update_widgets(self):
-        from memphis import form
+        from ptah import form
 
         request = DummyRequest()
         request.POST = {}
@@ -202,7 +203,7 @@ class TestForm(unittest.TestCase):
         self.assertEqual(form_ob.widgets['test'].id, 'form-widgets-test')
 
     def test_form_extract(self):
-        from memphis import form
+        from ptah import form
 
         request = DummyRequest()
         request.POST = {}
@@ -220,7 +221,7 @@ class TestForm(unittest.TestCase):
         self.assertEqual(data['test'], 'Test string')
 
     def test_form_render(self):
-        from memphis import form
+        from ptah import form
 
         request = DummyRequest()
 

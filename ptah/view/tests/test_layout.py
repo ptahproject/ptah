@@ -4,10 +4,10 @@ from zope import interface
 from pyramid.interfaces import IRouteRequest
 from pyramid.httpexceptions import HTTPNotFound
 
-from memphis import config, view
-from memphis.view.view import View, viewMapper
-from memphis.view.layout import Layout, query_layout
-from memphis.view.renderers import Renderer, SimpleRenderer
+from ptah import config, view
+from ptah.view.view import View, viewMapper
+from ptah.view.layout import Layout, query_layout
+from ptah.view.renderers import Renderer, SimpleRenderer
 
 from base import Base
 
@@ -22,7 +22,7 @@ class TestLayout(Base):
         Base.tearDown(self)
         shutil.rmtree(self.dir)
 
-    def _setup_memphis(self):
+    def _setup_ptah(self):
         pass
 
     def test_layout_register_class_errors(self):
@@ -34,7 +34,7 @@ class TestLayout(Base):
 
     def test_layout_register_simple(self):
         view.register_layout('test')
-        self._init_memphis()
+        self._init_ptah()
 
         layout = config.registry.getMultiAdapter(
             (object(), self.request), view.ILayout, 'test')
@@ -50,7 +50,7 @@ class TestLayout(Base):
             pass
 
         view.register_layout('test', klass=MyLayout)
-        self._init_memphis()
+        self._init_ptah()
 
         layout = config.registry.getMultiAdapter(
             (object(), self.request), view.ILayout, 'test')
@@ -66,7 +66,7 @@ class TestLayout(Base):
                 return '<html>%s</html>'%rendered
 
         view.register_layout('test', klass=Layout)
-        self._init_memphis()
+        self._init_ptah()
 
         v = View(Context(), self.request)
 
@@ -89,7 +89,7 @@ class TestLayout(Base):
             def render(self, rendered):
                 return '<html>%s</html>'%rendered
 
-        self._init_memphis()
+        self._init_ptah()
 
         v = View(Context(), self.request)
 
@@ -115,7 +115,7 @@ class TestLayout(Base):
                 return '<html>%s</html>'%content
 
         view.register_layout('test', klass=Layout, context=Context)
-        self._init_memphis()
+        self._init_ptah()
 
         v = View(Context(), self.request)
 
@@ -135,7 +135,7 @@ class TestLayout(Base):
                 return '<html>%s</html>'%content
 
         view.register_layout('', klass=Layout, context=Root)
-        self._init_memphis()
+        self._init_ptah()
 
         root = Root()
         context = Context(root)
@@ -161,7 +161,7 @@ class TestLayout(Base):
         tmpl.close()
 
         view.register_layout('test', template = view.template(fn))
-        self._init_memphis()
+        self._init_ptah()
 
         renderer = SimpleRenderer(layout='test')
 
@@ -185,7 +185,7 @@ class TestLayout(Base):
 
         view.register_layout('', klass=LayoutPage, parent=None)
         view.register_layout('test', klass=LayoutTest, parent='.')
-        self._init_memphis()
+        self._init_ptah()
 
         context = Context()
         renderer = SimpleRenderer('test')
@@ -208,7 +208,7 @@ class TestLayout(Base):
 
         view.register_layout('', klass=LayoutPage, context=Root, parent=None)
         view.register_layout('test', klass=LayoutTest, parent='.')
-        self._init_memphis()
+        self._init_ptah()
 
         root = Root()
         context = Context(root)
@@ -243,7 +243,7 @@ class TestLayout(Base):
 
         view.register_layout('', klass=Layout1, context=Context, parent='.')
         view.register_layout('', klass=Layout2, context=Root, parent=None)
-        self._init_memphis()
+        self._init_ptah()
 
         root = Root()
         context1 = Context2(root)
@@ -264,7 +264,7 @@ class TestLayout(Base):
                 return '<div>%s</div>'%content
 
         view.register_layout('', klass=Layout, context=Context, parent='page')
-        self._init_memphis()
+        self._init_ptah()
 
         root = Root()
         context = Context(root)
@@ -280,7 +280,7 @@ class TestLayout(Base):
                 return 'test'
 
         view.register_layout('test')
-        self._init_memphis()
+        self._init_ptah()
 
         v = View(Context(), self.request)
 
@@ -291,7 +291,7 @@ class TestLayout(Base):
     def test_layout_for_route(self):
         view.register_route('test-route', '/test/', use_global_views=True)
         view.register_layout('test', route = 'test-route')
-        self._init_memphis()
+        self._init_ptah()
 
         layout = query_layout(self.request, Context(), 'test')
         self.assertIsNone(layout)

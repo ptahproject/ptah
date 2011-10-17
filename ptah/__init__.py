@@ -96,7 +96,7 @@ def make_wsgi_app(global_settings, **settings):
 
     """
     import sys
-    import memphis
+    import ptah
     from pyramid.config import Configurator
 
     authService.set_userid(SUPERUSER_URI)
@@ -109,7 +109,7 @@ def make_wsgi_app(global_settings, **settings):
     try:
         ptah_init(config)
     except Exception, e:
-        if isinstance(e, memphis.config.StopException):
+        if isinstance(e, ptah.config.StopException):
             print e.print_tb()
 
         sys.exit(0)
@@ -118,14 +118,14 @@ def make_wsgi_app(global_settings, **settings):
     return config.make_wsgi_app()
 
 
-# initialize memphis
+# initialize ptah
 def ptah_init(configurator):
-    """ Initialize memphis packages.
-    Load all memphis packages and intialize memphis settings system.
+    """ Initialize ptah packages.
+    Load all ptah packages and intialize ptah settings system.
 
     This function automatically called by :py:func:`make_wsgi_app` function.
     """
-    import memphis
+    import ptah
     import transaction
     import sqlahelper
 
@@ -141,23 +141,23 @@ def ptah_init(configurator):
                             for s in settings['ptah.excludes'].split())
 
         # load packages
-        memphis.config.initialize(None, excludes, configurator.registry)
+        ptah.config.initialize(None, excludes, configurator.registry)
 
         # load settings
-        memphis.config.initialize_settings(settings, configurator)
+        ptah.config.initialize_settings(settings, configurator)
 
         # create sql tables
         Base = sqlahelper.get_base()
         Base.metadata.create_all()
 
         # send AppStarting event
-        memphis.config.start(configurator)
+        ptah.config.start(configurator)
     except Exception, e:
-        if not isinstance(e, memphis.config.StopException):
-            memphis.config.shutdown()
-            raise memphis.config.StopException(e)
+        if not isinstance(e, ptah.config.StopException):
+            ptah.config.shutdown()
+            raise ptah.config.StopException(e)
 
-        memphis.config.shutdown()
+        ptah.config.shutdown()
         raise
 
     # commit possible transaction

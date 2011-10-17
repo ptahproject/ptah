@@ -1,6 +1,6 @@
 """ default content forms """
 import re
-from memphis import config, view, form
+from ptah import config, view, form
 from pyramid.decorator import reify
 from pyramid.httpexceptions import HTTPFound
 

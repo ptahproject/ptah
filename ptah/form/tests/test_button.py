@@ -4,7 +4,7 @@ import unittest
 class TestButton(unittest.TestCase):
 
     def test_ctor(self):
-        from memphis import form
+        from ptah import form
 
         btn = form.Button(name='test', actionName='action',
                           actype = form.AC_PRIMARY)
@@ -15,7 +15,7 @@ class TestButton(unittest.TestCase):
         self.assertEqual(repr(btn), "<Button 'test' : 'Test'>")
 
     def test_bind(self):
-        from memphis import form
+        from ptah import form
 
         btn = form.Button(name='test', actionName='action',
                           actype = form.AC_PRIMARY)
@@ -35,7 +35,7 @@ class TestButton(unittest.TestCase):
         self.assertEqual(widget.klass, 'btn primary')
 
     def test_activated(self):
-        from memphis import form
+        from ptah import form
 
         btn = form.Button(name='test', actionName='action',
                           actype = form.AC_PRIMARY)
@@ -51,7 +51,7 @@ class TestButton(unittest.TestCase):
         self.assertTrue(widget.activated())
 
     def test_render(self):
-        from memphis import form
+        from ptah import form
 
         btn = form.Button(name='test', actionName='action',
                           actype = form.AC_PRIMARY)
@@ -65,7 +65,7 @@ class TestButton(unittest.TestCase):
             """<input id="test-test" name="test.test" class="btn primary" value="Test" type="submit" />""")
 
     def test_execute(self):
-        from memphis import form
+        from ptah import form
 
         btn = form.Button(name='test', actionName='action')
 
@@ -87,7 +87,7 @@ class TestButton(unittest.TestCase):
 class TestButtons(unittest.TestCase):
 
     def test_ctor(self):
-        from memphis import form
+        from ptah import form
 
         btn1 = form.Button(name='test1', actionName='action')
         btn2 = form.Button(name='test2', actionName='action')
@@ -107,7 +107,7 @@ class TestButtons(unittest.TestCase):
         self.assertEqual(btns.values(), [btn2, btn1])
 
     def test_add(self):
-        from memphis import form
+        from ptah import form
 
         btn1 = form.Button(name='test1', actionName='action')
         btn2 = form.Button(name='test2', actionName='action')
@@ -119,7 +119,7 @@ class TestButtons(unittest.TestCase):
         self.assertEqual(btns.values(), [btn1, btn2])
 
     def test_add_duplicate(self):
-        from memphis import form
+        from ptah import form
 
         btn1 = form.Button(name='test1', actionName='action')
         btn2 = form.Button(name='test1', actionName='action')
@@ -129,7 +129,7 @@ class TestButtons(unittest.TestCase):
         self.assertRaises(ValueError, btns.add, btn2)
 
     def test_add_action(self):
-        from memphis import form
+        from ptah import form
 
         btns = form.Buttons()
 
@@ -140,7 +140,7 @@ class TestButtons(unittest.TestCase):
         self.assertEqual(btns.values(), [btn1])
 
     def test_iadd(self):
-        from memphis import form
+        from ptah import form
 
         btn1 = form.Button(name='test1', actionName='action')
         btn2 = form.Button(name='test2', actionName='action')
@@ -156,7 +156,7 @@ class TestButtons(unittest.TestCase):
 class TestButtonDecorator(unittest.TestCase):
 
     def test_decorator(self):
-        from memphis import form
+        from ptah import form
 
         class MyForm(object):
             @form.button('Test button')
@@ -170,7 +170,7 @@ class TestButtonDecorator(unittest.TestCase):
         self.assertEqual(btn.actionName, 'handler')
 
     def test_decorator_multiple(self):
-        from memphis import form
+        from ptah import form
 
         class MyForm(object):
             @form.button('Test button')
@@ -188,7 +188,7 @@ class TestButtonDecorator(unittest.TestCase):
         self.assertEqual(btn2.actionName, 'handler2')
 
     def test_create_id(self):
-        from memphis.form.button import create_btn_id
+        from ptah.form.button import create_btn_id
 
         self.assertEqual(create_btn_id('Test'), 'test')
         self.assertEqual(create_btn_id('Test title'), u'Test title'.encode('hex'))
@@ -197,7 +197,7 @@ class TestButtonDecorator(unittest.TestCase):
 class TestActions(unittest.TestCase):
 
     def _makeOne(self, form, request):
-        from memphis.form.button import Actions
+        from ptah.form.button import Actions
         return Actions(form, request)
 
     def test_ctor(self):
@@ -208,7 +208,7 @@ class TestActions(unittest.TestCase):
         self.assertEqual(inst.request, request)
 
     def test_update(self):
-        from memphis import form
+        from ptah import form
 
         request = DummyRequest()
         tform = DummyForm()

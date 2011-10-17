@@ -1,4 +1,4 @@
-<tal:block i18n:domain="memphis.users">
+<tal:block i18n:domain="ptah.crowd">
   <div class="page-header">
     <h1 i18n:translate="">You are now logged in</h1>
   </div>

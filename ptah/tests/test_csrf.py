@@ -1,6 +1,6 @@
 import transaction
 from datetime import timedelta
-from memphis import config
+from ptah import config
 
 from base import Base
 
@@ -15,7 +15,7 @@ class TestCsrf(Base):
         import ptah
         from ptah.util import CSRFService
 
-        self._init_memphis()
+        self._init_ptah()
 
         csrf = CSRFService()
         t = csrf.generate('test')

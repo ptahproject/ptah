@@ -216,7 +216,7 @@ class MailGenerator(object):
         message['Message-ID'] = context.messageId
 
         #if not message.has_key('X-Mailer'):
-        #    message['X-mailer'] = 'memphis.mailer'
+        #    message['X-mailer'] = 'ptah.mailer'
 
         if not message.get('To') and context.to_address:
             message['To'] = context.to_address

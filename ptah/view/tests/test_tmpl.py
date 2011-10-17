@@ -1,7 +1,7 @@
 """ tmpl  """
 import unittest
-from memphis import view, config
-from memphis.view import tmpl as tapi
+from ptah import view, config
+from ptah.view import tmpl as tapi
 
 
 class TestTmplCommand(unittest.TestCase):
@@ -15,41 +15,41 @@ class TestTmplCommand(unittest.TestCase):
             view.template, 'unkown.pt')
 
     def test_tmpl(self):
-        tmpl = view.template('memphis.view.tests:templates/test.pt')
+        tmpl = view.template('ptah.view.tests:templates/test.pt')
         self.assertTrue('PageTemplateFile' in repr(tmpl))
 
-        tmpl = view.template('memphis.view.tests:templates/test.txt')
+        tmpl = view.template('ptah.view.tests:templates/test.txt')
         self.assertTrue('PageTextTemplateFile' in repr(tmpl))
 
-        self.assertEqual(tapi.registry['memphis.view.tests'].keys(),
+        self.assertEqual(tapi.registry['ptah.view.tests'].keys(),
                          ['test.pt', 'test.txt'])
 
     def test_tmpl_multiple_decl(self):
-        tmpl = view.template('memphis.view.tests:templates/test.pt')
+        tmpl = view.template('ptah.view.tests:templates/test.pt')
 
-        tmpl1 = view.template('memphis.view.tests:templates/test.pt')
+        tmpl1 = view.template('ptah.view.tests:templates/test.pt')
 
         self.assertIs(tmpl, tmpl1)
 
     def test_tmpl_multiple_disable_packages(self):
-        tmpl = view.template('memphis.view.tests:templates/test.pt',
+        tmpl = view.template('ptah.view.tests:templates/test.pt',
                              nolayer = True)
-        tmpl = view.template('memphis.view.tests:templates/test.pt',
+        tmpl = view.template('ptah.view.tests:templates/test.pt',
                              nolayer = True)
         self.assertEqual(
             tapi.registry.keys(), [])
 
     def test_tmpl_multiple_layer_name(self):
-        tmpl = view.template('memphis.view.tests:templates/test.pt',
+        tmpl = view.template('ptah.view.tests:templates/test.pt',
                              layer = 'test')
-        tmpl = view.template('memphis.view.tests:templates/test.pt')
+        tmpl = view.template('ptah.view.tests:templates/test.pt')
 
-        self.assertEqual(tapi.registry.keys(), ['test', 'memphis.view.tests'])
+        self.assertEqual(tapi.registry.keys(), ['test', 'ptah.view.tests'])
 
     def test_tmpl_multiple_extra_params(self):
-        tmpl = view.template('memphis.view.tests:templates/test.pt',
+        tmpl = view.template('ptah.view.tests:templates/test.pt',
                              title = 'Test template',
                              description = 'Test template description')
 
-        self.assertEqual(tapi.registry['memphis.view.tests']['test.pt'][1:3],
+        self.assertEqual(tapi.registry['ptah.view.tests']['test.pt'][1:3],
                          ['Test template', 'Test template description'])

@@ -1,6 +1,6 @@
 import decimal
 import unittest
-from memphis import form
+from ptah import form
 from webob.multidict import MultiDict
 
 from base import Base
@@ -13,7 +13,7 @@ class DummyRequest(object):
 
 
 def invalid_exc(func, *arg, **kw):
-    from memphis.form import Invalid
+    from ptah.form import Invalid
     try:
         func(*arg, **kw)
     except Invalid, e:
@@ -29,7 +29,7 @@ def strip(str):
 class TestInputField(Base):
 
     def _makeOne(self, name, **kw):
-        from memphis.form.fields import InputField
+        from ptah.form.fields import InputField
         return InputField(name, **kw)
 
     def test_fields_text(self):
@@ -607,7 +607,7 @@ class TestDate(unittest.TestCase):
 class TestFileField(Base):
 
     def _makeOne(self, name, **kw):
-        from memphis.form.fields import FileField
+        from ptah.form.fields import FileField
         return FileField(name, **kw)
 
     def test_fields_text(self):

@@ -110,7 +110,7 @@ I am impressed.  We are focusing on documentation, API cleaning, and
 test coverage.  There is alot of construction.  If you want to help - you
 are more than welcome.  Please do us the following favors:
 
-  * Please do not name a package with the top level ptah_ or memphis_
+  * Please do not name a package with the top level ptah_ 
     namespace.  We would like to formally bless any software with these
     prefixes in a package name.
 

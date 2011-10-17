@@ -12,7 +12,7 @@ def shutdown_handler(handler):
 _shutdown = False
 _handler_int = signal.getsignal(SIGINT)
 _handler_term = signal.getsignal(SIGTERM)
-log = logging.getLogger('memphis.config')
+log = logging.getLogger('ptah.config')
 
 
 def shutdown():

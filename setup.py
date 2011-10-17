@@ -46,10 +46,17 @@ setup(name='ptah',
       zip_safe = False,
       entry_points = {
         'ptah': ['package = ptah'],
+        'console_scripts': [
+            'settings = memphis.config.commands:settingsCommand',
+            ],
         'paste.app_factory': [
             'app = ptah:make_wsgi_app'],
         'paste.paster_create_template': [
             'ptahdemo = ptah_app.scaffolds:StarterProjectTemplate',
-            ]
+            ],
+        'paste.global_paster_command': [
+            'static = ptah.view.commands:StaticCommand',
+            'templates = ptah.view.commands:TemplatesCommand',
+            ],
         },
       )

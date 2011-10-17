@@ -7,10 +7,10 @@ try:
 except: # pragma: no cover
     chameleon_template = None
 
-from memphis import config
-from memphis.view import tmpl
+from ptah import config
+from ptah.view import tmpl
 
-log = logging.getLogger('memphis.view')
+log = logging.getLogger('ptah.view')
 
 
 TEMPLATE = config.register_settings(

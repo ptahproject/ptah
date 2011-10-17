@@ -1,5 +1,5 @@
 """ Page """
-import memphis
+import ptah
 import sqlalchemy as sqla
 
 import ptah_cms
@@ -22,7 +22,7 @@ class Page(ptah_cms.Content):
                        info = {'field_type': 'tinymce'})
 
 
-memphis.view.register_view(
+ptah.view.register_view(
     context = Page,
     permission = ptah_cms.View,
-    template = memphis.view.template('ptah_app:templates/page.pt'))
+    template = ptah.view.template('ptah_app:templates/page.pt'))

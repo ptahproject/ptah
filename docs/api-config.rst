@@ -1,7 +1,7 @@
-Memphis config  API
--------------------
+Ptah config  API
+----------------
 
-.. automodule:: memphis.config
+.. automodule:: ptah.config
 
   .. py:data:: registry
 

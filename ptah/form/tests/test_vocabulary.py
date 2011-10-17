@@ -14,7 +14,7 @@
 """Test of the Vocabulary and related support APIs.
 """
 import unittest
-from memphis.form import vocabulary
+from ptah.form import vocabulary
 
 
 class SimpleVocabularyTests(unittest.TestCase):

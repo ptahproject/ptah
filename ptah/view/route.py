@@ -1,5 +1,5 @@
 """ routes """
-from memphis import config
+from ptah import config
 from pyramid.config.util import make_predicates
 from pyramid.request import route_request_iface
 from pyramid.traversal import DefaultRootFactory
@@ -30,7 +30,7 @@ def register_route(name, pattern=None, factory=None, header=None,
         config.Action(
             register_route_impl,
             (name,pattern,factory,predicates,pregenerator,use_global_views),
-            discriminator = ('memphis.view:route', name),
+            discriminator = ('ptah.view:route', name),
             order = 1))
 
 

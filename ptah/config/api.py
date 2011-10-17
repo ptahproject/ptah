@@ -1,7 +1,7 @@
 import StringIO
 import traceback
 import sys, pkg_resources
-from memphis.config import directives
+from ptah.config import directives
 from zope.interface.registry import Components
 from zope.interface.interface import adapter_hooks
 from zope.interface.interfaces import IObjectEvent
@@ -34,7 +34,7 @@ class StopException(Exception):
 
 
 class AppStarting(object):
-    """ Memphis sends this event when application is ready to start. """
+    """ ptah sends this event when application is ready to start. """
     directives.event('Application starting event')
 
     config = None
@@ -54,15 +54,15 @@ class Config(object):
 
 
 def initialize(packages=None, excludes=(), reg=None):
-    """ Load memphis packages, scan and execute all configuration
+    """ Load ptah packages, scan and execute all configuration
     directives. """
 
     if reg is None:
-        reg = Components('memphis')
+        reg = Components('ptah')
         reg.registerHandler(objectEventNotify, (IObjectEvent,))
 
-    sys.modules['memphis.config'].registry = reg
-    sys.modules['memphis.config.api'].registry = reg
+    sys.modules['ptah.config'].registry = reg
+    sys.modules['ptah.config.api'].registry = reg
 
     def exclude_filter(modname):
         if modname in packages:
@@ -125,7 +125,7 @@ def loadPackage(name, seen, first=True):
                 continue
             packages.extend(loadPackage(pkg, seen, False))
 
-        distmap = pkg_resources.get_entry_map(dist, 'memphis')
+        distmap = pkg_resources.get_entry_map(dist, 'ptah')
         ep = distmap.get('package')
         if ep is not None:
             if dist.has_metadata('top_level.txt'):
@@ -158,7 +158,7 @@ def list_packages(include_packages=None, excludes=None):
             if excludes and pkg in excludes:
                 continue
 
-            distmap = pkg_resources.get_entry_map(dist, 'memphis')
+            distmap = pkg_resources.get_entry_map(dist, 'ptah')
             if 'package' in distmap:
                 packages.extend(loadPackage(pkg, seen))
             else:

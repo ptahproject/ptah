@@ -6,7 +6,7 @@ from collections import OrderedDict
 
 import api
 
-log = logging.getLogger('memphis.config')
+log = logging.getLogger('ptah.config')
 
 
 class EventDescriptor(object):
@@ -32,7 +32,7 @@ class EventDescriptor(object):
         self.name = '%s.%s'%(inst.__module__, inst.__name__)
 
 
-EVENT_ID = 'memphis.config:event'
+EVENT_ID = 'ptah.config:event'
 
 def event(title='', category=''):
     """ Register event object, it is used for introspection only. """
@@ -62,7 +62,7 @@ def adapter(*required, **kw):
     name = kw.get('name', '')
 
     def descriminator(action):
-        return ('memphis.config:adapter',
+        return ('ptah.config:adapter',
                 required, _getProvides(action.info.context), name)
 
     if info.scope in ('module', 'function call'): # function decorator
@@ -71,7 +71,7 @@ def adapter(*required, **kw):
                 Action(
                     _register,
                     ('registerAdapter', func, required), {'name': name},
-                    discriminator = ('memphis.config:adapter',
+                    discriminator = ('ptah.config:adapter',
                                      required, _getProvides(func), name))
                 )
             return func
@@ -92,7 +92,7 @@ def subscriber(*required):
         info.attach(
             Action(
                 _register, ('registerHandler', func, required),
-                discriminator = ('memphis.config:subscriber',
+                discriminator = ('ptah.config:subscriber',
                                  func, tuple(required)))
             )
         return func
@@ -119,7 +119,7 @@ def _getProvides(factory):
             "and no provided interface was specified.")
 
 
-ATTACH_ATTR = '__memphis_actions__'
+ATTACH_ATTR = '__ptah_actions__'
 
 class Action(object):
 

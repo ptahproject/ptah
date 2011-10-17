@@ -3,10 +3,10 @@ import colander
 from colander.tests import TestMapping, TestSequence, TestSchemaNode
 
 
-class TestMemphisMapping(TestMapping):
+class TestptahMapping(TestMapping):
 
     def _makeOne(self, *arg, **kw):
-        from memphis.config.schema import Mapping
+        from ptah.config.schema import Mapping
         return Mapping(*arg, **kw)
 
     def test_schema_mapping_flatten_without_name(self):
@@ -63,10 +63,10 @@ class TestMemphisMapping(TestMapping):
         self.assertEqual(result, {'node': {'a': 1, 'b': 2}})
 
 
-class TestMemphisSequence(TestSequence):
+class TestptahSequence(TestSequence):
 
     def _makeOne(self, **kw):
-        from memphis.config.schema import Sequence
+        from ptah.config.schema import Sequence
         return Sequence(**kw)
 
     def test_schema_sequence_flatten(self):
@@ -79,24 +79,24 @@ class TestMemphisSequence(TestSequence):
         self.assertEqual(result, {'node.0': 1, 'node.1': 2})
 
 
-class TestMemphisString(unittest.TestCase):
+class TestptahString(unittest.TestCase):
 
     def test_schema_str(self):
-        from memphis.config.schema import Str
+        from ptah.config.schema import Str
 
         typ = Str()
 
         self.assertEqual(typ.encoding, 'utf-8')
 
 
-class TestMemphisSchemaNode(unittest.TestCase):
+class TestptahSchemaNode(unittest.TestCase):
 
     def _makeOne(self, *arg, **kw):
-        from memphis.config.schema import SchemaNode
+        from ptah.config.schema import SchemaNode
         return SchemaNode(*arg, **kw)
 
     def test_schema_node_deserialize(self):
-        from memphis.config.schema import Required
+        from ptah.config.schema import Required
 
         node = self._makeOne(
             colander.Int(),
@@ -136,7 +136,7 @@ class TestMemphisSchemaNode(unittest.TestCase):
         self.assertEqual(node.deserialize(), 200)
 
     def test_schema_node_deserialize_str(self):
-        from memphis.config.schema import Required
+        from ptah.config.schema import Required
 
         node = self._makeOne(
             colander.Str(),
@@ -161,8 +161,8 @@ class TestMemphisSchemaNode(unittest.TestCase):
 class TestRequiredWithDependency(unittest.TestCase):
 
     def test_schema_required_validator(self):
-        from memphis import config
-        from memphis.config.schema import Required
+        from ptah import config
+        from ptah.config.schema import Required
 
         v = config.RequiredWithDependency(
             'field', 'depends', 'depvalue', 'default')

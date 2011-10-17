@@ -2,8 +2,8 @@
 from pyramid.response import Response
 from pyramid.httpexceptions import HTTPFound
 
-from memphis import config, view
-from memphis.view.renderers import Renderer, JSONRenderer, SimpleRenderer
+from ptah import config, view
+from ptah.view.renderers import Renderer, JSONRenderer, SimpleRenderer
 
 from base import Base, Context
 
@@ -64,7 +64,7 @@ class TestSimpleRenderer(Base):
                 return '<html>%s</html>'%content
 
         view.register_layout('test', klass=Layout)
-        self._init_memphis()
+        self._init_ptah()
 
         def viewFactory(context, request):
             return None, 'test'
@@ -201,7 +201,7 @@ class TestTmplRenderer(RendererBase):
                 return '<html>%s</html>'%content
 
         view.register_layout('test', klass=Layout)
-        self._init_memphis()
+        self._init_ptah()
 
         def viewFactory(context, request):
             return None, {}

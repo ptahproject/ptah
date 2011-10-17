@@ -3,14 +3,14 @@ import sys, logging
 from zope import interface
 from pyramid.httpexceptions import HTTPNotFound
 
-from memphis import config
-from memphis.view.base import View
-from memphis.view.customize import LayerWrapper
-from memphis.view.interfaces import ISnippet
+from ptah import config
+from ptah.view.base import View
+from ptah.view.customize import LayerWrapper
+from ptah.view.interfaces import ISnippet
 
-log = logging.getLogger('memphis.view')
+log = logging.getLogger('ptah.view')
 
-STYPE_ID = 'memphis.view:snippettype'
+STYPE_ID = 'ptah.view:snippettype'
 
 
 class Snippet(View):
@@ -69,7 +69,7 @@ def snippettype(name, context=None, title='', description=''):
 def register_snippet(name, context=None, klass=None, template=None, layer=''):
     info = config.DirectiveInfo()
 
-    discriminator = ('memphis.view:snippet', name, context, layer)
+    discriminator = ('ptah.view:snippet', name, context, layer)
 
     info.attach(
         config.Action(

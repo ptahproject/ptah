@@ -29,7 +29,7 @@ class TestTemplatesModule(Base):
         res = TemplatesView.__renderer__(mod, request)
         self.assertEqual(res.status, '200 OK')
 
-    # fixme: memphis.view.tmpl
+    # fixme: ptah.view.tmpl
     def test_tmpls_view_pkg(self):
         from ptah_modules.templates import TemplatesModule, TemplatesView
 

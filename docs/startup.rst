@@ -4,23 +4,23 @@ Pyramid & Ptah Startup
 Requirements
 ------------
 You must pass a pyramid Configurator.registry object into 
-memphis.config.initialize and  memphis.config.initialize_settings. You can
+ptah.config.initialize and ptah.config.initialize_settings. You can
 manually create WSGI App and initialize it or Ptah can perform this for you.
 
 config.initialize
 -----------------
 
-This function is found at, memphis.config.initialize
+This function is found at, ptah.config.initialize
 
   - inspects all eggs using setuptool.pkg_resources
-  - find all memphis-related eggs using setup.py entry_points::
+  - find all ptah-related eggs using setup.py entry_points::
   
           entry_points = {
-            'memphis': ['package = your_package'],
+            'ptah': ['package = your_package'],
           }
         
-  - for each memphis egg it is loaded
-    memphis.config.loadPackage(memphis-related-egg)
+  - for each ptah egg it is loaded
+    ptah.config.loadPackage(ptah-related-egg)
     All configuration has been read and registrations are loaded in memory
     
   - Checks for configuration conflicts
@@ -28,12 +28,12 @@ This function is found at, memphis.config.initialize
 config.initialize_settings
 --------------------------
 
-This function, memphis.config.initialize_settings(/path/to/settings.ini)
+This function, ptah.config.initialize_settings({'settings': /path/to/settings.ini})
 
   - consumes the .ini file and parses it
-  - makes all values available in memphis.config.Settings dict
-  - notify(memphis.config.ISettingsInitializing)
-    - memphis/pyramid related packages who subscribe to pyramid's event channel will get this event.
+  - makes all values available in ptah.config.Settings dict
+  - notify(ptah.config.SettingsInitializing)
+    - ptah/pyramid related packages who subscribe to pyramid's event channel will get this event.
     - each package can configure itself at this point with environment
   - At this point pyramid and ptah as well as all add-ons will be fully
     configured.  Services available:
@@ -57,12 +57,12 @@ I have 2 ways to do register?
 Yes.  But its easier to think about it this way.  Pyramid is a agnostic 
 web framework.  Ptah is a application/web framework with opinions. 
 Ptah registration revolve around services (uri resolvers, models and a
-type system).  These memphis registration's are application specific and
+type system).  These ptah registration's are application specific and
 have no such equivilent in Pyramid (nor should they).  
 
-Where is memphis.config used?
------------------------------
-Everywhere.  But you never touch it.  There is always formal API that is defined and (will be( documented.  The internal implementation uses memphis.config implementation.
+Where is ptah.config used?
+--------------------------
+Everywhere.  But you never touch it.  There is always formal API that is defined and (will be( documented.  The internal implementation uses ptah.config implementation.
 
 Some examples:
 
@@ -70,7 +70,7 @@ Some examples:
   
   - REST registration, ala. ptah_cms.rest
   
-  - Field registration, memphis.form.field
+  - Field registration, ptah.form.field
   
   - Ptah App provides "UI Action" to show "Edit, Sharing, etc" actions
   
@@ -92,12 +92,12 @@ convienance of Ptah You
 can do the work of Ptah manually; its just added convienance for Ptah
 usage. 
 
-Pyramid configuraiton vs. Memphis configuration
------------------------------------------------
+Pyramid configuraiton vs. ptah configuration
+--------------------------------------------
 In Pyramid configuration statements such as pyramid.config.add_route, etc
-generate Actions (same as memphis).  
+generate Actions (same as ptah).  
 
-Currently Memphis differs in Pyramid in the following ways.
+Currently ptah differs in Pyramid in the following ways.
 
   - Memphis configuration has different information during configuration
   
@@ -121,7 +121,7 @@ Currently Memphis differs in Pyramid in the following ways.
       thrown away. e.g. pyramid probably has no desire to add config 
       statements at run-time or to "unload" configuration at run-time.
 
-In Memphis there is a 
+In ptah there is a 
 more formal 2 stage configuration, registration stage and apply stage.
 It loads all packages and can be introspected and then a applying
 the configuration to the environment.  Why?  An example:
@@ -133,24 +133,24 @@ we load the external package:
 
   - It does not immediately load the resolver into the main dictionary
   
-  - memphis will have the registration and can check for conflict as well
+  - ptah will have the registration and can check for conflict as well
     as have access to all API registrations for the add-on package.
     
   - At this point you can control whether or not you want to apply the
     add-on registrations.  
     
-  - Because memphis has the configuration object and its a separate step
-    to apply; memphis.config KNOWS which add-on is repsonsible for the
+  - Because ptah has the configuration object and its a separate step
+    to apply; ptah.config KNOWS which add-on is repsonsible for the
     implementation.  
     
     - Without this you could see a new URI resolver registered but you would not know exactly which package was responsible for that registration.
     
     - Another possibility is unloading this configuration.  In future we may have a add-on ecosystem where you will want to "unload" registrations.  
     
-  - registeration/apply are runtime features of memphis.config and maybe in future there will be remove registrations.  
+  - registeration/apply are runtime features of ptah.config and maybe in future there will be remove registrations.  
 
 More thoughts
 -------------
-Pyramid is explicit.  Memphis is sort-of implicit and has indirection.  For instance memphis needs to scan packages with the entry-point memphis.  Pyramid would need to expose this functionality for memphis to plugin its own higher-level registration calls (uri, type system, etc).
-Also Ptah/memphis reuse memphis.config in a lot of places.  The pattern
-of having an public API which advertises the functionality but internally uses the memphis.config implementation - is inspired from Pyramid.
+Pyramid is explicit. ptah is sort-of implicit and has indirection.  For instance ptah needs to scan packages with the entry-point ptah.  Pyramid would need to expose this functionality for ptah to plugin its own higher-level registration calls (uri, type system, etc).
+Also Ptah/ptah reuse ptah.config in a lot of places.  The pattern
+of having an public API which advertises the functionality but internally uses the ptah.config implementation - is inspired from Pyramid.

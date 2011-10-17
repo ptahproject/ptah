@@ -1,10 +1,10 @@
-""" memphis.view interfaces """
+""" ptah.view interfaces """
 from zope import interface
 from pyramid.interfaces import IView as IPyramidView
 
 
-class IMemphisView(IPyramidView):
-    """ memphis view """
+class IPtahView(IPyramidView):
+    """ ptah view """
 
     __name__ = interface.Attribute('Name')
     __parent__ = interface.Attribute('Parent')

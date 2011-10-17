@@ -1,5 +1,5 @@
 import ptah, ptah_cms
-from memphis import view 
+from ptah import view 
 
 
 class PageLayout(view.Layout):

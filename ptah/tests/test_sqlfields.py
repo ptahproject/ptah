@@ -1,7 +1,7 @@
 import transaction
 import sqlahelper
 import sqlalchemy as sqla
-from memphis import config, form
+from ptah import config, form
 
 from base import Base
 

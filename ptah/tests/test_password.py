@@ -1,4 +1,4 @@
-from memphis import form
+from ptah import form
 
 from base import Base
 
@@ -6,7 +6,7 @@ from base import Base
 class TestPasswordSchema(Base):
 
     def test_password_required(self):
-        self._init_memphis()
+        self._init_ptah()
         from ptah.password import PasswordSchema
 
         pwdSchema = PasswordSchema.bind(params={})
@@ -16,7 +16,7 @@ class TestPasswordSchema(Base):
         self.assertEqual(errors[0].field.name, 'password')
 
     def test_password_equal(self):
-        self._init_memphis()
+        self._init_ptah()
         from ptah.password import PasswordSchema
 
         pwdSchema = PasswordSchema.bind(
@@ -30,7 +30,7 @@ class TestPasswordSchema(Base):
             "Password and Confirm Password should be the same.")
 
     def test_password(self):
-        self._init_memphis()
+        self._init_ptah()
         from ptah.password import PasswordSchema
 
         pwdSchema = PasswordSchema.bind(

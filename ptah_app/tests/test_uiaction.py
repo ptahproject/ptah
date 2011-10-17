@@ -1,6 +1,6 @@
 import transaction
 from zope import interface
-from memphis import config
+from ptah import config
 from pyramid.httpexceptions import HTTPForbidden
 
 from base import Base
@@ -12,7 +12,7 @@ class TestUIAction(Base):
         config.cleanup_system(self.__class__.__module__)
         super(TestUIAction, self).tearDown()
 
-    def _setup_memphis(self):
+    def _setup_ptah(self):
         pass
 
     def test_uiaction(self):
@@ -22,7 +22,7 @@ class TestUIAction(Base):
             __name__ = ''
 
         ptah_app.uiaction(Content, 'action1', 'Action 1')
-        self._init_memphis()
+        self._init_ptah()
 
         request = self._makeRequest()
 
@@ -39,7 +39,7 @@ class TestUIAction(Base):
 
         ptah_app.uiaction(Content, 'action1', 'Action 1')
         ptah_app.uiaction(Content, 'action1', 'Action 1')
-        self.assertRaises(config.ConflictError, self._init_memphis)
+        self.assertRaises(config.ConflictError, self._init_ptah)
 
     def test_uiaction_url(self):
         import ptah_app
@@ -49,7 +49,7 @@ class TestUIAction(Base):
 
         ptah_app.uiaction(Content, 'action1', 'Action 1',
                                action='test.html')
-        self._init_memphis()
+        self._init_ptah()
         request = self._makeRequest()
 
         actions = ptah_app.list_uiactions(Content(), request)
@@ -63,7 +63,7 @@ class TestUIAction(Base):
 
         ptah_app.uiaction(Content, 'action1', 'Action 1',
                                action='/content/about.html')
-        self._init_memphis()
+        self._init_ptah()
         request = self._makeRequest()
 
         actions = ptah_app.list_uiactions(Content(), request)
@@ -81,7 +81,7 @@ class TestUIAction(Base):
 
         ptah_app.uiaction(Content, 'action1', 'Action 1',
                                action=customAction)
-        self._init_memphis()
+        self._init_ptah()
         request = self._makeRequest()
 
         actions = ptah_app.list_uiactions(Content(), request)
@@ -100,7 +100,7 @@ class TestUIAction(Base):
         ptah_app.uiaction(
             Content, 'action1', 'Action 1',
             action='test.html', condition=condition)
-        self._init_memphis()
+        self._init_ptah()
         request = self._makeRequest()
 
         actions = ptah_app.list_uiactions(Content(), request)
@@ -122,7 +122,7 @@ class TestUIAction(Base):
 
         ptah_app.uiaction(
             Content, 'action1', 'Action 1', permission='View')
-        self._init_memphis()
+        self._init_ptah()
         request = self._makeRequest()
 
         orig_cp = ptah.checkPermission
@@ -145,7 +145,7 @@ class TestUIAction(Base):
 
         ptah_app.uiaction(Content, 'view', 'View', sortWeight=1.0)
         ptah_app.uiaction(Content, 'action', 'Action', sortWeight=2.0)
-        self._init_memphis()
+        self._init_ptah()
 
         request = self._makeRequest()
 
@@ -161,7 +161,7 @@ class TestUIAction(Base):
             __name__ = ''
 
         ptah_app.uiaction(Content, 'view', 'View', testinfo='test')
-        self._init_memphis()
+        self._init_ptah()
 
         request = self._makeRequest()
 

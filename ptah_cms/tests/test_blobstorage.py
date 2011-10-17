@@ -1,7 +1,7 @@
 import ptah
 import transaction
 from cStringIO import StringIO
-from memphis import config
+from ptah import config
 
 from base import Base
 

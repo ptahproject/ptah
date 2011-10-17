@@ -165,7 +165,7 @@ Exclusion over Inclusion
 We know this is controversial and possible anti-Pyramid but hear us out.
 Pyramid requires the developer to be explicit and you specifically say you
 want to load a package.  Ptah *does not* do this.  If you have a package
-in your PYTHONPATH that has a entry-point for `memphis`; it will get loaded.
+in your PYTHONPATH that has a entry-point for `ptah`; it will get loaded.
 This is the default behavior and, of course, you can manually Configure your
 usage of Ptah the same way you configure Pyramid.  
 

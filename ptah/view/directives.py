@@ -2,17 +2,17 @@
 import inspect
 from pyramid.interfaces import IRequest
 
-from memphis import config
-from memphis.view.customize import LayerWrapper
-from memphis.view.view import unset, register_view_impl
-from memphis.view.layout import register_layout_impl
-from memphis.view.snippet import register_snippet_impl
+from ptah import config
+from ptah.view.customize import LayerWrapper
+from ptah.view.view import unset, register_view_impl
+from ptah.view.layout import register_layout_impl
+from ptah.view.snippet import register_snippet_impl
 
 
 def snippet(name, context=None, template=None, layer=''):
     info = config.DirectiveInfo(allowed_scope=('class',))
 
-    discriminator = ('memphis.view:snippet', name, context, layer)
+    discriminator = ('ptah.view:snippet', name, context, layer)
 
     info.attach(
         config.ClassAction(
@@ -29,7 +29,7 @@ def pyramidview(name=u'', context=None, route=None,
     info = config.DirectiveInfo(
         allowed_scope=('class', 'module', 'function call'))
 
-    discriminator = ('memphis.view:view', name, context, route, layer)
+    discriminator = ('ptah.view:view', name, context, route, layer)
 
     if info.scope in ('module', 'function call'): # function decorator
         def wrapper(factory):
@@ -55,7 +55,7 @@ def pyramidview(name=u'', context=None, route=None,
 def layout(name='',context=None,parent='',route=None,template=None,layer=''):
     info = config.DirectiveInfo(allowed_scope=('class',))
 
-    discriminator = ('memphis.view:layout', name, context, route, layer)
+    discriminator = ('ptah.view:layout', name, context, route, layer)
 
     info.attach(
         config.ClassAction(

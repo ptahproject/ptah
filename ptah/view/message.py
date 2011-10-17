@@ -3,9 +3,9 @@ import cgi
 from zope import interface
 from pyramid.interfaces import IRequest
 
-from memphis import config
-from memphis.view.tmpl import template as get_template
-from memphis.view.interfaces import IMessage, IStatusMessage
+from ptah import config
+from ptah.view.tmpl import template as get_template
+from ptah.view.interfaces import IMessage, IStatusMessage
 
 
 def add_message(request, msg, type='info'):
@@ -67,25 +67,25 @@ class Message(object):
 class InformationMessage(Message):
     config.adapter(IRequest, name='info')
 
-    template = get_template('memphis.view:templates/msg-info.pt')
+    template = get_template('ptah.view:templates/msg-info.pt')
 
 
 class SuccessMessage(Message):
     config.adapter(IRequest, name='success')
 
-    template = get_template('memphis.view:templates/msg-success.pt')
+    template = get_template('ptah.view:templates/msg-success.pt')
 
 
 class WarningMessage(Message):
     config.adapter(IRequest, name='warning')
 
-    template = get_template('memphis.view:templates/msg-warning.pt')
+    template = get_template('ptah.view:templates/msg-warning.pt')
 
 
 class ErrorMessage(Message):
     config.adapter(IRequest, name='error')
 
-    template = get_template('memphis.view:templates/msg-error.pt')
+    template = get_template('ptah.view:templates/msg-error.pt')
 
     def render(self, e):
         if isinstance(e, Exception):

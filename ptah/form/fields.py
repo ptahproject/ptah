@@ -1,9 +1,9 @@
 """ Basic fields """
 import datetime, iso8601, decimal
-from memphis import view
-from memphis.form import vocabulary
-from memphis.form.field import field, Field
-from memphis.form.interfaces import _, null, required, Invalid, ITerm
+from ptah import view
+from ptah.form import vocabulary
+from ptah.form.field import field, Field
+from ptah.form.interfaces import _, null, required, Invalid, ITerm
 
 
 class InputField(Field, view.View):
@@ -69,7 +69,7 @@ class BaseChoiceField(VocabularyField):
     """ choice field """
 
     tmpl_display = view.template(
-        "memphis.form:templates/fields/basechoice-display.pt")
+        "ptah.form:templates/fields/basechoice-display.pt")
 
     def serialize(self, value):
         if value is null:
@@ -114,7 +114,7 @@ class BaseMultiChoiceField(VocabularyField):
     """ multi choice field """
 
     tmpl_display = view.template(
-        "memphis.form:templates/fields/basemultichoice-display.pt")
+        "ptah.form:templates/fields/basemultichoice-display.pt")
 
     def serialize(self, value):
         if value is null:
@@ -175,9 +175,9 @@ class TextField(InputField):
     value = u''
 
     tmpl_input = view.template(
-        "memphis.form:templates/fields/text-input.pt")
+        "ptah.form:templates/fields/text-input.pt")
     tmpl_display = view.template(
-        "memphis.form:templates/fields/text-display.pt")
+        "ptah.form:templates/fields/text-display.pt")
 
 
 class Number(object):
@@ -251,7 +251,7 @@ class TextAreaField(TextField):
     cols = 40
 
     tmpl_input = view.template(
-        "memphis.form:templates/fields/textarea-input.pt")
+        "ptah.form:templates/fields/textarea-input.pt")
 
 
 class FileField(TextField):
@@ -261,7 +261,7 @@ class FileField(TextField):
     klass = u'input-file'
 
     tmpl_input = view.template(
-        "memphis.form:templates/fields/file-input.pt")
+        "ptah.form:templates/fields/file-input.pt")
 
     def extract(self, default=null):
         value = self.params.get(self.name, default)
@@ -317,9 +317,9 @@ class PasswordField(TextField):
     klass = u'password-widget'
 
     tmpl_input = view.template(
-        "memphis.form:templates/fields/password-input.pt")
+        "ptah.form:templates/fields/password-input.pt")
     tmpl_display = view.template(
-        "memphis.form:templates/fields/password-display.pt")
+        "ptah.form:templates/fields/password-display.pt")
 
 
 class MultiChoiceField(BaseMultiChoiceField):
@@ -329,14 +329,14 @@ class MultiChoiceField(BaseMultiChoiceField):
 
     klass = u'multichoice-widget'
     tmpl_input = view.template(
-        "memphis.form:templates/fields/multichoice-input.pt")
+        "ptah.form:templates/fields/multichoice-input.pt")
 
 
 class DateField(TextField):
     __doc__ = _(u'Simple date input field.')
 
     tmpl_display = view.template(
-        "memphis.form:templates/fields/date-display.pt")
+        "ptah.form:templates/fields/date-display.pt")
 
     def serialize(self, value):
         if value is null:
@@ -374,7 +374,7 @@ class DateTimeField(TextField):
     default_tzinfo = iso8601.iso8601.Utc()
 
     tmpl_display = view.template(
-        "memphis.form:templates/fields/datetime-display.pt")
+        "ptah.form:templates/fields/datetime-display.pt")
 
     def serialize(self, value):
         if value is null or value is None:
@@ -418,7 +418,7 @@ class RadioField(BaseChoiceField):
 
     klass = u'radio-widget'
     tmpl_input = view.template(
-        "memphis.form:templates/fields/radio-input.pt")
+        "ptah.form:templates/fields/radio-input.pt")
 
 
 class BoolField(BaseChoiceField):
@@ -431,7 +431,7 @@ class BoolField(BaseChoiceField):
         (False, 'false',  _('no')))
 
     tmpl_input = view.template(
-        "memphis.form:templates/fields/bool-input.pt")
+        "ptah.form:templates/fields/bool-input.pt")
 
 
 class ChoiceField(BaseChoiceField):
@@ -445,7 +445,7 @@ class ChoiceField(BaseChoiceField):
     promptMessage = _('select a value ...')
 
     tmpl_input = view.template(
-        "memphis.form:templates/fields/select-input.pt")
+        "ptah.form:templates/fields/select-input.pt")
 
     def update_items(self):
         super(ChoiceField, self).update_items()

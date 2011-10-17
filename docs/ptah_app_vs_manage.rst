@@ -22,7 +22,7 @@ The default "modules" for Ptah Manage are:
   
   - Form fields
   
-  UI listing for each memphis.form.field that is registered with Ptah.  If you create a new field and define a preview for the Field - it will show up here.  As new fields become available or you create them - you can see them here.
+  UI listing for each ptah.form.field that is registered with Ptah.  If you create a new field and define a preview for the Field - it will show up here.  As new fields become available or you create them - you can see them here.
   
   - Introspect
   

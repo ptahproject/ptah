@@ -63,7 +63,7 @@ show schema
 
 show fields of schema (html)
 
-  >>> from memphis import form
+  >>> from ptah import form
   >>> request=request (description='We are not sending title',
           text='<p>This is some body text for WYSIWYG field</p>')
   >>> eform = form.Form(page,  )

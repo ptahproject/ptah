@@ -28,7 +28,7 @@ def resetThreadLocalData(ev):
 
 
 class CSRFService(object):
-    """ csrf service for memphis.form """
+    """ csrf service for ptah.form """
 
     TOKEN_TYPE = token.TokenType(
         '1c49d2aacf844557a7aff3dbf09c0740', timedelta(minutes=30))

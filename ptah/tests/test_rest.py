@@ -1,7 +1,7 @@
 import ptah
 import transaction
 import simplejson
-from memphis import config
+from ptah import config
 from pyramid.testing import DummyRequest
 from pyramid.httpexceptions import HTTPNotFound
 
@@ -18,7 +18,7 @@ class TestRestRegistrations(Base):
         import ptah.rest
 
         srv = ptah.rest.restService('test', 'Test service')
-        self._init_memphis()
+        self._init_ptah()
 
         self.assertEqual(srv.name, 'test')
         self.assertIn('test', ptah.rest.services)
@@ -30,7 +30,7 @@ class TestRestRegistrations(Base):
         ptah.rest.restService('test', 'Test service')
         ptah.rest.restService('test', 'Test service2')
 
-        self.assertRaises(config.ConflictError, self._init_memphis)
+        self.assertRaises(config.ConflictError, self._init_ptah)
 
     def test_rest_registerService_action(self):
         import ptah.rest
@@ -108,7 +108,7 @@ class TestRestView(Base):
     def test_rest_login_success(self):
         from ptah.rest import Login
         from ptah import authentication
-        self._init_memphis()
+        self._init_ptah()
 
         authentication.providers['test'] = Provider()
         request = DummyRequest(params = {'login': 'admin', 'password': '12345'})

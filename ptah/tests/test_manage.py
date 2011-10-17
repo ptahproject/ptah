@@ -1,7 +1,7 @@
 import ptah
 import transaction
 import simplejson
-from memphis import config, view
+from ptah import config, view
 from pyramid.testing import DummyRequest
 from pyramid.httpexceptions import HTTPNotFound, HTTPForbidden
 
@@ -24,7 +24,7 @@ class TestManageModule(Base):
             title = 'Test module'
             ptah.manageModule('test-module')
 
-        self._init_memphis()
+        self._init_ptah()
         self.assertIn('test-module', MODULES)
 
         request = self._makeRequest()
@@ -71,7 +71,7 @@ class TestManageModule(Base):
         def principalResolver(uri):
             return principal
 
-        self._init_memphis()
+        self._init_ptah()
         self.assertTrue(PtahAccessManager('test:user'))
 
     def test_manage_view(self):
@@ -90,7 +90,7 @@ class TestManageModule(Base):
         ptah.set_access_manager(accessManager)
         ptah.authService.set_userid('test-user')
 
-        self._init_memphis()
+        self._init_ptah()
 
         request = self._makeRequest()
         route = PtahManageRoute(request)
@@ -113,7 +113,7 @@ class TestManageModule(Base):
         class Content(object):
             __parent__ = None
 
-        self._init_memphis()
+        self._init_ptah()
 
         request = self._makeRequest()
 
@@ -144,6 +144,6 @@ class TestInstrospection(Base):
             title = 'Test module'
             introspection('test-module')
 
-        self._init_memphis()
+        self._init_ptah()
         self.assertIn('test-module', INTROSPECTIONS)
         self.assertIs(INTROSPECTIONS['test-module'], TestModule)

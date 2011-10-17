@@ -1,5 +1,5 @@
 from zope import interface
-from memphis import view, form, config
+from ptah import view, form, config
 from pyramid.httpexceptions import HTTPFound, HTTPNotFound
 
 import ptah

@@ -3,21 +3,21 @@ import sys, unittest
 from zope import interface
 from pyramid.interfaces import IRequest
 
-from memphis import config, view
-from memphis.view.message import InformationMessage
-from memphis.view.interfaces import IMessage, IStatusMessage
+from ptah import config, view
+from ptah.view.message import InformationMessage
+from ptah.view.interfaces import IMessage, IStatusMessage
 
 from base import Base
 
 
 class TestStatusMessages(Base):
 
-    def _setup_memphis(self):
+    def _setup_ptah(self):
         pass
 
     def test_messages_service(self, skip=False):
         if not skip:
-            self._init_memphis()
+            self._init_ptah()
 
         service = IStatusMessage(self.request)
         self.assertTrue(IStatusMessage.providedBy(service))
@@ -43,7 +43,7 @@ class TestStatusMessages(Base):
         self.assertEqual(service.clear(), ())
 
     def test_messages_addmessage(self):
-        self._init_memphis()
+        self._init_ptah()
 
         service = IStatusMessage(self.request)
 
@@ -55,7 +55,7 @@ class TestStatusMessages(Base):
         self.assertEqual(service.clear(), ())
 
     def test_messages_service_no_session(self):
-        self._init_memphis()
+        self._init_ptah()
 
         del self.request.session
 
@@ -63,7 +63,7 @@ class TestStatusMessages(Base):
         self.test_messages_service(True)
 
     def test_messages_warning_msg(self):
-        self._init_memphis()
+        self._init_ptah()
 
         service = IStatusMessage(self.request)
 
@@ -73,7 +73,7 @@ class TestStatusMessages(Base):
                          [u'<div class="alert-message warning">\n  <a class="close" href="#">\xd7</a>\n  <p>warning</p>\n</div>\n'])
 
     def test_messages_error_msg(self):
-        self._init_memphis()
+        self._init_ptah()
 
         try:
             raise ValueError('Test')
@@ -102,7 +102,7 @@ class TestStatusMessages(Base):
             def render(self, message):
                 return '<div class="customMsg">%s</div>'%message
 
-        self._init_memphis()
+        self._init_ptah()
 
         sm = config.registry
         sm.registerAdapter(CustomMessage, (IRequest,), IMessage, name='custom')
@@ -115,7 +115,7 @@ class TestStatusMessages(Base):
             [u'<div class="customMsg">message</div>'])
 
     def test_messages_render(self):
-        self._init_memphis()
+        self._init_ptah()
 
         view.add_message(self.request, 'message')
         msg = view.render_messages(self.request)
@@ -126,7 +126,7 @@ class TestStatusMessages(Base):
         self.assertEqual(msg, '')
 
     def test_messages_View(self):
-        self._init_memphis()
+        self._init_ptah()
 
         v = view.View(None, self.request)
 

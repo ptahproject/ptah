@@ -6,9 +6,9 @@ from datetime import date, datetime, timedelta
 from pyramid.i18n import get_localizer
 from pyramid.threadlocal import get_current_request
 
-from memphis import config
+from ptah import config
 
-_ = translationstring.TranslationStringFactory('memphis.view')
+_ = translationstring.TranslationStringFactory('ptah.view')
 
 
 class FormatImpl(dict):
@@ -164,13 +164,13 @@ def timedeltaFormatter(value, type='short', request=None):
 
         if hours:
             frm.append(translate(
-                    '${hours} hour(s)', 'memphis.view', {'hours': hours}))
+                    '${hours} hour(s)', 'ptah.view', {'hours': hours}))
         if mins:
             frm.append(translate(
-                    '${mins} min(s)', 'memphis.view', {'mins': mins}))
+                    '${mins} min(s)', 'ptah.view', {'mins': mins}))
         if secs:
             frm.append(translate(
-                    '${secs} sec(s)', 'memphis.view', {'secs': secs}))
+                    '${secs} sec(s)', 'ptah.view', {'secs': secs}))
 
         return ' '.join(frm)
 

@@ -1,5 +1,5 @@
 import transaction
-from memphis import config
+from ptah import config
 
 import ptah
 import ptah_cms

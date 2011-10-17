@@ -1,18 +1,18 @@
 import ptah
 import transaction
-from memphis import config
+from ptah import config
 
 from base import Base
 
 
 class TestApplicationFactoryRegistration(Base):
 
-    def _setup_memphis(self):
+    def _setup_ptah(self):
         pass
 
     def test_app_factory(self):
         import ptah_cms
-        self._init_memphis()
+        self._init_ptah()
 
         factory = ptah_cms.ApplicationFactory('/test', 'root', 'Root App')
 
@@ -64,11 +64,11 @@ class TestApplicationFactoryRegistration(Base):
         factory1 = ptah_cms.ApplicationFactory('/test', 'root', 'Root App1')
         factory2 = ptah_cms.ApplicationFactory('/', 'root', 'Root App2')
 
-        self.assertRaises(config.ConflictError, self._init_memphis)
+        self.assertRaises(config.ConflictError, self._init_ptah)
 
     def test_app_factory_mutiple_same_applications(self):
         import ptah_cms
-        self._init_memphis()
+        self._init_ptah()
 
         factory1 = ptah_cms.ApplicationFactory('/app1', 'root', 'Root App')
         factory2 = ptah_cms.ApplicationFactory('/app2', 'root', 'Root App')

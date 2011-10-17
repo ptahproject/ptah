@@ -3,9 +3,9 @@ import sys, os, re, colander
 from urlparse import urljoin, urlparse
 from paste import fileapp, request, httpexceptions
 
-from memphis import config
-from memphis.view import tmpl
-from memphis.view.customize import LayerWrapper
+from ptah import config
+from ptah.view import tmpl
+from ptah.view.customize import LayerWrapper
 
 
 STATIC = config.register_settings(
@@ -44,7 +44,7 @@ def static(name, path, layer=''):
     if not os.path.isdir(abspath):
         raise ValueError("path is not directory")
 
-    discriminator = ('memphis.view:static', name, layer)
+    discriminator = ('ptah.view:static', name, layer)
 
     info = config.DirectiveInfo()
     info.attach(

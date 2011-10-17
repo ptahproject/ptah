@@ -2,9 +2,9 @@
 import os.path, shutil, textwrap, pkg_resources
 from paste.script.command import Command
 
-from memphis import config
-from memphis.view import tmpl, resources
-from memphis.view.customize import _Manager
+from ptah import config
+from ptah.view import tmpl, resources
+from ptah.view.customize import _Manager
 
 
 grpTitleWrap = textwrap.TextWrapper(
@@ -37,9 +37,9 @@ nameDescriptionWrap = textwrap.TextWrapper(
 class TemplatesCommand(Command):
     """ 'templates' paste command"""
 
-    summary = "Memphis templates management"
+    summary = "ptah templates management"
     usage = ""
-    group_name = "Memphis"
+    group_name = "ptah"
     parser = Command.standard_parser(verbose=False)
     parser.add_option('-a', '--all', dest='all',
                       action="store_true",
@@ -59,7 +59,7 @@ class TemplatesCommand(Command):
                       help = 'Force override custom template.')
 
     def command(self):
-        # load all memphis packages
+        # load all ptah packages
         config.initialize()
 
         if self.options.filename:
@@ -208,9 +208,9 @@ class TemplatesCommand(Command):
 class StaticCommand(Command):
     """ 'static' paste command"""
 
-    summary = "Memphis static assets management"
+    summary = "ptah static assets management"
     usage = ""
-    group_name = "Memphis"
+    group_name = "ptah"
     parser = Command.standard_parser(verbose=False)
     parser.add_option('-l', '--list', dest='section',
                       action="store_true",
@@ -219,7 +219,7 @@ class StaticCommand(Command):
                       help = 'Dump static assets')
 
     def command(self):
-        # load all memphis packages
+        # load all ptah packages
         config.initialize()
 
         if self.options.dump:

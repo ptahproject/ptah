@@ -1,5 +1,5 @@
 import transaction
-from memphis import config
+from ptah import config
 from pyramid.httpexceptions import HTTPNotFound, HTTPForbidden
 
 import ptah

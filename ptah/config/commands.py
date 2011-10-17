@@ -3,8 +3,8 @@ import argparse, textwrap
 import StringIO, ConfigParser
 from collections import OrderedDict
 
-from memphis import config
-from memphis.config import api, directives
+from ptah import config
+from ptah.config import api, directives
 
 
 grpTitleWrap = textwrap.TextWrapper(
@@ -37,7 +37,7 @@ def settingsCommand():
 class SettingsCommand(object):
     """ 'settings' paste command"""
 
-    parser = argparse.ArgumentParser(description="Memphis settings management")
+    parser = argparse.ArgumentParser(description="ptah settings management")
     parser.add_argument('-a', '--all', action="store_true",
                         dest='all',
                         help = 'List all registered settings')
@@ -52,7 +52,7 @@ class SettingsCommand(object):
         self.options = args
 
     def run(self):
-        # load all memphis packages
+        # load all ptah packages
         config.initialize()
 
         # print defaults

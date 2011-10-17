@@ -1,12 +1,12 @@
-from memphis import config, view
+from ptah import config, view
 from collections import OrderedDict
 
 from validator import All
 from interfaces import _, null, required
 from interfaces import Invalid, FORM_INPUT, FORM_DISPLAY
 
-FIELD_ID = 'memphis.form:field'
-PREVIEW_ID = 'memphis.form:field-preview'
+FIELD_ID = 'ptah.form:field'
+PREVIEW_ID = 'ptah.form:field-preview'
 
 
 def field(name, layer=''):

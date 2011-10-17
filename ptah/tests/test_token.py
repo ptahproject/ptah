@@ -1,5 +1,5 @@
 import transaction
-from memphis import config
+from ptah import config
 from datetime import timedelta
 
 from base import Base
@@ -15,7 +15,7 @@ class TestTokenType(Base):
         from ptah import token
 
         tt = token.TokenType('unique-id', timedelta(minutes=20))
-        self._init_memphis()
+        self._init_ptah()
 
         t = token.service.generate(tt, 'data')
         transaction.commit()
@@ -32,7 +32,7 @@ class TestTokenType(Base):
         tt1 = token.TokenType('unique-id', timedelta(minutes=20))
         tt2 = token.TokenType('unique-id', timedelta(minutes=20))
 
-        self.assertRaises(config.ConflictError, self._init_memphis)
+        self.assertRaises(config.ConflictError, self._init_ptah)
 
     def test_token_remove_expired(self):
         pass

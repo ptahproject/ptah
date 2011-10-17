@@ -16,7 +16,7 @@ Where does Pyramid and Ptah differ?
 Ptah has a view system built on top of Pyramid.
 Ptah has a config system that plays nicely with Pyramid.
 
-In Pyramid you must create a configurator and explicitly include/configure everything.  Ptah has config step which can scan and load all modules on initialization.  So if you have a module which defines a memphis entry-point in your setup.py; it will automatically get loaded.  Any module with a memphis entry-point needs to be excluded for it *not* to be loaded.
+In Pyramid you must create a configurator and explicitly include/configure everything.  Ptah has config step which can scan and load all modules on initialization.  So if you have a module which defines a ptah entry-point in your setup.py; it will automatically get loaded.  Any module with a ptah entry-point needs to be excluded for it *not* to be loaded.
 
 Ptah provides a different set of facilities for view, config and settings management.  Everything you know about Pyramid is valid.  In many cases what makes Ptah Manage work the way it does it due to these higher-level subsystems (see Introspection module in Ptah Manage UI).
 
@@ -25,7 +25,7 @@ Anytime Ptah provides a facility that is _like_ Pyramid it is solely for introsp
 Will Ptah and Pyramid merge functionality?
 ------------------------------------------
 
-Probably.  Ptah is very new and once functionality is understood by both communities merging code is good possibility.  Some useful reusable subsystems in Ptah are memphis.view, memphis.config, memphis.settings systems.  Not surprsingly Ptah's subsystems are higher level than Pyramids.
+Probably.  Ptah is very new and once functionality is understood by both communities merging code is good possibility.  Some useful reusable subsystems in Ptah are ptah.view, ptah.config, ptah.config.settings systems.  Not surprsingly Ptah's subsystems are higher level than Pyramids.
 
 Why does Ptah not use deform?
 -----------------------------
@@ -37,7 +37,7 @@ Why we do not use colander for forms
 
 Colander is nice general schema language.  We use it for settings management.  In many cases when you are working with forms you want to work logically with a Field (schemanode and widget).  It is the case with colander that responsibilities are separated in which (de)serialization is done with colander and the widget turns that into internal structure for the widget.  If you make your own widget you will need to keep in mind how colander schemas can use your widget and you may end up having to keep a colander schemanode in sync with your widget.  We believe that most people desire a tighter coupling between widget and schema when working with widgets; they would like to see everything in one place.  
 
-If you understand colander, memphis.form will be familiar.  After all we sort of forked it and folded it into memphis.form.  The big difference is we have removed some additional flexibility from colander, such as nesting of schema nodes.  memphis.form.fields has both schema and field definition in one class, Field.
+If you understand colander, ptah.form will be familiar.  After all we sort of forked it and folded it into ptah.form.  The big difference is we have removed some additional flexibility from colander, such as nesting of schema nodes.  ptah.form.fields has both schema and field definition in one class, Field.
 
 We are open to moving back to colander as long as it doesnt add more indirection for the widget creator.
 

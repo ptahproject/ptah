@@ -2,7 +2,7 @@
 import unittest
 import sqlahelper
 import transaction
-from memphis import config
+from ptah import config
 from pyramid import testing
 from pyramid.threadlocal import manager
 
@@ -31,7 +31,7 @@ class Base(unittest.TestCase):
         environ.update(extras)
         return environ
 
-    def _init_memphis(self, settings=None, handler=None, *args, **kw):
+    def _init_ptah(self, settings=None, handler=None, *args, **kw):
         if settings is None:
             settings = self._settings
         config.initialize(('ptah', self.__class__.__module__))
@@ -56,7 +56,7 @@ class Base(unittest.TestCase):
 
     def setUp(self):
         self._setup_pyramid()
-        self._init_memphis()
+        self._init_ptah()
 
     def tearDown(self):
         config.cleanup_system()

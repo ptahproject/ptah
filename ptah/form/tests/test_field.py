@@ -1,4 +1,4 @@
-from memphis import form
+from ptah import form
 from base import Base
 
 field = form.TextField(
@@ -198,7 +198,7 @@ class TestFieldsetErrors(Base):
 class TestField(Base):
 
     def test_field_ctor(self):
-        from memphis import form
+        from ptah import form
 
         field = form.Field('test', **{'title': 'Title',
                                       'description': 'Description',
@@ -222,7 +222,7 @@ class TestField(Base):
         self.assertEqual(repr(field), "<Field 'test'>")
 
     def test_field_bind(self):
-        from memphis import form
+        from ptah import form
 
         orig_field = form.Field(
             'test', **{'title': 'Title',
@@ -251,7 +251,7 @@ class TestField(Base):
         self.assertEqual(repr(field), "<Field 'field.test'>")
 
     def test_field_field_api(self):
-        from memphis import form
+        from ptah import form
 
         field = form.Field('test')
 
@@ -259,7 +259,7 @@ class TestField(Base):
         self.assertRaises(NotImplementedError, field.deserialize, '')
 
     def test_field_validate(self):
-        from memphis import form
+        from ptah import form
 
         field = form.Field('test')
 
@@ -273,7 +273,7 @@ class TestField(Base):
         self.assertRaises(form.Invalid, field.validate, '')
 
     def test_field_extract(self):
-        from memphis import form
+        from ptah import form
 
         field = form.Field('test')
 
@@ -287,7 +287,7 @@ class TestField(Base):
         self.assertIs(widget.extract(default='test'), 'TEST')
 
     def test_field_render(self):
-        from memphis import form
+        from ptah import form
 
         class MyField(form.Field):
 
@@ -308,7 +308,7 @@ class TestField(Base):
         self.assertEqual(widget.render({}), 'DISPLAY')
 
     def test_field_update_mode(self):
-        from memphis import form
+        from ptah import form
 
         request = object()
         field = form.Field('test')
@@ -330,7 +330,7 @@ class TestField(Base):
         self.assertEqual(widget.mode, form.FORM_DISPLAY)
 
     def test_field_update_value(self):
-        from memphis import form
+        from ptah import form
 
         class MyField(form.Field):
             def serialize(self, value):
@@ -363,13 +363,13 @@ class TestField(Base):
 class TestFieldFactory(Base):
 
     def test_field_factory(self):
-        from memphis import form
+        from ptah import form
 
         global MyField
         class MyField(form.Field):
             form.field('my-field')
 
-        self._init_memphis()
+        self._init_ptah()
 
         field = form.FieldFactory(
             'my-field', 'test', title='Test field')
@@ -387,7 +387,7 @@ class TestFieldFactory(Base):
         self.assertEqual(widget.name, 'field.test')
 
     def test_field_faile(self):
-        from memphis import form
+        from ptah import form
 
         field = form.FieldFactory(
             'new-field', 'test', title='Test field')

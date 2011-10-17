@@ -1,5 +1,5 @@
 import ptah
-from memphis import config, view
+from ptah import config, view
 from pyramid.testing import DummyRequest
 from pyramid.httpexceptions import HTTPNotFound, HTTPForbidden
 
@@ -51,7 +51,7 @@ class TestExceptions(Base):
 
     def test_forbidden_user(self):
         from ptah.exc import Forbidden
-        self._init_memphis()
+        self._init_ptah()
         config.start(self.p_config)
 
         class Context(object):

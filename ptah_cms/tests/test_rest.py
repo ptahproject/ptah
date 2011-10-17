@@ -1,7 +1,7 @@
 import transaction
 from zope import interface
 import ptah, ptah_cms
-from memphis import config
+from ptah import config
 from pyramid.testing import DummyRequest
 
 from base import Base
@@ -14,7 +14,7 @@ class RestBase(Base):
     def _check_perm(self, perm, content, request=None, throw=False):
         return self._allow
 
-    def _setup_memphis(self):
+    def _setup_ptah(self):
         pass
 
     def setUp(self):
@@ -44,7 +44,7 @@ class TestRestApi(RestBase):
 
     def test_rest_applications(self):
         from ptah_cms.rest import cmsApplications
-        self._init_memphis()
+        self._init_ptah()
 
         request = self._makeRequest()
 
@@ -75,7 +75,7 @@ class TestRestApi(RestBase):
         info = cmsTypes(request)
         self.assertEqual(info, [])
 
-        self._init_memphis()
+        self._init_ptah()
 
         info = cmsTypes(request)
 
@@ -87,7 +87,7 @@ class TestRestApi(RestBase):
 
     def test_rest_content(self):
         from ptah_cms.rest import cmsContent
-        self._init_memphis()
+        self._init_ptah()
 
         request = self._makeRequest()
         self.assertRaises(ptah_cms.NotFound, cmsContent, request, 'root')
@@ -135,7 +135,7 @@ class TestCMSRestAction(RestBase):
         def update(content, request, *args):
             """ doc string """
 
-        self._init_memphis()
+        self._init_ptah()
 
         adapters = config.registry.adapters
 
@@ -157,11 +157,11 @@ class TestCMSRestAction(RestBase):
         def update2(content, request, *args):
             """ doc string """
 
-        self.assertRaises(config.ConflictError, self._init_memphis)
+        self.assertRaises(config.ConflictError, self._init_ptah)
 
     def test_rest_cms_node_info(self):
         from ptah_cms import rest
-        self._init_memphis()
+        self._init_ptah()
 
         content = Content()
         request = self._makeRequest()
@@ -173,7 +173,7 @@ class TestCMSRestAction(RestBase):
 
     def test_rest_cms_apidoc(self):
         from ptah_cms import rest
-        self._init_memphis()
+        self._init_ptah()
 
         content = Content()
         request = self._makeRequest()
@@ -187,7 +187,7 @@ class TestCMSRestAction(RestBase):
 
     def test_rest_cms_container_info(self):
         from ptah_cms import rest
-        self._init_memphis()
+        self._init_ptah()
 
         container = Container()
         container['content'] = Content()
@@ -204,7 +204,7 @@ class TestCMSRestAction(RestBase):
 
     def test_rest_cms_delete(self):
         from ptah_cms import rest
-        self._init_memphis()
+        self._init_ptah()
 
         container = Container()
         container['content'] = Content()
@@ -215,7 +215,7 @@ class TestCMSRestAction(RestBase):
 
     def test_rest_cms_update(self):
         from ptah_cms import rest
-        self._init_memphis()
+        self._init_ptah()
 
         content = Content(title='Test')
 
@@ -234,7 +234,7 @@ class TestCMSRestAction(RestBase):
     def test_rest_cms_create(self):
         from ptah_cms import rest
         from ptah_cms import tinfo
-        self._init_memphis()
+        self._init_ptah()
         tinfo.Types[Content.__type__.__uri__] = Content.__type__
 
         container = Container()

@@ -1,7 +1,7 @@
 import unittest
 
 def invalid_exc(func, *arg, **kw):
-    from memphis.form import Invalid
+    from ptah.form import Invalid
     try:
         func(*arg, **kw)
     except Invalid, e:
@@ -15,14 +15,14 @@ class DummyValidator(object):
         self.msg = msg
 
     def __call__(self, node, value):
-        from memphis.form import Invalid
+        from ptah.form import Invalid
         if self.msg:
             raise Invalid(node, self.msg)
 
 
 class TestAll(unittest.TestCase):
     def _makeOne(self, validators):
-        from memphis.form import All
+        from ptah.form import All
         return All(*validators)
 
     def test_success(self):
@@ -41,7 +41,7 @@ class TestAll(unittest.TestCase):
 
 class TestFunction(unittest.TestCase):
     def _makeOne(self, *arg, **kw):
-        from memphis.form import Function
+        from ptah.form import Function
         return Function(*arg, **kw)
 
     def test_success_function_returns_True(self):
@@ -69,7 +69,7 @@ class TestFunction(unittest.TestCase):
 
 class TestRange(unittest.TestCase):
     def _makeOne(self, **kw):
-        from memphis.form import Range
+        from ptah.form import Range
         return Range(**kw)
 
     def test_success_no_bounds(self):
@@ -111,7 +111,7 @@ class TestRange(unittest.TestCase):
 
 class TestRegex(unittest.TestCase):
     def _makeOne(self, pattern):
-        from memphis.form import Regex
+        from ptah.form import Regex
         return Regex(pattern)
 
     def test_valid_regex(self):
@@ -121,12 +121,12 @@ class TestRegex(unittest.TestCase):
         self.assertEqual(self._makeOne('.*')(None, ''), None)
 
     def test_invalid_regexs(self):
-        from memphis.form import Invalid
+        from ptah.form import Invalid
         self.assertRaises(Invalid, self._makeOne('[0-9]+'), None, 'a')
         self.assertRaises(Invalid, self._makeOne('a{2,4}'), None, 'ba')
 
     def test_regex_not_string(self):
-        from memphis.form import Invalid
+        from ptah.form import Invalid
         import re
         regex = re.compile('[0-9]+')
         self.assertEqual(self._makeOne(regex)(None, '01'), None)
@@ -135,7 +135,7 @@ class TestRegex(unittest.TestCase):
 
 class TestEmail(unittest.TestCase):
     def _makeOne(self):
-        from memphis.form import Email
+        from ptah.form import Email
         return Email()
 
     def test_valid_emails(self):
@@ -153,7 +153,7 @@ class TestEmail(unittest.TestCase):
 
     def test_invalid_emails(self):
         validator = self._makeOne()
-        from memphis.form import Invalid
+        from ptah.form import Invalid
         self.assertRaises(Invalid, validator, None, 'me@here.')
         self.assertRaises(Invalid, validator, None, 'name@here.comcom')
         self.assertRaises(Invalid, validator, None, '@here.us')
@@ -161,7 +161,7 @@ class TestEmail(unittest.TestCase):
 
 class TestLength(unittest.TestCase):
     def _makeOne(self, min=None, max=None):
-        from memphis.form import Length
+        from ptah.form import Length
         return Length(min=min, max=max)
 
     def test_success_no_bounds(self):
@@ -192,7 +192,7 @@ class TestLength(unittest.TestCase):
 
 class TestOneOf(unittest.TestCase):
     def _makeOne(self, values):
-        from memphis.form import OneOf
+        from ptah.form import OneOf
         return OneOf(values)
 
     def test_success(self):

@@ -1,6 +1,6 @@
 """ role """
 from zope import interface
-from memphis import config
+from ptah import config
 
 from base import Base
 
@@ -42,7 +42,7 @@ class TestAuthentication(Base):
 
     def test_auth_checker(self):
         import ptah
-        self._init_memphis()
+        self._init_ptah()
 
         principal = Principal('1', 'user', 'user')
 
@@ -103,7 +103,7 @@ class TestAuthentication(Base):
                 return principal
 
         ptah.register_uri_resolver('test', resolver)
-        self._init_memphis()
+        self._init_ptah()
 
         self.assertEqual(ptah.authService.get_current_principal(), None)
 
@@ -147,7 +147,7 @@ class TestSuperUser(Base):
     def test_superuser_resolver(self):
         import ptah
         from ptah.authentication import SUPERUSER
-        self._init_memphis()
+        self._init_ptah()
 
         user = ptah.resolve(ptah.SUPERUSER_URI)
         self.assertIs(user, SUPERUSER)

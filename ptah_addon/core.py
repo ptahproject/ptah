@@ -19,6 +19,6 @@ def initAddons(ev):
         path = os.path.join(dir, item)
 
         for dist in pkg_resources.find_distributions(path, True):
-            distmap = pkg_resources.get_entry_map(dist, 'memphis')
+            distmap = pkg_resources.get_entry_map(dist, 'ptah')
             if 'package' in distmap:
                 ADDONS.append(dist)

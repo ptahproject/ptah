@@ -1,4 +1,4 @@
-from memphis import form, config
+from ptah import form, config
 
 from base import Base
 
@@ -12,7 +12,7 @@ class TestFieldset(Base):
 
             form.field('my-field')
 
-        self._init_memphis()
+        self._init_ptah()
         self.assertIs(form.get_field_factory('my-field'), MyField)
 
     def test_decl_register(self):
@@ -22,7 +22,7 @@ class TestFieldset(Base):
 
         form.register_field_factory(MyField, 'my-field')
 
-        self._init_memphis()
+        self._init_ptah()
         self.assertIs(form.get_field_factory('my-field'), MyField)
 
     def test_decl_conflict(self):
@@ -37,7 +37,7 @@ class TestFieldset(Base):
 
             form.field('my-field')
 
-        self.assertRaises(config.ConflictError, self._init_memphis)
+        self.assertRaises(config.ConflictError, self._init_ptah)
 
     def test_decl_preview(self):
         global MyField
@@ -49,9 +49,9 @@ class TestFieldset(Base):
         def preview(request):
             """ """
 
-        self._init_memphis()
+        self._init_ptah()
 
-        from memphis.form.field import PREVIEW_ID
+        from ptah.form.field import PREVIEW_ID
         previews = config.registry.storage[PREVIEW_ID]
 
         self.assertIn(MyField, previews)

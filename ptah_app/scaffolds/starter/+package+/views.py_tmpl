@@ -1,4 +1,4 @@
-from memphis import view
+from ptah import view
 from {{package}}.app import ApplicationRoot
 
 view.static('{{project}}', '{{project}}:static')

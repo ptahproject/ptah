@@ -1,5 +1,5 @@
 import unittest
-from memphis import config
+from ptah import config
 
 from base import Base
 
@@ -20,7 +20,7 @@ class TestUri(Base):
 
         ptah.register_uri_resolver('test1', resolver1)
         ptah.register_uri_resolver('test2', resolver2)
-        self._init_memphis()
+        self._init_ptah()
 
         self.assertEqual(ptah.resolve('test1:uri'), 'Resolved1')
         self.assertEqual(ptah.resolve('test2:uri'), 'Resolved2')
@@ -40,7 +40,7 @@ class TestUri(Base):
         def resolver2(uri):
             return 'Resolved2'
 
-        self._init_memphis()
+        self._init_ptah()
 
         self.assertEqual(ptah.resolve('test1:uri'), 'Resolved1')
         self.assertEqual(ptah.resolve('test2:uri'), 'Resolved2')
@@ -54,7 +54,7 @@ class TestUri(Base):
         ptah.register_uri_resolver('test', None)
         ptah.register_uri_resolver('test', None)
 
-        self.assertRaises(config.ConflictError, self._init_memphis)
+        self.assertRaises(config.ConflictError, self._init_ptah)
 
     def test_uri_registration_decorator_conflicts(self):
         import ptah
@@ -67,7 +67,7 @@ class TestUri(Base):
         def resolver2(uri): # pragma: no cover
             return 'Resolved2'
 
-        self.assertRaises(config.ConflictError, self._init_memphis)
+        self.assertRaises(config.ConflictError, self._init_ptah)
 
     def test_uri_extract_type(self):
         import ptah

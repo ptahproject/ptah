@@ -1,6 +1,6 @@
 """ file content implementation """
 import sqlalchemy as sqla
-from memphis import view, form
+from ptah import view, form
 
 import ptah, ptah_cms, ptah_app
 from ptah_app.permissions import AddFile

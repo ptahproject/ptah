@@ -1,14 +1,14 @@
 import sys
 import unittest, colander
 from StringIO import StringIO
-from memphis import config
-from memphis.config import commands
+from ptah import config
+from ptah.config import commands
 
 
 class BaseTesting(unittest.TestCase):
 
-    def _init_memphis(self, settings={}, *args, **kw):
-        config.initialize(('memphis.config', self.__class__.__module__))
+    def _init_ptah(self, settings={}, *args, **kw):
+        config.initialize(('ptah.config', self.__class__.__module__))
 
     def tearDown(self):
         config.cleanup_system(self.__class__.__module__)
@@ -34,7 +34,7 @@ class TestCommand(BaseTesting):
             description = 'Description2',
             )
 
-        self._init_memphis()
+        self._init_ptah()
 
         # all
         sys.argv[1:] = ['-a']
