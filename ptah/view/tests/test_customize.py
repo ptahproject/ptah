@@ -49,7 +49,7 @@ class TestGlobalCustomizeManagement(BaseLayerTest):
         self.assertEqual('', customize.TEMPLATE.custom)
 
     @unittest.skipUnless(sys.platform == 'linux2', 'linux specific')
-    def test_customize_global_enabled(self):
+    def _test_customize_global_enabled(self):
         self._mkfile1(self.file1)
         self._mkfile2(self.file2)
 
@@ -79,7 +79,7 @@ class TestGlobalCustomizeManagement(BaseLayerTest):
         self.assertEqual(tmpl(), '<div>Test template 2</div>')
 
     @unittest.skipUnless(sys.platform == 'linux2', 'linux specific')
-    def test_customize_global_reenable(self):
+    def _test_customize_global_reenable(self):
         self._mkfile1(self.file1)
         self._mkfile2(self.file2)
 
@@ -108,7 +108,7 @@ class TestGlobalCustomizeManagement(BaseLayerTest):
         self.assertEqual(tmpl(), '<div>Test template 2</div>')
 
     @unittest.skipUnless(sys.platform == 'linux2', 'linux specific')
-    def test_customize_global_disable(self):
+    def _test_customize_global_disable(self):
         self._mkfile1(self.file1)
         self._mkfile2(self.file2)
 
@@ -127,7 +127,7 @@ class TestGlobalCustomizeManagement(BaseLayerTest):
         self.assertEqual(tmpl(), '<div>Test template 1</div>')
 
     @unittest.skipUnless(sys.platform == 'linux2', 'linux specific')
-    def test_customize_global_createfolder_and_reloadpackage(self):
+    def _test_customize_global_createfolder_and_reloadpackage(self):
         self._mkfile1(self.file1)
 
         tmpl = view.template(os.path.join(self.dir1, 'file.pt'))
@@ -176,7 +176,7 @@ class TestGlobalCustomizeManagement(BaseLayerTest):
 class TestTemplateLayer(BaseLayerTest):
 
     @unittest.skipUnless(sys.platform == 'linux2', 'linux specific')
-    def test_customize_layers(self):
+    def _test_customize_layers(self):
         self.dir3 = tempfile.mkdtemp()
 
         self._mkfile1(self.file1)

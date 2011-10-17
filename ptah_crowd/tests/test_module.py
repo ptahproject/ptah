@@ -10,7 +10,7 @@ from base import Base
 class TestModule(Base):
 
     def test_manage_module(self):
-        from ptah.manage import PtahManageRoute
+        from ptah.manage.manage import PtahManageRoute
         from ptah_crowd.module import CrowdModule
 
         request = DummyRequest()
