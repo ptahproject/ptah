@@ -7,7 +7,10 @@ You will need Python 2.7 and git installed on your machine.
 Install virtualenv
 ------------------
 
-First install virtualenv::
+You need 1.6.4 of virtualenv or greater for Git support.  
+use your existing virtualenv.  It takes < 15 seconds to grab it. 
+
+install virtualenv::
 
     ~$ curl -O https://raw.github.com/pypa/virtualenv/master/virtualenv.py
     ~$ python2.7 virtualenv.py --no-site-packages myvirtualenv
@@ -16,7 +19,8 @@ First install virtualenv::
 Create requirements
 -------------------
 
-Lets create the `pip` requirements.txt file with the contents::
+Now you will create a file called requirements.txt.  In that file you will
+have 2 lines, those lines will be::
 
     -e git+https://github.com/ptahproject/memphis#egg=memphis
     -e git+https://github.com/ptahproject/ptah.git#egg=ptah
@@ -37,6 +41,7 @@ Let's create ptah app with paster::
      ~$ ./bin/paster create -t ptahdemo myapp
      ~$ cd myapp
      ~$ ../bin/python2.7 ./setup.py develop
+     ... will download `myapp depedencies` and register `myapp` in virtualenv
 
 Start app
 ~~~~~~~~~
@@ -61,7 +66,8 @@ Run Tests
 ~~~~~~~~~
 
 We use the `nose` test runner to collect which tests to run.  You can
-read up how to use coverage integration.  
+read up how to use coverage integration.  This is standard python usage
+of the the nose library; nothing fancy.
 
 Run memphis tests::
 
@@ -83,4 +89,5 @@ Run myapp tests::
 Summary
 ~~~~~~~
 
-Look inside myapp/__init__.py and you will see the application configuration.
+Look inside myapp/__init__.py and you will see the application 
+startup configuration.
