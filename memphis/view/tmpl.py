@@ -63,6 +63,9 @@ def getRenderer(path):
 
 
 def path(spec, package_name=None):
+    if os.path.exists(spec):
+        return spec, caller_package(2).__name__
+
     try:
         package_name, filename = spec.split(':', 1)
     except ValueError:

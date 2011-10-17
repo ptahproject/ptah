@@ -1,5 +1,5 @@
-import time
-import unittest, os, shutil, tempfile, colander
+import sys, os, time
+import unittest, shutil, tempfile, colander
 from zope.interface.registry import Components
 from zope.interface.interface import InterfaceClass
 from zope.interface.interfaces import IObjectEvent
@@ -697,6 +697,7 @@ class TestSettingsInitialization(BaseTesting):
         self.assertEqual(group['node1'], 'value')
         self.assertEqual(group['node2'], 10)
 
+    @unittest.skipUnless(sys.platform == 'linex2', 'linux specific')
     def test_settings_fs_watcher(self):
         path = os.path.join(self.dir, 'settings.cfg')
         f = open(path, 'wb')

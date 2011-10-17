@@ -76,8 +76,9 @@ class TestStaticCommand(unittest.TestCase):
 
         val = self.out.getvalue()
         self.assertTrue("* Coping from 'memphis.view.tests'" in val)
-        self.assertTrue(os.listdir(os.path.join(dir, 'tests')) ==
-                        ['text.txt', 'style.css'])
+        files = os.listdir(os.path.join(dir, 'tests'))
+        files.sort()
+        self.assertTrue(files == ['style.css', 'text.txt'])
 
     def test_commands_static_dump_skipping_existing(self):
         view.static('tests', 'memphis.view.tests:static/dir2')
@@ -125,8 +126,11 @@ class TestTemplatesCommand(unittest.TestCase):
 
         val = self._run()
         self.assertTrue('* memphis.view.tests' in val)
+
+        name = os.path.join('..', 'memphis', 'view', 'tests', 
+            'templates', 'test.pt')
         self.assertTrue(
-            '- test.pt: ../memphis/view/tests/templates/test.pt' in val)
+            '- test.pt: %s'%name in val)
 
     def test_commands_template_all_several_pkg(self):
         tmpl = view.template('memphis.view:/tests/templates/test.pt')
@@ -137,8 +141,11 @@ class TestTemplatesCommand(unittest.TestCase):
 
         self.assertTrue('* memphis.view' in val)
         self.assertTrue('* memphis.view.tests' in val)
+
+        name = os.path.join('..', 'memphis', 'view', 'tests', 
+            'templates', 'test.pt')
         self.assertTrue(
-            '- test.pt: ../memphis/view/tests/templates/test.pt' in val)
+            '- test.pt: %s'%name in val)
 
     def test_commands_template_list(self):
         tmpl = view.template('memphis.view:/tests/templates/test.pt',

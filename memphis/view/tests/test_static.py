@@ -1,5 +1,5 @@
 """ test for static assets api """
-import unittest
+import unittest, os.path
 from memphis import config, view
 from memphis.view import resources
 from memphis.view.base import View
@@ -68,11 +68,11 @@ class TestStaticManagement(Base):
         # subtrees
         abspath, pkg = view.path('memphis.view.tests:static')
         self.assertEqual(buildTree(abspath),
-                         {'dir1/style.css': 1,
-                          'dir1/subdir/text.txt': 1,
-                          'dir1/text2.txt': 1,
-                          'dir2/style.css': 1,
-                          'dir2/text.txt': 1})
+                         {os.path.join('dir1','style.css'): 1,
+                          os.path.join('dir1','subdir','text.txt'): 1,
+                          os.path.join('dir1','text2.txt'): 1,
+                          os.path.join('dir2','style.css'): 1,
+                          os.path.join('dir2','text.txt'): 1})
 
     def test_base_static_url(self):
         view.static('tests2', 'memphis.view.tests:static/dir1')

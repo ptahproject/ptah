@@ -8,6 +8,23 @@ def read(*rnames):
 
 version='1.0dev'
 
+
+install_requires = ['setuptools',
+                    'colander >= 0.9.4',
+                    'iso8601',
+                    'chameleon == 2.4.5',
+                    'pyramid',
+                    'pytz',
+                    'simplejson',
+                    'zope.interface >= 3.8.0',
+                    'WebOb >= 1.2b2',
+                    ]
+tests_require = ['nose']
+
+if sys.platform == 'linux2':
+    tests_require.append('pyinotify')
+
+
 setup(name='memphis',
       version=version,
       description="",
@@ -32,17 +49,8 @@ setup(name='memphis',
       url='https://github.com/ptahproject/memphis/',
       license='BSD-derived',
       packages = find_packages(),
-      install_requires = ['setuptools',
-                          'colander >= 0.9.4',
-                          'iso8601',
-                          'chameleon == 2.4.5',
-                          'pyramid',
-                          'pytz',
-                          'simplejson',
-                          'zope.interface >= 3.8.0',
-                          'WebOb >= 1.2b2',
-                          ],
-      tests_require = ['nose', 'pyinotify'],
+      install_requires = install_requires,
+      tests_require = tests_require,
       test_suite = 'nose.collector',
       include_package_data = True,
       zip_safe = False,
