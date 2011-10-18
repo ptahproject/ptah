@@ -76,7 +76,7 @@ class ValidationTemplate(mail.MailTemplate):
 
 view.register_route('ptah-principal-validate', '/validateaccount.html')
 
-@view.pyramidview(route='ptah-principal-validate')
+@view.pview(route='ptah-principal-validate')
 def validate(request):
     """Validate account"""
     t = request.GET.get('token')

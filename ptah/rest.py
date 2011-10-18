@@ -114,7 +114,7 @@ def dthandler(obj):
 
 
 class Login(object):
-    view.pyramidview(route='ptah-rest-login', layout=None)
+    view.pview(route='ptah-rest-login')
 
     def __init__(self, request):
         self.request = request
@@ -155,7 +155,7 @@ class Login(object):
 
 
 class Api(object):
-    view.pyramidview(route='ptah-rest', layout=None)
+    view.pview(route='ptah-rest')
 
     def __init__(self, request):
         self.request = request

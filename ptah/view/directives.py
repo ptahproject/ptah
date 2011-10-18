@@ -22,9 +22,9 @@ def snippet(name, context=None, template=None, layer=''):
         )
 
 
-def pyramidview(name=u'', context=None, route=None,
-                template=None, layout=unset,
-                permission='__no_permission_required__', layer=''):
+def pview(name=u'', context=None, route=None,
+          template=None, layout=unset,
+          permission='__no_permission_required__', layer=''):
 
     info = config.DirectiveInfo(
         allowed_scope=('class', 'module', 'function call'))

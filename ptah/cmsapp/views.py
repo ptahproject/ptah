@@ -58,8 +58,8 @@ def defaultView(renderer):
 listing_template = view.template("ptah.cmsapp:templates/listing.pt")
 
 class ContainerListing(view.View):
-    view.pyramidview('listing.html', interfaces.IContainer,
-                     template = listing_template)
+    view.pview('listing.html', interfaces.IContainer,
+               template = listing_template)
 
     def update(self):
         context = self.context
@@ -94,18 +94,18 @@ class ContainerListing(view.View):
 #@defaultView
 
 class ViewContainer(ContainerListing):
-    view.pyramidview(context = interfaces.IContainer,
-                     template = listing_template)
+    view.pview(context = interfaces.IContainer,
+               template = listing_template)
 
 
 class RenameForm(view.View):
-    view.pyramidview(
+    view.pview(
         'rename.html', interfaces.IContainer,
         template=view.template("ptah.cmsapp:templates/folder_rename.pt"))
 
 
 class Adding(view.View):
-    view.pyramidview('+', interfaces.IContainer)
+    view.pview('+', interfaces.IContainer)
 
     template=view.template("ptah.cmsapp:templates/adding.pt")
 
@@ -143,7 +143,7 @@ class AddContentForm(AddForm):
 
 
 class DefaultContentView(form.DisplayForm):
-    view.pyramidview(
+    view.pview(
         context = cms.Content,
         permission = cms.View,
         template=view.template("ptah.cmsapp:templates/contentview.pt"))

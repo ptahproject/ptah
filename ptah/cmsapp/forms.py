@@ -127,7 +127,7 @@ view.register_snippet(
 
 
 class EditForm(form.Form):
-    view.pyramidview('edit.html', cms.Content, permission=cms.ModifyContent)
+    view.pview('edit.html', cms.Content, permission=cms.ModifyContent)
 
     @reify
     def label(self):

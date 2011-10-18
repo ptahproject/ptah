@@ -14,7 +14,7 @@ from module import UserWrapper
 
 
 class CreateUserForm(form.Form):
-    view.pyramidview('create.html', CrowdModule)
+    view.pview('create.html', CrowdModule)
 
     __intr_path__ = '/ptah-manage/crowd/create.html'
 
@@ -44,7 +44,7 @@ class CreateUserForm(form.Form):
 
 
 class UserInfo(form.Form):
-    view.pyramidview(context=UserWrapper)
+    view.pview(context=UserWrapper)
 
     __intr_path__ = '/ptah-manage/crowd/${user}/'
 
@@ -76,7 +76,7 @@ class UserInfo(form.Form):
 
 
 class ChangePassword(form.Form):
-    view.pyramidview('password.html', UserWrapper)
+    view.pview('password.html', UserWrapper)
 
     __intr_path__ = '/ptah-manage/crowd/${user}/password.html'
 

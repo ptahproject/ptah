@@ -20,7 +20,7 @@ view.register_snippet(
 
 
 class PermissionsView(view.View):
-    view.pyramidview(
+    view.pview(
         context=PermissionsModule,
         template=view.template('ptah.manage:templates/permissions.pt'))
 
@@ -34,7 +34,7 @@ class PermissionsView(view.View):
 
 
 class RolesView(view.View):
-    view.pyramidview(
+    view.pview(
         'roles.html', PermissionsModule,
         template=view.template('ptah.manage:templates/roles.pt'))
 

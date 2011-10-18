@@ -3,6 +3,6 @@ from {{package}}.app import ApplicationRoot
 
 view.static('{{project}}', '{{project}}:static')
 
-@view.pyramidview('view', context = ApplicationRoot)
+@view.pview('view', context = ApplicationRoot)
 def my_view(request):
     return "A view"

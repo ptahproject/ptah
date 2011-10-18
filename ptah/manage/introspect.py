@@ -62,7 +62,7 @@ class Package(object):
 
 
 class MainView(view.View):
-    view.pyramidview(
+    view.pview(
         context = IntrospectModule,
         template = view.template('ptah.manage:templates/introspect.pt'))
 
@@ -79,7 +79,7 @@ view.register_snippet(
 
 
 class PackageView(view.View):
-    view.pyramidview(
+    view.pview(
         context = Package,
         template = view.template('ptah.manage:templates/introspect-pkg.pt'))
 
@@ -107,7 +107,7 @@ class PackageView(view.View):
 
 
 class EventsView(view.View):
-    view.pyramidview(
+    view.pview(
         'events.html', IntrospectModule,
         template = view.template('ptah.manage:templates/introspect-events.pt'))
 
@@ -158,7 +158,7 @@ def lineno(ob):
 
 
 class RoutesView(view.View):
-    view.pyramidview(
+    view.pview(
         'routes.html', IntrospectModule,
         template = view.template('ptah.manage:templates/introspect-routes.pt'))
 
@@ -252,7 +252,7 @@ class RoutesView(view.View):
 
 
 class SourceView(view.View):
-    view.pyramidview(
+    view.pview(
         'source.html', IntrospectModule,
         template = view.template('ptah.manage:templates/introspect-source.pt'))
 

@@ -50,9 +50,9 @@ from ptah.view.library import include
 from ptah.view.library import render_includes
 
 # directives
+from ptah.view.directives import pview
 from ptah.view.directives import layout
 from ptah.view.directives import snippet
-from ptah.view.directives import pyramidview
 
 # status message
 from ptah.view.message import Message

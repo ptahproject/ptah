@@ -18,7 +18,7 @@ view.register_route('ptah-resetpassword-form', '/resetpasswordform.html')
 
 
 class ResetPassword(form.Form):
-    view.pyramidview(
+    view.pview(
         route = 'ptah-resetpassword', layout='ptah-page',
         template = view.template('ptah.crowd:templates/resetpassword.pt'))
 
@@ -75,7 +75,7 @@ class ResetPassword(form.Form):
 
 
 class ResetPasswordForm(form.Form):
-    view.pyramidview(
+    view.pview(
         route = 'ptah-resetpassword-form', layout='ptah-page',
         template=view.template('ptah.crowd:templates/resetpasswordform.pt'))
 

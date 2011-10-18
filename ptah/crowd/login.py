@@ -13,7 +13,7 @@ view.register_route('ptah-login-suspended', '/login-suspended.html')
 
 
 class LoginForm(form.Form):
-    view.pyramidview(
+    view.pview(
         route='ptah-login', layout='ptah-page',
         template = view.template("ptah.crowd:templates/login.pt"))
 
@@ -87,7 +87,7 @@ class LoginForm(form.Form):
 class LoginSuccess(view.View):
     """ Login successful information page. """
 
-    view.pyramidview(
+    view.pview(
         route = 'ptah-login-success', layout='ptah-page',
         template = view.template("ptah.crowd:templates/login-success.pt"))
 
@@ -107,7 +107,7 @@ class LoginSuccess(view.View):
 class LoginSuspended(view.View):
     """ Suspended account information page. """
 
-    view.pyramidview(
+    view.pview(
         route = 'ptah-login-suspended', layout='ptah-page',
         template = view.template("ptah.crowd:templates/login-suspended.pt"))
 
@@ -125,7 +125,7 @@ class LoginSuspended(view.View):
         self.full_address = ptah.mail.MAIL.full_from_address
 
 
-@view.pyramidview(route='ptah-logout')
+@view.pview(route='ptah-logout')
 def logout(request):
     """Logout action"""
     uid = ptah.authService.get_userid()

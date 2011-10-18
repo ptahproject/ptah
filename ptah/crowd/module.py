@@ -39,7 +39,7 @@ view.register_snippet(
 
 
 class SearchUsers(form.Form):
-    view.pyramidview(
+    view.pview(
         context = CrowdModule,
         template = view.template('ptah.crowd:templates/search.pt'))
 

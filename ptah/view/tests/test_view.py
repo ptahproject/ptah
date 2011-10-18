@@ -61,7 +61,7 @@ class TestView(BaseView):
         global MyView
 
         class MyView(view.View):
-            view.pyramidview('index.html')
+            view.pview('index.html')
 
             def render(self):
                 return '<html>view</html>'
@@ -182,7 +182,7 @@ class TestView(BaseView):
 
         @deco
         class DecoView(view.View):
-            view.pyramidview('index.html', Context)
+            view.pview('index.html', Context)
 
         self._init_ptah()
 
@@ -310,7 +310,7 @@ class TestView(BaseView):
         self.assertEqual(v.body, '<html>Secured view</html>')
 
     def test_view_function(self):
-        @view.pyramidview('index.html')
+        @view.pview('index.html')
         def render(request):
             return '<html>content</html>'
 
@@ -323,7 +323,7 @@ class TestView(BaseView):
     def test_view_custom_class(self):
         global View
         class View(object):
-            view.pyramidview('index.html')
+            view.pview('index.html')
 
             def __init__(self, request):
                 self.request = request
@@ -340,7 +340,7 @@ class TestView(BaseView):
         self.assertEqual(v.body, 'True')
 
     def test_view_for_exception(self):
-        @view.pyramidview(context=HTTPForbidden, layer='test')
+        @view.pview(context=HTTPForbidden, layer='test')
         def render(request):
             return '<html>Forbidden</html>'
 
@@ -362,7 +362,7 @@ class TestView(BaseView):
     def test_view_for_route(self):
         view.register_route('test-route', '/test/')
 
-        @view.pyramidview(route='test-route')
+        @view.pview(route='test-route')
         def render(request):
             return '<html>Route view</html>'
 

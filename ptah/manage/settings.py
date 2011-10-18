@@ -11,7 +11,7 @@ class SettingsModule(ptah.PtahModule):
 
 
 class SettingsView(view.View):
-    view.pyramidview(
+    view.pview(
         context = SettingsModule,
         template = view.template('ptah.manage:templates/settings.pt'))
 

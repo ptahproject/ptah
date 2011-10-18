@@ -21,8 +21,8 @@ class LayoutPage(view.Layout):
 
 
 class Forbidden(view.View):
-    view.pyramidview(context=HTTPForbidden, layout='ptah-page',
-                     template=view.template('ptah:templates/forbidden.pt'))
+    view.pview(context=HTTPForbidden, layout='ptah-page',
+               template=view.template('ptah:templates/forbidden.pt'))
 
     def update(self):
         request = self.request
@@ -54,8 +54,8 @@ class Forbidden(view.View):
 
 
 class NotFound(view.View):
-    view.pyramidview(context=HTTPNotFound, layout='ptah-page',
-                     template=view.template('ptah:templates/notfound.pt'))
+    view.pview(context=HTTPNotFound, layout='ptah-page',
+               template=view.template('ptah:templates/notfound.pt'))
 
     def update(self):
         context = getattr(self.request, 'context', None)
