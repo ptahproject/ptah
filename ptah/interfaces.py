@@ -90,35 +90,6 @@ class IPrincipalSearcher(interface.Interface):
         """ search users return IPrincipal object """
 
 
-class IPasswordTool(interface.Interface):
-    """ password tool """
-
-    min_length = interface.Attribute('Minimum length')
-    letters_digits = interface.Attribute(u'Letters and digits')
-    letters_mixed_case = interface.Attribute(u'Letters case')
-
-    def encode(password, *args, **kw):
-        """ encode password """
-
-    def check(encodedPassword, password):
-        """ check password """
-
-    def validatePassword(password):
-        """ validate password """
-
-    def passwordStrength(password):
-        """ check password strength """
-
-    def getPrincipal(passcode):
-        """ return principal by passcode """
-
-    def removePasscode(passcode):
-        """ remove passcode """
-
-    def generatePasscode(principal):
-        """ generate passcode for principal """
-
-
 class IOwnersAware(interface.Interface):
     """ owners aware context """
 

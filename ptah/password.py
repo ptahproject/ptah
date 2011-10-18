@@ -6,14 +6,13 @@ from hashlib import sha1
 from base64 import urlsafe_b64encode, urlsafe_b64decode
 from datetime import timedelta
 
-from zope import interface
-from ptah import config, form
-
 import ptah
-from ptah import token
+from ptah import config, form, token
 
 from settings import PTAH_CONFIG
-from interfaces import _, IPasswordTool
+from interfaces import _
+
+PASSWORD_CHANGER_ID = 'ptah:password-changer'
 
 
 TOKEN_TYPE = token.TokenType(
@@ -56,7 +55,6 @@ class SSHAPasswordManager(object):
 
 class PasswordTool(object):
     """ Password management utility. """
-    interface.implements(IPasswordTool)
 
     min_length = 5
     letters_digits = False
@@ -67,10 +65,8 @@ class PasswordTool(object):
           }
     passwordManager = pm['{plain}']
 
-    def __init__(self):
-        self._changers = {}
-
     def check(self, encoded, password):
+        """ check encoded password with plain password """
         try:
             pm, pwd = encoded.split('}', 1)
         except:
@@ -82,40 +78,47 @@ class PasswordTool(object):
         return False
 
     def encode(self, password, salt=None):
+        """ encode password with current password manager """
         return self.manager.encode(password, salt)
 
-    def registerPasswordChanger(self, typ, changer):
-        self._changers[typ] = changer
+    def can_change_password(self, principal):
+        """ can principal password be changed """
+        return ptah.extract_uri_schema(principal.uri) in \
+            config.registry.storage[PASSWORD_CHANGER_ID]
 
-    def hasPasswordChanger(self, uri):
-        return ptah.extract_uri_schema(uri) in self._changers
-
-    def getPrincipal(self, passcode):
+    def get_principal(self, passcode):
+        """ generate passcode for principal """
         data = token.service.get(passcode)
 
         if data is not None:
             return ptah.resolve(data)
 
-    def generatePasscode(self, uri):
-        return token.service.generate(TOKEN_TYPE, uri)
+    def generate_passcode(self, principal):
+        """ generate passcode for principal """
+        return token.service.generate(TOKEN_TYPE, principal.uri)
 
-    def removePasscode(self, passcode):
+    def remove_passcode(self, passcode):
+        """ remove passcode """
         token.service.remove(passcode)
 
-    def changePassword(self, passcode, password):
-        principal = self.getPrincipal(passcode)
+    def change_password(self, passcode, password):
+        """ change password """
+        principal = self.get_principal(passcode)
 
-        self.removePasscode(passcode)
+        self.remove_passcode(passcode)
 
         if principal is not None:
-            changer = self._changers.get(ptah.extract_uri_schema(principal.uri))
+            changers = config.registry.storage[PASSWORD_CHANGER_ID]
+
+            changer = changers.get(ptah.extract_uri_schema(principal.uri))
             if changer is not None:
                 changer(principal, self.encode(password))
                 return True
 
         return False
 
-    def validatePassword(self, password):
+    def validate(self, password):
+        """ Validate password """
         if len(password) < self.min_length:
             #return _('Password should be at least ${count} characters.',
             #         mapping={'count': self.min_length})
@@ -128,15 +131,31 @@ class PasswordTool(object):
                 (password.isupper() or password.islower()):
             return _('Password should contain letters in mixed case.')
 
-    def passwordStrength(self, password):
-        return 100.0
-
 
 passwordTool = PasswordTool()
 
 
+def password_changer(schema):
+    info = config.DirectiveInfo()
+
+    def wrapper(changer):
+        info.attach(
+            config.Action(
+                lambda config, schema, changer: \
+                    config.storage[PASSWORD_CHANGER_ID].update(
+                            {schema: changer}),
+                (schema, changer),
+                id = PASSWORD_CHANGER_ID,
+                discriminator = (PASSWORD_CHANGER_ID, schema))
+            )
+
+        return changer
+
+    return wrapper
+
+
 def passwordValidator(field, appstruct):
-    err = passwordTool.validatePassword(appstruct)
+    err = passwordTool.validate(appstruct)
     if err is not None:
         raise form.Invalid(field, err)
 

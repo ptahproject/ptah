@@ -94,9 +94,9 @@ def get_byuri(uri):
     return CrowdUser._sql_get_uri.first(uri=uri)
 
 
+@ptah.password_changer('user+crowd')
 def change_pwd(principal, password):
     principal.password = password
 
 
 ptah.register_auth_provider('user+crowd', CrowdProvider())
-ptah.passwordTool.registerPasswordChanger('user+crowd', change_pwd)

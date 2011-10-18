@@ -1,8 +1,16 @@
 import unittest
 import ptah
-from ptah import form
+from ptah import form, config
 
 from base import Base
+
+
+class Principal(object):
+
+    def __init__(self, uri, name, login):
+        self.uri = uri
+        self.name = name
+        self.login = login
 
 
 class TestPasswordSchema(Base):
@@ -43,17 +51,17 @@ class TestPasswordSchema(Base):
     def test_password_validator(self):
         from ptah.password import passwordValidator, PasswordTool
 
-        vp = PasswordTool.validatePassword
+        vp = PasswordTool.validate
 
         def validatePassword(self, pwd):
             return 'Error'
 
-        PasswordTool.validatePassword = validatePassword
+        PasswordTool.validate = validatePassword
 
         self.assertRaises(
             form.Invalid, passwordValidator, None, 'pwd')
         
-        PasswordTool.validatePassword = vp
+        PasswordTool.validate = vp
 
 
 class TestSHAPasswordManager(unittest.TestCase):
@@ -62,7 +70,7 @@ class TestSHAPasswordManager(unittest.TestCase):
         from ptah.password import SSHAPasswordManager
 
         manager = SSHAPasswordManager()
-        
+
         password = u"right \N{CYRILLIC CAPITAL LETTER A}"
         encoded = manager.encode(password, salt="")
 
@@ -91,6 +99,56 @@ class TestPasswordSettings(Base):
         self.assertIsInstance(ptah.passwordTool.manager, SSHAPasswordManager)
 
 
+class TestPasswordChangerDecl(Base):
+
+    def tearDown(self):
+        config.cleanup_system(self.__class__.__module__)
+        super(TestPasswordChangerDecl, self).tearDown()
+
+    def test_password_changer_decl(self):
+        import ptah
+
+        @ptah.password_changer('test+schema')
+        def changer(schema):
+            """ """
+
+        self._init_ptah()
+
+        from ptah.password import PASSWORD_CHANGER_ID
+        changers = config.registry.storage[PASSWORD_CHANGER_ID]
+
+        self.assertIn('test+schema', changers)
+        self.assertIs(changers['test+schema'], changer)
+
+    def test_password_changer_decl_conflict(self):
+        import ptah
+
+        @ptah.password_changer('test+schema')
+        def changer(schema):
+            """ """
+
+        @ptah.password_changer('test+schema')
+        def changer2(schema):
+            """ """
+
+        self.assertRaises(config.ConflictError, self._init_ptah)
+
+    def test_password_changer(self):
+        import ptah
+
+        @ptah.password_changer('test+schema')
+        def changer(schema):
+            """ """
+
+        self._init_ptah()
+
+        p = Principal('test+schema:numbers_numbers', 'name', 'login')
+        self.assertTrue(ptah.passwordTool.can_change_password(p))
+
+        p = Principal('unknown+schema:numbers_numbers', 'name', 'login')
+        self.assertFalse(ptah.passwordTool.can_change_password(p))
+
+
 class TestPasswordTool(Base):
 
     def test_password_encode(self):
@@ -109,3 +167,24 @@ class TestPasswordTool(Base):
         self.assertTrue(ptah.passwordTool.check('{plain}12345', '12345'))
         self.assertFalse(ptah.passwordTool.check('{plain}12345', '123455'))
         self.assertFalse(ptah.passwordTool.check('{unknown}12345', '123455'))
+
+    def test_password_passcode(self):
+        p = Principal('test+schema:test', 'name', 'login')
+        principals = {'test+schema:test': p}
+
+        @ptah.resolver('test+schema')
+        def resolver(uri):
+            return principals.get(uri)
+
+        self._init_ptah()
+        
+        token = ptah.passwordTool.generate_passcode(p)
+        self.assertIsNotNone(token)
+
+        newp = ptah.passwordTool.get_principal(token)
+        self.assertIs(newp, p)
+
+        ptah.passwordTool.remove_passcode(token)
+
+        newp = ptah.passwordTool.get_principal(token)
+        self.assertIsNone(newp)

@@ -52,9 +52,9 @@ class ResetPassword(form.Form):
             principal = authService.get_principal_bylogin(login)
 
             if principal is not None and \
-                   passwordTool.hasPasswordChanger(principal.uri):
+                   passwordTool.can_change_password(principal):
 
-                passcode = passwordTool.generatePasscode(principal.uri)
+                passcode = passwordTool.generate_passcode(principal)
 
                 template = ResetPasswordTemplate(principal, request)
                 template.passcode = passcode
@@ -85,10 +85,10 @@ class ResetPasswordForm(form.Form):
     def update(self):
         request = self.request
         passcode = request.params.get('passcode')
-        self.principal = principal = passwordTool.getPrincipal(passcode)
+        self.principal = principal = passwordTool.get_principal(passcode)
 
         if principal is not None and \
-               passwordTool.hasPasswordChanger(principal.uri):
+               passwordTool.can_change_password(principal.uri):
             self.passcode = passcode
             self.title = principal.name or principal.login
         else:
@@ -105,8 +105,8 @@ class ResetPasswordForm(form.Form):
         if errors:
             self.message(errors, 'form-error')
         else:
-            principal = passwordTool.getPrincipal(self.passcode)
-            passwordTool.changePassword(self.passcode, data['password'])
+            principal = passwordTool.get_principal(self.passcode)
+            passwordTool.change_password(self.passcode, data['password'])
 
             self.request.registry.notify(
                 PrincipalPasswordChangedEvent(principal))
