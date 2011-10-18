@@ -129,6 +129,7 @@ class TestTemplatesCommand(unittest.TestCase):
 
         name = os.path.join('..', 'ptah', 'view', 'tests', 
             'templates', 'test.pt')
+
         self.assertTrue(
             '- test.pt: %s'%name in val)
 
@@ -268,8 +269,8 @@ class TestTemplatesCommand(unittest.TestCase):
         self.assertTrue(
             "Template 'ptah.view:test.pt' has been customized" in val)
         self.assertEqual(
-            open(os.path.join(self.dir, 'ptah.view', 'test.pt'),'rb').read(),
-            '<div>My snippet</div>\n')
+            open(os.path.join(self.dir, 'ptah.view', 'test.pt'),'rb').read().strip(),
+            '<div>My snippet</div>')
 
     def test_commands_template_skip_existing(self):
         tmpl = view.template('ptah.view:/tests/templates/test.pt')
@@ -300,5 +301,5 @@ class TestTemplatesCommand(unittest.TestCase):
         val = self._run()
         self.assertTrue("Overrids: Template 'ptah.view:test.pt' has been customized." in val)
         self.assertEqual(
-            open(os.path.join(self.dir, 'ptah.view', 'test.pt'),'rb').read(),
-            '<div>My snippet</div>\n')
+            open(os.path.join(self.dir, 'ptah.view', 'test.pt'),'rb').read().strip(),
+            '<div>My snippet</div>')
