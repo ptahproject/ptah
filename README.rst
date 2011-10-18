@@ -11,6 +11,8 @@ Install
 
 You will need git, python 2.7 and a new version of virtualenv.
 
+Lets do the needful::
+
   $ curl -O https://raw.github.com/pypa/virtualenv/master/virtualenv.py
   $ python2.7 virtualenv.py --no-site-packages venv
   $ cd venv
