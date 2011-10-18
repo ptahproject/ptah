@@ -49,8 +49,8 @@ Data model
 ----------
 
 Ptah specifies a relational data model which varies with degrees of
-features (ptah is simpler than ptah_cms which, in turn, is simpler
-that ptah_app).  We chose a dirt-simple relational data model that
+features (ptah is simpler than ptah.cms which, in turn, is simpler
+that ptah.cmsapp).  We chose a dirt-simple relational data model that
 emphasizes pragmatism over purity.  It should be approachable by
 anyone who has previous database experience. 
 
@@ -102,7 +102,7 @@ mantra.
 REST as First Class Citizen
 ---------------------------
 
-By participating in the basic ptah_cms.content datamodel; your content can be 
+By participating in the basic ptah.cms.content datamodel; your content can be 
 READ/UPDATED/DELETED via a REST URL without any work from you.  And security
 will be applied to your models.  Install Ptah and curl
 http://localhost:8080/__rest__/cms/ - we believe you wont be disappointed.
@@ -154,7 +154,7 @@ are widely available.
 
 Interactivity
 -------------
-The default ptah_app UI will require websockets for interactivity.
+The default ptah.cmsapp UI will require websockets for interactivity.
 Ptah will still work by running simply 1 server (HTTP) but it will be 
 recommended to run a second server dedicated to websockets.  We aim to provide
 facilities which will make developing security interactive web applications

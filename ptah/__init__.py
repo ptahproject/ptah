@@ -80,6 +80,12 @@ from ptah.sqla import JsonListType
 from ptah.sqla import generateFieldset
 from ptah.sqla import buildSqlaFieldset
 
+# cms
+from ptah import cms
+
+# crowd
+from ptah import crowd
+
 
 def includeme(config):
     config.add_directive('ptah_init', ptah_init)

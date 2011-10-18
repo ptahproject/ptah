@@ -64,7 +64,7 @@ def getRenderer(path):
 
 def path(spec, package_name=None):
     if os.path.exists(spec):
-        return spec, caller_package(2).__name__
+        return spec, caller_package(3).__name__
 
     try:
         package_name, filename = spec.split(':', 1)
@@ -76,10 +76,7 @@ def path(spec, package_name=None):
 
     abspath = pkg_resources.resource_filename(package_name, filename)
     if not pkg_resources.resource_exists(package_name, filename):
-        if os.path.exists(spec):
-            return spec, package_name
         return None, package_name
-
     return abspath, package_name
 
 

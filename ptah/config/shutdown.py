@@ -19,7 +19,7 @@ def shutdown():
     global _shutdown
 
     if not _shutdown:
-        _shutdown = True
+        #_shutdown = True
 
         for handler in handlers:
             try:
@@ -28,7 +28,7 @@ def shutdown():
                 #log.exception("Showndown handler: %s"%handler)
                 pass
 
-    handlers[:] = []
+    #handlers[:] = []
 
 
 def processShutdown(sig, frame):

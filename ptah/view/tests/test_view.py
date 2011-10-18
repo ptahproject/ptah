@@ -272,6 +272,9 @@ class TestView(BaseView):
         self.assertEqual(v.body, '<html>Secured view</html>')
 
     def test_view_register_secured_view(self):
+        from ptah.view.view import defaultCheckPermission, set_checkpermission
+        set_checkpermission(defaultCheckPermission)
+        
         def render(request):
             return '<html>Secured view</html>'
 
@@ -337,7 +340,7 @@ class TestView(BaseView):
         self.assertEqual(v.body, 'True')
 
     def test_view_for_exception(self):
-        @view.pyramidview(context=HTTPForbidden)
+        @view.pyramidview(context=HTTPForbidden, layer='test')
         def render(request):
             return '<html>Forbidden</html>'
 

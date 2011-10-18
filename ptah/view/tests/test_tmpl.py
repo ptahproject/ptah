@@ -14,6 +14,11 @@ class TestTmplCommand(unittest.TestCase):
             ValueError,
             view.template, 'unkown.pt')
 
+    def test_tmpl_relative(self):
+        path, pkg = tapi.path('templates/msg-error.pt')
+        self.assertEqual(path, None)
+        self.assertEqual(pkg, 'ptah.view.tests')
+
     def test_tmpl(self):
         tmpl = view.template('ptah.view.tests:templates/test.pt')
         self.assertTrue('PageTemplateFile' in repr(tmpl))

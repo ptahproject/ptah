@@ -11,7 +11,7 @@ import api
 
 try:
     import transaction
-except ImportError:
+except ImportError: # pragma: no cover
     transaction = None
 
 import api, schema, shutdown

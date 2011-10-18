@@ -16,16 +16,16 @@ functionality at this time.  The public API will be enough.
 
 Let us query all content in the system.
 
-  >>> from ptah_cms import Session, Content
+  >>> from ptah.cms import Session, Content
   >>> Session.query(Content).all()
 
-  [<ptah_cms.root.ApplicationRoot at 0x3df04b0>, 
-   <ptah_app.content.page.Page at 0x3df1330>,
-   <ptah_app.content.folder.Folder at 0x3df1810>]
+  [<ptah.cms.root.ApplicationRoot at 0x3df04b0>, 
+   <ptah.cmsapp.content.page.Page at 0x3df1330>,
+   <ptah.cmsapp.content.folder.Folder at 0x3df1810>]
 
 Creating content is straight forward.  If you manipulate SQL directly you will not participate in the event subsystem of Ptah.  So lets create a piece of content with and without events.
 
-  >>> from ptah_app.content.page import Page
+  >>> from ptah.cmsapp.content.page import Page
   >>> page = Page(title='Manually created')
   >>> Session.add(page)
   >>> import transaction; transaction.commit()
@@ -33,14 +33,14 @@ Creating content is straight forward.  If you manipulate SQL directly you will n
 If you goto the Ptah App interface, http://localhost:8080/ you will not see your page.  But if you goto Ptah Manage interface, http://localhost:8080/ptah-manage/ then goto SQLAlchemy and goto the ptah_cms_pages table you *will* see your content.  Lets continue using the low-level API (SQL).  First let's see the new page via SQL::
 
   >>> Session.query(Content).all()
-  [<ptah_cms.root.ApplicationRoot at 0x3df04b0>, 
-   <ptah_app.content.page.Page at 0x3df1330>,
-   <ptah_app.content.folder.Folder at 0x3df1810>,
-   <ptah_app.content.page.Page at 0x3df16b2>]
+  [<ptah.cms.root.ApplicationRoot at 0x3df04b0>, 
+   <ptah.cmsapp.content.page.Page at 0x3df1330>,
+   <ptah.cmsapp.content.folder.Folder at 0x3df1810>,
+   <ptah.cmsapp.content.page.Page at 0x3df16b2>]
 
 Let's add the relationship between Page and its container (ApplicationRoot) so we can see our new page inside the Ptah App interface.
 
-  >>> import ptah_cms import ApplicationRoot
+  >>> import ptah.cms import ApplicationRoot
   >>> root=Session.query(ApplicationRoot).filter_by(
   ...     __name__='root').first()
   >>> root['manually-created']=page
@@ -52,7 +52,7 @@ sql way
   >>> transaction.commit()
 
 cms way, `update` method examines type info schema and sets attributes
-that awailable in schema.  this will also notify the framework with appropriate ptah_cms.events.
+that awailable in schema.  this will also notify the framework with appropriate ptah.cms.events.
 
   >>> page.update(description='description')
   
@@ -102,7 +102,7 @@ Now lets use the form system to set attributes on the page.
 
 load and load_parents
 
-These two functions can be found in ptah_cms.node.load and ptah_cms.node.load_parents.  This API is useful when you want to work with heirarchies or security. 
+These two functions can be found in ptah.cms.node.load and ptah.cms.node.load_parents.  This API is useful when you want to work with heirarchies or security. 
 
 First lets show non-initialized node
   >>> p=Session.query(Content).filter_by(title='Manually created').first()
@@ -111,16 +111,16 @@ First lets show non-initialized node
 
 This is because there is no parent.  We can load_parents to get __parent__.
 
-  >>> from ptah_cms import load, load_parents
+  >>> from ptah.cms import load, load_parents
   >>> load_parents(p)
-  [<ptah_cms.root.ApplicationRoot at 0x3df04b0>]
+  [<ptah.cms.root.ApplicationRoot at 0x3df04b0>]
   >>> p.__parent__
-  <ptah_cms.root.ApplicationRoot at 0x3df04b0>
+  <ptah.cms.root.ApplicationRoot at 0x3df04b0>
 
 As you use the system you will notice that we attempt not to load objects as that can be a expensive operation.  So if an object refers to another object it will do so by URI.  So let's load a object via its URI.
 
   >>> load(p.__uri__)
-  <ptah_app.content.page.Page at 0x3df16b2>
+  <ptah.cmsapp.content.page.Page at 0x3df16b2>
   
 `load` also supports passing in a Permission which can checked after loading which will raise Forbidden if the user does not have this permission on Content.
 

@@ -41,7 +41,7 @@ User resolver
 
 Resolvers in Ptah are the way we indirect lookup between components.  For
 instance, instead of storing the primary key of the user for say, the
-ptah_cms_node.Owner field; we make that a string and store a URI.  URIs
+ptah.cms.node.Owner field; we make that a string and store a URI.  URIs
 can be resolved into a object.
 
 This code registeres a function which returns a object given a URI::

@@ -388,7 +388,7 @@ Create content
 Let us create a Page whose name is 'foobar.html'. 
 
 There is a special feature of `container.create REST action` which allow you to create type 
-and update all values in one operation. Here is example of creating ptah_app.content.Page::
+and update all values in one operation. Here is example of creating ptah.cmsapp.content.Page::
 
     $ curl -H "X_AUTH_TOKEN:8725da7fdf14e1442f1ed4670f3b61614e95a6bcuser%2Bcrowd%3A9a529386a61c4f20a2481da6a9f455cc" \
       --url "http://localhost:8080/__rest__/cms/content:/cms+app:c24d0e245edc413980a75D5D5f035ee3c8b2/create?tinfo=cms+type:page&name=foobar.html"
@@ -396,7 +396,7 @@ and update all values in one operation. Here is example of creating ptah_app.con
      "message": "cms+page:032e6b19a99c40fba264c1aeeaf08254"
     }
     
-`tinfo` is the type's __uri__.  You can get a list of available types by querying __rest__/cms/types for instance, the default types available with ptah_app are:
+`tinfo` is the type's __uri__.  You can get a list of available types by querying __rest__/cms/types for instance, the default types available with ptah.cmsapp are:
 
    - cms+type:page
    - cms+type:folder

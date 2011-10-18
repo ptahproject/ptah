@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# ptah_cms documentation build configuration file
+# ptah documentation build configuration file
 #
 # This file is execfile()d with the current directory set to its containing
 # dir.
@@ -30,7 +30,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General substitutions.
-project = 'ptah_cms'
+project = 'ptah'
 
 # The default replacements for |version| and |release|, also used in various
 # other places throughout the built documents.

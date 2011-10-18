@@ -1,7 +1,7 @@
 Ptah CMS API
 ------------
 
-.. automodule:: ptah_cms
+.. automodule:: ptah.cms
 
 Content classes
 ~~~~~~~~~~~~~~~

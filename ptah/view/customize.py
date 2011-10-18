@@ -138,6 +138,7 @@ class _GlobalLayerManager(object):
 
         # unload
         pkg_data = tmpl.registry[pkg]
+
         for fn, (p,t,d,t,pkg) in pkg_data.items():
             if t.custom is not None:
                 t.setCustom(None)
@@ -268,7 +269,7 @@ def initialize(*args):
 
 @config.shutdown_handler
 def shutdown():
-    if TEMPLATE._watcher is not None: # pragma: no cover
+    if TEMPLATE._watcher is not None:
         TEMPLATE._watcher.stop()
         TEMPLATE._watcher = None
 

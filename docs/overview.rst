@@ -2,10 +2,10 @@
 Ptah CMS
 ========
 
-The ptah_cms package depends on the ptah package and contains no policy or
+The ptah.cms package depends on the ptah package and contains no policy or
 user interface.  The pixels you see on the screen resulting from the
-install.rst document is ptah_app.  The kernel of the CMS exists in ptah_cms.  
-If you want an alternative datastore fork ptah_cms package and change the models 
+install.rst document is ptah.cmsapp.  The kernel of the CMS exists in ptah.cms.  
+If you want an alternative datastore fork ptah.cms package and change the models 
 to use mongo, zodb, etc.
 
 The package is responsible for permissions, base content models, blob,
@@ -14,7 +14,7 @@ content/data model), application concept as well as a traverser which
 integrates a URL (you pick where) and the efficient lookup, security,
 and dispatch based on URL.
 
-If you want an example of using ```ptah_cms``` look at ```ptah_app``` which
+If you want an example of using ```ptah.cms``` look at ```ptah.cmsapp``` which
 contains implementation of the CMS types, such as File, Folder and Page.
 This package is will probably not be useful unless you want to write a CMS
 with your own opinions.
@@ -50,7 +50,7 @@ on where you `mount` the Application into your heirarchy.
 
   e.g.:::
 
-    factory = ptah_cms.ApplicationFactory('/', 'root', 'Ptah CMS')
+    factory = ptah.cms.ApplicationFactory('/', 'root', 'Ptah CMS')
     ptah.config.add_route('root-app', '/*traverse',
         factory = factory, use_global_views = True)
 
@@ -109,7 +109,7 @@ Traverser
 The ContentTraverser is bound to the ApplicationRoot and registers itself
 with Pyramid.  So if Pyramid resolves URL into an ApplicationRoot it will
 use this custom traverser.  A traverser is responsible for resolving the URL
-into a response by pyramid.  :py:class:`ptah_cms.traverser.Traverser`
+into a response by pyramid.  :py:class:`ptah.cms.traverser.Traverser`
 will lookup the location of the model via the `ptah_cms_content` table.
 
 Traversal is only used for the content heirarchy.  URL Dispatch can still
@@ -174,7 +174,7 @@ conflicting with Ptah.
 Node
 ~~~~
 
-    ::py:class:`ptah_cms.node.Node` is the primary table.
+    ::py:class:`ptah.cms.node.Node` is the primary table.
 
     id::
        this is a integer which is internal implementation detail for SQLAlchemy.
@@ -192,7 +192,7 @@ Node
     type::
        this is the application-level "type" information which provides a
        indirection for model re-use. A News Item is a Page with a different
-       :py:class:`ptah_cms.tinfo.TypeInformation`
+       :py:class:`ptah.cms.tinfo.TypeInformation`
 
     parent::
        a UUID of the parent.  The only time this will be null is in the
@@ -212,7 +212,7 @@ Content
 ~~~~~~~
 
     `ptah_cms_content` is an optional application-level data model which
-    provides high level attributes core to `ptah_cms` as well as some
+    provides high level attributes core to `ptah.cms` as well as some
     optimization information.  for instance, there is a `path` column
     which we use to fast-path lookups for leaf nodes in `traversal`.
 
@@ -220,7 +220,7 @@ Content
         the internal path representation of the URL used to efficiently
         traverse a pyramid URL into the internal data model.  For instance:
         a Page which is located at http://host/folder/front-page will be
-        internally represented as, /${ptah_cms.node.uuid}/folder/front-page
+        internally represented as, /${ptah.cms.node.uuid}/folder/front-page
 
       e.g. /cms+app:f4642bf9d7cb42fb92578763b4dc91aa/folder/front-page/
 
@@ -278,7 +278,7 @@ Container
 ~~~~~~~~~
 
   There is no data model/persistent difference between Content and Container.
-  The database records are identical.  The difference is the ```ptah_cms.Container```
+  The database records are identical.  The difference is the ```ptah.cms.Container```
   model supports a Mapping-like interface so you can resolve children efficiently.
   It also makes it easier for programmers to model/manipulate containment relationships.
 
@@ -288,7 +288,7 @@ Container
 
     SQLAlchemy low-level without application events::
 
-      from ptah_cms import Session, Content
+      from ptah.cms import Session, Content
       page = Session.query(Content).filter_by(Content.__name__='front-page').all()[0]
       Session.delete(page)
       import transaction; transaction.commit()
@@ -297,7 +297,7 @@ Container
 
     Ptah high level data access::
 
-      from ptah_cms import Session, Content
+      from ptah.cms import Session, Content
       page = Session.query(Content).filter_by(Content.__name__='front-page').all()[0]
       page.delete()
       import transaction; transaction.commit()
@@ -309,7 +309,7 @@ URIs
 
   In Ptah all models have a URI, $scheme:$UID e.g.::
 
-      >> from ptah_cms import Session, Node
+      >> from ptah.cms import Session, Node
       >> x.__uri__ for x in Session.query(Node).all()]
       [u'cms+app:f4642bf9d7cb42fb92578763b4dc91aa',
        u'cms+page:0d60fc5c2128449898a92a90fa757173',
@@ -317,7 +317,7 @@ URIs
        u'cms+page:a0b87c1d3f354183bafb3da5a94a097f']
 
 For instance, the default User/Properties system is `ptah-crowd:$UID` for
-a user.  And for ptah_cms.ApplicationRoot it is `ptah-app:$UID`.  URI
+a user.  And for ptah.cms.ApplicationRoot it is `ptah-app:$UID`.  URI
 resolution This is a core facility and contract of the system. Given any
 UUID the application should be able to load the corresponding model.  This
 loose coupling allows for us to store records externally to the system.
@@ -352,7 +352,7 @@ up the tree to the ApplicationRoot.  While this is obvious if you have
 object/graph database background it is important concept to understand since
 we are working with heirachies.
 
-  See :py:class:`ptah_cms.load_parents`
+  See :py:class:`ptah.cms.load_parents`
 
 Security, Lineage, URL Dispatch
 ===============================

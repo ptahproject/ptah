@@ -52,7 +52,7 @@ setup(name='ptah',
         'paste.app_factory': [
             'app = ptah:make_wsgi_app'],
         'paste.paster_create_template': [
-            'ptahdemo = ptah_app.scaffolds:StarterProjectTemplate',
+            'ptahdemo = ptah.cmsapp.scaffolds:StarterProjectTemplate',
             ],
         'paste.global_paster_command': [
             'static = ptah.view.commands:StaticCommand',

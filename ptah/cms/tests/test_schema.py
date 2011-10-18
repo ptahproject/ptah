@@ -1,0 +1,28 @@
+import unittest
+from ptah import form
+
+from base import Base
+
+
+class TestNameSchema(Base):
+
+    def test_schema_name_validator(self):
+        from ptah.cms.interfaces import ContentNameSchema
+
+        fieldset = ContentNameSchema.bind(
+            params = {'__name__': '/asdfasdfadf'})
+
+        data, errors = fieldset.extract()
+        self.assertTrue(errors)
+
+        fieldset = ContentNameSchema.bind(
+            params = {'__name__': 'asdfasdf/adf'})
+
+        data, errors = fieldset.extract()
+        self.assertTrue(errors)
+
+        fieldset = ContentNameSchema.bind(
+            params = {'__name__': ' asdfasdfadf'})
+
+        data, errors = fieldset.extract()
+        self.assertTrue(errors)

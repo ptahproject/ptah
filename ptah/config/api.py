@@ -21,7 +21,9 @@ class StopException(Exception):
             self.isexc = False
 
     def __str__(self):
-        return str(self.exc)
+        if self.isexc:
+            return str(self.exc)
+        return self.exc
 
     def print_tb(self):
         if self.isexc:

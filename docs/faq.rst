@@ -4,9 +4,9 @@ Ptah Q & A
 What is scope of Ptah?
 ----------------------
 
-Ptah aims to provide a framework which makes low level choices for developers so the programmer can get on with solving their problem on a unrealistic deadline.  It is high level compared to Pyramid but lower level compared to something like Plone or Drupal.  ptah_cms will never require developers to have to participate in advanced CMS functionality such as staging, workflow or versioning; those will be optional and if support is required in data model we will ensure it is not required and that such features can be nullable (like ptah_cms_nodes.parent; its optional).
+Ptah aims to provide a framework which makes low level choices for developers so the programmer can get on with solving their problem on a unrealistic deadline.  It is high level compared to Pyramid but lower level compared to something like Plone or Drupal.  ptah.cms will never require developers to have to participate in advanced CMS functionality such as staging, workflow or versioning; those will be optional and if support is required in data model we will ensure it is not required and that such features can be nullable (like ptah_cms_nodes.parent; its optional).
 
-Ptah is a framework, implementation and set of opinions around the Pyramid web framework.  It supports `URL dispatch`, `Traversal`, a SQL data model, pyramid view-level security, view/template composition system (which can use traversal), content heirarchy, multiple applications living in the same content heirarchy, a high level security policy (permissions, roles, and principals).  Ptah ships as two separate applications, `Ptah Manage` (inside ptah) and `Ptah App`, ptah_app.  
+Ptah is a framework, implementation and set of opinions around the Pyramid web framework.  It supports `URL dispatch`, `Traversal`, a SQL data model, pyramid view-level security, view/template composition system (which can use traversal), content heirarchy, multiple applications living in the same content heirarchy, a high level security policy (permissions, roles, and principals).  Ptah ships as two separate applications, `Ptah Manage` (inside ptah) and `Ptah App`, ptah.cmsapp.  
 
 Ptah Manage aims at provide 100% visibility into ALL aspects of your application and how its using the Ptah framework.  Ptah Manage is about transparency of configuration for developers/administrators.  Ptah App is about application developers and end users.  
 
@@ -44,7 +44,7 @@ We are open to moving back to colander as long as it doesnt add more indirection
 Why does Ptah use a Folder paradigm?
 ------------------------------------
 
-It *does not* require a Folder paradigm or containment.  ptah_app demonstrates the features of ptah_cms and one of those features are content heirarchies.  Thus the Page/Folder experience in ptah_app.  We currently have a Poll add-on which does not participate in Page/Folder heirarchy.
+It *does not* require a Folder paradigm or containment.  ptah.cmsapp demonstrates the features of ptah.cms and one of those features are content heirarchies.  Thus the Page/Folder experience in ptah.cmsapp.  We currently have a Poll add-on which does not participate in Page/Folder heirarchy.
 
 Why does Ptah not use ZODB?
 ---------------------------
@@ -67,7 +67,7 @@ integrate Mongo into Ptah.
 Why does Ptah use sqlite?
 -------------------------
 
-Ptah uses SQLAlchemy which supports many different database drivers.  sqlite ships with Python obviating the need to install a separate database daemon.  ptah_cms will not depend on database specific features to gain performance or scalability.  simplicity and approachability are the overriding concerns in Ptah.
+Ptah uses SQLAlchemy which supports many different database drivers.  sqlite ships with Python obviating the need to install a separate database daemon.  ptah.cms will not depend on database specific features to gain performance or scalability.  simplicity and approachability are the overriding concerns in Ptah.
 
 Pyramid is not a bottleneck; Ptah is
 ------------------------------------
@@ -103,7 +103,7 @@ See content.rst for example of SQLAlchemy usage.
 Why do you say REST and Websockets are First Class?
 ---------------------------------------------------
 
-If your content model inherients from ptah_cms.Content than it will automatically be exposed via the Ptah REST API.  You will be able to update and call REST Actions on your models over REST.  We say its first class because the framework treat REST as important as it does its SQL data model.
+If your content model inherients from ptah.cms.Content than it will automatically be exposed via the Ptah REST API.  You will be able to update and call REST Actions on your models over REST.  We say its first class because the framework treat REST as important as it does its SQL data model.
 
 Websocket integration is a bit trickier at the moment.  We are still feeling our way around how this will work.  We want developers to be able to use websocket's with their models in the context of the security system without having to think too much.  There will be a better answer soon.
 
@@ -117,13 +117,13 @@ Backwards compatibility (especially regarding browsers) is a non-priority for Pt
 Ptah cheats and uses SQL like NoSQL
 -----------------------------------
 
-The core ptah_cms data model is very simple and meant to be extensible.
+The core ptah.cms data model is very simple and meant to be extensible.
 We do store JSON for some attributes (like security) instead of separate tables for performance and convienance reasons.  Ptah isnt a academic
 exercise it is to help people get work done efficiently.  The core data
 model is simple enough that you can normalize your schema's however you
 like but that doesnt mean the core system needs to have that complexity.
 The other "cheat" is that we store path in the content table.  This enables
-fast lookups if using content heirarchies (1 simple SELECT).  ptah_cms
+fast lookups if using content heirarchies (1 simple SELECT).  ptah.cms
 has 3 tables and one of them (ptah_cms_content) is not required to be used
 unless you want heriarchies.  
 
@@ -138,7 +138,7 @@ extension to Ptah but not in the core framework.  The core framework must be dat
 I hate traversal, why would I use Ptah?
 ---------------------------------------
 
-You do not need to use traversal/containment with Ptah.  You can still use nearly all of ptah_cms.  Containment is useful concept and it is how many users think about website management.  After all Apache uses containment; just instead of a database it uses a filesystem.
+You do not need to use traversal/containment with Ptah.  You can still use nearly all of ptah.cms.  Containment is useful concept and it is how many users think about website management.  After all Apache uses containment; just instead of a database it uses a filesystem.
 
 I hate Pyramid, why would I use Ptah?
 -------------------------------------

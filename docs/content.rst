@@ -2,7 +2,7 @@ Example of Content Model
 ------------------------
 
 The Ptah Content model is quite high level and provides a lot of functionality.
-By inherienting from ptah_cms.content.Content you gain the following:
+By inherienting from ptah.cms.content.Content you gain the following:
 
   - Automatically get polymorphism with ptah_cms_node table.
   - You do not need to specify a "uri resolver"
@@ -11,7 +11,7 @@ By inherienting from ptah_cms.content.Content you gain the following:
   - Your model can participate in REST api without any work
   - Your model will have events thrown upon creation/delete/update
   - Automatically generated Add/Edit forms
-  - Models will be added in the ptah_app UI/content heirarchy
+  - Models will be added in the ptah.cmsapp UI/content heirarchy
 
 All of the above can be overridden if you want fine-grain control of the
 specifics. 
@@ -26,21 +26,21 @@ A simple model::
     from pyramid.httpexceptions import HTTPFound
 
     from ptah import view, form
-    import ptah_cms
+    import ptah.cms
     from ptah import checkPermission
     
-    class Link(ptah_cms.Content):
+    class Link(ptah.cms.Content):
         __tablename__ = 'ptah_cms_link'
-        __type__ = ptah_cms.Type('link', permission=ptah_cms.AddContent)
+        __type__ = ptah.cms.Type('link', permission=ptah.cms.AddContent)
         href = sqla.Column(sqla.Unicode)
 
-    @view.pyramidview(context=Link, permission=ptah_cms.View, layout='page')
+    @view.pyramidview(context=Link, permission=ptah.cms.View, layout='page')
     def link_view(context, request):
         """ This is a default view for a Link model.
             If you have permission to edit it it will display the form.
             If you do not have ability to edit it; you will be redirected.
         """
-        can_edit = checkPermission(ptah_cms.ModifyContent, context, throw=False)
+        can_edit = checkPermission(ptah.cms.ModifyContent, context, throw=False)
 
         if can_edit:
             vform = form.DisplayForm(context, request)

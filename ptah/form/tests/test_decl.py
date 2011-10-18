@@ -56,3 +56,4 @@ class TestFieldset(Base):
 
         self.assertIn(MyField, previews)
         self.assertIs(previews[MyField], preview)
+        self.assertIs(form.get_field_preview(MyField), preview)

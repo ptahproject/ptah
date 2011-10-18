@@ -358,23 +358,6 @@ class TestExtraDirective(BaseTesting):
     def test_scan_unknown(self):
         self.assertRaises(ImportError,  directives.scan, 'unknown', [])
 
-    def _test_scan_package(self):
-        global testHandler
-
-        @config.action
-        def testHandler(*args): # pragma: no cover
-            pass
-
-        seen = set()
-        actions = directives.scan(self.__class__.__module__, seen)
-
-        self.assertTrue(len(actions) == 1)
-        self.assertTrue(self.__class__.__module__ in seen)
-
-        # already seen
-        actions = directives.scan(self.__class__.__module__, seen)
-        self.assertTrue(len(actions) == 0)
-
     def test_directive_info_limit_scope(self):
         self.assertRaises(
             TypeError,
@@ -389,23 +372,6 @@ class TestExtraDirective(BaseTesting):
         self.assertEqual(info.context,
                          sys.modules[self.__class__.__module__])
 
-    def _test_api_init(self):
-        global testHandler
-
-        processed = []
-
-        @config.action
-        def testHandler(*args): # pragma: no cover
-            processed.append(1)
-
-        config.initialize()
-
-        self.assertTrue(len(processed) == 0)
-
-        config.initialize((self.__class__.__module__,))
-
-        self.assertTrue(len(processed) == 1)
-
     def test_api_loadpackage(self):
         from ptah.config import api
 
@@ -415,32 +381,3 @@ class TestExtraDirective(BaseTesting):
 
         packages = api.loadPackage('ptah.config', seen)
         self.assertEqual(packages, [])
-
-
-class BadicTesting(unittest.TestCase):
-
-    def test_exclude_test(self):
-        from ptah.config import api
-
-        self.assertFalse(api.exclude('blah.test'))
-        self.assertFalse(api.exclude('blah.ftest'))
-        self.assertFalse(api.exclude('blah.subpkg', ('blah.',)))
-        self.assertTrue(api.exclude('blah.subpkg'))
-
-    def test_loadpackages(self):
-        from ptah.config import api
-
-        self.assertEqual(
-            api.list_packages(('ptah',), excludes=('ptah',)), [])
-
-        self.assertIn('ptah', api.list_packages())
-        self.assertEqual(api.list_packages(excludes=('ptah',)), [])
-
-    def test_stop_exc(self):
-        from ptah.config import api
-
-        err = ValueError('test')
-
-        exc = api.StopException(err)
-        self.assertIs(exc.exc, err)
-        self.assertEqual(str(exc), 'test')

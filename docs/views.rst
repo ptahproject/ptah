@@ -8,20 +8,20 @@ Conceptual Model
 ----------------
 
 Let's use Ptah App as an example.  There is a `front-page` content, its
-class is ptah_app.content.Page.  The default view for this page is::
+class is ptah.cmsapp.content.Page.  The default view for this page is::
 
     ptah.view.register_view(
         context = Page,
         layout = u'', # empty string means `default layout`
-        permission = ptah_cms.View,
-        template = ptah.view.template('ptah_app:templates/page.pt'))
+        permission = ptah.cms.View,
+        template = ptah.view.template('ptah.cmsapp:templates/page.pt'))
 
 NOTE: The layout '' means default.  You can also pass None which means no layout.  If you want
 to return a file from a view (you dont need a layout).
 
 So if you render this view::
     >>> from pyramid.requests import Request
-    >>> from ptah_cms import Factories    
+    >>> from ptah.cms import Factories    
     >>> import ptah
     >>> root = Factories['root']()
     >>> request = Request.blank('/')
@@ -30,7 +30,7 @@ So if you render this view::
     >>> full_html = ptah.view.render_view('', root['front-page'], request) 
     ... the entire html page with all layout applied
 
-This is ptah_app/templates/page.pt rendered against the page.  This page
+This is ptah.cmsapp/templates/page.pt rendered against the page.  This page
 does not contain *any* layout.  Then the ptah.view machinery walks up
 the layout chain calling each layout with the previous html rendered.
 
@@ -39,9 +39,9 @@ System queries layout for this view::
     >>> snippet = '<div>The result of a view without layout</div>.'
     >>> layout = ptah.view.query_layout(request, root['front-page'], u'')
     >>> layout
-    <ptah_app.views.ContentLayout object at ...>
+    <ptah.cmsapp.views.ContentLayout object at ...>
     >>> layout.template
-    <PageTemplateFile .. \ptah_app\templates\layoutcontent.pt>
+    <PageTemplateFile .. \ptah.cmsapp\templates\layoutcontent.pt>
     >>> layout.update() # Since layouts have behavior; you must initialize
     >>> layout.render(snippet)
     .. This will show the layout and substiute ${content} with the snippet.
@@ -49,12 +49,12 @@ System queries layout for this view::
     .. this will walk the layout chain and render the full HTML
 
 If we want to walk the layout chain upwards we would see that the ContentLayout's parent essentially is WorkspaceLayout.  Let's take a look
-at it by opening ptah_app\views.py and see ContentLayout::
+at it by opening ptah.cmsapp\views.py and see ContentLayout::
 
     class ContentLayout(view.Layout):
-        """ interface.IContent can be replaced with ptah_cms.Content """
+        """ interface.IContent can be replaced with ptah.cms.Content """
         view.layout('', interfaces.IContent, parent="workspace",
-                template=view.template("ptah_app:templates/layoutcontent.pt"))
+                template=view.template("ptah.cmsapp:templates/layoutcontent.pt"))
 
         def update(self):
             self.actions = list_uiactions(self.context, self.request)
@@ -188,7 +188,7 @@ Now lets override the snippet for the Settings module:
   - We see the name of the Module, SettingsModule and registration of it ptah.manageModule('settings')
   
 Now lets override the snippet in myapp:
-  - Copy the ptah/ptah_app/templates/moduleactions.pt into myapp/templates/settings-snippet.pt
+  - Copy the ptah/ptah.cmsapp/templates/moduleactions.pt into myapp/templates/settings-snippet.pt
   - Edit the .pt and add a <li>Modified</li> in the HTML snippet
   - Now open up myapp/views.py and add::
       from ptah import view
@@ -247,13 +247,13 @@ Libraries
 This name may change.  Main idea is that if your Snippet needs tags inserted into the HEAD you can use the library feature to ensure those HTML supporting assets exist.  An example:
 
   - The TinyMCE widget is a form field and when it is rendered it does have access to HEAD.
-  - In an editor open up ptah/ptah_app/tinymce.py
+  - In an editor open up ptah/ptah.cmsapp/tinymce.py
 
 Definition of Library::
 
     # TinyMCE
     view.static(
-        'tiny_mce', 'ptah_app:static/tiny_mce')
+        'tiny_mce', 'ptah.cmsapp:static/tiny_mce')
 
     view.library(
         "tiny_mce",
