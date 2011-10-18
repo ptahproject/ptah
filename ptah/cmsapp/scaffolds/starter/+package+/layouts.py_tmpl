@@ -1,6 +1,6 @@
 import ptah, ptah_cms
 from ptah import view 
-
+from ptah import manage, authService
 
 class PageLayout(view.Layout):
     view.layout('page', ptah_cms.ApplicationRoot,
@@ -37,4 +37,6 @@ class WorkspaceLayout(view.Layout):
 
     def update(self):
         self.user = ptah.authService.get_current_principal()
+        self.ptahManager = ptah.manage.get_access_manager()(ptah.authService.get_userid()) 
         self.isAnon = self.user is None
+
