@@ -1,7 +1,7 @@
 import ptah.cms
 
 
-class ApplicationRoot(ptah_cms.ApplicationRoot):
+class ApplicationRoot(ptah.cms.ApplicationRoot):
 
     __type__ = ptah.cms.Type('{{package}}-app')
 
