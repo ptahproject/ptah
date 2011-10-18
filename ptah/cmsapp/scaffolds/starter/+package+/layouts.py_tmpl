@@ -1,13 +1,13 @@
-import ptah, ptah_cms
+import ptah, ptah.cms
 from ptah import view 
 from ptah import manage, authService
 
 class PageLayout(view.Layout):
-    view.layout('page', ptah_cms.ApplicationRoot,
+    view.layout('page', ptah.cms.ApplicationRoot,
                 layer = 'test',
                 template = view.template('templates/layoutpage.pt'))
 
-    """ override 'page' layout from ptah_app
+    """ override 'page' layout from ptah.app
 
     layer - identifier, import order does matter, last imported wins
     """
@@ -28,7 +28,7 @@ class PageLayout(view.Layout):
 
 
 class WorkspaceLayout(view.Layout):
-    view.layout('workspace', ptah_cms.ApplicationRoot,
+    view.layout('workspace', ptah.cms.ApplicationRoot,
                 parent = 'page',
                 layer = 'test',
                 template = view.template('templates/layoutworkspace.pt'))

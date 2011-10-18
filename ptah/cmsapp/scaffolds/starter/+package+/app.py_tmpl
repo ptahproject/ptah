@@ -1,12 +1,12 @@
-import ptah_cms
+import ptah.cms
 
 
 class ApplicationRoot(ptah_cms.ApplicationRoot):
 
-    __type__ = ptah_cms.Type('{{package}}-app')
+    __type__ = ptah.cms.Type('{{package}}-app')
 
 
-APP_FACTORY = ptah_cms.ApplicationFactory(
+APP_FACTORY = ptah.cms.ApplicationFactory(
     name='root', 
     title='{{project}} Application',
     tinfo = ApplicationRoot.__type__)
