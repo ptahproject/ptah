@@ -274,7 +274,7 @@ class TestView(BaseView):
     def test_view_register_secured_view(self):
         from ptah.view.view import defaultCheckPermission, set_checkpermission
         set_checkpermission(defaultCheckPermission)
-        
+
         def render(request):
             return '<html>Secured view</html>'
 

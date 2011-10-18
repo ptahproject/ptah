@@ -127,7 +127,7 @@ class TestTemplatesCommand(unittest.TestCase):
         val = self._run()
         self.assertTrue('* ptah.view.tests' in val)
 
-        name = os.path.join('..', 'ptah', 'view', 'tests', 
+        name = os.path.join('..', 'ptah', 'view', 'tests',
             'templates', 'test.pt')
         self.assertTrue(
             '- test.pt: %s'%name in val)
@@ -142,7 +142,7 @@ class TestTemplatesCommand(unittest.TestCase):
         self.assertTrue('* ptah.view' in val)
         self.assertTrue('* ptah.view.tests' in val)
 
-        name = os.path.join('..', 'ptah', 'view', 'tests', 
+        name = os.path.join('..', 'ptah', 'view', 'tests',
             'templates', 'test.pt')
         self.assertTrue(
             '- test.pt: %s'%name in val)
