@@ -2,8 +2,8 @@ from pyramid.config import Configurator
 from pyramid.asset import abspath_from_asset_spec
 
 import ptah
-import ptah.app
-from ptah.app.content import Page
+import ptah.cmsapp
+from ptah.cmsapp.content import Page
 from ptah.crowd.provider import CrowdUser, Session
 
 from {{package}}.app import APP_FACTORY
@@ -28,7 +28,7 @@ def main(global_config, **settings):
 
     # give manager role to admin
     if user.uri not in root.__local_roles__:
-        root.__local_roles__[user.uri] = [ptah.app.Manager.id]
+        root.__local_roles__[user.uri] = [ptah.cmsapp.Manager.id]
     
     ptah.authService.set_userid(user.uri)
 

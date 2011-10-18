@@ -95,7 +95,7 @@ class AddForm(form.Form):
         if not name:
             name = self.chooseName(**data)
 
-        content = cms.cms(self.container).create(
+        content = cms.wrap(self.container).create(
             self.tinfo.__uri__, name, **data)
 
         return content
@@ -150,7 +150,7 @@ class EditForm(form.Form):
         super(EditForm, self).update()
 
     def applyChanges(self, **data):
-        cms.cms(self.context).update(**data)
+        cms.wrap(self.context).update(**data)
 
     @form.button('Save', actype=form.AC_PRIMARY)
     def saveHandler(self):

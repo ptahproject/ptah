@@ -7,7 +7,7 @@ class PageLayout(view.Layout):
                 layer = 'test',
                 template = view.template('templates/layoutpage.pt'))
 
-    """ override 'page' layout from ptah.app
+    """ override 'page' layout from ptah.cmsapp
 
     layer - identifier, import order does matter, last imported wins
     """
