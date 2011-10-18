@@ -18,7 +18,7 @@ class TestProvider(Base):
                 {'login': 'test', 'password': '12345'}))
 
         user = CrowdUser('test', 'test', 'test@ptahproject.org',
-                         ptah.passwordTool.encodePassword('12345'))
+                         ptah.passwordTool.encode('12345'))
         Session.add(user)
         transaction.commit()
 
@@ -39,7 +39,7 @@ class TestProvider(Base):
         self.assertIsNone(provider.get_principal_bylogin('test'))
 
         user = CrowdUser('test', 'test', 'test@ptahproject.org',
-                         ptah.passwordTool.encodePassword('12345'))
+                         ptah.passwordTool.encode('12345'))
         Session.add(user)
         transaction.commit()
 

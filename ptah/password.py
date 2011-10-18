@@ -51,7 +51,7 @@ class SSHAPasswordManager(object):
         encoded_password = encoded_password.encode('ascii')
         byte_string = urlsafe_b64decode(encoded_password[6:])
         salt = byte_string[20:]
-        return encoded_password == self.encodePassword(password, salt)
+        return encoded_password == self.encode(password, salt)
 
 
 class PasswordTool(object):
@@ -70,15 +70,19 @@ class PasswordTool(object):
     def __init__(self):
         self._changers = {}
 
-    def checkPassword(self, encodedPassword, password):
-        for prefix, pm in self.pm.items():
-            if encodedPassword.startswith(prefix):
-                return pm.check(encodedPassword, password)
+    def check(self, encoded, password):
+        try:
+            pm, pwd = encoded.split('}', 1)
+        except:
+            return self.passwordManager.check(encoded, password)
 
-        return self.passwordManager.check(encodedPassword, password)
+        manager = self.pm.get('%s}'%pm)
+        if manager is not None:
+            return manager.check(encoded, password)
+        return False
 
-    def encodePassword(self, password, salt=None):
-        return self.passwordManager.encode(password, salt)
+    def encode(self, password, salt=None):
+        return self.manager.encode(password, salt)
 
     def registerPasswordChanger(self, typ, changer):
         self._changers[typ] = changer
@@ -106,7 +110,7 @@ class PasswordTool(object):
         if principal is not None:
             changer = self._changers.get(ptah.extract_uri_schema(principal.uri))
             if changer is not None:
-                changer(principal, self.encodePassword(password))
+                changer(principal, self.encode(password))
                 return True
 
         return False
@@ -178,4 +182,4 @@ def initializing(ev):
     if mng is None:
         mng = PasswordTool.pm['{plain}']
 
-    passwordTool.passwordManager = mng
+    passwordTool.manager = mng

@@ -15,7 +15,7 @@ class CrowdProvider(object):
         user = CrowdUser.get_bylogin(login)
 
         if user is not None:
-            if ptah.passwordTool.checkPassword(user.password, password):
+            if ptah.passwordTool.check(user.password, password):
                 return user
 
     def get_principal_bylogin(self, login):

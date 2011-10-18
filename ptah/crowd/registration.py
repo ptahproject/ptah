@@ -38,7 +38,7 @@ class Registration(form.Form):
         user = CrowdUser(data['name'], data['login'], data['login'])
 
         # set password
-        user.password = ptah.passwordTool.encodePassword(data['password'])
+        user.password = ptah.passwordTool.encode(data['password'])
         Session.add(user)
         Session.flush()
 

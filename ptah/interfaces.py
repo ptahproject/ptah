@@ -97,10 +97,10 @@ class IPasswordTool(interface.Interface):
     letters_digits = interface.Attribute(u'Letters and digits')
     letters_mixed_case = interface.Attribute(u'Letters case')
 
-    def encodePassword(password, *args, **kw):
+    def encode(password, *args, **kw):
         """ encode password """
 
-    def checkPassword(encodedPassword, password):
+    def check(encodedPassword, password):
         """ check password """
 
     def validatePassword(password):

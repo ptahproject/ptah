@@ -33,7 +33,7 @@ class CreateUserForm(form.Form):
         # create user
         user = CrowdUser(data['name'], data['login'], data['login'])
         # set password
-        user.password = ptah.passwordTool.encodePassword(data['password'])
+        user.password = ptah.passwordTool.encode(data['password'])
         Session.add(user)
         Session.flush()
 
@@ -97,6 +97,6 @@ class ChangePassword(form.Form):
         sm = self.request.registry
 
         self.context.user.password = \
-            ptah.passwordTool.encodePassword(data['password'])
+            ptah.passwordTool.encode(data['password'])
 
         self.message("User password has been changed.")

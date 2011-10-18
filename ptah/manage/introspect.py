@@ -122,11 +122,13 @@ class EventsView(view.View):
 
     def update(self):
         ev = self.request.params.get('ev')
-        self.event = event = directives.events.get(ev)
+
+        all_events = config.registry.storage[directives.EVENT_ID]
+        self.event = event = all_events.get(ev)
 
         if event is None:
             events = []
-            for n, ev in directives.events.items():
+            for n, ev in all_events.items():
                 if isinstance(n, basestring):
                     events.append((ev.title, ev))
 
