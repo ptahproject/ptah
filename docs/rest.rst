@@ -266,7 +266,7 @@ information contains:
    * permission, permission to create models of this type
    
    * fieldset, schema of the type. if you do not define one the system 
-   will create one by introspecting your model.
+     will create one by introspecting your model.
 
 Let's see all registered types::
 
