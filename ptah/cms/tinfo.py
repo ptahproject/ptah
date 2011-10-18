@@ -89,8 +89,10 @@ _sql_get = ptah.QueryFreezer(
 
 
 def Type(name, title=None, fieldset=None, **kw):
-    """ Declare new type. This function has to be call within
-    content class declaration.::
+    """ Declare new type. This function has to be called within a content
+    class declaration.
+
+    .. code-block:: python
 
         class MyContent(ptah.cms.Content):
 
