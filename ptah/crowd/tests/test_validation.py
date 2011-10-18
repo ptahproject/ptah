@@ -1,4 +1,4 @@
-import transaction
+import os, transaction
 import ptah, ptah.crowd
 from ptah import config
 from ptah.authentication import AuthInfo
@@ -161,7 +161,7 @@ class TestValidation(Base):
             user, request, email = user.email, token = 'test-token')
         template.update()
 
-        self.assertEqual(template.render(),
+        self.assertEqual('\n'.join(template.render().split(os.linesep)),
                          """Hi!
 
 You're close to completing the registration process.  Once you click this link,

@@ -59,6 +59,7 @@ class Base(unittest.TestCase):
         self._init_ptah()
 
     def tearDown(self):
+        transaction.abort()
         config.cleanup_system()
         sm = self.p_config
         sm.__init__('base')

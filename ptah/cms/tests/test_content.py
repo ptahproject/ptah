@@ -1,3 +1,4 @@
+import time
 import ptah
 import transaction
 from ptah import config
@@ -63,6 +64,7 @@ class TestContent(Base):
 
         self.assertTrue(isinstance(content.created, datetime))
         self.assertTrue(isinstance(content.modified, datetime))
+        time.sleep(0.1)
 
         config.notify(ptah.cms.ContentModifiedEvent(content))
         self.assertTrue(content.modified != content.created)
@@ -119,6 +121,7 @@ class TestContent(Base):
         config.notify(ptah.cms.ContentCreatedEvent(content))
 
         modified = content.modified
+        time.sleep(0.1)
 
         content.update(title='Test title')
         info = content.info()
