@@ -12,30 +12,22 @@ Install
 You will need git, python 2.7 and a new version of virtualenv.
 
   $ curl -O https://raw.github.com/pypa/virtualenv/master/virtualenv.py
-  $ python2.7 virtualenv.py --no-site-packages myvirtualenv
-
-Create a requirements.txt file which contains the following two lines::
-
-  -e git+https://github.com/ptahproject/memphis#egg=memphis
-  -e git+https://github.com/ptahproject/ptah.git#egg=ptah
-
-Run pip install::
-
-  $ ../bin/pip install -r requirements.txt
-
+  $ python2.7 virtualenv.py --no-site-packages venv
+  $ cd venv
+  venv$ bin/pip install -e git+https://github.com/ptahproject/ptah.git#egg=ptah
+  venv$ cd src/ptah
+  venv/src/ptah$ ../../bin/python2.7 setup.py develop
+  venv/src/ptah$ cd ..  
+  
 Use paster to create scaffolding::
 
-  $ ../bin/paster create -t ptahdemo myapp
-  $ cd myapp
-  $ ../bin/python2.7 setup.py develop
+  venv/src$ ../bin/paster create -t ptahdemo myapp
+  venv/src$ cd myapp
+  venv/src/myapp$ ../../bin/python2.7 setup.py develop
 
-Run the tests::
-
-  $ ../bin/python2.7 setup.py test
-  
 Start application via Paster::
 
-  $ ../bin/paster serve development.ini
+  venv$ bin/paster serve src/myapp/development.ini --reload
 
 Login by opening your web browser to http://localhost:6543 with credentials,
 login: admin and password: 12345
