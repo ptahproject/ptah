@@ -112,7 +112,7 @@ class TemplatesCommand(Command):
             templates = data.items()
             templates.sort()
             for filename, (path,title,desc,_tmpl,pkg_name) in templates:
-                if path.startswith(dist.location):
+                if path.lower().startswith(dist.location.lower()):
                     path = '..%s'%path[dist_loc_len:]
 
                 print nameWrap.fill('%s: %s'%(filename, path))

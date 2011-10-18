@@ -170,7 +170,7 @@ class TestView(BaseView):
         self._init_ptah()
 
         res = view.render_view('index.html', Context(), self.request)
-        self.assertEqual(res.body, '<div>My snippet</div>\n')
+        self.assertEqual(res.body.strip(), '<div>My snippet</div>')
 
     def test_view_with_decorator(self):
         def deco(func):
@@ -236,7 +236,7 @@ class TestView(BaseView):
 
         context = Context()
         v = self._view('index.html', context, self.request)
-        self.assertEqual(v.body, '<div>My snippet</div>\n')
+        self.assertEqual(v.body.strip(), '<div>My snippet</div>')
 
     def test_view_register_view_function_requestonly_template(self):
         def render(request):
@@ -248,7 +248,7 @@ class TestView(BaseView):
 
         context = Context()
         v = self._view('index.html', context, self.request)
-        self.assertEqual(v.body, '<div>My snippet</div>\n')
+        self.assertEqual(v.body.strip(), '<div>My snippet</div>')
 
     def test_view_register_callable_permission(self):
         def render(request):
@@ -274,7 +274,7 @@ class TestView(BaseView):
     def test_view_register_secured_view(self):
         from ptah.view.view import defaultCheckPermission, set_checkpermission
         set_checkpermission(defaultCheckPermission)
-        
+
         def render(request):
             return '<html>Secured view</html>'
 
@@ -489,7 +489,7 @@ class TestSubpathView(BaseView):
 
         self.request.subpath = ('validate',)
         v = self._view('index.html', Context(), self.request)
-        self.assertEqual(v.body, '<div>My snippet</div>\n')
+        self.assertEqual(v.body.strip(), '<div>My snippet</div>')
 
     def test_view_subpath_err(self):
         sp = view.subpath()
