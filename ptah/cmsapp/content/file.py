@@ -9,7 +9,7 @@ from ptah.cmsapp.permissions import AddFile
 
 class File(ptah.cms.Content):
 
-    __tablename__ = 'ptah.cmsapp_files'
+    __tablename__ = 'ptah_cmsapp_files'
 
     __type__ = cms.Type(
         'file',

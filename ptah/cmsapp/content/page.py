@@ -8,7 +8,7 @@ from ptah.cmsapp.permissions import AddPage
 
 class Page(cms.Content):
 
-    __tablename__ = 'ptah.cmsapp_pages'
+    __tablename__ = 'ptah_cmsapp_pages'
 
     __type__ = cms.Type(
         'page',
