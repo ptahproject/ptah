@@ -11,7 +11,7 @@ class ApplicationsModule(ptah.PtahModule):
     ptah.manageModule('ptah-apps')
 
     def __getitem__(self, key):
-        f = cms.Factories[key]
+        f = ptah.cms.Factories[key]
         return AppFactory(f, self, self.request)
 
 
@@ -22,7 +22,7 @@ class ApplicationsModuleView(view.View):
 
     def update(self):
         factories = []
-        for factory in cms.Factories.values():
+        for factory in ptah.cms.Factories.values():
             factories.append((factory.title, factory))
 
         factories.sort()
