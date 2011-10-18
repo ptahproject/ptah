@@ -3,18 +3,18 @@ import ptah
 import sqlalchemy as sqla
 from zope import interface
 from pyramid.httpexceptions import HTTPFound
-from ptah import view, form, config
+from ptah import view, form, config, manage
 
 from settings import _
 from provider import Session, CrowdUser
 from memberprops import get_properties, MemberProperties
 
 
-class CrowdModule(ptah.PtahModule):
+class CrowdModule(manage.PtahModule):
     """ Basic user management module. """
 
     title = 'Crowd'
-    ptah.manageModule('crowd')
+    manage.module('crowd')
 
     def __getitem__(self, key):
         if key:

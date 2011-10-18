@@ -1,5 +1,4 @@
 """ introspect module """
-import ptah
 import pkg_resources, inspect, os, sys
 from pyramid.interfaces import IRoutesMapper, IRouteRequest
 from pyramid.interfaces import IViewClassifier, IExceptionViewClassifier
@@ -7,7 +6,7 @@ from pyramid.interfaces import IViewClassifier, IExceptionViewClassifier
 from zope import interface
 from zope.interface.interface import InterfaceClass
 
-from ptah import config, view
+from ptah import config, view, manage
 from ptah.config import directives
 from ptah.config.api import exclude, list_packages
 
@@ -16,11 +15,11 @@ from ptah.uri import RESOLVER_ID
 from manage import INTROSPECTIONS
 
 
-class IntrospectModule(ptah.PtahModule):
+class IntrospectModule(manage.PtahModule):
     """ Introspection various aspects of ptah & ptah. """
 
     title = 'Introspect'
-    ptah.manageModule('introspect')
+    manage.module('introspect')
 
     packages = None
 
@@ -314,7 +313,7 @@ class UriIntrospection(object):
     """ """
 
     title = 'Uri resolver'
-    ptah.introspection('ptah:uri-resolver')
+    manage.introspection('ptah:uri-resolver')
 
     actions = view.template('ptah.manage:templates/directive-uriresolver.pt')
 
@@ -332,7 +331,7 @@ class EventDirective(object):
     """ zca event declarations """
 
     title = 'Events'
-    ptah.introspection('ptah.config:event')
+    manage.introspection('ptah.config:event')
 
     actions = view.template('ptah.manage:templates/directive-event.pt')
 
@@ -350,7 +349,7 @@ class AdapterDirective(object):
     """ zca adapter registrations """
 
     title = 'Adapters'
-    ptah.introspection('ptah.config:adapter')
+    manage.introspection('ptah.config:adapter')
 
     actions = view.template('ptah.manage:templates/directive-adapter.pt')
 
@@ -386,7 +385,7 @@ class SnippetTypeDirective(object):
     """ ptah snippet types """
 
     title = 'Snippet Types'
-    ptah.introspection('ptah.view:snippettype')
+    manage.introspection('ptah.view:snippettype')
 
     actions = view.template('ptah.manage:templates/directive-stype.pt')
 
@@ -406,7 +405,7 @@ class RouteDirective(object):
     """ pyramid routes """
 
     title = 'Routes'
-    ptah.introspection('ptah.view:route')
+    manage.introspection('ptah.view:route')
 
     actions = view.template('ptah.manage:templates/directive-route.pt')
 
@@ -423,7 +422,7 @@ class SubscriberDirective(object):
     """ zca event subscribers """
 
     title = 'Event subscribers'
-    ptah.introspection('ptah.config:subscriber')
+    manage.introspection('ptah.config:subscriber')
 
     actions = view.template('ptah.manage:templates/directive-subscriber.pt')
 
@@ -458,7 +457,7 @@ class ViewDirective(object):
     """ pyramid views """
 
     title = 'Views'
-    ptah.introspection('ptah.view:view')
+    manage.introspection('ptah.view:view')
 
     actions = view.template('ptah.manage:templates/directive-view.pt')
 

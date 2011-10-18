@@ -1,7 +1,7 @@
 """ introspect module """
 import ptah
 import sqlahelper as psa
-from ptah import config, view, form
+from ptah import config, view, form, manage
 from pyramid.decorator import reify
 from pyramid.httpexceptions import HTTPFound
 
@@ -9,11 +9,11 @@ Session = psa.get_session()
 metadata = psa.get_base().metadata
 
 
-class SQLAModule(ptah.PtahModule):
+class SQLAModule(manage.PtahModule):
     """ SQLAlchemy instrospection module. """
 
     title = 'SQLAlchemy'
-    ptah.manageModule('sqla')
+    manage.module('sqla')
 
     metadata = {}
 

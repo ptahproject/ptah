@@ -1,14 +1,14 @@
 """ app management module """
 import ptah
-from ptah import view, form
+from ptah import view, form, manage
 from pyramid.httpexceptions import HTTPFound
 
 
-class ApplicationsModule(ptah.PtahModule):
+class ApplicationsModule(manage.PtahModule):
     __doc__ = 'Ptah CMS Applications management.'
 
     title = 'Ptah CMS Applications'
-    ptah.manageModule('ptah-apps')
+    manage.module('ptah-apps')
 
     def __getitem__(self, key):
         f = ptah.cms.Factories[key]
@@ -114,7 +114,7 @@ class TypeIntrospection(object):
 
     name = 'ptah-cms:type'
     title = 'Content Types'
-    ptah.introspection('ptah-cms:type')
+    manage.introspection('ptah-cms:type')
 
     actions = view.template('ptah.cmsapp:templates/directive-type.pt')
 

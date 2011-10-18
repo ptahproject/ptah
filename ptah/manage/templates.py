@@ -1,16 +1,16 @@
-import ptah, os, os.path
+import os, os.path
 from zope import interface
 from pyramid.httpexceptions import HTTPFound
-from ptah import config, view
+from ptah import config, view, manage
 from ptah.view import tmpl
 from ptah.view.customize import TEMPLATE
 
 
-class TemplatesModule(ptah.PtahModule):
+class TemplatesModule(manage.PtahModule):
     """ Templates management module. """
 
     title = 'Templates'
-    ptah.manageModule('templates')
+    manage.module('templates')
 
 
 view.register_snippet(

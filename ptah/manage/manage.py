@@ -1,8 +1,8 @@
-from ptah import view, config
 from pyramid.security import authenticated_userid
 from pyramid.httpexceptions import HTTPFound, HTTPForbidden
 
-from ptah import resolve
+import ptah
+from ptah import view, config
 from ptah.settings import PTAH_CONFIG
 from ptah.authentication import authService
 
@@ -34,7 +34,7 @@ class PtahModule(object):
         return True
 
 
-def manageModule(id):
+def module(id):
     info = config.DirectiveInfo(allowed_scope=('class',))
 
     def _complete(config, cls, id):
@@ -70,7 +70,7 @@ def PtahAccessManager(id):
     if '*' in PTAH_CONFIG.managers:
         return True
 
-    principal = resolve(id)
+    principal = ptah.resolve(id)
 
     if principal is not None and principal.login in PTAH_CONFIG.managers:
         return True

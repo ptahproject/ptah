@@ -18,14 +18,16 @@ class TestManageModule(Base):
         super(TestManageModule, self).tearDown()
 
     def test_manage_module(self):
-        from ptah.manage.manage import MODULES, PtahManageRoute
+        from ptah.manage.manage import \
+           module, MODULES, PtahModule, PtahManageRoute,\
+           set_access_manager
 
         global TestModule
-        class TestModule(ptah.PtahModule):
+        class TestModule(PtahModule):
             """ module description """
 
             title = 'Test module'
-            ptah.manageModule('test-module')
+            module('test-module')
 
         self._init_ptah()
         self.assertIn('test-module', MODULES)
@@ -41,7 +43,7 @@ class TestManageModule(Base):
         def accessManager(id):
             return True
 
-        ptah.set_access_manager(accessManager)
+        set_access_manager(accessManager)
 
         route = PtahManageRoute(request)
         mod = route['test-module']
@@ -78,19 +80,21 @@ class TestManageModule(Base):
         self.assertTrue(PtahAccessManager('test:user'))
 
     def test_manage_view(self):
-        from ptah.manage.manage import PtahManageRoute, ManageView
+        from ptah.manage.manage import \
+            module, PtahModule, PtahManageRoute, ManageView, \
+            set_access_manager
 
         global TestModule
-        class TestModule(ptah.PtahModule):
+        class TestModule(PtahModule):
             """ module description """
 
             title = 'Test module'
-            ptah.manageModule('test-module')
+            module('test-module')
 
         def accessManager(id):
             return True
 
-        ptah.set_access_manager(accessManager)
+        set_access_manager(accessManager)
         ptah.authService.set_userid('test-user')
 
         self._init_ptah()
@@ -104,14 +108,15 @@ class TestManageModule(Base):
         self.assertIsInstance(view.modules[-1], TestModule)
 
     def test_manage_layout(self):
-        from ptah.manage.manage import PtahManageRoute, LayoutManage
+        from ptah.manage.manage import \
+            module, PtahModule, PtahManageRoute, LayoutManage
 
         global TestModule
-        class TestModule(ptah.PtahModule):
+        class TestModule(PtahModule):
             """ module description """
 
             title = 'Test module'
-            ptah.manageModule('test-module')
+            module('test-module')
 
         class Content(object):
             __parent__ = None

@@ -1,13 +1,12 @@
 """ settings module """
-import ptah
-from ptah import config, view
+from ptah import config, view, manage
 
 
-class SettingsModule(ptah.PtahModule):
+class SettingsModule(manage.PtahModule):
     """ Memphis settings management module. """
 
     title = 'Settings'
-    ptah.manageModule('settings')
+    manage.module('settings')
 
 
 class SettingsView(view.View):

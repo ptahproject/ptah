@@ -1,17 +1,16 @@
 """ addon system """
-import ptah
 import pkg_resources
-from ptah  import config, view, form
+from ptah  import config, view, manage
 from ptah.config import directives
 
 from core import ADDONS
 
 
-class AddonModule(ptah.PtahModule):
+class AddonModule(manage.PtahModule):
     """Add-ons management"""
 
     title = 'Add-ons'
-    ptah.manageModule('addons')
+    manage.module('addons')
 
 
 class AddonView(view.View):

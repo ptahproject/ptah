@@ -7,6 +7,7 @@ import ptah
 from ptah import authService
 from ptah.mail import MAIL
 from ptah.settings import PTAH_CONFIG
+from ptah.manage import get_access_manager
 
 
 class LayoutPage(view.Layout):
@@ -17,7 +18,7 @@ class LayoutPage(view.Layout):
         self.root = getattr(self.request, 'root', None)
         self.user = authService.get_current_principal()
         self.isanon = self.user is None
-        self.ptahmanager = ptah.get_access_manager()(authService.get_userid())
+        self.ptahmanager = get_access_manager()(authService.get_userid())
 
 
 class Forbidden(view.View):

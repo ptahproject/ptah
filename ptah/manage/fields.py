@@ -1,15 +1,13 @@
 """ ptah.form fields """
-from ptah import view, form, config
-from ptah .form.field import FIELD_ID, PREVIEW_ID
-
-import ptah
+from ptah import view, config, manage
+from ptah.form.field import FIELD_ID, PREVIEW_ID
 
 
-class FieldsModule(ptah.PtahModule):
+class FieldsModule(manage.PtahModule):
     __doc__ = 'Memphis form fields.'
 
     title = 'Form fields'
-    ptah.manageModule('fields')
+    manage.module('fields')
 
 
 class FieldsView(view.View):

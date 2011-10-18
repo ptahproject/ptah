@@ -1,17 +1,15 @@
 """ security ptah module """
 from zope import interface
-from ptah import config, view
 
 import ptah
-from ptah import Roles
-from ptah import Permissions
+from ptah import config, view, manage
 
 
-class PermissionsModule(ptah.PtahModule):
+class PermissionsModule(manage.PtahModule):
     __doc__ = 'Default permission settings.'
 
     title = 'Permissions'
-    ptah.manageModule('permissions')
+    manage.module('permissions')
 
 
 view.register_snippet(
@@ -25,7 +23,7 @@ class PermissionsView(view.View):
         template=view.template('ptah.manage:templates/permissions.pt'))
 
     def update(self):
-        self.permissions = Permissions.values()
+        self.permissions = ptah.Permissions.values()
         self.permissions.sort(key = lambda p: p.title)
 
         self.acls = [acl for acl in ptah.ACLs.values() if acl.name != '']
@@ -39,7 +37,7 @@ class RolesView(view.View):
         template=view.template('ptah.manage:templates/roles.pt'))
 
     def update(self):
-        self.roles = Roles.values()
+        self.roles = ptah.Roles.values()
         self.roles.sort(key = lambda r: r.title)
 
 
@@ -47,7 +45,7 @@ class RoleIntrospection(object):
     """ Role registrations """
 
     title = 'Role'
-    ptah.introspection('ptah:role')
+    manage.introspection('ptah:role')
 
     actions = view.template('ptah.manage:templates/directive-role.pt')
 
@@ -65,7 +63,7 @@ class PermissionIntrospection(object):
     """ Permission registrations """
 
     title = 'Permission'
-    ptah.introspection('ptah:permission')
+    manage.introspection('ptah:permission')
 
     actions = view.template('ptah.manage:templates/directive-permission.pt')
 
