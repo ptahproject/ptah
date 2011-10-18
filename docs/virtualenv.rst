@@ -12,42 +12,33 @@ use your existing virtualenv.  It takes < 15 seconds to grab it.
 
 install virtualenv::
 
-    ~$ curl -O https://raw.github.com/pypa/virtualenv/master/virtualenv.py
-    ~$ python2.7 virtualenv.py --no-site-packages myvirtualenv
-    ~$ cd myvirtualenv
-    
-Create requirements
--------------------
+ ~$ curl -O https://raw.github.com/pypa/virtualenv/master/virtualenv.py
+ ~$ python2.7 virtualenv.py --no-site-packages venv
+ ~$ cd venv
 
-Now you will create a file called requirements.txt.  In that file you will
-have 2 lines, those lines will be::
+install ptah::
 
-    -e git+https://github.com/ptahproject/ptah.git#egg=ptah
+ ~/venv$ bin/pip install -e git+https://github.com/ptahproject/ptah.git#egg=ptah
+ ~/venv$ cd src/ptah
+ ~/venv/src/ptah$ ../../bin/python setup.py develop
+ 
+Create ptah addon 
+~~~~~~~~~~~~~~~~~
 
-Install the requirements
-------------------------
+Let's create ptah addon with paster::
 
-Let's run pip's installer to grab all of our software::
+ ~/venv/src/ptah$ cd ..
+ ~/venv/src$ ../bin/paster create -t ptahdemo myapp
+ ~/venv/src$ cd myapp
+ ~/venv/src/myapp$ ../../bin/python2.7 setup.py develop
 
-     ~/myvirtualenv$ bin/pip install -r requirements.txt
-     ... a lot of text while system resolves dependencies and installs software
-
-Create ptah app
-~~~~~~~~~~~~~~~
-
-Let's create ptah app with paster::
-
-     ~$ ./bin/paster create -t ptahdemo myapp
-     ~$ cd myapp
-     ~$ ../bin/python2.7 ./setup.py develop
-     ... will download `myapp depedencies` and register `myapp` in virtualenv
 
 Start app
 ~~~~~~~~~
 
 Start paster server::
 
-     ~$ ../bin/paster serve development.ini
+ ~/venv$ bin/paster serve development.ini
 
 Login
 ~~~~~

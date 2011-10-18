@@ -10,6 +10,8 @@ virtualenv
 Grab latest virtualenv, clone ptah into new environment, src directory, use
 paster to create a package for your software.
 
+Issue these commands::
+
  ~ $ curl -O https://raw.github.com/pypa/virtualenv/master/virtualenv.py
  ~ $ python2.7 virtualenv.py --no-site-packages workspace
  ~ $ mkdir workspace/src
@@ -22,12 +24,14 @@ paster to create a package for your software.
  ~/workspace/src $ cd mypackage
  ~/workspace/src/mypackage $ ../../bin/python setup.py develop
 
-You are done, now start paster.
+You are done, now start paster::
 
  $ ~/workspace/bin/paster serve ~/workspace/src/mypackage/development.ini --reload
 
 buildout
 ========
+
+The commands::
 
   ~ $ git clone github.com/ptahproject/devel
   ~ $ cd devel
@@ -35,20 +39,21 @@ buildout
   ~ $ bin/buildout -c develop.cfg
   ~ $ bin/paster serve ptah.ini --reload
 
-edit devel.cfg and change [sources] section
+edit devel.cfg and change [sources] section::
 
-[sources]
-ptah = git git@github.com:myusername/ptah.git
+ [sources]
+ ptah = git git@github.com:myusername/ptah.git
 
 if you delete src/ptah and clone ptah and re-run buildout; you will
-be ready to hack; 
+be ready to hack
 
 Developing a component in buildout
 ----------------------------------
 
-After running buildout.
+After running buildout::
 
-  ~ $ bin/paster create -t ptahdemo src/$yourcomponent
+  ~ $ cd src
+  ~ $ bin/paster create -t ptahdemo $yourcomponent
 
 edit devel.cfg [sources] section and add
 yourcomponent = fs yourcomponent
