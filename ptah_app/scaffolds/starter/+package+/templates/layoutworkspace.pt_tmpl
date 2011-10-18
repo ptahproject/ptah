@@ -12,6 +12,9 @@
 	      </a>
 	    </h5>
 	  </li>
+          <li tal:condition="view.ptahManager">
+            <a href="${app_url}/ptah-manage/">Manage</a>
+          </li>
 	  <li>
 	    <a href="${app_url}/logout.html">Logout</a>
 	  </li>
