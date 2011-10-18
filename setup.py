@@ -47,7 +47,7 @@ setup(name='ptah',
       entry_points = {
         'ptah': ['package = ptah'],
         'console_scripts': [
-            'settings = memphis.config.commands:settingsCommand',
+            'settings = ptah.config.commands:settingsCommand',
             ],
         'paste.app_factory': [
             'app = ptah:make_wsgi_app'],
