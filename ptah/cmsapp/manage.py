@@ -5,7 +5,7 @@ from pyramid.httpexceptions import HTTPFound
 
 
 class ApplicationsModule(manage.PtahModule):
-    __doc__ = 'Ptah CMS Applications management.'
+    __doc__ = u'A listing of all registered Pyramid ApplicationFactorys.'
 
     title = 'Ptah CMS Applications'
     manage.module('ptah-apps')

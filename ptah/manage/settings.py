@@ -3,8 +3,8 @@ from ptah import config, view, manage
 
 
 class SettingsModule(manage.PtahModule):
-    """ Memphis settings management module. """
-
+    __doc__ = u'The current settings which include defaults not used by .ini'
+    
     title = 'Settings'
     manage.module('settings')
 

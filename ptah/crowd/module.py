@@ -11,7 +11,7 @@ from memberprops import get_properties, MemberProperties
 
 
 class CrowdModule(manage.PtahModule):
-    """ Basic user management module. """
+    __doc__ = u'Default user management. Create, edit, and activate users.'
 
     title = 'Crowd'
     manage.module('crowd')

@@ -10,8 +10,8 @@ metadata = psa.get_base().metadata
 
 
 class SQLAModule(manage.PtahModule):
-    """ SQLAlchemy instrospection module. """
-
+    __doc__ = u'A listing of all tables with ability to view and edit records'
+    
     title = 'SQLAlchemy'
     manage.module('sqla')
 
