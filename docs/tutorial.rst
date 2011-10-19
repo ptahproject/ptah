@@ -112,15 +112,23 @@ mind numbing.  While we take a break and since we are still in Ptah Manage
 Form Fields
 ===========
 
-Remember some of those fields we saw when editing those SQLAlchemy models?
-Well the Form fields module is a list of all available Field's registered
+Remember some of those fields we saw when editing the SQLAlchemy models?
+Well the `Form fields` module is a list of all available Field's registered
 in the system.  By the time you read this, I hope, there will be dozens of
-addon Fields available to download and use.  These fields are reusable
-objects that are sharable between Ptah installations.  So if you spent a
-bit of time designing a good Field - you will be able to reuse it.
+add-on Fields available to download and use.  Fields can be reused between 
+Ptah installations.  While you dont need to make resuable software upfront;
+if you do - you can share/reuse it.
 
   - If you scroll all the way down you will see the tinymce Field that
   we saw in the ptah_cmsapp_pages Edit screen.
+  
+  - There is an API that Field developer use to register a preview of their
+  widget.  Use this so that a preview is available for your widget.  You
+  can see default widget previews in `path/manage/fieldpreviews.py`
+
+  - Do not expect to interact with a Field preview; its a READONLY preview.
+
+
 
 
 
