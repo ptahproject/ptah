@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head tal:define="root getattr(request, 'root', None)">
+        <title>${getattr(root, 'title', '')}</title>
+        <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+
+        ${view.include('bootstrap')}
+        <tal:block content="structure view.render_includes()" />
+    </head>
+
+    <body>
+      <!--
+	This is rendered content that is beeing passed to 
+	layout.render method
+      </-->
+      ${content}
+    </body>
+</html>

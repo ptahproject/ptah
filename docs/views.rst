@@ -191,6 +191,7 @@ Now lets override the snippet in myapp:
   - Copy the ptah/ptah.cmsapp/templates/moduleactions.pt into myapp/templates/settings-snippet.pt
   - Edit the .pt and add a <li>Modified</li> in the HTML snippet
   - Now open up myapp/views.py and add::
+
       from ptah import view
       from ptah.manage.settings import SettingsModule
       view.register_snippet(

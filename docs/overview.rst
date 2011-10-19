@@ -1,3 +1,32 @@
+=========
+Why Ptah?
+=========
+
+Because at Enfold Systems we build complicated systems for customers with a 
+fixed price or need to estimate a relatively accurate cost for project 
+completion.  Customers are asking for interactive features which require
+a lot of javascript (e.g. REST representations of models).  Many of our 
+customers care deeply about security and work inside of discrete groups
+among themselves.  Therefore we needed a model which provided relatively 
+fine-grain security in the framework.  Our projects use other open source
+communities code to do work.  We want to facilitate sharing addons with
+this framework so we can solve our customers requirements with less effort.
+Lastly Pyramid appealed to us because of its documentation, test coverage, 
+and attention to API design.
+
+=============
+What is Ptah?
+=============
+
+Ptah is a Python based web development framework whose goal is to allow
+developers to more predictably develop complex web applications.  Ptah
+is cross platform and runs on Windows, OSX and Linux.  Ptah is built on 
+top of the Pyramid framework and let's Pyramid do most of the heavy lifting.
+Ptah uses SQLAlchemy for relational database abstraction/connectivity.  
+Ptah runs on Python 2.7 and will soon run on Python 3.2.  
+
+Ptah is also the Egyptian god of craftsmanship.  He built the sky.
+
 ========
 Ptah CMS
 ========
@@ -121,7 +150,6 @@ Characteristics
   * Runtime configurable: No
   * Persistent: No
 
-
 TypeInformation and Actions
 ===========================
 
@@ -174,20 +202,23 @@ conflicting with Ptah.
 Node
 ~~~~
 
-    ::py:class:`ptah.cms.node.Node` is the primary table.
-
+  ::py:class:`ptah.cms.node.Node` is the primary table.  Columns for ptah_cms_nodes
+  table: 
+    
     id::
-       this is a integer which is internal implementation detail for SQLAlchemy.
+       Primary key which is internal implementation detail for SQLAlchemy.
 
        SQLAlchemy Entity property: __id__
        Database column name: id
-
+       
     uri::
-       this ia string which is unique throughout the system.  This is the
-       the application-level identifier that is used to interact with models.
-
+       A required unique string which is used throughout the system to refer to 
+       the record.  A common pattern is to use URI to reference models instead of
+       their primary key.  An example, blob+sql:9f4b24205c704dbc99a24abdd2f55350
+       
        SQLAlchemy Entity property: __uuid__
-       Database column name: ptah_cms_node.uuid (VARCHAR)
+       
+       Database column name: ptah_cms_nodes.uri (VARCHAR)
 
     type::
        this is the application-level "type" information which provides a
@@ -200,114 +231,124 @@ Node
        its container's UUID.
 
     owner::
-       a URI resolvable to the Principal of the record.
-
+       Owner is Principal URI. 
+       This field gets set by the subscriber for :py:class:`ptah.cms.events.ContentCreatedEvent`
+       An example, user+crowd:301067f19db649098d51659a8b8aa572
+       
     roles::
        a ```ptah.utils.JSONType``` which will contain which roles have custom permissions.
-
+       a node with the following data would give Principal the manager role,
+       {u'user+crowd:301067f19db649098d51659a8b8aa572': [u'role:manager']} 
+       
     acls::
        a ```ptah.utils.JSONType``` which will contain a sequence of named ACL maps.
 
 Content
 ~~~~~~~
 
-    `ptah_cms_content` is an optional application-level data model which
-    provides high level attributes core to `ptah.cms` as well as some
-    optimization information.  for instance, there is a `path` column
-    which we use to fast-path lookups for leaf nodes in `traversal`.
+`ptah_cms_content` is an optional application-level data model which
+provides high level attributes core to `ptah.cms` as well as some
+optimization information.  for instance, there is a `path` column
+which we use to fast-path lookups for leaf nodes in `traversal`.
 
-    path::
-        the internal path representation of the URL used to efficiently
-        traverse a pyramid URL into the internal data model.  For instance:
-        a Page which is located at http://host/folder/front-page will be
-        internally represented as, /${ptah.cms.node.uuid}/folder/front-page
+path::
+    the internal path representation of the URL used to efficiently
+    traverse a pyramid URL into the internal data model.  For instance:
+    a Page which is located at http://host/folder/front-page will be
+    internally represented as, /${ptah.cms.node.uuid}/folder/front-page
 
-      e.g. /cms+app:f4642bf9d7cb42fb92578763b4dc91aa/folder/front-page/
+    e.g. /cms+app:f4642bf9d7cb42fb92578763b4dc91aa/folder/front-page/
 
-    name::
-        a unique name in the ```ptah_cms_nodes.parent``` container.  this
-        is primary used for traversal.  not required for url_routing or
-        security.
+name::
+    a unique name in the ```ptah_cms_nodes.parent``` container.  this
+    is primary used for traversal.  not required for url_routing or
+    security.
 
-    title::
-        cms title attribute. self explanatory.
+title::
+    cms title attribute. self explanatory.
 
-    description::
-        cmd description attribute, self explanatory.
+description::
+    cms description attribute, self explanatory.
 
-    view::
-        a URI string which can be resolved via ```ptah.uri.resolve``` function.
-        in the traditional CMS UI sense you can default a Folder to have
-        a Page as the view.  Anything that can be resolved can be a "view"
-        for a content.
+view::
+    a URI string which can be resolved via ```ptah.uri.resolve``` function.
+    in the traditional CMS UI sense you can default a Folder to have
+    a Page as the view.  Anything that can be resolved can be a "view"
+    for a content.
 
-        Rules for view resolution:
-          - Interface
-          - ptah_cms_content.view
-          - traversal
+    Rules for view resolution:
+      - ptah_cms_content.view
+      - traversal
 
-    created::
-        datetime to mark when record was created
+created::
+    datetime to mark when record was created
 
-    modified::
-        datetime to mark when record was last modified in UTC
+modified::
 
-    effective::
-        datetime to mark when record which should be visible or "effective"
-        DublinCore attribute in UTC
+    datetime to mark when record was last modified in UTC
 
-    expires::
-        datetime to mark when record should no longer be visible in CMS.
-        DublinCore attribute in UTC
+effective::
 
-    creators::
-        A JsonType sequence of principal URIs which are able to be resolved.
-        Any number of creators may be assigned to piece of content.  Often
-        anyone involved in editorial process may be assigned.
+    datetime to mark when record which should be visible or "effective"
+    DublinCore attribute in UTC
 
-    subjects::
-        Jsontype?
+expires::
 
-    publisher::
-        DublinCore attribute. Unicode.
+    datetime to mark when record should no longer be visible in CMS.
+    DublinCore attribute in UTC
 
-    contributors::
-        DublinCore asttribute, JsonType sequence of URIs.
+creators::
+
+    A JsonType sequence of principal URIs which are able to be resolved.
+    Any number of creators may be assigned to piece of content.  Often
+    anyone involved in editorial process may be assigned.
+
+subjects::
+
+    Jsontype?
+
+publisher::
+
+    DublinCore attribute. Unicode.
+
+contributors::
+
+    DublinCore asttribute, JsonType sequence of URIs.
 
 Container
 ~~~~~~~~~
 
-  There is no data model/persistent difference between Content and Container.
-  The database records are identical.  The difference is the ```ptah.cms.Container```
-  model supports a Mapping-like interface so you can resolve children efficiently.
-  It also makes it easier for programmers to model/manipulate containment relationships.
+There is no data model/persistent difference between Content and Container.
+The database records are identical.  The difference is the ```ptah.cms.Container```
+model supports a Mapping-like interface so you can resolve children efficiently.
+It also makes it easier for programmers to model/manipulate containment relationships.
 
-  This API is added for convienance but is natural way of interacting with the heriarchy.
-  An example, if you have a piece of content, say, 'front-page' in a Folder.  How
-  can you delete it?
+This API is added for convienance but is natural way of interacting with the heriarchy.
+An example, if you have a piece of content, say, 'front-page' in a Folder.  How
+can you delete it?
 
-    SQLAlchemy low-level without application events::
+SQLAlchemy low-level without application events::
 
-      from ptah.cms import Session, Content
-      page = Session.query(Content).filter_by(Content.__name__='front-page').all()[0]
-      Session.delete(page)
-      import transaction; transaction.commit()
+  from ptah.cms import Session, Content
+  page = Session.query(Content).filter_by(Content.__name__='front-page').all()[0]
+  Session.delete(page)
+  import transaction; transaction.commit()
 
-    If you delete a page going directly through ORM; Ptah will not catch events.
+If you delete a page going directly through ORM; Ptah will not catch events.
 
-    Ptah high level data access::
+Ptah high level data access::
 
-      from ptah.cms import Session, Content
-      page = Session.query(Content).filter_by(Content.__name__='front-page').all()[0]
-      page.delete()
-      import transaction; transaction.commit()
+  from ptah.cms import Session, Content
+  page = Session.query(Content).filter_by(Content.__name__='front-page').all()[0]
+  page.delete()
+  import transaction; transaction.commit()
 
-    There are several other approachs.  One could be del container['page.html']
+There are several other approachs.  One could be del container['page.html']
 
 URIs
 ====
 
-  In Ptah all models have a URI, $scheme:$UID e.g.::
+In Ptah all models have a URI, $scheme:$UID e.g.::
 
       >> from ptah.cms import Session, Node
       >> x.__uri__ for x in Session.query(Node).all()]
@@ -357,20 +398,20 @@ we are working with heirachies.
 Security, Lineage, URL Dispatch
 ===============================
 
-    Since the ApplicationPolicy defines ACLs for an ApplicationRoot, which
-    contains your data model.  It will be required for us to ```load_parents``` to
-    walk __parent__ until we reach ApplicationRoot; then we will have all
-    security roles to satisfy Pyramid authorization security model.
+Since the ApplicationPolicy defines ACLs for an ApplicationRoot, which
+contains your data model.  It will be required for us to ```load_parents``` to
+walk __parent__ until we reach ApplicationRoot; then we will have all
+security roles to satisfy Pyramid authorization security model.
 
-    The fact is you *do not* need to ```load_parents``` every single time to
-    aggregate security settings.  You only need this in ad-hoc security delegation
-    applications which users can assign Roles to other users on Content.  While
-    this model is standard in heirarchical/collaboration systems it is not particularly
-    useful for a many types of applications.
+The fact is you *do not* need to ```load_parents``` every single time to
+aggregate security settings.  You only need this in ad-hoc security delegation
+applications which users can assign Roles to other users on Content.  While
+this model is standard in heirarchical/collaboration systems it is not particularly
+useful for a many types of applications.
 
-    See How-to Ptah with URL Dispatch.
+See How-to Ptah with URL Dispatch.
 
 Events
 ======
 
-   See API.
+See API.
