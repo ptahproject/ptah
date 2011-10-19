@@ -1,6 +1,6 @@
 """ Generic folder implementation """
 from ptah import cms
-from ptah.cmsapp.permissions import AddFolder
+from {{package}}.permissions import AddFolder
 
 
 class Folder(cms.Container):

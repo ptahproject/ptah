@@ -3,40 +3,10 @@ from ptah import view, form, config
 from pyramid.httpexceptions import HTTPFound, HTTPNotFound
 
 import ptah
-from ptah import authService, manage
-from ptah import cms
-from ptah.cms import tinfo, interfaces, events
+from ptah import authService, manage, cms
 
 from forms import AddForm
 from uiactions import list_uiactions
-
-
-view.register_layout(
-    'page', cms.ApplicationRoot,
-    template = view.template("ptah.cmsapp:templates/layoutpage.pt"))
-
-view.register_layout(
-    'ptah-page', cms.ApplicationRoot, parent='workspace', layer='ptah.cmsapp',
-    template = view.template("ptah.cmsapp:templates/layout-ptahsecurity.pt"))
-
-
-class LayoutWorkspace(view.Layout):
-    view.layout('workspace', cms.ApplicationRoot, parent="page",
-                template=view.template("ptah.cmsapp:templates/layoutworkspace.pt"))
-
-    def update(self):
-        self.root = getattr(self.request, 'root', None)
-        self.user = authService.get_current_principal()
-        self.isAnon = self.user is None
-        self.ptahManager = manage.get_access_manager()(authService.get_userid())
-
-
-class ContentLayout(view.Layout):
-    view.layout('', interfaces.IContent, parent="workspace",
-                template=view.template("ptah.cmsapp:templates/layoutcontent.pt"))
-
-    def update(self):
-        self.actions = list_uiactions(self.context, self.request)
 
 
 def defaultView(renderer):
@@ -58,7 +28,7 @@ def defaultView(renderer):
 listing_template = view.template("ptah.cmsapp:templates/listing.pt")
 
 class ContainerListing(view.View):
-    view.pview('listing.html', interfaces.IContainer,
+    view.pview('listing.html', ptah.cms.Container,
                template = listing_template)
 
     def update(self):
@@ -94,18 +64,18 @@ class ContainerListing(view.View):
 #@defaultView
 
 class ViewContainer(ContainerListing):
-    view.pview(context = interfaces.IContainer,
+    view.pview(context = ptah.cms.Container,
                template = listing_template)
 
 
 class RenameForm(view.View):
     view.pview(
-        'rename.html', interfaces.IContainer,
+        'rename.html', cms.Container,
         template=view.template("ptah.cmsapp:templates/folder_rename.pt"))
 
 
 class Adding(view.View):
-    view.pview('+', interfaces.IContainer)
+    view.pview('+', ptah.cms.Container)
 
     template=view.template("ptah.cmsapp:templates/adding.pt")
 
@@ -140,21 +110,3 @@ class AddContentForm(AddForm):
 
         self.tinfo = tinfo
         self.container = form.context
-
-
-class DefaultContentView(form.DisplayForm):
-    view.pview(
-        context = cms.Content,
-        permission = cms.View,
-        template=view.template("ptah.cmsapp:templates/contentview.pt"))
-
-    @property
-    def fields(self):
-        return self.context.__type__.fieldset
-
-    def form_content(self):
-        data = {}
-        for name, field in self.context.__type__.fieldset.items():
-            data[name] = getattr(self.context, name, field.default)
-
-        return data

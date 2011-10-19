@@ -2,9 +2,12 @@ import ptah, ptah.cms
 from ptah import view 
 from ptah import manage, authService
 
+view.register_layout(
+    'ptah-page', cms.ApplicationRoot, parent='workspace', layer='{{package}}',
+    template = view.template("ptah.cmsapp:templates/layout-ptahpage.pt"))
+
 class PageLayout(view.Layout):
-    view.layout('page', ptah.cms.ApplicationRoot,
-                layer = 'test',
+    view.layout('page', ptah.cms.ApplicationRoot, layer='{{package}}',
                 template = view.template('templates/layoutpage.pt'))
 
     """ override 'page' layout from ptah.cmsapp
@@ -29,14 +32,21 @@ class PageLayout(view.Layout):
 
 class WorkspaceLayout(view.Layout):
     view.layout('workspace', ptah.cms.ApplicationRoot,
-                parent = 'page',
-                layer = 'test',
+                parent = 'page', layer='{{package}}',
                 template = view.template('templates/layoutworkspace.pt'))
 
     """ same as PageLayout, it uses 'page' as parent layout """
 
     def update(self):
         self.user = ptah.authService.get_current_principal()
-        self.ptahManager = ptah.manage.get_access_manager()(ptah.authService.get_userid()) 
+        self.ptahManager = manage.get_access_manager()(ptah.authService.get_userid()) 
         self.isAnon = self.user is None
 
+
+class ContentLayout(view.Layout):
+    view.layout('', interfaces.IContent, parent="workspace",
+                layer = '{{package}}',
+                template=view.template("templates/layoutcontent.pt"))
+
+    def update(self):
+        self.actions = list_uiactions(self.context, self.request)

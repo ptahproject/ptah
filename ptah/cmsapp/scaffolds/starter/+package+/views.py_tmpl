@@ -1,4 +1,4 @@
-from ptah import view
+from ptah import view, form
 from {{package}}.app import ApplicationRoot
 
 view.static('{{project}}', '{{project}}:static')
@@ -6,3 +6,21 @@ view.static('{{project}}', '{{project}}:static')
 @view.pview('view', context = ApplicationRoot)
 def my_view(request):
     return "A view"
+
+
+class DefaultContentView(form.DisplayForm):
+    view.pview(
+        context = cms.Content,
+        permission = cms.View,
+        template=view.template("templates/contentview.pt"))
+
+    @property
+    def fields(self):
+        return self.context.__type__.fieldset
+
+    def form_content(self):
+        data = {}
+        for name, field in self.context.__type__.fieldset.items():
+            data[name] = getattr(self.context, name, field.default)
+
+        return data
