@@ -59,7 +59,7 @@ from ptah import events
 from ptah import mail
 
 # ptah settings
-from ptah.settings import PTAH_CONFIG
+from ptah.settings import PTAH_CONFIG, MAIL
 
 # pagination
 from ptah.util import Pagination

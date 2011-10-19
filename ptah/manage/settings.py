@@ -34,7 +34,8 @@ class SettingsView(view.View):
                     ({'name': '%s.%s'%(name, node.name),
                       'value': '%s: %s'%(node.typ.__class__.__name__, value),
                       'title': node.title,
-                      'description': node.description}))
+                      'description': node.description,
+                      'default': node.default}))
 
             data.append(
                 ({'title': title,

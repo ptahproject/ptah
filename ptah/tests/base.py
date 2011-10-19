@@ -32,10 +32,11 @@ class Base(unittest.TestCase):
         return environ
 
     def _init_ptah(self, settings=None, handler=None, *args, **kw):
-        if settings is None:
-            settings = self._settings
+        st = dict(self._settings)
+        if settings is not None:
+            st.update(settings)
         config.initialize(('ptah', self.__class__.__module__))
-        config.initialize_settings(settings, self.p_config)
+        config.initialize_settings(st, self.p_config)
 
         # create sql tables
         Base = sqlahelper.get_base()

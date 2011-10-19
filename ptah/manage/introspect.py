@@ -346,9 +346,9 @@ class EventDirective(object):
 
 
 class AdapterDirective(object):
-    """ zca adapter registrations """
+    """ zc adapter registrations """
 
-    title = 'Adapters'
+    title = 'zc adapters'
     manage.introspection('ptah.config:adapter')
 
     actions = view.template('ptah.manage:templates/directive-adapter.pt')

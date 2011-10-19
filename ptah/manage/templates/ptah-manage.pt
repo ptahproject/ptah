@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Ptah</title>
+    <title>Ptah Manage</title>
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
 
     ${view.include('jquery')}
@@ -12,7 +12,7 @@
     <div class="topbar" tal:define="app_url request.application_url">
       <div class="fill">
 	<div class="container">
-	  <h3><a href="${app_url}/ptah-manage/">Ptah</a></h3>
+	  <h3><a href="${app_url}/ptah-manage/">Ptah Manage</a></h3>
 	  <tal:block 
 	     condition="view.module"
 	     content="structure 
