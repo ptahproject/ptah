@@ -4,6 +4,7 @@ from pyramid import security
 from pyramid.httpexceptions import HTTPFound
 
 import ptah
+from ptah.settings import MAIL
 from settings import _, CROWD
 
 view.register_route('ptah-login', '/login.html')
@@ -120,9 +121,9 @@ class LoginSuspended(view.View):
         if not props.suspended:
             raise HTTPFound(location=self.request.application_url)
 
-        self.from_name = ptah.mail.MAIL.from_name
-        self.from_address = ptah.mail.MAIL.from_address
-        self.full_address = ptah.mail.MAIL.full_from_address
+        self.from_name = MAIL.from_name
+        self.from_address = MAIL.from_address
+        self.full_address = MAIL.full_from_address
 
 
 @view.pview(route='ptah-logout')

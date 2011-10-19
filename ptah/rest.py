@@ -12,7 +12,7 @@ from pyramid.interfaces import IAuthenticationPolicy
 from ptah import view, config
 
 import ptah
-from ptah.app import SECURITY
+from ptah.settings import SECURITY
 
 
 services = {}

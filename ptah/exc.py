@@ -5,9 +5,8 @@ from pyramid.httpexceptions import HTTPFound, HTTPForbidden, HTTPNotFound
 
 import ptah
 from ptah import authService
-from ptah.mail import MAIL
-from ptah.settings import PTAH_CONFIG
 from ptah.manage import get_access_manager
+from ptah.settings import MAIL, PTAH_CONFIG
 
 
 class LayoutPage(view.Layout):
