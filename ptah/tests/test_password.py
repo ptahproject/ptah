@@ -151,6 +151,10 @@ class TestPasswordChangerDecl(Base):
 
 class TestPasswordTool(Base):
 
+    def tearDown(self):
+        config.cleanup_system(self.__class__.__module__)
+        super(TestPasswordTool, self).tearDown()
+
     def test_password_encode(self):
         from ptah.password import PasswordTool
         
@@ -188,3 +192,46 @@ class TestPasswordTool(Base):
 
         newp = ptah.passwordTool.get_principal(token)
         self.assertIsNone(newp)
+
+    def test_password_change_password(self):
+        p = Principal('test+schema:test', 'name', 'login')
+        principals = {'test+schema:test': p}
+
+        @ptah.resolver('test+schema')
+        def resolver(uri):
+            return principals.get(uri)
+
+        @ptah.password_changer('test+schema')
+        def changer(principal, password):
+            p.password = password
+
+        self._init_ptah()
+        
+        token = ptah.passwordTool.generate_passcode(p)
+        self.assertIsNotNone(token)
+
+        newp = ptah.passwordTool.get_principal(token)
+        self.assertIs(newp, p)
+
+        self.assertTrue(ptah.passwordTool.change_password(token, '12345'))
+        self.assertEqual(p.password, '{plain}12345')
+
+        newp = ptah.passwordTool.get_principal(token)
+        self.assertIsNone(newp)
+
+        self.assertFalse(ptah.passwordTool.change_password('unknown', '12345'))
+
+    def test_password_validate(self):
+        ptah.passwordTool.min_length = 5
+        self.assertEqual(ptah.passwordTool.validate('1234'),
+                         'Password should be at least 5 characters.')
+
+        ptah.passwordTool.letters_digits = True
+        self.assertEqual(ptah.passwordTool.validate('123456'),
+                         'Password should contain both letters and digits.')
+        
+        ptah.passwordTool.letters_mixed_case = True
+        self.assertEqual(ptah.passwordTool.validate('abs456'),
+                         'Password should contain letters in mixed case.')
+
+        self.assertIsNone(ptah.passwordTool.validate('aBs456'))

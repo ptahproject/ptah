@@ -1,10 +1,8 @@
 """ default content forms """
 import re
-from ptah import config, view, form
+from ptah import config, view, form, cms
 from pyramid.decorator import reify
 from pyramid.httpexceptions import HTTPFound
-
-from ptah import cms
 
 
 class AddForm(form.Form):

@@ -3,12 +3,12 @@ import ptah
 import sqlalchemy as sqla
 
 from ptah import cms
-from ptah.cmsapp.permissions import AddPage
+from {{package}}.permissions import AddPage
 
 
 class Page(cms.Content):
 
-    __tablename__ = 'ptah_cmsapp_pages'
+    __tablename__ = '{{package}}_pages'
 
     __type__ = cms.Type(
         'page',
@@ -25,4 +25,4 @@ class Page(cms.Content):
 ptah.view.register_view(
     context = Page,
     permission = cms.View,
-    template = ptah.view.template('ptah.cmsapp:templates/page.pt'))
+    template = ptah.view.template('{{package}}:templates/page.pt'))

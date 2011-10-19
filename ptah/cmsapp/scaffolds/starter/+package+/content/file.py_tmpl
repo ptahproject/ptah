@@ -4,12 +4,13 @@ from ptah import view, form
 
 import ptah, ptah.cmsapp
 from ptah import cms
-from ptah.cmsapp.permissions import AddFile
+
+from {{package}}.permissions import AddFile
 
 
 class File(ptah.cms.Content):
 
-    __tablename__ = 'ptah_cmsapp_files'
+    __tablename__ = '{{package}}_files'
 
     __type__ = cms.Type(
         'file',
@@ -73,7 +74,7 @@ class FileDownloadView(view.View):
 class FileView(FileDownloadView):
     view.pview(context = File, permission = cms.View)
 
-    template = view.template('ptah.cmsapp:templates/file.pt')
+    template = view.template('{{package}}:templates/file.pt')
 
     def update(self):
         self.resolve = ptah.resolve
