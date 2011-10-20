@@ -1,8 +1,9 @@
 Ptah CMS
 ========
 
-Ptah is a fast, fun, open source Python web CMS. It's prime directive is to
-make developing interactive web applications which require security easier.
+Ptah is a fast, fun, open source high-level Python web framework. It's prime 
+goal is to make developing interactive web applications and web sites which 
+require security fun and a lot easier.
 
 Ptah is loosely affiliated with the Pyramid, Django, Drupal and Zope/Plone communities.
 
