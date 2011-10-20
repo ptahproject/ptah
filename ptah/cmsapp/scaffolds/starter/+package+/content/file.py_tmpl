@@ -23,7 +23,7 @@ class File(ptah.cms.Content):
     blobref = sqla.Column(
         sqla.Unicode,
         info = {'title': 'Data',
-                'field_type': 'file'
+                'field_type': 'file',
                 'uri': True})
 
     @cms.action(permission=cms.ModifyContent)
