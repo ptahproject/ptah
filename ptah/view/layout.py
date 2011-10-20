@@ -102,7 +102,9 @@ def register_layout(
         )
 
 
-def register_layout_impl(config, klass, name, context, template, parent, route_name):
+def register_layout_impl(
+    config, klass, name, context, template, parent, route_name):
+
     if not parent:
         layout = None
     elif parent == '.':
