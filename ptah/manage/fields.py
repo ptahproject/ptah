@@ -4,9 +4,9 @@ from ptah.form.field import FIELD_ID, PREVIEW_ID
 
 
 class FieldsModule(manage.PtahModule):
-    __doc__ = u'A listing of all registered fields.'
+    __doc__ = u'A list of all registered fields with your application.'
 
-    title = 'Form fields'
+    title = 'Field types'
     manage.module('fields')
 
 

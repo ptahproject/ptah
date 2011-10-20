@@ -15,7 +15,9 @@ class PtahTemplate(Template):
         return Template.pre(self, command, output_dir, vars)
 
     def post(self, command, output_dir, vars):
-        self.out('Welcome to Ptah.  Sorry for the convenience.')
+        deo_trib = ("\n\nPtah has generated your application. Your application "
+               "can be found at /. \nDorneles hopes you like it.\n")
+        self.out(deo_trib)
         return Template.post(self, command, output_dir, vars)
 
     def out(self, msg): # pragma: no cover (replaceable testing hook)
