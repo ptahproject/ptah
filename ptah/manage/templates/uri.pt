@@ -6,24 +6,34 @@
   <table class="zebra-striped">
     <tr tal:repeat="rec view.data">
       <td>
-	<h3>${rec['resolver']}</h3>
+	<tal:block condition="rec['resolver'] is not None">
+	  <h3>${rec['resolver']}</h3>
 
-	<strong>Resolver:</strong>
-	<a href="./source.html?pkg=${rec['module']}#sl-${rec['line']}"
-	   tal:content="rec['name']" />
-	<br />
-
-	<br />
-	<strong>Object:</strong>
-	<tal:block content="rec['obj']" />
-
-	<tal:block condition="rec['cls']">
+	  <strong>Resolver:</strong>
+	  <a href="./source.html?pkg=${rec['module']}#sl-${rec['line']}"
+	     tal:content="rec['name']" />
 	  <br />
-	  <strong>Class:</strong>
-	  <a href="./source.html?pkg=${rec['clsmod']}#sl-${rec['clsline']}"
-	     tal:content="rec['cls']" />
+
 	  <br />
-	  <tal:block content="rec['clsdoc']" />
+	  <strong>URI:</strong>
+	  <tal:block content="rec['uri']" />
+	  <br />
+	  <strong>Object:</strong>
+	  <tal:block content="rec['obj']" />
+	  
+	  <tal:block condition="rec['cls']">
+	    <br />
+	    <strong>Class:</strong>
+	    <a href="./source.html?pkg=${rec['clsmod']}#sl-${rec['clsline']}"
+	       tal:content="rec['cls']" />
+	    <br />
+	    <tal:block content="rec['clsdoc']" />
+	  </tal:block>
+	</tal:block>
+	<tal:block condition="rec['resolver'] is None">
+	  <h3>Unknown</h3>
+	  <strong>URI:</strong>
+	  ${rec['uri']}
 	</tal:block>
       </td>
     </tr>

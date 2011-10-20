@@ -128,13 +128,14 @@ class UriResolver(form.Form):
                     obj = ptah.resolve(u)
                     info['obj'] = obj
 
-                    cls = getattr(obj, '__class__', None)
-                    info['cls'] = cls
-                    info['clsdoc'] = getattr(cls, '__doc__', '')
+                    if obj is not None:
+                        cls = getattr(obj, '__class__', None)
+                        info['cls'] = cls
+                        info['clsdoc'] = getattr(cls, '__doc__', '')
 
-                    if cls is not None:
-                        info['clsmod'] = cls.__module__
-                        info['clsline'] = inspect.getsourcelines(cls)[-1]
+                        if cls is not None:
+                            info['clsmod'] = cls.__module__
+                            info['clsline'] = inspect.getsourcelines(cls)[-1]
 
                 data.append(info)
 

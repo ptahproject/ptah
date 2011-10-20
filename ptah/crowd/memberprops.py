@@ -25,7 +25,7 @@ class MemberProperties(Base):
 
     __tablename__ = 'ptah_crowd_memberprops'
 
-    uri = sqla.Column(sqla.Unicode, primary_key=True)
+    uri = sqla.Column(sqla.Unicode, primary_key=True, info={'uri': True})
     joined = sqla.Column(sqla.DateTime())
     validated = sqla.Column(sqla.Boolean, default=False)
     suspended = sqla.Column(sqla.Boolean(), default=False)

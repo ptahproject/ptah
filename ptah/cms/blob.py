@@ -78,7 +78,7 @@ class BlobStorage(object):
         return blob
 
     def get(self, uri):
-        """SQL Blob storage resolver"""
+        """SQL Blob resolver"""
         return self._sql_get.first(uri=uri)
 
     def getByParent(self, parent):

@@ -51,12 +51,14 @@ class Node(Base):
     __tablename__ = 'ptah_cms_nodes'
 
     __id__ = sqla.Column('id', sqla.Integer, primary_key=True)
-    __type_id__ = sqla.Column('type', sqla.String)
+    __type_id__ = sqla.Column('type', sqla.String, info={'uri':True})
     __type__ = None
 
     __uri__ = sqla.Column('uri', sqla.String, unique=True,
                           nullable=False, info={'uri':True})
-    __parent_uri__ = sqla.Column('parent', sqla.String,sqla.ForeignKey(__uri__))
+    __parent_uri__ = sqla.Column('parent', 
+                                 sqla.String,sqla.ForeignKey(__uri__),
+                                 info={'uri': True})
 
     __owner__ = sqla.Column('owner', sqla.String, default='', info={'uri':True})
     __local_roles__ = sqla.Column('roles', ptah.JsonDictType(), default={})
