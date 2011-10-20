@@ -49,6 +49,27 @@ class TestExceptions(Base):
             res.headers['location'],
             'http://example.com/login.html?came_from=http%3A%2F%2Fexample.com')
 
+    def test_forbidden_default_root(self):
+        from ptah.exc import Forbidden
+        from pyramid.interfaces import IRootFactory
+
+        class Root(object):
+            """ """
+            def __init__(self, request):
+                self.request = request
+
+        request = DummyRequest()
+        request.url = u'http://example.com'
+        request.application_url = u'http://example.com'
+
+        config.registry.registerUtility(Root, IRootFactory)
+
+        excview = Forbidden(HTTPForbidden(), request)
+        excview.update()
+
+        self.assertIs(excview.__parent__, request.root)
+        self.assertIsInstance(request.root, Root)
+
     def test_forbidden_user(self):
         from ptah.exc import Forbidden
         self._init_ptah()

@@ -52,10 +52,16 @@ class LoginForm(form.Form):
             request.registry.notify(
                 ptah.events.LoggedInEvent(info.principal))
 
+            location = request.application_url
+
+            came_from = request.GET.get('came_from', '')
+            if came_from.startswith(location):
+                location = came_from
+            else:
+                location = '%s/login-success.html'%location
+
             headers = security.remember(request, info.principal.uri)
-            raise HTTPFound(
-                headers = headers,
-                location = '%s/login-success.html'%request.application_url)
+            raise HTTPFound(headers = headers, location = location)
 
         if info.principal is not None:
             request.registry.notify(

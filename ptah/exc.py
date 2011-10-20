@@ -1,6 +1,8 @@
 """ forbidden view """
 import urllib
-from ptah import view
+from ptah import view, config
+from pyramid.interfaces import IRootFactory
+from pyramid.traversal import DefaultRootFactory
 from pyramid.httpexceptions import HTTPFound, HTTPForbidden, HTTPNotFound
 
 import ptah
@@ -30,6 +32,12 @@ class Forbidden(view.View):
         context = getattr(request, 'context', None)
         if context is None:
             context = getattr(request, 'root', None)
+
+        if context is None:
+            root_factory = config.registry.queryUtility(
+                IRootFactory, default=DefaultRootFactory)
+            context = root_factory(request)
+            request.root = context
 
         self.__parent__ = context
 
