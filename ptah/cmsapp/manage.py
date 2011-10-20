@@ -110,7 +110,7 @@ class SharingForm(form.Form):
 
 
 class TypeIntrospection(object):
-    """ Ptah CMS content types """
+    """ Ptah content types """
 
     name = 'ptah-cms:type'
     title = 'Content Types'
