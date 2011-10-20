@@ -31,10 +31,10 @@ class TestSecurityInit(Base):
         self._init_ptah({'mail.host': 'smtp.ptahproject.org',
                          'mail.from_name': 'Ptah admin',
                          'mail.from_address': 'admin@ptahproject.org'})
-        
+
         from ptah import MAIL
 
         self.assertIsNotNone(MAIL.Mailer)
-        self.assertEqual(MAIL.full_from_address, 
+        self.assertEqual(MAIL.full_from_address,
                          'Ptah admin <admin@ptahproject.org>')
         self.assertEqual(MAIL.Mailer.mailer.hostname, 'smtp.ptahproject.org')

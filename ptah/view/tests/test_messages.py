@@ -121,7 +121,7 @@ class TestStatusMessages(Base):
         view.add_message(self.request, 'message')
         msg = view.render_messages(self.request)
         self.assertEqual(
-           '\n'.join(msg.split(os.linesep)), 
+           '\n'.join(msg.split(os.linesep)),
            u'<div class="alert-message info">\n  <a class="close" href="#">\xd7</a>\n  <p>message</p>\n</div>\n')
         self.assertEqual(type(msg), unicode)
 

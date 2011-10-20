@@ -8,7 +8,7 @@ from ptah.view.customize import TEMPLATE
 
 class TemplatesModule(manage.PtahModule):
     __doc__ = u'A listing of all templates registered grouped by module'
-    
+
     title = 'Templates'
     manage.module('templates')
 

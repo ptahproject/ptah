@@ -1,0 +1,37 @@
+<div class="page-header">
+  <h1>Resolve URI</h1>
+</div>
+
+<div class="span12" tal:condition="view.data">
+  <table class="zebra-striped">
+    <tr tal:repeat="rec view.data">
+      <td>
+	<h3>${rec['resolver']}</h3>
+
+	<strong>Resolver:</strong>
+	<a href="./source.html?pkg=${rec['module']}#sl-${rec['line']}"
+	   tal:content="rec['name']" />
+	<br />
+
+	<br />
+	<strong>Object:</strong>
+	<tal:block content="rec['obj']" />
+
+	<tal:block condition="rec['cls']">
+	  <br />
+	  <strong>Class:</strong>
+	  <a href="./source.html?pkg=${rec['clsmod']}#sl-${rec['clsline']}"
+	     tal:content="rec['cls']" />
+	  <br />
+	  <tal:block content="rec['clsdoc']" />
+	</tal:block>
+      </td>
+    </tr>
+  </table>
+</div>
+
+<div class="span12">
+  <h2>Enter uri</h2>
+
+  ${view.snippet('form-view', view)}
+</div>

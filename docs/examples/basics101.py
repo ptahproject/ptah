@@ -15,7 +15,7 @@ def show_models(request):
 @view.pview('show_info', context=cms.Content)
 def show_info(context, request):
     return cgi.escape(str(context.info()))
-    
+
 @view.pview('list_children', context=cms.Container)
 def list_children(context, request):
     out = []

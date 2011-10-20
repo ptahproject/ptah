@@ -21,6 +21,10 @@ class _Superuser(object):
         self.login = ''
         self.name = 'Manager'
 
+    def __repr__(self):
+        return '<ptah Superuser>'
+
+
 SUPERUSER = _Superuser()
 SUPERUSER_URI = 'ptah+auth:superuser'
 

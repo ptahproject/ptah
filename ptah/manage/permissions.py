@@ -7,7 +7,7 @@ from ptah import config, view, manage
 
 class PermissionsModule(manage.PtahModule):
     __doc__ = u'A listing of all permission sets and their definitions'
-    
+
     title = 'Permissions'
     manage.module('permissions')
 

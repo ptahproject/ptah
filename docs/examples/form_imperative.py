@@ -44,12 +44,12 @@ def form_view(context, request):
             return
 
         pprint(data)
-        
+
         form.context.title = data['title']
         form.context.description = data['description']
         form.message('Content has been updated.', 'info')
         raise HTTPFound(location='.')
-        
+
     myform.buttons.add_action('Update', action=updateAction)
     myform.buttons.add_action('Cancel', action=cancelAction)
 
@@ -70,7 +70,7 @@ def form_view(context, request):
 
 if __name__ == '__main__':
     """ ...
-    
+
     """
     app = ptah.make_wsgi_app({'settings':r'./ptah.ini'})
     serve(app, host='0.0.0.0')

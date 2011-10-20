@@ -9,7 +9,7 @@ from ptah.cms import restaction, View, ModifyContent
 @restaction('extra-info', ptah_cms.Content, permission=View)
 def extraInfo(content, request):
     """ __doc__ is used for action description """
-    
+
     return {'title': content.title,
             'email': 'ptah@ptahproject.org',
             'message': 'Ptah rest api'}
@@ -18,7 +18,7 @@ def extraInfo(content, request):
 @restaction('protected-info', ptah_cms.Content, permission=ModifyContent)
 def protectedInfo(content, request):
     """ protected rest action """
-    
+
     return {'title': content.title,
             'email': 'ptah@ptahproject.org',
             'message': 'Ptah rest api'}
@@ -26,7 +26,7 @@ def protectedInfo(content, request):
 
 if __name__ == '__main__':
     """ ...
-    
+
     """
     app = ptah.make_wsgi_app({'settings':r'./ptah.ini'})
     serve(app, host='0.0.0.0')

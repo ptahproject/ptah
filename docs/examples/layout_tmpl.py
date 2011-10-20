@@ -43,7 +43,7 @@ class WorkspaceLayout(view.Layout):
 
 if __name__ == '__main__':
     """
-    
+
     """
     import ptah
     app = ptah.make_wsgi_app({'settings':r'./ptah.ini'})

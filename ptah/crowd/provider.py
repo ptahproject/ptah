@@ -27,7 +27,7 @@ class CrowdUser(Base):
     __tablename__ = 'ptah_crowd'
 
     pid = sqla.Column(sqla.Integer, primary_key=True)
-    uri = sqla.Column(sqla.Unicode(45), unique=True)
+    uri = sqla.Column(sqla.Unicode(45), unique=True, info={'uri': True})
     name = sqla.Column(sqla.Unicode(255))
     login = sqla.Column(sqla.Unicode(255), unique=True)
     email = sqla.Column(sqla.Unicode(255), unique=True)

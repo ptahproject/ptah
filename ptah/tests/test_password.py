@@ -60,7 +60,7 @@ class TestPasswordSchema(Base):
 
         self.assertRaises(
             form.Invalid, passwordValidator, None, 'pwd')
-        
+
         PasswordTool.validate = vp
 
 
@@ -79,7 +79,7 @@ class TestSHAPasswordManager(unittest.TestCase):
         self.assertFalse(manager.check(encoded, password + u"wrong"))
 
         encoded = manager.encode(password)
-        self.assertTrue(manager.check(encoded, password))       
+        self.assertTrue(manager.check(encoded, password))
 
 
 class TestPasswordSettings(Base):
@@ -87,7 +87,7 @@ class TestPasswordSettings(Base):
     def test_password_settings(self):
         from ptah.password import \
              initializing, PlainPasswordManager, SSHAPasswordManager
-        
+
         ptah.PTAH_CONFIG['pwdmanager'] = 'unknown'
         initializing(None)
 
@@ -157,7 +157,7 @@ class TestPasswordTool(Base):
 
     def test_password_encode(self):
         from ptah.password import PasswordTool
-        
+
         ptah.passwordTool.manager = PasswordTool.pm['{plain}']
 
         encoded = ptah.passwordTool.encode('12345')
@@ -181,7 +181,7 @@ class TestPasswordTool(Base):
             return principals.get(uri)
 
         self._init_ptah()
-        
+
         token = ptah.passwordTool.generate_passcode(p)
         self.assertIsNotNone(token)
 
@@ -206,7 +206,7 @@ class TestPasswordTool(Base):
             p.password = password
 
         self._init_ptah()
-        
+
         token = ptah.passwordTool.generate_passcode(p)
         self.assertIsNotNone(token)
 
@@ -229,7 +229,7 @@ class TestPasswordTool(Base):
         ptah.passwordTool.letters_digits = True
         self.assertEqual(ptah.passwordTool.validate('123456'),
                          'Password should contain both letters and digits.')
-        
+
         ptah.passwordTool.letters_mixed_case = True
         self.assertEqual(ptah.passwordTool.validate('abs456'),
                          'Password should contain letters in mixed case.')

@@ -44,12 +44,12 @@ class MyForm(form.Form):
             return
 
         pprint(data)
-        
+
         self.context.title = data['title']
         self.context.description = data['description']
         self.message('Content has been updated.', 'info')
         raise HTTPFound(location='.')
-    
+
     @form.button('Cancel')
     def cancel_handler(self):
         raise HTTPFound(location='.')
@@ -57,7 +57,7 @@ class MyForm(form.Form):
 
 if __name__ == '__main__':
     """ ...
-    
+
     """
     app = ptah.make_wsgi_app({'settings':r'./ptah.ini'})
     serve(app, host='0.0.0.0')

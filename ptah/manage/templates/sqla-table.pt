@@ -22,7 +22,13 @@
 	    <input type="checkbox" name="rowid" 
 		   value="${getattr(row, view.primary)}" />
 	  </td>
-	  <td tal:repeat="val row" tal:content="val"></td>
+	  <td tal:repeat="val row">
+	    <a href="../../introspect/uri.html?uri=${view.quote(val)}"
+	       tal:omit-tag="repeat['val'].index not in view.uris">
+	      <tal:block tal:on-error="nothing" 
+			 tal:content="view.val(val)" />
+	    </a>
+	  </td>
 	  <td>
 	    <a class="btn info"
 	       href="${url}${getattr(row, view.primary)}/">Edit</a>

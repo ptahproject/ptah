@@ -18,8 +18,8 @@ if __name__ == '__main__':
                          href='http://ptahproject.org')
         cms.Session.add(link)
         import transaction; transaction.commit()
-        
+
     for link in cms.Session.query(Hyperlink).all():
         print 'curl http://localhost:8080/__rest__/cms/content:/%s' % link.__uri__
-        
+
     serve(app, host='0.0.0.0')

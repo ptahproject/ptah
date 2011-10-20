@@ -4,7 +4,7 @@ from ptah import config, view, manage
 
 class SettingsModule(manage.PtahModule):
     __doc__ = u'The current settings which include defaults not used by .ini'
-    
+
     title = 'Settings'
     manage.module('settings')
 

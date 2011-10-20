@@ -1,9 +1,11 @@
 """ introspect module """
-import ptah
+import urllib
 import sqlahelper as psa
-from ptah import config, view, form, manage
 from pyramid.decorator import reify
 from pyramid.httpexceptions import HTTPFound
+
+import ptah
+from ptah import config, view, form, manage
 
 Session = psa.get_session()
 metadata = psa.get_base().metadata
@@ -11,7 +13,7 @@ metadata = psa.get_base().metadata
 
 class SQLAModule(manage.PtahModule):
     __doc__ = u'A listing of all tables with ability to view and edit records'
-    
+
     title = 'SQLAlchemy'
     manage.module('sqla')
 
@@ -139,10 +141,16 @@ class TableView(form.Form):
         table = self.table = self.context.table
         self.primary = None
         self.pcolumn = None
+        self.uris = []
+
+        names = []
         for cl in table.columns:
+            names.append(cl.name)
             if cl.primary_key:
                 self.primary = cl.name
                 self.pcolumn = cl
+            if cl.info.get('uri'):
+                self.uris.append(len(names)-1)
 
         super(TableView, self).update()
 
@@ -167,6 +175,19 @@ class TableView(form.Form):
 
         offset, limit = self.page.offset(current)
         self.data = Session.query(table).offset(offset).limit(limit).all()
+
+    def quote(self, val):
+        return urllib.quote_plus(val)
+
+    def val(self, val):
+        try:
+            if isinstance(val, str):
+                val = unicode(val, 'utf-8', 'ignore')
+            elif not isinstance(val, unicode):
+                val = str(val)
+        except:
+            val = u"Can't show"
+        return val[:100]
 
     @form.button('Add', actype=form.AC_PRIMARY)
     def add(self):
