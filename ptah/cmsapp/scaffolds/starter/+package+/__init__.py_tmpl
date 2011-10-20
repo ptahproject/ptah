@@ -4,8 +4,8 @@ from pyramid.asset import abspath_from_asset_spec
 import ptah
 from ptah.crowd.provider import CrowdUser, Session
 
-from {{package}}.app import APP_FACTORY
-from {{package}}.content import Page
+from {{package}}.application import APP_FACTORY
+from {{package}}.page import Page
 from {{package}}.permissions import Manager
 
 
