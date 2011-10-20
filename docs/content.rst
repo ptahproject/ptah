@@ -40,7 +40,7 @@ A simple model::
             If you have permission to edit it it will display the form.
             If you do not have ability to edit it; you will be redirected.
         """
-        can_edit = checkPermission(ptah.cms.ModifyContent, context, throw=False)
+        can_edit = checkPermission(ptah.cms.ModifyContent, context)
 
         if can_edit:
             vform = form.DisplayForm(context, request)
