@@ -18,8 +18,9 @@
     <form method="post" action="${request.url}">
       <div class="actions">
 	<a href="./?pkg=${view.pkg}" class="btn">Back</a>
-	<input type="submit" class="btn primary" 
-	       name="customize" value="Customize" />
+	<input type="submit" class="btn primary"
+	       name="customize" value="Customize" 
+	       tal:condition="view.hasWatcher" />
       </div>
       <input type="hidden" name="pkg" value="${view.pkg}" />
       <input type="hidden" name="template" value="${view.template}"
