@@ -19,7 +19,8 @@ class ModActions(view.Snippet):
                      'ptah.manage:templates/customize-actions.pt'))
 
     def update(self):
-        self.hasWatcher = TEMPLATE._watcher is not None
+        self.hasWatcher = TEMPLATE._watcher is not None and \
+            TEMPLATE._watcher.started
 
 
 class TemplatesView(view.View):
@@ -73,7 +74,8 @@ class ViewTemplate(view.View):
         reg = tmpl.registry
         request = self.request
 
-        self.hasWatcher = TEMPLATE._watcher is not None
+        self.hasWatcher = TEMPLATE._watcher is not None and \
+            TEMPLATE._watcher.started
 
         items = tmpl.registry.items()
         items.sort()
