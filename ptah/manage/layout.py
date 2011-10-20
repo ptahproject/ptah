@@ -1,5 +1,5 @@
 from ptah import view, config
-from ptah.view.renderers import BaseRenderer
+#from ptah.view.renderers import BaseRenderer
 
 from zope.interface import providedBy
 from pyramid.interfaces import IView, IViewClassifier

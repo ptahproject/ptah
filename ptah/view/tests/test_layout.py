@@ -5,9 +5,8 @@ from pyramid.interfaces import IRouteRequest
 from pyramid.httpexceptions import HTTPNotFound
 
 from ptah import config, view
-from ptah.view.view import View, viewMapper
 from ptah.view.layout import Layout, query_layout
-from ptah.view.renderers import Renderer, SimpleRenderer
+from ptah.view.renderers import LayoutRenderer
 
 from base import Base
 
@@ -127,9 +126,6 @@ class TestLayout(Base):
         self.assertEqual(layout.render(v.render()), '<html>View: test</html>')
 
     def test_layout_simple_multilevel(self):
-        class View(view.View):
-            def __call__(self):
-                return 'View: test'
         class Layout(view.Layout):
             def render(self, content):
                 return '<html>%s</html>'%content
@@ -139,22 +135,17 @@ class TestLayout(Base):
 
         root = Root()
         context = Context(root)
-        v = View(context, self.request)
 
         # find layout for view
         layout = query_layout(self.request, context, '')
         self.assertTrue(isinstance(layout, Layout))
 
-        renderer = SimpleRenderer(layout='')
-        res = renderer(context, self.request, viewMapper(View))
+        renderer = LayoutRenderer('')
+        res = renderer(context, self.request, 'View: test')
 
-        self.assertTrue('<html>View: test</html>' in res.body)
+        self.assertTrue('<html>View: test</html>' in res)
 
     def test_layout_simple_view_with_template(self):
-        class View(view.View):
-            def __call__(self):
-                return 'View: test'
-
         fn = os.path.join(self.dir, 'test.pt')
         tmpl = open(fn, 'wb')
         tmpl.write('<html>${content}</html>')
@@ -163,18 +154,14 @@ class TestLayout(Base):
         view.register_layout('test', template = view.template(fn))
         self._init_ptah()
 
-        renderer = SimpleRenderer(layout='test')
+        renderer = LayoutRenderer('test')
 
         context = Context()
-        res = renderer(context, self.request, viewMapper(View))
+        res = renderer(context, self.request, 'View: test')
 
-        self.assertTrue('<html>View: test</html>' in res.body)
+        self.assertTrue('<html>View: test</html>' in res)
 
     def test_layout_simple_chain_one_level(self):
-        class View(view.View):
-            def render(self):
-                return 'View: test'
-
         class LayoutTest(view.Layout):
             def render(self,content):
                 return '<div>%s</div>'%content
@@ -188,16 +175,12 @@ class TestLayout(Base):
         self._init_ptah()
 
         context = Context()
-        renderer = SimpleRenderer('test')
-        res = renderer(context, self.request, viewMapper(View,'render'))
+        renderer = LayoutRenderer('test')
+        res = renderer(context, self.request, 'View: test')
 
-        self.assertTrue('<html><div>View: test</div></html>' in res.body)
+        self.assertTrue('<html><div>View: test</div></html>' in res)
 
     def test_layout_simple_chain_multi_level(self):
-        class View(view.View):
-            def render(self):
-                return 'View: test'
-
         class LayoutTest(view.Layout):
             def render(self, content):
                 return '<div>%s</div>'%content
@@ -212,14 +195,13 @@ class TestLayout(Base):
 
         root = Root()
         context = Context(root)
-        v = View(context, self.request)
 
-        renderer = SimpleRenderer('test')
-        res = renderer(context, self.request, viewMapper(View,'render'))
+        renderer = LayoutRenderer('test')
+        res = renderer(context, self.request, 'View: test')
 
-        self.assertTrue('<html><div>View: test</div></html>' in res.body)
+        self.assertTrue('<html><div>View: test</div></html>' in res)
 
-        layout = query_layout(self.request, v.context, 'test')
+        layout = query_layout(self.request, context, 'test')
         self.assertTrue(isinstance(layout, LayoutTest))
 
         rootlayout = query_layout(self.request, context, '')
@@ -229,10 +211,6 @@ class TestLayout(Base):
         self.assertTrue(isinstance(rootlayout, LayoutPage))
 
     def test_layout_chain_same_layer_id_on_different_levels(self):
-        class View(view.View):
-            def render(self):
-                return 'View: test'
-
         class Layout1(view.Layout):
             def render(self, content):
                 return '<div>%s</div>'%content
@@ -249,16 +227,12 @@ class TestLayout(Base):
         context1 = Context2(root)
         context2 = Context(context1)
 
-        renderer = SimpleRenderer()
-        res = renderer(context2, self.request, viewMapper(View,'render'))
+        renderer = LayoutRenderer('')
+        res = renderer(context2, self.request, 'View: test')
 
-        self.assertTrue('<html><div>View: test</div></html>' in res.body)
+        self.assertTrue('<html><div>View: test</div></html>' in res)
 
     def test_layout_chain_parent_notfound(self):
-        class View(view.View):
-            def __call__(self):
-                return 'View: test'
-
         class Layout(view.Layout):
             def render(self, content):
                 return '<div>%s</div>'%content
@@ -269,10 +243,10 @@ class TestLayout(Base):
         root = Root()
         context = Context(root)
 
-        renderer = SimpleRenderer(layout='')
-        res = renderer(context, self.request, viewMapper(View))
+        renderer = LayoutRenderer('')
+        res = renderer(context, self.request, 'View: test')
 
-        self.assertTrue('<div>View: test</div>' in res.body)
+        self.assertTrue('<div>View: test</div>' in res)
 
     def test_layout_simple_view_without_template(self):
         class View(view.View):

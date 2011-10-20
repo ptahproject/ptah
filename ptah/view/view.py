@@ -3,20 +3,21 @@ import sys, inspect
 from zope import interface
 from zope.interface import providedBy
 
+from pyramid.response import Response
+from pyramid.security import NO_PERMISSION_REQUIRED
+from pyramid.httpexceptions import WSGIHTTPException
 from pyramid.config.views import requestonly, isexception
 from pyramid.interfaces import IView
 from pyramid.interfaces import IRequest
 from pyramid.interfaces import IRouteRequest
 from pyramid.interfaces import IViewClassifier
 from pyramid.interfaces import IExceptionViewClassifier
-from pyramid.interfaces import IAuthorizationPolicy
-from pyramid.interfaces import IAuthenticationPolicy
-from pyramid.httpexceptions import HTTPForbidden
 
 from ptah import config
 from ptah.view.base import View
 from ptah.view.customize import LayerWrapper
-from ptah.view.renderers import Renderer, SimpleRenderer
+from ptah.view.renderers import \
+    PermissionRenderer, ViewRenderer, TemplateRenderer, LayoutRenderer
 
 
 def render_view(name, context, request):
@@ -29,32 +30,37 @@ def render_view(name, context, request):
     return view_callable(context, request)
 
 
-checkPermission = None
+class PyramidView(object):
 
-def defaultCheckPermission(permission, context, request=None, throw=False):
-    global AUTH, AUTHZ
+    def __init__(self, chain):
+        self.renderers = chain
+    
+    def __call__(self, context, request):
+        content = None
 
-    try:
-        AUTH
-    except:
-        AUTH = config.registry.queryUtility(IAuthenticationPolicy)
-        AUTHZ = config.registry.queryUtility(IAuthorizationPolicy)
+        try:
+            for renderer in self.renderers:
+                content = renderer(context, request, content)
+        except WSGIHTTPException, resp:
+            return resp
 
-    principals = AUTH.effective_principals(request)
-    return AUTHZ.permits(context, principals, permission)
+        if isinstance(content, Response):
+            return content
 
-def set_checkpermission(func):
-    global checkPermission
-    checkPermission = func
+        response = request.response
+        if type(content) is unicode:
+            response.unicode_body = content
+        else:
+            response.body = content
 
-set_checkpermission(defaultCheckPermission)
+        return response
 
 
 chained = object()
 
-def subpathWrapper(factory, renderer, subpaths):
+def subpath_wrapper(factory, renderer, subpaths):
 
-    def wrapper(context, request):
+    def wrapper(context, request, content):
         if request.subpath:
             item = request.subpath[0]
             if item in subpaths:
@@ -69,7 +75,7 @@ def subpathWrapper(factory, renderer, subpaths):
                 if result is not chained:
                     return result
 
-        return renderer(context, request)
+        return renderer(context, request, content)
 
     return wrapper
 
@@ -106,8 +112,8 @@ class subpath(object):
         if renderer:
             render = renderer
         else:
-            def render(context, request, factory):
-                return factory(context, request)[1]
+            def render(context, request, content):
+                return factory(context, request, content)
 
         if self.name:
             subpaths[self.name] = render, method
@@ -121,7 +127,7 @@ unset = object()
 
 def register_view(
     name=u'', factory=View, context=None, template=None, route=None,
-    layout=unset, permission='__no_permission_required__', layer=''):
+    layout=unset, permission=NO_PERMISSION_REQUIRED, layer=''):
 
     if factory is None or not callable(factory):
         raise ValueError('view factory is required')
@@ -139,7 +145,27 @@ def register_view(
 
 def register_view_impl(config, factory, name, context, template, route_name,
                        layout, permission):
+    chain = []
 
+    # permission
+    if permission != NO_PERMISSION_REQUIRED and permission is not None:
+        chain.append(PermissionRenderer(permission, factory))
+
+    # view
+    if template is None:
+        render = ViewRenderer(viewMapper(factory, 'render'))
+    else:
+        render = TemplateRenderer(viewMapper(factory, 'update'), template)
+
+    # add 'subpath' support
+    if inspect.isclass(factory):
+        subpath_traverse = getattr(factory, '__subpath_traverse__', None)
+        if subpath_traverse is not None:
+            render = subpath_wrapper(
+                viewInstanceMapper(factory), render, subpath_traverse)
+    chain.append(render)
+
+    # layout
     if layout is unset:
         layout = None
         try:
@@ -147,52 +173,11 @@ def register_view_impl(config, factory, name, context, template, route_name,
                 layout = ''
         except:
             pass
-
-    if template is not None:
-        renderer = Renderer(template, layout=layout).bind(
-            viewMapper(factory, 'update'))
-    else:
-        renderer = SimpleRenderer(layout=layout).bind(
-            viewMapper(factory, 'render'))
-
-    factory.__renderer__ = renderer
-
-    # add 'subpath' support
-    if inspect.isclass(factory):
-        subpath_traverse = getattr(factory, '__subpath_traverse__', None)
-        if subpath_traverse is not None:
-            renderer = subpathWrapper(
-                viewInstanceMapper(factory), renderer, subpath_traverse)
-
-    # build pyramid view
-    if permission == '__no_permission_required__':
-        permission = None
-
-    sm = config.registry
-
-    if callable(permission):
-        def pyramidview(context, request):
-            if permission(context, request):
-                return renderer(context, request)
-
-            msg = getattr(request, 'authdebug_message',
-                          'Unauthorized: %s failed permission check'%factory)
-            raise HTTPForbidden(msg)
-    elif permission:
-        def pyramidview(context, request):
-            if checkPermission(permission, context, request):
-                return renderer(context, request)
-
-            msg = getattr(request, 'authdebug_message',
-                          'Unauthorized: %s failed permission check'%factory)
-            raise HTTPForbidden(msg)
-    else:
-        pyramidview = renderer
+        
+    if layout is not None:
+        chain.append(LayoutRenderer(layout))
 
     # register view
-    if context is None:
-        context = interface.Interface
-
     if isexception(context):
         view_classifier = IExceptionViewClassifier
     else:
@@ -205,7 +190,9 @@ def register_view_impl(config, factory, name, context, template, route_name,
         request_iface = sm.getUtility(IRouteRequest, name=route_name)
 
     sm.registerAdapter(
-        pyramidview, (view_classifier, request_iface, context), IView, name)
+        PyramidView(chain),
+        (view_classifier, request_iface, context or interface.Interface),
+        IView, name)
 
 
 def viewMapper(view, attr=None):

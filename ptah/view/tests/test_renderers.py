@@ -3,7 +3,7 @@ from pyramid.response import Response
 from pyramid.httpexceptions import HTTPFound
 
 from ptah import config, view
-from ptah.view.renderers import Renderer, JSONRenderer, SimpleRenderer
+from ptah.view.renderers import TemplateRenderer, JSONRenderer, LayoutRenderer
 
 from base import Base, Context
 
@@ -12,7 +12,7 @@ class RendererBase(Base):
     pass
 
 
-class TestSimpleRenderer(Base):
+class _TestSimpleRenderer(Base):
 
     def test_renderer_simple(self):
         def viewFactory(context, request):
@@ -93,7 +93,7 @@ class TestSimpleRenderer(Base):
         self.assertEqual(res.content_type, 'text/plain')
 
 
-class TestJSONRenderer(RendererBase):
+class _TestJSONRenderer(RendererBase):
 
     def test_renderer_json(self):
         def viewFactory(context, request):
@@ -129,7 +129,7 @@ class TestJSONRenderer(RendererBase):
         self.assertEqual(res.body, '{"test": 1}')
 
 
-class TestTmplRenderer(RendererBase):
+class _TestTmplRenderer(RendererBase):
 
     def test_renderer_tmpl(self):
         def viewFactory(context, request):

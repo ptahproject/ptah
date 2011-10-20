@@ -29,12 +29,12 @@ from ptah.view.view import chained
 from ptah.view.view import subpath
 from ptah.view.view import render_view
 from ptah.view.view import register_view
-from ptah.view.view import set_checkpermission
+from ptah.view.renderers import set_checkpermission
 
 # renderers
-from ptah.view.renderers import Renderer
-from ptah.view.renderers import SimpleRenderer
-from ptah.view.renderers import json, JSONRenderer
+#from ptah.view.renderers import Renderer
+#from ptah.view.renderers import SimpleRenderer
+from ptah.view.renderers import json #, JSONRenderer
 
 # layer
 from ptah.view.customize import layer

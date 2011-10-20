@@ -12,7 +12,7 @@ from pyramid.httpexceptions import HTTPForbidden, HTTPNotFound, HTTPFound
 from ptah import config, view
 from ptah.config import api
 from ptah.view.base import View
-from ptah.view.renderers import Renderer
+from ptah.view.renderers import ViewRenderer
 
 from base import Base, Context
 
@@ -264,16 +264,18 @@ class TestView(BaseView):
         self._init_ptah()
 
         context = Context()
-        self.assertRaises(
-            HTTPForbidden, self._view, 'index.html', context, self.request)
+
+        resp = self._view('index.html', context, self.request)
+
+        self.assertIsInstance(resp, HTTPForbidden)
 
         allowed = True
         v = self._view('index.html', context, self.request)
         self.assertEqual(v.body, '<html>Secured view</html>')
 
     def test_view_register_secured_view(self):
-        from ptah.view.view import defaultCheckPermission, set_checkpermission
-        set_checkpermission(defaultCheckPermission)
+        from ptah.view.renderers import \
+            default_checkpermission, set_checkpermission
 
         def render(request):
             return '<html>Secured view</html>'
@@ -300,10 +302,11 @@ class TestView(BaseView):
         config.registry.registerUtility(SimpleAuth(), IAuthenticationPolicy)
         config.registry.registerUtility(Authz(), IAuthorizationPolicy)
 
+        set_checkpermission(default_checkpermission)
+
         context = Context()
-        self.assertRaises(
-            HTTPForbidden,
-            self._view, 'index.html', context, self.request)
+        resp = self._view('index.html', context, self.request)
+        self.assertIsInstance(resp, HTTPForbidden)
 
         Authz.allowed = True
         v = self._view('index.html', context, self.request)
@@ -377,7 +380,7 @@ class TestView(BaseView):
         self.assertEqual(v.body, '<html>Route view</html>')
 
 
-class TestSubpathView(BaseView):
+class _TestSubpathView(BaseView):
 
     def test_view_subpath(self):
         class MyView(view.View):
