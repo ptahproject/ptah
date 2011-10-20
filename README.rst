@@ -9,7 +9,30 @@ Ptah is loosely affiliated with the Pyramid, Django, Drupal and Zope/Plone commu
 Install
 -------
 
-You will need git, python 2.7 and a new version of virtualenv.
+You will need git, python 2.7 and a new version of virtualenv.  Before we start
+lets review what the structure will look like after you complete the 
+instructions::
+
+  venv/
+    Include/
+    Lib/
+      site-packages/
+    bin/
+      python
+      pip
+      paster
+    src/
+      ptah/
+        setup.py
+        ptah/
+        docs/
+      myapp/
+        setup.py
+        development.ini
+        myapp/
+          
+
+Why the duplication in nested folders?  It's how Python egg's work.
 
 Lets do the needful::
 
