@@ -16,7 +16,8 @@ class ApplicationRoot(Container):
 
     __root_path__ = '/'
 
-    __type__ = Type('app', 'Application')
+    __type__ = Type('app', 'Application',
+                    description = 'Default ptah application')
 
     def __resource_url__(self, request, info):
         return self.__root_path__
