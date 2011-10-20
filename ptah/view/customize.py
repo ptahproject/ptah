@@ -187,7 +187,7 @@ class iNotifyWatcher(object):
         self.manager = manager
         self.directory = manager.directory
 
-        self._started = False
+        self.started = False
 
         if pyinotify:
             self._wm = pyinotify.WatchManager()
@@ -207,11 +207,11 @@ class iNotifyWatcher(object):
     def start(self):
         if pyinotify:
             self._notifier.start()
-            self._started = True
+            self.started = True
 
     def stop(self):
-        if self._started:
-            self._started = False
+        if self.started:
+            self.started = False
             self._notifier.stop()
 
 

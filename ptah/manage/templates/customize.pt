@@ -6,7 +6,7 @@
   <div class="span3 column">
     <ul>
       <li tal:repeat="pkg view.packages">
-	<a href="?pkg=${pkg}">${pkg}</a>
+	<a href="./?pkg=${pkg}">${pkg}</a>
       </li>
     </ul>
   </div>

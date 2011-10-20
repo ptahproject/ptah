@@ -163,7 +163,7 @@ class TestGlobalCustomizeManagement(BaseLayerTest):
 
         # enable custom folder
         self._init_ptah({'template.custom': self.dir2})
-        self.assertTrue(not customize.TEMPLATE._watcher._started)
+        self.assertTrue(not customize.TEMPLATE._watcher.started)
 
         customize.iNotifyWatcher.start = orig
 
