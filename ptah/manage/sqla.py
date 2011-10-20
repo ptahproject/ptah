@@ -1,6 +1,7 @@
 """ introspect module """
 import urllib
 import sqlahelper as psa
+from sqlalchemy.orm.mapper import _mapper_registry
 from pyramid.decorator import reify
 from pyramid.httpexceptions import HTTPFound
 
@@ -126,6 +127,24 @@ class MainView(view.View):
         self.tables = tables
 
 
+def get_inheritance(table):
+    # inheritance
+    inherits = []
+    mapper = None
+    for m, s in _mapper_registry.items():
+        if m.local_table is table:
+            mapper = m
+
+    curr_mapper = mapper
+    while curr_mapper is not None:
+        curr_mapper = curr_mapper.inherits
+        if curr_mapper is not None:
+            inherits.append(curr_mapper.local_table.name)
+
+    inherits.reverse()
+    return inherits
+
+
 class TableView(form.Form):
     view.pview(
         context = Table,
@@ -142,6 +161,8 @@ class TableView(form.Form):
         self.primary = None
         self.pcolumn = None
         self.uris = []
+        
+        self.inheritance = get_inheritance(table)
 
         names = []
         for cl in table.columns:
@@ -213,7 +234,8 @@ class TableView(form.Form):
 
 
 class EditRecord(form.Form):
-    view.pview(context = Record)
+    view.pview(context = Record,
+               template = view.template('ptah.manage:templates/sqla-edit.pt'))
 
     __doc__ = "Edit table record."
     __intr_path__ = '/ptah-manage/sqla/${table}/${record}/index.html'
@@ -222,12 +244,16 @@ class EditRecord(form.Form):
 
     @reify
     def label(self):
-        return '%s: record %s'%(self.context.table.name, self.context.__name__)
+        return 'record %s'%self.context.__name__
 
     @reify
     def fields(self):
         return ptah.buildSqlaFieldset(
             [(cl.name, cl) for cl in self.context.table.columns])
+
+    def update(self):
+        self.inheritance = get_inheritance(self.context.table)
+        super(EditRecord, self).update()
 
     def form_content(self):
         data = {}
