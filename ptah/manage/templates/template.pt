@@ -1,9 +1,12 @@
+<div class="page-header">
+  <h2>Packages</h2>
+</div>
+
 <div class="row">
   <div class="span3 column">
-    <h2>Packages</h2>
     <ul>
       <li tal:repeat="pkg view.packages">
-	<a href="index.html?pkg=${pkg}">${pkg}</a>
+	<a href="./?pkg=${pkg}">${pkg}</a>
       </li>
     </ul>
   </div>
@@ -14,12 +17,13 @@
 
     <form method="post" action="${request.url}">
       <div class="actions">
-	<a href="index.html?pkg=${view.pkg}" class="btn">Back</a>
+	<a href="./?pkg=${view.pkg}" class="btn">Back</a>
 	<input type="submit" class="btn primary" 
 	       name="customize" value="Customize" />
       </div>
       <input type="hidden" name="pkg" value="${view.pkg}" />
-      <input type="hidden" name="template" value="${view.template}" />
+      <input type="hidden" name="template" value="${view.template}"
+	     tal:condition="view.hasWatcher" />
     </form>
   </div>
 </div>

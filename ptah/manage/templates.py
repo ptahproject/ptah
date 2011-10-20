@@ -13,10 +13,13 @@ class TemplatesModule(manage.PtahModule):
     manage.module('templates')
 
 
-view.register_snippet(
-    'ptah-module-actions', TemplatesModule,
-    template = view.template(
-        'ptah.manage:templates/customize-actions.pt', nolayer = True))
+class ModActions(view.Snippet):
+    view.snippet('ptah-module-actions', TemplatesModule,
+                 template = view.template(
+                     'ptah.manage:templates/customize-actions.pt'))
+
+    def update(self):
+        self.hasWatcher = TEMPLATE._watcher is not None
 
 
 class TemplatesView(view.View):
@@ -70,6 +73,8 @@ class ViewTemplate(view.View):
         reg = tmpl.registry
         request = self.request
 
+        self.hasWatcher = TEMPLATE._watcher is not None
+
         items = tmpl.registry.items()
         items.sort()
         self.packages = [name for name, data in items]
@@ -77,13 +82,13 @@ class ViewTemplate(view.View):
 
         self.pkg = request.params.get('pkg')
         if self.pkg not in reg:
-            raise HTTPFound(location = 'index.html')
+            raise HTTPFound(location = '')
 
         data = reg[self.pkg]
 
         self.template = request.params.get('template')
         if self.template not in data:
-            raise HTTPFound(location = 'index.html')
+            raise HTTPFound(location = '')
 
         if 'customize' in request.POST:
             dir = TEMPLATE.custom
@@ -156,7 +161,7 @@ class CustomTemplate(view.View):
 
         if not dir:
             self.message("There are no any customizations", 'warning')
-            raise HTTPFound(location='index.html')
+            raise HTTPFound(location='')
 
         packages = []
         for name in os.listdir(dir):
