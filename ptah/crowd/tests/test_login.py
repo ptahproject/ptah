@@ -194,6 +194,32 @@ class TestLogin(Base):
         self.assertEqual(res.headers['location'],
                          'http://example.com/login-success.html')
 
+    def test_login_came_from(self):
+        from ptah.crowd import login
+        from ptah.crowd.provider import CrowdUser, Session
+        user = CrowdUser('name', 'login', 'email',
+                         password = '{plain}12345')
+        uri = user.uri
+        Session.add(user)
+        Session.flush()
+        transaction.commit()
+
+        request = DummyRequest(
+            POST={'login': 'login', 'password': '12345'},
+            GET={'came_from': 'http://example.com/ptah-manage/'})
+
+        form = login.LoginForm(None, request)
+        form.update()
+        data, errors = form.extract()
+
+        try:
+            form.handleLogin()
+        except Exception, res:
+            pass
+
+        self.assertEqual(res.headers['location'],
+                         'http://example.com/ptah-manage/')
+
     def test_login_wrong_login(self):
         from ptah.crowd import login
         from ptah.crowd.provider import CrowdUser, Session
