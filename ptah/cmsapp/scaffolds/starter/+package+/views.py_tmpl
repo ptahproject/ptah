@@ -1,5 +1,5 @@
 from ptah import view, form, cms
-from {{package}}.application import ApplicationRoot
+from {{package}}.root import ApplicationRoot
 
 view.static('{{project}}', '{{project}}:static')
 

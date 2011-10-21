@@ -4,20 +4,53 @@ from pyramid.asset import abspath_from_asset_spec
 import ptah
 from ptah.crowd.provider import CrowdUser, Session
 
-from {{package}}.application import APP_FACTORY
-from {{package}}.page import Page
+# Your custom application permissions
 from {{package}}.permissions import Manager
 
+# Your custom application models
+from {{package}}.root import APP_FACTORY
+from {{package}}.page import Page
+from {{package}}.file import File
+from {{package}}.folder import Folder
 
 def main(global_config, **settings):
-    """ This function returns a Pyramid WSGI application.
+    """ This is your application startup.
     """
     config = Configurator(root_factory=APP_FACTORY, settings=settings)
 
     config.include('ptah')
-    config.ptah_init()
+    
+    # config.ptah_init() #people want to see the guts.
+    import transaction
+    import sqlahelper
+    
+    # start ptah_init
+    config.include('pyramid_tm')
 
-    # some more setup
+    settings = config.registry.settings
+
+    # exclude
+    excludes = []
+    if 'ptah.excludes' in settings:
+        excludes.extend(s.strip()
+                        for s in settings['ptah.excludes'].split())
+
+    # load packages
+    ptah.config.initialize(None, excludes, config.registry)
+    
+    # load settings
+    ptah.config.initialize_settings(settings, config)
+
+    # create sql tables
+    Base = sqlahelper.get_base()
+    Base.metadata.create_all()
+
+    # send AppStarting event
+    ptah.config.start(config)
+    
+    # end ptah_init
+     
+    # your application configuration
     root = APP_FACTORY()
 
     # admin user

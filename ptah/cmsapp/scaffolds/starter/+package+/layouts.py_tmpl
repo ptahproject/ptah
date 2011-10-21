@@ -1,12 +1,14 @@
 import ptah, ptah.cmsapp
 from ptah import view, cms, manage, authService
 
+from {{package}}.root import ApplicationRoot
+
 view.register_layout(
-    'ptah-page', cms.ApplicationRoot, parent='workspace', layer='{{package}}',
+    'ptah-page', ApplicationRoot, parent='workspace', layer='{{package}}',
     template = view.template("{{package}}:templates/layout-ptahpage.pt"))
 
 class PageLayout(view.Layout):
-    view.layout('page', ptah.cms.ApplicationRoot, layer='{{package}}',
+    view.layout('page', ApplicationRoot, layer='{{package}}',
                 template = view.template('templates/layout-page.pt'))
 
     """ override 'page' layout from ptah.cmsapp
@@ -30,7 +32,7 @@ class PageLayout(view.Layout):
 
 
 class WorkspaceLayout(view.Layout):
-    view.layout('workspace', ptah.cms.ApplicationRoot,
+    view.layout('workspace', ApplicationRoot,
                 parent = 'page', layer='{{package}}',
                 template = view.template('templates/layout-workspace.pt'))
 

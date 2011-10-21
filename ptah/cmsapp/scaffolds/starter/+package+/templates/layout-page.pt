@@ -9,10 +9,7 @@
     </head>
 
     <body>
-      <!--
-	This is rendered content that is beeing passed to 
-	layout.render method
-      </-->
+      <!-- Rendered content that is beeing passed to layout.render method -->
       ${content}
     </body>
 </html>
