@@ -201,47 +201,47 @@ conflicting with Ptah.
 Node
 ~~~~
 
-  :py:class:`ptah.cms.node.Node` is the primary table.  Columns for the
-  ``ptah_cms_nodes`` table: 
-    
-  id
-     Primary key which is an internal implementation detail for SQLAlchemy.
+:py:class:`ptah.cms.node.Node` is the primary table.  Columns for the
+``ptah_cms_nodes`` table: 
+  
+id
+   Primary key which is an internal implementation detail for SQLAlchemy.
 
-     SQLAlchemy Entity property: ``__id__``
-     Database column name: ``id``
-       
-  uri
-     A required unique string which is used throughout the system to refer to 
-     the record.  A common pattern is to use URI to reference models instead of
-     their primary key.  An example, blob+sql:9f4b24205c704dbc99a24abdd2f55350
+   SQLAlchemy Entity property: ``__id__``
+   Database column name: ``id``
      
-     SQLAlchemy Entity property: ``__uuid__``
-     
-     Database column name: ``ptah_cms_nodes.uri`` (VARCHAR)
+uri
+   A required unique string which is used throughout the system to refer to 
+   the record.  A common pattern is to use URI to reference models instead of
+   their primary key.  An example, blob+sql:9f4b24205c704dbc99a24abdd2f55350
+   
+   SQLAlchemy Entity property: ``__uuid__``
+   
+   Database column name: ``ptah_cms_nodes.uri`` (VARCHAR)
 
-  type
-     This is the application-level "type" information which provides a
-     indirection for model re-use. A News Item is a Page with a different
-     :py:class:`ptah.cms.tinfo.TypeInformation`.
+type
+   This is the application-level "type" information which provides a
+   indirection for model re-use. A News Item is a Page with a different
+   :py:class:`ptah.cms.tinfo.TypeInformation`.
 
-  parent
-     A UUID of the parent.  The only time this will be null is in the
-     ApplicationRoot in /.  For instance, a Page's parent attribute will be
-     its container's UUID.
+parent
+   A UUID of the parent.  The only time this will be null is in the
+   ApplicationRoot in /.  For instance, a Page's parent attribute will be
+   its container's UUID.
 
-  owner
-     Owner is the URI of a Principal URI.
-     This field gets set by the subscriber for :py:class:`ptah.cms.events.ContentCreatedEvent`
-     An example, user+crowd:301067f19db649098d51659a8b8aa572
-     
-  roles
-     A :py:class:`ptah.utils.JSONType` which will contain which roles have custom permissions.
-     A node with the following data would give Principal the manager role::
-     
-       {u'user+crowd:301067f19db649098d51659a8b8aa572': [u'role:manager']} 
-     
-  acls
-     A :py:class:`ptah.utils.JSONType` which will contain a sequence of named ACL maps.
+owner
+   Owner is the URI of a Principal URI.
+   This field gets set by the subscriber for :py:class:`ptah.cms.events.ContentCreatedEvent`
+   An example, user+crowd:301067f19db649098d51659a8b8aa572
+   
+roles
+   A :py:class:`ptah.utils.JSONType` which will contain which roles have custom permissions.
+   A node with the following data would give Principal the manager role::
+   
+     {u'user+crowd:301067f19db649098d51659a8b8aa572': [u'role:manager']} 
+   
+acls
+   A :py:class:`ptah.utils.JSONType` which will contain a sequence of named ACL maps.
 
 Content
 ~~~~~~~
