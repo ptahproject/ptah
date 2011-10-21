@@ -58,15 +58,6 @@ class ILayout(interface.Interface):
         """ build layout tree and render """
 
 
-class IRenderer(interface.Interface):
-    """ renderer """
-
-    content_type = interface.Attribute('Renderer content_type')
-
-    def __call__(result):
-        """ render result """
-
-
 # status message
 class IMessage(interface.Interface):
     """ message """

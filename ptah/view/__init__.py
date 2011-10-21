@@ -1,9 +1,5 @@
 # ptah.view public API
 
-# interfaces
-from ptah.view.interfaces import ILayout
-from ptah.view.interfaces import IRenderer
-
 # path/template
 from ptah.view.tmpl import path, template
 
@@ -21,20 +17,14 @@ from ptah.view.route import register_route
 
 # layout
 from ptah.view.layout import Layout
+from ptah.view.layout import ILayout
 from ptah.view.layout import query_layout
 from ptah.view.layout import register_layout
 
 # view
-from ptah.view.view import chained
-from ptah.view.view import subpath
 from ptah.view.view import render_view
 from ptah.view.view import register_view
 from ptah.view.renderers import set_checkpermission
-
-# renderers
-#from ptah.view.renderers import Renderer
-#from ptah.view.renderers import SimpleRenderer
-from ptah.view.renderers import json #, JSONRenderer
 
 # layer
 from ptah.view.customize import layer

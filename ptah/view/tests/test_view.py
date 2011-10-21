@@ -139,6 +139,21 @@ class TestView(BaseView):
         self.assertEqual(res.status, '202 Accepted')
         self.assertEqual(res.body, 'test')
 
+    def test_view_custom_return_response(self):
+        class MyView(view.View):
+            def render(self):
+                response = self.request.response
+                response.status = '202'
+                response.body = 'test response'
+                return response
+
+        view.register_view('index.html', MyView, Context)
+        self._init_ptah()
+
+        res = view.render_view('index.html', Context(), self.request)
+        self.assertEqual(res.status, '202 Accepted')
+        self.assertEqual(res.body, 'test response')
+
     def test_view_httpresp_from_update(self):
         class MyView(view.View):
             def update(self):
@@ -283,6 +298,14 @@ class TestView(BaseView):
         view.register_view('index.html', render,
                           permission = 'Protected')
 
+        self._init_ptah()
+
+        set_checkpermission(default_checkpermission)
+
+        context = Context()
+        v = self._view('index.html', context, self.request)
+        self.assertEqual(v.body, '<html>Secured view</html>')
+
         class SimpleAuth(object):
             interface.implements(IAuthenticationPolicy)
 
@@ -296,8 +319,6 @@ class TestView(BaseView):
 
             def permits(self, context, princials, permission):
                 return self.allowed
-
-        self._init_ptah()
 
         config.registry.registerUtility(SimpleAuth(), IAuthenticationPolicy)
         config.registry.registerUtility(Authz(), IAuthorizationPolicy)
@@ -378,127 +399,6 @@ class TestView(BaseView):
 
         v = self._view('', None, self.request)
         self.assertEqual(v.body, '<html>Route view</html>')
-
-
-class _TestSubpathView(BaseView):
-
-    def test_view_subpath(self):
-        class MyView(view.View):
-            @view.subpath
-            def validate(self):
-                return 'Validate method'
-
-            def render(self):
-                return 'Render method'
-
-        view.register_view('index.html', MyView, Context)
-        self._init_ptah()
-
-        v = self._view('index.html', Context(), self.request)
-        self.assertEqual(v.body, 'Render method')
-
-        self.request.subpath = ('validate',)
-        v = self._view('index.html', Context(), self.request)
-        self.assertTrue(isinstance(v, str))
-        self.assertEqual(v, 'Validate method')
-
-    def test_view_subpath_call(self):
-        class MyView(view.View):
-            @view.subpath()
-            def validate(self):
-                return 'Validate method'
-
-            def render(self):
-                return 'Render method'
-
-        view.register_view('index.html', MyView, Context)
-        self._init_ptah()
-
-        v = self._view('index.html', Context(), self.request)
-        self.assertEqual(v.body, 'Render method')
-
-        self.request.subpath = ('validate',)
-        v = self._view('index.html', Context(), self.request)
-        self.assertTrue(isinstance(v, str))
-        self.assertEqual(v, 'Validate method')
-
-    def test_view_subpath_json_renderer(self):
-        class MyView(view.View):
-            @view.subpath(renderer=view.json)
-            def validate(self):
-                return {'text': 'Validate method'}
-
-        view.register_view('index.html', MyView, Context)
-        self._init_ptah()
-
-        self.request.subpath = ('validate',)
-        v = self._view('index.html', Context(), self.request)
-        self.assertTrue(isinstance(v, Response))
-        self.assertEqual(v.body, '{"text": "Validate method"}')
-
-    def test_view_subpath_custom_name(self):
-        class MyView(view.View):
-            @view.subpath(name='test')
-            def validate(self):
-                return 'Validate method'
-
-            def render(self):
-                return 'Render method'
-
-        view.register_view('index.html', MyView, Context)
-        self._init_ptah()
-
-        self.request.subpath = ('validate',)
-        v = self._view('index.html', Context(), self.request)
-        self.assertTrue(isinstance(v, Response))
-        self.assertEqual(v.body, 'Render method')
-
-        self.request.subpath = ('test',)
-        v = self._view('index.html', Context(), self.request)
-        self.assertTrue(isinstance(v, str))
-        self.assertEqual(v, 'Validate method')
-
-    def test_view_subpath_class_requestonly(self):
-        class MyView(object):
-            def __init__(self, request):
-                self.request = request
-
-            @view.subpath()
-            def validate(self):
-                return 'Validate method: %s'%(self.request is not None)
-
-            def render(self):
-                return 'Render method'
-
-        view.register_view('index.html', MyView, Context)
-        self._init_ptah()
-
-        v = self._view('index.html', Context(), self.request)
-        self.assertEqual(v.body, 'Render method')
-
-        self.request.subpath = ('validate',)
-        v = self._view('index.html', Context(), self.request)
-        self.assertTrue(isinstance(v, str))
-        self.assertEqual(v, 'Validate method: True')
-
-    def test_view_subpath_with_template(self):
-        class MyView(view.View):
-            @view.subpath(renderer=Renderer(view.template('templates/test.pt')))
-            def validate(self):
-                return {}
-
-        view.register_view('index.html', MyView, Context)
-        self._init_ptah()
-
-        self.request.subpath = ('validate',)
-        v = self._view('index.html', Context(), self.request)
-        self.assertEqual(v.body.strip(), '<div>My snippet</div>')
-
-    def test_view_subpath_err(self):
-        sp = view.subpath()
-        self.assertRaises(
-            ValueError,
-            sp, self.test_view_subpath_err, sys._getframe(1))
 
 
 class TestRouteRegistration(BaseView):

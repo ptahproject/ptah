@@ -5,8 +5,7 @@ from pyramid.interfaces import IRouteRequest
 from pyramid.httpexceptions import HTTPNotFound
 
 from ptah import config, view
-from ptah.view.layout import Layout, query_layout
-from ptah.view.renderers import LayoutRenderer
+from ptah.view.layout import Layout, LayoutRenderer, query_layout, layout_chain
 
 from base import Base
 
@@ -70,7 +69,7 @@ class TestLayout(Base):
         v = View(Context(), self.request)
 
         # find layout for view
-        layout = query_layout(self.request, v.context, 'test')
+        layout = query_layout(v.context, self.request, 'test')
         self.assertTrue(isinstance(layout, Layout))
 
         layout.update()
@@ -92,7 +91,7 @@ class TestLayout(Base):
 
         v = View(Context(), self.request)
 
-        layout = query_layout(self.request, v.context, 'test')
+        layout = query_layout(v.context, self.request, 'test')
         self.assertTrue(isinstance(layout, Layout))
 
         layout.update()
@@ -101,7 +100,7 @@ class TestLayout(Base):
 
     def test_layout_simple_notfound(self):
         v = view.View(Context(Context()), self.request)
-        layout = query_layout(self.request, v.context, 'test')
+        layout = query_layout(v.context, self.request, 'test')
         self.assertTrue(layout is None)
 
     def test_layout_simple_context(self):
@@ -119,7 +118,7 @@ class TestLayout(Base):
         v = View(Context(), self.request)
 
         # find layout for view
-        layout = query_layout(self.request, v.context, 'test')
+        layout = query_layout(v.context, self.request, 'test')
         self.assertTrue(isinstance(layout, Layout))
 
         layout.update()
@@ -137,7 +136,7 @@ class TestLayout(Base):
         context = Context(root)
 
         # find layout for view
-        layout = query_layout(self.request, context, '')
+        layout = query_layout(context, self.request, '')
         self.assertTrue(isinstance(layout, Layout))
 
         renderer = LayoutRenderer('')
@@ -201,13 +200,13 @@ class TestLayout(Base):
 
         self.assertTrue('<html><div>View: test</div></html>' in res)
 
-        layout = query_layout(self.request, context, 'test')
+        layout = query_layout(context, self.request, 'test')
         self.assertTrue(isinstance(layout, LayoutTest))
 
-        rootlayout = query_layout(self.request, context, '')
+        rootlayout = query_layout(context, self.request, '')
         self.assertTrue(isinstance(rootlayout, LayoutPage))
 
-        rootlayout = query_layout(self.request, root, '')
+        rootlayout = query_layout(root, self.request, '')
         self.assertTrue(isinstance(rootlayout, LayoutPage))
 
     def test_layout_chain_same_layer_id_on_different_levels(self):
@@ -258,7 +257,7 @@ class TestLayout(Base):
 
         v = View(Context(), self.request)
 
-        layout = query_layout(self.request, v.context, 'test')
+        layout = query_layout(v.context, self.request, 'test')
         layout.update()
         self.assertTrue('test' == layout.render(v.render()))
 
@@ -267,15 +266,62 @@ class TestLayout(Base):
         view.register_layout('test', route = 'test-route')
         self._init_ptah()
 
-        layout = query_layout(self.request, Context(), 'test')
+        layout = query_layout(Context(), self.request, 'test')
         self.assertIsNone(layout)
 
         request_iface = config.registry.getUtility(
             IRouteRequest, name='test-route')
         interface.directlyProvides(self.request, request_iface)
 
-        layout = query_layout(self.request, Context(), 'test')
+        layout = query_layout(Context(), self.request, 'test')
         self.assertIsNotNone(layout)
+
+    def test_layout_chain_multi_level(self):
+        class Layout1(view.Layout):
+            """ """
+        class Layout2(view.Layout):
+            """ """
+        class Layout3(view.Layout):
+            """ """
+
+        class Context1(object):
+            """ """
+        class Context2(object):
+            """ """
+        class Context3(object):
+            """ """
+
+        view.register_layout('l1', klass=Layout1, context=Context1)
+        view.register_layout('l1', klass=Layout2, context=Context2, parent='l1')
+        view.register_layout('l3', klass=Layout3, context=Context3, parent='l1')
+        self._init_ptah()
+
+        root = Root()
+        context1 = Context1()
+        context2 = Context2()
+        context3 = Context3()
+
+        context1.__parent__ = root
+        context2.__parent__ = context1
+        context3.__parent__ = context2
+
+        chain = layout_chain(context1, self.request, 'l1')
+
+        self.assertEqual(len(chain), 1)
+        self.assertIsInstance(chain[0], Layout1)
+        
+        chain = layout_chain(context2, self.request, 'l1')
+
+        self.assertEqual(len(chain), 2)
+        self.assertIsInstance(chain[0], Layout2)
+        self.assertIsInstance(chain[1], Layout1)
+
+        chain = layout_chain(context3, self.request, 'l3')
+
+        self.assertEqual(len(chain), 3)
+        self.assertIsInstance(chain[0], Layout3)
+        self.assertIsInstance(chain[1], Layout2)
+        self.assertIsInstance(chain[2], Layout1)
 
 
 class Context(object):

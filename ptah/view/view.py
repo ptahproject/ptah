@@ -16,8 +16,9 @@ from pyramid.interfaces import IExceptionViewClassifier
 from ptah import config
 from ptah.view.base import View
 from ptah.view.customize import LayerWrapper
+from ptah.view.layout import LayoutRenderer
 from ptah.view.renderers import \
-    PermissionRenderer, ViewRenderer, TemplateRenderer, LayoutRenderer
+     PermissionRenderer, ViewRenderer, TemplateRenderer
 
 
 def render_view(name, context, request):
@@ -41,11 +42,10 @@ class PyramidView(object):
         try:
             for renderer in self.renderers:
                 content = renderer(context, request, content)
+                if isinstance(content, Response):
+                    return content
         except WSGIHTTPException, resp:
             return resp
-
-        if isinstance(content, Response):
-            return content
 
         response = request.response
         if type(content) is unicode:
@@ -54,73 +54,6 @@ class PyramidView(object):
             response.body = content
 
         return response
-
-
-chained = object()
-
-def subpath_wrapper(factory, renderer, subpaths):
-
-    def wrapper(context, request, content):
-        if request.subpath:
-            item = request.subpath[0]
-            if item in subpaths:
-                render, meth = subpaths[item]
-
-                def viewFactory(context, request):
-                    view = factory(context, request)
-                    return view, meth(view)
-
-                request.subpath = tuple(request.subpath[1:])
-                result = render(context, request, viewFactory)
-                if result is not chained:
-                    return result
-
-        return renderer(context, request, content)
-
-    return wrapper
-
-
-class subpath(object):
-
-    def __init__(self, meth=None, name='', renderer=None):
-        self.name = name
-        self.renderer = renderer
-        if meth is not None:
-            frame = sys._getframe(1)
-            try:
-                self(meth, frame)
-                frame.f_locals[meth.__name__] = meth
-            finally:
-                del frame
-
-    def __call__(self, method, frame=None):
-        if frame is None:
-            frame = sys._getframe(1)
-
-        if '__module__' not in frame.f_locals:
-            del frame
-            raise ValueError(
-                "Can apply 'subpath' decorator only to class methods")
-
-        subpaths = frame.f_locals.get('__subpath_traverse__', None)
-        if subpaths is None:
-            subpaths = {}
-            frame.f_locals['__subpath_traverse__'] = subpaths
-        del frame
-
-        renderer = self.renderer
-        if renderer:
-            render = renderer
-        else:
-            def render(context, request, content):
-                return factory(context, request, content)
-
-        if self.name:
-            subpaths[self.name] = render, method
-        else:
-            subpaths[method.__name__] = render, method
-
-        return method
 
 
 unset = object()
@@ -156,13 +89,8 @@ def register_view_impl(config, factory, name, context, template, route_name,
         render = ViewRenderer(viewMapper(factory, 'render'))
     else:
         render = TemplateRenderer(viewMapper(factory, 'update'), template)
+    factory.__view_renderer__ = render
 
-    # add 'subpath' support
-    if inspect.isclass(factory):
-        subpath_traverse = getattr(factory, '__subpath_traverse__', None)
-        if subpath_traverse is not None:
-            render = subpath_wrapper(
-                viewInstanceMapper(factory), render, subpath_traverse)
     chain.append(render)
 
     # layout
@@ -189,8 +117,11 @@ def register_view_impl(config, factory, name, context, template, route_name,
     if route_name is not None:
         request_iface = sm.getUtility(IRouteRequest, name=route_name)
 
+    pview = PyramidView(chain)
+    factory.__renderer__ = pview
+
     sm.registerAdapter(
-        PyramidView(chain),
+        pview,
         (view_classifier, request_iface, context or interface.Interface),
         IView, name)
 
@@ -230,15 +161,3 @@ def viewMapper(view, attr=None):
             def _view(context, request):
                 return None, view(context, request)
             return _view
-
-
-def viewInstanceMapper(view):
-    ronly = requestonly(view)
-    if ronly:
-        def _class_requestonly_view(context, request):
-            return view(request)
-        return _class_requestonly_view
-    else:
-        def _class_view(context, request):
-            return view(context, request)
-        return _class_view

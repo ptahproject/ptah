@@ -1,12 +1,11 @@
 """ renderers """
-import simplejson
 from pyramid.response import Response
 from pyramid.httpexceptions import HTTPForbidden
 from pyramid.interfaces import IAuthorizationPolicy
 from pyramid.interfaces import IAuthenticationPolicy
 
 from ptah import config
-from ptah.view.layout import query_layout
+from ptah.view.layout import query_layout, layout_chain
 
 
 checkPermission = None
@@ -83,38 +82,3 @@ class TemplateRenderer(ViewRenderer):
 
         request.response.content_type = self.content_type
         return self.template(**kwargs)
-
-
-class LayoutRenderer(object):
-
-    def __init__(self, layout):
-        self.layout = layout
-
-    def __call__(self, context, request, content):
-        layout = query_layout(request, context, self.layout)
-        if layout is not None:
-            content = layout(content)
-
-        return content
-
-
-class JSONRenderer(object):
-
-    content_type = 'text/json'
-
-    def __init__(self, content_type='text/json'):
-        self.content_type = content_type
-
-    def __call__(self, context, request, factory=None, dumps=simplejson.dumps):
-        if not factory:
-            factory = self.factory
-
-        view, result = factory(context, request)
-
-        response = request.response
-        response.content_type = self.content_type
-        response.body = dumps(result)
-        return response
-
-
-json = JSONRenderer()

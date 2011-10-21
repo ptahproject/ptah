@@ -208,10 +208,9 @@ class DirectiveInfo(object):
             data = OrderedDict()
             setattr(self.module, ATTACH_ATTR, data)
 
-        if action.hash == data:
+        if action.hash in data:
             raise TypeError(
-                "Directive registered twice: %s"%action.discriminator)
-
+                "Directive registered twice: %s"%(action.discriminator,))
         data[action.hash] = action
 
 

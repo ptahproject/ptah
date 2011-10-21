@@ -116,7 +116,7 @@ class PtahManageRoute(object):
 
 view.register_route(
     'ptah-manage-view','/ptah-manage',
-    PtahManageRoute)
+    PtahManageRoute, use_global_views=True)
 
 view.register_route(
     'ptah-manage','/ptah-manage/*traverse',
@@ -140,7 +140,7 @@ class LayoutManage(view.Layout):
     def update(self):
         self.user = authService.get_current_principal()
 
-        mod = self.viewcontext
+        mod = self.request.context
         while not isinstance(mod, PtahModule):
             mod = getattr(mod, '__parent__', None)
             if mod is None: # pragma: no cover
@@ -153,7 +153,6 @@ class ManageView(view.View):
     """List ptah modules"""
     view.pview(
         context = PtahManageRoute,
-        route = 'ptah-manage', layout='ptah-manage',
         template = view.template('ptah.manage:templates/manage.pt'))
 
     __intr_path__ = '/ptah-manage/'

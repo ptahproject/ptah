@@ -1,30 +1,68 @@
 """ layout implementation """
-import sys, logging
+import sys
 from zope import interface
+from pyramid.location import lineage
 from pyramid.interfaces import IRequest, IRouteRequest
 
 from ptah import config
 from ptah.view.base import View
-from ptah.view.formatter import format
 from ptah.view.interfaces import ILayout
 from ptah.view.customize import LayerWrapper
 
-log = logging.getLogger('ptah.view')
 
-
-def query_layout(request, context, name=''):
+def query_layout(context, request, name=''):
     """ query named layout for context """
     assert IRequest.providedBy(request), u"must pass in a request object"
 
-    while context is not None:
+    for context in lineage(context):
         layout = config.registry.queryMultiAdapter(
             (context, request), ILayout, name)
         if layout is not None:
             return layout
 
-        context = getattr(context, '__parent__', None)
-
     return None
+
+
+def layout_chain(context, request, layoutname=''):
+    chain = []
+    
+    layout = query_layout(context, request, layoutname)
+    if layout is None:
+        return chain
+
+    chain.append(layout)
+    contexts = {layoutname: layout.context}
+
+    while layout is not None:
+        if layout.layout in contexts:
+            l_context = contexts[layout.layout].__parent__
+        else:
+            l_context = context
+
+        layout = query_layout(l_context, request, layout.layout)
+        if layout is not None:
+            chain.append(layout)
+            contexts[layout.name] = layout.context
+
+            if layout.layout is None:
+                break
+
+    return chain
+
+
+class LayoutRenderer(object):
+
+    def __init__(self, layout):
+        self.layout = layout
+
+    def __call__(self, context, request, content):
+        chain = layout_chain(context, request, self.layout)
+
+        for layout in chain:
+            layout.update()
+            content = layout.render(content)
+            
+        return content
 
 
 class Layout(View):
@@ -32,8 +70,6 @@ class Layout(View):
 
     name = ''
     template = None
-    view = None
-    viewcontext = None
 
     @property
     def __name__(self):
@@ -46,42 +82,9 @@ class Layout(View):
         kwargs.update({'view': self,
                        'content': content,
                        'context': self.context,
-                       'request': self.request,
-                       'format': format})
+                       'request': self.request})
 
         return self.template(**kwargs)
-
-    def __call__(self, content, layout=None, view=None):
-        if view is not None:
-            self.view = view
-            self.viewcontext = getattr(view, 'context', self.context)
-        if layout is not None:
-            self.view = layout.view or self.view
-            self.viewcontext = layout.viewcontext or self.viewcontext
-
-        result = self.render(content, **(self.update() or {}))
-        if self.layout is None:
-            return result
-
-        parent = getattr(view, '__parent__', self.context)
-
-        if self.name != self.layout:
-            layout = query_layout(self.request, parent, self.layout)
-            if layout is not None:
-                return layout(result, layout=self, view=view)
-        else:
-            if layout is not None: # pragma: no cover
-                context = layout.context
-            else:
-                context = self.context
-            parent = getattr(context, '__parent__', None)
-            if parent is not None:
-                layout = query_layout(self.request, parent, self.layout)
-                if layout is not None:
-                    return layout(result, view=view)
-
-        log.warning("Can't find parent layout: '%s'"%self.layout)
-        return self.render(result)
 
 
 def register_layout(

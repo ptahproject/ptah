@@ -128,6 +128,7 @@ class TestManageModule(Base):
         mod = TestModule(None, request)
         content = Content()
         content.__parent__ = mod
+        request.context = content
 
         layout = LayoutManage(mod, request)
         layout.viewcontext = content

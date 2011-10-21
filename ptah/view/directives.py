@@ -52,7 +52,7 @@ def pview(name=u'', context=None, route=None,
             )
 
 
-def layout(name='',context=None,parent='',route=None,template=None,layer=''):
+def layout(name='', context=None, parent='', route=None,template=None,layer=''):
     info = config.DirectiveInfo(allowed_scope=('class',))
 
     discriminator = ('ptah.view:layout', name, context, route, layer)

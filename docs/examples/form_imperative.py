@@ -64,8 +64,8 @@ def form_view(context, request):
     res = myform.render()
 
     # optional, render form in layout
-    layout = view.query_layout(request, context)
-    return layout(res)
+    layout = view.LayoutRenderer('')
+    return layout(context, request, res)
 
 
 if __name__ == '__main__':

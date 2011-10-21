@@ -381,3 +381,17 @@ class TestExtraDirective(BaseTesting):
 
         packages = api.loadPackage('ptah.config', seen)
         self.assertEqual(packages, [])
+
+    def test_action(self):
+        info = config.DirectiveInfo()
+
+        action = config.Action(
+            None, discriminator = ('test',))
+
+        self.assertIsNone(action.hash)
+
+        info.attach(action)
+
+        self.assertIsNotNone(action.hash)
+        self.assertIsNotNone(hash(action))
+        self.assertRaises(TypeError, info.attach, action)

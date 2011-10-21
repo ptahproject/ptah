@@ -2,7 +2,7 @@ import transaction
 import ptah
 from ptah import config, crowd
 from pyramid.testing import DummyRequest
-from pyramid.httpexceptions import HTTPFound
+from pyramid.httpexceptions import HTTPException, HTTPFound
 
 from base import Base
 
@@ -29,7 +29,10 @@ class TestSuspended(Base):
         request = DummyRequest()
         ptah.authService.set_userid(uri)
 
-        res = login.LoginSuspended.__renderer__(None, request)
+        try:
+            login.LoginSuspended.__view_renderer__(None, request, '')
+        except Exception, res:
+            pass
         self.assertIsInstance(res, HTTPFound)
 
     def test_suspended(self):
@@ -48,7 +51,7 @@ class TestSuspended(Base):
         ptah.authService.set_userid(user.uri)
 
         request = DummyRequest()
-        res = login.LoginSuspended.__renderer__(None, request).body
+        res = login.LoginSuspended.__view_renderer__(None, request, '')
 
         self.assertIn('Your account is suspended', res)
 
@@ -89,8 +92,10 @@ class TestLogoutSuccess(Base):
         from ptah.crowd import login
 
         request = DummyRequest()
-
-        res = login.LoginSuccess.__renderer__(None, request)
+        try:
+            login.LoginSuccess.__view_renderer__(None, request, '')
+        except HTTPFound, res:
+            pass
 
         self.assertEqual(
             res.headers['location'], 'http://example.com/login.html')
@@ -108,7 +113,7 @@ class TestLogoutSuccess(Base):
         request = DummyRequest()
         ptah.authService.set_userid(uri)
 
-        res = login.LoginSuccess.__renderer__(None, request).body
+        res = login.LoginSuccess.__view_renderer__(None, request, '')
         self.assertIn('You are now logged in', res)
 
 
@@ -120,11 +125,14 @@ class TestLogin(Base):
         request = DummyRequest()
 
         ptah.authService.set_userid('test')
-        res = login.LoginForm.__renderer__(None, request)
+        try:
+            login.LoginForm.__view_renderer__(None, request, None)
+        except HTTPException, res:
+            pass
+        
         self.assertEqual(res.status, '302 Found')
-        self.assertEqual(
-            res.headers['location'],
-            'http://example.com/login-success.html')
+        self.assertEqual(res.headers['location'],
+                         'http://example.com/login-success.html')
 
     def test_login_update(self):
         from ptah.crowd import login
@@ -139,7 +147,7 @@ class TestLogin(Base):
         self.assertFalse(form.join)
         self.assertEqual(form.joinurl, 'http://test/login.html')
 
-        res = login.LoginForm.__renderer__(None, request).body
+        res = login.LoginForm.__view_renderer__(None, request, '')
         self.assertNotIn('head over to the registration form', res)
 
     def test_login_update_join(self):
@@ -155,7 +163,7 @@ class TestLogin(Base):
         self.assertTrue(form.join)
         self.assertEqual(form.joinurl, 'http://example.com/join.html')
 
-        res = login.LoginForm.__renderer__(None, request).body
+        res = login.LoginForm.__view_renderer__(None, request, '')
         self.assertIn('head over to the registration form', res)
 
     def test_login(self):
