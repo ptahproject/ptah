@@ -303,11 +303,18 @@ If you want to add dojo, on myapp.layouts.PageLayout add render_includes::
 
 Formatters
 ----------
-Convienance functions which provide helpers to display information.  The registered formatters are callable.  They are located in ptah.view.format. An example of this would be for localization, in your settings.ini file you can specify the date format to be displayed.  So if you use the view.format.date_short(datetime.date(2011, 12,12)) the resulting format will be based on the localization settings file.
 
-The goal is to have consistent format for values across a variety of applications, e.g. datetime, timezone, currency.
+Convienance functions which provide helpers to display information.  The 
+registered formatters are callable.  They are located in ptah.view.format. 
+An example of this would be for localization, in your settings.ini file 
+you can specify the date format to be displayed.  So if you use the 
+view.format.date_short(datetime.date(2011, 12,12)) the resulting format 
+will be based on the localization settings file.
+
+The goal is to have consistent format for values across a variety of 
+applications, e.g. datetime, timezone, currency.
 
 Messages
 --------
-This is a reimplementation of pyramid flashmessages.  This could probably be removed.
+This is a reimplementation of pyramid flashmessages.  This will move.
 

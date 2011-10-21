@@ -99,7 +99,7 @@ generate Actions (same as ptah).
 
 Currently ptah differs in Pyramid in the following ways.
 
-  - Memphis configuration has different information during configuration
+  - ptah.config has different information during configuration
   
     - config statements have context (module, line, etc)
     

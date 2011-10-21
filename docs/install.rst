@@ -2,32 +2,26 @@
 Installing Ptah
 ===============
 
-Currently Ptah is quite rough around the edges.  We will soon explain how
-to use virtualenv until then.  We will use buildout.
+Currently Ptah is quite rough around the edges.  virtualenv is the prefered
+mode of installation at this time.
 
 Requirements
 ------------
 
-Currently we are aiming for Python 3 so please use the latest Python 2.7
-available which is currently Python 2.7.2.
-
-  * Python 2.7.2
+  * Python 2.7
+  
   * git
 
 virtualenv & pip
 ~~~~~~~~~~~~~~~~
 
-This is recommended for the public.
-
-See the documentation at::
-
-  https://github.com/ptahproject/ptah/blob/master/docs/virtualenv.rst
-
+This is recommended for the public.  Read more,  
+`installing with virtualenv <https://github.com/ptahproject/ptah/blob/master/docs/virtualenv.rst>`_
 
 buildout
 ~~~~~~~~
 
-This is not recommended for public.
+This is not recommended for public.  Skip to next section.
 
 Grab buildout::
 
@@ -66,7 +60,7 @@ Management UI
 In your browser (after logging in)::
 
   Goto URL, http://localhost:8080/ptah-manage
-  THe `ptah management` UI provide introspection services.  The goal
+  The `ptah management` UI provide introspection services.  The goal
   is to have a WEB interface for your installation.  We hope for you
   to be able to see latest module updates and do some other fancy
   stuff.  You can think of `ptah-manage` as the unfriendly nerd console.
