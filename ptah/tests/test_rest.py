@@ -20,9 +20,11 @@ class TestRestRegistrations(Base):
         srv = ptah.rest.restService('test', 'Test service')
         self._init_ptah()
 
+        services = config.registry.storage[ptah.rest.REST_ID]
+
         self.assertEqual(srv.name, 'test')
-        self.assertIn('test', ptah.rest.services)
-        self.assertIn(srv, ptah.rest.services.values())
+        self.assertIn('test', services)
+        self.assertIn(srv, services.values())
 
     def test_rest_registerService_conflicts(self):
         import ptah.rest
@@ -56,7 +58,9 @@ class TestRestRegistrations(Base):
         import ptah.rest
 
         ptah.rest.restService('test', 'Test service')
-        srv = ptah.rest.services['test']
+        self._init_ptah()
+        
+        srv = config.registry.storage[ptah.rest.REST_ID]['test']
 
         @srv.action('action', 'Action')
         def raction(request, *args):
@@ -120,3 +124,128 @@ class TestRestView(Base):
         self.assertEqual(request.response.status, '200 OK')
 
         del authentication.providers['test']
+
+    def test_rest_api_auth(self):
+        from ptah.rest import Api, Login
+        from ptah import authentication
+        self._init_ptah()
+
+        authentication.providers['test'] = Provider()
+        request = DummyRequest(params = {'login': 'admin', 'password': '12345'})
+
+        login = Login(request)
+        info = simplejson.loads(login.render())
+
+        request = DummyRequest(environ = {'HTTP_X_AUTH_TOKEN': 'unknown'})
+        request.matchdict = {'service': 'cms', 'subpath': ()}
+
+        api = Api(request)
+        api.render()
+        self.assertEqual(ptah.authService.get_userid(), None)
+
+        token = info['auth-token']
+
+        request = DummyRequest(environ = {'HTTP_X_AUTH_TOKEN': token})
+        request.matchdict = {'service': 'cms', 'subpath': ()}
+
+        api = Api(request)
+        api.render()
+        self.assertEqual(ptah.authService.get_userid(), 'testprincipal:1')
+
+
+class TestRestApi(Base):
+
+    def tearDown(self):
+        config.cleanup_system(self.__class__.__module__)
+        super(TestRestApi, self).tearDown()
+
+    def test_rest_unknown_service(self):
+        from ptah.rest import Api
+        self._init_ptah()
+
+        request = DummyRequest()
+        request.matchdict = {'service': 'test', 'subpath': ()}
+
+        api = Api(request)
+        res = simplejson.loads(api.render())
+        self.assertEqual(res['message'], "'test'")
+        self.assertIn("KeyError: 'test'", res['traceback'])
+
+    def test_rest_arguments(self):
+        from ptah.rest import Api, REST_ID
+        self._init_ptah()
+
+        services = config.registry.storage[REST_ID]
+
+        data = []
+        def service(request, action, *args):
+            data[:] = [action, args]
+
+        services['test'] = service
+
+        request = DummyRequest()
+        request.matchdict = {'service': 'test',
+                             'subpath': ('action:test','1','2')}
+
+        api = Api(request)
+        res = api.render()
+        
+        self.assertEqual(data[0], "action")
+        self.assertEqual(data[1], ('test', '1', '2'))
+
+    def test_rest_httpexception(self):
+        from ptah.rest import Api, REST_ID
+        self._init_ptah()
+
+        services = config.registry.storage[REST_ID]
+
+        def service(request, action, *args):
+            raise HTTPNotFound()
+
+        services['test'] = service
+
+        request = DummyRequest()
+        request.matchdict = {'service': 'test',
+                             'subpath': ('action:test','1','2')}
+        api = Api(request)
+        res = simplejson.loads(api.render())
+        self.assertEqual(
+            res['message'], 'The resource could not be found.')
+
+    def test_rest_response(self):
+        from ptah.rest import Api, REST_ID
+        self._init_ptah()
+
+        services = config.registry.storage[REST_ID]
+
+        def service(request, action, *args):
+            return HTTPNotFound()
+
+        services['test'] = service
+
+        request = DummyRequest()
+        request.matchdict = {'service': 'test',
+                             'subpath': ('action:test','1','2')}
+        api = Api(request)
+        res = api.render()
+        self.assertIsInstance(res, HTTPNotFound)
+
+    def test_rest_response_data(self):
+        import datetime
+        from ptah.rest import Api, REST_ID
+        self._init_ptah()
+
+        services = config.registry.storage[REST_ID]
+
+        def service(request, action, *args):
+            return {'dt': datetime.datetime.now()}
+
+        services['test'] = service
+
+        request = DummyRequest()
+        request.matchdict = {'service': 'test',
+                             'subpath': ('action:test','1','2')}
+        api = Api(request)
+        res = simplejson.loads(api.render())
+        self.assertIn('dt', res)
+

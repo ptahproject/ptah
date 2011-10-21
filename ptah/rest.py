@@ -5,33 +5,32 @@ from cStringIO import StringIO
 from simplejson import dumps
 from collections import OrderedDict
 from pyramid.response import Response
-from pyramid.authentication import AuthTicket
+from pyramid.authentication import parse_ticket, AuthTicket, BadTicket
 from pyramid.httpexceptions import \
-    WSGIHTTPException, HTTPServerError, HTTPNotFound
-from pyramid.interfaces import IAuthenticationPolicy
+     WSGIHTTPException, HTTPServerError, HTTPNotFound
+
 from ptah import view, config
 
 import ptah
 from ptah.settings import SECURITY
 
 
-services = {}
+REST_ID = 'ptah:rest-service'
 
 def restService(name, title, description=''):
     srv = Service(name, title, description)
-    apidoc = ServiceAPIDoc(name)
 
-    services[name] = srv
+    apidoc = ServiceAPIDoc(name)
     srv.actions['apidoc'] = Action(apidoc, 'apidoc', apidoc.title)
 
     def _register(config, srv):
-        services[name] = srv
+        config.storage[REST_ID][name] = srv
 
     info = config.DirectiveInfo()
     info.attach(
         config.Action(
             _register, (srv,),
-            discriminator = ('ptah:rest-service', name))
+            id = REST_ID, discriminator = (REST_ID, name))
         )
 
     return srv
@@ -77,7 +76,7 @@ class ServiceAPIDoc(object):
         self.srvname = name
 
     def __call__(self, request):
-        srv = services[self.srvname]
+        srv = config.registry.storage[REST_ID][self.srvname]
         url = request.application_url
 
         info = OrderedDict(
@@ -166,11 +165,10 @@ class Api(object):
         # authentication by token
         token = request.environ.get('HTTP_X_AUTH_TOKEN')
         if token:
-            auth = request.registry.getUtility(IAuthenticationPolicy)
             try:
-                timestamp, userid, tokens, user_data = auth.cookie.parse_ticket(
-                    auth.cookie.secret, '%s!'%token, '0.0.0.0')
-            except auth.cookie.BadTicket:
+                timestamp, userid, tokens, user_data = parse_ticket(
+                    SECURITY.secret, '%s!'%token, '0.0.0.0')
+            except BadTicket:
                 userid = None
 
             if userid:
@@ -194,7 +192,8 @@ class Api(object):
 
         # execute action for specific service
         try:
-            result = services[service](request, action, *arguments)
+            result = config.registry.storage[REST_ID][service](
+                request, action, *arguments)
         except WSGIHTTPException, exc:
             request.response.status = exc.status
             result = {'message': str(exc)}

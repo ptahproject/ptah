@@ -5,7 +5,9 @@ from pyramid.interfaces import IRouteRequest
 from pyramid.httpexceptions import HTTPNotFound
 
 from ptah import config, view
-from ptah.view.layout import Layout, LayoutRenderer, query_layout, layout_chain
+from ptah.view.interfaces import ILayout
+from ptah.view.layout import Layout, LayoutRenderer, \
+    query_layout, query_layout_chain
 
 from base import Base
 
@@ -35,7 +37,7 @@ class TestLayout(Base):
         self._init_ptah()
 
         layout = config.registry.getMultiAdapter(
-            (object(), self.request), view.ILayout, 'test')
+            (object(), self.request), ILayout, 'test')
 
         self.assertEqual(layout.name, 'test')
         self.assertEqual(layout.__name__, 'test')
@@ -51,7 +53,7 @@ class TestLayout(Base):
         self._init_ptah()
 
         layout = config.registry.getMultiAdapter(
-            (object(), self.request), view.ILayout, 'test')
+            (object(), self.request), ILayout, 'test')
 
         self.assertTrue(isinstance(layout, MyLayout))
 
@@ -305,18 +307,18 @@ class TestLayout(Base):
         context2.__parent__ = context1
         context3.__parent__ = context2
 
-        chain = layout_chain(context1, self.request, 'l1')
+        chain = query_layout_chain(context1, self.request, 'l1')
 
         self.assertEqual(len(chain), 1)
         self.assertIsInstance(chain[0], Layout1)
-        
-        chain = layout_chain(context2, self.request, 'l1')
+
+        chain = query_layout_chain(context2, self.request, 'l1')
 
         self.assertEqual(len(chain), 2)
         self.assertIsInstance(chain[0], Layout2)
         self.assertIsInstance(chain[1], Layout1)
 
-        chain = layout_chain(context3, self.request, 'l3')
+        chain = query_layout_chain(context3, self.request, 'l3')
 
         self.assertEqual(len(chain), 3)
         self.assertIsInstance(chain[0], Layout3)

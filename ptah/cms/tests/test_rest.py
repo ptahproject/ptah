@@ -34,10 +34,13 @@ class TestRestApi(RestBase):
 
     def test_rest_srv(self):
         import ptah.rest
+        self._init_ptah()
 
-        self.assertIn('cms', ptah.rest.services)
+        services = config.registry.storage[ptah.rest.REST_ID]
 
-        srv = ptah.rest.services['cms']
+        self.assertIn('cms', services)
+
+        srv = services['cms']
         self.assertEqual(srv.title, 'Ptah CMS API')
         self.assertEqual(srv.actions.keys(),
                          ['content', 'applications', 'apidoc', 'types'])
