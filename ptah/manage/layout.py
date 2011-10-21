@@ -1,15 +1,16 @@
 from ptah import view, config
-#from ptah.view.renderers import BaseRenderer
+from ptah.view.view import PyramidView
 
 from zope.interface import providedBy
 from pyramid.interfaces import IView, IViewClassifier
+from pyramid.httpexceptions import HTTPNotFound
 
 
 class LayoutPreview(view.View):
     view.pview('layout-preview.html', layout=None)
 
-    template = None
-    layout_chain = ()
+    view = None
+    layout = None
     colors = ['green', 'yellow', 'blue', 'gray', 'black', 'black']
 
     def update(self):
@@ -23,60 +24,39 @@ class LayoutPreview(view.View):
         view_callable = adapters.lookup(
             (IViewClassifier, providedBy(request), providedBy(context)),
             IView, name=view_name, default=None)
-        
-        renderer = None
 
-        if isinstance(view_callable, BaseRenderer):
-            renderer = view_callable
-        else:
-            for cell in view_callable.func_closure:
-                if isinstance(cell.cell_contents, BaseRenderer):
-                    renderer = cell.cell_contents
-                    break
+        if not isinstance(view_callable, PyramidView):
+            raise HTTPNotFound()
 
-        layout = getattr(renderer, 'layout', None)
-        self.factory = getattr(renderer, 'factory', None)
-        self.template = getattr(renderer, 'template', None)
+        view_renderer = None
+        layout_renderer = None
 
-        if layout is not None:
-            layout_chain = []
+        for r in view_callable.renderers:
+            if isinstance(r, view.LayoutRenderer):
+                layout_renderer = r
+            if isinstance(r, view.ViewRenderer):
+                view_renderer = r
 
-            parent = context
-            
-            l = view.query_layout(request, parent, layout)
-            layout_chain.append(l)
+        if layout_renderer is not None:
+            self.layout = view.query_layout_chain(
+                context, request, layout_renderer.layout)
 
-            while l is not None:
-                if l.layout is None:
-                    break
+        self.view = view_renderer
 
-                parent = l.__parent__ or parent
-                l = view.query_layout(request, parent, l.layout)
-                layout_chain.append(l)
-
-            self.layout_chain = layout_chain
+        if self.layout is None:
+            raise HTTPNotFound()
 
     def render(self):
         res = []
 
-        view, params = self.factory(self.context, self.request)
+        content = self.view(self.context, self.request, '')
 
-        kwargs = {'view': view,
-                  'context': self.context,
-                  'request': self.request}
-        if type(params) is dict:
-            kwargs.update(params)
-            
-        if self.template:
-            res = self.template(**kwargs)
-        else:
-            res = view.render()
-            
-        content = u'<div style="border: 2px solid red">%s</div>'%res
-        for layout in self.layout_chain:
+        content = u'<div style="border: 2px solid red">%s</div>'%content
+        
+        for layout in self.layout:
             layout.update()
             res = layout.render(content)
-            idx = self.layout_chain.index(layout)
+            idx = self.layout.index(layout)
             content = u'<div style="border: 4px solid %s">%s</div>'%(
                 self.colors[idx], res)
 
