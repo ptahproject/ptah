@@ -56,9 +56,6 @@ ResetPasswordSchema = form.Fieldset(
 UserSchema = form.Fieldset(
 
     form.fields.TextField(
-        'id', title=_('Id')),
-
-    form.fields.TextField(
         'name',
         title=_('Full Name'),
         description=_(u"e.g. John Smith. This is how users "
@@ -76,13 +73,26 @@ UserSchema = form.Fieldset(
         validator = form.All(form.Email(), checkLoginValidator),
         ),
 
-    form.fields.PasswordField(
+    form.fields.TextField(
         'password',
-        title = _(u'New password'),
-        description = _(u'Enter new password. '\
+        title = _(u'Password'),
+        description = _(u'Enter password. '\
                         u'No spaces or special characters, should contain '\
                         u'digits and letters in mixed case.'),
-        validator = passwordValidator)
+        validator = passwordValidator),
+
+    form.fields.BoolField(
+        'validated',
+        title = _(u'Validated'),
+        default = True,
+        ),
+
+    form.fields.BoolField(
+        'suspended',
+        title = _(u'Suspended'),
+        default = False,
+        ),
+
     )
 
 

@@ -4,6 +4,7 @@ import sqlalchemy as sqla
 from zope import interface
 
 import ptah
+from tinfo import Type
 from node import Node, Session
 from interfaces import IBlob, IBlobStorage
 
@@ -12,11 +13,12 @@ class Blob(Node):
     interface.implements(IBlob)
 
     __tablename__ = 'ptah_cms_blobs'
-    __mapper_args__ = {'polymorphic_identity': 'ptah-cms-blob'}
     __uri_generator__ = ptah.UriGenerator('blob+sql')
 
     __id__ = sqla.Column('id', sqla.Integer,
                          sqla.ForeignKey('ptah_cms_nodes.id'), primary_key=True)
+
+    __type__ = Type('sqlblob', 'SQL Blob')
 
     mimetype = sqla.Column(sqla.String(), default='')
     filename = sqla.Column(sqla.String(), default='')

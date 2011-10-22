@@ -14,7 +14,7 @@ from ptah.events import PrincipalPasswordChangedEvent
 from settings import _
 
 view.register_route('ptah-resetpassword', '/resetpassword.html')
-view.register_route('ptah-resetpassword-form', '/resetpasswordform.html')
+view.register_route('ptah-resetpassword-form', '/resetpassword.html/*subpath')
 
 
 class ResetPassword(form.Form):
@@ -36,10 +36,10 @@ class ResetPassword(form.Form):
         return {'login': self.request.params.get('login', '')}
 
     def update(self):
-        super(ResetPassword, self).update()
-
         self.from_name = mail.MAIL.from_name
         self.from_address = mail.MAIL.from_address
+
+        super(ResetPassword, self).update()
 
     @form.button(_('Start password reset'), actype=form.AC_PRIMARY)
     def reset(self):

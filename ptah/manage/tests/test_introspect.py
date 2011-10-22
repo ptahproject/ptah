@@ -51,3 +51,42 @@ class TestIntrospectModule(Base):
 
             res = PackageView.__renderer__(package, request)
             self.assertEqual(res.status, '200 OK')
+
+
+class TestUriView(Base):
+
+    def setUp(self):
+        self._setup_pyramid()
+
+    def test_uri_view(self):
+        from ptah.manage.introspect import IntrospectModule, UriResolver
+
+        request = DummyRequest(
+            GET = {'uri': 'ptah+auth:superuser'})
+        mod = IntrospectModule(None, request)
+
+        view = UriResolver(mod, request)
+        view.update()
+
+        self.assertEqual(view.data[0]['name'],
+                         'ptah.authentication.superuser_resolver')
+
+    def test_uri_handler(self):
+        from ptah.manage.introspect import IntrospectModule, UriResolver
+
+        request = DummyRequest(
+            POST = {'form.buttons.show': 'Show'})
+        mod = IntrospectModule(None, request)
+
+        view = UriResolver(mod, request)
+        view.update()
+
+        request = DummyRequest(
+            POST = {'form.buttons.show': 'Show', 'uri': 'ptah+auth:superuser'})
+        mod = IntrospectModule(None, request)
+
+        view = UriResolver(mod, request)
+        view.update()
+
+        self.assertEqual(view.data[0]['name'],
+                         'ptah.authentication.superuser_resolver')

@@ -11,6 +11,7 @@ from module import CrowdModule
 from provider import CrowdUser, Session
 from schemas import UserSchema, ManagerChangePasswordSchema
 from module import UserWrapper
+from ptah.crowd.memberprops import get_properties
 
 
 class CreateUserForm(form.Form):
@@ -20,7 +21,7 @@ class CreateUserForm(form.Form):
 
     csrf = True
     label = _('Create new user')
-    fields = UserSchema.omit('id', 'joined')
+    fields = UserSchema
 
     @form.button(_('Create'), actype=form.AC_PRIMARY)
     def create(self):
@@ -34,13 +35,22 @@ class CreateUserForm(form.Form):
         user = CrowdUser(data['name'], data['login'], data['login'])
         # set password
         user.password = ptah.passwordTool.encode(data['password'])
+
+        props = get_properties(user.uri)
+        props.validated = data['validated']
+        props.suspended = data['suspended']
+
         Session.add(user)
         Session.flush()
 
         self.request.registry.notify(PrincipalAddedEvent(user))
 
         self.message('User has been created.', 'success')
-        raise HTTPFound(location='./')
+        raise HTTPFound(location='.')
+
+    @form.button(_('Back'))
+    def back(self):
+        raise HTTPFound(location='.')
 
 
 class UserInfo(form.Form):
