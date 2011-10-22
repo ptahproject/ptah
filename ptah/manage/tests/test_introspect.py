@@ -1,5 +1,6 @@
 import ptah
 from pyramid.testing import DummyRequest
+from pyramid.httpexceptions import HTTPFound
 
 from base import Base
 
@@ -51,6 +52,55 @@ class TestIntrospectModule(Base):
 
             res = PackageView.__renderer__(package, request)
             self.assertEqual(res.status, '200 OK')
+
+    def test_introspect_routes(self):
+        from ptah.manage.introspect import IntrospectModule, RoutesView
+
+        request = DummyRequest()
+
+        mod = IntrospectModule(None, request)
+
+        res = RoutesView.__renderer__(mod, request)
+        self.assertIn("Routes <small>registered pyramid routes</small>",
+                      res.body)
+
+    def test_introspect_events(self):
+        from ptah.manage.introspect import IntrospectModule, EventsView
+
+        request = DummyRequest()
+        mod = IntrospectModule(None, request)
+        res = EventsView.__renderer__(mod, request)
+
+        self.assertIn("Events <small>event declarations</small>", res.body)
+
+    def test_introspect_events_event(self):
+        from ptah.manage.introspect import IntrospectModule, EventsView
+
+        request = DummyRequest(
+            params = {'ev': 'ptah.config.settings.SettingsInitialized'})
+        mod = IntrospectModule(None, request)
+        res = EventsView.__renderer__(mod, request)
+
+        self.assertIn("Event: Settings initialized event", res.body)
+
+    def test_introspect_source(self):
+        from ptah.manage.introspect import IntrospectModule, SourceView
+
+        request = DummyRequest()
+        mod = IntrospectModule(None, request)
+        res = SourceView.__renderer__(mod, request)
+        self.assertIsInstance(res, HTTPFound)
+        self.assertEqual(res.headers['location'], '.')
+
+    def test_introspect_source_view(self):
+        from ptah.manage.introspect import IntrospectModule, SourceView
+
+        request = DummyRequest(
+            params = {'pkg': 'ptah.view.customize'})
+        
+        mod = IntrospectModule(None, request)
+        res = SourceView.__renderer__(mod, request)
+        self.assertIn('Source: ptah/customize.py', res.body)
 
 
 class TestUriView(Base):

@@ -2,6 +2,7 @@
 import pkg_resources, inspect, os, sys
 from pyramid.interfaces import IRoutesMapper, IRouteRequest
 from pyramid.interfaces import IViewClassifier, IExceptionViewClassifier
+from pyramid.httpexceptions import HTTPFound
 
 from zope import interface
 from zope.interface.interface import InterfaceClass
@@ -268,7 +269,7 @@ class RoutesView(view.View):
                             viewactions.append(
                                 (route, name, context, factory, action))
 
-            sm = self.request.registry
+            sm = config.registry
 
             # add pyramid routes
             for route in sm.getUtility(IRoutesMapper).get_routes():
@@ -280,7 +281,7 @@ class RoutesView(view.View):
             for route, name, context, factory, action in viewactions:
                 try:
                     rdata = routes[route][3]
-                except:
+                except: # pragma: no cover
                     continue
                 rdata.append([getattr(factory, '__intr_path__', name),
                               action.info.module.__name__, lineno(factory),
@@ -331,6 +332,8 @@ class SourceView(view.View):
 
     def update(self):
         name = self.request.params.get('pkg')
+        if name is None:
+            raise HTTPFound(location='.')
 
         dist = None
         pkg_name = name

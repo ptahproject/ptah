@@ -20,7 +20,7 @@
   </div>
 </tal:block>
 
-<tal:block condition="view.actions">
+<tal:block condition="view.event">
   <div class="page-header">
     <h2>Event: <tal:block content="view.event.title" /></h2>
   </div>

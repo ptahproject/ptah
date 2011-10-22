@@ -9,22 +9,6 @@ from forms import AddForm
 from uiactions import list_uiactions
 
 
-def defaultView(renderer):
-    def wrap(context, request):
-        if context.view:
-            item = cms.load(context.view)
-            if item is None:
-                return renderer(context, request)
-
-            request.context = item
-            return view.render_view('', item, request)
-
-        view = renderer(context, request)
-        view.update()
-        return view.render()
-    return wrap
-
-
 listing_template = view.template("ptah.cmsapp:templates/listing.pt")
 
 class ContainerListing(view.View):
@@ -60,8 +44,6 @@ class ContainerListing(view.View):
             uris = self.request.POST.getall('item')
             print '=============', uris
 
-
-#@defaultView
 
 class ViewContainer(ContainerListing):
     view.pview(context = ptah.cms.Container,
