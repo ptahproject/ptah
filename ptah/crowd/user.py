@@ -33,6 +33,7 @@ class CreateUserForm(form.Form):
 
         # create user
         user = CrowdUser(data['name'], data['login'], data['login'])
+
         # set password
         user.password = ptah.passwordTool.encode(data['password'])
 
@@ -53,39 +54,67 @@ class CreateUserForm(form.Form):
         raise HTTPFound(location='.')
 
 
-class UserInfo(form.Form):
+class ModifyUserForm(form.Form):
     view.pview(context=UserWrapper)
 
     __intr_path__ = '/ptah-manage/crowd/${user}/'
 
     csrf = True
     label = 'Update user'
-    fields = form.Fieldset(UserSchema).omit('id')
+    fields = form.Fieldset(UserSchema)
 
     def form_content(self):
         user = self.context.user
+        props = get_properties(user.uri)
+
         return {'name': user.name,
                 'login': user.login,
-                'password': ''}
+                'password': '',
+                'validated': props.validated,
+                'suspended': props.suspended}
 
     @form.button(_('Modify'), actype=form.AC_PRIMARY)
     def modify(self):
-        #user.validated = True
-        #self.message("Account  has been validated.", 'info')
-        pass
+        data, errors = self.extract()
+
+        if errors:
+            self.message(errors, 'form-error')
+            return
+
+        user = self.context.user
+
+        user.name = data['name']
+        user.login = data['login']
+        user.email = data['login']
+        user.password = ptah.passwordTool.encode(data['password'])
+
+        props = get_properties(user.uri)
+        props.validated = data['validated']
+        props.suspended = data['suspended']
+
+        self.message("User properties has been updated.", 'info')
 
     @form.button(_('Remove'), actype=form.AC_DANGER)
     def remove(self):
-        #user.validated = True
-        #self.message("Account  has been validated.", 'info')
-        pass
+        self.validate_csrf_token()
+        
+        user = self.context.user
+        Session.delete(user)
+        Session.flush()
+
+        self.message("User has been removed.", 'info')
+        raise HTTPFound(location='..')
+
+    @form.button(_('Change password'), name='changepwd')
+    def password(self):
+        raise HTTPFound(location='password.html')
 
     @form.button(_('Back'))
     def back(self):
         raise HTTPFound(location='..')
 
 
-class ChangePassword(form.Form):
+class ChangePasswordForm(form.Form):
     view.pview('password.html', UserWrapper)
 
     __intr_path__ = '/ptah-manage/crowd/${user}/password.html'
@@ -110,3 +139,7 @@ class ChangePassword(form.Form):
             ptah.passwordTool.encode(data['password'])
 
         self.message("User password has been changed.")
+
+    @form.button(_('Back'))
+    def back(self):
+        raise HTTPFound(location='..')
