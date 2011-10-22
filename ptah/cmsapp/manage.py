@@ -11,8 +11,11 @@ class ApplicationsModule(manage.PtahModule):
     manage.module('ptah-apps')
 
     def __getitem__(self, key):
-        f = ptah.cms.Factories[key]
-        return AppFactory(f, self, self.request)
+        for id, factory in ptah.cms.Factories.items():
+            if factory.name == key:
+                return AppFactory(factory, self, self.request)
+
+        raise KeyError(key)
 
 
 class ApplicationsModuleView(view.View):
