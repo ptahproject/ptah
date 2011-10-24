@@ -72,7 +72,7 @@ Ptah uses SQLAlchemy which supports many different database drivers.  sqlite shi
 Pyramid is not a bottleneck; Ptah is
 ------------------------------------
 
-Any experienced web developer will tell you that accessing data or going out of process for IO will slow down the responsiveness of the the application.  This is true of Ptah.  That is why we have such few SQL calls in the run-time.  We feel Ptah will *not* be a bottleneck for your application.  Ptah goes out of its way to do start-up time computation to minimize runtime overhead.
+Any experienced web developer will tell you that accessing data or going out of process for IO will slow down the responsiveness of the the application.  This is true of Ptah.  That is why we have such few SQL calls in the run-time.  We aim for Ptah *not* to be a bottleneck for your application.  Ptah goes out of its way to do as much as possible at start-up time.  You can see the SQLAlchemy queries per page using the pyramid_debugtoolbar that ships with development profile. 
 
 Ptah does not use Jinja, Mako, etc. Why?
 ----------------------------------------

@@ -80,6 +80,10 @@ exposed automatically when consuming high level APIs of Ptah.
 Websocket
 ---------
 
+This is experimental and no support is offered.  Please do not ask
+questions about this functionality.  It will be supported in 1.0 but
+not at this time.
+
 If you have greenlets and gevent installed by running
 `bin/buidout -c devel-socket.cfg` you will have an extra
 script inside of bin called `socket-server`.  You can just
