@@ -15,7 +15,7 @@ Session = sqlahelper.get_session()
 
 
 class Node(Base):
-    """ Base class for content objects.
+    """ Base class for persistent objects.
 
     .. attribute:: __uri__
 
@@ -37,10 +37,19 @@ class Node(Base):
 
     .. attribute:: __local_roles__
 
+       :py:class:`ptah.sqla.JsonDictType` which contains a principal uri as a
+       key and a sequence of role's granted to principal for Node.  
+       
     .. attribute:: __acls__
 
+       a sequence of :py:class:`ptah.security.ACL` which are represented as
+       strings registered with security machinery.
+       
     .. attribute:: __uri_generator__
 
+       function which will return value for __uri__.  the uri must be
+       resolvable by using :py:func:`ptah.resolve` function.
+       
     """
 
     interface.implements(INode,
@@ -131,6 +140,8 @@ def load(uri, permission=None):
 def load_parents(node):
     """ Load and initialize `__parent__` attribute for node.
     Returns list of loaded parents.
+    
+    :param node: ptah.cms.Node node
     """
     parents = []
     parent = node
