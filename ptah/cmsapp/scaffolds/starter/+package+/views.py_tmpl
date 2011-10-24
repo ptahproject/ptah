@@ -1,12 +1,21 @@
+from datetime import datetime
 from ptah import view, form, cms
+from {{package}} import settings
 from {{package}}.root import ApplicationRoot
 
 view.static('{{project}}', '{{project}}:static')
 
-@view.pview('view', context = ApplicationRoot)
-def my_view(request):
-    return "A view"
 
+# access this view by going to http://localhost:8080/myview.html
+# add {{package}}.band=my band to .ini file, restart and render this view.
+
+@view.pview('myview.html', context = ApplicationRoot)
+def my_view(request):
+    data = {'context' : request.root,
+            'happy' : settings.{{package}}.happy,
+            'favband' : settings.{{package}}.band,
+            'now' : datetime.now()}
+    return str(data)
 
 class DefaultContentView(form.DisplayForm):
     view.pview(
