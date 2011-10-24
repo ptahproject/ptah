@@ -1,12 +1,13 @@
-Ptah Manage vs. Ptah App
+Ptah Manage vs. Your App
 ========================
-
-The UI isnt great right now.  We currently use twitter bootstrap.  If you are a UI person and interested in helping - please create issue in github.
 
 Overview
 --------
 
-By installing ptah you get 2 applications which have UI.  One is called "ptah-manage" or the Management UI and the other is the "ptah-app".  Ptah App is the default implementation of the CMS.  Ptah Manage is fairly stable and existed long before Ptah App.
+By following the instructions you will end up with ptah (the library) and
+scaffolding which will have generated your application.  If you goto /
+you will see your application which was created by scaffolding.  If you
+goto /ptah-manage you will see Ptah Manage.
 
 Ptah Manage
 -----------
@@ -18,7 +19,7 @@ The default "modules" for Ptah Manage are:
 
   - Crowd
   
-  A primitive user management module.  Ptah App uses crowd for its user authentication.  This UI is fairly broken at the moment.
+  A primitive user management module.  Your App uses crowd for its user authentication.  This UI is fairly broken at the moment.
   
   - Form fields
   
@@ -48,49 +49,42 @@ The default "modules" for Ptah Manage are:
   
   All templates which are registered through Ptah/Memphis will show up.  They are grouped by package in which the template is defined.  All templates are overridable.  
 
-Ptah App
+Your App
 --------
 
-The Ptah App is a default UI to see how the basic functionality works.  It supports a Page/Folder paradigm but we recommend against that paradigm unless you are absolutely required to support it.  This UI will become more sophisticated and will be the "Demo application" for Ptah usage.  It is experimental but is meant to demonstrate the features of Ptah.
+Your App provides a primitive UI which provides a starting point for you to create an application.  You can see your application at /
 
-You can see the Ptah App by going to http://localhost:8080/ and you can login by going to http://localhost:8080/login.html 
-
-The current features for Ptah App:
+Your App contains:
 
   - Actions
   
-  In the left hand side you will see "actions" which the user can perform. Common actions are `Add content`, `Edit` and `Sharing`.  
-  
-  - Websocket
-  
-  If you are using the socket-server provided then you should get `growl` like notifications when application or content-level events are thrown. 
+  In the left hand side you will see "actions" which the user can perform. Common actions are `Add content`, `Edit` and `Sharing`.  This is
+using functionality currently inside of Ptah.  Most likely you will not
+be interested in using this.
   
   - Items/Containers
   
-  The first thing you see in Ptah App is a folder listing interface.  This is a listing of content inside the root application.  A Container can support `Rename`, `Cut`, and `Remove` actions which may be applied to its children.
+  The first thing you see in Your App is a folder listing interface.  This is a listing of content inside the root application.  A Container can support `Rename`, `Cut`, and `Remove` actions which may be applied to its children.  You create content types and they will appear inside
+of the Add Action.
   
   - Content Types
   
-  Ptah App ships with 3 basic content types: Page, File, and Folder.  These are just implementations of `ptah.cms` models.
-  
-  - TinyMCE field
-  
-  There is a primitive TinyMCE field which is included in Ptah App which is used by Page model.  
+  Your App ships with 3 basic content types: Page, File, and Folder.  These are just implementations of `ptah.cms` models.  Create your own.  It is very easy.  And the purpose of Your App.  Customizing it.
   
   - Forms
   
-  There are very basic Edit and Add forms which are used to autogenerate the forms for a model.  Again these are default implementations and do not expect them to become very sophisticated.  
+  There are very basic Edit and Add forms which are used to autogenerate the forms for a model.  Again these are default implementations and do not expect them to become very sophisticated.   These forms use functionality inside of Ptah.  You can follow the forms example to create your own.
   
   - Views
   
-  A set of views which will generate the layout of the Ptah App.  Also known as the "skin", "o-wrap", "ui", "template" which puts the the pixels on the screen. 
+  A set of views which will generate the layout of Your App.  Also known as the "skin", "o-wrap", "ui", "template" which puts the the pixels on the screen.  Layout's are how this is accomplished but you do not need to use layouts. 
   
   - Permissions
   
-  Ptah App defines 3 permissions: `Add page`, `Add file`, and `Add folder`. It also provides an example policy of which Roles are, by default, assigned what permissions.  
+  Your App defines 3 permissions and 3 roles: `Add page`, `Add file`, and `Add folder` permissions as well as 'Viewer', 'Editor' and 'Manager' roles. It also provides an example policy of which Roles are, by default, assigned what permissions.  
   
 Conclusion
 ----------
 Ptah Manage is useful for managing configuration and providing visibility into how your application(s) are configured.  It's prime goal is to make you feel comfortable with what, how, where your application is configured.  If you do not feel comfortable with Ptah Manage - please let us know.  Asking for additional features (search for configuration variables) is out of scope.  If the information is there but you have to click around a bit -- we can fix this with UI, else let us know.
 
-Ptah App is a default implementation of the `ptah.cms` and the software stack.  While some people may want to extend it - it's job in life is not to support being an Enterprise Content Management System.  It's job is to demonstrate the Ptah CMS stack and a reference implementation of those features.
+Your App is a default implementation of the `ptah.cms` and the software stack.  It is your application.  You are building a web application, right?  So here is a start.
