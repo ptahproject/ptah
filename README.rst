@@ -2,8 +2,8 @@ Ptah
 ====
 
 Ptah is a fast, fun, open source high-level Python web development environment.
-It's goal is to make developing interactive web applications and web sites fun.
-More fun^H^H^Hcowbell.
+Ptah is built on top of the Pyramid web framework.  Ptah's goal is to make 
+developing interactive web applications and web sites fun. 
 
 Ptah is loosely affiliated with the Pyramid, Django, Drupal and Zope/Plone communities.
 
