@@ -45,7 +45,7 @@ Lets do the needful::
   venv/src/ptah$ ../../bin/python2.7 setup.py develop
   venv/src/ptah$ cd ..  
   
-Use paster to create scaffolding::
+Use paster to create scaffolding with username *admin* and password *12345*::
 
   venv/src$ ../bin/paster create -t ptahdemo myapp
   venv/src$ cd myapp
