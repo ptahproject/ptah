@@ -16,30 +16,46 @@ from ptah.cms.permissions import View, DeleteContent, ModifyContent
 
 
 class Content(Node):
-    """ Base class for content objects. Class has to inherit from `Content`
-    to participat in content hiararchy.
+    """ Base class for content objects. A content class should inherit from
+    `Content` to participate in content hierarchy traversal.
 
     .. attribute:: __path__
 
+       A string used by the :py:class:`ptah.cms.ContentTraverser` which is
+       used for efficient resolution of URL structure to content models.
+       This is internal implementation and manually editing it can break
+       your hierarchy.
+       
     .. attribute:: __name__
+
+       This is the identifier in a container if you are using containment and
+       hierarchies.
 
     .. attribute:: title
 
-       Content title
+       Content title which is editable by end user.
 
     .. attribute:: description
 
-       Content description
+       Content description which is editable by end user.
 
+    .. attribute:: view
+    
+       A URI which can be resolved with :py:func:`ptah.resolve` function
+       which represents the 'default' view for content. Akin to index.html
+       or default.php in Apache.
+       
     .. attribute:: created
 
-       Content creation time
+       Content creation time which is set by 
+       :py:func:`ptah.cms.events.createdHandler` during object creation.
 
        :type: :py:class:`datetime.datetime`
 
     .. attribute:: modified
 
-       Content modification time
+       Content modification time which is set by
+       :py:func:`ptah.cms.events.modifiedHandler` during object modification.
 
        :type: :py:class:`datetime.datetime`
 
@@ -51,6 +67,25 @@ class Content(Node):
 
        :type: :py:class:`datetime.datetime` or None
 
+    .. attribute:: creators
+    
+       a :py:class:`ptah.JsonListType` which contains sequence of users.  Using
+       principal URIs is a good idea.
+    
+    .. attribute:: subjects
+    
+       a :py:class:`ptah.JsonListType` which contains sequence of subjects.
+       Holding a sequence of URIs could resolve to subject objects. Or you can
+       use strings.
+       
+    .. attribute: publisher
+    
+       a Unicode string which should identify the publisher.
+       
+    .. attribute: contributors
+    
+       a :py:class:`ptah.JsonListType` which contains sequence of contributors.
+       You could keep a sequence of principal URIs.
     """
 
     interface.implements(IContent)

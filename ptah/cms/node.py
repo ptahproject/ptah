@@ -19,7 +19,7 @@ class Node(Base):
 
     .. attribute:: __uri__
 
-       Unique object id. *Required*
+       Unique object id. **Required**
 
     .. attribute:: __type__
 
@@ -37,14 +37,14 @@ class Node(Base):
 
     .. attribute:: __local_roles__
 
-       :py:class:`ptah.sqla.JsonDictType` which contains a principal uri as a
+       :py:class:`ptah.JsonDictType` which contains a principal uri as a
        key and a sequence of role's granted to principal for Node.  
        
     .. attribute:: __acls__
 
-       a sequence of :py:class:`ptah.security.ACL` which are represented as
-       strings registered with security machinery.
-       
+       a :py:class:`ptah.JsonListType` of :py:class:`ptah.ACL` strings
+       registered with security machinery.
+
     .. attribute:: __uri_generator__
 
        function which will return value for __uri__.  the uri must be
