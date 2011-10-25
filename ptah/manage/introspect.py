@@ -548,11 +548,11 @@ class ViewDirective(object):
 
         if route:
             if name:
-                view = 'view: "%s" route: "%s"'%(name, route)
+                view = 'view: "%s" route: "%s"'%((name or '<default>'), route)
             else:
                 view = 'route: "%s"'%route
         else:
-            view = 'view: %s'%name
+            view = 'view: %s'%(name or '<default>')
 
         if isclass:
             factoryInfo = '%s.%s'%(factory.__module__, factory.__name__)
