@@ -11,7 +11,7 @@ class ApplicationsModule(manage.PtahModule):
     manage.module('ptah-apps')
 
     def __getitem__(self, key):
-        for id, factory in ptah.cms.Factories.items():
+        for id, factory in ptah.cms.get_app_factories.items():
             if factory.name == key:
                 return AppFactory(factory, self, self.request)
 
@@ -25,7 +25,7 @@ class ApplicationsModuleView(view.View):
 
     def update(self):
         factories = []
-        for factory in ptah.cms.Factories.values():
+        for factory in ptah.cms.get_app_factories.values():
             factories.append((factory.title, factory))
 
         factories.sort()

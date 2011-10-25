@@ -6,6 +6,11 @@ from pyramid.interfaces import ITraverser
 from base import Base
 
 
+class ApplicationRoot(ptah.cms.ApplicationRoot):
+
+    __type__ = ptah.cms.Type('traverserapp')
+
+
 class TestTraverser(Base):
 
     def tearDown(self):
@@ -15,7 +20,8 @@ class TestTraverser(Base):
     def _create_content(self):
         import ptah.cms
 
-        factory = ptah.cms.ApplicationFactory('/test', 'root', 'Root App')
+        factory = ptah.cms.ApplicationFactory(
+            ApplicationRoot, '/test', 'root', 'Root App')
         self.factory = factory
 
         class MyContent(ptah.cms.Content):
@@ -67,7 +73,8 @@ class TestTraverser(Base):
             {'PATH_INFO': '/test/index.html',
              'bfg.routes.route': {}})
 
-        factory = ptah.cms.ApplicationFactory('', 'root', 'Root App')
+        factory = ptah.cms.ApplicationFactory(
+            ApplicationRoot, '', 'root', 'Root App')
         root = factory(request)
 
         traverser = ITraverser(root)

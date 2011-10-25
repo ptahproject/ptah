@@ -21,9 +21,9 @@ to return a file from a view (you dont need a layout).
 
 So if you render this view::
     >>> from pyramid.requests import Request
-    >>> from ptah.cms import Factories    
+    >>> from ptah.cms import get_app_factories    
     >>> import ptah
-    >>> root = Factories['root']()
+    >>> root = get_app_factories()['root']()
     >>> request = Request.blank('/')
     >>> request.root = root
     >>> request.registry = # put registry

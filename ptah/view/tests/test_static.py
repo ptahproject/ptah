@@ -10,8 +10,6 @@ from base import Base
 
 abspath1, pkg1 = view.path('ptah.view.tests:static/dir1')
 abspath2, pkg2 = view.path('ptah.view.tests:static/dir2')
-dirinfo1 = buildTree(abspath1)
-dirinfo2 = buildTree(abspath2)
 
 
 class TestStaticManagement(Base):
@@ -86,47 +84,30 @@ class TestStaticManagement(Base):
             base.static_url('tests2', 'styles.css'),
             'http://localhost:8080/static/tests2/styles.css')
 
-    def test_static_wired(self):
-        # something strange can happen, info can be removed
-        # from registry before ptah init (tests for example)
-        view.static('tests', 'ptah.view.tests:static/dir1')
-
-        self.assertTrue('tests' in resources.registry)
-
-        del resources.registry['tests']
-        self._init_ptah()
-
-        self.assertTrue('tests' in resources.registry)
-
 
 class TestStaticView(Base):
 
     def test_resource_empty_pathinfo(self):
         environ = self._makeEnviron(PATH_INFO='')
         request = self._makeRequest(environ)
-        inst = StaticView(abspath1, dirinfo1, 'static/test')
+        inst = StaticView(abspath1, 'static/test')
 
         response = inst(None, request)
         self.assertTrue(response.status == '404 Not Found')
-        self.assertTrue(
-            'The resource at http://localhost:8080 could not be found'
-            in response.body)
 
     def test_resource_doesnt_exist(self):
         environ = self._makeEnviron(PATH_INFO='/static/test/notthere')
         request = self._makeRequest(environ)
 
-        inst = StaticView(abspath1, dirinfo1, 'static/test')
+        inst = StaticView(abspath1, 'static/test')
 
         response = inst(None, request)
         self.assertTrue(response.status == '404 Not Found')
-        self.assertTrue(
-            'http://localhost:8080/static/test/notthere' in response.body)
 
     def test_resource_file(self):
         environ = self._makeEnviron(PATH_INFO='/static/test/style.css')
         request = self._makeRequest(environ)
-        inst = StaticView(abspath1, dirinfo1, 'static/test')
+        inst = StaticView(abspath1, 'static/test')
 
         response = inst(None, request)
         self.assertTrue(response.status == '200 OK')
@@ -135,7 +116,7 @@ class TestStaticView(Base):
     def test_resource_file_from_subdir(self):
         environ = self._makeEnviron(PATH_INFO='/static/test/subdir/text.txt')
         request = self._makeRequest(environ)
-        inst = StaticView(abspath1, dirinfo1, 'static/test')
+        inst = StaticView(abspath1, 'static/test')
 
         response = inst(None, request)
         self.assertTrue(response.status == '200 OK')
@@ -144,10 +125,10 @@ class TestStaticView(Base):
     def test_resource_file_with_cache(self):
         environ = self._makeEnviron(PATH_INFO='/static/test/style.css')
         request = self._makeRequest(environ)
-        inst = StaticView(abspath1, dirinfo1, 'static/test')
+        inst = StaticView(abspath1, 'static/test')
 
         response = inst(None, request)
-        self.assertFalse('Cache-Control' in response.headers)
+        self.assertIn('max-age=0', response.headers['Cache-Control'])
 
         from ptah.view import resources
         resources.STATIC.cache_max_age = 360
@@ -160,7 +141,7 @@ class TestStaticView(Base):
         # if not exist in upper layer tring to get from lower layer
         environ = self._makeEnviron(PATH_INFO='/static/test/text2.txt')
         request = self._makeRequest(environ)
-        inst = StaticView(abspath1, dirinfo1, 'static/test')
+        inst = StaticView(abspath1, 'static/test')
 
         response = inst(None, request)
         self.assertTrue(response.status == '200 OK')
@@ -170,7 +151,7 @@ class TestStaticView(Base):
         # if not exist in upper layer tring to get from lower layer
         environ = self._makeEnviron(PATH_INFO='/static/test/subdir/text.txt')
         request = self._makeRequest(environ)
-        inst = StaticView(abspath1, dirinfo1, 'static/test')
+        inst = StaticView(abspath1, 'static/test')
 
         response = inst(None, request)
         self.assertTrue(response.status == '200 OK')

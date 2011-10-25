@@ -11,13 +11,16 @@ from interfaces import IApplicationRoot
 from interfaces import IApplicationPolicy
 
 
+APPFACTORY_ID = 'ptah-cms:appfactory'
+
+def get_app_factories():
+    return config.registry.storage.get(APPFACTORY_ID, {})
+
+
 class ApplicationRoot(Container):
     interface.implements(IApplicationRoot)
 
     __root_path__ = '/'
-
-    __type__ = Type('app', 'Application',
-                    description = 'Default ptah application')
 
     def __resource_url__(self, request, info):
         return self.__root_path__
@@ -34,14 +37,11 @@ class ApplicationPolicy(object):
 
     def __init__(self, request):
         self.request = request
-
-
-Factories = {}
+    
 
 class ApplicationFactory(object):
 
-    def __init__(self, path='', name='', title='',
-                 tinfo = ApplicationRoot.__type__,
+    def __init__(self, factory, path='', name='', title='',
                  policy = ApplicationPolicy, default_root = None):
         self.id = '-'.join(part for part in path.split('/') if part)
         self.path = path if path.endswith('/') else '%s/'%path
@@ -52,17 +52,23 @@ class ApplicationFactory(object):
         if not path and default_root is None:
             self.default_root = True
 
-        if isinstance(tinfo, type) and issubclass(tinfo, Node):
-            tinfo = tinfo.__type__
-
-        self.tinfo = tinfo
+        if isinstance(factory, type) and issubclass(factory, Node):
+            factory = factory.__type__
+        
+        self.factory = factory
         self.policy = policy
 
-        Factories[self.id] = self
+        if hasattr(config, 'registry'):
+            data = config.registry.storage.setdefault(APPFACTORY_ID, {})
+            data[self.id] = self
 
         info = config.DirectiveInfo()
         info.attach(
-            config.Action(None, discriminator=('ptah-cms:application', path))
+            config.Action(
+                lambda config: config.storage[APPFACTORY_ID].update(
+                    {self.id:self}),
+                id = APPFACTORY_ID,
+                discriminator=(APPFACTORY_ID, path))
             )
 
     _sql_get_root = ptah.QueryFreezer(
@@ -72,9 +78,10 @@ class ApplicationFactory(object):
                     Container.__type_id__ == sqla.sql.bindparam('type'))))
 
     def __call__(self, request=None):
-        root = self._sql_get_root.first(name=self.name, type=self.tinfo.__uri__)
+        root = self._sql_get_root.first(
+            name=self.name, type=self.factory.__uri__)
         if root is None:
-            root = self.tinfo.create(title=self.title)
+            root = self.factory.create(title=self.title)
             root.__name_id__ = self.name
             root.__path__ = '/%s/'%root.__uri__
             Session.add(root)
@@ -89,8 +96,3 @@ class ApplicationFactory(object):
         if request is not None:
             request.root = root
         return root
-
-
-@config.cleanup
-def cleanup():
-    Factories.clear()

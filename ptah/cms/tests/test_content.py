@@ -13,6 +13,15 @@ class TestContent(Base):
         config.cleanup_system(self.__class__.__module__)
         super(TestContent, self).tearDown()
 
+    def _make_app(self):
+        global ApplicationRoot
+        class ApplicationRoot(ptah.cms.ApplicationRoot):
+            __type__ = ptah.cms.Type('app')
+
+        ApplicationRoot.__type__.cls = ApplicationRoot
+
+        return ApplicationRoot
+
     def test_content_path(self):
         import ptah.cms
         self._setRequest(self._makeRequest())
@@ -22,8 +31,10 @@ class TestContent(Base):
             __mapper_args__ = {'polymorphic_identity': 'mycontent'}
             __uri_factory__ = ptah.UriFactory('mycontent')
 
+        ApplicationRoot = self._make_app()
 
-        factory = ptah.cms.ApplicationFactory('/app1', 'root', 'Root App')
+        factory = ptah.cms.ApplicationFactory(
+            ApplicationRoot, '/app1', 'root', 'Root App')
 
         root = factory(self.request)
 
@@ -42,7 +53,8 @@ class TestContent(Base):
 
         # same content inside same root but in different app factory
 
-        factory2 = ptah.cms.ApplicationFactory('/app2', 'root', 'Root App')
+        factory2 = ptah.cms.ApplicationFactory(
+            ApplicationRoot, '/app2', 'root', 'Root App')
         root = factory2(self.request)
 
         c = ptah.cms.Session.query(MyContent).filter(
