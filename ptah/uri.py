@@ -84,12 +84,12 @@ def _register_uri_resolver(config, schema, resolver):
     config.storage[RESOLVER_ID][schema] = resolver
 
 
-class UriGenerator(object):
+class UriFactory(object):
     """ Uri Generator
 
     Example::
 
-       >> uri = UriGenerator('cms+content')
+       >> uri = UriFactory('cms+content')
 
        >> uri()
        'cms+content:f73f3266fa15438e94cca3621a3f2dbc'

@@ -32,7 +32,7 @@ class CrowdUser(Base):
     login = sqla.Column(sqla.Unicode(255), unique=True)
     email = sqla.Column(sqla.Unicode(255), unique=True)
     password = sqla.Column(sqla.Unicode(255))
-    _uri_gen = ptah.UriGenerator('user+crowd')
+    _uri_gen = ptah.UriFactory('user+crowd')
 
     def __init__(self, name, login, email, password=u''):
         super(CrowdUser, self).__init__()

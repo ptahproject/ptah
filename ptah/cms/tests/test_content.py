@@ -20,7 +20,7 @@ class TestContent(Base):
         class MyContent(ptah.cms.Content):
 
             __mapper_args__ = {'polymorphic_identity': 'mycontent'}
-            __uri_generator__ = ptah.UriGenerator('mycontent')
+            __uri_factory__ = ptah.UriFactory('mycontent')
 
 
         factory = ptah.cms.ApplicationFactory('/app1', 'root', 'Root App')
@@ -56,7 +56,7 @@ class TestContent(Base):
 
         class MyContent(ptah.cms.Content):
             __mapper_args__ = {'polymorphic_identity': 'mycontent'}
-            __uri_generator__ = ptah.UriGenerator('mycontent')
+            __uri_factory__ = ptah.UriFactory('mycontent')
 
         content = MyContent()
 
@@ -74,7 +74,7 @@ class TestContent(Base):
 
         class MyContent(ptah.cms.Content):
             __mapper_args__ = {'polymorphic_identity': 'mycontent'}
-            __uri_generator__ = ptah.UriGenerator('mycontent')
+            __uri_factory__ = ptah.UriFactory('mycontent')
 
         content = MyContent()
 
@@ -92,7 +92,7 @@ class TestContent(Base):
 
         class MyContent(ptah.cms.Content):
             __mapper_args__ = {'polymorphic_identity': 'mycontent'}
-            __uri_generator__ = ptah.UriGenerator('mycontent')
+            __uri_factory__ = ptah.UriFactory('mycontent')
 
         content = MyContent()
         config.notify(ptah.cms.ContentCreatedEvent(content))

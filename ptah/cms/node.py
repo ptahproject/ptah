@@ -45,7 +45,7 @@ class Node(Base):
        a :py:class:`ptah.JsonListType` of :py:class:`ptah.ACL` strings
        registered with security machinery.
 
-    .. attribute:: __uri_generator__
+    .. attribute:: __uri_factory__
 
        function which will return value for __uri__.  the uri must be
        resolvable by using :py:func:`ptah.resolve` function.
@@ -80,7 +80,7 @@ class Node(Base):
     __mapper_args__ = {'polymorphic_on': __type_id__}
 
     __parent__ = None
-    __uri_generator__ = None
+    __uri_factory__ = None
 
     __acl__ = ptah.ACLsProperty()
 
@@ -96,10 +96,10 @@ class Node(Base):
             self.__parent_uri__ = kw['__parent__'].__uri__
 
         try:
-            self.__uri__ = self.__uri_generator__()
+            self.__uri__ = self.__uri_factory__()
         except TypeError:
             raise TypeError(
-                'Subclass of Node has to override __uri_generator__')
+                'Subclass of Node has to override __uri_factory__')
 
     @action(permission=View)
     def info(self):

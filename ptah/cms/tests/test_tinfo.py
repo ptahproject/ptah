@@ -177,7 +177,7 @@ class TestTypeInfo(Base):
             'cms+type:mycontent')
 
         self.assertTrue(
-            MyContent.__uri_generator__().startswith('cms+mycontent:'))
+            MyContent.__uri_factory__().startswith('cms+mycontent:'))
 
     def test_tinfo_resolver(self):
         import ptah, ptah.cms

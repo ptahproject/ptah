@@ -9,13 +9,13 @@ from base import Base
 class Content(ptah.cms.Content):
 
     __type__ = ptah.cms.Type('content', 'Test Content')
-    __uri_generator__ = ptah.UriGenerator('cms+content')
+    __uri_factory__ = ptah.UriFactory('cms+content')
 
 
 class Container(ptah.cms.Container):
 
     __type__ = ptah.cms.Type('container', 'Test Container')
-    __uri_generator__ = ptah.UriGenerator('cms+container')
+    __uri_factory__ = ptah.UriFactory('cms+container')
 
 
 class TestContainer(Base):

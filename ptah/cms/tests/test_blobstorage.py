@@ -60,7 +60,7 @@ class TestBlob(Base):
         class MyContent(ptah.cms.Node):
             __name__ = ''
             __mapper_args__ = {'polymorphic_identity': 'mycontent'}
-            __uri_generator__ = ptah.UriGenerator('test')
+            __uri_factory__ = ptah.UriFactory('test')
 
         content = MyContent()
         content_uri = content.__uri__

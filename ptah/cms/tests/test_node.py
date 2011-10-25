@@ -17,7 +17,7 @@ class TestNode(Base):
         import ptah.cms
 
         class MyContent(ptah.cms.Node):
-            __uri_generator__ = ptah.UriGenerator('test')
+            __uri_factory__ = ptah.UriFactory('test')
 
         content = MyContent()
         _uri = content.__uri__
@@ -34,7 +34,7 @@ class TestNode(Base):
 
         class MyContent(ptah.cms.Node):
             __mapper_args__ = {'polymorphic_identity': 'mycontent'}
-            __uri_generator__ = ptah.UriGenerator('test')
+            __uri_factory__ = ptah.UriFactory('test')
 
         content = MyContent()
         _uri = content.__uri__
@@ -51,7 +51,7 @@ class TestNode(Base):
 
         class MyContent(ptah.cms.Node):
             __mapper_args__ = {'polymorphic_identity': 'mycontent'}
-            __uri_generator__ = ptah.UriGenerator('test')
+            __uri_factory__ = ptah.UriFactory('test')
 
         parent = MyContent()
         parent_uri = parent.__uri__
@@ -73,7 +73,7 @@ class TestNode(Base):
         import ptah, ptah.cms
 
         class MyContent(ptah.cms.Node):
-            __uri_generator__ = ptah.UriGenerator('test')
+            __uri_factory__ = ptah.UriFactory('test')
             __mapper_args__ = {'polymorphic_identity': 'mycontent'}
 
         content = MyContent()
@@ -99,7 +99,7 @@ class TestNode(Base):
 
         class MyContent(ptah.cms.Node):
             __mapper_args__ = {'polymorphic_identity': 'mycontent'}
-            __uri_generator__ = ptah.UriGenerator('test')
+            __uri_factory__ = ptah.UriFactory('test')
 
         content = MyContent()
         __uri = content.__uri__
@@ -124,7 +124,7 @@ class TestNode(Base):
 
         class MyContent(ptah.cms.Node):
             __mapper_args__ = {'polymorphic_identity': 'mycontent'}
-            __uri_generator__ = ptah.UriGenerator('test')
+            __uri_factory__ = ptah.UriFactory('test')
 
         content = MyContent()
         __uri = content.__uri__

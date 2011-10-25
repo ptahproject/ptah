@@ -115,8 +115,8 @@ def Type(name, title=None, fieldset=None, **kw):
         f_locals['__id__'] = sqla.Column(
             'id', sqla.Integer,
             sqla.ForeignKey('ptah_cms_content.id'), primary_key=True)
-    if '__uri_generator__' not in f_locals:
-        f_locals['__uri_generator__'] = ptah.UriGenerator('cms+%s'%name)
+    if '__uri_factory__' not in f_locals:
+        f_locals['__uri_factory__'] = ptah.UriFactory('cms+%s'%name)
 
         def resolve_content(uri):
             return _sql_get.first(uri=uri)

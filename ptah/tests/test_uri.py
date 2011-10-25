@@ -79,7 +79,7 @@ class TestUri(Base):
     def test_uri_uri_generator(self):
         import ptah
 
-        uri = ptah.UriGenerator('test')
+        uri = ptah.UriFactory('test')
 
         u1 = uri()
         u2 = uri()

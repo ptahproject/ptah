@@ -20,7 +20,7 @@ class TestTraverser(Base):
 
         class MyContent(ptah.cms.Content):
             __mapper_args__ = {'polymorphic_identity': 'mycontent'}
-            __uri_generator__ = ptah.UriGenerator('test')
+            __uri_factory__ = ptah.UriFactory('test')
 
         root = factory()
 

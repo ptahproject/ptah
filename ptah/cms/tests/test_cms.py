@@ -157,7 +157,7 @@ class TestCms(Base):
         from ptah.cms.cms import wrap, NodeWrapper
 
         class Test(ptah.cms.Content):
-            __uri_generator__ = ptah.UriGenerator('test')
+            __uri_factory__ = ptah.UriFactory('test')
 
             @ptah.cms.action(permission=ptah.NO_PERMISSION_REQUIRED)
             def update(self, *args, **data): # pragma: no cover
@@ -173,7 +173,7 @@ class TestCms(Base):
         from ptah.cms.cms import wrap, NodeWrapper
 
         class Test(ptah.cms.Content):
-            __uri_generator__ = ptah.UriGenerator('test')
+            __uri_factory__ = ptah.UriFactory('test')
 
             @ptah.cms.action(permission=ptah.NO_PERMISSION_REQUIRED)
             def update(self, *args, **data): # pragma: no cover

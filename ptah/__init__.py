@@ -5,7 +5,7 @@ from ptah.uri import resolve
 from ptah.uri import resolver
 from ptah.uri import register_uri_resolver
 from ptah.uri import extract_uri_schema
-from ptah.uri import UriGenerator
+from ptah.uri import UriFactory
 
 # security
 from ptah.authentication import authService

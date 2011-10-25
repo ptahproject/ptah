@@ -12,7 +12,7 @@ URI
 
   .. autofunction:: extract_uri_schema
 
-  .. autoclass:: UriGenerator
+  .. autoclass:: UriFactory
      :members: __call__
 
 
