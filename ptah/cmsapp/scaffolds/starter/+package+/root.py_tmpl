@@ -4,7 +4,7 @@ import ptah.cms
 class ApplicationRoot(ptah.cms.ApplicationRoot):
 
     __type__ = ptah.cms.Type('{{package}}-app',
-        title='Application Root',
+        title='Application Root of {{package}}',
         description='A root for the {{package}} Application')
 
 
