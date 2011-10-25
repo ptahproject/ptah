@@ -1,0 +1,14 @@
+from ptah import manage, view
+
+class MyModule(manage.PtahModule):
+    __doc__ = u'An example Ptah Manage module from {{package}}'
+    title = '{{package}} example module'
+    manage.module('{{package}}')
+
+class MyModuleView(view.View):
+    view.pview(
+        context = MyModule,
+        template = view.template('{{package}}:templates/mgmtmodule.pt'))
+
+    def update(self):
+        self.data = {'example':'text'}
