@@ -19,7 +19,7 @@ from ptah.cms.tinfo import Types
 from ptah.cms.tinfo import TypeInformation
 
 # application root
-from ptah.cms.root import Factories
+from ptah.cms.root import get_app_factories
 from ptah.cms.root import ApplicationRoot
 from ptah.cms.root import ApplicationPolicy
 from ptah.cms.root import ApplicationFactory

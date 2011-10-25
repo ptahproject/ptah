@@ -17,11 +17,21 @@ class RestBase(Base):
     def _setup_ptah(self):
         pass
 
+    def _make_app(self):
+        global ApplicationRoot
+        class ApplicationRoot(ptah.cms.ApplicationRoot):
+            __type__ = ptah.cms.Type('app')
+
+        ApplicationRoot.__type__.cls = ApplicationRoot
+
+        return ApplicationRoot
+
     def setUp(self):
         super(RestBase, self).setUp()
 
         self.orig_checkPermission = ptah.checkPermission
         ptah.checkPermission = self._check_perm
+        ptah.cms.ApplicationFactory._sql_get_root.reset()
 
     def tearDown(self):
         ptah.checkPermission = self.orig_checkPermission
@@ -47,6 +57,9 @@ class TestRestApi(RestBase):
 
     def test_rest_applications(self):
         from ptah.cms.rest import cmsApplications
+
+        ApplicationRoot = self._make_app()
+
         self._init_ptah()
 
         request = self._makeRequest()
@@ -54,7 +67,8 @@ class TestRestApi(RestBase):
         info = cmsApplications(request)
         self.assertEqual(info, [])
 
-        factory = ptah.cms.ApplicationFactory('/test', 'root', 'Root App')
+        factory = ptah.cms.ApplicationFactory(
+            ApplicationRoot, '/test', 'root', 'Root App')
 
         info = cmsApplications(request)
         self.assertEqual(len(info), 1)
@@ -64,7 +78,8 @@ class TestRestApi(RestBase):
                          'http://localhost:8080/content:%s/%s/'%(
                 info[0]['__mount__'], info[0]['__uri__']))
 
-        factory = ptah.cms.ApplicationFactory('/test2', 'root2', 'Root App')
+        factory = ptah.cms.ApplicationFactory(
+            ApplicationRoot, '/test2', 'root2', 'Root App')
         self.assertEqual(len(cmsApplications(request)), 2)
 
         self._allow = False
@@ -78,10 +93,11 @@ class TestRestApi(RestBase):
         info = cmsTypes(request)
         self.assertEqual(info, [])
 
+        ApplicationRoot = self._make_app()
         self._init_ptah()
 
         info = cmsTypes(request)
-
+        
         self.assertEqual(info[0]['name'], 'app')
         self.assertEqual(info[0]['__uri__'], 'cms+type:app')
         self.assertEqual(len(info[0]['fieldset']), 2)
@@ -90,12 +106,14 @@ class TestRestApi(RestBase):
 
     def test_rest_content(self):
         from ptah.cms.rest import cmsContent
+        ApplicationRoot = self._make_app()
         self._init_ptah()
 
         request = self._makeRequest()
         self.assertRaises(ptah.cms.NotFound, cmsContent, request, 'root')
 
-        factory = ptah.cms.ApplicationFactory('/test', 'root', 'Root App')
+        factory = ptah.cms.ApplicationFactory(
+            ApplicationRoot, '/test', 'root', 'Root App')
         root = factory(request)
         root.__uri__ = 'cms+app:test'
         transaction.commit()

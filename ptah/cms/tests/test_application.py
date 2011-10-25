@@ -1,20 +1,37 @@
 import ptah
 import transaction
-from ptah import config
+from ptah import cms, config
 
 from base import Base
 
 
 class TestApplicationFactoryRegistration(Base):
 
+    def setUp(self):
+        super(TestApplicationFactoryRegistration, self).setUp()
+
+        import ptah.cms
+        ptah.cms.ApplicationFactory._sql_get_root.reset()
+
     def _setup_ptah(self):
         pass
 
+    def _make_app(self):
+        global ApplicationRoot
+        class ApplicationRoot(cms.ApplicationRoot):
+            __type__ = cms.Type('app')
+
+        return ApplicationRoot
+
+
     def test_app_factory(self):
         import ptah.cms
+        ApplicationRoot = self._make_app()
+
         self._init_ptah()
 
-        factory = ptah.cms.ApplicationFactory('/test', 'root', 'Root App')
+        factory = ptah.cms.ApplicationFactory(
+            ApplicationRoot, '/test', 'root', 'Root App')
 
         self.assertTrue(factory.id == 'test')
         self.assertTrue(factory.path == '/test/')
@@ -27,7 +44,7 @@ class TestApplicationFactoryRegistration(Base):
         root = factory(self.request)
         r_uri = root.__uri__
 
-        self.assertTrue(isinstance(root, ptah.cms.ApplicationRoot))
+        self.assertTrue(isinstance(root, ApplicationRoot))
         self.assertTrue(root.title == 'Root App')
         self.assertTrue(root.__name__ == 'root')
         self.assertTrue(root.__root_path__ == '/test/')
@@ -42,14 +59,17 @@ class TestApplicationFactoryRegistration(Base):
         root = ptah.resolve(r_uri)
         self.assertEqual(root.__uri__, r_uri)
 
-        factory = ptah.cms.ApplicationFactory('', 'root', 'Root App')
+        factory = ptah.cms.ApplicationFactory(
+            ApplicationRoot, '', 'root', 'Root App')
         self.assertTrue(factory.default_root)
 
     def test_app_factory_mutiple(self):
         import ptah.cms
 
-        factory1 = ptah.cms.ApplicationFactory('/app1', 'app1', 'Root App1')
-        factory2 = ptah.cms.ApplicationFactory('/app2', 'app2', 'Root App2')
+        factory1 = ptah.cms.ApplicationFactory(
+            ApplicationRoot, '/app1', 'app1', 'Root App1')
+        factory2 = ptah.cms.ApplicationFactory(
+            ApplicationRoot, '/app2', 'app2', 'Root App2')
 
         root1 = factory1()
         root2 = factory2()
@@ -61,8 +81,10 @@ class TestApplicationFactoryRegistration(Base):
     def test_app_factory_mutiple_same_name(self):
         import ptah.cms
 
-        factory1 = ptah.cms.ApplicationFactory('/test', 'root', 'Root App1')
-        factory2 = ptah.cms.ApplicationFactory('/', 'root', 'Root App2')
+        factory1 = ptah.cms.ApplicationFactory(
+            ApplicationRoot, '/test', 'root', 'Root App1')
+        factory2 = ptah.cms.ApplicationFactory(
+            ApplicationRoot, '/', 'root', 'Root App2')
 
         self.assertRaises(config.ConflictError, self._init_ptah)
 
@@ -70,8 +92,10 @@ class TestApplicationFactoryRegistration(Base):
         import ptah.cms
         self._init_ptah()
 
-        factory1 = ptah.cms.ApplicationFactory('/app1', 'root', 'Root App')
-        factory2 = ptah.cms.ApplicationFactory('/app2', 'root', 'Root App')
+        factory1 = ptah.cms.ApplicationFactory(
+            ApplicationRoot, '/app1', 'root', 'Root App')
+        factory2 = ptah.cms.ApplicationFactory(
+            ApplicationRoot, '/app2', 'root', 'Root App')
 
         root1 = factory1()
         uri1 = root1.__uri__
@@ -92,7 +116,7 @@ class TestApplicationFactoryRegistration(Base):
             pass
 
         factory = ptah.cms.ApplicationFactory(
-            '/app1', 'root', 'Root App', policy=CustomPolicy)
+            ApplicationRoot, '/app1', 'root', 'Root App', CustomPolicy)
 
         root = factory(self._makeRequest())
         self.assertTrue(isinstance(root.__parent__, CustomPolicy))
@@ -120,7 +144,7 @@ class TestApplicationFactoryCustom(Base):
         CustomApplication.__type__.cls = CustomApplication
 
         factory = ptah.cms.ApplicationFactory(
-            '/', 'root', 'Root App', CustomApplication.__type__)
+            CustomApplication, '/', 'root', 'Root App')
 
         root = factory()
         self.assertTrue(isinstance(root, CustomApplication))
@@ -141,7 +165,7 @@ class TestApplicationFactoryCustom(Base):
         CustomApplication.__type__.cls = CustomApplication
 
         factory = ptah.cms.ApplicationFactory(
-            '/', 'root', 'Root App', CustomApplication)
+            CustomApplication, '/', 'root', 'Root App')
 
         root = factory()
         self.assertTrue(isinstance(root, CustomApplication))

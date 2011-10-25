@@ -9,6 +9,6 @@ class ApplicationRoot(ptah.cms.ApplicationRoot):
 
 
 APP_FACTORY = ptah.cms.ApplicationFactory(
+    ApplicationRoot,
     name='root', 
-    title='{{project}} Application',
-    tinfo = ApplicationRoot.__type__)
+    title='{{project}} Application')

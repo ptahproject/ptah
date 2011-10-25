@@ -22,7 +22,7 @@ CMS = ptah.restService('cms', 'Ptah CMS API')
 def cmsApplications(request, *args):
     apps = []
 
-    for name, factory in ptah.cms.Factories.items():
+    for name, factory in ptah.cms.get_app_factories().items():
         root = factory(request)
 
         try:
@@ -78,7 +78,7 @@ def typeInfo(tinfo, request):
 def cmsContent(request, app, uri=None, action='', *args):
     info = {}
 
-    appfactory = ptah.cms.Factories.get(app)
+    appfactory = ptah.cms.get_app_factories().get(app)
     if appfactory is None:
         raise NotFound()
 
