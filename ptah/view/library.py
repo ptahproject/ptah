@@ -1,7 +1,7 @@
 """ resource library """
 from urlparse import urlparse
 from ptah import config
-from ptah.view.resources import static_url, registry
+from ptah.view.resources import static_url
 
 _libraries = {}
 LIBRARY_ID = 'ptah.view:library'
@@ -13,9 +13,6 @@ def library(name,
 
     if not path:
         raise ValueError("path is required")
-
-    if resource and resource not in registry:
-        raise ValueError("Resource is not found '%s'"%resource)
 
     if type not in ('js', 'css'):
         raise ValueError("Uknown type '%s'"%type)

@@ -218,9 +218,12 @@ class StaticCommand(Command):
     parser.add_option('-d', '--dump', dest='dump',
                       help = 'Dump static assets')
 
+    _include = None
+
     def command(self):
         # load all ptah packages
-        config.initialize()
+        config.initialize(self._include)
+        registry = config.registry.storage[resources.STATIC_ID]
 
         if self.options.dump:
             basepath = self.options.dump.strip()
@@ -231,7 +234,7 @@ class StaticCommand(Command):
                 print "Output path is not directory."
                 return
 
-            items = resources.registry.items()
+            items = registry.items()
             items.sort()
             for name, (path, pkg) in items:
                 print "* Coping from '%s' %s"%(pkg, path)
@@ -260,7 +263,7 @@ class StaticCommand(Command):
 
         # list static sections
         if self.options.section:
-            items = resources.registry.items()
+            items = registry.items()
             items.sort()
 
             for name, (path, pkg) in items:

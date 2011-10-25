@@ -16,6 +16,8 @@ class TestStaticCommand(unittest.TestCase):
         self.dir = tempfile.mkdtemp()
 
     def tearDown(self):
+        config.cleanup_system(self.__class__.__module__)
+
         self.stdout = self._stdout
         shutil.rmtree(self.dir)
 
@@ -41,6 +43,9 @@ class TestStaticCommand(unittest.TestCase):
         self.assertTrue('by: ptah.view.tests' in val)
 
     def test_commands_static_dump_errors(self):
+        from ptah.view.commands import StaticCommand
+        StaticCommand._include = ('ptah', self.__class__.__module__)
+
         view.static('tests', 'ptah.view.tests:static/dir2')
 
         _out = sys.stdout
@@ -65,6 +70,9 @@ class TestStaticCommand(unittest.TestCase):
 
     def test_commands_static_dump(self):
         view.static('tests', 'ptah.view.tests:static/dir2')
+        
+        from ptah.view.commands import StaticCommand
+        StaticCommand._include = ('ptah', self.__class__.__module__)
 
         dir = os.path.join(self.dir, 'subdir')
 
@@ -81,6 +89,9 @@ class TestStaticCommand(unittest.TestCase):
         self.assertTrue(files == ['style.css', 'text.txt'])
 
     def test_commands_static_dump_skipping_existing(self):
+        from ptah.view.commands import StaticCommand
+        StaticCommand._include = ('ptah', self.__class__.__module__)
+
         view.static('tests', 'ptah.view.tests:static/dir2')
 
         os.makedirs(os.path.join(self.dir, 'tests'))

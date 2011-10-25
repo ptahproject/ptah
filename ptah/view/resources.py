@@ -1,7 +1,10 @@
 """ static resource management api """
 import sys, os, re, colander
 from urlparse import urljoin, urlparse
-from paste import fileapp, request, httpexceptions
+from paste import request
+
+from pyramid.static import _FileResponse
+from pyramid.httpexceptions import HTTPNotFound
 
 from ptah import config
 from ptah.view import tmpl
@@ -26,8 +29,8 @@ STATIC = config.register_settings(
 STATIC.isurl = False
 
 
-registry = {}
-dirs = {}
+STATIC_ID = 'ptah.view:static'
+
 
 def static(name, path, layer=''):
     """ Register new static assets directory
@@ -36,7 +39,6 @@ def static(name, path, layer=''):
     :param path: Filesystem path
     """
     abspath, pkg = tmpl.path(path)
-    data = registry[name] = [abspath, pkg]
 
     if not abspath:
         raise ValueError("Can't find path to static resource")
@@ -44,14 +46,16 @@ def static(name, path, layer=''):
     if not os.path.isdir(abspath):
         raise ValueError("path is not directory")
 
-    discriminator = ('ptah.view:static', name, layer)
+    discriminator = (STATIC_ID, name, layer)
 
     info = config.DirectiveInfo()
     info.attach(
         config.Action(
             LayerWrapper(lambda config, a1,a2,a3: \
-                         registry.update({a1: (a2, a3)}), discriminator),
+                         config.storage[STATIC_ID]\
+                             .update({a1: (a2, a3)}), discriminator),
             (name, abspath, pkg),
+            id = STATIC_ID,
             discriminator = discriminator))
 
 
@@ -89,13 +93,8 @@ def buildTree(path, not_allowed=re.compile('^[.~$#]')):
 @config.subscriber(config.AppStarting)
 def initialize(ev):
     url = STATIC.url
-    if urlparse(url)[0]:
-        # it's a URL
-        STATIC.isurl = True
-        for name, data in registry.items():
-            dirs[name] = (0, urljoin(url, name))
-
-    else:
+    if not urlparse(url)[0]:
+        registry = config.registry.storage[STATIC_ID]
         for name, (abspath, pkg) in registry.items():
             prefix = '%s/%s'%(url, name)
             rname = '%s-%s'%(url, name)
@@ -103,50 +102,29 @@ def initialize(ev):
 
             ev.config.add_route(rname, pattern)
             ev.config.add_view(
-                route_name=rname,
-                view=StaticView(abspath, buildTree(abspath), prefix))
+                route_name =rname,
+                view = StaticView(abspath, prefix))
+    else:
+        STATIC.isurl = True
 
 
 class StaticView(object):
 
-    def __init__(self, path, dirinfo, prefix):
+    def __init__(self, path, prefix):
         self.path = path
-        self.dirinfo = dirinfo
         self.prefix = '/%s'%prefix
         self.lprefix = len(self.prefix)+1
 
     def __call__(self, context, request):
-        return request.get_response(self.process)
-
-    def process(self, environ, start_response):
-        path_info = environ.get('PATH_INFO')
+        path_info = request.environ.get('PATH_INFO')
         if not path_info:
-            return self.not_found(environ, start_response)
+            return HTTPNotFound(request.url)
 
         # windows only
-        path = os.path.join(*(path_info[self.lprefix:].split('/')))
+        path = os.path.join(
+            self.path, os.path.join(*(path_info[self.lprefix:].split('/'))))
 
-        if path in self.dirinfo:
-            fa = fileapp.FileApp(os.path.join(self.path, path))
-            if STATIC.cache_max_age:
-                fa.cache_control(max_age=STATIC.cache_max_age)
+        if os.path.isfile(path):
+            return _FileResponse(path, STATIC.cache_max_age)
 
-            return fa(environ, start_response)
-
-        return self.not_found(environ, start_response)
-
-    def not_found(self, environ, start_response, debug_message=None):
-        comment=('SCRIPT_NAME=%r; PATH_INFO=%r; debug: %s' % (
-                environ.get('SCRIPT_NAME'),
-                environ.get('PATH_INFO'),
-                debug_message or '(none)'))
-        exc = httpexceptions.HTTPNotFound(
-            'The resource at %s could not be found'
-            % request.construct_url(environ),
-            comment=comment)
-        return exc.wsgi_application(environ, start_response)
-
-
-@config.cleanup
-def cleanup():
-    registry.clear()
+        return HTTPNotFound(request.url)
