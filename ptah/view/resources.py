@@ -28,7 +28,6 @@ STATIC = config.register_settings(
 )
 STATIC.isurl = False
 
-
 STATIC_ID = 'ptah.view:static'
 
 

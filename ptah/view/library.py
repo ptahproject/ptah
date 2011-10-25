@@ -3,7 +3,6 @@ from urlparse import urlparse
 from ptah import config
 from ptah.view.resources import static_url
 
-_libraries = {}
 LIBRARY_ID = 'ptah.view:library'
 
 
@@ -162,8 +161,3 @@ class Library(object):
 
     def __repr__(self):
         return '<ptah.view.library.Library "%s">'%self.name
-
-
-@config.cleanup
-def cleanup():
-    _libraries.clear()
