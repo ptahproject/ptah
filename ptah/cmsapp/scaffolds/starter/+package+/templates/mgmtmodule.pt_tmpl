@@ -1,0 +1,7 @@
+<div class="page-header">
+    <h1>${view.context.title}<h1>
+</div>
+
+<div class="row">
+    <p>An example Ptah Manage in {{package}}</p>
+</div>
