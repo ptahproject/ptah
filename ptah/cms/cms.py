@@ -3,8 +3,6 @@ from ptah import config
 from zope.interface import providedBy, Interface, implements
 
 import ptah
-#from ptah.cms import node
-#from node import load, load_parents
 from permissions import View
 from interfaces import NotFound, Forbidden
 

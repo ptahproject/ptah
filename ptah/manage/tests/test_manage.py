@@ -19,7 +19,7 @@ class TestManageModule(Base):
 
     def test_manage_module(self):
         from ptah.manage.manage import \
-           module, MODULES, PtahModule, PtahManageRoute,\
+           module, MANAGE_ID, PtahModule, PtahManageRoute,\
            set_access_manager
 
         global TestModule
@@ -30,6 +30,8 @@ class TestManageModule(Base):
             module('test-module')
 
         self._init_ptah()
+
+        MODULES = config.registry.storage[MANAGE_ID]
         self.assertIn('test-module', MODULES)
 
         request = self._makeRequest()
@@ -147,7 +149,7 @@ class TestInstrospection(Base):
         super(TestInstrospection, self).tearDown()
 
     def test_manage_module(self):
-        from ptah.manage.manage import INTROSPECTIONS, introspection
+        from ptah.manage.manage import INTROSPECT_ID, introspection
 
         global TestModule
         class TestModule(object):
@@ -157,5 +159,7 @@ class TestInstrospection(Base):
             introspection('test-module')
 
         self._init_ptah()
+
+        INTROSPECTIONS = config.registry.storage[INTROSPECT_ID]
         self.assertIn('test-module', INTROSPECTIONS)
         self.assertIs(INTROSPECTIONS['test-module'], TestModule)

@@ -13,7 +13,7 @@ from ptah.uri import RESOLVER_ID
 from ptah.config import directives
 from ptah.config.api import exclude, list_packages
 
-from manage import INTROSPECTIONS
+from manage import INTROSPECT_ID
 
 
 class IntrospectModule(manage.PtahModule):
@@ -166,7 +166,8 @@ class PackageView(view.View):
             ndata[tp] = actions
 
         itypes = []
-        for key, cls in INTROSPECTIONS.items():
+        intros = config.registry.storage[INTROSPECT_ID]
+        for key, cls in intros.items():
             if key in self.data:
                 itypes.append((cls.title, cls(self.request)))
 

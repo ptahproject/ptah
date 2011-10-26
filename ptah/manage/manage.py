@@ -7,7 +7,9 @@ from ptah.settings import PTAH_CONFIG
 from ptah.authentication import authService
 
 
-MODULES = {}
+MANAGE_ID = 'ptah:manage-module'
+INTROSPECT_ID = 'ptah:introspection'
+
 
 class PtahModule(object):
 
@@ -38,30 +40,29 @@ def module(id):
     info = config.DirectiveInfo(allowed_scope=('class',))
 
     def _complete(config, cls, id):
-        MODULES[id] = cls
-
         cls.name = id
+        config.storage[MANAGE_ID][id] = cls
 
     info.attach(
         config.ClassAction(
             _complete, (id,),
-            discriminator = ('ptah:manage-module', id))
+            id = MANAGE_ID,
+            discriminator = (MANAGE_ID, id))
         )
 
-
-INTROSPECTIONS = {}
 
 def introspection(id):
     info = config.DirectiveInfo(allowed_scope=('class',))
 
     def _complete(config, cls, id):
-        INTROSPECTIONS[id] = cls
         cls.name = id
+        config.storage[INTROSPECT_ID][id] = cls
 
     info.attach(
         config.ClassAction(
             _complete, (id,),
-            discriminator = ('ptah:introspection', id))
+            id = INTROSPECT_ID,
+            discriminator = (INTROSPECT_ID, id))
         )
 
 
@@ -106,7 +107,7 @@ class PtahManageRoute(object):
             raise HTTPForbidden()
 
     def __getitem__(self, key):
-        mod = MODULES.get(key)
+        mod = config.registry.storage[MANAGE_ID].get(key)
 
         if mod is not None:
             return mod(self, self.request)
@@ -162,7 +163,7 @@ class ManageView(view.View):
         request = self.request
 
         mods = []
-        for name, mod in MODULES.items():
+        for name, mod in config.registry.storage[MANAGE_ID].items():
             mods.append((mod.title, mod))
 
         mods.sort()
