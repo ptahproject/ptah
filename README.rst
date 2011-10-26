@@ -81,4 +81,4 @@ Ptah is offered under the BSD3 license included in all packages.
 Authors
 -------
 
-Ptah is written by Python enthusiasts who do not want to compromise.
+Ptah is written by Python enthusiasts who do not want compromise.
