@@ -7,12 +7,14 @@ developing interactive web sites and applications fun.
 
 Ptah is loosely affiliated with the Pyramid, Django, Drupal and Zope/Plone communities.
 
+Requirements
+------------
+
+You will need **git**, **python 2.7** and a new version of **virtualenv**.
+
 Install
 -------
-
-You will need git, python 2.7 and a new version of virtualenv.  Before we start
-lets review what the structure will look like after you complete the 
-instructions::
+Before we start lets review what the structure will look like after you complete the instructions::
 
   venv/
     Include/
