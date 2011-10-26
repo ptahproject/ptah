@@ -9,10 +9,6 @@ from ptah.uri import resolve, resolver
 from ptah.util import tldata
 from ptah.interfaces import IAuthInfo, IAuthentication
 
-checkers = []
-providers = {}
-searchers = {}
-
 
 class _Superuser(object):
 
@@ -35,26 +31,31 @@ def superuser_resolver(uri):
         return SUPERUSER
 
 
-def register_auth_checker(checker):
-    checkers.append(checker)
+AUTH_CHECKER_ID = 'ptah:auth-checker'
+AUTH_PROVIDER_ID = 'ptah:auth-provider'
+AUTH_SEARCHER_ID = 'ptah:auth-searcher'
 
+
+def auth_checker(checker):
     info = config.DirectiveInfo()
     info.attach(
         config.Action(
-            lambda config, c: checkers.append(c), (checker,),
-            discriminator = ('ptah:auth-checker', checker))
+            lambda config: config.storage[AUTH_CHECKER_ID].\
+                update({id(checker): checker}),
+            discriminator = (AUTH_CHECKER_ID, checker))
         )
     return checker
 
 
 def register_auth_provider(name, provider):
-    providers[name] = provider
-
     info = config.DirectiveInfo()
+
     info.attach(
         config.Action(
-            lambda config, n, p: providers.update({n:p}), (name, provider),
-            discriminator = ('ptah:auth-provider', name))
+            lambda config, n, p: config.storage[AUTH_PROVIDER_ID]\
+                .update({n:p}),
+            (name, provider),
+            discriminator = (AUTH_PROVIDER_ID, name))
         )
 
 
@@ -80,13 +81,15 @@ class Authentication(object):
     def authenticate(self, credentials):
         info = AuthInfo()
 
+        providers = config.registry.storage[AUTH_PROVIDER_ID]
         for pname, provider in providers.items():
             principal = provider.authenticate(credentials)
             if principal is not None:
                 info.uri = principal.uri
                 info.principal = principal
 
-                for checker in checkers:
+                for checker in \
+                        config.registry.storage[AUTH_CHECKER_ID].values():
                     if not checker(info):
                         return info
 
@@ -100,7 +103,8 @@ class Authentication(object):
         info.uri = principal.uri
         info.principal = principal
 
-        for checker in checkers:
+        for checker in \
+                config.registry.storage[AUTH_CHECKER_ID].values():
             if not checker(info):
                 return info
 
@@ -124,6 +128,8 @@ class Authentication(object):
         return resolve(self.get_userid())
 
     def get_principal_bylogin(self, login):
+        providers = config.registry.storage[AUTH_PROVIDER_ID]
+
         for pname, provider in providers.items():
             principal = provider.get_principal_bylogin(login)
             if principal is not None:
@@ -133,17 +139,20 @@ authService = Authentication()
 
 
 def search_principals(term):
+    searchers = config.registry.storage[AUTH_SEARCHER_ID]
     for name, searcher in searchers.items():
         for principal in searcher(term):
             yield principal
 
 
 def register_principal_searcher(name, searcher):
-    searchers[name] = searcher
-
     info = config.DirectiveInfo()
     info.attach(
-        config.Action(None, discriminator = ('ptah:auth-searcher', name))
+        config.Action(
+            lambda config, name, searcher:
+               config.storage[AUTH_SEARCHER_ID].update({name: searcher}),
+            (name, searcher),
+            discriminator = (AUTH_SEARCHER_ID, name))
         )
 
 
@@ -151,23 +160,14 @@ def principal_searcher(name):
     info = config.DirectiveInfo()
 
     def wrapper(searcher):
-        searchers[name] = searcher
-
         info.attach(
             config.Action(
-                lambda config, name, searcher: searchers.update({name: searcher}),
+                lambda config, name, searcher:
+                    config.storage[AUTH_SEARCHER_ID].update({name: searcher}),
                 (name, searcher),
-                discriminator = ('ptah:auth-searcher', name))
+                discriminator = (AUTH_SEARCHER_ID, name))
             )
 
         return searcher
 
     return wrapper
-
-
-
-@config.cleanup
-def cleanup():
-    checkers[:] = []
-    providers.clear()
-    searchers.clear()

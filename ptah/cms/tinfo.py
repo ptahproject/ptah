@@ -61,7 +61,7 @@ class TypeInformation(object):
             return False
 
         if self.permission:
-            return ptah.checkPermission(self.permission, container)
+            return ptah.check_permission(self.permission, container)
         return True
 
     def checkContext(self, container):
@@ -75,7 +75,7 @@ class TypeInformation(object):
 
         types = []
         all_types = config.registry.storage[TYPES_DIR_ID]
-        
+
         if self.filter_content_types:
             for tinfo in self.allowed_content_types:
                 if isinstance(tinfo, basestring):
@@ -138,7 +138,6 @@ def Type(name, title=None, fieldset=None, **kw):
     info.attach(
         config.ClassAction(
             registerType, (typeinfo, name, fieldset), kw,
-            id = TYPES_DIR_ID,
             discriminator = (TYPES_DIR_ID, name))
         )
 

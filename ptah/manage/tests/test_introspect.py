@@ -97,7 +97,7 @@ class TestIntrospectModule(Base):
 
         request = DummyRequest(
             params = {'pkg': 'ptah.view.customize'})
-        
+
         mod = IntrospectModule(None, request)
         res = SourceView.__renderer__(mod, request)
         self.assertIn('Source: ptah/customize.py', res.body)
@@ -110,6 +110,7 @@ class TestUriView(Base):
 
     def test_uri_view(self):
         from ptah.manage.introspect import IntrospectModule, UriResolver
+        self._init_ptah()
 
         request = DummyRequest(
             GET = {'uri': 'ptah+auth:superuser'})
@@ -123,6 +124,7 @@ class TestUriView(Base):
 
     def test_uri_handler(self):
         from ptah.manage.introspect import IntrospectModule, UriResolver
+        self._init_ptah()
 
         request = DummyRequest(
             POST = {'form.buttons.show': 'Show'})

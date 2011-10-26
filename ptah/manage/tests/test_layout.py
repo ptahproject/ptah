@@ -65,5 +65,3 @@ class TestLayoutPreview(Base):
         res = v.render()
         self.assertEqual(
             '<div style="border: 4px solid yellow"><div><div style="border: 4px solid green"><div><div style="border: 2px solid red">test</div></div></div></div></div>', res)
-
-

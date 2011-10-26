@@ -17,7 +17,7 @@ def field(name, layer=''):
     info.attach(
         config.ClassAction(
             view.LayerWrapper(register_field_impl, discriminator),
-            (name, ), id = FIELD_ID, discriminator = discriminator)
+            (name, ), discriminator = discriminator)
         )
 
 
@@ -29,7 +29,7 @@ def register_field_factory(cls, name, layer=''):
     info.attach(
         config.Action(
             view.LayerWrapper(register_field_impl, discriminator),
-            (cls, name), id = FIELD_ID, discriminator = discriminator)
+            (cls, name), discriminator = discriminator)
         )
 
 
@@ -41,7 +41,7 @@ def fieldpreview(cls):
             config.Action(
                 lambda config, cls, func:
                     config.storage[PREVIEW_ID].update({cls: func}),
-                (cls, func), id = PREVIEW_ID, discriminator = (PREVIEW_ID, cls))
+                (cls, func), discriminator = (PREVIEW_ID, cls))
             )
         return func
 
@@ -316,7 +316,7 @@ class FieldFactory(Field):
 
     def bind(self, prefix, content, params):
         try:
-            cls = config.registry.storage[FIELD_ID].get(self.__field__, None)
+            cls = config.registry.storage[FIELD_ID][self.__field__]
         except:
             cls = None
 

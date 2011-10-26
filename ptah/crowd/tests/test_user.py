@@ -39,7 +39,7 @@ class TestCreateUser(Base):
         view = CreateUserForm(mod, request)
         view.update()
         self.assertIn(
-            'Please fix indicated errors.', 
+            'Please fix indicated errors.',
             request.session['msgservice'][0])
 
     def test_create_user(self):
@@ -67,7 +67,7 @@ class TestCreateUser(Base):
         self.assertIsInstance(res, HTTPFound)
         self.assertEqual(res.headers['location'], '.')
         self.assertIn(
-            'User has been created.', 
+            'User has been created.',
             request.session['msgservice'][0])
 
         user = ptah.authService.get_principal_bylogin('ptah@ptahproject.org')
@@ -88,13 +88,13 @@ class TestModifyUser(Base):
         Session.add(user)
         Session.flush()
         return user
-        
+
     def test_modify_user_back(self):
         from ptah.crowd.module import UserWrapper
         from ptah.crowd.user import ModifyUserForm
 
         user = self._user()
-        
+
         request = DummyRequest(
             POST = {'form.buttons.back': 'Back'})
         wrapper = UserWrapper(user, request)
@@ -112,7 +112,7 @@ class TestModifyUser(Base):
         from ptah.crowd.user import ModifyUserForm
 
         user = self._user()
-        
+
         request = DummyRequest(
             POST = {'form.buttons.changepwd': 'Change'})
         wrapper = UserWrapper(user, request)
@@ -130,7 +130,7 @@ class TestModifyUser(Base):
         from ptah.crowd.user import ModifyUserForm
 
         user = self._user()
-        
+
         request = DummyRequest(
             POST = {'form.buttons.modify': 'Modify',
                     'name': 'NKim',
@@ -155,7 +155,7 @@ class TestModifyUser(Base):
 
         user = self._user()
         f = ModifyUserForm(None, None)
-        
+
         request = DummyRequest(
             POST = {'form.buttons.modify': 'Modify',
                     ModifyUserForm.csrfname: f.token})
@@ -165,7 +165,7 @@ class TestModifyUser(Base):
         view.update()
 
         self.assertIn(
-            'Please fix indicated errors.', 
+            'Please fix indicated errors.',
             request.session['msgservice'][0])
 
     def test_modify_user(self):
@@ -174,7 +174,7 @@ class TestModifyUser(Base):
 
         user = self._user()
         f = ModifyUserForm(None, None)
-        
+
         request = DummyRequest(
             POST = {'form.buttons.modify': 'Modify',
                     'name': 'NKim',
@@ -198,7 +198,7 @@ class TestModifyUser(Base):
 
         user = self._user()
         f = ModifyUserForm(None, None)
-        
+
         request = DummyRequest(
             POST = {'form.buttons.remove': 'Remove',
                     ModifyUserForm.csrfname: f.token})
@@ -225,13 +225,13 @@ class TestChangePassword(Base):
         Session.add(user)
         Session.flush()
         return user
-        
+
     def test_change_password_user_back(self):
         from ptah.crowd.module import UserWrapper
         from ptah.crowd.user import ChangePasswordForm
 
         user = self._user()
-        
+
         request = DummyRequest(
             POST = {'form.buttons.back': 'Back'})
         wrapper = UserWrapper(user, request)
@@ -249,7 +249,7 @@ class TestChangePassword(Base):
         from ptah.crowd.user import ChangePasswordForm
 
         user = self._user()
-        
+
         request = DummyRequest(
             POST = {'form.buttons.change': 'Change',
                     'password': '12345',
@@ -270,7 +270,7 @@ class TestChangePassword(Base):
 
         user = self._user()
         f = ChangePasswordForm(None, None)
-        
+
         request = DummyRequest(
             POST = {'form.buttons.change': 'Change',
                     ChangePasswordForm.csrfname: f.token})
@@ -280,7 +280,7 @@ class TestChangePassword(Base):
         view.update()
 
         self.assertIn(
-            'Please fix indicated errors.', 
+            'Please fix indicated errors.',
             request.session['msgservice'][0])
 
     def test_change_password(self):
@@ -289,7 +289,7 @@ class TestChangePassword(Base):
 
         user = self._user()
         f = ChangePasswordForm(None, None)
-        
+
         request = DummyRequest(
             POST = {'form.buttons.change': 'Change',
                     'password': '12345',
@@ -300,4 +300,3 @@ class TestChangePassword(Base):
         view.update()
 
         self.assertEqual(user.password, '{plain}12345')
-

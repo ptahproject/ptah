@@ -54,7 +54,6 @@ def static(name, path, layer=''):
                          config.storage[STATIC_ID]\
                              .update({a1: (a2, a3)}), discriminator),
             (name, abspath, pkg),
-            id = STATIC_ID,
             discriminator = discriminator))
 
 

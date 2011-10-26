@@ -44,7 +44,7 @@ def event(title='', category=''):
     info.attach(
         ClassAction(
             _event, (title, category),
-            id = EVENT_ID, discriminator = descriminator)
+            discriminator = descriminator)
         )
 
 def _event(config, klass, title, category):
@@ -126,8 +126,7 @@ class Action(object):
     hash = None
 
     def __init__(self, callable, args=(), kw={},
-                 id = None, discriminator=None, order=0, info=None):
-        self.id = id
+                 discriminator=None, order=0, info=None):
         self.callable = callable
         self.args = args
         self.kw = kw

@@ -270,11 +270,11 @@ class TestView(BaseView):
             return '<html>Secured view</html>'
 
         allowed = False
-        def checkPermission(context, request):
+        def check_permission(context, request):
             return allowed
 
         view.register_view('index.html', render,
-                          permission = checkPermission)
+                          permission = check_permission)
 
         self._init_ptah()
 

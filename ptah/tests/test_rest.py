@@ -59,7 +59,7 @@ class TestRestRegistrations(Base):
 
         ptah.rest.restService('test', 'Test service')
         self._init_ptah()
-        
+
         srv = config.registry.storage[ptah.rest.REST_ID]['test']
 
         @srv.action('action', 'Action')
@@ -76,10 +76,10 @@ class TestRestRegistrations(Base):
 
         self.assertEqual(info['actions'][0]['name'], 'apidoc')
         self.assertEqual(
-            info['actions'][0]['link'], 'http://localhost:8080/apidoc')
+            info['actions'][0]['__link__'], 'http://localhost:8080/apidoc')
         self.assertEqual(info['actions'][1]['name'], 'action')
         self.assertEqual(
-            info['actions'][1]['link'], 'http://localhost:8080/action')
+            info['actions'][1]['__link__'], 'http://localhost:8080/action')
 
 
 class Principal(object):
@@ -114,7 +114,8 @@ class TestRestView(Base):
         from ptah import authentication
         self._init_ptah()
 
-        authentication.providers['test'] = Provider()
+        config.registry.storage[
+            authentication.AUTH_PROVIDER_ID]['test'] = Provider()
         request = DummyRequest(params = {'login': 'admin', 'password': '12345'})
 
         login = Login(request)
@@ -123,14 +124,14 @@ class TestRestView(Base):
         self.assertIn('auth-token', info)
         self.assertEqual(request.response.status, '200 OK')
 
-        del authentication.providers['test']
-
     def test_rest_api_auth(self):
         from ptah.rest import Api, Login
         from ptah import authentication
         self._init_ptah()
 
-        authentication.providers['test'] = Provider()
+        config.registry.storage[
+            authentication.AUTH_PROVIDER_ID]['test'] = Provider()
+
         request = DummyRequest(params = {'login': 'admin', 'password': '12345'})
 
         login = Login(request)
@@ -189,7 +190,7 @@ class TestRestApi(Base):
 
         api = Api(request)
         res = api.render()
-        
+
         self.assertEqual(data[0], "action")
         self.assertEqual(data[1], ('test', '1', '2'))
 
@@ -248,4 +249,3 @@ class TestRestApi(Base):
         api = Api(request)
         res = simplejson.loads(api.render())
         self.assertIn('dt', res)
-

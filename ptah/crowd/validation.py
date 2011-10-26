@@ -21,7 +21,7 @@ def initiate_email_validation(email, principal, request):
     template.send()
 
 
-@ptah.register_auth_checker
+@ptah.auth_checker
 def validationAndSuspendedChecker(info):
     props = get_properties(info.principal.uri)
     if props.suspended:

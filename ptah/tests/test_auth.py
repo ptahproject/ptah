@@ -33,6 +33,7 @@ class TestAuthentication(Base):
                     return Principal('1', 'user', 'user')
 
         ptah.register_auth_provider('test-provider', Provider())
+        self._init_ptah()
 
         info = ptah.authService.authenticate(
             {'login': 'user', 'password': '12345'})
@@ -40,7 +41,7 @@ class TestAuthentication(Base):
         self.assertTrue(info.status)
         self.assertEqual(info.uri, '1')
 
-    def test_auth_checker(self):
+    def test_auth_checker_default(self):
         import ptah
         self._init_ptah()
 
@@ -52,6 +53,11 @@ class TestAuthentication(Base):
         self.assertEqual(info.message, '')
         self.assertEqual(info.arguments, {})
 
+    def test_auth_checker(self):
+        import ptah
+
+        principal = Principal('1', 'user', 'user')
+
         class Provider(object):
             def authenticate(self, creds):
                 if creds['login'] == 'user':
@@ -59,12 +65,13 @@ class TestAuthentication(Base):
 
         ptah.register_auth_provider('test-provider', Provider())
 
+        @ptah.auth_checker
         def checker(info):
             info.message = 'Suspended'
             info.arguments['additional'] = 'test'
             return False
 
-        ptah.register_auth_checker(checker)
+        self._init_ptah()
 
         info = ptah.authService.authenticate(
             {'login': 'user', 'password': '12345'})
@@ -120,6 +127,7 @@ class TestAuthentication(Base):
                     return principal
 
         ptah.register_auth_provider('test-provider', Provider())
+        self._init_ptah()
 
         self.assertEqual(
             ptah.authService.get_principal_bylogin('user2'), None)
@@ -139,6 +147,8 @@ class TestPrincipalSearcher(Base):
                 yield principal
 
         ptah.register_principal_searcher('test-provider', search)
+        self._init_ptah()
+
         self.assertEqual(list(ptah.search_principals('user')), [principal])
 
 

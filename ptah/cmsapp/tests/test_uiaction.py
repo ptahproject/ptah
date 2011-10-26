@@ -117,7 +117,7 @@ class TestUIAction(Base):
             __name__ = ''
 
         allow = False
-        def checkPermission(permission, content, request=None, throw=False):
+        def check_permission(permission, content, request=None, throw=False):
             return allow
 
         ptah.cmsapp.uiaction(
@@ -125,8 +125,8 @@ class TestUIAction(Base):
         self._init_ptah()
         request = self._makeRequest()
 
-        orig_cp = ptah.checkPermission
-        ptah.checkPermission = checkPermission
+        orig_cp = ptah.check_permission
+        ptah.check_permission = check_permission
 
         actions = ptah.cmsapp.list_uiactions(Content(), request)
         self.assertEqual(len(actions), 0)
@@ -135,7 +135,7 @@ class TestUIAction(Base):
         actions = ptah.cmsapp.list_uiactions(Content(), request)
         self.assertEqual(len(actions), 1)
 
-        ptah.checkPermission = orig_cp
+        ptah.check_permission = orig_cp
 
     def test_uiaction_sort_weight(self):
         import ptah.cmsapp

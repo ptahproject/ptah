@@ -33,7 +33,7 @@ class PyramidView(object):
 
     def __init__(self, chain):
         self.renderers = chain
-    
+
     def __call__(self, context, request):
         content = None
 
@@ -99,7 +99,7 @@ def register_view_impl(config, factory, name, context, template, route_name,
                 layout = ''
         except:
             pass
-        
+
     if layout is not None:
         chain.append(LayoutRenderer(layout))
 

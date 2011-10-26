@@ -145,7 +145,6 @@ def password_changer(schema):
                     config.storage[PASSWORD_CHANGER_ID].update(
                             {schema: changer}),
                 (schema, changer),
-                id = PASSWORD_CHANGER_ID,
                 discriminator = (PASSWORD_CHANGER_ID, schema))
             )
 

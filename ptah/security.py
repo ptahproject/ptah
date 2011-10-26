@@ -11,9 +11,22 @@ from ptah import SUPERUSER_URI
 from ptah.interfaces import IOwnersAware
 from ptah.interfaces import ILocalRolesAware
 
-ACLs = {}
-Roles = {}
-Permissions = {}
+
+ACL_ID = 'ptah:acl-map'
+ROLE_ID = 'ptah:role'
+PERMISSION_ID = 'ptah:permission'
+
+
+def get_acls():
+    return config.registry.storage[ACL_ID]
+
+
+def get_roles():
+    return config.registry.storage[ROLE_ID]
+
+
+def get_permissions():
+    return config.registry.storage[PERMISSION_ID]
 
 
 class PermissionInfo(str):
@@ -29,12 +42,12 @@ def Permission(name, title, description=u''):
     permission = PermissionInfo(name)
     permission.title = title
     permission.description = description
-    Permissions[str(permission)] = permission
 
     info.attach(
         config.Action(
-            lambda config, p: Permissions.update({str(p): p}),
-            (permission,), discriminator = ('ptah:permission', name))
+            lambda config, p: config.storage[PERMISSION_ID].update({str(p): p}),
+            (permission,),
+            discriminator = (PERMISSION_ID, name))
         )
 
     return permission
@@ -62,12 +75,10 @@ class ACL(list):
         self.title = title
         self.description = description
 
-        ACLs[name] = self
-
         info = config.DirectiveInfo()
         info.attach(
             config.Action(
-                lambda config, p: ACLs.update({name: p}),
+                lambda config, p: config.storage[ACL_ID].update({name: p}),
                 (self,), discriminator = ('ptah:acl-map', name))
             )
         self.directiveInfo = info
@@ -143,8 +154,9 @@ class ACLsMerge(object):
         self.acls = acls
 
     def __iter__(self):
+        acls = config.registry.storage[ACL_ID]
         for aname in self.acls:
-            acl = ACLs.get(aname)
+            acl = acls.get(aname)
             if acl is not None:
                 for rec in acl:
                     yield rec
@@ -191,15 +203,12 @@ class Role(object):
         self.allowed = set()
         self.denied = set()
 
-        # register role
-        Roles[name] = self
-
         # conflict detection and introspection
         info = config.DirectiveInfo()
         info.attach(
             config.Action(
-                lambda config, r: Roles.update({r.name: r}),
-                (self,), discriminator = ('ptah:role', name))
+                lambda config, r: config.storage[ROLE_ID].update({r.name: r}),
+                (self,), discriminator = (ROLE_ID, name))
             )
 
     def __str__(self):
@@ -261,7 +270,7 @@ Owner = Role(
 NOT_ALLOWED = Permission('__not_allowed__', 'Special permission')
 
 
-def checkPermission(permission, context, request=None, throw=False):
+def check_permission(permission, context, request=None, throw=False):
     """ Check `permission` withing `context`.
 
     :param permission: Permission
@@ -281,11 +290,7 @@ def checkPermission(permission, context, request=None, throw=False):
     if userid == SUPERUSER_URI:
         return True
 
-    global AUTHZ
-    try:
-        AUTHZ
-    except:
-        AUTHZ = config.registry.getUtility(IAuthorizationPolicy)
+    AUTHZ = config.registry.getUtility(IAuthorizationPolicy)
 
     principals = [Everyone.id]
 
@@ -305,12 +310,9 @@ def checkPermission(permission, context, request=None, throw=False):
         return False
     return True
 
-view.set_checkpermission(checkPermission)
+view.set_checkpermission(check_permission)
 
 
 @config.cleanup
 def cleanup():
     DEFAULT_ACL[:] = []
-    ACLs.clear()
-    Roles.clear()
-    Permissions.clear()

@@ -11,7 +11,7 @@ from ptah.uri import UriFactory
 from ptah.authentication import authService
 from ptah.authentication import SUPERUSER_URI
 
-from ptah.authentication import register_auth_checker
+from ptah.authentication import auth_checker
 from ptah.authentication import register_auth_provider
 
 from ptah.authentication import search_principals
@@ -24,18 +24,18 @@ from ptah.interfaces import ILocalRolesAware
 
 # acl
 from ptah.security import ACL
-from ptah.security import ACLs
 from ptah.security import ACLsProperty
+from ptah.security import get_acls
 
 # role
 from ptah.security import Role
-from ptah.security import Roles
 from ptah.security import LocalRoles
+from ptah.security import get_roles
 
 # permission
 from ptah.security import Permission
-from ptah.security import Permissions
-from ptah.security import checkPermission
+from ptah.security import get_permissions
+from ptah.security import check_permission
 
 # default roles and permissions
 from ptah.security import Everyone

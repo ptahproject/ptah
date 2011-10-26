@@ -57,15 +57,15 @@ class TestLoadApi(Base):
         import ptah
 
         allow = False
-        def checkPermission(permission, content, r=None, t=True):
+        def check_permission(permission, content, r=None, t=True):
             if not allow:
                 return False
 
             return True
 
         # monkey patch
-        orig_checkPermission = ptah.checkPermission
-        ptah.checkPermission = checkPermission
+        orig_check_permission = ptah.check_permission
+        ptah.check_permission = check_permission
 
         c = Content(title='Content')
         uri = c.__uri__
@@ -79,4 +79,4 @@ class TestLoadApi(Base):
         self.assertEqual(c.__uri__, uri)
 
         # remove monkey patch
-        ptah.checkPermission = orig_checkPermission
+        ptah.check_permission = orig_check_permission

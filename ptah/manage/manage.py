@@ -46,7 +46,6 @@ def module(id):
     info.attach(
         config.ClassAction(
             _complete, (id,),
-            id = MANAGE_ID,
             discriminator = (MANAGE_ID, id))
         )
 
@@ -61,7 +60,6 @@ def introspection(id):
     info.attach(
         config.ClassAction(
             _complete, (id,),
-            id = INTROSPECT_ID,
             discriminator = (INTROSPECT_ID, id))
         )
 

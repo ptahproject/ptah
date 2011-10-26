@@ -25,7 +25,7 @@ def query_layout(context, request, name=''):
 
 def query_layout_chain(context, request, layoutname=''):
     chain = []
-    
+
     layout = query_layout(context, request, layoutname)
     if layout is None:
         return chain
@@ -61,7 +61,7 @@ class LayoutRenderer(object):
         for layout in chain:
             layout.update()
             content = layout.render(content)
-            
+
         return content
 
 

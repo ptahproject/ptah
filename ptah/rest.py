@@ -30,7 +30,7 @@ def restService(name, title, description=''):
     info.attach(
         config.Action(
             _register, (srv,),
-            id = REST_ID, discriminator = (REST_ID, name))
+            discriminator = (REST_ID, name))
         )
 
     return srv
@@ -81,7 +81,7 @@ class ServiceAPIDoc(object):
 
         info = OrderedDict(
             (('name', srv.name),
-             ('link', '%s/'%url),
+             ('__link__', '%s/'%url),
              ('title', srv.title),
              ('description', srv.description),
              ('actions', [])))
@@ -94,7 +94,7 @@ class ServiceAPIDoc(object):
             info['actions'].append(
                 OrderedDict(
                     (('name', name),
-                     ('link', '%s/%s'%(url, name)),
+                     ('__link__', '%s/%s'%(url, name)),
                      ('title', title),
                      ('description', description))))
 
