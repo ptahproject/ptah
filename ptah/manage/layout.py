@@ -18,7 +18,7 @@ class LayoutPreview(view.View):
         context = self.context
 
         view_name = request.GET.get('view', '')
-        
+
         adapters = config.registry.adapters
 
         view_callable = adapters.lookup(
@@ -52,7 +52,7 @@ class LayoutPreview(view.View):
         content = self.view(self.context, self.request, '')
 
         content = u'<div style="border: 2px solid red">%s</div>'%content
-        
+
         for layout in self.layout:
             layout.update()
             res = layout.render(content)

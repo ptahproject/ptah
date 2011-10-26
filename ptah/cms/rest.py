@@ -100,7 +100,7 @@ def cmsContent(request, app, uri=None, action='', *args):
         request.environ['SCRIPT_NAME'] = '%s/content:%s/'%(
             request.environ['SCRIPT_NAME'], app)
 
-        ptah.checkPermission(action.permission, content, request, True)
+        ptah.check_permission(action.permission, content, request, True)
         res = action.callable(content, request, *args)
         if not res: # pragma: no cover
             res = {}
@@ -162,7 +162,7 @@ def containerNodeInfo(content, request, *args):
 
     contents = []
     for item in content.values():
-        if not ptah.checkPermission(View, item, request): # pragma: no cover
+        if not ptah.check_permission(View, item, request): # pragma: no cover
             continue
 
         contents.append(
@@ -191,7 +191,7 @@ def apidocAction(content, request, *args):
     for name, action in config.registry.adapters.lookupAll(
         (IRestActionClassifier, providedBy(content)), IRestAction):
 
-        if not ptah.checkPermission(
+        if not ptah.check_permission(
             action.permission, content, request):
             continue
 

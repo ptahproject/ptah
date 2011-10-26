@@ -37,7 +37,7 @@ class ApplicationPolicy(object):
 
     def __init__(self, request):
         self.request = request
-    
+
 
 class ApplicationFactory(object):
 
@@ -54,7 +54,7 @@ class ApplicationFactory(object):
 
         if isinstance(factory, type) and issubclass(factory, Node):
             factory = factory.__type__
-        
+
         self.factory = factory
         self.policy = policy
 
@@ -66,7 +66,6 @@ class ApplicationFactory(object):
             config.Action(
                 lambda config: config.storage[APPFACTORY_ID].update(
                     {self.id:self}),
-                id = APPFACTORY_ID,
                 discriminator=(APPFACTORY_ID, path))
             )
 

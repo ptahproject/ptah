@@ -92,8 +92,6 @@ def initialize(packages=None, excludes=(), reg=None):
     actions = directives.resolveConflicts(actions)
 
     for action in actions:
-        if action.id and action.id not in config.storage:
-            config.storage[action.id] = {}
         action(config)
 
 
@@ -194,6 +192,7 @@ def cleanup(handler):
 
 def cleanup_system(*modIds):
     mods.clear()
+    registry.storage.clear()
 
     for h in _cleanups:
         h()

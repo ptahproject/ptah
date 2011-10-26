@@ -20,7 +20,7 @@ class ContainerListing(view.View):
         request = self.request
         registry = request.registry
 
-        self.deleteContent = ptah.checkPermission(
+        self.deleteContent = ptah.check_permission(
             cms.DeleteContent, context)
 
         # cms(uri).read()

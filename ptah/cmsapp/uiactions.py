@@ -36,7 +36,7 @@ class Action(object):
 
     def check(self, context, request):
         if self.permission:
-            if not ptah.checkPermission(
+            if not ptah.check_permission(
                 self.permission, context, request):
                 return False
 

@@ -38,8 +38,8 @@ class Node(Base):
     .. attribute:: __local_roles__
 
        :py:class:`ptah.JsonDictType` which contains a principal uri as a
-       key and a sequence of role's granted to principal for Node.  
-       
+       key and a sequence of role's granted to principal for Node.
+
     .. attribute:: __acls__
 
        a :py:class:`ptah.JsonListType` of :py:class:`ptah.ACL` strings
@@ -49,7 +49,7 @@ class Node(Base):
 
        function which will return value for __uri__.  the uri must be
        resolvable by using :py:func:`ptah.resolve` function.
-       
+
     """
 
     interface.implements(INode,
@@ -65,7 +65,7 @@ class Node(Base):
 
     __uri__ = sqla.Column('uri', sqla.String, unique=True,
                           nullable=False, info={'uri':True})
-    __parent_uri__ = sqla.Column('parent', 
+    __parent_uri__ = sqla.Column('parent',
                                  sqla.String,sqla.ForeignKey(__uri__),
                                  info={'uri': True})
 
@@ -129,7 +129,7 @@ def load(uri, permission=None):
         load_parents(item)
 
         if permission is not None:
-            if not ptah.checkPermission(permission, item):
+            if not ptah.check_permission(permission, item):
                 raise Forbidden()
     else:
         raise NotFound(uri)
@@ -140,7 +140,7 @@ def load(uri, permission=None):
 def load_parents(node):
     """ Load and initialize `__parent__` attribute for node.
     Returns list of loaded parents.
-    
+
     :param node: ptah.cms.Node node
     """
     parents = []

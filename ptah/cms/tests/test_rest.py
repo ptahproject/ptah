@@ -29,12 +29,12 @@ class RestBase(Base):
     def setUp(self):
         super(RestBase, self).setUp()
 
-        self.orig_checkPermission = ptah.checkPermission
-        ptah.checkPermission = self._check_perm
+        self.orig_check_permission = ptah.check_permission
+        ptah.check_permission = self._check_perm
         ptah.cms.ApplicationFactory._sql_get_root.reset()
 
     def tearDown(self):
-        ptah.checkPermission = self.orig_checkPermission
+        ptah.check_permission = self.orig_check_permission
 
         config.cleanup_system(self.__class__.__module__)
         super(RestBase, self).tearDown()
@@ -93,7 +93,7 @@ class TestRestApi(RestBase):
 
         request = self._makeRequest()
         info = cmsTypes(request)
-        
+
         self.assertEqual(info[0]['name'], 'app')
         self.assertEqual(info[0]['__uri__'], 'cms+type:app')
         self.assertEqual(len(info[0]['fieldset']), 2)
@@ -254,7 +254,7 @@ class TestCMSRestAction(RestBase):
         self._init_ptah()
 
         all_types = ptah.cms.get_types()
-        
+
         all_types[Content.__type__.__uri__] = Content.__type__
 
         container = Container()

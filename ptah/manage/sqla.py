@@ -162,7 +162,7 @@ class TableView(form.Form):
         self.primary = None
         self.pcolumn = None
         self.uris = []
-        
+
         self.inheritance = get_inheritance(table)
 
         names = []

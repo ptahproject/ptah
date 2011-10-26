@@ -31,7 +31,7 @@ class TokenType(object):
                 lambda config, id, tp: \
                     config.storage[TOKEN_TYPE].update({id: tp}),
                 (id, self),
-                id = TOKEN_TYPE, discriminator = (TOKEN_TYPE, id))
+                discriminator = (TOKEN_TYPE, id))
             )
 
 

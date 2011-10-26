@@ -14,11 +14,12 @@ class TestPermission(Base):
         import ptah
 
         perm = ptah.Permission('perm', 'Permission', 'Test permission')
+        self._init_ptah()
 
         self.assertTrue(perm == 'perm')
         self.assertTrue(perm.title == 'Permission')
         self.assertTrue(perm.description == 'Test permission')
-        self.assertTrue(ptah.Permissions['perm'] is perm)
+        self.assertTrue(ptah.get_permissions()['perm'] is perm)
 
     def test_permission_register_same_name(self):
         import ptah
@@ -39,11 +40,12 @@ class TestACL(Base):
         import ptah
 
         pmap = ptah.ACL('map', 'ACL', 'Map')
+        self._init_ptah()
 
         self.assertTrue(pmap.name == 'map')
         self.assertTrue(pmap.title == 'ACL')
         self.assertTrue(pmap.description == 'Map')
-        self.assertTrue(ptah.ACLs['map'] is pmap)
+        self.assertTrue(ptah.get_acls()['map'] is pmap)
 
     def test_acl_register_same_name(self):
         import ptah
@@ -230,6 +232,10 @@ class TestACL(Base):
 
 class TestACLsProps(Base):
 
+    def tearDown(self):
+        config.cleanup_system(self.__class__.__module__)
+        super(TestACLsProps, self).tearDown()
+
     def test_acls(self):
         import ptah
 
@@ -238,6 +244,8 @@ class TestACLsProps(Base):
 
         acl2 = ptah.ACL('acl2', 'acl2')
         acl2.deny('role1', 'perm1', 'perm2')
+
+        self._init_ptah()
 
         class Content(object):
             __acl__ = ptah.ACLsProperty()
@@ -266,6 +274,10 @@ class TestACLsProps(Base):
 
 class TestRole(Base):
 
+    def tearDown(self):
+        config.cleanup_system(self.__class__.__module__)
+        super(TestRole, self).tearDown()
+
     def test_role_register(self):
         import ptah
 
@@ -290,9 +302,10 @@ class TestRole(Base):
         import ptah
 
         role = ptah.Role('myrole', 'MyRole')
+        self._init_ptah()
 
-        self.assertTrue('myrole' in ptah.Roles)
-        self.assertTrue(ptah.Roles['myrole'] is role)
+        self.assertTrue('myrole' in ptah.get_roles())
+        self.assertTrue(ptah.get_roles()['myrole'] is role)
 
     def test_role_allow_permission(self):
         import ptah
@@ -353,14 +366,14 @@ class TestDefaultRoles(Base):
         import ptah
         self._init_ptah()
 
-        roles = list(ptah.Roles.keys())
+        roles = list(ptah.get_roles().keys())
         roles.sort()
         roles = roles[:3]
 
         self.assertTrue(['Authenticated', 'Everyone', 'Owner'] == roles)
-        self.assertTrue(ptah.Roles['Everyone'].id == 'system.Everyone')
-        self.assertTrue(ptah.Roles['Authenticated'].id=='system.Authenticated')
-        self.assertTrue(ptah.Roles['Owner'].id=='system.Owner')
+        self.assertTrue(ptah.get_roles()['Everyone'].id == 'system.Everyone')
+        self.assertTrue(ptah.get_roles()['Authenticated'].id=='system.Authenticated')
+        self.assertTrue(ptah.get_roles()['Owner'].id=='system.Owner')
 
 
 class Content(object):
@@ -503,8 +516,8 @@ class TestCheckPermission(Base):
 
         content = Content(acl=[DENY_ALL])
 
-        self.assertFalse(ptah.checkPermission('View', content, throw=False))
-        self.assertTrue(ptah.checkPermission(
+        self.assertFalse(ptah.check_permission('View', content, throw=False))
+        self.assertTrue(ptah.check_permission(
             NO_PERMISSION_REQUIRED, content, throw=False))
 
     def test_checkpermission_deny(self):
@@ -512,8 +525,8 @@ class TestCheckPermission(Base):
 
         content = Content(acl=[(Allow, ptah.Everyone.id, ALL_PERMISSIONS)])
 
-        self.assertTrue(ptah.checkPermission('View', content, throw=False))
-        self.assertFalse(ptah.checkPermission(
+        self.assertTrue(ptah.check_permission('View', content, throw=False))
+        self.assertFalse(ptah.check_permission(
             ptah.NOT_ALLOWED, content, throw=False))
 
     def test_checkpermission_exc(self):
@@ -522,12 +535,12 @@ class TestCheckPermission(Base):
         content = Content(acl=[DENY_ALL])
 
         self.assertRaises(
-            HTTPForbidden, ptah.checkPermission, 'View', content, throw=True)
+            HTTPForbidden, ptah.check_permission, 'View', content, throw=True)
 
         content = Content(acl=[(Allow, ptah.Everyone.id, ALL_PERMISSIONS)])
 
         self.assertRaises(
-            HTTPForbidden, ptah.checkPermission,
+            HTTPForbidden, ptah.check_permission,
             ptah.NOT_ALLOWED, content, throw=True)
 
     def test_checkpermission_authenticated(self):
@@ -535,10 +548,10 @@ class TestCheckPermission(Base):
 
         content = Content(acl=[(Allow, ptah.Authenticated.id, 'View')])
 
-        self.assertFalse(ptah.checkPermission('View', content, throw=False))
+        self.assertFalse(ptah.check_permission('View', content, throw=False))
 
         ptah.authService.set_userid('test-user')
-        self.assertTrue(ptah.checkPermission('View', content, throw=False))
+        self.assertTrue(ptah.check_permission('View', content, throw=False))
 
     def test_checkpermission_user(self):
         import ptah
@@ -546,7 +559,7 @@ class TestCheckPermission(Base):
         content = Content(acl=[(Allow, 'test-user', 'View')])
 
         ptah.authService.set_userid('test-user')
-        self.assertTrue(ptah.checkPermission('View', content, throw=False))
+        self.assertTrue(ptah.check_permission('View', content, throw=False))
 
     def test_checkpermission_superuser(self):
         import ptah
@@ -556,8 +569,8 @@ class TestCheckPermission(Base):
             acl=[(Deny, ptah.SUPERUSER_URI, security.ALL_PERMISSIONS)])
 
         ptah.authService.set_userid(ptah.SUPERUSER_URI)
-        self.assertTrue(ptah.checkPermission('View', content))
-        self.assertFalse(ptah.checkPermission(ptah.NOT_ALLOWED, content))
+        self.assertTrue(ptah.check_permission('View', content))
+        self.assertFalse(ptah.check_permission(ptah.NOT_ALLOWED, content))
 
     def test_checkpermission_local_roles(self):
         import ptah
@@ -567,7 +580,7 @@ class TestCheckPermission(Base):
             acl=[(Allow, 'role:test', 'View')])
 
         ptah.authService.set_userid('test-user')
-        self.assertFalse(ptah.checkPermission('View', content, throw=False))
+        self.assertFalse(ptah.check_permission('View', content, throw=False))
 
         content.__local_roles__['test-user'] = ['role:test']
-        self.assertTrue(ptah.checkPermission('View', content, throw=False))
+        self.assertTrue(ptah.check_permission('View', content, throw=False))

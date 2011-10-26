@@ -129,7 +129,7 @@ class TestLogin(Base):
             login.LoginForm.__view_renderer__(None, request, None)
         except HTTPException, res:
             pass
-        
+
         self.assertEqual(res.status, '302 Found')
         self.assertEqual(res.headers['location'],
                          'http://example.com/login-success.html')

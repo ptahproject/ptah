@@ -3,8 +3,6 @@ from ptah import config
 from zope.interface import providedBy, Interface, implements
 
 import ptah
-#from ptah.cms import node
-#from node import load, load_parents
 from permissions import View
 from interfaces import NotFound, Forbidden
 
@@ -33,7 +31,7 @@ class NodeWrapper(object):
 
         fname, permission = self._actions[action]
         if permission:
-            if not ptah.checkPermission(permission, self._content):
+            if not ptah.check_permission(permission, self._content):
                 raise Forbidden(action)
 
         return ActionWrapper(self._content, fname)

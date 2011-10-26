@@ -70,7 +70,7 @@ class TestStaticCommand(unittest.TestCase):
 
     def test_commands_static_dump(self):
         view.static('tests', 'ptah.view.tests:static/dir2')
-        
+
         from ptah.view.commands import StaticCommand
         StaticCommand._include = ('ptah', self.__class__.__module__)
 

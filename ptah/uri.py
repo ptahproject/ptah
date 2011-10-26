@@ -48,7 +48,6 @@ def resolver(schema):
         info.attach(
             config.Action(
                 _register_uri_resolver, (schema, func),
-                id = RESOLVER_ID,
                 discriminator = (RESOLVER_ID, schema))
             )
 
@@ -75,7 +74,6 @@ def register_uri_resolver(schema, resolver, depth=1):
     info.attach(
         config.Action(
             _register_uri_resolver, (schema, resolver),
-            id = RESOLVER_ID,
             discriminator = (RESOLVER_ID, schema))
         )
 

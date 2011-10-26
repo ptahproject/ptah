@@ -97,7 +97,7 @@ class ModifyUserForm(form.Form):
     @form.button(_('Remove'), actype=form.AC_DANGER)
     def remove(self):
         self.validate_csrf_token()
-        
+
         user = self.context.user
         Session.delete(user)
         Session.flush()

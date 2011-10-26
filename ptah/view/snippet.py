@@ -63,7 +63,7 @@ def snippettype(name, context=None, title='', description=''):
             lambda config, name, stype: \
                 config.storage[STYPE_ID].update({name: stype}),
             (name, stype,),
-            id = STYPE_ID, discriminator = (STYPE_ID, name), order = 1))
+            discriminator = (STYPE_ID, name), order = 1))
 
 
 def register_snippet(name, context=None, klass=None, template=None, layer=''):
