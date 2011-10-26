@@ -1,8 +1,8 @@
 from ptah import manage, view
 
 class MyModule(manage.PtahModule):
-    __doc__ = u'An example Ptah Manage module from {{package}}'
-    title = '{{package}} example module'
+    __doc__ = u'Example REST Introspector Management Module from {{package}}'
+    title = '{{package}} REST Introspector Module'
     manage.module('{{package}}')
 
 class MyModuleView(view.View):
@@ -11,4 +11,4 @@ class MyModuleView(view.View):
         template = view.template('{{package}}:templates/mgmtmodule.pt'))
 
     def update(self):
-        self.data = {'example':'text'}
+        self.url = self.request.get('url', 'http://localhost:6543/__rest__/cms/')
