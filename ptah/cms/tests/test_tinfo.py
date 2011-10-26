@@ -25,9 +25,11 @@ class TestTypeInfo(Base):
 
         self._init_ptah()
 
-        self.assertTrue('cms+type:mycontent' in ptah.cms.Types)
+        all_types = ptah.cms.get_types()
 
-        tinfo = ptah.cms.Types['cms+type:mycontent']
+        self.assertTrue('cms+type:mycontent' in all_types)
+
+        tinfo = ptah.cms.get_type('cms+type:mycontent')
 
         self.assertEqual(tinfo.__uri__, 'cms+type:mycontent')
         self.assertEqual(tinfo.name, 'mycontent')
@@ -156,7 +158,9 @@ class TestTypeInfo(Base):
 
         self._init_ptah()
 
-        content = ptah.cms.Types['cms+type:mycontent'].create(title='Test content')
+        all_types = ptah.cms.get_types()
+
+        content = all_types['cms+type:mycontent'].create(title='Test content')
 
         self.assertTrue(isinstance(content, MyContent))
         self.assertEqual(content.title, 'Test content')

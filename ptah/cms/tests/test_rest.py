@@ -88,14 +88,10 @@ class TestRestApi(RestBase):
     def test_rest_types(self):
         from ptah.cms.rest import cmsTypes
 
-        request = self._makeRequest()
-
-        info = cmsTypes(request)
-        self.assertEqual(info, [])
-
         ApplicationRoot = self._make_app()
         self._init_ptah()
 
+        request = self._makeRequest()
         info = cmsTypes(request)
         
         self.assertEqual(info[0]['name'], 'app')
@@ -256,7 +252,10 @@ class TestCMSRestAction(RestBase):
         from ptah.cms import rest
         from ptah.cms import tinfo
         self._init_ptah()
-        tinfo.Types[Content.__type__.__uri__] = Content.__type__
+
+        all_types = ptah.cms.get_types()
+        
+        all_types[Content.__type__.__uri__] = Content.__type__
 
         container = Container()
 

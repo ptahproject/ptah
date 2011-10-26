@@ -42,7 +42,7 @@ def cmsApplications(request, *args):
 def cmsTypes(request, *args):
     types = []
 
-    for name, tinfo in ptah.cms.Types.items():
+    for name, tinfo in ptah.cms.get_types().items():
         types.append((tinfo.title, name, typeInfo(tinfo, request)))
 
     types.sort()

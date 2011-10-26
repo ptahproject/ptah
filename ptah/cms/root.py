@@ -58,9 +58,8 @@ class ApplicationFactory(object):
         self.factory = factory
         self.policy = policy
 
-        if hasattr(config, 'registry'):
-            data = config.registry.storage.setdefault(APPFACTORY_ID, {})
-            data[self.id] = self
+        if hasattr(config, 'registry') and hasattr(config.registry, 'storage'):
+            config.registry.storage[APPFACTORY_ID][self.id] = self
 
         info = config.DirectiveInfo()
         info.attach(

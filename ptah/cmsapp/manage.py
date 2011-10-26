@@ -129,6 +129,6 @@ class TypeIntrospection(object):
 
     def renderActions(self, *actions):
         return self.actions(
-            types = ptah.cms.Types,
+            types = ptah.cms.get_types(),
             actions = actions,
             request = self.request)
