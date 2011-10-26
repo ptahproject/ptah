@@ -16,7 +16,7 @@ class PtahTemplate(Template):
 
     def post(self, command, output_dir, vars):
         deo_trib = ("\n\nPtah has generated your application. Your application "
-               "can be found at /. \nDorneles hopes you like it.\n")
+               "can be found at /. \n\nDorneles hopes you like it.\n")
         self.out(deo_trib)
         return Template.post(self, command, output_dir, vars)
 
