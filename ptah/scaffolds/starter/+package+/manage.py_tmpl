@@ -11,4 +11,5 @@ class MyModuleView(view.View):
         template = view.template('{{package}}:templates/mgmtmodule.pt'))
 
     def update(self):
-        self.url = self.request.get('url', 'http://localhost:6543/__rest__/cms/')
+        self.appurl = self.request.application_url
+        self.url = self.request.get('url', '%s/__rest__/cms/' % self.appurl)

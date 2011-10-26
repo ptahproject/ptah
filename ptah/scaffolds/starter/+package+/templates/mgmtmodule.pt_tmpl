@@ -1,14 +1,40 @@
 <script type="text/javascript">
-$(document).ready(function() {
-    $("#query").bind("click", function() {
-        var value = $("input").val();
-        $.get(value, function(data) {
-            $("#result").text(data);
-        });
-    }); 
-});
-</script>
+    function hrefify(text) {
+        var first_index = text.indexOf('"http://');
+        var href = text.slice(first_index + 1, text.length - 1);
+        var tag = '"<a href="' + href + '">' + href + '</a>"';
+        var ret_val = '"__link__": ' + tag;
+        return ret_val;
+    }
+         
+    function linkify(text) {
+        var re = /\"__link__\":\s*\"http:\/\/.*\"/g//;
+        re = RegExp(re);
+        text = text.replace(re, hrefify);
+        return text;
+    }
 
+    $(function() {
+        $("#query").bind("click", function() {
+            var value = $("input").val();
+            $.get(value, function(data) {
+                data = linkify(data)
+                $("#result").html(data);
+            });
+        }); 
+        $("#result a").live("click", function() {
+            var value = $(this).attr('href');
+            $("input").val(value);
+            $.get(value, function(data) {
+                data = linkify(data)
+                $("#result").html(data);
+            });
+            return false;
+        }); 
+    });
+
+</script>
+        
 <div class="page-header">
     <h1>${view.context.title}<h1>
 </div>
@@ -17,9 +43,9 @@ $(document).ready(function() {
     <form onsubmit="return false;">
       <fieldset>
         <div class="clearfix">
-            <label for="xlInput">REST API URL</label>
+            <label for="xlInput">URL</label>
             <div class="input">
-              <input class="xlarge" id="xlInput" size="30" value="${view.url}" type="text">
+              <input class="xxlarge" id="xlInput" value="${view.url}" type="text">
               <button id="query" class="btn primary">Query</button>
             </div>
         </div>
