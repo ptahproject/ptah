@@ -22,7 +22,6 @@ class ResetPassword(form.Form):
         route = 'ptah-resetpassword', layout='ptah-page',
         template = view.template('ptah.crowd:templates/resetpassword.pt'))
 
-    csrf = True
     fields = form.Fieldset(
         form.FieldFactory(
             'text',
@@ -41,7 +40,7 @@ class ResetPassword(form.Form):
 
         super(ResetPassword, self).update()
 
-    @form.button(_('Start password reset'), actype=form.AC_PRIMARY)
+    @form.button(_('Start password reset'),name='reset',actype=form.AC_PRIMARY)
     def reset(self):
         request = self.request
         registry = request.registry
@@ -63,8 +62,8 @@ class ResetPassword(form.Form):
                 self.request.registry.notify(
                     ResetPasswordInitiatedEvent(principal))
 
-                self.message(_('Your password has been '
-                               'reset and is being emailed to you.'))
+                self.message(_('Password reseting process has been initiated. '
+                               'Check your email for futher instructions.'))
                 raise HTTPFound(location=request.application_url)
 
         self.message(_(u"System can't restore password for this user."))
@@ -79,16 +78,16 @@ class ResetPasswordForm(form.Form):
         route = 'ptah-resetpassword-form', layout='ptah-page',
         template=view.template('ptah.crowd:templates/resetpasswordform.pt'))
 
-    csrf = True
     fields = PasswordSchema
 
     def update(self):
         request = self.request
-        passcode = request.params.get('passcode')
+
+        passcode = request.subpath[0]
         self.principal = principal = passwordTool.get_principal(passcode)
 
         if principal is not None and \
-               passwordTool.can_change_password(principal.uri):
+               passwordTool.can_change_password(principal):
             self.passcode = passcode
             self.title = principal.name or principal.login
         else:
@@ -98,7 +97,7 @@ class ResetPasswordForm(form.Form):
 
         super(ResetPasswordForm, self).update()
 
-    @form.button(_("Change password and login"), actype=form.AC_PRIMARY)
+    @form.button(_("Change password"), name='change', actype=form.AC_PRIMARY)
     def changePassword(self):
         data, errors = self.extract()
 
@@ -114,10 +113,9 @@ class ResetPasswordForm(form.Form):
             # check if principal can be authenticated
             info = authService.authenticate_principal(principal)
 
+            headers = []
             if info.status:
                 headers = security.remember(self.request, self.principal.uri)
-            else:
-                headers = []
 
             self.message(
                 _('You have successfully changed your password.'), 'success')
@@ -144,7 +142,7 @@ class ResetPasswordTemplate(mail.MailTemplate):
         self.from_ip = (forwardedFor and '%s/%s' %
                         (remoteAddr, forwardedFor) or remoteAddr)
 
-        self.url = '%s/resetpasswordform.html?passcode=%s'%(
+        self.url = '%s/resetpassword.html/%s/'%(
             request.application_url, self.passcode)
 
         info = self.context
