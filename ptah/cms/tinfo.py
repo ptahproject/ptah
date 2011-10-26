@@ -13,13 +13,20 @@ from interfaces import Forbidden, ContentSchema, ITypeInformation
 
 log = logging.getLogger('ptah.cms')
 
-
-Types = {}
+TYPES_DIR_ID = 'ptah-cms:type'
 
 @ptah.resolver('cms+type')
 def typeInfoResolver(uri):
     """Type resolver"""
-    return Types.get(uri)
+    return config.registry.storage[TYPES_DIR_ID].get(uri)
+
+
+def get_type(tp):
+    return config.registry.storage[TYPES_DIR_ID].get(tp)
+
+
+def get_types():
+    return config.registry.storage[TYPES_DIR_ID]
 
 
 class TypeInformation(object):
@@ -67,15 +74,17 @@ class TypeInformation(object):
             return ()
 
         types = []
+        all_types = config.registry.storage[TYPES_DIR_ID]
+        
         if self.filter_content_types:
             for tinfo in self.allowed_content_types:
                 if isinstance(tinfo, basestring):
-                    tinfo = Types.get('cms+type:%s'%tinfo)
+                    tinfo = all_types.get('cms+type:%s'%tinfo)
 
                 if tinfo and tinfo.isAllowed(container):
                     types.append(tinfo)
         else:
-            for tinfo in Types.values():
+            for tinfo in all_types.values():
                 if tinfo.global_allow and tinfo.isAllowed(container):
                     types.append(tinfo)
 
@@ -129,7 +138,8 @@ def Type(name, title=None, fieldset=None, **kw):
     info.attach(
         config.ClassAction(
             registerType, (typeinfo, name, fieldset), kw,
-            discriminator = ('ptah-cms:type', name))
+            id = TYPES_DIR_ID,
+            discriminator = (TYPES_DIR_ID, name))
         )
 
     return typeinfo
@@ -168,12 +178,7 @@ def registerType(
     tinfo.cls = cls
     tinfo.permission = permission
 
-    Types[tinfo.__uri__] = tinfo
+    config.storage[TYPES_DIR_ID][tinfo.__uri__] = tinfo
 
     # build cms actions
     buildClassActions(cls)
-
-
-@config.cleanup
-def cleanup():
-    Types.clear()

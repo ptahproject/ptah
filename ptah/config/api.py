@@ -1,6 +1,7 @@
 import StringIO
 import traceback
 import sys, pkg_resources
+from collections import defaultdict
 from ptah.config import directives
 from zope.interface.registry import Components
 from zope.interface.interface import adapter_hooks
@@ -50,7 +51,7 @@ class Config(object):
     def __init__(self, registry, actions):
         self.registry = registry
         self.actions = actions
-        self.storage = {}
+        self.storage = defaultdict(lambda: dict())
         registry.storage = self.storage
         registry.storage['actions'] = actions
 
