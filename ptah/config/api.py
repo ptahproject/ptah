@@ -92,6 +92,7 @@ def initialize(packages=None, excludes=(), reg=None):
     actions = directives.resolveConflicts(actions)
 
     for action in actions:
+        config.action = action
         action(config)
 
 

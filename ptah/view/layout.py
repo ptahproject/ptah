@@ -129,6 +129,8 @@ def register_layout_impl(
     else:
         layout_class = type(str('Layout<%s>'%name), (Layout,), cdict)
 
+    layout_class.__config_action__ = config.action
+
     # register layout
     request_iface = IRequest
     if route_name is not None:

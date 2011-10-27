@@ -42,6 +42,7 @@ class TestLayoutPreview(Base):
 
         class Context(object):
             """ """
+            __name__ = 'test'
 
         global View
         class View(ptah.view.View):
@@ -63,5 +64,7 @@ class TestLayoutPreview(Base):
         v = LayoutPreview(Context(), request)
         v.update()
         res = v.render()
-        self.assertEqual(
-            '<div style="border: 4px solid yellow"><div><div style="border: 4px solid green"><div><div style="border: 2px solid red">test</div></div></div></div></div>', res)
+        
+        self.assertIn('<div style="border: 4px solid yellow">', res)
+        self.assertIn('ptah.manage.tests.test_layout.Layout', res)
+        self.assertIn('ptah.manage.tests.test_layout', res)
