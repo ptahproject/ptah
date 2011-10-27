@@ -24,15 +24,14 @@ Before we start lets review what the structure will look like after you complete
       python
       pip
       paster
-    src/
+    ptah/
+      setup.py
       ptah/
-        setup.py
-        ptah/
-        docs/
+      docs/
+    myapp/
+      setup.py
+      development.ini
       myapp/
-        setup.py
-        development.ini
-        myapp/
           
 You may ask, Why the duplication of nested folders?  It's how Python packages 
 are structured.
@@ -44,22 +43,26 @@ Lets do the needful::
   $ curl -k -O https://raw.github.com/pypa/virtualenv/master/virtualenv.py
   $ python2.7 virtualenv.py --no-site-packages venv
   $ cd venv
-  venv$ bin/pip install -e git://github.com/ptahproject/ptah.git#egg=ptah
-  venv$ cd src/ptah
-  venv/src/ptah$ ../../bin/python setup.py develop
-  venv/src/ptah$ cd ..  
+  venv$ git clone git://github.com/ptahproject/ptah.git
+  venv$ cd ptah
+  venv/ptah$ ../bin/python setup.py develop
   
+If you like tests, run the tests::
+
+  venv/ptah$ ../bin/python setup.py test
+
 Use paster to create your application.  The default username and password are:
 **admin** as login and **12345** as password::
 
-  venv/src$ ../bin/paster create -t ptahdemo myapp
-  venv/src$ cd myapp
-  venv/src/myapp$ ../../bin/python setup.py develop
+  venv/ptah$ cd ..
+  venv$ bin/paster create -t ptahdemo myapp
+  venv$ cd myapp
+  venv/myapp$ ../bin/python setup.py develop
   
 Start application via Paster::
 
-  venv/src/myapp$ cd ../..
-  venv$ bin/paster serve src/myapp/development.ini --reload
+  venv/myapp$ cd ..
+  venv$ bin/paster serve myapp/development.ini --reload
 
 Login by opening your web browser to http://localhost:6543 with credentials,
 login: admin and password: 12345
