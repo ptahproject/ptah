@@ -86,7 +86,7 @@ class SharingForm(form.Form):
             userdata = {}
             for attr, val in request.POST.items():
                 if attr.startswith('user-'):
-                    userId, roleId = attr.split('-')[1:]
+                    userId, roleId = attr[5:].rsplit('-',1)
                     data = userdata.setdefault(str(userId), [])
                     data.append(str(roleId))
                 if attr.startswith('userid-'):

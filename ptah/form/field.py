@@ -134,8 +134,12 @@ class Fieldset(OrderedDict):
             content = {}
 
         for name, field in self.items():
-            clone[name] = field.bind(
-                self.prefix, content.get(name, null), params)
+            if isinstance(field, Fieldset):
+                clone[name] = field.bind(
+                    content.get(name, None), params)
+            else:
+                clone[name] = field.bind(
+                    self.prefix, content.get(name, null), params)
 
         clone.params = params
         clone.content = content
@@ -144,6 +148,13 @@ class Fieldset(OrderedDict):
     def extract(self):
         data = {}
         errors = FieldsetErrors(self)
+
+        for fieldset in self.fieldsets():
+            if fieldset is self:
+                continue
+            fdata, ferrors = fieldset.extract()
+            data[fieldset.name] = fdata
+            errors.extend(ferrors)
 
         for field in self.fields():
             if field.mode == FORM_DISPLAY:
@@ -164,7 +175,7 @@ class Fieldset(OrderedDict):
             except Invalid, error:
                 errors.append(error)
 
-            data[field.name] = value
+            data[field.name[self.lprefix:]] = value
 
         if not errors:
             try:
