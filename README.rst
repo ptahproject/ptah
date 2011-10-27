@@ -24,15 +24,14 @@ Before we start lets review what the structure will look like after you complete
       python
       pip
       paster
-    src/
+    ptah/
+      setup.py
       ptah/
-        setup.py
-        ptah/
-        docs/
+      docs/
+    myapp/
+      setup.py
+      development.ini
       myapp/
-        setup.py
-        development.ini
-        myapp/
           
 You may ask, Why the duplication of nested folders?  It's how Python packages 
 are structured.
@@ -62,7 +61,7 @@ Use paster to create your application.  The default username and password are:
 Start application via Paster::
 
   venv/myapp$ cd ..
-  venv$ bin/paster serve src/myapp/development.ini --reload
+  venv$ bin/paster serve myapp/development.ini --reload
 
 Login by opening your web browser to http://localhost:6543 with credentials,
 login: admin and password: 12345
