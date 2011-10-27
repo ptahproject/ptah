@@ -33,7 +33,7 @@ class TestAddForm(Base):
         from ptah.cmsapp.forms import AddForm
 
         container = Container()
-        
+
         form = AddForm(container, DummyRequest())
         form.tinfo = Content.__type__
 
@@ -82,7 +82,7 @@ class TestAddForm(Base):
 
         Content.__type__.name_suffix = '.xml'
         Content.__type__.permission = ptah.cms.NO_PERMISSION_REQUIRED
-        
+
         form.tinfo = Content.__type__
         form.update()
 
@@ -279,7 +279,7 @@ class TestAddForm(Base):
 
         self.assertIsInstance(res, HTTPFound)
         self.assertEqual(res.headers['location'], '/test-content/')
-        self.assertIn('New content has been created.', 
+        self.assertIn('New content has been created.',
                       request.session['msgservice'][0])
 
     def test_addform_add_errors(self):
@@ -295,7 +295,7 @@ class TestAddForm(Base):
         form.tinfo = Content.__type__
         form.update()
 
-        self.assertIn('Please fix indicated errors.', 
+        self.assertIn('Please fix indicated errors.',
                       request.session['msgservice'][0])
 
     def test_addform_cancel(self):
@@ -326,7 +326,7 @@ class TestEditForm(Base):
         from ptah.cmsapp.forms import EditForm
 
         content = Content()
-        
+
         form = EditForm(content, DummyRequest())
         form.update()
 
@@ -340,7 +340,7 @@ class TestEditForm(Base):
         content = Content()
         content.title = 'Test content'
         content.description = 'Desc'
-        
+
         form = EditForm(content, DummyRequest())
         form.update()
 
@@ -356,7 +356,7 @@ class TestEditForm(Base):
         content = Content()
         content.title = 'Test'
         content.description = 'Desc'
-        
+
         form = EditForm(content, DummyRequest())
         form.update()
 
@@ -372,7 +372,7 @@ class TestEditForm(Base):
         content = Content()
         content.title = 'Test'
         content.description = 'Desc'
-        
+
         form = EditForm(content, DummyRequest(
             POST = {'title': 'Test2', 'description': 'Desc2',
                     'form.buttons.save': 'Save'}))
@@ -393,7 +393,7 @@ class TestEditForm(Base):
         ptah.authService.set_userid(ptah.SUPERUSER_URI)
 
         content = Content()
-        
+
         form = EditForm(content, DummyRequest(
             POST = {'form.buttons.save': 'Save'}))
 
@@ -406,7 +406,7 @@ class TestEditForm(Base):
         ptah.authService.set_userid(ptah.SUPERUSER_URI)
 
         content = Content()
-        
+
         form = EditForm(content, DummyRequest(
             POST = {'form.buttons.cancel': 'Cancel'}))
 

@@ -3,11 +3,11 @@ import ptah
 from ptah import view
 from paste.httpserver import serve
 
-# this is login, bobdobbs whose prefix is user+example.
-# the default Ptah implementation is ptah.crowd.provider, scheme `user+crowd`
+# this is login, bobdobbs whose prefix is user-example.
+# the default Ptah implementation is ptah.crowd.provider, scheme `user-crowd`
 
-USERS = {'user+example:bobdobbs':'aliens'}
-SCHEME = 'user+example'
+USERS = {'user-example:bobdobbs':'aliens'}
+SCHEME = 'user-example'
 
 class User(object):
 
@@ -40,7 +40,7 @@ class UserProvider(object):
 
 
 # registration
-@ptah.resolver('user+example', 'An example principal resolver')
+@ptah.resolver('user-example', 'An example principal resolver')
 def getPrincipal(uri):
     return User.get(uri)
 

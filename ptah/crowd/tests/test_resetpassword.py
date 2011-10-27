@@ -50,7 +50,7 @@ class TestResetPassword(Base):
             data[1] = self.passcode
 
         ResetPasswordTemplate.send = send
-        
+
         request = DummyRequest(
             POST={'login': 'login',
                   'form.buttons.reset': 'Reset'})
@@ -77,9 +77,9 @@ class TestResetPassword(Base):
 
     def test_resetpassword_form_unknown_passcode(self):
         from ptah.crowd.resetpassword import ResetPasswordForm
-        
+
         request = DummyRequest(subpath=('unknown',))
-        
+
         form = ResetPasswordForm(None, request)
         try:
             form.update()
@@ -100,9 +100,9 @@ class TestResetPassword(Base):
         Session.flush()
 
         passcode = ptah.passwordTool.generate_passcode(user)
-        
+
         request = DummyRequest(subpath=(passcode,))
-        
+
         form = ResetPasswordForm(None, request)
         form.update()
 
@@ -118,7 +118,7 @@ class TestResetPassword(Base):
         Session.flush()
 
         passcode = ptah.passwordTool.generate_passcode(user)
-        
+
         request = DummyRequest(
             subpath=(passcode,),
             POST = {'password': '12345', 'confirm_password': '123456',
@@ -139,7 +139,7 @@ class TestResetPassword(Base):
         Session.flush()
 
         passcode = ptah.passwordTool.generate_passcode(user)
-        
+
         request = DummyRequest(
             subpath=(passcode,),
             POST = {'password': '123456', 'confirm_password': '123456',

@@ -65,7 +65,7 @@ class Base(unittest.TestCase):
 
     def tearDown(self):
         config.cleanup_system()
-        
+
         sm = self.p_config
         sm.__init__('base')
         testing.tearDown()

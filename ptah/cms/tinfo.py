@@ -15,7 +15,7 @@ log = logging.getLogger('ptah.cms')
 
 TYPES_DIR_ID = 'ptah-cms:type'
 
-@ptah.resolver('cms+type')
+@ptah.resolver('cms-type')
 def typeInfoResolver(uri):
     """Type resolver"""
     return config.registry.storage[TYPES_DIR_ID].get(uri)
@@ -44,7 +44,7 @@ class TypeInformation(object):
     def __init__(self, cls, name, title, fieldset, **kw):
         self.__dict__.update(kw)
 
-        self.__uri__ = 'cms+type:%s'%name
+        self.__uri__ = 'cms-type:%s'%name
 
         self.cls = cls
         self.name = name
@@ -79,7 +79,7 @@ class TypeInformation(object):
         if self.filter_content_types:
             for tinfo in self.allowed_content_types:
                 if isinstance(tinfo, basestring):
-                    tinfo = all_types.get('cms+type:%s'%tinfo)
+                    tinfo = all_types.get('cms-type:%s'%tinfo)
 
                 if tinfo and tinfo.is_allowed(container):
                     types.append(tinfo)
@@ -125,15 +125,14 @@ def Type(name, title=None, fieldset=None, **kw):
             'id', sqla.Integer,
             sqla.ForeignKey('ptah_cms_content.id'), primary_key=True)
     if '__uri_factory__' not in f_locals:
-        f_locals['__uri_factory__'] = ptah.UriFactory('cms+%s'%name)
+        f_locals['__uri_factory__'] = ptah.UriFactory('cms-%s'%name)
 
         def resolve_content(uri):
             return _sql_get.first(uri=uri)
 
         resolve_content.__doc__ = 'CMS Content resolver for %s type'%title
 
-        ptah.register_uri_resolver(
-            'cms+%s'%name, resolve_content, depth = 2)
+        ptah.register_uri_resolver('cms-%s'%name, resolve_content, depth = 2)
 
     info.attach(
         config.ClassAction(

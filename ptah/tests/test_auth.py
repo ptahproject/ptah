@@ -161,5 +161,5 @@ class TestSuperUser(Base):
 
         user = ptah.resolve(ptah.SUPERUSER_URI)
         self.assertIs(user, SUPERUSER)
-        self.assertIsNone(ptah.resolve('ptah+auth:unknown'))
+        self.assertIsNone(ptah.resolve('ptah-auth:unknown'))
         self.assertEqual(repr(user), '<ptah Superuser>')

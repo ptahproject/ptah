@@ -7,7 +7,7 @@ Session = psa.get_session()
 
 
 class CrowdProvider(object):
-    #ptah.auth_provider('user+crowd')
+    #ptah.auth_provider('user-crowd')
 
     def authenticate(self, creds):
         login, password = creds['login'], creds['password']
@@ -32,7 +32,7 @@ class CrowdUser(Base):
     login = sqla.Column(sqla.Unicode(255), unique=True)
     email = sqla.Column(sqla.Unicode(255), unique=True)
     password = sqla.Column(sqla.Unicode(255))
-    _uri_gen = ptah.UriFactory('user+crowd')
+    _uri_gen = ptah.UriFactory('user-crowd')
 
     def __init__(self, name, login, email, password=u''):
         super(CrowdUser, self).__init__()
@@ -82,21 +82,21 @@ _sql_search = ptah.QueryFreezer(
     .order_by(sqla.sql.asc('name')))
 
 
-@ptah.principal_searcher('user+crowd')
+@ptah.principal_searcher('user-crowd')
 def search(term):
     for user in _sql_search.all(term = '%%%s%%'%term):
         yield user
 
 
-@ptah.resolver('user+crowd')
+@ptah.resolver('user-crowd')
 def get_byuri(uri):
     """Crowd principal resolver"""
     return CrowdUser._sql_get_uri.first(uri=uri)
 
 
-@ptah.password_changer('user+crowd')
+@ptah.password_changer('user-crowd')
 def change_pwd(principal, password):
     principal.password = password
 
 
-ptah.register_auth_provider('user+crowd', CrowdProvider())
+ptah.register_auth_provider('user-crowd', CrowdProvider())

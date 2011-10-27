@@ -161,16 +161,12 @@ class TestValidation(Base):
             user, request, email = user.email, token = 'test-token')
         template.update()
 
-        self.assertEqual('\n'.join(template.render().split(os.linesep)),
-                         """Hi!
+        res = template.render()
 
-You're close to completing the registration process.  Once you click this link,
-your login and password will be activated. 
-
-http://localhost:8080/validateaccount.html?token=test-token
-
-Thanks
-""")
+        self.assertIn(
+            "You're close to completing the registration process.", res)
+        self.assertIn(
+            "http://localhost:8080/validateaccount.html?token=test-token", res)
 
     def test_validate(self):
         from ptah.crowd import validation

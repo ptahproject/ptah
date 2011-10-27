@@ -13,7 +13,7 @@ class Blob(Node):
     interface.implements(IBlob)
 
     __tablename__ = 'ptah_cms_blobs'
-    __uri_factory__ = ptah.UriFactory('blob+sql')
+    __uri_factory__ = ptah.UriFactory('blob-sql')
 
     __id__ = sqla.Column('id', sqla.Integer,
                          sqla.ForeignKey('ptah_cms_nodes.id'), primary_key=True)
@@ -95,4 +95,4 @@ class BlobStorage(object):
 
 blobStorage = BlobStorage()
 
-ptah.register_uri_resolver('blob+sql', blobStorage.get)
+ptah.register_uri_resolver('blob-sql', blobStorage.get)

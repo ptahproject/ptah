@@ -87,10 +87,10 @@ class UriFactory(object):
 
     Example::
 
-       >> uri = UriFactory('cms+content')
+       >> uri = UriFactory('cms-content')
 
        >> uri()
-       'cms+content:f73f3266fa15438e94cca3621a3f2dbc'
+       'cms-content:f73f3266fa15438e94cca3621a3f2dbc'
 
     """
 

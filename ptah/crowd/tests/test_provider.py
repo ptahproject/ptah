@@ -56,7 +56,7 @@ class TestProvider(Base):
         self.assertEqual(user.login, 'user-login')
         self.assertEqual(user.email, 'user-email')
         self.assertEqual(user.password, 'passwd')
-        self.assertTrue(user.uri.startswith('user+crowd'))
+        self.assertTrue(user.uri.startswith('user-crowd'))
         self.assertEqual(str(user), 'user-name')
         self.assertEqual(repr(user), 'CrowdUser<%s:%s>'%(user.name, user.uri))
 

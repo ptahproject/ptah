@@ -113,7 +113,7 @@ class TestUriView(Base):
         self._init_ptah()
 
         request = DummyRequest(
-            GET = {'uri': 'ptah+auth:superuser'})
+            GET = {'uri': 'ptah-auth:superuser'})
         mod = IntrospectModule(None, request)
 
         view = UriResolver(mod, request)
@@ -134,7 +134,7 @@ class TestUriView(Base):
         view.update()
 
         request = DummyRequest(
-            POST = {'form.buttons.show': 'Show', 'uri': 'ptah+auth:superuser'})
+            POST = {'form.buttons.show': 'Show', 'uri': 'ptah-auth:superuser'})
         mod = IntrospectModule(None, request)
 
         view = UriResolver(mod, request)

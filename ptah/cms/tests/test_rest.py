@@ -95,7 +95,7 @@ class TestRestApi(RestBase):
         info = cmsTypes(request)
 
         self.assertEqual(info[0]['name'], 'app')
-        self.assertEqual(info[0]['__uri__'], 'cms+type:app')
+        self.assertEqual(info[0]['__uri__'], 'cms-type:app')
         self.assertEqual(len(info[0]['fieldset']), 2)
         self.assertEqual(info[0]['fieldset'][0]['name'], 'title')
         self.assertEqual(info[0]['fieldset'][1]['name'], 'description')
@@ -111,7 +111,7 @@ class TestRestApi(RestBase):
         factory = ptah.cms.ApplicationFactory(
             ApplicationRoot, '/test', 'root', 'Root App')
         root = factory(request)
-        root.__uri__ = 'cms+app:test'
+        root.__uri__ = 'cms-app:test'
         transaction.commit()
 
         self._allow = False
@@ -134,13 +134,13 @@ class TestRestApi(RestBase):
 class Content(ptah.cms.Content):
 
     __type__ = ptah.cms.Type('content', 'Test Content')
-    __uri_factory__ = ptah.UriFactory('cms+content')
+    __uri_factory__ = ptah.UriFactory('cms-content')
 
 
 class Container(ptah.cms.Container):
 
     __type__ = ptah.cms.Type('container', 'Test Container')
-    __uri_factory__ = ptah.UriFactory('cms+container')
+    __uri_factory__ = ptah.UriFactory('cms-container')
 
 
 class TestCMSRestAction(RestBase):

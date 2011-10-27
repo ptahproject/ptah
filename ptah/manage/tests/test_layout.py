@@ -64,7 +64,7 @@ class TestLayoutPreview(Base):
         v = LayoutPreview(Context(), request)
         v.update()
         res = v.render()
-        
+
         self.assertIn('<div style="border: 4px solid yellow">', res)
         self.assertIn('ptah.manage.tests.test_layout.Layout', res)
         self.assertIn('ptah.manage.tests.test_layout', res)

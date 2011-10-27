@@ -54,7 +54,7 @@ class LayoutPreview(view.View):
     def build_layout_info(self, layout):
         action = layout.__config_action__
         info = action.info
-        
+
         data = OrderedDict(
             (('name', layout.name),
              ('parent-layout', layout.layout),

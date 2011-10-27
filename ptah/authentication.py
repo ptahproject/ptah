@@ -13,7 +13,7 @@ from ptah.interfaces import IAuthInfo, IAuthentication
 class _Superuser(object):
 
     def __init__(self):
-        self.uri = 'ptah+auth:superuser'
+        self.uri = 'ptah-auth:superuser'
         self.login = ''
         self.name = 'Manager'
 
@@ -22,9 +22,9 @@ class _Superuser(object):
 
 
 SUPERUSER = _Superuser()
-SUPERUSER_URI = 'ptah+auth:superuser'
+SUPERUSER_URI = 'ptah-auth:superuser'
 
-@resolver('ptah+auth')
+@resolver('ptah-auth')
 def superuser_resolver(uri):
     """System super user"""
     if uri == SUPERUSER_URI:

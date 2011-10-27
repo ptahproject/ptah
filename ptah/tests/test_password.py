@@ -108,7 +108,7 @@ class TestPasswordChangerDecl(Base):
     def test_password_changer_decl(self):
         import ptah
 
-        @ptah.password_changer('test+schema')
+        @ptah.password_changer('test-schema')
         def changer(schema):
             """ """
 
@@ -117,17 +117,17 @@ class TestPasswordChangerDecl(Base):
         from ptah.password import PASSWORD_CHANGER_ID
         changers = config.registry.storage[PASSWORD_CHANGER_ID]
 
-        self.assertIn('test+schema', changers)
-        self.assertIs(changers['test+schema'], changer)
+        self.assertIn('test-schema', changers)
+        self.assertIs(changers['test-schema'], changer)
 
     def test_password_changer_decl_conflict(self):
         import ptah
 
-        @ptah.password_changer('test+schema')
+        @ptah.password_changer('test-schema')
         def changer(schema):
             """ """
 
-        @ptah.password_changer('test+schema')
+        @ptah.password_changer('test-schema')
         def changer2(schema):
             """ """
 
@@ -136,16 +136,16 @@ class TestPasswordChangerDecl(Base):
     def test_password_changer(self):
         import ptah
 
-        @ptah.password_changer('test+schema')
+        @ptah.password_changer('test-schema')
         def changer(schema):
             """ """
 
         self._init_ptah()
 
-        p = Principal('test+schema:numbers_numbers', 'name', 'login')
+        p = Principal('test-schema:numbers_numbers', 'name', 'login')
         self.assertTrue(ptah.passwordTool.can_change_password(p))
 
-        p = Principal('unknown+schema:numbers_numbers', 'name', 'login')
+        p = Principal('unknown-schema:numbers_numbers', 'name', 'login')
         self.assertFalse(ptah.passwordTool.can_change_password(p))
 
 
@@ -173,10 +173,10 @@ class TestPasswordTool(Base):
         self.assertFalse(ptah.passwordTool.check('{unknown}12345', '123455'))
 
     def test_password_passcode(self):
-        p = Principal('test+schema:test', 'name', 'login')
-        principals = {'test+schema:test': p}
+        p = Principal('test-schema:test', 'name', 'login')
+        principals = {'test-schema:test': p}
 
-        @ptah.resolver('test+schema')
+        @ptah.resolver('test-schema')
         def resolver(uri):
             return principals.get(uri)
 
@@ -194,14 +194,14 @@ class TestPasswordTool(Base):
         self.assertIsNone(newp)
 
     def test_password_change_password(self):
-        p = Principal('test+schema:test', 'name', 'login')
-        principals = {'test+schema:test': p}
+        p = Principal('test-schema:test', 'name', 'login')
+        principals = {'test-schema:test': p}
 
-        @ptah.resolver('test+schema')
+        @ptah.resolver('test-schema')
         def resolver(uri):
             return principals.get(uri)
 
-        @ptah.password_changer('test+schema')
+        @ptah.password_changer('test-schema')
         def changer(principal, password):
             p.password = password
 
