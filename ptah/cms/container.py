@@ -204,7 +204,7 @@ class Container(Content):
         if tinfo is None:
             raise NotFound('Type information is not found')
 
-        tinfo.checkContext(self)
+        tinfo.check_context(self)
 
         if '/' in name:
             raise Error("Names cannot contain '/'")

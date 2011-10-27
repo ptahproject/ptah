@@ -41,7 +41,7 @@ class AddForm(form.Form):
 
         suffix = self.name_suffix
         n = '%s%s'%(name, suffix)
-        i = 1
+        i = 0
         while n in self.container:
             i += 1
             n = u'%s-%s%s'%(name, i, suffix)
@@ -51,7 +51,7 @@ class AddForm(form.Form):
     def update(self):
         self.name_suffix = getattr(self.tinfo, 'name_suffix', '')
 
-        self.tinfo.checkContext(self.container)
+        self.tinfo.check_context(self.container)
         super(AddForm, self).update()
 
     def update_widgets(self):
@@ -66,7 +66,7 @@ class AddForm(form.Form):
     def validate(self, data, errors):
         super(AddForm, self).validate(data, errors)
 
-        if '__name__' in data and data['__name__']:
+        if self.name_widgets and '__name__' in data and data['__name__']:
             widget = self.name_widgets['__name__']
 
             name = data['__name__']
@@ -93,13 +93,11 @@ class AddForm(form.Form):
         if not name:
             name = self.chooseName(**data)
 
-        content = cms.wrap(self.container).create(
+        return cms.wrap(self.container).create(
             self.tinfo.__uri__, name, **data)
 
-        return content
-
     @form.button('Add', actype=form.AC_PRIMARY)
-    def saveHandler(self):
+    def add_handler(self):
         data, errors = self.extract()
 
         if errors:
@@ -109,13 +107,13 @@ class AddForm(form.Form):
         content = self.create(**data)
 
         self.message('New content has been created.')
-        raise HTTPFound(location=self.nextUrl(content))
+        raise HTTPFound(location=self.get_next_url(content))
 
     @form.button('Cancel')
-    def cancelHandler(self):
+    def cancel_handler(self):
         raise HTTPFound(location='.')
 
-    def nextUrl(self, content):
+    def get_next_url(self, content):
         return self.request.resource_url(content)
 
 
@@ -147,26 +145,25 @@ class EditForm(form.Form):
 
         super(EditForm, self).update()
 
-    def applyChanges(self, **data):
+    def apply_changes(self, **data):
         cms.wrap(self.context).update(**data)
 
     @form.button('Save', actype=form.AC_PRIMARY)
-    def saveHandler(self):
+    def save_handler(self):
         data, errors = self.extract()
 
         if errors:
             self.message(errors, 'form-error')
             return
 
-        self.applyChanges(**data)
-        #config.notify(cms.events.ContentModifiedEvent(self.context))
+        self.apply_changes(**data)
 
         self.message("Changes have been saved.")
-        raise HTTPFound(location=self.nextUrl())
+        raise HTTPFound(location=self.get_next_url())
 
     @form.button('Cancel')
-    def cancelHandler(self):
-        raise HTTPFound(location=self.nextUrl())
+    def cancel_handler(self):
+        raise HTTPFound(location=self.get_next_url())
 
-    def nextUrl(self):
+    def get_next_url(self):
         return '.'

@@ -56,7 +56,7 @@ class TypeInformation(object):
         config.notify(ContentCreatedEvent(content))
         return content
 
-    def isAllowed(self, container):
+    def is_allowed(self, container):
         if not isinstance(container, Container):
             return False
 
@@ -64,11 +64,11 @@ class TypeInformation(object):
             return ptah.check_permission(self.permission, container)
         return True
 
-    def checkContext(self, container):
-        if not self.isAllowed(container):
+    def check_context(self, container):
+        if not self.is_allowed(container):
             raise Forbidden()
 
-    def listTypes(self, container):
+    def list_types(self, container):
         if container.__type__ is not self or \
                not isinstance(container, Container):
             return ()
@@ -81,11 +81,11 @@ class TypeInformation(object):
                 if isinstance(tinfo, basestring):
                     tinfo = all_types.get('cms+type:%s'%tinfo)
 
-                if tinfo and tinfo.isAllowed(container):
+                if tinfo and tinfo.is_allowed(container):
                     types.append(tinfo)
         else:
             for tinfo in all_types.values():
-                if tinfo.global_allow and tinfo.isAllowed(container):
+                if tinfo.global_allow and tinfo.is_allowed(container):
                     types.append(tinfo)
 
         return types

@@ -51,6 +51,7 @@ from ptah.cms.permissions import ModifyContent
 from ptah.cms.permissions import ShareContent
 from ptah import NOT_ALLOWED
 from pyramid.security import ALL_PERMISSIONS
+from pyramid.security import NO_PERMISSION_REQUIRED
 
 # events
 from ptah.cms.events import ContentEvent

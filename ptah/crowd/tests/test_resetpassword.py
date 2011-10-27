@@ -7,7 +7,7 @@ from pyramid.httpexceptions import HTTPFound, HTTPForbidden
 from base import Base
 
 
-class TestJoin(Base):
+class TestResetPassword(Base):
 
     def test_resetpassword_cancel(self):
         from ptah.crowd.resetpassword import ResetPassword

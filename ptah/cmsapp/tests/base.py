@@ -24,6 +24,7 @@ class Base(unittest.TestCase):
             'wsgi.url_scheme':'http',
             'wsgi.version':(1,0),
             'PATH_INFO': '/',
+            'SCRIPT_NAME': '',
             'SERVER_NAME':'localhost',
             'SERVER_PORT':'8080',
             'REQUEST_METHOD':'GET',
@@ -34,14 +35,13 @@ class Base(unittest.TestCase):
     def _init_ptah(self, settings=None, handler=None, *args, **kw):
         if settings is None:
             settings = self._settings
-        config.initialize(('ptah.cms', self.__class__.__module__),
+        config.initialize(('ptah', self.__class__.__module__),
                           reg = Components('test'))
         config.initialize_settings(settings, self.p_config)
 
         # create sql tables
         Base = sqlahelper.get_base()
         Base.metadata.drop_all()
-        transaction.commit()
         Base.metadata.create_all()
         transaction.commit()
 
@@ -65,6 +65,7 @@ class Base(unittest.TestCase):
 
     def tearDown(self):
         config.cleanup_system()
+        
         sm = self.p_config
         sm.__init__('base')
         testing.tearDown()

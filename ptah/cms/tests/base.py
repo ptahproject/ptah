@@ -36,7 +36,7 @@ class Base(unittest.TestCase):
         if settings is None:
             settings = self._settings
         config.initialize(('ptah', self.__class__.__module__),
-                          reg = Components('test'))
+                          reg = self.p_config.registry)
         config.initialize_settings(settings, self.p_config)
 
         # create sql tables
@@ -64,7 +64,9 @@ class Base(unittest.TestCase):
         self._setup_ptah()
 
     def tearDown(self):
+        #config.cleanup_system(self.__class__.__module__)
         config.cleanup_system()
+
         sm = self.p_config
         sm.__init__('base')
         testing.tearDown()

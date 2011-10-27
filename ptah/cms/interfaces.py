@@ -73,13 +73,13 @@ class ITypeInformation(interface.Interface):
     def create(**data):
         """ construct new content instance """
 
-    def isAllowed(container):
+    def is_allowed(container):
         """ allow create this content in container """
 
-    def checkContext(container):
+    def check_context(container):
         """ same as isAllowed, but raises HTTPForbidden """
 
-    def listTypes(self, container):
+    def list_types(self, container):
         """ list addable content types """
 
 

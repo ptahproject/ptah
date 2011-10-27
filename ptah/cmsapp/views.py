@@ -65,7 +65,7 @@ class Adding(view.View):
         self.url = self.request.resource_url(self.context)
 
         types = [(t.title, t) for t in
-                 self.context.__type__.listTypes(self.context)]
+                 self.context.__type__.list_types(self.context)]
         types.sort()
 
         self.types = [t for _t, t in types]

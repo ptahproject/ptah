@@ -63,19 +63,19 @@ class TestTypeInfo(Base):
         container = MyContainer()
 
         # always fail
-        self.assertFalse(MyContent.__type__.isAllowed(content))
+        self.assertFalse(MyContent.__type__.is_allowed(content))
         self.assertRaises(
-            HTTPForbidden, MyContent.__type__.checkContext, content)
+            HTTPForbidden, MyContent.__type__.check_context, content)
 
         #
-        self.assertTrue(MyContent.__type__.isAllowed(container))
-        self.assertEqual(MyContent.__type__.checkContext(container), None)
+        self.assertTrue(MyContent.__type__.is_allowed(container))
+        self.assertEqual(MyContent.__type__.check_context(container), None)
 
         # permission
         MyContent.__type__.permission = 'Protected'
-        self.assertFalse(MyContent.__type__.isAllowed(container))
+        self.assertFalse(MyContent.__type__.is_allowed(container))
         self.assertRaises(
-            HTTPForbidden, MyContent.__type__.checkContext, container)
+            HTTPForbidden, MyContent.__type__.check_context, container)
 
     def test_tinfo_list(self):
         import ptah.cms
@@ -90,18 +90,18 @@ class TestTypeInfo(Base):
         content = MyContent()
         container = MyContainer()
 
-        self.assertEqual(MyContent.__type__.listTypes(content), ())
-        self.assertEqual(MyContent.__type__.listTypes(container), ())
+        self.assertEqual(MyContent.__type__.list_types(content), ())
+        self.assertEqual(MyContent.__type__.list_types(container), ())
 
-        self.assertEqual(MyContainer.__type__.listTypes(container),
+        self.assertEqual(MyContainer.__type__.list_types(container),
                          [MyContent.__type__])
 
         MyContent.__type__.global_allow = False
-        self.assertEqual(MyContainer.__type__.listTypes(container), [])
+        self.assertEqual(MyContainer.__type__.list_types(container), [])
 
         MyContent.__type__.global_allow = True
         MyContent.__type__.permission = 'Protected'
-        self.assertEqual(MyContainer.__type__.listTypes(container), [])
+        self.assertEqual(MyContainer.__type__.list_types(container), [])
 
     def test_tinfo_global_allow_Node(self):
         import ptah.cms
@@ -131,10 +131,10 @@ class TestTypeInfo(Base):
 
         content = MyContent()
         container = MyContainer()
-        self.assertEqual(MyContainer.__type__.listTypes(container), [])
+        self.assertEqual(MyContainer.__type__.list_types(container), [])
 
         MyContainer.__type__.allowed_content_types = ('mycontent',)
-        self.assertEqual(MyContainer.__type__.listTypes(container),
+        self.assertEqual(MyContainer.__type__.list_types(container),
                          [MyContent.__type__])
 
     def test_tinfo_conflicts(self):
