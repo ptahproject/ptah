@@ -47,7 +47,8 @@ Lets do the needful::
   venv$ cd ptah
   venv/ptah$ ../bin/python setup.py develop
   
-Want to run the tests?
+If you like tests, run the tests::
+
   venv/ptah$ ../bin/python setup.py test
 
 Use paster to create your application.  The default username and password are:
