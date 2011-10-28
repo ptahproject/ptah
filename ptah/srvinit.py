@@ -74,6 +74,7 @@ def initializing(ev):
 @config.subscriber(config.AppStarting)
 def start(ev):
     # session
+    settings = dict(('session.%s'%key, val) for key, val in SESSION.items())
     session_factory = pyramid_beaker \
-       .session_factory_from_settings(SESSION)
+       .session_factory_from_settings(settings)
     ev.config.set_session_factory(session_factory)
