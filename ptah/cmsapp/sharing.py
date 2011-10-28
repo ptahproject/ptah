@@ -23,7 +23,7 @@ class SharingForm(form.Form):
     bsize = 15
 
     def form_content(self):
-        return {'term': self.request.session.get('sharing-term', '')}
+        return {'term': self.request.session.get('sharing-search-term', '')}
 
     def get_principal(self, id):
         return ptah.resolve(id)
@@ -37,7 +37,7 @@ class SharingForm(form.Form):
         self.roles = [r for r in ptah.get_roles().values() if not r.system]
         self.local_roles = local_roles = context.__local_roles__
 
-        term = request.session.get('sharing-term', '')
+        term = request.session.get('sharing-search-term', '')
         if term:
             self.users = list(ptah.search_principals(term))
 
@@ -46,7 +46,7 @@ class SharingForm(form.Form):
             userdata = {}
             for attr, val in request.POST.items():
                 if attr.startswith('user-'):
-                    userId, roleId = attr.split('-')[1:]
+                    userId, roleId = attr[5:].rsplit('-',1)
                     data = userdata.setdefault(str(userId), [])
                     data.append(str(roleId))
                 if attr.startswith('userid-'):
@@ -68,5 +68,5 @@ class SharingForm(form.Form):
             self.message('Please specify search term', 'warning')
             return
 
-        self.request.session['sharing-term'] = data['term']
+        self.request.session['sharing-search-term'] = data['term']
         raise HTTPFound(location = self.request.url)
