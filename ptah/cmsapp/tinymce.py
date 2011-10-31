@@ -2,19 +2,6 @@
 from ptah import view, form
 
 
-# TinyMCE
-view.static(
-    'tiny_mce', 'ptah.cmsapp:static/tiny_mce')
-
-
-view.library(
-    "tiny_mce",
-    resource="tiny_mce",
-    path=('tiny_mce.js', 'jquery.tinymce.js'),
-    type="js",
-    require='jquery')
-
-
 class TinymceField(form.TextAreaField):
     __doc__ = u'TinyMCE Text Area input widget'
 
