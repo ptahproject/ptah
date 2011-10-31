@@ -38,7 +38,7 @@ view.register_snippet(
     template = view.template('ptah.crowd:templates/ptah-actions.pt'))
 
 
-class SearchUsers(form.Form):
+class CrowdModuleView(form.Form):
     view.pview(
         context = CrowdModule,
         template = view.template('ptah.crowd:templates/search.pt'))
@@ -66,7 +66,7 @@ class SearchUsers(form.Form):
         return get_properties(uri)
 
     def update(self):
-        super(SearchUsers, self).update()
+        super(CrowdModuleView, self).update()
 
         request = self.request
         uids = request.POST.getall('uid')
@@ -100,11 +100,9 @@ class SearchUsers(form.Form):
             try:
                 current = int(request.params.get('batch', None))
                 if not current:
-                    current = request.session.get('crowd-current-batch')
-                    if not current:
-                        current = 1
-                    else:
-                        request.session['crowd-current-batch'] = current
+                    current = 1
+
+                request.session['crowd-current-batch'] = current
             except:
                 current = request.session.get('crowd-current-batch')
                 if not current:
@@ -129,7 +127,7 @@ class SearchUsers(form.Form):
         self.request.session['ptah-search-term'] = data['term']
         raise HTTPFound(location = self.request.url)
 
-    @form.button(_('Clear term'))
+    @form.button(_('Clear term'), name='clear')
     def clear(self):
         if 'ptah-search-term' in self.request.session:
             del self.request.session['ptah-search-term']
