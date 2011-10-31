@@ -5,7 +5,6 @@ from pyramid.httpexceptions import HTTPFound, HTTPNotFound
 import ptah
 from ptah import authService, manage, cms
 
-from forms import AddForm
 from uiactions import list_uiactions
 
 
@@ -85,7 +84,7 @@ class Adding(view.View):
         return super(Adding, self).render()
 
 
-class AddContentForm(AddForm):
+class AddContentForm(cms.AddForm):
 
     def __init__(self, tinfo, form, request):
         super(AddContentForm, self).__init__(form, request)

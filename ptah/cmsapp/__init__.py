@@ -1,8 +1,8 @@
 # ptah.cmsapp api
 
 # forms
-from ptah.cmsapp.forms import AddForm
-from ptah.cmsapp.forms import EditForm
+from ptah.cms.forms import AddForm
+from ptah.cms.forms import EditForm
 
 # ui actions
 from ptah.cmsapp.uiactions import uiaction

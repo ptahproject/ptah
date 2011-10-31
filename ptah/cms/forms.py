@@ -1,8 +1,13 @@
 """ default content forms """
 import re
-from ptah import config, view, form, cms
+from ptah import config, view, form
 from pyramid.decorator import reify
 from pyramid.httpexceptions import HTTPFound
+
+from cms import wrap
+from content import Content
+from permissions import ModifyContent
+from interfaces import ContentNameSchema
 
 
 class AddForm(form.Form):
@@ -13,7 +18,7 @@ class AddForm(form.Form):
     name_show = True
     name_suffix = ''
     name_widgets = None
-    name_fields = cms.ContentNameSchema
+    name_fields = ContentNameSchema
 
     def __init__(self, context, request):
         self.container = context
@@ -93,7 +98,7 @@ class AddForm(form.Form):
         if not name:
             name = self.chooseName(**data)
 
-        return cms.wrap(self.container).create(
+        return wrap(self.container).create(
             self.tinfo.__uri__, name, **data)
 
     @form.button('Add', actype=form.AC_PRIMARY)
@@ -119,11 +124,11 @@ class AddForm(form.Form):
 
 view.register_snippet(
     'form-actions', AddForm,
-    template = view.template('ptah.cmsapp:templates/form-actions.pt'))
+    template = view.template('ptah.cms:form-actions.pt'))
 
 
 class EditForm(form.Form):
-    view.pview('edit.html', cms.Content, permission=cms.ModifyContent)
+    view.pview('edit.html', Content, permission=ModifyContent)
 
     @reify
     def label(self):
@@ -146,7 +151,7 @@ class EditForm(form.Form):
         super(EditForm, self).update()
 
     def apply_changes(self, **data):
-        cms.wrap(self.context).update(**data)
+        wrap(self.context).update(**data)
 
     @form.button('Save', actype=form.AC_PRIMARY)
     def save_handler(self):

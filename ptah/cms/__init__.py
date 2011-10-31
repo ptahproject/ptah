@@ -63,3 +63,7 @@ from ptah.cms.events import ContentDeletingEvent
 
 # cms rest
 from ptah.cms.rest import restaction
+
+# content add/edit form helpers
+from ptah.cms.forms import AddForm
+from ptah.cms.forms import EditForm
