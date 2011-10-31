@@ -6,14 +6,14 @@ ptah.cmsapp.uiaction(
                           'title': 'View',
                           'action': '',
                           'permission': ptah.cms.View,
-                          'sortWeight': 0.5})
+                          'sort_weight': 0.5})
 
 ptah.cmsapp.uiaction(
     ptah.cms.IContent, **{'id': 'edit',
                           'title': 'Edit',
                           'action': 'edit.html',
                           'permission': ptah.cms.ModifyContent,
-                          'sortWeight': 0.6})
+                          'sort_weight': 0.6})
 
 
 ptah.cmsapp.uiaction(
@@ -21,7 +21,7 @@ ptah.cmsapp.uiaction(
                             'title': 'Add content',
                             'action': '+/',
                             'permission': ptah.cms.AddContent,
-                            'sortWeight': 5.0})
+                            'sort_weight': 5.0})
 
 
 ptah.cmsapp.uiaction(
@@ -29,4 +29,4 @@ ptah.cmsapp.uiaction(
                               'title': 'Sharing',
                               'action': 'sharing.html',
                               'permission': ptah.cms.ShareContent,
-                              'sortWeight': 10.0})
+                              'sort_weight': 10.0})
