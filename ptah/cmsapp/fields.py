@@ -4,6 +4,21 @@ from ptah import form, view
 from ptah.view import formatter
 
 
+class TinymceField(form.TextAreaField):
+    __doc__ = u'TinyMCE Text Area input widget'
+
+    form.field('tinymce')
+
+    klass = u'tinymce-widget'
+
+    width = '400px'
+    height = '300px'
+    theme = "advanced"
+
+    tmpl_input = view.template(
+        "ptah.cmsapp:templates/tinymce_input.pt")
+
+
 class JSDateField(form.DateField):
     __doc__ = u'Date input widget with JQuery Datepicker.'
 
@@ -100,5 +115,19 @@ def jsdatetimePreview(request):
         description = 'jQuery DateTime field preview description')
 
     widget = field.bind('preview.', datetime.datetime.now(), {})
+    widget.update(request)
+    return widget.snippet('form-widget', widget)
+
+
+@form.fieldpreview(TinymceField)
+def tinemcePreview(request):
+    field = TinymceField(
+        'TinymceField',
+        title = 'TinyMCE field',
+        description = 'TinyMCE field preview description',
+        default = 'Test text in tinymce field.',
+        width = '200px')
+
+    widget = field.bind('preview.', form.null, {})
     widget.update(request)
     return widget.snippet('form-widget', widget)
