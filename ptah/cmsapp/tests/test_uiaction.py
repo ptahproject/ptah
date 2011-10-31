@@ -143,8 +143,8 @@ class TestUIAction(Base):
         class Content(object):
             __name__ = ''
 
-        ptah.cmsapp.uiaction(Content, 'view', 'View', sortWeight=1.0)
-        ptah.cmsapp.uiaction(Content, 'action', 'Action', sortWeight=2.0)
+        ptah.cmsapp.uiaction(Content, 'view', 'View', sort_weight=1.0)
+        ptah.cmsapp.uiaction(Content, 'action', 'Action', sort_weight=2.0)
         self._init_ptah()
 
         request = self._makeRequest()

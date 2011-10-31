@@ -15,10 +15,10 @@ class Action(object):
     title = ''
     description = ''
     action = ''
-    actionFactory = None
+    action_factory = None
     condition = None
     permission = None
-    sortWeight = 1.0,
+    sort_weight = 1.0,
     data = None
 
     def __init__(self, id='', **kw):
@@ -26,8 +26,8 @@ class Action(object):
         self.__dict__.update(kw)
 
     def url(self, context, request, url=''):
-        if self.actionFactory is not None:
-            return self.actionFactory(context, request)
+        if self.action_factory is not None:
+            return self.action_factory(context, request)
 
         if self.action.startswith('/'):
             return '%s%s'%(request.application_url, self.action)
@@ -53,18 +53,18 @@ def _contentAction(config, id, context, ac):
 def uiaction(context, id, title,
              description = '',
              action='', condition=None, permission=None,
-             sortWeight = 1.0, **kw):
+             sort_weight = 1.0, **kw):
 
     kwargs = {'id': id,
               'title': title,
               'description': description,
               'condition': condition,
               'permission': permission,
-              'sortWeight': sortWeight,
+              'sort_weight': sort_weight,
               'data': kw}
 
     if callable(action):
-        kwargs['actionFactory'] = action
+        kwargs['action_factory'] = action
     else:
         kwargs['action'] = action
 
@@ -86,7 +86,7 @@ def list_uiactions(content, request):
         (interface.providedBy(content),), IAction):
         if action.check(content, request):
             actions.append(
-                (action.sortWeight,
+                (action.sort_weight,
                  {'id': action.id,
                   'url': action.url(content, request, url),
                   'title': action.title,
