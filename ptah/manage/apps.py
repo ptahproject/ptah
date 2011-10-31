@@ -1,6 +1,6 @@
 """ app management module """
 import ptah
-from ptah import view, form, manage
+from ptah import view, form, manage, cms
 from pyramid.httpexceptions import HTTPFound
 
 
@@ -8,10 +8,10 @@ class ApplicationsModule(manage.PtahModule):
     __doc__ = u'A listing of all registered Ptah Applications.'
 
     title = 'Applications'
-    manage.module('ptah-apps')
+    manage.module('apps')
 
     def __getitem__(self, key):
-        for id, factory in ptah.cms.get_app_factories().items():
+        for id, factory in cms.get_app_factories().items():
             if factory.name == key:
                 return AppFactory(factory, self, self.request)
 
@@ -21,11 +21,11 @@ class ApplicationsModule(manage.PtahModule):
 class ApplicationsModuleView(view.View):
     view.pview(
         context=ApplicationsModule,
-        template=view.template('ptah.cmsapp:templates/module-apps.pt'))
+        template=view.template('ptah.manage:templates/apps.pt'))
 
     def update(self):
         factories = []
-        for factory in ptah.cms.get_app_factories().values():
+        for factory in cms.get_app_factories().values():
             factories.append((factory.title, factory))
 
         factories.sort()
@@ -39,13 +39,13 @@ class AppFactory(object):
         self.__parent__ = context
         self.request = request
         self.factory = factory
-        self.root = factory(request)
+        self.app = factory(request)
 
 
 class SharingForm(form.Form):
     view.pview(
         context = AppFactory,
-        template = view.template('ptah.cmsapp:templates/module-apps-sharing.pt'))
+        template = view.template('ptah.manage:templates/apps-sharing.pt'))
 
     csrf = True
     fields = form.Fieldset(
@@ -63,7 +63,7 @@ class SharingForm(form.Form):
     bsize = 15
 
     def form_content(self):
-        return {'term': self.request.session.get('sharing-term', '')}
+        return {'term': self.request.session.get('apps-sharing-term', '')}
 
     def get_principal(self, id):
         return ptah.resolve(id)
@@ -72,12 +72,12 @@ class SharingForm(form.Form):
         super(SharingForm, self).update()
 
         request = self.request
-        context = self.context.root
+        context = self.context.app
 
         self.roles = [r for r in ptah.get_roles().values() if not r.system]
         self.local_roles = local_roles = context.__local_roles__
 
-        term = request.session.get('sharing-term', '')
+        term = request.session.get('apps-sharing-term', '')
         if term:
             self.users = list(ptah.search_principals(term))
 
@@ -108,7 +108,7 @@ class SharingForm(form.Form):
             self.message('Please specify search term', 'warning')
             return
 
-        self.request.session['sharing-term'] = data['term']
+        self.request.session['apps-sharing-term'] = data['term']
         raise HTTPFound(location = self.request.url)
 
 
@@ -119,13 +119,10 @@ class TypeIntrospection(object):
     title = 'Content Types'
     manage.introspection('ptah-cms:type')
 
-    actions = view.template('ptah.cmsapp:templates/directive-type.pt')
+    actions = view.template('ptah.manage:templates/directive-type.pt')
 
     def __init__(self, request):
         self.request = request
-
-    def renderAction(self, action):
-        pass
 
     def renderActions(self, *actions):
         return self.actions(
