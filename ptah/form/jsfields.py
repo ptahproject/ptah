@@ -1,13 +1,17 @@
 """ various fields """
 import datetime
-from ptah import form, view
+from ptah import view
 from ptah.view import formatter
 
+from interfaces import null
+from field import field
+from fields import TextAreaField, DateField, DateTimeField
 
-class TinymceField(form.TextAreaField):
+
+class TinymceField(TextAreaField):
     __doc__ = u'TinyMCE Text Area input widget'
 
-    form.field('tinymce')
+    field('tinymce')
 
     klass = u'tinymce-widget'
 
@@ -16,35 +20,35 @@ class TinymceField(form.TextAreaField):
     theme = "advanced"
 
     tmpl_input = view.template(
-        "ptah.cmsapp:templates/tinymce_input.pt")
+        "ptah.form:templates/fields/tinymce_input.pt")
 
 
-class JSDateField(form.DateField):
+class JSDateField(DateField):
     __doc__ = u'Date input widget with JQuery Datepicker.'
 
-    form.field('date')
+    field('date')
 
     klass = u'date-widget'
     value = u''
 
     tmpl_input = view.template(
-        "ptah.cmsapp:templates/date-input.pt")
+        "ptah.form:templates/fields/jsdate-input.pt")
 
 
-class JSDateTimeField(form.DateTimeField):
+class JSDateTimeField(DateTimeField):
     __doc__ = u'DateTime input widget with JQuery Datepicker.'
 
-    form.field('datetime')
+    field('datetime')
 
     klass = u'datetime-widget'
     value = u''
 
-    time_part = form.null
-    date_part = form.null
+    time_part = null
+    date_part = null
     tzinfo = None
 
     tmpl_input = view.template(
-        "ptah.cmsapp:templates/datetime-input.pt")
+        "ptah.form:templates/fields/jsdatetime-input.pt")
 
     def update(self, request):
         self.date_name = '%s.date'%self.name
@@ -52,23 +56,23 @@ class JSDateTimeField(form.DateTimeField):
 
         super(JSDateTimeField, self).update(request)
 
-        self.date_part = self.params.get(self.date_name, form.null)
-        self.time_part = self.params.get(self.time_name, form.null)
+        self.date_part = self.params.get(self.date_name, null)
+        self.time_part = self.params.get(self.time_name, null)
 
         if self.content:
             raw = self.content
             self.tzinfo = raw.tzinfo
-            if self.date_part is form.null:
+            if self.date_part is null:
                 self.date_part = raw.strftime('%m/%d/%Y')
-            if self.time_part is form.null:
+            if self.time_part is null:
                 self.time_part = raw.strftime(formatter.FORMAT.time_short)
 
-        if self.date_part is form.null:
+        if self.date_part is null:
             self.date_part = u''
-        if self.time_part is form.null:
+        if self.time_part is null:
             self.time_part = u''
 
-    def extract(self, default=form.null):
+    def extract(self, default=null):
         date = self.params.get(self.date_name, default)
         if date is default:
             return default
@@ -84,50 +88,10 @@ class JSDateTimeField(form.DateTimeField):
             return ''
 
         format = '%s %s'%(
-            '%m/%d/%Y',
-            formatter.FORMAT.time_short)
+            '%m/%d/%Y', formatter.FORMAT.time_short)
         try:
             dt = datetime.strptime('%s %s'%(date, time), format)
         except ValueError:
             return '--------'
 
         return dt.replace(tzinfo=self.tzinfo).isoformat()
-
-
-@form.fieldpreview(JSDateField)
-def jsdatePreview(request):
-    field = JSDateField(
-        'JSDateField',
-        title = 'jQuery Date field',
-        description = 'jQuery Date field preview description',
-        default = datetime.date.today())
-
-    widget = field.bind('preview.', form.null, {})
-    widget.update(request)
-    return widget.snippet('form-widget', widget)
-
-
-@form.fieldpreview(JSDateTimeField)
-def jsdatetimePreview(request):
-    field = JSDateTimeField(
-        'JSDateTimeField',
-        title = 'jQuery DateTime field',
-        description = 'jQuery DateTime field preview description')
-
-    widget = field.bind('preview.', datetime.datetime.now(), {})
-    widget.update(request)
-    return widget.snippet('form-widget', widget)
-
-
-@form.fieldpreview(TinymceField)
-def tinemcePreview(request):
-    field = TinymceField(
-        'TinymceField',
-        title = 'TinyMCE field',
-        description = 'TinyMCE field preview description',
-        default = 'Test text in tinymce field.',
-        width = '200px')
-
-    widget = field.bind('preview.', form.null, {})
-    widget.update(request)
-    return widget.snippet('form-widget', widget)

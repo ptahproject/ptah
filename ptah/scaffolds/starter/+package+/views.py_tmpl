@@ -1,5 +1,8 @@
 from datetime import datetime
+import ptah
 from ptah import view, form, cms
+from pyramid.httpexceptions import HTTPFound, HTTPNotFound
+
 from {{package}} import settings
 from {{package}}.root import ApplicationRoot
 
@@ -21,7 +24,7 @@ class DefaultContentView(form.DisplayForm):
     view.pview(
         context = cms.Content,
         permission = cms.View,
-        template=view.template("templates/contentview.pt"))
+     	template=view.template("templates/contentview.pt"))
 
     @property
     def fields(self):
@@ -33,3 +36,82 @@ class DefaultContentView(form.DisplayForm):
             data[name] = getattr(self.context, name, field.default)
 
         return data
+
+
+class DefaultEditForm(cms.EditForm):
+    view.pview('edit.html', cms.Content, permission=cms.ModifyContent)
+
+
+class ContainerListing(view.View):
+    view.pview('listing.html', cms.Container,
+               template = view.template("templates/listing.pt"))
+
+    def update(self):
+        context = self.context
+        request = self.request
+        registry = request.registry
+
+        self.deleteContent = ptah.check_permission(
+            cms.DeleteContent, context)
+
+        # cms(uri).read()
+        # cms(uri).create(type)
+        # cms(uri).delete()
+        # cms(uri).update(**kwargs)
+        # cms(uri).items(offset, limit)
+
+        if self.deleteContent and 'form.buttons.remove' in request.POST:
+            uris = self.request.POST.getall('item')
+            for uri in uris:
+                cms.wrap(uri).delete()
+
+                self.message("Selected content items have been removed.")
+
+
+class ViewContainer(ContainerListing):
+    view.pview(context = cms.Container,
+               template = view.template("templates/listing.pt"))
+
+
+class RenameForm(view.View):
+    view.pview(
+        'rename.html', cms.Container,
+        template=view.template("templates/folder_rename.pt"))
+
+
+class Adding(view.View):
+    view.pview('+', cms.Container)
+
+    template=view.template("templates/adding.pt")
+
+    def update(self):
+        self.url = self.request.resource_url(self.context)
+
+        types = [(t.title, t) for t in
+                 self.context.__type__.list_types(self.context)]
+        types.sort()
+
+        self.types = [t for _t, t in types]
+
+    def render(self):
+        subpath = self.request.subpath
+        if subpath and subpath[0]:
+            tname = subpath[0]
+            tinfo = cms.get_type('cms-type:%s'%tname)
+            if tinfo is None:
+                raise HTTPNotFound
+
+            form = AddContentForm(tinfo, self, self.request)
+            form.update()
+            return form.render()
+
+        return super(Adding, self).render()
+
+
+class AddContentForm(cms.AddForm):
+
+    def __init__(self, tinfo, form, request):
+        super(AddContentForm, self).__init__(form, request)
+
+        self.tinfo = tinfo
+        self.container = form.context

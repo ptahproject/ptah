@@ -1,5 +1,7 @@
-import decimal
+import decimal, datetime
+
 from ptah import form
+
 
 vocabulary = form.SimpleVocabulary.from_items(
     (1, 'one', 'One', 'One description'),
@@ -146,6 +148,45 @@ def passwordPreview(request):
         'PasswordField',
         title = 'Password field',
         description = 'Password field preview description')
+
+    widget = field.bind('preview.', form.null, {})
+    widget.update(request)
+    return widget.snippet('form-widget', widget)
+
+
+@form.fieldpreview(form.JSDateField)
+def jsdatePreview(request):
+    field = form.JSDateField(
+        'JSDateField',
+        title = 'jQuery Date field',
+        description = 'jQuery Date field preview description',
+        default = datetime.date.today())
+
+    widget = field.bind('preview.', form.null, {})
+    widget.update(request)
+    return widget.snippet('form-widget', widget)
+
+
+@form.fieldpreview(form.JSDateTimeField)
+def jsdatetimePreview(request):
+    field = form.JSDateTimeField(
+        'JSDateTimeField',
+        title = 'jQuery DateTime field',
+        description = 'jQuery DateTime field preview description')
+
+    widget = field.bind('preview.', datetime.datetime.now(), {})
+    widget.update(request)
+    return widget.snippet('form-widget', widget)
+
+
+@form.fieldpreview(form.TinymceField)
+def tinemcePreview(request):
+    field = form.TinymceField(
+        'TinymceField',
+        title = 'TinyMCE field',
+        description = 'TinyMCE field preview description',
+        default = 'Test text in tinymce field.',
+        width = '200px')
 
     widget = field.bind('preview.', form.null, {})
     widget.update(request)

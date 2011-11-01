@@ -1,4 +1,4 @@
-""" default content forms """
+""" content helper forms """
 import re
 from ptah import config, view, form
 from pyramid.decorator import reify
@@ -128,7 +128,6 @@ view.register_snippet(
 
 
 class EditForm(form.Form):
-    view.pview('edit.html', Content, permission=ModifyContent)
 
     @reify
     def label(self):

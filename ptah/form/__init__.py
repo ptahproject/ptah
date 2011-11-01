@@ -51,6 +51,11 @@ from ptah.form.fields import ChoiceField
 from ptah.form.fields import MultiChoiceField
 from ptah.form.fields import MultiSelectField
 
+# js fields (temporary)
+from ptah.form.jsfields import JSDateField
+from ptah.form.jsfields import JSDateTimeField
+from ptah.form.jsfields import TinymceField
+
 # helper field classes
 from ptah.form.fields import VocabularyField
 from ptah.form.fields import BaseChoiceField

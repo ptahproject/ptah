@@ -3,9 +3,9 @@ from ptah import view, cms, manage, authService
 
 from {{package}}.root import ApplicationRoot
 
-ptah.cmsapp.uiaction(cms.Content, 'layout-preview', 'Layout preview',
-                     description='view parameter is any registered view name for object',
-                     action='layout-preview.html?view=')
+ptah.cms.uiaction(cms.Content, 'layout-preview', 'Layout preview',
+                  description='view parameter is any registered view name for object',
+                  action='layout-preview.html?view=')
 
 view.register_layout(
     'ptah-page', ApplicationRoot, parent='workspace', layer='{{package}}',
@@ -54,4 +54,4 @@ class ContentLayout(view.Layout):
                 template=view.template("templates/layout-content.pt"))
 
     def update(self):
-        self.actions = ptah.cmsapp.list_uiactions(self.context, self.request)
+        self.actions = ptah.cms.list_uiactions(self.context, self.request)
