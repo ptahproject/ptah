@@ -8,8 +8,8 @@ def resolve(uri):
     """ Resolve uri, return resolved object.
 
     Uri contains two parts, `schema` and `uuid`. `schema` is used for
-    resolver selection. `uuid` is resolver specific data.
-    Ussually it is just uuid number.
+    resolver selection. `uuid` is resolver specific data. By default 
+    uuid is a uuid.uuid4 string.
     """
     if not uri:
         return
@@ -59,7 +59,7 @@ def resolver(schema):
 def register_uri_resolver(schema, resolver, depth=1):
     """ Register resolver for given schema
 
-    :param schema: Uri schema
+    :param schema: uri schema
     :type schema: string
     :param resolver: Callable object that accept one parameter.
 
