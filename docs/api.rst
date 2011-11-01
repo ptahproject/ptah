@@ -44,10 +44,10 @@ ACL, Roles, Permissions
   
   .. autoclass:: Role
   
-  .. autoclass:: LocalRoles
-  
   .. autofunction:: get_roles
   
+  .. autofunction:: get_local_roles
+
   .. autoclass:: Permission
   
   .. autofunction:: get_permissions
@@ -84,9 +84,9 @@ Utilities
 
   .. autoclass:: JsonListType
 
-  .. autofunction:: generateFieldset
+  .. autofunction:: generate_fieldset
   
-  .. autofunction:: buildSqlaFieldset
+  .. autofunction:: build_sqla_fieldset
   
 
 

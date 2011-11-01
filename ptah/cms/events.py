@@ -41,7 +41,7 @@ class ContentDeletingEvent(ContentEvent):
 
 
 @config.subscriber(ContentCreatedEvent)
-def createdHandler(ev):
+def content_created_handler(ev):
     """ Assigns created, modified, __owner__
         attributes for newly created content """
     now = datetime.utcnow()
@@ -54,6 +54,6 @@ def createdHandler(ev):
 
 
 @config.subscriber(ContentModifiedEvent)
-def modifiedHandler(ev):
+def content_modified_handler(ev):
     """ Updates the modified attribute on content """
     ev.object.modified = datetime.utcnow()

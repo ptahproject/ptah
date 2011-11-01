@@ -249,7 +249,7 @@ class EditRecord(form.Form):
 
     @reify
     def fields(self):
-        return ptah.buildSqlaFieldset(
+        return ptah.build_sqla_fieldset(
             [(cl.name, cl) for cl in self.context.table.columns])
 
     def update(self):
@@ -304,7 +304,7 @@ class AddRecord(form.Form):
 
     @reify
     def fields(self):
-        return ptah.buildSqlaFieldset(
+        return ptah.build_sqla_fieldset(
             [(cl.name, cl) for cl in self.context.table.columns])
 
     @form.button('Create', actype=form.AC_PRIMARY)

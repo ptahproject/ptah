@@ -2,7 +2,7 @@
 import colander
 import translationstring
 from ptah import config
-from ptah.security import LocalRoles
+from ptah.security import get_local_roles
 from pyramid.authentication import AuthTktAuthenticationPolicy
 
 _ = translationstring.TranslationStringFactory('ptah')
@@ -72,7 +72,7 @@ SECURITY = config.register_settings(
     title = _('Pyramid authentication settings'),
     validator = config.RequiredWithDependency('secret','policy','auth_tkt',''),
 )
-SECURITY['callback'] = LocalRoles
+SECURITY['callback'] = get_local_roles
 
 
 SESSION = config.register_settings(

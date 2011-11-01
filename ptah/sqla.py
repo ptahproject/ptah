@@ -11,16 +11,16 @@ from sqlalchemy.types import TypeDecorator, VARCHAR
 
 class QueryFreezer(object):
     """ A facade for sqla.Session.query which caches internal query structure.
-    
+
     :param builder: anonymous function containing SQLAlchemy query
 
     .. code-block:: python
-    
+
         _sql_parent = ptah.QueryFreezer(
             lambda: Session.query(Content)
                 .filter(Content.__uri__ == sqla.sql.bindparam('parent')))
     """
-    
+
     def __init__(self, builder):
         self.builder = builder
         self.data = local()
@@ -129,27 +129,27 @@ class MutationDict(Mutable, dict):
 
 
 def JsonDictType():
-    """ 
-    function which returns a SQLA Column Type suitable to store a Json object.
-    
+    """
+    function which returns a SQLA Column Type suitable to store a Json dict.
+
     :returns: ptah.sqla.MutationDict
     """
     return MutationDict.as_mutable(JsonType)
 
 
 def JsonListType():
-    """ 
+    """
     function which returns a SQLA Column Type suitable to store a Json array.
-    
+
     :returns: ptah.sqla.MutationList
     """
 
     return MutationList.as_mutable(JsonType)
 
 
-def columnOrder(mapper):
+def get_columns_order(mapper):
     if mapper.inherits is not None:
-        order = columnOrder(mapper.inherits)
+        order = get_columns_order(mapper.inherits)
     else:
         order = []
 
@@ -160,20 +160,20 @@ def columnOrder(mapper):
     return order
 
 
-def generateFieldset(model, fieldNames=None, namesFilter=None,
-                     skipPrimaryKey=True):
+def generate_fieldset(model, fieldNames=None, namesFilter=None,
+                      skipPrimaryKey=True):
     """
     :param model: subclass of sqlalchemy.ext.declarative.declarative_base
-    :param fieldNames: **optional** sequence of strings to use 
-    :param namesFilter: **optional** callable which takes a key and list 
-        of fieldNames to compute if fieldName should filtered out of Fieldset 
+    :param fieldNames: **optional** sequence of strings to use
+    :param namesFilter: **optional** callable which takes a key and list
+        of fieldNames to compute if fieldName should filtered out of Fieldset
         generation.
-    :param skipPrimaryKey: **default: True** Should PrimaryKey be omitted 
-        from fieldset generation.  
+    :param skipPrimaryKey: **default: True** Should PrimaryKey be omitted
+        from fieldset generation.
     :returns: a instance of :py:class:`ptah.form.Fieldset`
     """
     mapper = model.__mapper__
-    order = columnOrder(mapper)
+    order = get_columns_order(mapper)
 
     columns = []
     for attr in list(mapper.class_manager.attributes):
@@ -192,7 +192,7 @@ def generateFieldset(model, fieldNames=None, namesFilter=None,
     columns.sort()
     columns = [(name, cl) for i, name, cl in columns]
 
-    return buildSqlaFieldset(columns, skipPrimaryKey)
+    return build_sqla_fieldset(columns, skipPrimaryKey)
 
 
 mapping = {
@@ -205,14 +205,14 @@ mapping = {
 }
 
 
-def buildSqlaFieldset(columns, skipPrimaryKey=False):
+def build_sqla_fieldset(columns, skipPrimaryKey=False):
     """
     Given a list of SQLAlchemy columns generate a ptah.form.Fieldset.
 
     :param columns: sequence of sqlachemy.schema.Column instances
-    :param skipPrimaryKey: **default: False** boolean whether to include PK 
+    :param skipPrimaryKey: **default: False** boolean whether to include PK
       Columns in Fieldset generation.
-    :returns: a instance of :py:class:`ptah.form.Fieldset`    
+    :returns: a instance of :py:class:`ptah.form.Fieldset`
     """
     fields = []
 

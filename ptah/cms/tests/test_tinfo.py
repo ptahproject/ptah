@@ -247,15 +247,15 @@ class TestTypeInfo(Base):
         self.assertIs(ptah.resolve(tinfo_uri), MyContent.__type__)
 
     def test_names_filter(self):
-        from ptah.cms.tinfo import namesFilter
+        from ptah.cms.tinfo import names_filter
 
-        self.assertFalse(namesFilter('_test'))
-        self.assertFalse(namesFilter('__test__'))
-        self.assertTrue(namesFilter('__test__', ('__test__',)))
+        self.assertFalse(names_filter('_test'))
+        self.assertFalse(names_filter('__test__'))
+        self.assertTrue(names_filter('__test__', ('__test__',)))
 
         excludeNames = ('expires', 'contributors', 'creators',
                         'view', 'subjects',
                         'publisher', 'effective', 'created', 'modified')
         for name in excludeNames:
-            self.assertFalse(namesFilter(name))
-            self.assertTrue(namesFilter(name, (name,)))
+            self.assertFalse(names_filter(name))
+            self.assertTrue(names_filter(name, (name,)))

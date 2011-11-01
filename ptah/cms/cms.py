@@ -68,7 +68,7 @@ def action(func=None, name=None, permission = View):
     return wrapper
 
 
-def buildClassActions(cls):
+def build_class_actions(cls):
     actions = cls.__dict__.get('__ptahcms_actions__', None)
     if actions is None:
         actions = {}

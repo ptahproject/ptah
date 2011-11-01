@@ -25,7 +25,7 @@ class TestSqlSchema(Base):
             datetime = sqla.Column(sqla.DateTime())
             boolean = sqla.Column(sqla.Boolean())
 
-        fieldset = ptah.generateFieldset(Test)
+        fieldset = ptah.generate_fieldset(Test)
 
         # no primary keya
         self.assertNotIn('id', fieldset)
@@ -38,12 +38,12 @@ class TestSqlSchema(Base):
         self.assertEqual(fieldset['boolean'].__field__, 'bool')
         self.assertEqual(fieldset['name'].title, 'Name')
 
-        fieldset = ptah.generateFieldset(Test, fieldNames=('name', 'count'))
+        fieldset = ptah.generate_fieldset(Test, fieldNames=('name', 'count'))
         self.assertEqual(len(fieldset), 2)
         self.assertIn('name', fieldset)
         self.assertIn('count', fieldset)
 
-        fieldset = ptah.generateFieldset(
+        fieldset = ptah.generate_fieldset(
             Test, fieldNames=('id', 'name'), skipPrimaryKey=False)
         self.assertEqual(len(fieldset), 2)
         self.assertIn('name', fieldset)
@@ -54,7 +54,7 @@ class TestSqlSchema(Base):
         class TestNoTable(Test):
             pass
 
-        fieldset = ptah.generateFieldset(TestNoTable)
+        fieldset = ptah.generate_fieldset(TestNoTable)
         self.assertEqual(len(fieldset), 6)
 
     def test_sqlschema_extra_fields(self):
@@ -72,7 +72,7 @@ class TestSqlSchema(Base):
                       'field_type': 'textarea',
                       'vocabulary': ['1','2']})
 
-        fieldset = ptah.generateFieldset(Test2)
+        fieldset = ptah.generate_fieldset(Test2)
 
         field = fieldset['name']
 
@@ -92,7 +92,7 @@ class TestSqlSchema(Base):
             id = sqla.Column('id', sqla.Integer, primary_key=True)
             name = sqla.Column(sqla.Unicode(), info={'field': field})
 
-        fieldset = ptah.generateFieldset(Test3)
+        fieldset = ptah.generate_fieldset(Test3)
 
         m_field = fieldset['name']
 
@@ -110,7 +110,7 @@ class TestSqlSchema(Base):
             name = sqla.Column(sqla.Unicode())
             json = sqla.Column(ptah.JsonListType())
 
-        fieldset = ptah.generateFieldset(Test2)
+        fieldset = ptah.generate_fieldset(Test2)
 
         self.assertNotIn('json', fieldset)
 

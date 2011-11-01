@@ -32,13 +32,11 @@ ACL
 Roles
 ~~~~~
 
-  .. py:data:: Roles
-
-     Roles dictionary contains all registered roles in the system.
-
   .. autoclass:: Role(name, title, description='')
 
-  .. autofunction:: LocalRoles
+  .. autofunction:: get_local_roles
+
+  .. autofunction:: get_roles
 
 
 Permissions
@@ -50,7 +48,7 @@ Permissions
 
   .. autofunction:: Permission
 
-  .. autofunction:: checkPermission
+  .. autofunction:: check_permission
 
 
 misc

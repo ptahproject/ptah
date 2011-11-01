@@ -8,7 +8,7 @@ def resolve(uri):
     """ Resolve uri, return resolved object.
 
     Uri contains two parts, `schema` and `uuid`. `schema` is used for
-    resolver selection. `uuid` is resolver specific data. By default 
+    resolver selection. `uuid` is resolver specific data. By default
     uuid is a uuid.uuid4 string.
     """
     if not uri:

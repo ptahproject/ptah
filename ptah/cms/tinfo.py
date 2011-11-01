@@ -7,7 +7,7 @@ from zope import interface
 from node import Session
 from content import Content
 from container import Container
-from cms import buildClassActions
+from cms import build_class_actions
 from events import ContentCreatedEvent
 from interfaces import Forbidden, ContentSchema, ITypeInformation
 
@@ -18,7 +18,7 @@ TYPES_DIR_ID = 'ptah-cms:type'
 @ptah.resolver('cms-type')
 def typeInfoResolver(uri):
     """Type resolver
-    
+
        :Parameters:
          - type scheme, e.g. blob-sql
        :Returns:
@@ -30,10 +30,10 @@ def typeInfoResolver(uri):
 def get_type(uri):
     """
     :param uri: string identifier for TypeInformation, e.g. `cms-type:sqlblob`
-      
+
     :Returns:
       - :py:class:`ptah.cms.TypeInformation`
-      
+
     """
     return config.registry.storage[TYPES_DIR_ID].get(uri)
 
@@ -153,7 +153,7 @@ def Type(name, title=None, fieldset=None, **kw):
 
     info.attach(
         config.ClassAction(
-            registerType, (typeinfo, name, fieldset), kw,
+            register_type_impl, (typeinfo, name, fieldset), kw,
             discriminator = (TYPES_DIR_ID, name))
         )
 
@@ -162,7 +162,7 @@ def Type(name, title=None, fieldset=None, **kw):
 
 excludeNames = ('expires', 'contributors', 'creators', 'view', 'subjects',
                 'publisher', 'effective', 'created', 'modified')
-def namesFilter(name, fieldNames=None):
+def names_filter(name, fieldNames=None):
     if fieldNames is not None and name in fieldNames:
         return True
 
@@ -172,14 +172,14 @@ def namesFilter(name, fieldNames=None):
     return not name.startswith('_')
 
 
-def registerType(
+def register_type_impl(
     config, cls, tinfo, name, fieldset,
     permission = ptah.NOT_ALLOWED, fieldNames=None, **kw):
 
     # generate schema
     if fieldset is None:
-        fieldset = ptah.generateFieldset(
-            cls, fieldNames=fieldNames, namesFilter=namesFilter)
+        fieldset = ptah.generate_fieldset(
+            cls, fieldNames=fieldNames, namesFilter=names_filter)
         log.info("Generating fieldset for %s content type.", cls)
 
     if 'global_allow' not in kw and not issubclass(cls, Content):
@@ -196,4 +196,4 @@ def registerType(
     config.storage[TYPES_DIR_ID][tinfo.__uri__] = tinfo
 
     # build cms actions
-    buildClassActions(cls)
+    build_class_actions(cls)

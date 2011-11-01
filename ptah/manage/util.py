@@ -4,7 +4,7 @@ import docutils.core
 def rest_to_html(text):
     if not isinstance(text, unicode):
         text = unicode(text, 'utf-8')
-    
+
     overrides = {
         'halt_level': 6,
         'input_encoding': 'unicode',

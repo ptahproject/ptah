@@ -51,7 +51,7 @@ class TestAction(Base):
 
     def test_cms_action_inherit(self):
         import ptah.cms
-        from ptah.cms.cms import buildClassActions
+        from ptah.cms.cms import build_class_actions
 
         class Test(object):
             @ptah.cms.action(permission='perm')
@@ -61,7 +61,7 @@ class TestAction(Base):
         class Test2(Test):
             pass
 
-        buildClassActions(Test2)
+        build_class_actions(Test2)
 
         actions = Test2.__ptahcms_actions__
 
@@ -70,7 +70,7 @@ class TestAction(Base):
 
     def test_cms_action_inherit2(self):
         import ptah.cms
-        from ptah.cms.cms import buildClassActions
+        from ptah.cms.cms import build_class_actions
 
         class Test(object):
             @ptah.cms.action
@@ -82,7 +82,7 @@ class TestAction(Base):
             def create(self, **data): # pragma: no cover
                 pass
 
-        buildClassActions(Test2)
+        build_class_actions(Test2)
 
         actions = Test2.__ptahcms_actions__
 

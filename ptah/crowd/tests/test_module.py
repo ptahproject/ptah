@@ -143,7 +143,7 @@ class TestModuleView(Base):
                 POST=MultiDict(
                     {'uid': uri,
                      'validate': 'validate'})))
-        
+
         form.csrf = False
         form.update()
         transaction.commit()
@@ -168,7 +168,7 @@ class TestModuleView(Base):
                 POST=MultiDict(
                     {'uid': uri,
                      'suspend': 'suspend'})))
-        
+
         form.csrf = False
         form.update()
         transaction.commit()
@@ -193,7 +193,7 @@ class TestModuleView(Base):
                 POST=MultiDict(
                     {'uid': uri,
                      'activate': 'activate'})))
-        
+
         form.csrf = False
         form.update()
         transaction.commit()

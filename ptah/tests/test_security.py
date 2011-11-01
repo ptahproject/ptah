@@ -395,12 +395,12 @@ class TestLocalRoles(Base):
 
         content = Content(iface=security.ILocalRolesAware)
 
-        self.assertEqual(security.LocalRoles('userid', context=content), [])
+        self.assertEqual(security.get_local_roles('userid', context=content), [])
 
         content.__local_roles__['userid'] = ('role:test',)
 
         self.assertEqual(
-            security.LocalRoles('userid', context=content), ['role:test'])
+            security.get_local_roles('userid', context=content), ['role:test'])
 
     def test_local_role_lineage(self):
         from ptah import security
@@ -408,12 +408,12 @@ class TestLocalRoles(Base):
         parent = Content(iface=security.ILocalRolesAware)
         content = Content(parent=parent, iface=security.ILocalRolesAware)
 
-        self.assertEqual(security.LocalRoles('userid', context=content), [])
+        self.assertEqual(security.get_local_roles('userid', context=content), [])
 
         parent.__local_roles__['userid'] = ('role:test',)
 
         self.assertEqual(
-            security.LocalRoles('userid', context=content), ['role:test'])
+            security.get_local_roles('userid', context=content), ['role:test'])
 
     def test_local_role_lineage_multiple(self):
         from ptah import security
@@ -421,12 +421,12 @@ class TestLocalRoles(Base):
         parent = Content(iface=security.ILocalRolesAware)
         content = Content(parent=parent, iface=security.ILocalRolesAware)
 
-        self.assertEqual(security.LocalRoles('userid', context=content), [])
+        self.assertEqual(security.get_local_roles('userid', context=content), [])
 
         parent.__local_roles__['userid'] = ('role:test',)
         content.__local_roles__['userid'] = ('role:test2',)
 
-        lr = security.LocalRoles('userid', context=content)
+        lr = security.get_local_roles('userid', context=content)
         lr.sort()
 
         self.assertTrue(lr == ['role:test', 'role:test2'])
@@ -437,12 +437,12 @@ class TestLocalRoles(Base):
         parent = Content(iface=security.ILocalRolesAware)
         content = Content(parent=parent)
 
-        self.assertEqual(security.LocalRoles('userid', context=content), [])
+        self.assertEqual(security.get_local_roles('userid', context=content), [])
 
         parent.__local_roles__['userid'] = ('role:test',)
 
         self.assertEqual(
-            security.LocalRoles('userid', context=content), ['role:test'])
+            security.get_local_roles('userid', context=content), ['role:test'])
 
     def test_local_role_lineage_context_from_request(self):
         from ptah import security
@@ -458,13 +458,13 @@ class TestLocalRoles(Base):
 
         request.root = content
 
-        self.assertEqual(security.LocalRoles('userid', request), ['role:test'])
+        self.assertEqual(security.get_local_roles('userid', request), ['role:test'])
 
         content2 = Content(iface=security.ILocalRolesAware)
         content2.__local_roles__['userid'] = ('role:test2',)
 
         request.context = content2
-        self.assertEqual(security.LocalRoles('userid', request), ['role:test2'])
+        self.assertEqual(security.get_local_roles('userid', request), ['role:test2'])
 
 
 class Content2(object):
@@ -484,12 +484,12 @@ class TestOwnerLocalRoles(Base):
 
         content = Content2(iface=security.IOwnersAware)
 
-        self.assertEqual(security.LocalRoles('userid', context=content), [])
+        self.assertEqual(security.get_local_roles('userid', context=content), [])
 
         content.__owner__ = 'userid'
 
         self.assertEqual(
-            security.LocalRoles('userid', context=content), ['system.Owner'])
+            security.get_local_roles('userid', context=content), ['system.Owner'])
 
     def test_owner_role_in_parent(self):
         # return owner only on current context
@@ -500,9 +500,9 @@ class TestOwnerLocalRoles(Base):
 
         parent.__owner__ = 'user'
 
-        self.assertEqual(security.LocalRoles('user', context=content), [])
+        self.assertEqual(security.get_local_roles('user', context=content), [])
         self.assertEqual(
-            security.LocalRoles('user', context=parent), ['system.Owner'])
+            security.get_local_roles('user', context=parent), ['system.Owner'])
 
 
 class TestCheckPermission(Base):

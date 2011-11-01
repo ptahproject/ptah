@@ -227,8 +227,8 @@ class Role(object):
         DEFAULT_ACL.unset(self.id, *permissions)
 
 
-def LocalRoles(userid, request=None, context=None):
-    """ LocalRole calculates local roles for userid """
+def get_local_roles(userid, request=None, context=None):
+    """ calculates local roles for userid """
     if context is None:
         context = getattr(request, 'context', None)
         if context is None:
@@ -297,7 +297,7 @@ def check_permission(permission, context, request=None, throw=False):
     if userid is not None:
         principals.extend((Authenticated.id, userid))
 
-        roles = LocalRoles(userid, context=context)
+        roles = get_local_roles(userid, context=context)
         if roles:
             principals.extend(roles)
 

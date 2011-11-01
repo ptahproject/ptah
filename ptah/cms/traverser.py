@@ -1,11 +1,11 @@
 """ content traverser """
 import ptah
+from ptah import config
 from sqlalchemy import sql
 from zope import interface
-from ptah import config
 from pyramid.interfaces import ITraverser
-from pyramid.traversal import traversal_path, quote_path_segment
 from pyramid.traversal import ResourceTreeTraverser
+from pyramid.traversal import traversal_path, quote_path_segment
 
 from node import Session
 from content import Content

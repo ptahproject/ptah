@@ -29,8 +29,8 @@ from ptah.security import get_acls
 
 # role
 from ptah.security import Role
-from ptah.security import LocalRoles
 from ptah.security import get_roles
+from ptah.security import get_local_roles
 
 # permission
 from ptah.security import Permission
@@ -55,7 +55,7 @@ from ptah.rest import restService
 # events
 from ptah import events
 
-# mail api
+# mail templates
 from ptah import mail
 
 # ptah settings
@@ -71,8 +71,8 @@ from ptah.util import tldata
 from ptah.sqla import QueryFreezer
 from ptah.sqla import JsonDictType
 from ptah.sqla import JsonListType
-from ptah.sqla import generateFieldset
-from ptah.sqla import buildSqlaFieldset
+from ptah.sqla import generate_fieldset
+from ptah.sqla import build_sqla_fieldset
 
 # cms
 from ptah import cms
