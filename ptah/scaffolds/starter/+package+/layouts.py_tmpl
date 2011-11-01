@@ -1,4 +1,4 @@
-import ptah, ptah.cmsapp
+import ptah
 from ptah import view, cms, manage, authService
 
 from {{package}}.root import ApplicationRoot
@@ -15,7 +15,7 @@ class PageLayout(view.Layout):
     view.layout('page', ApplicationRoot, layer='{{package}}',
                 template = view.template('templates/layout-page.pt'))
 
-    """ override 'page' layout from ptah.cmsapp
+    """ override 'page' layout
 
     layer - identifier, import order does matter, last imported wins
     """

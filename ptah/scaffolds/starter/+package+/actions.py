@@ -1,5 +1,5 @@
 """ default actions """
-import ptah, ptah.cmsapp
+import ptah
 
 ptah.cms.uiaction(
     ptah.cms.Content, **{'id': 'view',
