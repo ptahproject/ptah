@@ -138,7 +138,7 @@ Traverser
 The ContentTraverser is bound to the ApplicationRoot and registers itself
 with Pyramid.  So if Pyramid resolves URL into an ApplicationRoot it will
 use this custom traverser.  A traverser is responsible for resolving the URL
-into a response by pyramid.  :py:class:`ptah.cms.traverser.Traverser`
+into a response by pyramid.  :py:class:`ptah.cms.Traverser`
 will lookup the location of the model via the `ptah_cms_content` table.
 
 Traversal is only used for the content hierarchy.  URL Dispatch can still
