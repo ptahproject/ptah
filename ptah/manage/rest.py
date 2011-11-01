@@ -1,15 +1,15 @@
 from ptah import manage, view
 
-class MyModule(manage.PtahModule):
+class RestModule(manage.PtahModule):
     """
     REST Introspector
     """
     title = 'REST Introspector'
-    manage.module('myapp2')
+    manage.module('rest')
 
-class MyModuleView(view.View):
+class RestModuleView(view.View):
     view.pview(
-        context = MyModule,
+        context = RestModule,
         template = view.template('ptah.manage:templates/rest.pt'))
 
     def update(self):
