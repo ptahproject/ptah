@@ -2,6 +2,18 @@ import ptah.cms
 
 
 class ApplicationRoot(ptah.cms.ApplicationRoot):
+    """
+    Application model which subclasses ptah.cms.ApplicationRoot_.
+    
+    ApplicationRoot is a persistent Container which serves as a
+    RootFactory_.
+    
+    :Table: `ptah_cms_content`_
+        
+    .. _ptah_cms_content: /ptah-manage/sqla/psqla-ptah_cms_content/
+    .. _ptah.cms.ApplicationRoot: /ptah-manage/introspect/source.html?pkg=ptah.cms.root
+    .. _RootFactory: http://docs.pylonsproject.org/projects/pyramid/dev/glossary.html#term-root-factory
+    """
 
     __type__ = ptah.cms.Type('{{package}}-app',
         title='Application Root',
