@@ -1,0 +1,7 @@
+""" {{package}} permissions and roles """
+import ptah
+
+ptah.Everyone.allow(ptah.cms.View)
+
+Manager = ptah.Role('manager', 'Manager')
+Manager.allow(ptah.cms.ALL_PERMISSIONS)

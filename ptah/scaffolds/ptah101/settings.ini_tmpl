@@ -1,0 +1,82 @@
+[app:main]
+use = egg:{{project}}
+
+pyramid.reload_templates = true
+pyramid.debug_authorization = false
+pyramid.debug_notfound = false
+pyramid.debug_routematch = false
+pyramid.debug_templates = true
+pyramid.default_locale_name = en
+pyramid.includes = pyramid_debugtoolbar
+
+# auth
+auth.policy = auth_tkt
+auth.secret = secret
+
+# session settings
+session.type = file
+session.data_dir = %(here)s/var/sessions/data
+session.lock_dir = %(here)s/var/sessions/lock
+session.key = session
+session.secret = secret
+
+# mailer settings
+mail.host = localhost
+mail.port = 25
+mail.queue_path = None
+mail.default_sender = Ptah <info@ptahproject.org>
+mail.debug = true
+
+# sqlalchemy
+sqla.url = sqlite:///%(here)s/db.sqlite
+
+# custom templates
+template.chameleon_reload = true
+
+# ptah
+ptah.managers.0 = *
+
+# disable modules for newbies
+ptah.disable_modules.0 = rest
+ptah.disable_modules.1 = addons
+ptah.disable_modules.2 = introspect
+ptah.disable_modules.3 = rest
+ptah.disable_modules.4 = apps
+ptah.disable_modules.5 = permissions
+ptah.disable_modules.6 = templates
+
+[server:main]
+use = egg:Paste#http
+host = 0.0.0.0
+port = 6543
+
+# Begin logging configuration
+
+[loggers]
+keys = root, {{package_logger}}
+
+[handlers]
+keys = console
+
+[formatters]
+keys = generic
+
+[logger_root]
+level = INFO
+handlers = console
+
+[logger_{{package_logger}}]
+level = DEBUG
+handlers =
+qualname = {{package}}
+
+[handler_console]
+class = StreamHandler
+args = (sys.stderr,)
+level = NOTSET
+formatter = generic
+
+[formatter_generic]
+format = %(asctime)s %(levelname)-5.5s [%(name)s][%(threadName)s] %(message)s
+
+# End logging configuration

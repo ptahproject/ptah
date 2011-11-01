@@ -28,3 +28,8 @@ class StarterProjectTemplate(PtahTemplate):
     _template_dir = 'starter'
     summary = 'ptah app starter project'
     template_renderer = staticmethod(paste_script_template_renderer)
+
+class Ptah101ProjectTemplate(PtahTemplate):
+    _template_dir = 'ptah101'
+    summary = 'ptah intro project'
+    template_renderer = staticmethod(paste_script_template_renderer)
