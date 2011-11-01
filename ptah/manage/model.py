@@ -4,15 +4,13 @@ from ptah import cms, view, form, manage
 from pyramid.decorator import reify
 from pyramid.httpexceptions import HTTPFound
 
-from util import rest_to_html
-
 
 class ModelModule(manage.PtahModule):
     __doc__ = u'A listing of all registered models.'
 
     title = 'Models'
     manage.module('models')
-    
+
     def __getitem__(self, key):
         ti = cms.get_type('cms-type:%s'%key)
 
@@ -61,7 +59,7 @@ class ModelModuleView(view.View):
     view.pview(context = ModelModule,
                template = view.template('ptah.manage:templates/models.pt'))
 
-    rest_to_html = staticmethod(rest_to_html)
+    rst_to_html = staticmethod(ptah.rst_to_html)
 
     def update(self):
         types = []
@@ -212,5 +210,5 @@ class TypeIntrospection(object):
         return self.actions(
             types = cms.get_types(),
             actions = actions,
-            rest_to_html = rest_to_html,
+            rst_to_html = ptah.rst_to_html,
             request = self.request)

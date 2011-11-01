@@ -67,6 +67,9 @@ from ptah.util import Pagination
 # thread local data
 from ptah.util import tldata
 
+# ReST renderer
+from ptah.rst import rst_to_html
+
 # sqlalchemy utils
 from ptah.sqla import QueryFreezer
 from ptah.sqla import JsonDictType

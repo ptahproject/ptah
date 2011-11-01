@@ -3,8 +3,6 @@ import ptah
 from ptah import view, form, manage, cms
 from pyramid.httpexceptions import HTTPFound
 
-from util import rest_to_html
-
 
 class ApplicationsModule(manage.PtahModule):
     __doc__ = u'A listing of all registered Ptah Applications.'

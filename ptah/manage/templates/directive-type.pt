@@ -7,7 +7,7 @@
 	    ${ti.title}</a>
 	  <small>${ti.__uri__}</small>
 	</h4>
-	<p tal:condition="ti.cls.__doc__">${rest_to_html(ti.cls.__doc__)}</p>
+	<p tal:condition="ti.cls.__doc__">${rst_to_html(ti.cls.__doc__)}</p>
       </td>
     </tr>
   </tbody>

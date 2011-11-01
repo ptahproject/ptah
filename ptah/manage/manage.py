@@ -6,8 +6,6 @@ from ptah import view, config
 from ptah.settings import PTAH_CONFIG
 from ptah.authentication import authService
 
-from util import rest_to_html
-
 
 MANAGE_ID = 'ptah:manage-module'
 INTROSPECT_ID = 'ptah:introspection'
@@ -158,7 +156,7 @@ class ManageView(view.View):
 
     __intr_path__ = '/ptah-manage/'
 
-    rest_to_html = staticmethod(rest_to_html)
+    rst_to_html = staticmethod(ptah.rst_to_html)
 
     def update(self):
         context = self.context
