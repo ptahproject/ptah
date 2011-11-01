@@ -33,8 +33,7 @@ Before we start lets review what the structure will look like after you complete
       development.ini
       myapp/
           
-You may ask, Why the duplication of nested folders?  It's how Python packages 
-are structured.
+You may ask, Why the duplication of nested folders?  It's how Python packages are structured.
 
 On Windows you will have a venv/Scripts directory not a venv/bin directory. 
 
@@ -51,8 +50,7 @@ If you like tests, run the tests::
 
   venv/ptah$ ../bin/python setup.py test
 
-Use paster to create your application.  The default username and password are:
-**admin** as login and **12345** as password::
+Use paster to create **your own application**.  The default username is **admin** and password is **12345**.  Check myapp/__init__.py for more information. 
 
   venv/ptah$ cd ..
   venv$ bin/paster create -t ptahdemo myapp
@@ -64,10 +62,9 @@ Start application via Paster::
   venv/myapp$ cd ..
   venv$ bin/paster serve myapp/development.ini --reload
 
-Login by opening your web browser to http://localhost:6543 with credentials,
-login: admin and password: 12345
+Login by opening your web browser to http://localhost:6543/ with credentials, login **admin** and password **12345**
 
-You can see more information how your App boostraps by looking at myapp/__init__.py
+You should read the source of myapp, after all it is your application.  A good place to start is myapp/__init__.py
 
 Support and Documentation
 -------------------------
@@ -76,14 +73,14 @@ Use github until `Ptah Project website <http://ptahproject.org/>`_ is online.
 
 Documentation can be found in ptah/docs directory.
 
-You can ask for help on #pyramid.
+On irc, use the freenode network and find us on channeld, #ptahproject and #pyramid.
 
 License
 -------
 
-Ptah is offered under the BSD3 license included in all packages.
+Ptah is offered under the BSD3 license.
 
 Authors
 -------
 
-Ptah is written by Python enthusiasts who do not want compromise.
+Ptah is written by Python enthusiasts who refuse to compromise.
