@@ -1,14 +1,16 @@
 from ptah import manage, view
 
 class MyModule(manage.PtahModule):
-    __doc__ = u'Example REST Introspector Management Module from {{package}}'
-    title = '{{package}} REST Introspector Module'
-    manage.module('{{package}}')
+    """
+    REST Introspector
+    """
+    title = 'REST Introspector'
+    manage.module('myapp2')
 
 class MyModuleView(view.View):
     view.pview(
         context = MyModule,
-        template = view.template('{{package}}:templates/mgmtmodule.pt'))
+        template = view.template('ptah.manage:templates/rest.pt'))
 
     def update(self):
         self.appurl = self.request.application_url
