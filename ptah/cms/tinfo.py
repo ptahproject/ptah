@@ -17,15 +17,32 @@ TYPES_DIR_ID = 'ptah-cms:type'
 
 @ptah.resolver('cms-type')
 def typeInfoResolver(uri):
-    """Type resolver"""
+    """Type resolver
+    
+       :Parameters:
+         - type scheme, e.g. blob-sql
+       :Returns:
+         - :py:class:`ptah.cms.TypeInformation`
+    """
     return config.registry.storage[TYPES_DIR_ID].get(uri)
 
 
-def get_type(tp):
-    return config.registry.storage[TYPES_DIR_ID].get(tp)
+def get_type(uri):
+    """
+    :param uri: string identifier for TypeInformation, e.g. `cms-type:sqlblob`
+      
+    :Returns:
+      - :py:class:`ptah.cms.TypeInformation`
+      
+    """
+    return config.registry.storage[TYPES_DIR_ID].get(uri)
 
 
 def get_types():
+    """
+    :Returns:
+      - mapping of all registered identifier and TypeInformation
+    """
     return config.registry.storage[TYPES_DIR_ID]
 
 
