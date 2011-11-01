@@ -1,11 +1,14 @@
 from ptah import manage, view
 
+
 class RestModule(manage.PtahModule):
     """
     REST Introspector
     """
+
     title = 'REST Introspector'
     manage.module('rest')
+
 
 class RestModuleView(view.View):
     view.pview(

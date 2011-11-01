@@ -33,7 +33,7 @@
 	  <td>
 	    <h4>
 	      <em>
-		<a href="source.html?pkg=${action.info.module.__name__}#sl-${view.lineno(action.args[1])}">
+		<a href="../source.html?pkg=${action.info.module.__name__}#sl-${view.lineno(action.args[1])}">
 		  ${action.info.module.__name__}:</a>
 	      </em>
 	      ${action.args[1].__name__}</h4>
