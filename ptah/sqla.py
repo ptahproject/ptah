@@ -10,7 +10,17 @@ from sqlalchemy.types import TypeDecorator, VARCHAR
 
 
 class QueryFreezer(object):
+    """ A facade for sqla.Session.query which caches internal query structure.
+    
+    :param builder: anonymous function containing SQLAlchemy query
 
+    .. code-block:: python
+    
+        _sql_parent = ptah.QueryFreezer(
+            lambda: Session.query(Content)
+                .filter(Content.__uri__ == sqla.sql.bindparam('parent')))
+    """
+    
     def __init__(self, builder):
         self.builder = builder
         self.data = local()
@@ -119,10 +129,21 @@ class MutationDict(Mutable, dict):
 
 
 def JsonDictType():
+    """ 
+    function which returns a SQLA Column Type suitable to store a Json object.
+    
+    :returns: ptah.sqla.MutationDict
+    """
     return MutationDict.as_mutable(JsonType)
 
 
 def JsonListType():
+    """ 
+    function which returns a SQLA Column Type suitable to store a Json array.
+    
+    :returns: ptah.sqla.MutationList
+    """
+
     return MutationList.as_mutable(JsonType)
 
 
@@ -141,6 +162,16 @@ def columnOrder(mapper):
 
 def generateFieldset(model, fieldNames=None, namesFilter=None,
                      skipPrimaryKey=True):
+    """
+    :param model: subclass of sqlalchemy.ext.declarative.declarative_base
+    :param fieldNames: **optional** sequence of strings to use 
+    :param namesFilter: **optional** callable which takes a key and list 
+        of fieldNames to compute if fieldName should filtered out of Fieldset 
+        generation.
+    :param skipPrimaryKey: **default: True** Should PrimaryKey be omitted 
+        from fieldset generation.  
+    :returns: a instance of :py:class:`ptah.form.Fieldset`
+    """
     mapper = model.__mapper__
     order = columnOrder(mapper)
 
@@ -175,6 +206,14 @@ mapping = {
 
 
 def buildSqlaFieldset(columns, skipPrimaryKey=False):
+    """
+    Given a list of SQLAlchemy columns generate a ptah.form.Fieldset.
+
+    :param columns: sequence of sqlachemy.schema.Column instances
+    :param skipPrimaryKey: **default: False** boolean whether to include PK 
+      Columns in Fieldset generation.
+    :returns: a instance of :py:class:`ptah.form.Fieldset`    
+    """
     fields = []
 
     for name, cl in columns:
