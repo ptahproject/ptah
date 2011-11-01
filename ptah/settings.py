@@ -32,6 +32,13 @@ PTAH_CONFIG = config.register_settings(
         description = 'Available password managers ("plain", "ssha", "bcrypt")',
         default = 'plain'),
 
+    config.SchemaNode(
+        config.Sequence(), colander.SchemaNode(colander.Str()),
+        name = 'disable_modules',
+        title = 'Hide Modules in Management UI',
+        description = 'List of modules names to hide in manage ui',
+        default = ()),
+
     title = 'Ptah settings',
     )
 

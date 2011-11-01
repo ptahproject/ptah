@@ -1,0 +1,23 @@
+import colander
+from ptah import config
+
+{{package}} = config.register_settings(
+    '{{package}}',
+
+    config.SchemaNode(
+        colander.Str(),
+        name = 'band',
+        default = 'Primus',
+        title = 'Favorite band',
+        description = 'This is your favorite band.'),
+
+    config.SchemaNode(
+        colander.Bool(),
+        name = 'happy',
+        default = True,
+        title = 'Are you happy?',
+        description = 'Does Ptah bring you happiness?'),
+
+    title = '{{package}} settings',
+    description = 'Configuration settings for {{package}}.'
+    )

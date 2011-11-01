@@ -164,6 +164,8 @@ class ManageView(view.View):
 
         mods = []
         for name, mod in config.registry.storage[MANAGE_ID].items():
+            if name in PTAH_CONFIG.disable_modules:
+                continue
             mods.append((mod.title, mod))
 
         mods.sort()

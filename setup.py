@@ -55,6 +55,9 @@ setup(name='ptah',
         'paste.paster_create_template': [
             'ptahdemo = ptah.scaffolds:StarterProjectTemplate',
             ],
+        'paste.paster_create_template': [
+            'ptah101 = ptah.scaffolds:Ptah101ProjectTemplate',
+            ],
         'paste.global_paster_command': [
             'static = ptah.view.commands:StaticCommand',
             'templates = ptah.view.commands:TemplatesCommand',
