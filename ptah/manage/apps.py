@@ -3,6 +3,8 @@ import ptah
 from ptah import view, form, manage, cms
 from pyramid.httpexceptions import HTTPFound
 
+from util import rest_to_html
+
 
 class ApplicationsModule(manage.PtahModule):
     __doc__ = u'A listing of all registered Ptah Applications.'
@@ -128,4 +130,5 @@ class TypeIntrospection(object):
         return self.actions(
             types = ptah.cms.get_types(),
             actions = actions,
+            rest_to_html = rest_to_html,
             request = self.request)

@@ -13,6 +13,7 @@ from ptah.uri import RESOLVER_ID
 from ptah.config import directives
 from ptah.config.api import exclude, list_packages
 
+from util import rest_to_html
 from manage import INTROSPECT_ID
 
 
@@ -85,6 +86,7 @@ class UriResolver(form.Form):
             klass = 'xxlarge'))
 
     uri = None
+    rest_to_html = staticmethod(rest_to_html)
 
     def form_content(self):
         return {'uri': [self.request.GET.get('uri','')]}
@@ -396,6 +398,7 @@ class UriIntrospection(object):
         return self.actions(
             resolvers = config.registry.storage[RESOLVER_ID],
             actions = actions,
+            rest_to_html = rest_to_html,
             request = self.request)
 
 

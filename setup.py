@@ -4,6 +4,7 @@ from setuptools import setup, find_packages
 version='0.1'
 
 install_requires = ['setuptools',
+                    'docutils',
                     'colander >= 0.9.4',
                     'pytz',
                     'iso8601',
