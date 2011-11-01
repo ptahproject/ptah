@@ -15,7 +15,7 @@
 	</h3>
 	<p>${ti.description}</p>
 
-	<p tal:condition="ti.cls.__doc__">${rest_to_html(ti.cls.__doc__)}</p>
+	<p tal:condition="ti.cls.__doc__">${view.rest_to_html(ti.cls.__doc__)}</p>
       </td>
     </tr>
   </tbody>
