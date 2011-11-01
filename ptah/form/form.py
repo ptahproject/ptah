@@ -42,18 +42,21 @@ class FormWidgets(OrderedDict):
     fieldsets = ()
 
     def __init__(self, fields, form, request):
-        self.fields = fields
+        self.form_fields = fields
         self.form = form
         self.request = request
 
         super(FormWidgets, self).__init__()
+
+    def fields(self):
+        return self.fieldset.fields()
 
     def update(self):
         params = self.form.form_params()
         content = self.form.form_content()
         prefix = '%s%s'%(self.form.prefix, self.prefix)
 
-        self.fieldset = self.fields.bind(content, params)
+        self.fieldset = self.form_fields.bind(content, params)
         self.fieldsets = fieldsets = []
 
         # Walk through each field, making a widget out of it.

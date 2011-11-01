@@ -1,0 +1,65 @@
+<div class="page-header">
+  <h1>${context.tinfo.title} <small>size: ${view.size}</small></h1>
+</div>
+
+<div class="row" tal:define="url request.url">
+  <div class="span16 columns">
+    <tal:block tal:condition="not view.size">
+      There are no records.
+    </tal:block>
+
+    <form method="post" action="${request.url}">
+      <table class="zebra-striped" tal:condition="view.size">
+	<thead>
+	  <tr>
+	    <th>&nbsp;</th>
+	    <th tal:repeat="f view.widgets.fields()">
+	      ${f.title}
+	    </th>
+	    <th>&nbsp;</th>
+	  </tr>
+	</thead>
+	<tbody>
+	  <tal:block tal:repeat="item view.data">
+	    <tr tal:define="info view.get_record_info(item)">
+	      <td>
+		<input type="checkbox" name="rowid"
+		       value="${item.__id__}" />
+	      </td>
+	      <td tal:repeat="f view.widgets.fields()">
+		${info.get(f.name, '')}
+	      </td>
+	      <td>
+		<a class="btn info"
+		   href="${url}${item.__id__}/">Edit</a>
+	      </td>
+	    </tr>
+	  </tal:block>
+	</tbody>
+      </table>
+
+      <div class="pagination" tal:condition="len(view.pages)>1">
+	<ul>
+	  <li class="${'prev' if view.prev else 'prev disabled'}">
+	    <a href="?batch=${view.prev}">&larr; Previous</a>
+	  </li>
+	  
+	  <tal:block repeat="idx view.pages">
+	    <li tal:define="klass '' if idx else 'disabled'"
+		tal:attributes="class 'active' if idx==view.current else klass">
+	      <a href="?batch=${idx}">${idx if idx else '...'}</a>
+	    </li>
+	  </tal:block>
+	  
+	  <li class="${'next' if view.next else 'next disabled'}">
+	    <a href="?batch=${view.next}">
+	      Next &rarr;
+	    </a>
+	  </li>
+	</ul>
+      </div>
+
+      <tal:block content="structure view.snippet('form-actions', view)" />
+    </form>
+  </div>
+</div>

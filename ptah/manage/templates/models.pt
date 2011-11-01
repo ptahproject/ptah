@@ -1,0 +1,22 @@
+<div class="paga-header">
+  <h1>${context.title}</h1>
+  <p>${context.__doc__}</p>
+</div>
+
+<table class="zebra-striped"
+       tal:define="url request.application_url">
+  <tbody>
+    <tr tal:repeat="ti view.types">
+      <td>
+	<h3>
+	  <a href="${ti.name}/">${ti.title}</a> 
+
+	  <small>${ti.__uri__}</small>
+	</h3>
+	<p>${ti.description}</p>
+
+	<p tal:condition="ti.cls.__doc__">${rest_to_html(ti.cls.__doc__)}</p>
+      </td>
+    </tr>
+  </tbody>
+</table>

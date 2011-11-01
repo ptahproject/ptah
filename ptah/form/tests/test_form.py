@@ -12,7 +12,7 @@ class TestFormWidgets(unittest.TestCase):
         form = DummyForm()
         fields = DummyFields()
         inst = self._makeOne(fields, form, request)
-        self.assertEqual(inst.fields, fields)
+        self.assertEqual(inst.form_fields, fields)
         self.assertEqual(inst.form, form)
         self.assertEqual(inst.request, request)
 
@@ -197,6 +197,7 @@ class TestForm(unittest.TestCase):
         form_ob.update()
         self.assertEqual(len(form_ob.widgets), 1)
         self.assertIn('test', form_ob.widgets)
+        self.assertIn('test', [f.name for f in form_ob.widgets.fields()])
 
         self.assertIsInstance(form_ob.widgets['test'], form.TextField)
         self.assertEqual(form_ob.widgets['test'].name, 'test')
