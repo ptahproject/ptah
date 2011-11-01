@@ -1,0 +1,14 @@
+<div class="page-header">
+  <h1>Adding</h1>
+</div>
+
+<div>
+  <ul>
+    <li tal:repeat="info view.types">
+      <a href="${view.url}${info.addview if info.addview else '+/%s'%info.name}">
+	${info.title}
+      </a>
+      <p>${info.description}</p>
+    </li>
+  </ul>
+</div>

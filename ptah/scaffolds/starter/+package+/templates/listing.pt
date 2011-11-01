@@ -1,0 +1,44 @@
+<div class="page-header">
+  <h3>${context.title}</h3>
+</div>
+<p>${context.description}</p>
+
+<tal:block tal:define="contents context.values();
+		       url request.resource_url(context)">
+  <form action="${request.url}" method="post">
+    <table class="zebra-striped">
+      <thead>
+	<tr>
+	  <th tal:condition="view.deleteContent"></th>
+	  <th>Name</th>
+	  <th>Title</th>
+	  <th>Type</th>
+	  <th>Created</th>
+	  <th>Modified</th>
+	</tr>
+      </thead>
+      <tbody>
+	<tr tal:repeat="item contents">
+	  <td tal:condition="view.deleteContent">
+	    <input type="checkbox" name="item" value="${item.__uri__}" />
+	  </td>
+	  <td><a href="${url}${item.__name__}/">${item.__name__ or 'unknown'}</a></td>
+	  <td><a href="${url}${item.__name__}/">${item.title}</a></td>
+	  <td>${item.__type__.title}</td>
+ 	  <td>${view.format.datetime(item.created, 'short')}</td>
+ 	  <td>${view.format.datetime(item.created)}</td>
+	</tr>
+      </tbody>
+    </table>
+
+    <div class="actions" tal:condition="contents"
+	 tal:condition="view.deleteContent">
+      <input type="submit" class="btn"
+	     name="form.buttons.rename" value="Rename" />
+      <input type="submit" class="btn"
+	     name="form.buttons.cut" value="Cut" />
+      <input type="submit" class="btn danger"
+	     name="form.buttons.remove" value="Remove" />
+    </div>
+  </form>
+</tal:block>

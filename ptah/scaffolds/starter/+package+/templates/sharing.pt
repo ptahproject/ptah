@@ -1,0 +1,80 @@
+<div>
+  <div class="page-header">
+    <h2>Local roles</h2>
+  </div>
+
+  <p tal:condition="not view.local_roles">
+    There are no local roles defined.
+  </p>
+
+  <div tal:condition="view.local_roles">
+    <table class="common-table zebra-striped">
+      <thead>
+	<tr>
+	  <th>Name</th>
+	  <th tal:repeat="role view.roles">
+	    ${role.title}
+	  </th>
+	</tr>
+      </thead>
+      <tbody>
+	<tal:block tal:repeat="data view.local_roles.items()">
+	  <tr tal:define="principal view.get_principal(data[0])"
+	      tal:condition="principal is not None">
+	    <td>${principal.name}</td>
+	    <td tal:repeat="role view.roles">
+	      <input type="checkbox" name="user-${data[0]}"
+		     checked="${role.id in data[1]}" />
+	    </td>
+	  </tr>
+	</tal:block>
+      </tbody>
+    </table>
+    <div class="actions">
+      <input type="submit" class="btn primary" 
+	     value="Save" name="form.buttons.savelocal" />
+    </div>
+  </div>
+</div>
+
+<div tal:condition="view.users">
+  <div class="page-header">
+    <h3>Users</h3>
+  </div>
+
+  <form method="post" action="${request.url}">
+    <table class="common-table zebra-striped"
+	   tal:define="uids request.params.getall('uid')">
+      <thead>
+	<tr>
+	  <th>Name</th>
+	  <th tal:repeat="role view.roles">
+	    ${role.title}
+	  </th>
+	</tr>
+      </thead>
+      <tbody>
+	<tr tal:repeat="user view.users">
+	  <td>${user.name} (${user.login})
+	    <input type="hidden" name="userid-${user.uri}" value="on" />
+	  </td>
+	  <td tal:repeat="role view.roles">
+	    <input type="checkbox" name="${name}"
+		   tal:define="name 'user-%s-%s'%(user.uri, role.id)"
+		   checked="${name in request.POST}" />
+	  </td>
+	</tr>
+      </tbody>
+    </table>
+    <div class="actions">
+      <input type="submit" class="btn primary" 
+	     value="Save" name="form.buttons.save" />
+    </div>
+  </form>
+</div>
+
+<div class="page-header">
+  <h3>Search users</h3>
+</div>
+
+<tal:block content="structure view.snippet('form-view', view)" />
