@@ -105,10 +105,11 @@ class PtahManageRoute(object):
             raise HTTPForbidden()
 
     def __getitem__(self, key):
-        mod = config.registry.storage[MANAGE_ID].get(key)
+        if key not in PTAH_CONFIG.disable_modules:
+            mod = config.registry.storage[MANAGE_ID].get(key)
 
-        if mod is not None:
-            return mod(self, self.request)
+            if mod is not None:
+                return mod(self, self.request)
 
         raise KeyError(key)
 

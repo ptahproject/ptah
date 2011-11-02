@@ -15,7 +15,7 @@
 	    <p>
 	      <ul>
 		<li tal:repeat="v r[3]">
-		  <a href="source.html?pkg=${v[1]}#sl-${v[2]}">
+		  <a href="../source.html?pkg=${v[1]}#sl-${v[2]}">
 		    ${v[0] or 'Route view'}
 		  </a>
 		  <tal:block content="v[3].__doc__" />

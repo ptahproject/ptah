@@ -10,7 +10,7 @@
 	  <h3>${rec['resolver']}</h3>
 
 	  <strong>Resolver:</strong>
-	  <a href="./source.html?pkg=${rec['module']}#sl-${rec['line']}"
+	  <a href="../source.html?pkg=${rec['module']}#sl-${rec['line']}"
 	     tal:content="rec['name']" />
 	  <br />
 
@@ -24,7 +24,7 @@
 	  <tal:block condition="rec['cls']">
 	    <br />
 	    <strong>Class:</strong>
-	    <a href="./source.html?pkg=${rec['clsmod']}#sl-${rec['clsline']}"
+	    <a href="../source.html?pkg=${rec['clsmod']}#sl-${rec['clsline']}"
 	       tal:content="rec['cls']" />
 	    <br />
 	    <tal:block content="rec['clsdoc']" />

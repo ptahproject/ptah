@@ -83,25 +83,6 @@ class TestIntrospectModule(Base):
 
         self.assertIn("Event: Settings initialized event", res.body)
 
-    def test_introspect_source(self):
-        from ptah.manage.introspect import IntrospectModule, SourceView
-
-        request = DummyRequest()
-        mod = IntrospectModule(None, request)
-        res = SourceView.__renderer__(mod, request)
-        self.assertIsInstance(res, HTTPFound)
-        self.assertEqual(res.headers['location'], '.')
-
-    def test_introspect_source_view(self):
-        from ptah.manage.introspect import IntrospectModule, SourceView
-
-        request = DummyRequest(
-            params = {'pkg': 'ptah.view.customize'})
-
-        mod = IntrospectModule(None, request)
-        res = SourceView.__renderer__(mod, request)
-        self.assertIn('Source: ptah/customize.py', res.body)
-
 
 class TestUriView(Base):
 
