@@ -2,16 +2,16 @@
 import sqlalchemy as sqla
 import ptah
 from ptah import cms, view, form, manage
+
 from pyramid.decorator import reify
 from pyramid.httpexceptions import HTTPFound
-
 
 class ModelModule(manage.PtahModule):
     __doc__ = u'A listing of all registered models.'
 
     title = 'Models'
     manage.module('models')
-
+    
     def __getitem__(self, key):
         ti = cms.get_type('cms-type:%s'%key)
 
@@ -63,8 +63,9 @@ class ModelModuleView(view.View):
     def update(self):
         types = []
         for ti in cms.get_types().values():
+            if ti.__uri__ in ptah.PTAH_CONFIG['disable_models']:
+                continue 
             types.append((ti.title, ti))
-
         types.sort()
         self.types = [f for _t, f in types]
 
