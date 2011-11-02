@@ -15,11 +15,20 @@ class TestFieldset(Base):
 
         self.assertEqual(fieldset.name, '')
         self.assertEqual(fieldset.legend, '')
+        self.assertEqual(fieldset.prefix, '')
 
         fieldset = form.Fieldset(field1, name='othername', legend='Other name')
 
         self.assertEqual(fieldset.name, 'othername')
         self.assertEqual(fieldset.legend, 'Other name')
+
+    def test_fieldset_nested(self):
+        fieldset = form.Fieldset(
+            field,
+            form.Fieldset(name='fs', *(field,)))
+
+        self.assertEqual(fieldset['fs'].name, 'fs')
+        self.assertEqual(fieldset['fs'].prefix, 'fs.')
 
     def test_fieldset_fields(self):
         fieldset = form.Fieldset(field, field1)
@@ -109,6 +118,22 @@ class TestFieldset(Base):
         self.assertEqual(fs['test'].params, {})
         self.assertIs(fs['test'].content, form.null)
 
+    def test_fieldset_bind_nested(self):
+        fieldset = form.Fieldset(
+            field,
+            form.Fieldset(name='fs', *(field,)))
+        
+        params = object()
+        content = {'test': 'CONTENT',
+                   'fs': {'test': 'NESTED CONTENT'}}
+
+        fs = fieldset.bind(content, params)
+
+        self.assertEqual(fs['fs']['test'].content, 'NESTED CONTENT')
+
+        fs = fieldset.bind()
+        self.assertIs(fs['fs']['test'].content, form.null)
+
     def test_fieldset_validate(self):
         def validator(fs, data):
             raise form.Invalid(fs, 'msg')
@@ -143,6 +168,18 @@ class TestFieldset(Base):
         self.assertIs(errors[0].field, fieldset['test'])
         self.assertEqual(errors[0].msg, u'Required')
 
+    def test_fieldset_extract_missing_nested(self):
+        field = self._makeOne('test')
+        fieldset = form.Fieldset(
+            field,
+            form.Fieldset(name='fs', *(field,))).bind()
+
+        data, errors = fieldset.extract()
+        self.assertIs(errors[0].field, fieldset['fs']['test'])
+        self.assertIs(errors[1].field, fieldset['test'])
+        self.assertEqual(errors[0].msg, u'Required')
+        self.assertEqual(errors[1].msg, u'Required')
+
     def test_fieldset_extract(self):
         field = self._makeOne('test')
         fieldset = form.Fieldset(field).bind(params={'test': 'FORM'})
@@ -150,6 +187,18 @@ class TestFieldset(Base):
         data, errors = fieldset.extract()
         self.assertFalse(bool(errors))
         self.assertEqual(data['test'], 'FORM')
+
+    def test_fieldset_extract_nested(self):
+        field = self._makeOne('test')
+        fieldset = form.Fieldset(
+            field,
+            form.Fieldset(name='fs', *(field,))
+            ).bind(params={'test': 'FORM', 'fs.test': 'NESTED FORM'})
+
+        data, errors = fieldset.extract()
+        self.assertFalse(bool(errors))
+        self.assertEqual(data['test'], 'FORM')
+        self.assertEqual(data['fs']['test'], 'NESTED FORM')
 
     def test_fieldset_extract_preparer(self):
         def lower(val):
