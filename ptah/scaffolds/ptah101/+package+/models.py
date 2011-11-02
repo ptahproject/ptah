@@ -1,0 +1,27 @@
+import sqlalchemy as sqla
+
+import ptah
+from ptah import cms
+
+class Link(cms.Node):
+    """ A basic model. """
+    
+    __tablename__ = 'intro_links'
+   
+    # Required primary field
+    __id__ = sqla.Column('id', sqla.Integer,
+                         sqla.ForeignKey('ptah_cms_nodes.id'),
+                         primary_key=True)
+
+    # Your custom fields
+    title = sqla.Column(sqla.Unicode)
+    href = sqla.Column(sqla.Unicode)
+    
+    # Declare it as a Ptah Model
+    __type__ = cms.Type('link')
+
+    # Query that return Links given a uri
+    _sql_get = ptah.QueryFreezer(
+        lambda: cms.Session.query(Link)\
+               .filter(Link.__uri__ == sqla.sql.bindparam('uri')))
+

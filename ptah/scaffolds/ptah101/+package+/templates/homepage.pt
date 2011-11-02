@@ -1,0 +1,143 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Bootstrap, from Twitter</title>
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- require bootstrap and bootstrap js support.
+         render_includes actually generates the HTML of the includes
+    -->
+
+    ${view.include('bootstrap')}
+    ${view.include('bootstrap-js')}
+    <tal:block content="structure view.render_includes()" />
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="images/favicon.ico">
+    <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="images/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="images/apple-touch-icon-114x114.png">
+  </head>
+
+  <body>
+
+    <div class="topbar">
+      <div class="topbar-inner">
+        <div class="container-fluid">
+          <a class="brand" href="#">Project name</a>
+          <ul class="nav">
+            <li class="active"><a href="#">Home</a></li>
+            <li><a href="/contact-us.html">Contact</a></li>
+          </ul>
+          <p class="pull-right">Logged in as <a href="#">username</a></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="container-fluid">
+      <div class="sidebar">
+        <div class="well">
+          <h5>Links</h5>
+          <ul>
+            <li tal:repeat="link view.get_links()">
+              <a href="${link.href}">${link.title}</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="content">
+        <!-- Main hero unit for a primary marketing message or call to action -->
+        <div class="hero-unit">
+          <h1>Welcome to Ptah!</h1>
+          <p>Ptah is a modern web publishing framework.  It enables you
+             to build web apps and websites - very fast.  The best part
+             is it works like you expect.  It uses well-documented technologies.
+             You can pick what features you want and use only those.
+          </p>
+          <p><a class="btn primary large" href="/ptah-manage">Goto Manange UI &raquo;</a></p>
+        </div>
+
+        <!-- Example row of columns -->
+        <div class="row">
+          <div class="span6">
+            <h2>Models</h2>
+            <p>This sample application comes with an example model, Link.
+               You can add, edit and delete them in the Manage UI.  You
+               can look on the filesystem in models.py to see the Link model.
+            </p>
+            <p><a class="btn" href="/ptah-manage/models/">View models &raquo;</a></p>
+          </div>
+          <div class="span5">
+            <h2>Settings</h2>
+             <p>You started Ptah with telling paster to serve a .ini file.
+                You can use the same software with different settings and have
+                a very different expereince.  Ptah and Pyramid both provide 
+                mechanisms to easily create your own settings attributes.  This
+                way you can store application settings on filesystem instead of
+                in a database where version control isnt practical.
+            </p>
+            <p><a class="btn" href="/ptah-manage/settings">View settings &raquo;</a></p>
+         </div>
+          <div class="span5">
+            <h2>Users</h2>
+            <p>Ptah comes with a default user subsystem.  You can use it to 
+               create, edit, delete, suspend and activate users.  The user 
+               system is invoked in __init__.py of your application to create
+               the default login/password for this application. 
+            </p>
+            <p><a class="btn" href="/ptah-manage/crowd">View users &raquo;</a></p>
+          </div>
+        </div>
+
+        <hr>
+
+        <div class="row">
+          <div class="span6">
+            <h2>SQL</h2>
+            <p>Ptah uses SQLAlchemy for its ORM and SQL library.
+               While the default is sqlite, Ptah will run on all
+               modern databases including Mysql, Oracle, Postgresql, and
+               Microsoft SQLServer.  There is an O'Reilly book on SQLAlchemy.
+               No homebrewed SQL usage here.  Everything you learn you can be
+               applied outside of Ptah.
+            </p>
+
+            <p><a class="btn" href="/ptah-manage/sqla">View tables &raquo;</a></p>
+          </div>
+          <div class="span5">
+            <h2>Fields</h2>
+             <p>No modern web environment would make you build your own Field's
+                from scratch.  We provide a set of Fields out-of-the-box and it
+                is very easy to build new ones.  Soon we will provide ability to
+                download additional Fields so you can share and re-use other
+                people's work.
+             </p>
+            <p><a class="btn" href="/ptah-manage/fields">View fields &raquo;</a></p>
+         </div>
+
+          <div class="span5">
+            <h2>Much more</h2>
+            <p>We have disabled quite a few Manage UI modules for the initial
+               user experience.  We do not want to further side track you from
+               your evaluation time you have with Ptah.  Once you feel Ptah is
+               right for you.  Feel free to re-enable those modules in your
+               .ini file.
+            </p>
+            <!--
+            <p><a class="btn" href="#">View details &raquo;</a></p>
+            -->
+          </div>
+
+        </div>
+
+        <footer>
+          <p>&copy; Company 2011</p>
+        </footer>
+      </div>
+    </div>
+
+  </body>
+</html>
