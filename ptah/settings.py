@@ -39,6 +39,13 @@ PTAH_CONFIG = config.register_settings(
         description = 'List of modules names to hide in manage ui',
         default = ()),
 
+    config.SchemaNode(
+        config.Sequence(), colander.SchemaNode(colander.Str()),
+        name = 'disable_models',
+        title = 'Hide Models in Model Management UI',
+        description = 'List of models to hide in model manage ui',
+        default = ('cms-type:sqlblob',)),
+
     title = 'Ptah settings',
     )
 
