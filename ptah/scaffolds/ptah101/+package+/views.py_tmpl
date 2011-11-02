@@ -5,20 +5,42 @@ from {{package}}.root import ApplicationRoot
 from {{package}}.models import Link
 
 # register static asset directory
-# logo can be found at /static/intro/logo.png
+
 view.static('{{package}}', '{{package}}:static')
+
+
+# register layout its identifier is 'template' and it would be used
+# on a model called ApplicationRoot.  You can use template inheritance
+# instead of using Ptah's layout machinery.
+
+view.register_layout(
+    'template', ApplicationRoot, 
+    template = view.template("{{package}}:templates/template.pt"))
+
+class Telephone(form.Regex):
+    """ An example validator.  See ptah.form.validators for more info."""
+    def __init__(self, msg=None):
+        if msg is None:
+            msg = "Invalid telephone number"           
+        super(Telephone, self).__init__(
+            u'^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$', msg=msg)
+
+
+# This is a "class view", you do not need to use a class for your 
+# view.  You can use a Function view
 
 class HomepageView(view.View):
     """ Homepage view """
+    
     view.pview(context=ApplicationRoot,
                template=view.template('templates/homepage.pt'))
 
     def get_links(self):
         return cms.Session.query(Link).all()
 
-class LinkListingView(view.View):
-    """ Show a listing of Link models """
-    pass
+
+# This is a "function view", you do not need to use a function for your 
+# view.  You can use a Class view.
 
 @view.pview('contact-us.html', context=ApplicationRoot)
 def contact_us(context, request):
@@ -33,7 +55,9 @@ def contact_us(context, request):
 
         form.TextField(
             'phone',
-            title = u'Telephone number'),
+            title = u'Telephone number',
+            description=u'Please provide telephone number',
+            validator = Telephone()),
 
         form.TextField(
             'email',
@@ -66,7 +90,7 @@ def contact_us(context, request):
         form.context.email = data['email']
         form.context.subject = data['subject']
 
-        # form succeeded; want to send email?  put data in database?
+        # Form succeeded; want to send email?  put data in database?
         # you would add that logic here.
 
         form.message('Content has been updated.', 'info')
@@ -86,6 +110,11 @@ def contact_us(context, request):
     res = contactform.render()
 
     # optional, render form in layout
-    layout = view.LayoutRenderer('')
+    layout = view.LayoutRenderer('template')
+    
+    # Left hand box requires links; this is downside of using
+    # of using functions for views.. but here we go
+    links = cms.Session.query(Link).all()
+    request['links'] = links
+    
     return layout(context, request, res)
-
