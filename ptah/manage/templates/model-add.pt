@@ -1,0 +1,5 @@
+<div class="page-header">
+  <h1>Add ${context.tinfo.title}</h1>
+</div>
+
+${view.snippet('form-view', view)}

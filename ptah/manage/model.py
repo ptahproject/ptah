@@ -152,6 +152,41 @@ class ModelView(form.Form):
         self.message('Select records have been removed')
 
 
+class AddRecord(form.Form):
+    view.pview('add.html',
+               context = Model,
+               template = view.template('ptah.manage:templates/model-add.pt'))
+
+    __doc__ = "Add model record."
+
+    csrf = True
+
+    @reify
+    def fields(self):
+        return self.context.tinfo.fieldset
+
+    @form.button('Add', actype=form.AC_PRIMARY)
+    def add_handler(self):
+        data, errors = self.extract()
+
+        if errors:
+            self.message(errors, 'form-error')
+            return
+
+        record = self.context.tinfo.create()
+        record.update(**data)
+
+        ptah.cms.Session.add(record)
+        ptah.cms.Session.flush()        
+
+        self.message('New record has been created.', 'success')
+        raise HTTPFound(location='./%s/'%record.__id__)
+
+    @form.button('Back')
+    def back_handler(self):
+        raise HTTPFound(location='.')
+
+
 class EditRecord(form.Form):
     view.pview(context = Record,
                template = view.template('ptah.manage:templates/model-edit.pt'))
