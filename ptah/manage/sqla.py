@@ -90,17 +90,13 @@ class MainView(view.View):
         for cl in table.columns:
             kwarg = []
             if cl.key != cl.name:
-                kwarg.append('key')
+                kwarg.append('key') # pragma: no cover
             if cl.primary_key:
                 kwarg.append('primary_key')
             if not cl.nullable:
                 kwarg.append('nullable')
-            if cl.onupdate:
-                kwarg.append('onupdate')
             if cl.default:
                 kwarg.append('default')
-            if cl.server_default:
-                kwarg.append('server_default')
 
             columns.append(
                 "Column(%s)" % ', '.join(

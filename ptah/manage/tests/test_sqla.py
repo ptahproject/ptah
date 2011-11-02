@@ -58,11 +58,11 @@ class TestSqlaModule(Base):
         res = TableView.__renderer__(table, request)
         self.assertEqual(res.status, '200 OK')
 
-    def test_table_traverse(self):
+    def test_sqla_table_traverse(self):
         from ptah.manage.sqla import SQLAModule, Table, Record
 
         from ptah import token
-        from ptah.utils import CSRFService
+        from ptah.util import CSRFService
         
         tid = token.service.generate(CSRFService.TOKEN_TYPE, 'test')
         inst = token.service._sql_get.first(token=tid)
@@ -75,3 +75,9 @@ class TestSqlaModule(Base):
         rec = table[str(inst.id)]
         
         self.assertIsInstance(rec, Record)
+        self.assertEqual(rec.pname, 'id')
+        self.assertIsNotNone(rec.pcolumn)
+        self.assertIsNotNone(rec.data)
+
+        self.assertRaises(KeyError, table.__getitem__, 'add.html')
+        self.assertRaises(KeyError, table.__getitem__, 'unknown')
