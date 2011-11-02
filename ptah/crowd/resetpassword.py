@@ -55,8 +55,8 @@ class ResetPassword(form.Form):
 
                 passcode = passwordTool.generate_passcode(principal)
 
-                template = ResetPasswordTemplate(principal, request)
-                template.passcode = passcode
+                template = ResetPasswordTemplate(
+                    principal, request, passcode = passcode)
                 template.send()
 
                 self.request.registry.notify(

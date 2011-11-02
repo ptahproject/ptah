@@ -1,5 +1,5 @@
 """ mail settings """
-import colander
+import os.path
 from email.Utils import formataddr
 from email import Encoders
 from email.MIMEText import MIMEText
@@ -20,25 +20,25 @@ class MailGenerator(object):
         self._headers = {}
         self.context = context
 
-    def _addHeader(self, header, value, encode=False):
+    def _add_header(self, header, value, encode=False):
         self._headers[header] = (header, value, encode)
 
-    def setHeaders(self, message):
+    def set_headers(self, message):
         charset = str(self.context.charset)
 
-        extra = list(self.context.getHeaders())
+        extra = list(self.context.get_headers())
         for key, val, encode in self._headers.values() + extra:
             if encode:
                 message[key] = make_header(((val, charset),))
             else:
                 message[key] = val
 
-    def getMessage(self):
+    def get_message(self):
         """ render a mail template """
         context = self.context
 
         charset = str(context.charset)
-        contentType = context.contentType
+        contentType = context.content_type
 
         mail_body = context.render()
         maintype, subtype = contentType.split('/')
@@ -48,19 +48,19 @@ class MailGenerator(object):
 
         return message
 
-    def getAttachments(self):
+    def get_attachments(self):
         attachments = []
 
         # attach files
         for data, content_type, filename, disposition in \
-                self.context.getAttachments():
+                self.context.get_attachments():
             maintype, subtype = content_type.split('/')
 
             msg = MIMENonMultipart(maintype, subtype)
 
             msg.set_payload(data)
             if filename:
-                msg['Content-Id'] = '<%s@z3ext>' % filename
+                msg['Content-Id'] = '<%s@ptah>' % filename
                 msg['Content-Disposition'] = '%s; filename="%s"' % (
                     disposition, filename)
 
@@ -74,16 +74,16 @@ class MailGenerator(object):
         context = self.context
 
         # generate message
-        message = self.getMessage()
+        message = self.get_message()
 
         # generate attachments
-        attachments = self.getAttachments()
+        attachments = self.get_attachments()
         if attachments:
             # create multipart message
             root = MIMEMultipart(multipart_format)
 
             # insert headers
-            self.setHeaders(root)
+            self.set_headers(root)
 
             # create message with attachments
             related = MIMEMultipart('related')
@@ -100,7 +100,7 @@ class MailGenerator(object):
             message = root
 
         # alternative
-        alternatives = self.context.getAlternative()
+        alternatives = self.context.get_alternative()
         if alternatives:
             mainmessage = MIMEMultipart('alternative')
             mainmessage.attach(message)
@@ -112,9 +112,9 @@ class MailGenerator(object):
             message = mainmessage
 
         # default headers
-        self._addHeader('Subject', context.subject, True)
+        self._add_header('Subject', context.subject, True)
 
-        self.setHeaders(message)
+        self.set_headers(message)
         return message
 
     def __call__(self, multipart_format='mixed', *args, **kw):
@@ -122,10 +122,7 @@ class MailGenerator(object):
         message = self.message(multipart_format, *args, **kw)
 
         message['Date'] = formatdate()
-        message['Message-ID'] = context.messageId
-
-        #if not message.has_key('X-Mailer'):
-        #    message['X-mailer'] = 'ptah.mailer'
+        message['Message-ID'] = context.message_id
 
         if not message.get('To') and context.to_address:
             message['To'] = context.to_address
@@ -142,8 +139,8 @@ class MailTemplate(object):
 
     subject = u''
     charset = u'utf-8'
-    contentType = u'text/plain'
-    messageId = None
+    content_type = u'text/plain'
+    message_id = None
     template = None
 
     from_name = ''
@@ -163,10 +160,10 @@ class MailTemplate(object):
         self._headers = {}
         self._alternative = []
 
-    def addHeader(self, header, value, encode=False):
+    def add_header(self, header, value, encode=False):
         self._headers[header] = (header, value, encode)
 
-    def hasHeader(self, header):
+    def has_header(self, header):
         header = header.lower()
         for key in self._headers.keys():
             if key.lower() == header:
@@ -174,38 +171,39 @@ class MailTemplate(object):
 
         return False
 
-    def getHeaders(self):
+    def get_headers(self):
         return self._headers.values()
 
-    def addAttachment(self, file_data, content_type,
-                      filename, disposition='attachment'):
+    def add_attachment(self, file_data, content_type,
+                       filename, disposition='attachment'):
         self._files.append((file_data, content_type,
                             wrap_filename(filename), disposition))
 
-    def getAttachments(self):
+    def get_attachments(self):
         return self._files
 
-    def addAlternative(self, template):
+    def add_alternative(self, template):
         self._alternative.append(template)
 
-    def getAlternative(self):
+    def get_alternative(self):
         return self._alternative
 
     def update(self):
-        self.from_name = MAIL.from_name
-        self.from_address = MAIL.from_address
+        if not self.from_name:
+            self.from_name = MAIL.from_name
+        if not self.from_address:
+            self.from_address = MAIL.from_address
 
     def render(self):
         kwargs = {'view': self,
                   'context': self.context,
-                  'request': self.request,
-                  'nothing': None}
+                  'request': self.request}
 
         return self.template(**kwargs)
 
-    def send(self, emails=None, **kw):
-        if emails:
-            self.to_address = emails
+    def send(self, email=None, **kw):
+        if email:
+            self.to_address = emails # pragma: no cover
 
         message = self(**kw)
 
@@ -214,9 +212,9 @@ class MailTemplate(object):
     def __call__(self, **kw):
         for key, value in kw.items():
             if type(value) is tuple:
-                self.addHeader(key, value[0], value[1])
+                self.add_header(key, value[0], value[1])
             else:
-                self.addHeader(key, value)
+                self.add_header(key, value)
 
         self.update()
         return MailGenerator(self)()
