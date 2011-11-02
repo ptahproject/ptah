@@ -10,6 +10,12 @@ from {{package}}.permissions import Manager
 # Your custom application models
 from {{package}}.root import APP_FACTORY
 
+# Import your views
+from {{package}} import views
+
+# Import models
+from {{package}} import models
+
 def main(global_config, **settings):
     """ This is your application startup.
     """
@@ -61,6 +67,19 @@ def main(global_config, **settings):
         root.__local_roles__[user.uri] = [Manager.id]
     
     ptah.authService.set_userid(user.uri)
+
+    # Create a few links
+    links = {'sqlalchemy':'http://www.sqlalchemy.org/',
+             'pyramid':'http://docs.pylonsproject.org/',
+             'enfoldsystems':'http://www.enfoldsystems.com/',
+             'bootstrap':'http://twitter.github.com/bootstrap/'}
+             
+    for name, url in links.items():
+        if not Session.query(models.Link)\
+               .filter(models.Link.href == url).all():
+            link = models.Link(title=name,
+                               href=url)
+            Session.add(link)
 
     import transaction; transaction.commit()
 
