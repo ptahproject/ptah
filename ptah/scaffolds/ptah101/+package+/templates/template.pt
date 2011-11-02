@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>tutorial, made with Ptah!</title>
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- require bootstrap and bootstrap js support.
+         render_includes actually generates the HTML of the includes
+    -->
+
+    ${view.include('bootstrap')}
+    ${view.include('bootstrap-js')}
+    <tal:block content="structure view.render_includes()" />
+    <link type="text/css" rel="stylesheet" href="${view.static_url('tutorial', 'app.css')}" />
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="${view.static_url('tutorial', 'ico/favicon.ico')}">
+    <link rel="apple-touch-icon" href="${view.static_url('tutorial', 'ico/apple-touch-icon.png')}">
+    <link rel="apple-touch-icon" sizes="72x72" href="${view.static_url('tutorial', 'ico/apple-touch-icon-72x72.png')}">
+    <link rel="apple-touch-icon" sizes="114x114" href="${view.static_url('tutorial', 'ico/apple-touch-icon-114x114.png')}">
+
+  </head>
+
+  <body>
+
+    <div class="topbar">
+      <div class="topbar-inner">
+        <div class="container-fluid">
+          <a class="brand" href="/">Project name</a>
+          <ul class="nav">
+            <li class="active"><a href="/">Home</a></li>
+            <li><a href="/contact-us.html">Contact</a></li>
+          </ul>
+          <p class="pull-right">Logged in as <a href="#">username</a></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="container-fluid app-body">
+      <div class="sidebar">
+        <div class="well">
+          <h5>Links</h5>
+          <ul>
+            <li tal:repeat="link request.links|view.get_links()">
+              <a href="${link.href}">${link.title}</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+            
+      <div class="content">
+        ${view.render_messages()}
+
+        ${content}
+      </div>
+
+      <footer>
+      <p>&copy; Enfold Systems 2011</p>
+      </footer>
+    </div>
+
+  </body>
+</html>
