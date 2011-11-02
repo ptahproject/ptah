@@ -161,7 +161,7 @@ class Content(Node):
             tinfo = self.__type__
 
             for field in tinfo.fieldset.fields():
-                val = data.get(field.name,  field.default)
+                val = data.get(field.name, field.default)
                 if val is not form.null:
                     setattr(self, field.name, val)
 

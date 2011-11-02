@@ -2,4 +2,40 @@
   <h1>Modify ${context.tinfo.title}</h1>
 </div>
 
-${view.snippet('form-view', view)}
+<div class="span10">
+  ${view.snippet('form-view', view)}
+</div>
+
+<div class="span4" tal:define="url '%s/ptah-manage/introspect/uri.html'%request.application_url">
+  <table class="zebra-striped">
+    <tbody tal:define="r context.record">
+      <tr>
+	<td>Id</td>
+	<td>${r.__id__}</td>
+      </tr>
+      <tr>
+	<td>URI</td>
+	<td><a href="${url}?uri=${r.__uri__}">${r.__uri__}</a></td>
+      </tr>
+      <tr>
+	<td>Parent</td>
+	<td>
+	  <a href="${url}?uri=${r.__parent_uri__}"
+	     tal:condition="r.__parent_uri__">${r.__parent_uri__}</a>
+	</td>
+      </tr>
+      <tr>
+	<td>Owner</td>
+	<td><a href="${url}?uri=${r.__owner__}">${r.__owner__}</a></td>
+      </tr>
+      <tr>
+	<td>Local roles</td>
+	<td>${r.__local_roles__}</td>
+      </tr>
+      <tr>
+	<td>ACLs</td>
+	<td>${r.__acls__}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

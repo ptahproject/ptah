@@ -174,7 +174,14 @@ class AddRecord(form.Form):
             return
 
         record = self.context.tinfo.create()
-        record.update(**data)
+
+        if hasattr(record, 'update'):
+            record.update(**data)
+        else:
+            for field in self.context.tinfo.fieldset.fields():
+                val = data.get(field.name, field.default)
+                if val is not form.null:
+                    setattr(record, field.name, val)
 
         ptah.cms.Session.add(record)
         ptah.cms.Session.flush()        
