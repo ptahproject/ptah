@@ -31,7 +31,7 @@
 	      </td>
 	      <td>
 		<a class="btn info"
-		   href="${url}${item.__id__}/">Edit</a>
+		   href="${url}/${item.__id__}/">Edit</a>
 	      </td>
 	    </tr>
 	  </tal:block>
@@ -58,6 +58,9 @@
 	  </li>
 	</ul>
       </div>
+
+      <input type="hidden" tal:condition="view.csrf" 
+	     name="${view.csrfname}" value="${view.token}" />
 
       <tal:block content="structure view.snippet('form-actions', view)" />
     </form>

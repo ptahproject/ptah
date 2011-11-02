@@ -25,6 +25,18 @@ class TestSqlaModule(Base):
         table = mod['psqla-ptah_tokens']
         self.assertIsInstance(table, Table)
 
+    def test_sqla_traverse(self):
+        from ptah.manage.sqla import SQLAModule, Table
+
+        request = DummyRequest()
+
+        mod = SQLAModule(None, request)
+
+        table = mod['psqla-ptah_cms_nodes']
+        self.assertIsInstance(table, Table)
+
+        self.assertRaises(KeyError, mod.__getitem__, 'unknown')
+
     def test_sqla_view(self):
         from ptah.manage.sqla import SQLAModule, MainView
 

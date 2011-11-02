@@ -180,11 +180,9 @@ class TableView(form.Form):
         try:
             current = int(request.params.get('batch', None))
             if not current:
-                current = request.session.get('table-current-batch')
-                if not current:
-                    current = 1
-            else:
-                request.session['table-current-batch'] = current
+                current = 1
+
+            request.session['table-current-batch'] = current
         except:
             current = request.session.get('table-current-batch')
             if not current:

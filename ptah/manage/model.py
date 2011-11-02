@@ -1,4 +1,5 @@
 """ content types module """
+import sqlalchemy as sqla
 import ptah
 from ptah import cms, view, form, manage
 from pyramid.decorator import reify
@@ -35,8 +36,6 @@ class Model(object):
         try:
             return Record(key, self.tinfo, self, self.request)
         except:
-            import traceback
-            traceback.print_exc()
             raise KeyError(key)
 
 
@@ -89,11 +88,9 @@ class ModelView(form.Form):
         try:
             current = int(request.params.get('batch', None))
             if not current:
-                current = request.session.get('table-current-batch')
-                if not current:
-                    current = 1
-            else:
-                request.session['table-current-batch'] = current
+                current = 1
+
+            request.session['table-current-batch'] = current
         except:
             current = request.session.get('table-current-batch')
             if not current:
@@ -116,19 +113,6 @@ class ModelView(form.Form):
 
         return res
 
-    def quote(self, val):
-        return urllib.quote_plus(val)
-
-    def val(self, val):
-        try:
-            if isinstance(val, str):
-                val = unicode(val, 'utf-8', 'ignore')
-            elif not isinstance(val, unicode):
-                val = str(val)
-        except:
-            val = u"Can't show"
-        return val[:100]
-
     @form.button('Add', actype=form.AC_PRIMARY)
     def add(self):
         raise HTTPFound(location='add.html')
@@ -141,15 +125,19 @@ class ModelView(form.Form):
         for id in self.request.POST.getall('rowid'):
             try:
                 ids.append(int(id))
-            except:
+            except: # pragma: no cover
                 pass
 
         if not ids:
-            self.message('Please select records for removing', 'warning')
+            self.message('Please select records for removing.', 'warning')
             return
 
-        self.table.delete(self.pcolumn.in_(ids)).execute()
-        self.message('Select records have been removed')
+        for rec in cms.Session.query(self.context.tinfo.cls).filter(
+            self.context.tinfo.cls.__id__.in_(ids)).all():
+            cms.Session.delete(rec)
+
+        self.message('Select records have been removed.')
+        raise HTTPFound(location = self.request.url)
 
 
 class AddRecord(form.Form):
@@ -173,7 +161,7 @@ class AddRecord(form.Form):
             self.message(errors, 'form-error')
             return
 
-        record = self.context.tinfo.create()
+        self.record = record = self.context.tinfo.create()
 
         if hasattr(record, 'update'):
             record.update(**data)
@@ -183,8 +171,8 @@ class AddRecord(form.Form):
                 if val is not form.null:
                     setattr(record, field.name, val)
 
-        ptah.cms.Session.add(record)
-        ptah.cms.Session.flush()        
+        cms.Session.add(record)
+        cms.Session.flush()
 
         self.message('New record has been created.', 'success')
         raise HTTPFound(location='./%s/'%record.__id__)
@@ -225,9 +213,15 @@ class EditRecord(form.Form):
             self.message(errors, 'form-error')
             return
 
-        ptah.authService.set_userid(ptah.SUPERUSER_URI)
+        record = self.context.record
 
-        cms.wrap(self.context.record).update(**data)
+        if hasattr(record, 'update'):
+            record.update(**data)
+        else:
+            for field in self.fields.fields():
+                val = data.get(field.name, field.default)
+                if val is not form.null:
+                    setattr(record, field.name, val)
 
         self.message('Model record has been modified.', 'success')
 

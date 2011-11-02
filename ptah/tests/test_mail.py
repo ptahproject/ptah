@@ -13,7 +13,7 @@ class TestMailTemplate(Base):
 
     def _make_one(self):
         from ptah.mail import MailTemplate
-        
+
         class MyMailTemplate(MailTemplate):
             template = view.template('test_mail_tmpl.pt')
             subject = 'Test subject'
@@ -75,7 +75,7 @@ class TestMailTemplate(Base):
 
         tmpl = cls(Content(), DummyRequest())
         self.assertFalse(tmpl.has_header('X-Mailer'))
-        
+
         tmpl.add_header('X-Mailer', 'ptah')
         self.assertTrue(tmpl.has_header('X-Mailer'))
 
