@@ -53,7 +53,7 @@ If you like tests, run the tests::
 Use paster to create **your own application**.  The default username is **admin** and password is **12345**.  Check myapp/__init__.py for more information::
 
   venv/ptah$ cd ..
-  venv$ bin/paster create -t ptahdemo myapp
+  venv$ bin/paster create -t ptah101 myapp
   venv$ cd myapp
   venv/myapp$ ../bin/python setup.py develop
   
