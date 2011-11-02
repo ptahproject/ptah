@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>tutorial, made with Ptah!</title>
+    <title>{{package}}, made with Ptah!</title>
     <meta name="description" content="">
     <meta name="author" content="">
 
@@ -13,13 +13,13 @@
     ${view.include('bootstrap')}
     ${view.include('bootstrap-js')}
     <tal:block content="structure view.render_includes()" />
-    <link type="text/css" rel="stylesheet" href="${view.static_url('tutorial', 'app.css')}" />
+    <link type="text/css" rel="stylesheet" href="${view.static_url('{{package}}', 'app.css')}" />
 
     <!-- Le fav and touch icons -->
-    <link rel="shortcut icon" href="${view.static_url('tutorial', 'ico/favicon.ico')}">
-    <link rel="apple-touch-icon" href="${view.static_url('tutorial', 'ico/apple-touch-icon.png')}">
-    <link rel="apple-touch-icon" sizes="72x72" href="${view.static_url('tutorial', 'ico/apple-touch-icon-72x72.png')}">
-    <link rel="apple-touch-icon" sizes="114x114" href="${view.static_url('tutorial', 'ico/apple-touch-icon-114x114.png')}">
+    <link rel="shortcut icon" href="${view.static_url('{{package}}', 'ico/favicon.ico')}">
+    <link rel="apple-touch-icon" href="${view.static_url('{{package}}', 'ico/apple-touch-icon.png')}">
+    <link rel="apple-touch-icon" sizes="72x72" href="${view.static_url('{{package}}', 'ico/apple-touch-icon-72x72.png')}">
+    <link rel="apple-touch-icon" sizes="114x114" href="${view.static_url('{{package}}', 'ico/apple-touch-icon-114x114.png')}">
 
   </head>
 
