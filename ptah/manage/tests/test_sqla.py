@@ -57,3 +57,21 @@ class TestSqlaModule(Base):
 
         res = TableView.__renderer__(table, request)
         self.assertEqual(res.status, '200 OK')
+
+    def test_table_traverse(self):
+        from ptah.manage.sqla import SQLAModule, Table, Record
+
+        from ptah import token
+        from ptah.utils import CSRFService
+        
+        tid = token.service.generate(CSRFService.TOKEN_TYPE, 'test')
+        inst = token.service._sql_get.first(token=tid)
+
+        request = DummyRequest()
+
+        mod = SQLAModule(None, request)
+        table = mod['psqla-ptah_tokens']
+
+        rec = table[str(inst.id)]
+        
+        self.assertIsInstance(rec, Record)

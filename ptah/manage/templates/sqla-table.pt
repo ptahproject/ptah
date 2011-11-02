@@ -68,7 +68,9 @@
 	</ul>
       </div>
 
-      <tal:block content="structure view.snippet('form-actions', view)" />
+      <tal:block
+	 condition="view.show_actions"
+	 content="structure view.snippet('form-actions', view)" />
     </form>
   </div>
 </div>
