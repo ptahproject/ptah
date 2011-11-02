@@ -57,6 +57,9 @@
              is it works like you expect.  It uses well-documented technologies.
              You can pick what features you want and use only those.
           </p>
+          <p>The default login is <strong>admin</strong> and the 
+             password is <strong>12345</strong>
+          </p>
           <p><a class="btn primary large" href="/ptah-manage">Goto Manange UI &raquo;</a></p>
         </div>
 
