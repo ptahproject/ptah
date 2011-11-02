@@ -1,12 +1,12 @@
 from pyramid.httpexceptions import HTTPFound
 from ptah import view, form, cms
 
-from intro.root import ApplicationRoot
-from intro.models import Link
+from {{package}}.root import ApplicationRoot
+from {{package}}.models import Link
 
 # register static asset directory
 # logo can be found at /static/intro/logo.png
-view.static('intro', 'intro:static')
+view.static('{{package}}', '{{package}}:static')
 
 class HomepageView(view.View):
     """ Homepage view """
@@ -19,7 +19,6 @@ class HomepageView(view.View):
 class LinkListingView(view.View):
     """ Show a listing of Link models """
     pass
-
 
 @view.pview('contact-us.html', context=ApplicationRoot)
 def contact_us(context, request):
