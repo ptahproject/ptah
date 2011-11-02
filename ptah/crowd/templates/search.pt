@@ -1,10 +1,11 @@
-<tal:block tal:condition="view.users">
+<tal:block tal:condition="view.users" 
+	   tal:define="url '%s/ptah-manage/crowd'%request.application_url">
   <div class="page-header">
     <h2>Users</h2>
   </div>
 
   <div class="content">
-    <form method="post" action="${request.url}">
+    <form method="post" action="${url}/">
       <table class="common-table zebra-striped"
 	     tal:define="uids request.params.getall('uid')">
 	<thead>
@@ -21,7 +22,7 @@
 	  <tr tal:repeat="user view.users">
 	    <td><input type="checkbox" name="uid" value="${user.uri}" 
 		       tal:attributes="checked str(user.uri) in uids" /></td>
-	    <td><a href="${user.pid}/">${user.name}</a></td>
+	    <td><a href="${url}/${user.pid}/">${user.name}</a></td>
 	    <td>${user.login}</td>
 	    <tal:block tal:define="props view.get_props(user.uri)">
 	      <td tal:content="props.validated"></td>
