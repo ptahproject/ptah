@@ -2,14 +2,15 @@
   <h2>SQL Tables</h2>
 </div>
 
-<div class="row" tal:repeat="data view.tables">
+<div class="row" tal:repeat="data view.tables"
+     tal:define="url '%s/ptah-manage/sqla'%request.application_url">
   <div class="span16 column">
     <h3>${data[0]}</h3>
     <table class="zebra-striped">
       <tr tal:repeat="tb data[2]">
 	<td>
 	  <h4>
-	    <a href="${data[1]}-${tb[0]}/">${tb[0]}</a>
+	    <a href="${url}/${data[1]}-${tb[0]}/">${tb[0]}</a>
 	  </h4>
 	  <p>
 	    <tal:block tal:repeat="rec tb[1][1]">
