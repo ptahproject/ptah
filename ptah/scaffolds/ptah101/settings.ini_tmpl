@@ -45,6 +45,10 @@ ptah.disable_modules.4 = apps
 ptah.disable_modules.5 = permissions
 ptah.disable_modules.6 = templates
 
+# disable models for newbies
+ptah.disable_models.0 = cms-type:{{package}}-app
+ptah.disable_models.1 = cms-type:sqlblob
+
 [server:main]
 use = egg:Paste#http
 host = 0.0.0.0
