@@ -111,7 +111,7 @@ def exclude(modname, excludes=()):
     return True
 
 
-def loadPackage(name, seen, first=True):
+def load_package(name, seen, first=True):
     packages = []
 
     if name in seen:
@@ -125,7 +125,7 @@ def loadPackage(name, seen, first=True):
             pkg = req.project_name
             if pkg in seen:
                 continue
-            packages.extend(loadPackage(pkg, seen, False))
+            packages.extend(load_package(pkg, seen, False))
 
         distmap = pkg_resources.get_entry_map(dist, 'ptah')
         ep = distmap.get('package')
@@ -151,7 +151,7 @@ def list_packages(include_packages=None, excludes=None):
         for pkg in include_packages:
             if excludes and pkg in excludes:
                 continue
-            packages.extend(loadPackage(pkg, seen))
+            packages.extend(load_package(pkg, seen))
     else:
         for dist in pkg_resources.working_set:
             pkg = dist.project_name
@@ -162,7 +162,7 @@ def list_packages(include_packages=None, excludes=None):
 
             distmap = pkg_resources.get_entry_map(dist, 'ptah')
             if 'package' in distmap:
-                packages.extend(loadPackage(pkg, seen))
+                packages.extend(load_package(pkg, seen))
             else:
                 seen.add(pkg)
 

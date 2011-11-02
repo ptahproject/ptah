@@ -334,7 +334,6 @@ class UriIntrospection(object):
 
     def renderActions(self, *actions):
         return self.actions(
-            resolvers = config.registry.storage[RESOLVER_ID],
             actions = actions,
             rst_to_html = ptah.rst_to_html,
             request = self.request)

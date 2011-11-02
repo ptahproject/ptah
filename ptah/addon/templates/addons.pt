@@ -2,13 +2,13 @@
   <h2>Add-ons</h2>
 </div>
 
-<div class="columns">
-  <form method="post" action="${request.url}">
-    <h3>Packages</h3>
+<div class="columns" 
+     tal:define="url '%s/ptah-manage/addons'%request.application_url">
+  <form method="post" action="${url}/">
     <fieldset>
       <div tal:repeat="pkg view.addons">
 	<input type="checkbox" name="addon" value="${pkg.project_name}" />
-	${pkg}
+	<a href="${url}/${pkg.project_name}/">${pkg}</a>
       </div>
     </fieldset>
     <div class="actions">

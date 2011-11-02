@@ -1,0 +1,12 @@
+<div class="page-header">
+  <h2>Package: ${context.__name__} </h2>
+</div>
+
+<div class="row" tal:repeat="itype view.itypes">
+  <div class="span16 columns">
+    <h3>
+      ${itype.title} <small>${itype.__doc__}</small>
+    </h3>
+    ${itype.renderActions(*view.ndata[itype.name])}
+  </div>
+</div>

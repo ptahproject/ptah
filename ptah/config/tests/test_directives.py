@@ -376,10 +376,10 @@ class TestExtraDirective(BaseTesting):
         from ptah.config import api
 
         seen = set()
-        packages = api.loadPackage('ptah.config', seen)
+        packages = api.load_package('ptah.config', seen)
         self.assertEqual(packages, ['ptah.config'])
 
-        packages = api.loadPackage('ptah.config', seen)
+        packages = api.load_package('ptah.config', seen)
         self.assertEqual(packages, [])
 
     def test_action(self):

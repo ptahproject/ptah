@@ -73,6 +73,5 @@ class PermissionIntrospection(object):
 
     def renderActions(self, *actions):
         return self.actions(
-            permissions = ptah.get_permissions(),
             actions = actions,
             request = self.request)
