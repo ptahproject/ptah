@@ -1,3 +1,4 @@
+import logging
 import tempfile
 import threading
 import pkg_resources
@@ -6,6 +7,8 @@ from docutils.core import Publisher
 
 from sphinx.application import Sphinx
 from sphinx.writers.html import HTMLWriter, HTMLTranslator
+
+log = logging.getLogger('ptah.rst')
 
 local_data = threading.local()
 
@@ -48,7 +51,12 @@ def rst_to_html(text):
     sphinx, pub = get_sphinx()
 
     pub.set_source(text, None)
-    pub.publish()
+
+    try:
+        pub.publish()
+    except:
+        log.warning(u'ReST to HTML error\n %s', text)
+        return u'<pre>%s</pre>'%text
 
     doctree = pub.document
     sphinx.env.filter_messages(doctree)
