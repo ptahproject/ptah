@@ -46,6 +46,14 @@ class AppStarting(object):
         self.config = config
 
 
+class Initialized(object):
+    """ ptah sends this after ptah.config.initialize """
+    directives.event('Ptah config initialized event')
+
+    def __init__(self, registry):
+        self.registry = registry
+
+
 class Config(object):
 
     def __init__(self, registry, actions):
@@ -54,6 +62,10 @@ class Config(object):
         self.storage = defaultdict(lambda: dict())
         registry.storage = self.storage
         registry.storage['actions'] = actions
+
+        # settings
+        from settings import SETTINGS_ID
+        registry.storage[SETTINGS_ID] = defaultdict(lambda: dict())
 
 
 def initialize(packages=None, excludes=(), reg=None):
@@ -94,6 +106,8 @@ def initialize(packages=None, excludes=(), reg=None):
     for action in actions:
         config.action = action
         action(config)
+
+    notify(Initialized(registry))
 
 
 def start(cfg):

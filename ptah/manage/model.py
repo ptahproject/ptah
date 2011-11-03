@@ -11,7 +11,7 @@ class ModelModule(manage.PtahModule):
 
     title = 'Models'
     manage.module('models')
-    
+
     def __getitem__(self, key):
         ti = cms.get_type('cms-type:%s'%key)
 
@@ -64,7 +64,7 @@ class ModelModuleView(view.View):
         types = []
         for ti in cms.get_types().values():
             if ti.__uri__ in ptah.PTAH_CONFIG['disable_models']:
-                continue 
+                continue
             types.append((ti.title, ti))
         types.sort()
         self.types = [f for _t, f in types]

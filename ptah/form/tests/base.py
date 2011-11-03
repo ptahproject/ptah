@@ -9,7 +9,7 @@ from zope.interface.registry import Components
 class Base(unittest.TestCase):
 
     def _init_ptah(self, settings={}, handler=None, *args, **kw):
-        config.initialize(('ptah.view', self.__class__.__module__),
+        config.initialize(('ptah', self.__class__.__module__),
                           reg = Components('test'))
         config.initialize_settings(settings, self.p_config)
 

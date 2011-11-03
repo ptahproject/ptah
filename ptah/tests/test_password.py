@@ -85,6 +85,8 @@ class TestSHAPasswordManager(unittest.TestCase):
 class TestPasswordSettings(Base):
 
     def test_password_settings(self):
+        self._init_ptah()
+
         from ptah.password import \
              initializing, PlainPasswordManager, SSHAPasswordManager
 

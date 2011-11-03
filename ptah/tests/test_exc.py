@@ -14,6 +14,7 @@ class TestExceptions(Base):
 
     def test_not_found(self):
         from ptah.exc import NotFound
+        self._init_ptah()
 
         class Context(object):
             """ """
@@ -29,6 +30,7 @@ class TestExceptions(Base):
 
     def test_forbidden(self):
         from ptah.exc import Forbidden
+        self._init_ptah()
 
         class Context(object):
             """ """

@@ -122,7 +122,7 @@ class TestFieldset(Base):
         fieldset = form.Fieldset(
             field,
             form.Fieldset(name='fs', *(field,)))
-        
+
         params = object()
         content = {'test': 'CONTENT',
                    'fs': {'test': 'NESTED CONTENT'}}

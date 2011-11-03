@@ -13,6 +13,7 @@ from repoze.sendmail.mailer import SMTPMailer
 from repoze.sendmail.delivery import DirectMailDelivery
 
 from ptah import config
+from ptah.security import get_local_roles
 from ptah.settings import types, PTAH_CONFIG, MAIL, SESSION, SECURITY, SQLA
 
 SQL_compiled_cache = {}
@@ -32,7 +33,8 @@ def initializing(ev):
         for attr in attrs:
             settings.append(SECURITY.get(attr))
 
-        kwargs = {'wild_domain': False}
+        kwargs = {'wild_domain': False,
+                  'callback': get_local_roles}
         for attr in kw:
             kwargs[attr] = SECURITY.get(attr)
 

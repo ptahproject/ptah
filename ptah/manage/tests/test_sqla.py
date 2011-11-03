@@ -63,7 +63,7 @@ class TestSqlaModule(Base):
 
         from ptah import token
         from ptah.util import CSRFService
-        
+
         tid = token.service.generate(CSRFService.TOKEN_TYPE, 'test')
         inst = token.service._sql_get.first(token=tid)
 
@@ -73,7 +73,7 @@ class TestSqlaModule(Base):
         table = mod['psqla-ptah_tokens']
 
         rec = table[str(inst.id)]
-        
+
         self.assertIsInstance(rec, Record)
         self.assertEqual(rec.pname, 'id')
         self.assertIsNotNone(rec.pcolumn)

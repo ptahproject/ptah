@@ -5,6 +5,7 @@ from collections import OrderedDict
 
 from ptah import config
 from ptah.config import api, directives
+from ptah.config.settings import get_settings
 
 
 grpTitleWrap = textwrap.TextWrapper(
@@ -28,7 +29,10 @@ nameDescriptionWrap = textwrap.TextWrapper(
     subsequent_indent='')
 
 
-def settingsCommand():
+def settingsCommand(init=True):
+    if init: # pragma: no cover
+        config.initialize()
+
     args = SettingsCommand.parser.parse_args()
     cmd = SettingsCommand(args)
     cmd.run()
@@ -52,12 +56,9 @@ class SettingsCommand(object):
         self.options = args
 
     def run(self):
-        # load all ptah packages
-        config.initialize()
-
         # print defaults
         if self.options.printcfg:
-            data = config.Settings.export(True)
+            data = get_settings().export(True)
 
             parser = ConfigParser.ConfigParser(dict_type=OrderedDict)
             items = data.items()
@@ -80,7 +81,7 @@ class SettingsCommand(object):
             section = self.options.section
 
         # print description
-        groups = config.Settings.items()
+        groups = get_settings().items()
         groups.sort()
 
         for name, group in groups:

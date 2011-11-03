@@ -22,13 +22,13 @@ class TestCommand(BaseTesting):
                 name = 'node',
                 default = 'test')
 
-        group = config.register_settings(
+        group1 = config.register_settings(
             'group1', node,
             title = 'Section1',
             description = 'Description1',
             )
 
-        group = config.register_settings(
+        group2 = config.register_settings(
             'group2', node,
             title = 'Section2',
             description = 'Description2',
@@ -43,7 +43,7 @@ class TestCommand(BaseTesting):
         out = StringIO()
         sys.stdout = out
 
-        commands.settingsCommand()
+        commands.settingsCommand(False)
         sys.stdout = stdout
 
         val = out.getvalue()
@@ -59,7 +59,7 @@ class TestCommand(BaseTesting):
         out = StringIO()
         sys.stdout = out
 
-        commands.settingsCommand()
+        commands.settingsCommand(False)
         sys.stdout = stdout
 
         val = out.getvalue()
@@ -75,7 +75,7 @@ class TestCommand(BaseTesting):
         out = StringIO()
         sys.stdout = out
 
-        commands.settingsCommand()
+        commands.settingsCommand(False)
         sys.stdout = stdout
 
         val = out.getvalue().strip()

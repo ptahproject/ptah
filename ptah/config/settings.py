@@ -1,5 +1,6 @@
-""" settings api """
+""" settings """
 import colander
+import transaction
 import logging, os.path, ConfigParser
 from datetime import datetime, timedelta
 from collections import OrderedDict
@@ -7,15 +8,8 @@ from zope import interface
 from zope.interface.interfaces import ObjectEvent
 from zope.interface.interface import InterfaceClass
 
-import api
-
-try:
-    import transaction
-except ImportError: # pragma: no cover
-    transaction = None
-
 import api, schema, shutdown
-from directives import event, DirectiveInfo, Action
+from directives import event, subscriber, DirectiveInfo, Action
 
 log = logging.getLogger('ptah.config')
 
@@ -51,29 +45,51 @@ class SettingsGroupModified(ObjectEvent):
 
 _marker = object()
 
-def initialize_settings(settings,
-                        config=None, loader=None, watcherFactory=_marker,
-                        section=ConfigParser.DEFAULTSECT):
-    if Settings.initialized:
+SETTINGS_ID = 'settings'
+SETTINGS_OB_ID = 'ptah.config:settings'
+SETTINGS_GROUP_ID = 'ptah.config:settings-group'
+
+
+def get_settings():
+    return api.registry.storage.get(SETTINGS_OB_ID)
+
+
+@subscriber(api.Initialized)
+def init_settings(ev):
+    settings = Settings()
+    ev.registry.storage[SETTINGS_OB_ID] = settings
+
+    # complete settings initialization
+    for grp in ev.registry.storage[SETTINGS_GROUP_ID].values():
+        settings.register(grp)
+
+
+def initialize_settings(
+    cfg, config=None, loader=None,
+    watcherFactory=_marker, section=ConfigParser.DEFAULTSECT):
+
+    settings = api.registry.storage[SETTINGS_OB_ID]
+    if settings.initialized:
         raise RuntimeError(
             "initialize_settings has been called more than once.")
 
     log.info('Initializing ptah settings')
 
-    Settings.config = config
-    Settings.initialized = True
+    settings.config = config
+    settings.initialized = True
 
     if watcherFactory is _marker:
         watcherFactory = iNotifyWatcher
 
-    here = settings.get('here', './')
+    if config is None:
+        watcherFactory = None
+
+    here = cfg.get('here', './')
     if loader is None:
         loader = FileStorage(
-            settings.get('settings',''),
-            settings.get('defaults', ''),
-            here, section, watcherFactory)
+            settings, cfg.get('settings',''), here, section, watcherFactory)
 
-    include = settings.get('include', '')
+    include = cfg.get('include', '')
     for f in include.split('\n'):
         f = f.strip()
         if f and os.path.exists(f):
@@ -81,9 +97,9 @@ def initialize_settings(settings,
             parser.read(f)
             if section == ConfigParser.DEFAULTSECT or \
                     parser.has_section(section):
-                settings.update(parser.items(section, vars={'here': here}))
+                cfg.update(parser.items(section, vars={'here': here}))
 
-    Settings.init(loader, settings)
+    settings.init(loader, cfg)
 
     try:
         api.notify(SettingsInitializing(config))
@@ -106,12 +122,7 @@ def register_settings(name, *nodes, **kw):
         __doc__='Settings group: %s' %name,
         __module__='ptah.config.settings')
 
-    if name in Settings:
-        group = Settings[name]
-    else:
-        group = Group(name, Settings, title, description, category)
-
-    Settings.register(group)
+    group = Group(name, title, description, category, *nodes)
 
     if validator is not None:
         if type(validator) not in (list, tuple):
@@ -120,33 +131,20 @@ def register_settings(name, *nodes, **kw):
         for v in validator:
             group.schema.validator.add(v)
 
+    ac = Action(
+        lambda config, group: config.storage[SETTINGS_GROUP_ID].update(
+            {group.name: group}),
+        (group,),
+        discriminator = (SETTINGS_GROUP_ID, name))
+
     info = DirectiveInfo()
-
-    for node in nodes:
-        if not isinstance(node, schema.SchemaNode):
-            raise RuntimeError(
-                "Node '%s' has to be instance of "
-                "ptah.config.SchemaNode"%node.name)
-
-        ac = Action(
-            _register_settings_impl, (group, node),
-            discriminator = ('ptah.config:setting', node.name, name))
-
-        # mutate hash
-        ac.hash = info.hash + (node.name,)
-
-        info.attach(ac)
+    info.attach(ac)
 
     return group
 
 
-def _register_settings_impl(config, group, node):
-    Settings.register(group)
-    group.register(node)
-
-
-class SettingsImpl(dict):
-    """ simple settings management system """
+class Settings(dict):
+    """ settings management system """
 
     config = None
     loader = None
@@ -160,8 +158,7 @@ class SettingsImpl(dict):
         if not self._changed:
             if self._changed is None:
                 self._changed = {}
-            if transaction is not None: # pragma: no cover
-                transaction.get().addAfterCommitHook(self.save)
+            transaction.get().addAfterCommitHook(self.save)
 
         data = self._changed.setdefault(group, set())
         data.update(attrs)
@@ -209,7 +206,7 @@ class SettingsImpl(dict):
                         if modified:
                             api.registry.subscribers(
                                 (group,
-                                 SettingsGroupModified(group, self.config)), None)
+                                 SettingsGroupModified(group,self.config)),None)
                     else:
                         group.update(data[name])
 
@@ -230,7 +227,6 @@ class SettingsImpl(dict):
         if loader is None:
             return
 
-        self._load(loader.loadDefaults(), True)
         self._load(loader.load())
 
     def load(self):
@@ -252,7 +248,8 @@ class SettingsImpl(dict):
     def export(self, default=False):
         result = {}
         for name, group in self.items():
-            data = dict(group)
+            data = dict((node.name, node.default) for node in group.schema)
+            data.update(group.items())
             result[name] = data
 
         result = self.schema.serialize(result)
@@ -299,13 +296,12 @@ class GroupValidator(object):
             raise error
 
 
-class Group(dict):
+class Group(object):
 
-    def __init__(self, name, settings, title, description, category):
+    def __init__(self, name, title, description, category, *nodes):
         self.name = name
         self.title = title
         self.description = description
-        self.settings = settings
         self.category = category
         self.schema = schema.SchemaNode(
             schema.Mapping(),
@@ -315,10 +311,32 @@ class Group(dict):
 
         interface.directlyProvides(self, category)
 
-    def register(self, node):
-        if node not in self.schema.children:
-            super(Group, self).__setitem__(node.name, node.default)
+        for node in nodes:
+            if not isinstance(node, schema.SchemaNode):
+                raise RuntimeError(
+                    "Node '%s' has to be instance of "
+                    "ptah.config.SchemaNode"%node.name)
+
             self.schema.add(node)
+
+    def get(self, name, default=None):
+        data = api.registry.storage[SETTINGS_ID][self.name]
+        if name in data:
+            return data[name]
+
+        if name in self.schema:
+            return self.schema[name].default
+
+        return default
+
+    def keys(self):
+        return [node.name for node in self.schema]
+
+    def items(self):
+        return [(key, self.get(key)) for key in self.keys()]
+
+    def update(self, data):
+        api.registry.storage[SETTINGS_ID][self.name].update(data)
 
     def __getattr__(self, attr, default=_marker):
         res = self.get(attr, default)
@@ -326,30 +344,39 @@ class Group(dict):
             raise AttributeError(attr)
         return res
 
-    def __setitem__(self, attr, value):
-        if attr in self.schema and value != self[attr]:
-            self.settings.changed(self.name, (attr,))
-        super(Group, self).__setitem__(attr, value)
+    def __getitem__(self, name):
+        res = self.get(name, _marker)
+        if res is _marker:
+            raise KeyError(name)
+        return res
+
+    def __setitem__(self, name, value):
+        if name in self.schema and value != self.get(name):
+            get_settings().changed(self.name, (name,))
+
+        api.registry.storage[SETTINGS_ID][self.name][name] = value
 
 
 class FileStorage(object):
     """ Simple ConfigParser file storage """
 
-    def __init__(self, cfg, cfgdefaults='', here = '',
+    def __init__(self, settings, cfg, here = '',
                  section=ConfigParser.DEFAULTSECT, watcherFactory=None):
         self.cfg = cfg
-        self.cfgdefaults = cfgdefaults
         self.here = here
         self.section = section
         self.watcher = None
         self.watcherFactory = watcherFactory
+        self.settings = settings
 
     def _startWatcher(self, fn):
-        if self.watcher is None and self.watcherFactory is not None:
-            self.watcher = self.watcherFactory(Settings.load)
+        if self.settings and self.watcher is None and \
+                self.watcherFactory is not None:
+            self.watcher = self.watcherFactory(self.settings.load)
 
         if self.watcher is not None:
             self.watcher.start(fn)
+            shutdown.shutdown_handler(self.watcher.stop)
 
     def close(self):
         if self.watcher is not None:
@@ -374,34 +401,6 @@ class FileStorage(object):
             return {}
 
         return dict(parser.items(self.section, vars={'here': self.here}))
-
-    def loadDefaults(self):
-        if os.path.exists(self.cfgdefaults):
-            log.info("Loading default settings: %s"%self.cfgdefaults)
-            parser = ConfigParser.SafeConfigParser()
-            parser.read(self.cfgdefaults)
-            data = {}
-            if self.section == ConfigParser.DEFAULTSECT or \
-                    parser.has_section(self.section):
-                data.update(
-                    dict(parser.items(self.section, vars={'here': self.here})))
-
-            include = data.get('include', '')
-            for f in include.split('\n'):
-                f = f.strip()
-                if f and os.path.exists(f):
-                    parser = ConfigParser.SafeConfigParser()
-                    parser.read(f)
-                    if self.section == ConfigParser.DEFAULTSECT or \
-                            parser.has_section(self.section):
-                        data.update(
-                            dict(parser.items(
-                                    self.section, vars={'here': self.here})))
-            return data
-        elif not os.path.exists(self.cfgdefaults):
-            log.info("Default settings file is not found: %s"%self.cfgdefaults)
-
-        return {}
 
     def save(self, data):
         if not self.cfg:
@@ -430,9 +429,6 @@ class FileStorage(object):
         self._startWatcher(self.cfg)
 
 
-Settings = SettingsImpl()
-
-
 try:
     import pyinotify
 except ImportError: # pragma: no cover
@@ -452,23 +448,13 @@ class iNotifyWatcher(object):
 
     def _process_ev(self, ev):
         if ev.mask & pyinotify.IN_MODIFY:
-            if Settings.config is not None:
-                Settings.config.begin()
-
             self._handler()
-
-            if Settings.config is not None:
-                Settings.config.end()
 
     def start(self, filename): # pragma: no cover
         pass
 
     if pyinotify:
-
         def start(self, filename):
-            if Settings.config is None:
-                return
-
             if self.started:
                 if self.filename != filename: # pragma: no cover
                     self.stop()
@@ -484,9 +470,6 @@ class iNotifyWatcher(object):
             self.filename = filename
 
     def stop(self):
-        if Settings.config is None:
-            return
-
         if self.started:
             self.filename = ''
             self.started = False
@@ -496,26 +479,7 @@ class iNotifyWatcher(object):
 
 
 @shutdown.shutdown_handler
-def shutdown():
-    if Settings.loader is not None:
-        Settings.loader.close()
-
-
-@api.cleanup
-def cleanup():
-    if Settings.loader is not None:
-        Settings.loader.close()
-        Settings.loader = None
-
-    for name, group in Settings.items():
-        for node in group.schema.children:
-            node.default = node._origin_default
-            group.update({node.name: node.default})
-
-    Settings.clear()
-    Settings.schema.children[:] = []
-    Settings.config = None
-    Settings.initialized = False
-
-    if '_changed' in Settings.__dict__:
-        del Settings._changed
+def shutdown_handler():
+    settings = get_settings()
+    if settings.loader is not None:
+        settings.loader.close()

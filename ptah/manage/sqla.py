@@ -284,7 +284,7 @@ class EditRecord(form.Form):
         self.message('Table record has been modified.', 'success')
         raise HTTPFound(location='../')
 
-    @form.button('Remove', actype=form.AC_DANGER, 
+    @form.button('Remove', actype=form.AC_DANGER,
                  condition=lambda form: form.show_remove)
     def remove_handler(self):
         self.validate_csrf_token()
