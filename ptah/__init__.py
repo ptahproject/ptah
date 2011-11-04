@@ -116,6 +116,7 @@ def make_wsgi_app(global_settings, **settings):
             print e.print_tb()
 
         sys.exit(0)
+        return
 
     # create wsgi app
     return config.make_wsgi_app()

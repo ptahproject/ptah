@@ -27,8 +27,7 @@ class TemplatesView(view.View):
     """List templates"""
     view.pview(
         context = TemplatesModule,
-        template = view.template(
-            'ptah.manage:templates/customize.pt', nolayer=True))
+        template = view.template('ptah.manage:templates/customize.pt'))
 
     __intr_path__ = '/ptah-module/templates/index.html'
 
@@ -63,8 +62,7 @@ class ViewTemplate(view.View):
     """View template"""
     view.pview(
         'view.html', TemplatesModule,
-        template = view.template(
-            'ptah.manage:templates/template.pt', nolayer=True))
+        template = view.template('ptah.manage:templates/template.pt'))
 
     __intr_path__ = '/ptah-module/templates/view.html'
 
@@ -74,8 +72,8 @@ class ViewTemplate(view.View):
         reg = tmpl.registry
         request = self.request
 
-        self.hasWatcher = TEMPLATE._watcher is not None and \
-            TEMPLATE._watcher.started
+        self.hasWatcher = TEMPLATE._watcher is not None \
+                          and TEMPLATE._watcher.started
 
         items = tmpl.registry.items()
         items.sort()
@@ -148,8 +146,7 @@ class CustomTemplate(view.View):
     """List customized templates"""
     view.pview(
         'customized.html', TemplatesModule,
-        template = view.template(
-            'ptah.manage:templates/customized.pt', nolayer=True))
+        template = view.template('ptah.manage:templates/customized.pt'))
 
     __intr_path__ = '/ptah-module/templates/customized.html'
 
