@@ -73,6 +73,8 @@ Use github until `Ptah Project website <http://ptahproject.org/>`_ is online.
 
 Documentation can be found in ptah/docs directory.
 
+Over email, use ptahproject google groups, `Ptahproject Google Groups <http://groups.google.com/group/ptahproject/>`_
+
 On irc, use the freenode network and find us on channeld, #ptahproject and #pyramid.
 
 License
