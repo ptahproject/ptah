@@ -320,9 +320,12 @@ class Group(object):
             self.schema.add(node)
 
     def get(self, name, default=None):
-        data = api.registry.storage[SETTINGS_ID][self.name]
-        if name in data:
-            return data[name]
+        try:
+            data = api.registry.storage[SETTINGS_ID][self.name]
+            if name in data:
+                return data[name]
+        except (KeyError, AttributeError):
+            pass
 
         if name in self.schema:
             return self.schema[name].default

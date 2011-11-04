@@ -23,6 +23,20 @@ class BaseTesting(unittest.TestCase):
 
 class TestSettings(BaseTesting):
 
+    def test_settings_group_uninitialized(self):
+        node = config.SchemaNode(
+                colander.Str(),
+                name = 'node',
+                default = 'test')
+
+        group = config.register_settings(
+            'group1', node,
+            title = 'Section title',
+            description = 'Section description',
+            )
+
+        self.assertEqual(group.get('node'), 'test')
+
     def test_settings_register_errs(self):
         self.assertRaises(
             RuntimeError,
