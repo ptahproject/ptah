@@ -59,8 +59,7 @@ Use paster to create **your own application**.  The default username is **admin*
   
 Start application via Paster::
 
-  venv/myapp$ cd ..
-  venv$ bin/paster serve myapp/settings.ini --reload
+  venv/myapp$ ../bin/paster serve settings.ini --reload
 
 Login by opening your web browser to http://localhost:6543/ with credentials, login **admin** and password **12345**
 
