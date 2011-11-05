@@ -72,7 +72,10 @@ def main(global_config, **settings):
     links = {'sqlalchemy':'http://www.sqlalchemy.org/',
              'pyramid':'http://docs.pylonsproject.org/',
              'enfoldsystems':'http://www.enfoldsystems.com/',
-             'bootstrap':'http://twitter.github.com/bootstrap/'}
+             'bootstrap':'http://twitter.github.com/bootstrap/',
+             'chameleon':'http://chameleon.repoze.org/',
+             'sqlite':'http://www.sqlite.org/'}
+
              
     for name, url in links.items():
         if not Session.query(models.Link)\
