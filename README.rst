@@ -65,6 +65,27 @@ Login by opening your web browser to http://localhost:6543/ with credentials, lo
 
 You should read the source of myapp, after all it is your application.  A good place to start is myapp/__init__.py
 
+Another example
+---------------
+
+Ptah101 scaffold generates a simple application which has an example form, view, a model called Link.  Ptah101 is meant to get your feet wet.  There is a more sophiticated example in the Ptah301 scaffold.  If you have not written a Pyramid application and/or you are not familiar with traversal do not attempt to use Ptah301.  
+
+Let's uninstall the ptah101 egg, myapp::
+
+  venv$ bin/pip uninstall myapp
+
+Then create new application & install it using ptah301 scaffold::
+
+  venv$ bin/paster create -t ptah301 cmsapp
+  venv$ cd cmsapp
+  venv/cmsapp$ ../bin/python setup.py develop
+
+Start application via Paster::
+
+  venv/cmsapp$ ../bin/paster serve development.ini --reload
+
+Login by opening your web browser to http://localhost:6543/ with credentials, login **admin** and password **12345**
+
 Support and Documentation
 -------------------------
 

@@ -53,8 +53,8 @@ setup(name='ptah',
         'paste.app_factory': [
             'app = ptah:make_wsgi_app'],
         'paste.paster_create_template': [
-            'ptahdemo = ptah.scaffolds:StarterProjectTemplate',
             'ptah101 = ptah.scaffolds:Ptah101ProjectTemplate',
+            'ptah301 = ptah.scaffolds:Ptah301ProjectTemplate',
             ],
         'paste.global_paster_command': [
             'static = ptah.view.commands:StaticCommand',
