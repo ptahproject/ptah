@@ -5,12 +5,7 @@ from {{package}}.permissions import AddFolder
 
 class Folder(cms.Container):
     """
-    A Folder model which subclasses ptah.cms.Container_
-    
-    :Table: `ptah_cms_content`_
-        
-    .. _ptah_cms_content: /ptah-manage/sqla/psqla-ptah_cms_content/
-    .. _ptah.cms.Container: /ptah-manage/introspect/source.html?pkg=ptah.cms.container
+    A Folder model which subclasses ptah.cms.Container
     """
 
     __type__ = cms.Type(

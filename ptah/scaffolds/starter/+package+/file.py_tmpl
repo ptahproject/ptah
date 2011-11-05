@@ -10,22 +10,7 @@ from {{package}}.permissions import AddFile
 
 class File(cms.Content):
     """
-    A File model that subclasses ptah.cms.Content_
-    
-    :Table: `{{package}}_files`_
-      
-    :Attributes:
-    
-      `blobref`: URI referring to `ptah_cms_blobs` record.
-    
-    :Methods:
-    
-      * update: mapping of attributes and values to set on model
-    
-      * data: returns a mapping containing, mimetype, filename and file
-    
-    .. _{{package}}_files: /ptah-manage/sqla/psqla-{{package}}_files/
-    .. _ptah.cms.Content: /ptah-manage/introspect/source.html?pkg=ptah.cms.content
+    A File model that subclasses ptah.cms.Content
     """
 
     __tablename__ = '{{package}}_files'

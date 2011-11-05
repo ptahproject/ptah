@@ -8,15 +8,7 @@ from {{package}}.permissions import AddPage
 
 class Page(cms.Content):
     """
-    A Page model which subclasses ptah.cms.Content_
-    
-    :Table: `{{package}}_pages`_
-    
-    :Attributes:
-      `text`: attribute that contains the HTML contents of Page.
-    
-    .. _{{package}}_pages: /ptah-manage/sqla/psqla-{{package}}_pages/
-    .. _ptah.cms.Content: /ptah-manage/introspect/source.html?pkg=ptah.cms.content
+    A Page model which subclasses ptah.cms.Content
     """
 
     __tablename__ = '{{package}}_pages'
