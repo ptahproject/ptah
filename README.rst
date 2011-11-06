@@ -68,7 +68,7 @@ You should read the source of myapp, after all it is your application.  A good p
 Another example
 ---------------
 
-Ptah101 scaffold generates a simple application which has an example form, view, a model called Link.  Ptah101 is meant to get your feet wet.  There is a more sophiticated example in the Ptah301 scaffold.  If you have not written a Pyramid application and/or you are not familiar with traversal do not attempt to use Ptah301.  
+Ptah101 scaffold generates a simple application which has an example form, view, a model called Link.  Ptah101 is meant to get your feet wet.  There is a more sophisticated example in the Ptah301 scaffold.  If you have not written a Pyramid application and/or you are not familiar with traversal do not attempt to use Ptah301.  
 
 Let's uninstall the ptah101 egg, myapp::
 

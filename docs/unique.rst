@@ -96,7 +96,7 @@ it is flat.  We have 2 attributes we use for mapping on to heirarchies:
 ptah_cms_nodes.parent_uri and the ptah_cms_content.path columns.  The path
 attribute is how we efficiently do fast look ups.  Walking parent/children 
 relationships in a RDBMS is inefficient, say, compared to graph databases such
-as ZODB or Neo4J. RDBMS arent graphs.  The REST API is another example of this
+as ZODB or Neo4J. RDBMS aren't graphs.  The REST API is another example of this
 mantra.
 
 REST as First Class Citizen

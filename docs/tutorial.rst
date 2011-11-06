@@ -4,7 +4,7 @@ Ptah Walkthrough
 
 You should have virtualenv with ptah installed.  Let's create an add-on::
 
-  ~/venv/src$ ../bin/paster create -t ptahdemo mypkg
+  ~/venv/src$ ../bin/paster create -t ptah101 mypkg
   ~/venv/src$ cd mypkg
   ~/venv/src/mypkg$ ../../bin/python setup.py develop
 
