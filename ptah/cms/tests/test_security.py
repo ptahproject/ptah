@@ -51,7 +51,7 @@ class TestAction(Base):
 
     def test_cms_action_inherit(self):
         import ptah.cms
-        from ptah.cms.cms import build_class_actions
+        from ptah.cms.security import build_class_actions
 
         class Test(object):
             @ptah.cms.action(permission='perm')
@@ -70,7 +70,7 @@ class TestAction(Base):
 
     def test_cms_action_inherit2(self):
         import ptah.cms
-        from ptah.cms.cms import build_class_actions
+        from ptah.cms.security import build_class_actions
 
         class Test(object):
             @ptah.cms.action
@@ -99,7 +99,7 @@ class TestWrapper(Base):
 
     def test_cms_wrapper_not_found(self):
         import ptah.cms
-        from ptah.cms.cms import NodeWrapper
+        from ptah.cms.security import NodeWrapper
 
         class Test(object):
             @ptah.cms.action
@@ -112,7 +112,7 @@ class TestWrapper(Base):
 
     def test_cms_wrapper_forbidden(self):
         import ptah, ptah.cms
-        from ptah.cms.cms import NodeWrapper
+        from ptah.cms.security import NodeWrapper
 
         class Test(object):
             @ptah.cms.action(permission=ptah.NOT_ALLOWED)
@@ -126,7 +126,7 @@ class TestWrapper(Base):
 
     def test_cms_wrapper(self):
         import ptah, ptah.cms
-        from ptah.cms.cms import NodeWrapper
+        from ptah.cms.security import NodeWrapper
 
         class Test(object):
             @ptah.cms.action(permission=ptah.NO_PERMISSION_REQUIRED)
@@ -154,7 +154,7 @@ class TestCms(Base):
 
     def test_cms(self):
         import ptah
-        from ptah.cms.cms import wrap, NodeWrapper
+        from ptah.cms.security import wrap, NodeWrapper
 
         class Test(ptah.cms.Content):
             __uri_factory__ = ptah.UriFactory('test')
@@ -170,7 +170,7 @@ class TestCms(Base):
 
     def test_cms_2(self):
         import ptah
-        from ptah.cms.cms import wrap, NodeWrapper
+        from ptah.cms.security import wrap, NodeWrapper
 
         class Test(ptah.cms.Content):
             __uri_factory__ = ptah.UriFactory('test')

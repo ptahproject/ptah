@@ -107,9 +107,9 @@ class TestPtahInit(unittest.TestCase):
 
         sys.exit = exit
         ptah.ptah_init = ptah_init
-        
+
         app = ptah.make_wsgi_app({})
-        
+
         sys.exit = orig_exit
         ptah.ptah_init = orig_ptah_init
 

@@ -4,7 +4,7 @@ from ptah import config, view, form
 from pyramid.decorator import reify
 from pyramid.httpexceptions import HTTPFound
 
-from cms import wrap
+from security import wrap
 from content import Content
 from permissions import ModifyContent
 from interfaces import ContentNameSchema

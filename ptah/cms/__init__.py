@@ -1,7 +1,7 @@
 # ptah.cms api
 
 #
-from ptah.cms.cms import wrap, action
+from ptah.cms.security import wrap, action
 from ptah.cms.interfaces import Error, NotFound, Forbidden
 
 # base content classes

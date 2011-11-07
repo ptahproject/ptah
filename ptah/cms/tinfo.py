@@ -7,7 +7,7 @@ from zope import interface
 from node import Session
 from content import Content
 from container import Container
-from cms import build_class_actions
+from security import build_class_actions
 from events import ContentCreatedEvent
 from interfaces import Forbidden, ContentSchema, ITypeInformation
 

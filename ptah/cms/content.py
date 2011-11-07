@@ -8,10 +8,9 @@ from collections import OrderedDict
 
 import ptah
 from ptah.cms import events
-from ptah.cms.cms import action
 from ptah.cms.node import Node, Session, load_parents
-from ptah.cms.interfaces import Error
-from ptah.cms.interfaces import IContent
+from ptah.cms.interfaces import Error, IContent
+from ptah.cms.security import action
 from ptah.cms.permissions import View, DeleteContent, ModifyContent
 
 
