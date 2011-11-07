@@ -52,17 +52,17 @@ Optional. If you are using ptah.make_wsgi_app some extra features are available:
 
 This function returns a WSGIApp.
 
-I have 2 ways to do register?
+I have 2 ways to do registration?
 -----------------------------
 Yes.  But its easier to think about it this way.  Pyramid is a agnostic 
 web framework.  Ptah is a application/web framework with opinions. 
 Ptah registration revolve around services (uri resolvers, models and a
 type system).  These ptah registration's are application specific and
-have no such equivilent in Pyramid (nor should they).  
+have no such equivalent in Pyramid (nor should they).  
 
 Where is ptah.config used?
 --------------------------
-Everywhere.  But you never touch it.  There is always formal API that is defined and (will be( documented.  The internal implementation uses ptah.config implementation.
+Everywhere.  But you never touch it.  There is always formal API that is defined and will be documented.  The internal implementation uses ptah.config implementation.
 
 Some examples:
 
@@ -113,7 +113,7 @@ Currently ptah differs in Pyramid in the following ways.
   
     - config statements do not have context (but will in 1.4?)
     
-    - config statemetns talk about concrete services of *pyramid* ala
+    - config statements talk about concrete services of *pyramid* ala
       route, views, etc. not high-level application services such as
       model registration.
       
@@ -123,10 +123,10 @@ Currently ptah differs in Pyramid in the following ways.
 
 In ptah there is a 
 more formal 2 stage configuration, registration stage and apply stage.
-It loads all packages and can be introspected and then a applying
+It loads all packages and can be introspected and then applys
 the configuration to the environment.  Why?  An example:
 
-URI implementaiton is a dictionary which maps the uri scheme / key
+URI implementation is a dictionary which maps the uri scheme / key
 to resolver callable.  {'crowd+user':ptah.crowd.userProvider}.  If an
 add-on package defines an additional URI resolver, what will happen when
 we load the external package:
@@ -147,10 +147,10 @@ we load the external package:
     
     - Another possibility is unloading this configuration.  In future we may have a add-on ecosystem where you will want to "unload" registrations.  
     
-  - registeration/apply are runtime features of ptah.config and maybe in future there will be remove registrations.  
+  - registration/apply are runtime features of ptah.config and maybe in future there will be remove registrations.  
 
 More thoughts
 -------------
-Pyramid is explicit. ptah is sort-of implicit and has indirection.  For instance ptah needs to scan packages with the entry-point ptah.  Pyramid would need to expose this functionality for ptah to plugin its own higher-level registration calls (uri, type system, etc).
-Also Ptah/ptah reuse ptah.config in a lot of places.  The pattern
-of having an public API which advertises the functionality but internally uses the ptah.config implementation - is inspired from Pyramid.
+Pyramid is explicit. Ptah is sort-of implicit and has indirection.  For instance Ptah needs to scan packages with the entry-point ptah.  Pyramid would need to expose this functionality for Ptah to plugin its own higher-level registration calls (uri, type system, etc).
+Also Ptah/ptah reuses ptah.config in a lot of places.  The pattern
+of having a public API which advertises the functionality but internally uses the ptah.config implementation - is inspired from Pyramid.
