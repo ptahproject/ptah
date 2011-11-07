@@ -10,9 +10,6 @@ from {{package}}.permissions import Manager
 # Your custom application models
 from {{package}}.root import APP_FACTORY
 
-# Import your views
-from {{package}} import views
-
 # Import models
 from {{package}} import models
 

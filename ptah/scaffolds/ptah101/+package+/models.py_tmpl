@@ -1,6 +1,5 @@
 import sqlalchemy as sqla
 
-import ptah
 from ptah import cms
 
 class Link(cms.Node):
@@ -21,7 +20,6 @@ class Link(cms.Node):
     __type__ = cms.Type('link')
 
     # Query that return Links given a uri
-    _sql_get = ptah.QueryFreezer(
-        lambda: cms.Session.query(Link)\
-               .filter(Link.__uri__ == sqla.sql.bindparam('uri')))
+    _sql_get = cms.Session.query(Link)\
+               .filter(Link.__uri__ == sqla.sql.bindparam('uri'))
 
