@@ -85,6 +85,29 @@ class TestRestApi(RestBase):
         self._allow = False
         self.assertEqual(len(cmsApplications(request)), 0)
 
+    def test_rest_applications_default(self):
+        from ptah.cms.rest import cmsApplications
+
+        ApplicationRoot = self._make_app()
+
+        self._init_ptah()
+
+        request = self._makeRequest()
+
+        info = cmsApplications(request)
+        self.assertEqual(info, [])
+
+        factory = ptah.cms.ApplicationFactory(
+            ApplicationRoot, '/', 'root', 'Root App')
+
+        info = cmsApplications(request)
+        self.assertEqual(len(info), 1)
+        self.assertEqual(info[0]['__name__'], 'root')
+        self.assertEqual(info[0]['__mount__'], '')
+        self.assertEqual(
+            info[0]['__link__'],
+            'http://localhost:8080/content/%s/'%(info[0]['__uri__'],))
+
     def test_rest_types(self):
         from ptah.cms.rest import cmsTypes
 
@@ -105,9 +128,12 @@ class TestRestApi(RestBase):
         ApplicationRoot = self._make_app()
         self._init_ptah()
 
-        request = self._makeRequest()
+        request = DummyRequest(
+            subpath=('content:root',), environ=self._makeEnviron())
         self.assertRaises(ptah.cms.NotFound, cmsContent, request, 'root')
 
+        request = DummyRequest(
+            subpath=('content:test',), environ=self._makeEnviron())
         factory = ptah.cms.ApplicationFactory(
             ApplicationRoot, '/test', 'root', 'Root App')
         root = factory(request)
@@ -128,6 +154,35 @@ class TestRestApi(RestBase):
                           cmsContent, request, 'test', action='unknown')
 
         info = cmsContent(request, 'test', root.__uri__)
+        self.assertEqual(info['__uri__'], root.__uri__)
+
+    def test_rest_content_default(self):
+        from ptah.cms.rest import cmsContent
+        ApplicationRoot = self._make_app()
+        self._init_ptah()
+
+        request = DummyRequest(subpath=('content',),environ=self._makeEnviron())
+
+        factory = ptah.cms.ApplicationFactory(
+            ApplicationRoot, '/', 'root', 'Root App')
+        root = factory(request)
+        root.__uri__ = 'cms-app:test'
+        transaction.commit()
+
+        self._allow = False
+        self.assertRaises(ptah.cms.Forbidden, cmsContent, request)
+
+        self._allow = True
+
+        root = factory(request)
+
+        info = cmsContent(request)
+        self.assertEqual(info['__uri__'], root.__uri__)
+
+        self.assertRaises(ptah.cms.NotFound,
+                          cmsContent, request, action='unknown')
+
+        info = cmsContent(request, root.__uri__)
         self.assertEqual(info['__uri__'], root.__uri__)
 
 

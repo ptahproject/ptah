@@ -31,8 +31,12 @@ def cmsApplications(request, *args):
             continue
 
         info['__mount__'] = name
-        info['__link__'] = '%s/content:%s/%s/'%(
-            request.application_url, name, root.__uri__)
+        if name:
+            info['__link__'] = '%s/content:%s/%s/'%(
+                request.application_url, name, root.__uri__)
+        else:
+            info['__link__'] = '%s/content/%s/'%(
+                request.application_url, root.__uri__)
         apps.append(info)
 
     return apps
@@ -75,8 +79,13 @@ def typeInfo(tinfo, request):
 
 
 @CMS.action('content', 'CMS content')
-def cmsContent(request, app, uri=None, action='', *args):
+def cmsContent(request, app='', uri=None, action='', *args):
     info = {}
+
+    name = getattr(request, 'subpath', ('content',))[0]
+    if ':' not in name:
+        app = u''
+        uri = app
 
     appfactory = ptah.cms.get_app_factories().get(app)
     if appfactory is None:
@@ -97,8 +106,12 @@ def cmsContent(request, app, uri=None, action='', *args):
         IRestAction, name=action, default=None)
 
     if action:
-        request.environ['SCRIPT_NAME'] = '%s/content:%s/'%(
-            request.environ['SCRIPT_NAME'], app)
+        if app:
+            request.environ['SCRIPT_NAME'] = '%s/content:%s/'%(
+                request.environ['SCRIPT_NAME'], app)
+        else:
+            request.environ['SCRIPT_NAME'] = '%s/content/'%(
+                request.environ['SCRIPT_NAME'])
 
         ptah.check_permission(action.permission, content, request, True)
         res = action.callable(content, request, *args)
