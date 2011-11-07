@@ -1,4 +1,4 @@
-<table class="zebra-striped" tal:define="url request.application_url">
+<table class="zebra-striped">
   <tbody>
     <tr tal:repeat="action actions">
       <td tal:define="info getInfo(action);
@@ -7,7 +7,7 @@
 	  <tal:block condition="info['name']">name='${info['name']}'</tal:block>
 	</h4>
 	<small>
-	  <a href="${url}/ptah-manage/source.html?pkg=${context.__module__}#sl-${action.info.codeinfo[1]}">
+	  <a href="${manage_url}/source.html?pkg=${context.__module__}#sl-${action.info.codeinfo[1]}">
 	    ${context.__module__}.${context.__name__}</a>
 	</small>
 	<div>

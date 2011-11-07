@@ -199,6 +199,10 @@ class EditRecord(form.Form):
     def fields(self):
         return self.context.tinfo.fieldset
 
+    def update(self):
+        self.manage_url = ptah.PTAH_CONFIG.manage_url
+        super(EditRecord, self).update()
+
     def form_content(self):
         data = {}
         for field in self.fields.fields():
@@ -248,4 +252,5 @@ class TypeIntrospection(object):
             types = cms.get_types(),
             actions = actions,
             rst_to_html = ptah.rst_to_html,
+            manage_url = ptah.PTAH_CONFIG.manage_url,
             request = self.request)

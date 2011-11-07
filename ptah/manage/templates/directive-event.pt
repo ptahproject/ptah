@@ -1,10 +1,10 @@
-<table class="zebra-striped" tal:define="url request.application_url">
+<table class="zebra-striped">
   <tbody>
     <tr tal:repeat="action actions">
       <td tal:define="ev events[action.info.context]">
 	<h4>${ev.title} 
 	  <small>
-	    <a href="${url}/ptah-manage/source.html?pkg=${action.info.context.__module__}#sl-${action.info.codeinfo[1]}">
+	    <a href="${manage_url}/ptah-manage/source.html?pkg=${action.info.context.__module__}#sl-${action.info.codeinfo[1]}">
 	      ${ev.instance.__module__}.${ev.instance.__name__}</a>
 	  </small>
 	</h4>

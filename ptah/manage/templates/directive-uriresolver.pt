@@ -1,4 +1,4 @@
-<table class="zebra-striped" tal:define="url request.application_url">
+<table class="zebra-striped">
   <tbody>
     <tr tal:repeat="action actions">
       <td tal:define="s action.args[0];
@@ -8,7 +8,7 @@
 	    ${s}
 	  </small>
 	  <small>
-	    <a href="${url}/ptah-manage/source.html?pkg=${action.info.module.__name__}#sl-${action.info.codeinfo[1]}">
+	    <a href="${manage_url}/source.html?pkg=${action.info.module.__name__}#sl-${action.info.codeinfo[1]}">
 	      ${r.__name__}</a>
 	</small></h4>
       </td>

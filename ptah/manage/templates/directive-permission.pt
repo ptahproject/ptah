@@ -4,7 +4,7 @@
       <td tal:define="p action.args[0]">
 	<h4>${p.title} 
 	  <small>
-	    <a href="${url}/ptah-manage/source.html?pkg=${action.info.context.__name__}#sl-${action.info.codeinfo[1]}">
+	    <a href="${manage_url}/source.html?pkg=${action.info.context.__name__}#sl-${action.info.codeinfo[1]}">
 	      ${p}</a>
 	  </small>
 	</h4>

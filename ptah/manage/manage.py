@@ -1,3 +1,4 @@
+import urlparse
 from pyramid.security import authenticated_userid
 from pyramid.httpexceptions import HTTPFound, HTTPForbidden
 
@@ -25,7 +26,7 @@ class PtahModule(object):
 
     def url(self):
         """ return url to this module """
-        return '%s/'%self.name
+        return '%s/%s/'%(PTAH_CONFIG.manage_url, self.name)
 
     @property
     def __name__(self):
@@ -91,9 +92,6 @@ def get_access_manager():
 class PtahManageRoute(object):
     """ ptah management route """
 
-    __name__ = 'ptah-manage'
-    __parent__ = None
-
     def __init__(self, request):
         self.request = request
 
@@ -104,6 +102,8 @@ class PtahManageRoute(object):
         if not ACCESS_MANAGER(userid):
             raise HTTPForbidden()
 
+        self.manage_url = PTAH_CONFIG.manage_url
+
     def __getitem__(self, key):
         if key not in PTAH_CONFIG.disable_modules:
             mod = config.registry.storage[MANAGE_ID].get(key)
@@ -113,14 +113,6 @@ class PtahManageRoute(object):
 
         raise KeyError(key)
 
-
-view.register_route(
-    'ptah-manage-view','/ptah-manage',
-    PtahManageRoute, use_global_views=True)
-
-view.register_route(
-    'ptah-manage','/ptah-manage/*traverse',
-    PtahManageRoute, use_global_views=True)
 
 view.snippettype('ptah-module-actions', PtahModule)
 
@@ -138,6 +130,7 @@ class LayoutManage(view.Layout):
                 template=view.template("ptah.manage:templates/ptah-manage.pt"))
 
     def update(self):
+        self.manage_url = PTAH_CONFIG.manage_url
         self.user = authService.get_current_principal()
 
         mod = self.request.context
@@ -171,8 +164,3 @@ class ManageView(view.View):
 
         mods.sort()
         self.modules = [mod(context, request) for _t, mod in mods]
-
-
-@view.pview(context = PtahManageRoute, route = 'ptah-manage-view')
-def redirectToManage(request):
-    raise HTTPFound(location = '%s/'%request.url) # pragma: no cover

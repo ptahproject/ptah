@@ -77,6 +77,9 @@ from ptah.sqla import JsonListType
 from ptah.sqla import generate_fieldset
 from ptah.sqla import build_sqla_fieldset
 
+# manage
+from ptah import manage
+
 # cms
 from ptah import cms
 

@@ -6,7 +6,7 @@
   ${view.snippet('form-view', view)}
 </div>
 
-<div class="span4" tal:define="url '%s/ptah-manage/introspect/uri.html'%request.application_url">
+<div class="span4" tal:define="url '%s/introspect/uri.html'%view.manage_url">
   <table class="zebra-striped">
     <tbody tal:define="r context.record">
       <tr>

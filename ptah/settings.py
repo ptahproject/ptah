@@ -32,6 +32,12 @@ PTAH_CONFIG = config.register_settings(
         default = 'plain'),
 
     config.SchemaNode(
+        colander.Str(),
+        name = 'manage_url',
+        title = 'Ptah manage url',
+        default = '/ptah-manage'),
+
+    config.SchemaNode(
         config.Sequence(), colander.SchemaNode(colander.Str()),
         name = 'disable_modules',
         title = 'Hide Modules in Management UI',

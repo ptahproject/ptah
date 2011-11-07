@@ -9,10 +9,10 @@
     <tal:block content="structure view.render_includes()" />
   </head>
   <body>
-    <div class="topbar" tal:define="app_url request.application_url">
+    <div class="topbar">
       <div class="fill">
 	<div class="container">
-	  <h3><a href="${app_url}/ptah-manage/">Ptah Manage</a></h3>
+	  <h3><a href="${view.manage_url}/">Ptah Manage</a></h3>
 	  <tal:block 
 	     condition="view.module"
 	     content="structure 
@@ -21,13 +21,13 @@
 	  <ul class="nav secondary-nav">
 	    <li>
 	      <h5>
-		<a href="${app_url}">
+		<a href="${view.manage_url}/">
 		  ${unicode(view.user)}:
 		</a>
 	      </h5>
 	    </li>
 	    <li class="active">
-	      <a href="${app_url}/logout.html">Logout</a>
+	      <a href="${view.manage_url}/logout.html">Logout</a>
 	    </li>
 	  </ul>
 	</div>

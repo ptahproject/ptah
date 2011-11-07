@@ -62,7 +62,7 @@
           <p>The default login is <strong>admin</strong> and the 
              password is <strong>12345</strong>
           </p>
-          <p><a class="btn primary large" href="/ptah-manage">Goto Manange UI &raquo;</a></p>
+          <p><a class="btn primary large" href="/ptah-manage/">Goto Manange UI &raquo;</a></p>
         </div>
 
         <!-- Example row of columns -->
@@ -84,7 +84,7 @@
                 way you can store application settings on filesystem instead of
                 in a database where version control isnt practical.
             </p>
-            <p><a class="btn" href="/ptah-manage/settings">View settings &raquo;</a></p>
+            <p><a class="btn" href="/ptah-manage/settings/">View settings &raquo;</a></p>
          </div>
           <div class="span5">
             <h2>Users</h2>
@@ -93,7 +93,7 @@
                system is invoked in __init__.py of your application to create
                the default login/password for this application. 
             </p>
-            <p><a class="btn" href="/ptah-manage/crowd">View users &raquo;</a></p>
+            <p><a class="btn" href="/ptah-manage/crowd/">View users &raquo;</a></p>
           </div>
         </div>
 
@@ -110,7 +110,7 @@
                applied outside of Ptah.
             </p>
 
-            <p><a class="btn" href="/ptah-manage/sqla">View tables &raquo;</a></p>
+            <p><a class="btn" href="/ptah-manage/sqla/">View tables &raquo;</a></p>
           </div>
           <div class="span5">
             <h2>Fields</h2>
@@ -120,7 +120,7 @@
                 download additional Fields so you can share and re-use other
                 people's work.
              </p>
-            <p><a class="btn" href="/ptah-manage/fields">View fields &raquo;</a></p>
+            <p><a class="btn" href="/ptah-manage/fields/">View fields &raquo;</a></p>
          </div>
 
           <div class="span5">

@@ -54,7 +54,7 @@ class TestManageModule(Base):
         self.assertIsInstance(mod, TestModule)
         self.assertTrue(mod.available())
         self.assertEqual(mod.__name__, 'test-module')
-        self.assertEqual(mod.url(), 'test-module/')
+        self.assertEqual(mod.url(), '/ptah-manage/test-module/')
 
         self.assertRaises(KeyError, route.__getitem__, 'unknown')
 
