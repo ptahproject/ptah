@@ -43,14 +43,8 @@ def main(global_config, **settings):
 
     settings = config.registry.settings
 
-    # exclude
-    excludes = []
-    if 'ptah.excludes' in settings:
-        excludes.extend(s.strip()
-                        for s in settings['ptah.excludes'].split())
-
     # load packages
-    ptah.config.initialize(None, excludes, config.registry)
+    ptah.config.initialize(('{{package}}', 'ptah'), reg=config.registry)
     
     # load settings
     ptah.config.initialize_settings(settings, config)

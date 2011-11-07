@@ -35,7 +35,7 @@ class TestPtahInit(unittest.TestCase):
             (ptah.config.SettingsInitialized,))
 
         config.include('ptah')
-        config.ptah_init()
+        config.ptah_init(autoinclude=True)
 
         self.assertTrue(data[0])
         self.assertTrue(data[1])
@@ -83,7 +83,7 @@ class TestPtahInit(unittest.TestCase):
         config.include('ptah')
 
         try:
-            config.ptah_init()
+            config.ptah_init(autoinclude=True)
         except Exception, err:
             pass
 
@@ -102,7 +102,7 @@ class TestPtahInit(unittest.TestCase):
         def exit(status):
             data[0] = True
 
-        def ptah_init(config):
+        def ptah_init(config, packages=None, autoinclude=False):
             raise ptah.config.StopException('')
 
         sys.exit = exit

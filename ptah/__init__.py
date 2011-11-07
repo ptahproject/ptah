@@ -112,8 +112,10 @@ def make_wsgi_app(global_settings, **settings):
     config = Configurator(settings=global_settings)
 
     # initialization
+    packages = settings.get('packages', None)
+    autoinclude = settings.get('autoinclude', True)
     try:
-        ptah_init(config)
+        ptah_init(config, packages, autoinclude)
     except Exception, e:
         if isinstance(e, ptah.config.StopException):
             print e.print_tb()
@@ -126,7 +128,7 @@ def make_wsgi_app(global_settings, **settings):
 
 
 # initialize ptah
-def ptah_init(configurator):
+def ptah_init(configurator, packages=None, autoinclude=False):
     """ Initialize ptah packages.
     Load all ptah packages and intialize ptah settings system.
 
@@ -148,7 +150,8 @@ def ptah_init(configurator):
                             for s in settings['ptah.excludes'].split())
 
         # load packages
-        ptah.config.initialize(None, excludes, configurator.registry)
+        ptah.config.initialize(
+            packages, excludes, configurator.registry, autoinclude)
 
         # load settings
         ptah.config.initialize_settings(settings, configurator)

@@ -31,7 +31,7 @@ nameDescriptionWrap = textwrap.TextWrapper(
 
 def settingsCommand(init=True):
     if init: # pragma: no cover
-        config.initialize()
+        config.initialize(autoinclude=True)
 
     args = SettingsCommand.parser.parse_args()
     cmd = SettingsCommand(args)
