@@ -68,7 +68,7 @@ class Config(object):
         registry.storage[SETTINGS_ID] = defaultdict(lambda: dict())
 
 
-def initialize(packages=None, excludes=(), reg=None):
+def initialize(packages=None, excludes=(), reg=None, autoinclude=False):
     """ Load ptah packages, scan and execute all configuration
     directives. """
 
@@ -85,11 +85,14 @@ def initialize(packages=None, excludes=(), reg=None):
         return exclude(modname, excludes)
 
     # list all packages
-    if packages is None:
-        packages = list_packages(excludes=excludes)
-        packages.extend([mod for mod in mods if exclude_filter(mod)])
-    else:
-        packages = list_packages(packages, excludes=excludes)
+    if autoinclude:
+        if packages is None:
+            packages = list_packages(excludes=excludes)
+            packages.extend([mod for mod in mods if exclude_filter(mod)])
+        else:
+            packages = list_packages(packages, excludes=excludes)
+    elif packages is None:
+        packages = ()
 
     # scan packages and load actions
     seen = set()

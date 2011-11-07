@@ -60,7 +60,7 @@ class TemplatesCommand(Command):
 
     def command(self):
         # load all ptah packages
-        config.initialize()
+        config.initialize(autoinclude=True)
 
         if self.options.filename:
             self.print_template(self.options.filename)
@@ -222,7 +222,7 @@ class StaticCommand(Command):
 
     def command(self):
         # load all ptah packages
-        config.initialize(self._include)
+        config.initialize(self._include, autoinclude=True)
         registry = config.registry.storage[resources.STATIC_ID]
 
         if self.options.dump:

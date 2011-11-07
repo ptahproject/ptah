@@ -36,7 +36,7 @@ def main(global_config, **settings):
                         for s in settings['ptah.excludes'].split())
 
     # load packages
-    ptah.config.initialize(None, excludes, config.registry)
+    ptah.config.initialize(('{{package}}', 'ptah'), excludes, config.registry)
     
     # load settings
     ptah.config.initialize_settings(settings, config)
