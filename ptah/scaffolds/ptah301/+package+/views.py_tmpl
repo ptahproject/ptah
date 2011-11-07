@@ -4,7 +4,7 @@ from ptah import view, form, cms
 from pyramid.httpexceptions import HTTPFound, HTTPNotFound
 
 from {{package}} import settings
-from {{package}}.root import ApplicationRoot
+from {{package}}.app import ApplicationRoot
 
 view.static('{{project}}', '{{project}}:static')
 

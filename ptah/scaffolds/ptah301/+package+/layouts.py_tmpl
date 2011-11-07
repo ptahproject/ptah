@@ -1,7 +1,7 @@
 import ptah
 from ptah import view, cms, manage, authService
 
-from {{package}}.root import ApplicationRoot
+from {{package}}.app import ApplicationRoot
 
 ptah.cms.uiaction(cms.Content, 'layout-preview', 'Layout preview',
                   description='view parameter is any registered view name for object',
