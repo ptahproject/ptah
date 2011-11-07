@@ -1,21 +1,14 @@
 from pyramid.httpexceptions import HTTPFound
-from ptah import view, form, cms
+from pyramid.security import authenticated_userid
 
-from {{package}}.root import ApplicationRoot
+from ptah import view, form, cms, resolve
+
+from {{package}}.app import ApplicationRoot
 from {{package}}.models import Link
 
 # register static asset directory
 
 view.static('{{package}}', '{{package}}:static')
-
-
-# register layout its identifier is 'template' and it would be used
-# on a model called ApplicationRoot.  You can use template inheritance
-# instead of using Ptah's layout machinery.
-
-view.register_layout(
-    'template', ApplicationRoot, 
-    template = view.template("{{package}}:templates/template.pt"))
 
 class Telephone(form.Regex):
     """ An example validator.  See ptah.form.validators for more info."""
@@ -27,7 +20,7 @@ class Telephone(form.Regex):
 
 
 # This is a "class view", you do not need to use a class for your 
-# view.  You can use a Function view
+# view. You can use a Function view as provided below.
 
 class HomepageView(view.View):
     """ Homepage view """
@@ -36,13 +29,19 @@ class HomepageView(view.View):
                template=view.template('templates/homepage.pt'))
 
     def get_links(self):
-        return cms.Session.query(Link).all()
+        return cms.Session.query(Link)
 
+    def update(self):
+        """ update is called before template applied for ptah.view.View """
+        self.principal = authenticated_userid(self.request)
+        self.user = resolve(self.principal)
 
 # This is a "function view", you do not need to use a function for your 
-# view.  You can use a Class view.
+# view.  You can use a Class view as provided above.
 
-@view.pview('contact-us.html', context=ApplicationRoot)
+@view.pview('contact-us.html', context=ApplicationRoot,
+            template=view.template('templates/template.pt'))
+
 def contact_us(context, request):
 
     contactform = form.Form(context, request)
@@ -107,14 +106,27 @@ def contact_us(context, request):
     contactform.update()
 
     # render form into HTML
-    res = contactform.render()
+    rendered_form = contactform.render()
 
-    # optional, render form in layout
-    layout = view.LayoutRenderer('template')
-    
+    # render messages
+    rendered_messages = view.render_messages(request)
+
     # Left hand box requires links; this is downside of using
     # of using functions for views.. but here we go
-    links = cms.Session.query(Link).all()
-    request['links'] = links
+    links = cms.Session.query(Link)
     
-    return layout(context, request, res)
+    #include library dependencies
+    view.include('bootstrap', request)
+    
+    rendered_includes = view.render_includes(request)
+    
+    principal = authenticated_userid(request)
+    user = resolve(principal)
+        
+    return {'links':links,
+             'rendered_form':rendered_form,
+             'rendered_messages':rendered_messages,
+             'rendered_includes':rendered_includes,
+             'static_url':view.static_url('{{package}}', '', request),
+             'user':user,
+             'request':request}          

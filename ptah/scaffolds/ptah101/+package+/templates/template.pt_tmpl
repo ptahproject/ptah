@@ -6,20 +6,18 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <!-- require bootstrap and bootstrap js support.
-         render_includes actually generates the HTML of the includes
+    <!-- require bootstrap support from view function
+         render_includes generates the HTML for includes
     -->
 
-    ${view.include('bootstrap')}
-    ${view.include('bootstrap-js')}
-    <tal:block content="structure view.render_includes()" />
-    <link type="text/css" rel="stylesheet" href="${view.static_url('{{package}}', 'app.css')}" />
+    <tal:block content="structure rendered_includes" />
+    <link type="text/css" rel="stylesheet" href="${'%s/app.css' % static_url}" />
 
     <!-- Le fav and touch icons -->
-    <link rel="shortcut icon" href="${view.static_url('{{package}}', 'ico/favicon.ico')}">
-    <link rel="apple-touch-icon" href="${view.static_url('{{package}}', 'ico/apple-touch-icon.png')}">
-    <link rel="apple-touch-icon" sizes="72x72" href="${view.static_url('{{package}}', 'ico/apple-touch-icon-72x72.png')}">
-    <link rel="apple-touch-icon" sizes="114x114" href="${view.static_url('{{package}}', 'ico/apple-touch-icon-114x114.png')}">
+    <link rel="shortcut icon" href="${'%s/ico/favicon.ico' % static_url}" />
+    <link rel="apple-touch-icon" href="${'%s/ico/apple-touch-icon.png' % static_url}" />
+    <link rel="apple-touch-icon" sizes="72x72" href="${'%s/ico/apple-touch-icon-72x72.png' % static_url}" />       
+    <link rel="apple-touch-icon" sizes="114x114" href="${'%s/ico/apple-touch-icon-114x114.png' % static_url}" />
 
   </head>
 
@@ -33,7 +31,7 @@
             <li class="active"><a href="/">Home</a></li>
             <li><a href="/contact-us.html">Contact</a></li>
           </ul>
-          <p class="pull-right">Logged in as <a href="#">username</a></p>
+          <p class="pull-right" tal:condition="user is not None">Logged in as <a href="#">${user.name}</a></p>
         </div>
       </div>
     </div>
@@ -43,7 +41,7 @@
         <div class="well">
           <h5>Links</h5>
           <ul>
-            <li tal:repeat="link request.links|view.get_links()">
+            <li tal:repeat="link links">
               <a href="${link.href}">${link.title}</a>
             </li>
           </ul>
@@ -51,9 +49,9 @@
       </div>
             
       <div class="content">
-        ${view.render_messages()}
+        ${rendered_messages}
 
-        ${content}
+        ${rendered_form}
       </div>
 
       <footer>

@@ -34,7 +34,7 @@
             <li class="active"><a href="#">Home</a></li>
             <li><a href="/contact-us.html">Contact</a></li>
           </ul>
-          <p class="pull-right">Logged in as <a href="#">username</a></p>
+          <p class="pull-right" tal:condition="view.user is not None">Logged in as <a href="#">${view.user.name}</a></p>
         </div>
       </div>
     </div>
