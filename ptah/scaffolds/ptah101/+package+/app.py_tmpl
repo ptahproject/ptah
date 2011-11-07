@@ -10,9 +10,6 @@ from {{package}}.permissions import Manager
 # Import models
 from {{package}} import models
 
-import ptah.cms
-
-
 class ApplicationRoot(ptah.cms.ApplicationRoot):
     """
     ApplicationRoot is a Container which has a record in database. 
