@@ -77,10 +77,6 @@ def main(global_config, **settings):
 
     # enable ptah-manage
     config.add_route(
-        'ptah-manage-view','/ptah-manage',
-        factory=ptah.manage.PtahManageRoute, use_global_views=True)
-
-    config.add_route(
         'ptah-manage','/ptah-manage/*traverse',
         factory=ptah.manage.PtahManageRoute, use_global_views=True)
 
