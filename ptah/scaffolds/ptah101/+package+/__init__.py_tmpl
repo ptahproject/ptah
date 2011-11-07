@@ -86,6 +86,6 @@ def main(global_config, **settings):
     # enable ptah-manage
     config.add_route(
         'ptah-manage','/ptah-manage/*traverse',
-        ptah.manage.PtahManageRoute, use_global_views=True)
+        factory=ptah.manage.PtahManageRoute, use_global_views=True)
 
     return config.make_wsgi_app()

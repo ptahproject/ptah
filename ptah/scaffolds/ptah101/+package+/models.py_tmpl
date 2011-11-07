@@ -18,8 +18,3 @@ class Link(cms.Node):
     
     # Declare it as a Ptah Model
     __type__ = cms.Type('link')
-
-    # Query that return Links given a uri
-    _sql_get = cms.Session.query(Link)\
-               .filter(Link.__uri__ == sqla.sql.bindparam('uri'))
-
