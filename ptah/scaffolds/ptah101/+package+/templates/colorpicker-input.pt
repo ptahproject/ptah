@@ -13,7 +13,7 @@ ${view.include('colorpicker')}
             return false;
         },
         onChange: function (hsb, hex, rgb) {
-            $('#colorSelector div').css('backgroundColor', '#' + hex);
+            $('#colorSelector div').css('backgroundColor', '#'+hex);
             $('#${context.id}').val('#'+hex);
         }
     });
@@ -37,5 +37,5 @@ ${view.include('colorpicker')}
                        maxlength context.maxlength" />
 
 <div class="input" id="colorSelector">
-    <div style="background-color: ${context.value or '#0000FF'}"></div>
+    <div style="background-color: ${context.value}"></div>
 </div>
