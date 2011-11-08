@@ -41,7 +41,7 @@ def main(global_config, **settings):
     settings = config.registry.settings
 
     # load packages
-    ptah.config.initialize(('{{package}}', 'ptah'), reg=config.registry)
+    ptah.config.initialize(('{{package}}', 'ptah'), registry=config.registry)
     
     # load settings
     ptah.config.initialize_settings(settings, config)

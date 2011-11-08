@@ -15,7 +15,7 @@ class BaseTesting(unittest.TestCase):
     def _init_ptah(self, settings={}, *args, **kw):
         config.initialize(
             ('ptah.config', self.__class__.__module__),
-            reg = Components('test'))
+            registry = Components('test'))
 
     def tearDown(self):
         config.cleanup_system(self.__class__.__module__)

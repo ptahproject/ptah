@@ -28,7 +28,7 @@ class Base(unittest.TestCase):
 
     def _init_ptah(self, settings={}, handler=None, *args, **kw):
         config.initialize(('ptah', self.__class__.__module__),
-                          reg = Components('test'))
+                          registry = Components('test'))
         config.initialize_settings(settings, self.p_config)
         config.start(self.p_config)
 

@@ -36,7 +36,7 @@ class Base(unittest.TestCase):
         if settings is None:
             settings = self._settings
         config.initialize(('ptah', self.__class__.__module__),
-                          reg = self.p_config.registry)
+                          registry = self.p_config.registry)
         config.initialize_settings(settings, self.p_config)
 
         # create sql tables

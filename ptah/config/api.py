@@ -68,16 +68,16 @@ class Config(object):
         registry.storage[SETTINGS_ID] = defaultdict(lambda: dict())
 
 
-def initialize(packages=None, excludes=(), reg=None, autoinclude=False):
+def initialize(packages=None, excludes=(), registry=None, autoinclude=False):
     """ Load ptah packages, scan and execute all configuration
     directives. """
 
-    if reg is None:
-        reg = Components('ptah')
-        reg.registerHandler(objectEventNotify, (IObjectEvent,))
+    if registry is None:
+        registry = Components('ptah')
+        registry.registerHandler(objectEventNotify, (IObjectEvent,))
 
-    sys.modules['ptah.config'].registry = reg
-    sys.modules['ptah.config.api'].registry = reg
+    sys.modules['ptah.config'].registry = registry
+    sys.modules['ptah.config.api'].registry = registry
 
     def exclude_filter(modname):
         if modname in packages:
