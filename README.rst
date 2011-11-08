@@ -65,16 +65,12 @@ Login by opening your web browser to http://localhost:6543/ with credentials, lo
 
 You should read the source of myapp, after all it is your application.  A good place to start is myapp/__init__.py
 
-Another example
----------------
+Sophisticated App
+-----------------
 
 Ptah101 scaffold generates a simple application which has an example form, view, a model called Link.  Ptah101 is meant to get your feet wet.  There is a more sophisticated example in the Ptah301 scaffold.  If you have not written a Pyramid application and/or you are not familiar with traversal do not attempt to use Ptah301.  
 
-Let's uninstall the ptah101 egg, myapp::
-
-  venv$ bin/pip uninstall myapp
-
-Then create new application & install it using ptah301 scaffold::
+Let's create a new application & install it using ptah301 scaffold::
 
   venv$ bin/paster create -t ptah301 cmsapp
   venv$ cd cmsapp
@@ -89,13 +85,20 @@ Login by opening your web browser to http://localhost:6543/ with credentials, lo
 Support and Documentation
 -------------------------
 
-Use github until `Ptah Project website <http://ptahproject.org/>`_ is online.
+Use github until website is online.
 
 Documentation can be found in ptah/docs directory.
 
-Over email, use ptahproject google groups, `Ptahproject Google Groups <http://groups.google.com/group/ptahproject/>`_
+Ptahproject google groups/mailing list, `Ptahproject Google Groups <http://groups.google.com/group/ptahproject/>`_
 
-On irc, use the freenode network and find us on channeld, #ptahproject and #pyramid.
+On irc, use the freenode network and find us on channels, #ptahproject and #pyramid.
+
+Report bugs at `Ptahproject @ Github <https://github.com/ptahproject/ptah/issues>`_
+
+Known Issues
+------------
+
+On some versions of Ubuntu you may get Python exiting stating it has "Aborted." There is a bug in ctypes importing endian module.
 
 License
 -------
