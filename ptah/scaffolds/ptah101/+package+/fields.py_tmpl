@@ -1,0 +1,32 @@
+from ptah import form
+from ptah import view
+
+# register colorpicker assets
+view.static('colorpicker', '{{package}}:static/colorpicker')
+
+# register colorpicker assets as library
+view.library(
+    'colorpicker-js',
+    path=('js/colorpicker.js', 'js/eye.js', 'js/utils.js'),
+    type="js",
+    resource="colorpicker",
+    require="jquery")
+
+view.library(
+    'colorpicker-css',
+    path=('css/colorpicker.css', 'css/layout.css'),
+    resource="colorpicker",
+    type='css')
+
+class ColorPickerField(form.fields.InputField):
+    __doc__ = u'Colorpicker input widget'
+
+    form.field('colorpicker')
+
+    klass = u'colorpicker-widget'
+    value = u''
+
+    tmpl_input = view.template(
+        "templates/colorpicker-input.pt")
+    tmpl_display = view.template(
+        "templates/colorpicker-display.pt")
