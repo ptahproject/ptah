@@ -89,11 +89,11 @@ def contact_us(context, request):
         form.context.email = data['email']
         form.context.subject = data['subject']
 
+        form.message('Form has been updated.', 'info')
+        
         # Form succeeded; want to send email?  put data in database?
-        # you would add that logic here.
-
-        form.message('Content has been updated.', 'info')
-        raise HTTPFound(location='.')
+        # you would add that logic here and probably redirect somewhere.
+        # raise HTTPFound(location='.')
 
     contactform.buttons.add_action('Update', action=updateAction)
     contactform.buttons.add_action('Cancel', action=cancelAction)
