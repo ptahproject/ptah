@@ -35,7 +35,7 @@ def library(name,
             library_impl,
             (name, path, resource, type,
              require, prefix, postfix, extra),
-            discriminator = (LIBRARY_ID, name, path, resource))
+            discriminator = (LIBRARY_ID, name, tuple(path), resource))
         )
 
 
