@@ -1,4 +1,4 @@
-<ul>
-  <li><a href="${request.application_url}/ptah-manage/${context.url()}">${context.title}</a></li>
-  <li tal:condition="view.hasWatcher"><a href="${request.application_url}/ptah-manage/templates/customized.html">Customized templates</a></li>
+<ul tal:define="url context.url()">
+  <li><a href="${url}/">${context.title}</a></li>
+  <li tal:condition="view.hasWatcher"><a href="${url}/customized.html">Customized templates</a></li>
 </ul>

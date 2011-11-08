@@ -1,4 +1,4 @@
-<ul tal:define="url '%s/ptah-manage/permissions'%request.application_url">
+<ul tal:define="url context.url()">
   <li><a href="${url}/roles.html">Roles</a></li>
   <li><a href="${url}/">Permissions</a></li>
 </ul>

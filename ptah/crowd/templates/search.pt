@@ -1,5 +1,5 @@
 <tal:block tal:condition="view.users" 
-	   tal:define="url '%s/ptah-manage/crowd'%request.application_url">
+	   tal:define="url context.url()">
   <div class="page-header">
     <h2>Users</h2>
   </div>

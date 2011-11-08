@@ -26,7 +26,7 @@ class PtahModule(object):
 
     def url(self):
         """ return url to this module """
-        return '%s/%s/'%(PTAH_CONFIG.manage_url, self.name)
+        return '%s/%s'%(PTAH_CONFIG.manage_url, self.name)
 
     @property
     def __name__(self):

@@ -19,6 +19,7 @@ class LayoutPage(view.Layout):
         self.root = getattr(self.request, 'root', None)
         self.user = authService.get_current_principal()
         self.isanon = self.user is None
+        self.manage_url = PTAH_CONFIG.manage_url
         self.ptahmanager = get_access_manager()(authService.get_userid())
 
 

@@ -1,4 +1,4 @@
-<ul tal:define="url '%s/ptah-manage/introspect'%request.application_url">
+<ul tal:define="url context.url()">
   <li><a href="${url}/">${context.title}</a></li>
   <li><a href="${url}/routes.html">Routes</a></li>
   <li><a href="${url}/events.html">Events</a></li>

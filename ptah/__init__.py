@@ -50,7 +50,8 @@ from ptah.password import passwordTool
 from ptah.password import password_changer
 
 # rest api
-from ptah.rest import restService
+from ptah.rest import RestService
+from ptah.rest import enable_rest_api
 
 # events
 from ptah import events

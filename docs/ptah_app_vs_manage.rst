@@ -7,7 +7,7 @@ Overview
 By following the instructions you will end up with ptah (the library) and
 scaffolding which will have generated your application.  If you goto /
 you will see your application which was created by scaffolding.  If you
-goto /ptah-manage you will see Ptah Manage.
+goto /ptah-manage/ you will see Ptah Manage.
 
 Ptah Manage
 -----------

@@ -3,7 +3,7 @@
 </div>
 
 <div class="row" tal:repeat="data view.tables"
-     tal:define="url '%s/ptah-manage/sqla'%request.application_url">
+     tal:define="url context.url()">
   <div class="span16 column">
     <h3>${data[0]}</h3>
     <table class="zebra-striped">

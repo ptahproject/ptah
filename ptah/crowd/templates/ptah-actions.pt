@@ -1,4 +1,4 @@
-<ul tal:define="url '%s/ptah-manage/crowd'%request.application_url">
+<ul tal:define="url context.url()">
   <li><a href="${url}/">${context.title}</a></li>
   <li><a href="${url}/">Search</a></li>
   <li><a href="${url}/create.html">Create user</a></li>
