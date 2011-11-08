@@ -6,14 +6,14 @@ view.static('colorpicker', '{{package}}:static/colorpicker')
 
 # register colorpicker assets as library
 view.library(
-    'colorpicker-js',
+    'colorpicker',
     path=('js/colorpicker.js', 'js/eye.js', 'js/utils.js'),
     type="js",
     resource="colorpicker",
     require="jquery")
 
 view.library(
-    'colorpicker-css',
+    'colorpicker',
     path=('css/colorpicker.css', 'css/layout.css'),
     resource="colorpicker",
     type='css')
@@ -30,3 +30,14 @@ class ColorPickerField(form.fields.InputField):
         "templates/colorpicker-input.pt")
     tmpl_display = view.template(
         "templates/colorpicker-display.pt")
+
+@form.fieldpreview(ColorPickerField)
+def colorpickerPreview(request):
+    field = ColorPickerField(
+        'ColorPickerField',
+        title = 'Colorpicker example',
+        description = 'jquery plugin from eyecon.ro')
+
+    widget = field.bind('preview.', '#0000ff', {})
+    widget.update(request)
+    return widget.snippet('form-widget', widget)

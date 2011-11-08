@@ -1,5 +1,4 @@
-${view.include('colorpicker-js')}
-${view.include('colorpicker-css')}
+${view.include('colorpicker')}
 
 <script>
   $(function() {
