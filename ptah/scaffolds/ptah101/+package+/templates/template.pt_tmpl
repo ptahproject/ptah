@@ -42,7 +42,7 @@
           <h5>Links</h5>
           <ul>
             <li tal:repeat="link links">
-              <a href="${link.href}">${link.title}</a>
+              <a style="color:${link.color};" href="${link.href}">${link.title}</a>
             </li>
           </ul>
         </div>

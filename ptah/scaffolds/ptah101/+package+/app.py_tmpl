@@ -77,13 +77,13 @@ def main(global_config, **settings):
              'bootstrap':'http://twitter.github.com/bootstrap/',
              'chameleon':'http://chameleon.repoze.org/',
              'sqlite':'http://www.sqlite.org/'}
-
              
     for name, url in links.items():
         if not Session.query(models.Link)\
                .filter(models.Link.href == url).all():
             link = models.Link(title=name,
-                               href=url)
+                               href=url,
+                               color='#0000ff')
             Session.add(link)
 
     import transaction; transaction.commit()

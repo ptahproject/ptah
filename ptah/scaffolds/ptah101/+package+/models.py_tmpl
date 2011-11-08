@@ -15,6 +15,7 @@ class Link(cms.Node):
     # Your custom fields
     title = sqla.Column(sqla.Unicode)
     href = sqla.Column(sqla.Unicode)
+    color = sqla.Column(sqla.Unicode, info={'field_type':'colorpicker'})
     
     # Declare it as a Ptah Model
     __type__ = cms.Type('link')
