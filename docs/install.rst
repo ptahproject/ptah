@@ -59,7 +59,7 @@ Management UI
 
 In your browser (after logging in)::
 
-  Goto URL, http://localhost:8080/ptah-manage
+  Goto URL, http://localhost:8080/ptah-manage/
   The `ptah management` UI provide introspection services.  The goal
   is to have a WEB interface for your installation.  We hope for you
   to be able to see latest module updates and do some other fancy
