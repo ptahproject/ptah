@@ -35,8 +35,8 @@ class ColorPickerField(form.fields.InputField):
 def colorpickerPreview(request):
     field = ColorPickerField(
         'ColorPickerField',
-        title = 'Colorpicker example',
-        description = 'jquery plugin from eyecon.ro')
+        title = 'Colorpicker field',
+        description = 'Colorpicker field preview description')
 
     widget = field.bind('preview.', '#0000ff', {})
     widget.update(request)
