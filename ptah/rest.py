@@ -17,7 +17,7 @@ from ptah.settings import SECURITY
 
 REST_ID = 'ptah:rest-service'
 
-def restService(name, title, description=''):
+def RestService(name, title, description=''):
     srv = Service(name, title, description)
 
     apidoc = ServiceAPIDoc(name)
@@ -101,11 +101,18 @@ class ServiceAPIDoc(object):
         return info
 
 
-view.register_route(
-    'ptah-rest-login', '/__rest__/login')
+class RestLoginRoute(object):
+    """ rest login route """
 
-view.register_route(
-    'ptah-rest', '/__rest__/{service}/*subpath', use_global_views=True)
+    def __init__(self, request):
+        self.request = request
+
+
+class RestApiRoute(object):
+    """ rest api route """
+
+    def __init__(self, request):
+        self.request = request
 
 
 def dthandler(obj):
@@ -113,7 +120,7 @@ def dthandler(obj):
 
 
 class Login(object):
-    view.pview(route='ptah-rest-login')
+    view.pview(context = RestLoginRoute)
 
     def __init__(self, request):
         self.request = request
@@ -154,7 +161,7 @@ class Login(object):
 
 
 class Api(object):
-    view.pview(route='ptah-rest')
+    view.pview(context = RestApiRoute)
 
     def __init__(self, request):
         self.request = request
@@ -210,3 +217,16 @@ class Api(object):
             return result
 
         return '%s\n\n'%dumps(result, indent=True, default=dthandler)
+
+
+def enable_rest_api(config):
+    """ Register /__rest__/login and /__rest__/{service}/*subpath
+    routes """
+
+    config.add_route(
+        'ptah-rest-login', '/__rest__/login',
+        factory = RestLoginRoute, use_global_views=True)
+
+    config.add_route(
+        'ptah-rest', '/__rest__/{service}/*subpath',
+        factory = RestApiRoute, use_global_views=True)

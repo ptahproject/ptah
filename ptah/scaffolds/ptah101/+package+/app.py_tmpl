@@ -88,6 +88,9 @@ def main(global_config, **settings):
 
     import transaction; transaction.commit()
 
+    # enable rest api
+    ptah.enable_rest_api(config)
+
     # enable ptah-manage
     config.add_route(
         'ptah-manage','/ptah-manage/*traverse',

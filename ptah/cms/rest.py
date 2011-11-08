@@ -15,7 +15,7 @@ from interfaces import INode, IBlob, IContent, IContainer
 from permissions import View, ModifyContent, DeleteContent
 
 
-CMS = ptah.restService('cms', 'Ptah CMS API')
+CMS = ptah.RestService('cms', 'Ptah CMS API')
 
 
 @CMS.action('applications', 'List applications')

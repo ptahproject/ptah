@@ -17,7 +17,7 @@ class TestRestRegistrations(Base):
     def test_rest_registerService(self):
         import ptah.rest
 
-        srv = ptah.rest.restService('test', 'Test service')
+        srv = ptah.rest.RestService('test', 'Test service')
         self._init_ptah()
 
         services = config.registry.storage[ptah.rest.REST_ID]
@@ -29,15 +29,15 @@ class TestRestRegistrations(Base):
     def test_rest_registerService_conflicts(self):
         import ptah.rest
 
-        ptah.rest.restService('test', 'Test service')
-        ptah.rest.restService('test', 'Test service2')
+        ptah.rest.RestService('test', 'Test service')
+        ptah.rest.RestService('test', 'Test service2')
 
         self.assertRaises(config.ConflictError, self._init_ptah)
 
     def test_rest_registerService_action(self):
         import ptah.rest
 
-        srv = ptah.rest.restService('test', 'Test service')
+        srv = ptah.rest.RestService('test', 'Test service')
 
         @srv.action('action', 'Action')
         def raction(request, *args):
@@ -57,7 +57,7 @@ class TestRestRegistrations(Base):
     def test_rest_registerService_apidoc(self):
         import ptah.rest
 
-        ptah.rest.restService('test', 'Test service')
+        ptah.rest.RestService('test', 'Test service')
         self._init_ptah()
 
         srv = config.registry.storage[ptah.rest.REST_ID]['test']
@@ -87,6 +87,7 @@ class Principal(object):
     name = 'admin'
     login = 'admin'
 
+
 class Provider(object):
     principal = Principal()
 
@@ -99,6 +100,27 @@ class TestRestView(Base):
     def tearDown(self):
         config.cleanup_system(self.__class__.__module__)
         super(TestRestView, self).tearDown()
+
+    def test_rest_enable_api(self):
+        from pyramid.interfaces import IRoutesMapper
+        from ptah.rest import RestLoginRoute, RestApiRoute
+
+        mapper = self.p_config.get_routes_mapper()
+
+        self.assertIsNone(mapper.get_route('ptah-rest'))
+        self.assertIsNone(mapper.get_route('ptah-rest-login'))
+
+        ptah.enable_rest_api(self.p_config)
+
+        marker = object()
+
+        factory = mapper.get_route('ptah-rest').factory
+        self.assertIs(factory, RestApiRoute)
+        self.assertIs(factory(marker).request, marker)
+
+        factory = mapper.get_route('ptah-rest-login').factory
+        self.assertIs(factory, RestLoginRoute)
+        self.assertIs(factory(marker).request, marker)
 
     def test_rest_login(self):
         from ptah.rest import Login
