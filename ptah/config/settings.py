@@ -167,8 +167,10 @@ class Settings(dict):
         try:
             rawdata = dict((k.lower(), v) for k, v in rawdata.items())
             data = self.schema.unflatten(rawdata)
-        except:
+        except Exception, exc:
             log.error('Error loading settings')
+            if setdefaults:
+                raise
             return
 
         try:

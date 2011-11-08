@@ -244,6 +244,21 @@ class TestSettings(BaseTesting):
         self.assertEqual(dict(group),
                          {'node1': 'default1', 'node2': 10})
 
+    def test_settings_load_defaults_rawdata_with_errors_in_colander(self):
+        node = config.SchemaNode(
+            config.Sequence(), colander.SchemaNode(colander.Str()),
+            name = 'node1',
+            default = ())
+
+        group = config.register_settings('group', node)
+        self._init_ptah()
+
+        self.assertRaises(
+            KeyError, 
+            get_settings()._load,
+            {'group.node1.0': '1',
+             'group.node1.3': '1'}, setdefaults=True)
+
     def test_settings_init_with_no_loader(self):
         group = self._create_default_group()
 
