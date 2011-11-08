@@ -38,11 +38,10 @@ ptah.managers.0 = admin
 
 # disable modules for newbies
 ptah.disable_modules.0 = rest
-ptah.disable_modules.1 = addons
-ptah.disable_modules.2 = introspect
-ptah.disable_modules.3 = apps
-ptah.disable_modules.4 = permissions
-ptah.disable_modules.5 = templates
+ptah.disable_modules.1 = introspect
+ptah.disable_modules.2 = apps
+ptah.disable_modules.3 = permissions
+ptah.disable_modules.4 = templates
 
 # disable models for newbies
 ptah.disable_models.0 = cms-type:{{package}}-app
