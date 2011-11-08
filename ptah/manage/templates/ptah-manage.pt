@@ -27,7 +27,7 @@
 	      </h5>
 	    </li>
 	    <li class="active">
-	      <a href="${view.manage_url}/logout.html">Logout</a>
+	      <a href="${request.application_url}/logout.html">Logout</a>
 	    </li>
 	  </ul>
 	</div>

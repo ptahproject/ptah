@@ -10,22 +10,21 @@
   </head>
   <body>
     <div class="topbar" 
-	 tal:define="app_url request.application_url;
-		     root_url request.resource_url(request.root)">
+	 tal:define="app_url request.application_url">
       <div class="fill">
 	<div class="container">
-	  <h3><a href="${root_url}">${getattr(view.root, 'title', '')}</a></h3>
+	  <h3><a href="${app_url}">${getattr(view.root, 'title', '')}</a></h3>
 	  <tal:block tal:condition="not view.isanon">
 	    <ul class="nav secondary-nav">
 	      <li>
 		<h5>
-		  <a href="${root_url}">
+		  <a href="${app_url}">
   		    ${view.user.name or view.user.login}:
 		  </a>
 		</h5>
 	      </li>
 	      <li tal:condition="view.ptahmanager">
-		<a href="${app_url}/ptah-manage/">Manage</a>
+		<a href="${view.manage_url}/">Manage</a>
 	      </li>
 	      <li>
 		<a href="${app_url}/logout.html">Logout</a>
