@@ -230,7 +230,7 @@ class TestSettings(BaseTesting):
         self._init_ptah()
 
         self.assertRaises(
-            KeyError, 
+            KeyError,
             get_settings()._load,
             {'group.node1.0': '1',
              'group.node1.3': '1'}, setdefaults=True)
