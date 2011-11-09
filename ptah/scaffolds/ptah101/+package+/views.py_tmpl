@@ -167,6 +167,8 @@ def edit_link(context, request):
     links = cms.Session.query(models.Link)
     view.include('bootstrap', request)
     rendered_includes = view.render_includes(request)
+    principal = authenticated_userid(request)
+    user = resolve(principal)
     return {'links':links,
              'rendered_form':rendered_form,
              'rendered_messages':rendered_messages,
