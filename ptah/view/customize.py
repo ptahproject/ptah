@@ -216,7 +216,6 @@ class iNotifyWatcher(object):
 
 
 @config.subscriber(config.SettingsInitializing)
-@config.subscriber(TEMPLATE.category, config.SettingsGroupModified)
 def initialize(*args):
     _Manager.initialize()
 
@@ -277,4 +276,3 @@ def shutdown():
 @config.cleanup
 def cleanup():
     _Manager.layers.clear()
-    #_layersManager.layers.clear()

@@ -1,6 +1,5 @@
 """ settings """
 import colander
-import transaction
 import logging, os.path, ConfigParser
 from datetime import datetime, timedelta
 from collections import OrderedDict
@@ -34,15 +33,6 @@ class SettingsInitialized(object):
         self.config = config
 
 
-class SettingsGroupModified(ObjectEvent):
-    """ ptah sends this event when settings group is modified. """
-    event('Settings group modified event')
-
-    def __init__(self, group, config):
-        self.object = group
-        self.config = config
-
-
 _marker = object()
 
 SETTINGS_ID = 'settings'
@@ -64,10 +54,7 @@ def init_settings(ev):
         settings.register(grp)
 
 
-def initialize_settings(
-    cfg, config=None, loader=None,
-    watcherFactory=_marker, section=ConfigParser.DEFAULTSECT):
-
+def initialize_settings(cfg, config=None, section=ConfigParser.DEFAULTSECT):
     settings = api.registry.storage[SETTINGS_OB_ID]
     if settings.initialized:
         raise RuntimeError(
@@ -78,16 +65,7 @@ def initialize_settings(
     settings.config = config
     settings.initialized = True
 
-    if watcherFactory is _marker:
-        watcherFactory = iNotifyWatcher
-
-    if config is None:
-        watcherFactory = None
-
     here = cfg.get('here', './')
-    if loader is None:
-        loader = FileStorage(
-            settings, cfg.get('settings',''), here, section, watcherFactory)
 
     include = cfg.get('include', '')
     for f in include.split('\n'):
@@ -99,7 +77,7 @@ def initialize_settings(
                     parser.has_section(section):
                 cfg.update(parser.items(section, vars={'here': here}))
 
-    settings.init(loader, cfg)
+    settings.init(cfg)
 
     try:
         api.notify(SettingsInitializing(config))
@@ -147,23 +125,12 @@ class Settings(dict):
     """ settings management system """
 
     config = None
-    loader = None
     initialized = False
-    _changed = None
 
     def __init__(self):
         self.schema = schema.SchemaNode(schema.Mapping())
 
-    def changed(self, group, attrs):
-        if not self._changed:
-            if self._changed is None:
-                self._changed = {}
-            transaction.get().addAfterCommitHook(self.save)
-
-        data = self._changed.setdefault(group, set())
-        data.update(attrs)
-
-    def _load(self, rawdata, setdefaults=False, suppressevents=True):
+    def _load(self, rawdata, setdefaults=False):
         try:
             rawdata = dict((k.lower(), v) for k, v in rawdata.items())
             data = self.schema.unflatten(rawdata)
@@ -200,19 +167,9 @@ class Settings(dict):
                         if v is not colander.null:
                             group.schema[k].default = v
 
-                    group.update(data[name])
-                else:
-                    if not suppressevents:
-                        modified = data[name] != dict(group)
-                        group.update(data[name])
-                        if modified:
-                            api.registry.subscribers(
-                                (group,
-                                 SettingsGroupModified(group,self.config)),None)
-                    else:
-                        group.update(data[name])
+                group.update(data[name])
 
-    def init(self, loader, defaults=None):
+    def init(self, defaults=None):
         for group in self.values():
             data = {}
             for node in group.schema.children:
@@ -224,28 +181,6 @@ class Settings(dict):
 
         if defaults:
             self._load(defaults, True)
-
-        self.loader = loader
-        if loader is None:
-            return
-
-        self._load(loader.load())
-
-    def load(self):
-        if self.loader is not None:
-            self._load(self.loader.load(), suppressevents=False)
-
-    def save(self, *args):
-        if self._changed is not None:
-            for grp, attrs in self._changed.items():
-                api.notify(SettingsGroupModified(self[grp], self.config))
-
-            self._changed = None
-
-        if self.loader is not None:
-            data = self.export()
-            if data:
-                self.loader.save(data)
 
     def export(self, default=False):
         result = {}
@@ -356,135 +291,4 @@ class Group(object):
         return res
 
     def __setitem__(self, name, value):
-        if name in self.schema and value != self.get(name):
-            get_settings().changed(self.name, (name,))
-
         api.registry.storage[SETTINGS_ID][self.name][name] = value
-
-
-class FileStorage(object):
-    """ Simple ConfigParser file storage """
-
-    def __init__(self, settings, cfg, here = '',
-                 section=ConfigParser.DEFAULTSECT, watcherFactory=None):
-        self.cfg = cfg
-        self.here = here
-        self.section = section
-        self.watcher = None
-        self.watcherFactory = watcherFactory
-        self.settings = settings
-
-    def _startWatcher(self, fn):
-        if self.settings and self.watcher is None and \
-                self.watcherFactory is not None:
-            self.watcher = self.watcherFactory(self.settings.load)
-
-        if self.watcher is not None:
-            self.watcher.start(fn)
-            shutdown.shutdown_handler(self.watcher.stop)
-
-    def close(self):
-        if self.watcher is not None:
-            self.watcher.stop()
-
-    def load(self):
-        if not self.cfg:
-            return {}
-
-        if not os.path.exists(self.cfg):
-            f = open(self.cfg, 'wb')
-            f.write('[%s]\n'%self.section)
-            f.close()
-
-        log.info("Loading settings: %s"%self.cfg)
-        parser = ConfigParser.SafeConfigParser()
-        parser.read(self.cfg)
-        self._startWatcher(self.cfg)
-
-        if self.section != ConfigParser.DEFAULTSECT and \
-                not parser.has_section(self.section):
-            return {}
-
-        return dict(parser.items(self.section, vars={'here': self.here}))
-
-    def save(self, data):
-        if not self.cfg:
-            return
-
-        log.info("Saving settings: %s"%self.cfg)
-
-        parser = ConfigParser.ConfigParser(dict_type=OrderedDict)
-        parser.read(self.cfg)
-
-        if self.section != ConfigParser.DEFAULTSECT and \
-                not parser.has_section(self.section):
-            parser.add_section(self.section)
-
-        items = data.items()
-        items.sort()
-        for key, val in items:
-            parser.set(self.section, key, val)
-
-        fp = open(self.cfg, 'wb')
-        try:
-            parser.write(fp)
-        finally:
-            fp.close()
-
-        self._startWatcher(self.cfg)
-
-
-try:
-    import pyinotify
-except ImportError: # pragma: no cover
-    pyinotify = None
-
-
-class iNotifyWatcher(object):
-
-    if pyinotify:
-        mask = pyinotify.IN_MODIFY
-
-    started = False
-    filename = ''
-
-    def __init__(self, handler):
-        self._handler = handler
-
-    def _process_ev(self, ev):
-        if ev.mask & pyinotify.IN_MODIFY:
-            self._handler()
-
-    def start(self, filename): # pragma: no cover
-        pass
-
-    if pyinotify:
-        def start(self, filename):
-            if self.started:
-                if self.filename != filename: # pragma: no cover
-                    self.stop()
-                else:
-                    return
-
-            wm = pyinotify.WatchManager()
-            wm.add_watch(filename, self.mask, self._process_ev, False, False)
-            self.notifier = notifier = pyinotify.ThreadedNotifier(wm)
-            self.notifier.start()
-
-            self.started = True
-            self.filename = filename
-
-    def stop(self):
-        if self.started:
-            self.filename = ''
-            self.started = False
-
-            self.notifier.stop()
-            del self.notifier
-
-
-@shutdown.shutdown_handler
-def shutdown_handler():
-    settings = get_settings()
-    if settings.loader is not None:
-        settings.loader.close()
