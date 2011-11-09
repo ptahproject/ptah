@@ -1,5 +1,4 @@
 import sqlalchemy as sqla
-
 from ptah import cms
 
 class Link(cms.Node):
@@ -19,3 +18,11 @@ class Link(cms.Node):
     
     # Declare it as a Ptah Model
     __type__ = cms.Type('link')
+
+def factory(request):
+    id_ = request.matchdict.get('id')
+    if id_:
+        link = cms.Session.query(Link).filter(
+               Link.__id__ == id_).first()
+        return link
+    return HTTPNotFound(location='.')

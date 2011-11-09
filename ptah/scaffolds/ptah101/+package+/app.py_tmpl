@@ -89,7 +89,7 @@ def main(global_config, **settings):
                                color='#0000ff')
             Session.add(link)
 
-    # We are not in a web request; we need to manually commit.
+    # Not in HTTP request. Need to commit links to database manually.
     import transaction
     transaction.commit()
 
@@ -100,5 +100,13 @@ def main(global_config, **settings):
     config.add_route(
         'ptah-manage','/ptah-manage/*traverse',
         factory=ptah.manage.PtahManageRoute, use_global_views=True)
+
+    config.add_route('contact-us', '/contact-us.html')
+        
+    config.add_route(
+        'edit-links', '/links/{id}/edit',
+        factory=models.factory, use_global_views=True)
+        
+    config.scan()
 
     return config.make_wsgi_app()

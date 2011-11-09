@@ -1,20 +1,26 @@
+import logging
+
+from pyramid.view import view_config
 from pyramid.httpexceptions import HTTPFound
 from pyramid.security import authenticated_userid
 
-from ptah import view, form, cms, resolve
+from ptah import config, view, form, cms, resolve
 
 from {{package}}.app import ApplicationRoot
-from {{package}}.models import Link
+from {{package}} import models
+
+# logger, check Debug Toolbar logging section or stdout
+log = logging.getLogger(__name__)
 
 # register static asset directory
-
 view.static('{{package}}', '{{package}}:static')
 
 class Telephone(form.Regex):
     """ An example validator.  See ptah.form.validators for more info."""
     def __init__(self, msg=None):
+        log.info('Constructing a Telephone field validator')
         if msg is None:
-            msg = "Invalid telephone number"           
+            msg = "Invalid telephone number"
         super(Telephone, self).__init__(
             u'^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$', msg=msg)
 
@@ -29,7 +35,7 @@ class HomepageView(view.View):
                template=view.template('templates/homepage.pt'))
 
     def get_links(self):
-        return cms.Session.query(Link)
+        return cms.Session.query(models.Link)
 
     def update(self):
         """ update is called before template applied for ptah.view.View """
@@ -39,8 +45,9 @@ class HomepageView(view.View):
 # This is a "function view", you do not need to use a function for your 
 # view.  You can use a Class view as provided above.
 
-@view.pview('contact-us.html', context=ApplicationRoot,
-            template=view.template('templates/template.pt'))
+@view_config(renderer='templates/template.pt', 
+             context=ApplicationRoot, 
+             route_name='contact-us')
 
 def contact_us(context, request):
 
@@ -91,19 +98,15 @@ def contact_us(context, request):
 
         form.message('Form has been updated.', 'info')
         # You would add any logic/database updates/insert here.
+        # You would probably also redirect.
         
-        # NOTE: Python programmers use exceptions for flow control.
-        # A Pyramid pattern is to raise HTTPFound.  This means you will need
-        # to import transaction; transaction.commit() before you raise 
-        # HTTPFound exception (redirect) else your transaction will rollback
-        # raise HTTPFound(location='.')
+        log.info('The form was updated successfully')
 
     contactform.buttons.add_action('Update', action=updateAction)
     contactform.buttons.add_action('Cancel', action=cancelAction)
 
     # form default values
-    contactform.content = {'title': context.title,
-                           'description': context.description}
+    contactform.content = {}
 
     # prepare form
     contactform.update()
@@ -114,22 +117,60 @@ def contact_us(context, request):
     # render messages
     rendered_messages = view.render_messages(request)
 
-    # Left hand box requires links; this is downside of using
-    # of using functions for views.. but here we go
-    links = cms.Session.query(Link)
-    
+    # query for links to populate links box
+    links = cms.Session.query(models.Link)
+
     #include library dependencies
     view.include('bootstrap', request)
-    
+
+    # render all the included libraries into html
     rendered_includes = view.render_includes(request)
     
+    # pyramid authenticated_userid returns a uri
+    # you could get user properties by ptah.crowd.query_properties(principal)
     principal = authenticated_userid(request)
     user = resolve(principal)
-        
+
     return {'links':links,
              'rendered_form':rendered_form,
              'rendered_messages':rendered_messages,
              'rendered_includes':rendered_includes,
              'static_url':view.static_url('{{package}}', '', request),
              'user':user,
-             'request':request}          
+             'request':request}
+
+@view_config(renderer='templates/template.pt', 
+             context=models.Link, 
+             route_name='edit-links')
+
+def edit_link(context, request):
+    linkform = form.Form(context,request)
+    linkform.fields = models.Link.__type__.fieldset
+    def cancelAction(form):
+        raise HTTPFound(location='.')
+    def updateAction(form):
+        data, errors = form.extract()
+        if errors:
+            form.message(errors, 'form-error')
+            return
+        form.context.title = data['title']
+        form.context.href = data['href']
+        form.context.color = data['color']
+    linkform.buttons.add_action('Update', action=updateAction)
+    linkform.buttons.add_action('Cancel', action=cancelAction)
+    linkform.content = {'title':context.title,
+                        'href':context.href,
+                        'color':context.color}
+    linkform.update() # prepare form for rendering
+    rendered_form = linkform.render()
+    rendered_messages = view.render_messages(request)
+    links = cms.Session.query(models.Link)
+    view.include('bootstrap', request)
+    rendered_includes = view.render_includes(request)
+    return {'links':links,
+             'rendered_form':rendered_form,
+             'rendered_messages':rendered_messages,
+             'rendered_includes':rendered_includes,
+             'static_url':view.static_url('{{package}}', '', request),
+             'user':user,
+             'request':request}

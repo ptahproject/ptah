@@ -45,7 +45,10 @@
           <h5>Links</h5>
           <ul>
             <li tal:repeat="link view.get_links()">
-                <a style="color:${link.color};" href="${link.href}">${link.title}</a>
+              <a style="color:${link.color};" href="${link.href}">${link.title}</a>
+              <span class="label success">
+              <a href="/links/${link.__id__}/edit">edit</a>
+              </span>
             </li>
           </ul>
         </div>
