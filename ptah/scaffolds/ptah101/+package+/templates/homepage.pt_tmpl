@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -56,16 +55,16 @@
       <div class="content">
         <!-- Main hero unit for a primary marketing message or call to action -->
         <div class="hero-unit">
-          <h1>Welcome to Ptah!</h1>
-          <p>Ptah is a modern web publishing framework.  It enables you
-             to build web apps and websites - very fast.  The best part
-             is it works like you expect.  It uses well-documented technologies.
-             You can pick what features you want and use only those.
+          <h1>Welcome to {{package}}!</h1>
+          <p>The {{package}} application uses Ptah, a modern web publishing framework.  
+          Ptah enables you to build web applications and web sites - very fast.  The 
+          best part is Ptah works like you expect.  It uses well-documented technologies.
+          You can pick what features you want and leave behind the opinions which you disagree.
           </p>
           <p>The default login is <strong>admin</strong> and the 
              password is <strong>12345</strong>
           </p>
-          <p><a class="btn primary large" href="/ptah-manage/">Goto Manange UI &raquo;</a></p>
+          <p><a class="btn primary large" href="/ptah-manage/">Goto Ptah Manange UI &raquo;</a></p>
         </div>
 
         <!-- Example row of columns -->
