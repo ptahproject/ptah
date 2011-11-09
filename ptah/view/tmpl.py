@@ -16,7 +16,7 @@ class _Template(object):
 
         self.tmpl = default
 
-    def setCustom(self, custom):
+    def setCustom(self, custom): # pragma: no cover
         if custom is None:
             self.custom = None
             self.tmpl = self.default

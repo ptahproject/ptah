@@ -1,4 +1,0 @@
-<ul tal:define="url context.url()">
-  <li><a href="${url}/">${context.title}</a></li>
-  <li tal:condition="view.hasWatcher"><a href="${url}/customized.html">Customized templates</a></li>
-</ul>

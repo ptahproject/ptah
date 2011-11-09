@@ -6,8 +6,7 @@ from zope.interface.interfaces import IObjectEvent
 
 from ptah import config
 from ptah.config.api import objectEventNotify
-from ptah.config.settings import \
-    FileStorage, iNotifyWatcher, shutdown_handler, get_settings
+from ptah.config.settings import get_settings
 
 
 class BaseTesting(unittest.TestCase):
@@ -78,14 +77,8 @@ class TestSettings(BaseTesting):
             KeyError,
             group.__getitem__, 'unknown')
 
-        self.assertEqual(get_settings()._changed, None)
-
         group.node = 'test2'
         self.assertFalse(group.node == group['node'])
-
-        group['node'] =  'test2'
-        self.assertTrue('group1' in get_settings()._changed)
-        self.assertTrue('node' in get_settings()._changed['group1'])
 
     def test_settings_group_validation(self):
         def validator(node, appstruct):
@@ -208,23 +201,6 @@ class TestSettings(BaseTesting):
         self.assertEqual(group.schema['node1'].default, 'default1')
         self.assertEqual(group.schema['node2'].default, 30)
 
-    def test_settings_load_rawdata_and_send_modified_event(self):
-        group = self._create_default_group()
-
-        sm = config.registry
-
-        events = []
-        def h(grp, ev):
-            events.append((grp is group, ev))
-
-        sm.registerHandler(h, (group.category, config.SettingsGroupModified))
-
-        get_settings()._load({'group.node1': 'value'}, suppressevents=False)
-
-        self.assertTrue(events[0][0])
-        self.assertTrue(isinstance(events[0][1], config.SettingsGroupModified))
-        self.assertTrue(events[0][1].object is group)
-
     def test_settings_load_rawdata_with_errors_in_rawdata(self):
         group = self._create_default_group()
 
@@ -254,24 +230,15 @@ class TestSettings(BaseTesting):
         self._init_ptah()
 
         self.assertRaises(
-            KeyError, 
+            KeyError,
             get_settings()._load,
             {'group.node1.0': '1',
              'group.node1.3': '1'}, setdefaults=True)
 
-    def test_settings_init_with_no_loader(self):
-        group = self._create_default_group()
-
-        get_settings().init(None)
-
-        # initialized with defaults
-        self.assertEqual(dict(group), {'node1': 'default1', 'node2': 10})
-
     def test_settings_init_with_no_loader_with_defaults(self):
         group = self._create_default_group()
 
-        get_settings().init(None,
-                            {'group.node1': 'new-default',
+        get_settings().init({'group.node1': 'new-default',
                              'group.node2': 50})
 
         self.assertEqual(group['node1'], 'new-default')
@@ -279,154 +246,6 @@ class TestSettings(BaseTesting):
 
         self.assertEqual(group.schema['node1'].default, 'new-default')
         self.assertEqual(group.schema['node2'].default, 50)
-
-    def test_settings_init_with_loader_values(self):
-        class Loader(object):
-            def load(self):
-                return {
-                    'group.node1': 'new-value',
-                    'group.node2': 60}
-
-        group = self._create_default_group()
-        get_settings().init(Loader())
-
-        self.assertEqual(group['node1'], 'new-value')
-        self.assertEqual(group['node2'], 60)
-
-        self.assertEqual(group.schema['node1'].default, 'default1')
-        self.assertEqual(group.schema['node2'].default, 10)
-
-    def test_settings_reload_from_loader(self):
-        class Loader(object):
-            def load(self):
-                return {'group.node1': 'new-value',
-                        'group.node2': 60}
-
-        group = self._create_default_group()
-        get_settings().init(Loader())
-
-        group['node1'] = 'val'
-        group['node2'] = 90
-
-        self.assertEqual(group['node1'], 'val')
-        self.assertEqual(group['node2'], 90)
-
-        get_settings().load()
-        self.assertEqual(group['node1'], 'new-value')
-        self.assertEqual(group['node2'], 60)
-
-    def test_settings_save(self):
-        class Loader(object):
-            def load(self):
-                return {}
-            def save(self, data):
-                saved.update(data)
-
-        saved = {}
-
-        group = self._create_default_group()
-        get_settings().init(Loader())
-
-        get_settings().save()
-        self.assertEqual(saved, {})
-
-        sm = config.registry
-
-        events = []
-
-        def h(grp, ev):
-            events.append((grp is group, ev))
-
-        sm.registerHandler(h, (group.category, config.SettingsGroupModified))
-        sm.registerHandler(objectEventNotify, (IObjectEvent,))
-
-        group['node1'] = 'val'
-        group['node2'] = 90
-
-        get_settings().save()
-
-        self.assertEqual(saved, {'group.node1': 'val', 'group.node2': '90'})
-        self.assertTrue(len(events) == 1)
-
-
-class TestFileStorage(BaseTesting):
-
-    def setUp(self):
-        self.dir = tempfile.mkdtemp()
-
-    def tearDown(self):
-        shutil.rmtree(self.dir)
-
-    def test_settings_fs_no_fails(self):
-        fs = FileStorage(None, None)
-
-        self.assertEqual(fs.watcher, None)
-        self.assertEqual(fs.load(), {})
-        self.assertEqual(fs.close(), None)
-
-    def test_settings_fs(self):
-        path = os.path.join(self.dir, 'settings.cfg')
-        f = open(path, 'wb')
-        f.write("""[DEFAULT]\ngroup.node1 = test\ngroup.node2 = 40""")
-        f.close()
-
-        fs = FileStorage(None, path)
-        self.assertEqual(fs.load(),
-                         {'group.node1': 'test',
-                          'group.node2': '40', 'here': ''})
-
-    def test_settings_fs_nosettings_file(self):
-        path = os.path.join(self.dir, 'settings.cfg')
-
-        fs = FileStorage(None, path)
-        self.assertEqual(fs.load(), {'here': ''})
-        self.assertTrue(os.path.exists(path))
-
-    def test_settings_fs_save_nosettings_file(self):
-        fs = FileStorage(None, None)
-        self.assertEqual(fs.save({'group.node1': 'test'}), None)
-
-    def test_settings_fs_save(self):
-        path = os.path.join(self.dir, 'settings.cfg')
-
-        fs = FileStorage(None, path)
-        self.assertEqual(fs.load(), {'here': ''})
-
-        fs.save({'group.node1': 'value'})
-        self.assertEqual(fs.load(), {'group.node1': 'value', 'here': ''})
-        self.assertEqual(open(path).read(),
-                         '[DEFAULT]\ngroup.node1 = value\n\n')
-
-    def test_settings_fs_save_to_existing(self):
-        path = os.path.join(self.dir, 'settings.cfg')
-        f = open(path, 'wb')
-        f.write('[TEST]\ngroup.node1 = value\n\n')
-        f.close()
-
-        fs = FileStorage(None, path)
-        self.assertEqual(fs.load(), {'here': ''})
-
-        fs.save({'group.node1': 'value'})
-        self.assertEqual(fs.load(), {'group.node1': 'value', 'here': ''})
-        self.assertEqual(
-            open(path).read(),
-            '[DEFAULT]\ngroup.node1 = value\n\n[TEST]\ngroup.node1 = value\n\n')
-
-    def test_settings_fs_save_to_existing_diff_sect(self):
-        path = os.path.join(self.dir, 'settings.cfg')
-        f = open(path, 'wb')
-        f.write('[DEFAULT]\ngroup.node = value\n\n')
-        f.close()
-
-        fs = FileStorage(None, path, section='TEST')
-        self.assertEqual(fs.load(), {})
-
-        fs.save({'group.node3': 'value'})
-
-        #self.assertEqual(fs.load(), {'group.node3': 'value', 'here': ''})
-        self.assertEqual(
-            open(path).read(),
-            '[DEFAULT]\ngroup.node = value\n\n[TEST]\ngroup.node3 = value\n\n')
 
 
 class TestSettingsInitialization(BaseTesting):
@@ -456,8 +275,6 @@ class TestSettingsInitialization(BaseTesting):
 
         settings = get_settings()
 
-        self.assertTrue(settings.loader is None)
-
         conf = object()
         config.initialize_settings({}, conf)
 
@@ -466,8 +283,6 @@ class TestSettingsInitialization(BaseTesting):
 
         self.assertTrue(events[0].config is conf)
         self.assertTrue(events[1].config is conf)
-
-        self.assertTrue(isinstance(settings.loader, FileStorage))
 
     def test_settings_initialize_events_exceptions(self):
         self._init_ptah()
@@ -515,30 +330,6 @@ class TestSettingsInitialization(BaseTesting):
         self.assertEqual(group['node1'], 'setting from ini')
         self.assertEqual(group['node2'], 10)
 
-    def test_settings_initialize_load_settings_from_file(self):
-        path = os.path.join(self.dir, 'settings.cfg')
-        f = open(path, 'wb')
-        f.write('[DEFAULT]\ngroup.node1 = value\n\n')
-        f.close()
-
-        node1 = config.SchemaNode(
-                colander.Str(),
-                name = 'node1',
-                default = 'default1')
-
-        node2 = config.SchemaNode(
-                colander.Int(),
-                name = 'node2',
-                default = 10)
-
-        group = config.register_settings('group', node1, node2)
-        self._init_ptah()
-
-        config.initialize_settings({'settings': path})
-
-        self.assertEqual(group['node1'], 'value')
-        self.assertEqual(group['node2'], 10)
-
     def test_settings_initialize_load_settings_include(self):
         path = os.path.join(self.dir, 'settings.cfg')
         f = open(path, 'wb')
@@ -562,43 +353,3 @@ class TestSettingsInitialization(BaseTesting):
 
         self.assertEqual(group['node1'], 'value')
         self.assertEqual(group['node2'], 10)
-
-    @unittest.skipUnless(sys.platform == 'linux2', 'linux specific')
-    def test_settings_fs_watcher(self):
-        path = os.path.join(self.dir, 'settings.cfg')
-        f = open(path, 'wb')
-        f.write('[DEFAULT]\ngroup.node1 = value\n\n')
-        f.close()
-
-        node1 = config.SchemaNode(
-                colander.Str(),
-                name = 'node1',
-                default = 'default1')
-
-        group = config.register_settings('group', node1)
-        self._init_ptah()
-
-        class Config(object):
-            def begin(self): # pragma: no cover
-                pass
-            def end(self): # pragma: no cover
-                pass
-
-        config.initialize_settings({'settings': path}, config=Config())
-
-        settings = get_settings()
-
-        self.assertTrue(
-            isinstance(settings.loader.watcher, iNotifyWatcher))
-        self.assertEqual(group['node1'], 'value')
-
-        f = open(path, 'wb')
-        f.write('[DEFAULT]\ngroup.node1 = new_value\n\n')
-        f.close()
-        time.sleep(0.2)
-
-        self.assertEqual(group['node1'], 'new_value')
-        self.assertTrue(settings.loader.watcher.started)
-
-        shutdown_handler()
-        self.assertFalse(settings.loader.watcher.started)

@@ -1,5 +1,17 @@
 # ptah.view public API
 
+# static resources
+from ptah.view.resources import static
+from ptah.view.resources import static_url
+
+# resource library
+from ptah.view.library import library
+from ptah.view.library import include
+from ptah.view.library import render_includes
+
+
+# !!! PRIVATE API !!!
+
 # path/template
 from ptah.view.tmpl import path, template
 
@@ -30,17 +42,7 @@ from ptah.view.renderers import ViewRenderer
 from ptah.view.renderers import TemplateRenderer
 
 # layer
-from ptah.view.customize import layer
 from ptah.view.customize import LayerWrapper
-
-# resource
-from ptah.view.resources import static
-from ptah.view.resources import static_url
-
-# resource library
-from ptah.view.library import library
-from ptah.view.library import include
-from ptah.view.library import render_includes
 
 # directives
 from ptah.view.directives import pview

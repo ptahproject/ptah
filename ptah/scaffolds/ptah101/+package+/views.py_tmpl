@@ -174,5 +174,5 @@ def edit_link(context, request):
              'rendered_messages':rendered_messages,
              'rendered_includes':rendered_includes,
              'static_url':view.static_url('{{package}}', '', request),
-             'user':user,
+             'user':resolve(authenticated_userid(request)),
              'request':request}
