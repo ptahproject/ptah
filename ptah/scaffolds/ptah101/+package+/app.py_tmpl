@@ -31,11 +31,10 @@ def main(global_config, **settings):
 
     config.include('ptah')
     
-    # config.ptah_init() #people want to see the guts.
-    import transaction
-    import sqlahelper
+    # mcdonc says people want to see the guts.
+    # you could use config.ptah_init() and be home by now
     
-    # start ptah_init
+    # --- start config.ptah_init() ---
     config.include('pyramid_tm')
 
     settings = config.registry.settings
@@ -47,13 +46,14 @@ def main(global_config, **settings):
     ptah.config.initialize_settings(settings, config)
 
     # create sql tables
+    import sqlahelper
     Base = sqlahelper.get_base()
     Base.metadata.create_all()
 
     # send AppStarting event
     ptah.config.start(config)
     
-    # end ptah_init
+    # --- end config.ptah_init() ---
      
     # your application configuration
     root = APP_FACTORY()
@@ -68,9 +68,12 @@ def main(global_config, **settings):
     if user.uri not in root.__local_roles__:
         root.__local_roles__[user.uri] = [Manager.id]
     
+    # set context as admin user
     ptah.authService.set_userid(user.uri)
 
-    # Create a few links
+    # Bootstrap application data with some links; we use SQLAlchemy
+    # directly so there are not application events being fired to apply owner
+    
     links = {'sqlalchemy':'http://www.sqlalchemy.org/',
              'pyramid':'http://docs.pylonsproject.org/',
              'enfoldsystems':'http://www.enfoldsystems.com/',
@@ -86,7 +89,9 @@ def main(global_config, **settings):
                                color='#0000ff')
             Session.add(link)
 
-    import transaction; transaction.commit()
+    # We are not in a web request; we need to manually commit.
+    import transaction
+    transaction.commit()
 
     # enable rest api
     ptah.enable_rest_api(config)

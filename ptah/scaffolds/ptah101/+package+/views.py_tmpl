@@ -90,9 +90,12 @@ def contact_us(context, request):
         form.context.subject = data['subject']
 
         form.message('Form has been updated.', 'info')
+        # You would add any logic/database updates/insert here.
         
-        # Form succeeded; want to send email?  put data in database?
-        # you would add that logic here and probably redirect somewhere.
+        # NOTE: Python programmers use exceptions for flow control.
+        # A Pyramid pattern is to raise HTTPFound.  This means you will need
+        # to import transaction; transaction.commit() before you raise 
+        # HTTPFound exception (redirect) else your transaction will rollback
         # raise HTTPFound(location='.')
 
     contactform.buttons.add_action('Update', action=updateAction)
