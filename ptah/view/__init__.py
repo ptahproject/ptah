@@ -53,6 +53,3 @@ from ptah.view.directives import snippet
 from ptah.view.message import Message
 from ptah.view.message import add_message
 from ptah.view.message import render_messages
-
-# format
-from ptah.view.formatter import format

@@ -2,7 +2,7 @@
 import logging
 from zope import interface
 from ptah import config
-from ptah.view.formatter import format
+from ptah.formatter import format
 from ptah.view.resources import static_url
 from ptah.view.message import add_message, render_messages
 from ptah.view.library import include, render_includes

@@ -1,7 +1,6 @@
 """ various fields """
 import datetime
-from ptah import view
-from ptah.view import formatter
+from ptah import view, formatter
 
 from interfaces import null
 from field import field

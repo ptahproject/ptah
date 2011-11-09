@@ -3,7 +3,7 @@ from pyramid.path import caller_package
 from chameleon.zpt.template import PageTemplateFile
 from chameleon.zpt.template import PageTextTemplateFile
 from ptah import config
-from ptah.view.formatter import format
+
 
 registry = {}
 

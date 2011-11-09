@@ -1,10 +1,8 @@
 """ basic app settings """
 import uuid
-import colander
 import sqlahelper
 import sqlalchemy
 import pyramid_beaker
-import translationstring
 from email.Utils import formataddr
 from pyramid.interfaces import IAuthenticationPolicy, IAuthorizationPolicy
 from pyramid.authorization import ACLAuthorizationPolicy

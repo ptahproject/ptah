@@ -49,6 +49,9 @@ from pyramid.security import NO_PERMISSION_REQUIRED
 from ptah.password import passwordTool
 from ptah.password import password_changer
 
+# formatter
+from ptah.formatter import format
+
 # rest api
 from ptah.rest import RestService
 from ptah.rest import enable_rest_api

@@ -22,9 +22,6 @@ install_requires = ['setuptools',
                     ]
 tests_require = ['nose']
 
-if sys.platform == 'linux2':
-    tests_require.append('pyinotify')
-
 
 setup(name='ptah',
       version=version,

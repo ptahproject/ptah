@@ -8,7 +8,7 @@ from pyramid.threadlocal import get_current_request
 
 from ptah import config
 
-_ = translationstring.TranslationStringFactory('ptah.view')
+_ = translationstring.TranslationStringFactory('ptah')
 
 
 class FormatImpl(dict):
