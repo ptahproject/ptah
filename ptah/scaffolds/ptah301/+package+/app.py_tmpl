@@ -31,35 +31,28 @@ def main(global_config, **settings):
 
     config.include('ptah')
     
-    # config.ptah_init() #people want to see the guts.
-    import transaction
-    import sqlahelper
+    # you could use ptah.ptah_init() and be home by now
+    # --- start ptah.ptah_init() ---
     
-    # start ptah_init
     config.include('pyramid_tm')
 
     settings = config.registry.settings
 
-    # exclude
-    excludes = []
-    if 'ptah.excludes' in settings:
-        excludes.extend(s.strip()
-                        for s in settings['ptah.excludes'].split())
-
     # load packages
-    ptah.config.initialize(('{{package}}', 'ptah'), excludes, config.registry)
+    ptah.config.initialize(('{{package}}', 'ptah'), registry=config.registry)
     
     # load settings
     ptah.config.initialize_settings(settings, config)
 
     # create sql tables
+    import sqlahelper
     Base = sqlahelper.get_base()
     Base.metadata.create_all()
 
     # send AppStarting event
     ptah.config.start(config)
     
-    # end ptah_init
+    # --- end ptah.ptah_init() ---
      
     # your application configuration
     root = APP_FACTORY()
@@ -74,6 +67,7 @@ def main(global_config, **settings):
     if user.uri not in root.__local_roles__:
         root.__local_roles__[user.uri] = [Manager.id]
     
+    # set authcontext as admin user
     ptah.authService.set_userid(user.uri)
 
     # create default page
@@ -84,7 +78,9 @@ def main(global_config, **settings):
 
         root['front-page'] = page
 
-    import transaction; transaction.commit()
+    # We are not in a web request; we need to manually commit.
+    import transaction
+    transaction.commit()
 
     # enable rest api
     ptah.enable_rest_api(config)

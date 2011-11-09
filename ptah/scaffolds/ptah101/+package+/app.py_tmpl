@@ -34,7 +34,7 @@ def main(global_config, **settings):
     # mcdonc says people want to see the guts.
     # you could use config.ptah_init() and be home by now
     
-    # --- start config.ptah_init() ---
+    # --- start ptah.ptah_init() ---
     config.include('pyramid_tm')
 
     settings = config.registry.settings
@@ -53,7 +53,7 @@ def main(global_config, **settings):
     # send AppStarting event
     ptah.config.start(config)
     
-    # --- end config.ptah_init() ---
+    # --- end ptah.ptah_init() ---
      
     # your application configuration
     root = APP_FACTORY()
@@ -68,7 +68,7 @@ def main(global_config, **settings):
     if user.uri not in root.__local_roles__:
         root.__local_roles__[user.uri] = [Manager.id]
     
-    # set context as admin user
+    # set authcontext as admin user
     ptah.authService.set_userid(user.uri)
 
     # Bootstrap application data with some links; we use SQLAlchemy
@@ -96,7 +96,7 @@ def main(global_config, **settings):
     # enable rest api
     ptah.enable_rest_api(config)
 
-    # enable ptah-manage
+    # enable ptah-manage, see ptah.managers in .ini for users whom can access
     config.add_route(
         'ptah-manage','/ptah-manage/*traverse',
         factory=ptah.manage.PtahManageRoute, use_global_views=True)
