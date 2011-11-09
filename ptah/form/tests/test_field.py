@@ -98,25 +98,25 @@ class TestFieldset(Base):
         fieldset = form.Fieldset(field)
 
         params = object()
-        content = {'test': 'CONTENT'}
+        data = {'test': 'CONTENT'}
 
-        fs = fieldset.bind(content, params)
+        fs = fieldset.bind(data, params)
 
         self.assertIsNot(fieldset, fs)
         self.assertEqual(len(fieldset), len(fs))
         self.assertIs(fs.params, params)
-        self.assertIs(fs.content, content)
+        self.assertIs(fs.data, data)
 
         self.assertIs(fs['test'].params, params)
-        self.assertEqual(fs['test'].content, 'CONTENT')
+        self.assertEqual(fs['test'].value, 'CONTENT')
 
         fs = fieldset.bind()
         self.assertIsNot(fieldset, fs)
         self.assertEqual(len(fieldset), len(fs))
         self.assertEqual(fs.params, {})
-        self.assertEqual(fs.content, {})
+        self.assertEqual(fs.data, {})
         self.assertEqual(fs['test'].params, {})
-        self.assertIs(fs['test'].content, form.null)
+        self.assertIs(fs['test'].value, form.null)
 
     def test_fieldset_bind_nested(self):
         fieldset = form.Fieldset(
@@ -129,10 +129,10 @@ class TestFieldset(Base):
 
         fs = fieldset.bind(content, params)
 
-        self.assertEqual(fs['fs']['test'].content, 'NESTED CONTENT')
+        self.assertEqual(fs['fs']['test'].value, 'NESTED CONTENT')
 
         fs = fieldset.bind()
-        self.assertIs(fs['fs']['test'].content, form.null)
+        self.assertIs(fs['fs']['test'].value, form.null)
 
     def test_fieldset_validate(self):
         def validator(fs, data):
@@ -285,7 +285,7 @@ class TestField(Base):
 
         field = orig_field.bind('field.', form.null, {})
 
-        self.assertEqual(field.content, form.null)
+        self.assertEqual(field.value, form.null)
         self.assertEqual(field.params, {})
         self.assertEqual(field.name, 'field.test')
         self.assertEqual(field.title, 'Title')
@@ -392,21 +392,21 @@ class TestField(Base):
         field = MyField('test')
         widget = field.bind('field.', form.null, {})
         widget.update(request)
-        self.assertIs(widget.value, form.null)
+        self.assertIs(widget.form_value, form.null)
 
         field = MyField('test', default='default value')
         widget = field.bind('field.', form.null, {})
         widget.update(request)
-        self.assertIs(widget.value, 'default value')
+        self.assertIs(widget.form_value, 'default value')
 
         field = MyField('test', default='default value')
         widget = field.bind('field.', 'content value', {})
         widget.update(request)
-        self.assertIs(widget.value, 'content value')
+        self.assertIs(widget.form_value, 'content value')
 
         widget = field.bind('field.', form.null, {'field.test': 'form value'})
         widget.update(request)
-        self.assertEqual(widget.value, 'form value')
+        self.assertEqual(widget.form_value, 'form value')
 
 
 class TestFieldFactory(Base):
@@ -431,7 +431,7 @@ class TestFieldFactory(Base):
         widget = field.bind('field.', content, params)
 
         self.assertIsInstance(widget, MyField)
-        self.assertIs(widget.content, content)
+        self.assertIs(widget.value, content)
         self.assertIs(widget.params, params)
         self.assertEqual(widget.name, 'field.test')
 

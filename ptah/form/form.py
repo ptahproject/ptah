@@ -198,11 +198,14 @@ class Form(view.View):
     def extract(self):
         return self.widgets.extract()
 
-    def update(self):
+    def update(self, **data):
+        if not self.content and data:
+            self.content = data
+
         self.update_widgets()
         self.update_actions()
 
-        self.actions.execute()
+        return self.actions.execute()
 
     def render(self):
         if self.template is None:

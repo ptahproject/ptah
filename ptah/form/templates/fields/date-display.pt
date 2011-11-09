@@ -4,6 +4,6 @@
                         class context.klass;
                         title context.title;
                         lang context.lang;">
-    <tal:block condition="context.value" content="context.value" />
+    <tal:block condition="context.form_value" content="context.form_value" />
   </span>
 </span>

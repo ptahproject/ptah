@@ -81,7 +81,7 @@ def contact_us(context, request):
 
     # form actions
     def cancelAction(form):
-        raise HTTPFound(location='.')
+        return HTTPFound(location='/')
 
     def updateAction(form):
         data, errors = form.extract()
@@ -109,7 +109,9 @@ def contact_us(context, request):
     contactform.content = {}
 
     # prepare form
-    contactform.update()
+    result = contactform.update()
+    if isinstance(result, HTTPFound):
+        return result
 
     # render form into HTML
     rendered_form = contactform.render()
@@ -147,7 +149,7 @@ def edit_link(context, request):
     linkform = form.Form(context,request)
     linkform.fields = models.Link.__type__.fieldset
     def cancelAction(form):
-        raise HTTPFound(location='.')
+        return HTTPFound(location='/')
     def updateAction(form):
         data, errors = form.extract()
         if errors:
@@ -157,11 +159,15 @@ def edit_link(context, request):
         form.context.href = data['href']
         form.context.color = data['color']
     linkform.buttons.add_action('Update', action=updateAction)
-    linkform.buttons.add_action('Cancel', action=cancelAction)
+    linkform.buttons.add_action('Back', action=cancelAction)
     linkform.content = {'title':context.title,
                         'href':context.href,
                         'color':context.color}
-    linkform.update() # prepare form for rendering
+
+    result = linkform.update() # prepare form for rendering
+    if isinstance(result, HTTPFound):
+        return result
+
     rendered_form = linkform.render()
     rendered_messages = view.render_messages(request)
     links = cms.Session.query(models.Link)

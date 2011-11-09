@@ -199,16 +199,16 @@ class TestVocabularyField(Base):
 
         class MyVocabularyField(form.VocabularyField):
             def is_checked(self, term):
-                return term.token == self.value
+                return term.token == self.form_value
 
         field = MyVocabularyField('test', vocabulary=voc)
-        field.value = 'one'
+        field.form_value = 'one'
 
         self.assertTrue(field.is_checked(voc.get_term(1)))
         self.assertFalse(field.is_checked(voc.get_term(2)))
 
         field.id = 'test'
-        field.value = form.null
+        field.form_value = form.null
         field.update_items()
 
         self.assertEqual(field.items,
@@ -231,7 +231,7 @@ class TestVocabularyField(Base):
                            'name': 'test',
                            'value': 'three'}])
 
-        field.value = 'one'
+        field.form_value = 'one'
         field.update_items()
         self.assertEqual(field.items,
                          [{'checked': True,
@@ -321,11 +321,11 @@ class TestBaseMultiChoiceField(Base):
 
         field = orig_field.bind('', form.null, {})
         field.update(request)
-        self.assertEqual(field.value, [])
+        self.assertEqual(field.form_value, [])
 
         field = orig_field.bind('', [1], {})
         field.update(request)
-        self.assertEqual(field.value, ['one'])
+        self.assertEqual(field.form_value, ['one'])
 
         self.assertIs(field.extract(), form.null)
 

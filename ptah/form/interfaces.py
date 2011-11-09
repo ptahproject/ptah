@@ -104,14 +104,14 @@ class IWidget(interface.Interface):
     mode = interface.Attribute('Mode')
     required = interface.Attribute('Required')
     error = interface.Attribute('Error')
-    value = interface.Attribute('Value')
+    form_value = interface.Attribute('Form Value')
     params = interface.Attribute('Request params')
     localizer = interface.Attribute('Localizer')
 
     template = interface.Attribute('Template')
     widgetTemplate = interface.Attribute('Widget template')
 
-    content = interface.Attribute('Widget content')
+    value = interface.Attribute('Widget value')
 
     def extract(default=null):
         """Extract the string value(s) of the widget from the form.

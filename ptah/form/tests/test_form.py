@@ -68,6 +68,16 @@ class TestForm(unittest.TestCase):
         form.content = form_content
         self.assertIs(form.form_content(), form_content)
 
+    def test_form_content_from_update(self):
+        from ptah.form.form import Form
+
+        request = DummyRequest()
+        form = Form(None, request)
+
+        form_content = {'test': 'test1'}
+        form.update(**form_content)
+        self.assertEqual(form.form_content(), form_content)
+
     def test_csrf_token(self):
         from ptah.form import form
         form.setCsrfUtility(None)
@@ -265,7 +275,7 @@ class DummyFields(object):
             fieldset = DummyFieldset()
         self.fieldset = fieldset
 
-    def bind(self, content, params): # pragma: no cover
-        self.content = content
+    def bind(self, data, params): # pragma: no cover
+        self.data = data
         self.params = params
         return self.fieldset

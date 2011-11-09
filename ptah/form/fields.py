@@ -102,7 +102,7 @@ class BaseChoiceField(VocabularyField):
         return value
 
     def is_checked(self, term):
-        return term.token == self.value
+        return term.token == self.form_value
 
     def update(self, request):
         super(BaseChoiceField, self).update(request)
@@ -155,13 +155,13 @@ class BaseMultiChoiceField(VocabularyField):
         return value
 
     def is_checked(self, term):
-        return term.token in self.value
+        return term.token in self.form_value
 
     def update(self, request):
         super(BaseMultiChoiceField, self).update(request)
 
-        if self.value is null:
-            self.value = []
+        if self.form_value is null:
+            self.form_value = []
 
         self.update_items()
 
@@ -456,7 +456,7 @@ class ChoiceField(BaseChoiceField):
                     'name': self.name,
                     'value': self.noValueToken,
                     'label': self.promptMessage,
-                    'checked': self.value is null,
+                    'checked': self.form_value is null,
                     'description': u'',
                     })
 

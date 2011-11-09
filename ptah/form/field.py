@@ -123,26 +123,26 @@ class Fieldset(OrderedDict):
     def validate(self, data):
         self.validator(self, data)
 
-    def bind(self, content=None, params={}):
+    def bind(self, data=None, params={}):
         clone = Fieldset(
             name = self.name,
             legend = self.legend,
             prefix = self.prefix,
             validator = self.validator.validators)
 
-        if content is None:
-            content = {}
+        if data is None:
+            data = {}
 
         for name, field in self.items():
             if isinstance(field, Fieldset):
                 clone[name] = field.bind(
-                    content.get(name, None), params)
+                    data.get(name, None), params)
             else:
                 clone[name] = field.bind(
-                    self.prefix, content.get(name, null), params)
+                    self.prefix, data.get(name, null), params)
 
         clone.params = params
-        clone.content = content
+        clone.data = data
         return clone
 
     def extract(self):
@@ -219,10 +219,10 @@ class Field(object):
     required = False
 
     error = None
-    content = None
     params = {}
-    value = null
     mode = None
+    value = null
+    form_value = null
 
     id = None
     klass = None
@@ -243,10 +243,10 @@ class Field(object):
         self.validator = kw.get('validator', None)
         self.required = self.missing is required
 
-    def bind(self, prefix, content, params):
+    def bind(self, prefix, value, params):
         clone = self.__class__.__new__(self.__class__)
         clone.__dict__.update(self.__dict__)
-        clone.content = content
+        clone.value = value
         clone.params = params
         clone.name = '%s%s'%(prefix, self.name)
         clone.id = clone.name.replace('.', '-')
@@ -264,14 +264,14 @@ class Field(object):
         # Step 1.1: extract from request
         widget_value = self.extract()
         if widget_value is not null:
-            self.value = widget_value
+            self.form_value = widget_value
             return
 
         value = null
 
-        # Step 1.2: get from content
-        if self.content is not null:
-            value = self.content
+        # Step 1.2: get from value
+        if self.value is not null:
+            value = self.value
 
         # Step 1.2.2: default
         if value is null:
@@ -279,7 +279,7 @@ class Field(object):
 
         # Step 1.4: Convert the value to one that the widget can understand
         if value is not null:
-            self.value = self.serialize(value)
+            self.form_value = self.serialize(value)
 
     def serialize(self, value):
         raise NotImplementedError()
@@ -325,7 +325,7 @@ class FieldFactory(Field):
 
         super(FieldFactory, self).__init__(name, **kw)
 
-    def bind(self, prefix, content, params):
+    def bind(self, prefix, value, params):
         try:
             cls = config.registry.storage[FIELD_ID][self.__field__]
         except:
@@ -337,7 +337,7 @@ class FieldFactory(Field):
 
         clone = cls.__new__(cls)
         clone.__dict__.update(self.__dict__)
-        clone.content = content
+        clone.value = value
         clone.params = params
         clone.name = '%s%s'%(prefix, self.name)
         return clone

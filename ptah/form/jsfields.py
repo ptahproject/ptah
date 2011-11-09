@@ -58,8 +58,8 @@ class JSDateTimeField(DateTimeField):
         self.date_part = self.params.get(self.date_name, null)
         self.time_part = self.params.get(self.time_name, null)
 
-        if self.content:
-            raw = self.content
+        if self.value:
+            raw = self.value
             self.tzinfo = raw.tzinfo
             if self.date_part is null:
                 self.date_part = raw.strftime('%m/%d/%Y')

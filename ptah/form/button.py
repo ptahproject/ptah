@@ -141,15 +141,18 @@ class Actions(OrderedDict):
             self[field.name] = field.bind(prefix, params, form, self.request)
 
     def execute(self):
+        result = None
         executed = False
         for action in self.values():
             if action.activated():
                 executed = True
-                action(self.form)
+                result = action(self.form)
 
         if executed:
             self.clear()
             self.update()
+
+        return result
 
 
 _identifier = re.compile('[A-Za-z][a-zA-Z0-9_]*$')

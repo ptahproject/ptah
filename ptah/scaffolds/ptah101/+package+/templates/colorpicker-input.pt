@@ -27,7 +27,7 @@ ${view.include('colorpicker')}
                        class context.klass;
                        title context.title;
                        lang context.lang;
-                       value context.value;
+                       value context.form_value;
                        disabled context.disabled;
                        tabindex context.tabindex;
                        readonly context.readonly;
@@ -37,5 +37,5 @@ ${view.include('colorpicker')}
                        maxlength context.maxlength" />
 
 <div class="input" id="colorSelector">
-    <div style="background-color: ${context.value}"></div>
+    <div style="background-color: ${context.form_value}"></div>
 </div>

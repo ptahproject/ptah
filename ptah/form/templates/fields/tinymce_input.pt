@@ -12,7 +12,7 @@
                    rows context.rows;
                    readonly context.readonly;
                    accesskey context.accesskey;"
-   tal:content="context.value" />
+   tal:content="context.form_value" />
 
 ${view.include('tiny_mce')}
 <script language="javascript" type="text/javascript">

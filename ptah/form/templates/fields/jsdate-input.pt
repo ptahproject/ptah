@@ -13,7 +13,7 @@ ${view.include('jquery-ui')}
                        class context.klass;
                        title context.title;
                        lang context.lang;
-                       value context.value;
+                       value context.form_value;
                        disabled context.disabled;
                        tabindex context.tabindex;
                        readonly context.readonly;
