@@ -28,13 +28,20 @@ view.library(
 # Bootstrap css
 view.library(
     'bootstrap',
-    path="bootstrap-1.3.0.min.css",
+    path="bootstrap-1.4.0.min.css",
     resource="bootstrap",
     type="css")
 
 view.library(
     'bootstrap-js',
-    path="bootstrap-1.3.0.js",
+    path=('js/bootstrap-alerts.js',
+          'js/bootstrap-buttons.js',
+          'js/bootstrap-dropdown.js',
+          'js/bootstrap-modal.js',
+          'js/bootstrap-popover.js',
+          'js/bootstrap-scrollspy.js',
+          'js/bootstrap-tabs.js',
+          'js/bootstrap-twipsy.js'),
     resource="bootstrap",
     type="js",
     require="jquery")
