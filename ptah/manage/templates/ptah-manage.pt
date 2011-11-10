@@ -21,7 +21,7 @@
 	  <ul class="nav secondary-nav">
 	    <li>
 	      <h5>
-		<a href="${view.manage_url}/">
+		<a href="${request.application_url}/">
 		  ${unicode(view.user)}:
 		</a>
 	      </h5>

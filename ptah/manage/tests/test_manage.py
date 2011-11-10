@@ -60,7 +60,9 @@ class TestManageModule(Base):
 
     def test_manage_access_manager(self):
         from ptah.settings import PTAH_CONFIG
-        from ptah.manage.manage import PtahAccessManager
+        from ptah.manage.manage import get_access_manager, PtahAccessManager
+
+        self.assertIs(get_access_manager(), PtahAccessManager)
 
         PTAH_CONFIG.managers = ['*']
 
