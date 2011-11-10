@@ -99,7 +99,7 @@ def cmsContent(request, app='', uri=None, action='', *args):
     else:
         content = load(uri)
 
-    adapters = config.registry.adapters
+    adapters = request.registry.adapters
 
     action = adapters.lookup(
         (IRestActionClassifier, providedBy(content)),
@@ -144,9 +144,9 @@ class Action(object):
 def restaction(name, context, permission):
     info = config.DirectiveInfo()
 
-    def _register(config, callable, name, context, permission):
+    def _register(cfg, callable, name, context, permission):
         ac = Action(callable, name, permission)
-        config.registry.registerAdapter(
+        cfg.registry.registerAdapter(
             ac, (IRestActionClassifier, context), IRestAction, name)
 
     def wrapper(func):
@@ -201,7 +201,7 @@ def apidocAction(content, request, *args):
     """api doc"""
     actions = []
     url = request.application_url
-    for name, action in config.registry.adapters.lookupAll(
+    for name, action in request.registry.adapters.lookupAll(
         (IRestActionClassifier, providedBy(content)), IRestAction):
 
         if not ptah.check_permission(

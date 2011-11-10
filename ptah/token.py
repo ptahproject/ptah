@@ -29,7 +29,7 @@ class TokenType(object):
         info.attach(
             config.Action(
                 lambda config, id, tp: \
-                    config.storage[TOKEN_TYPE].update({id: tp}),
+                    config.get_cfg_storage(TOKEN_TYPE).update({id: tp}),
                 (id, self),
                 discriminator = (TOKEN_TYPE, id))
             )

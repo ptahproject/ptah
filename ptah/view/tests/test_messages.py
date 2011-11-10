@@ -105,7 +105,7 @@ class TestStatusMessages(Base):
 
         self._init_ptah()
 
-        sm = config.registry
+        sm = self.registry
         sm.registerAdapter(CustomMessage, (IRequest,), IMessage, name='custom')
 
         service = IStatusMessage(self.request)

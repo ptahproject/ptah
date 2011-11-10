@@ -23,7 +23,7 @@ class BaseView(Base):
         pass
 
     def _view(self, name, context, request):
-        adapters = config.registry.adapters
+        adapters = self.registry.adapters
 
         view_callable = adapters.lookup(
             (IViewClassifier,
@@ -320,8 +320,8 @@ class TestView(BaseView):
             def permits(self, context, princials, permission):
                 return self.allowed
 
-        config.registry.registerUtility(SimpleAuth(), IAuthenticationPolicy)
-        config.registry.registerUtility(Authz(), IAuthorizationPolicy)
+        self.registry.registerUtility(SimpleAuth(), IAuthenticationPolicy)
+        self.registry.registerUtility(Authz(), IAuthorizationPolicy)
 
         set_checkpermission(default_checkpermission)
 
@@ -372,7 +372,7 @@ class TestView(BaseView):
 
         context = HTTPForbidden()
 
-        adapters = config.registry.adapters
+        adapters = self.registry.adapters
 
         view_callable = adapters.lookup(
             (IExceptionViewClassifier,
@@ -392,7 +392,7 @@ class TestView(BaseView):
 
         self._init_ptah()
 
-        request_iface = config.registry.getUtility(
+        request_iface = self.registry.getUtility(
             IRouteRequest, name='test-route')
 
         interface.directlyProvides(self.request, request_iface)
@@ -407,7 +407,7 @@ class TestRouteRegistration(BaseView):
         view.register_route('test-route', '/test/')
         self._init_ptah()
 
-        request_iface = config.registry.getUtility(
+        request_iface = self.registry.getUtility(
             IRouteRequest, name='test-route')
 
         self.assertIsNotNone(request_iface)
@@ -416,7 +416,7 @@ class TestRouteRegistration(BaseView):
         view.register_route('test-route', '/test/', use_global_views=True)
         self._init_ptah()
 
-        request_iface = config.registry.getUtility(
+        request_iface = self.registry.getUtility(
             IRouteRequest, name='test-route')
 
         self.assertTrue(request_iface.isOrExtends(IRequest))

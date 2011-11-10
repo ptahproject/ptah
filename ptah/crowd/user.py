@@ -36,18 +36,17 @@ class CreateUserForm(form.Form):
 
         # set password
         user.password = ptah.passwordTool.encode(data['password'])
-
-        props = get_properties(user.uri)
-        props.validated = data['validated']
-        props.suspended = data['suspended']
-
         Session.add(user)
         Session.flush()
 
         self.request.registry.notify(PrincipalAddedEvent(user))
 
+        props = get_properties(user.uri)
+        props.validated = data['validated']
+        props.suspended = data['suspended']
+
         self.message('User has been created.', 'success')
-        raise HTTPFound(location='.')
+        return HTTPFound(location='.')
 
     @form.button(_('Back'))
     def back(self):

@@ -3,10 +3,10 @@ from pyramid.response import Response
 from pyramid.httpexceptions import HTTPForbidden
 from pyramid.interfaces import IAuthorizationPolicy
 from pyramid.interfaces import IAuthenticationPolicy
+from pyramid.threadlocal import get_current_registry
 
 from ptah import config
-from ptah.view.layout import \
-    query_layout, query_layout_chain
+from ptah.view.layout import query_layout, query_layout_chain
 
 
 checkPermission = None
@@ -19,9 +19,9 @@ def set_checkpermission(func):
 
 @set_checkpermission
 def default_checkpermission(permission, context, request=None, throw=False):
-    AUTH = config.registry.queryUtility(IAuthenticationPolicy)
+    AUTH = get_current_registry().queryUtility(IAuthenticationPolicy)
     if AUTH:
-        AUTHZ = config.registry.queryUtility(IAuthorizationPolicy)
+        AUTHZ = get_current_registry().queryUtility(IAuthorizationPolicy)
         if AUTHZ:
             principals = AUTH.effective_principals(request)
             return AUTHZ.permits(context, principals, permission)
@@ -74,6 +74,9 @@ class TemplateRenderer(ViewRenderer):
 
     def __call__(self, context, request, content):
         view, result = self.factory(context, request)
+
+        if isinstance(result, Response):
+            return result
 
         kwargs = {'view': view,
                   'context': context,

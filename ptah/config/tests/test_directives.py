@@ -1,9 +1,11 @@
 """ directives tests """
 import sys, unittest
+from pyramid import testing
 from zope import interface
 from zope.interface.registry import Components
 from zope.interface.interfaces import IObjectEvent
 
+import ptah
 from ptah import config
 from ptah.config import directives
 from ptah.config.api import objectEventNotify
@@ -11,9 +13,14 @@ from ptah.config.api import objectEventNotify
 
 class BaseTesting(unittest.TestCase):
 
-    def _init_ptah(self, settings={}, newReg=None, *args, **kw):
-        config.initialize(('ptah.config', self.__class__.__module__),
-                          registry=newReg)
+    def _init_ptah(self, settings={}, pconfig=None, *args, **kw):
+        if pconfig is None:
+            pconfig = self.config
+        ptah.config.initialize(pconfig,('ptah.config', self.__class__.__module__))
+
+    def setUp(self):
+        self.config = testing.setUp()
+        self.registry = self.config.registry
 
     def tearDown(self):
         config.cleanup_system(self.__class__.__module__)
@@ -31,6 +38,8 @@ class BaseTesting(unittest.TestCase):
             del testHandler
         except:
             pass
+
+        testing.tearDown()
 
 
 class IContext(interface.Interface):
@@ -80,7 +89,7 @@ class TestAdaptsDirective(BaseTesting):
 
         self._init_ptah()
 
-        sm = config.registry
+        sm = self.registry
         adapters = sm.adapters.lookupAll((IContext,), IAdapter)
 
         self.assertTrue(len(adapters) == 1)
@@ -99,7 +108,7 @@ class TestAdaptsDirective(BaseTesting):
 
         self._init_ptah()
 
-        sm = config.registry
+        sm = self.registry
         adapters = sm.adapters.lookupAll((IContext,), IAdapter)
 
         self.assertTrue(adapters[0][0] == 'test')
@@ -114,7 +123,7 @@ class TestAdaptsDirective(BaseTesting):
 
         self._init_ptah()
 
-        sm = config.registry
+        sm = self.registry
         adapters = sm.adapters.lookupAll((IContext, IContext2), IAdapter)
 
         self.assertTrue(adapters[0][0] == '')
@@ -129,7 +138,7 @@ class TestAdaptsDirective(BaseTesting):
 
         self._init_ptah()
 
-        sm = config.registry
+        sm = self.registry
         adapters = sm.adapters.lookupAll((IContext, IContext2), IAdapter)
 
         self.assertTrue(adapters[0][0] == 'test')
@@ -147,14 +156,14 @@ class TestAdaptsDirective(BaseTesting):
         # reinstall
         config.cleanup_system()
 
-        sm = config.registry
+        sm = self.registry
         sm.__init__('base')
         adapters = sm.adapters.lookupAll((IContext,), IAdapter)
         self.assertTrue(len(adapters) == 0)
 
         self._init_ptah()
 
-        sm = config.registry
+        sm = self.registry
         adapters = sm.adapters.lookupAll((IContext,), IAdapter)
 
         self.assertTrue(len(adapters) == 1)
@@ -174,7 +183,7 @@ class TestAdapterDirective(BaseTesting):
 
         self._init_ptah()
 
-        sm = config.registry
+        sm = self.registry
         adapters = sm.adapters.lookupAll((IContext,), IAdapter)
 
         self.assertTrue(len(adapters) == 1)
@@ -195,7 +204,7 @@ class TestAdapterDirective(BaseTesting):
 
         self._init_ptah()
 
-        sm = config.registry
+        sm = self.registry
         adapters = sm.adapters.lookupAll((IContext,), IAdapter)
 
         self.assertTrue(len(adapters) == 1)
@@ -212,7 +221,7 @@ class TestAdapterDirective(BaseTesting):
 
         self._init_ptah()
 
-        sm = config.registry
+        sm = self.registry
         adapters = sm.adapters.lookupAll((IContext, IContext2), IAdapter)
 
         self.assertTrue(len(adapters) == 1)
@@ -256,10 +265,10 @@ class TestAdapterDirective(BaseTesting):
         # reinstall
         config.cleanup_system()
 
-        sm = config.registry
+        sm = self.registry
         sm.__init__('base')
 
-        self._init_ptah(newReg=config.registry)
+        self._init_ptah()
 
         adapters = sm.adapters.lookupAll((IContext,), IAdapter)
 
@@ -285,7 +294,7 @@ class TestSubscriberDirective(BaseTesting):
 
         self._init_ptah()
 
-        sm = config.registry
+        sm = self.registry
         sm.subscribers((Context(IContext),), None)
 
         self.assertTrue(len(events) == 1)
@@ -305,7 +314,7 @@ class TestSubscriberDirective(BaseTesting):
 
         self._init_ptah()
 
-        sm = config.registry
+        sm = self.registry
         sm.subscribers((Context(IContext),), None)
         sm.subscribers((Context(IContext2),), None)
 
@@ -323,7 +332,7 @@ class TestSubscriberDirective(BaseTesting):
 
         self._init_ptah()
 
-        sm = config.registry
+        sm = self.config.registry
         sm.subscribers((ObjectEvent(Context(IContext)),), None)
 
         self.assertTrue(len(events) == 1)
@@ -343,12 +352,12 @@ class TestSubscriberDirective(BaseTesting):
         # reinstall
         config.cleanup_system()
 
-        sm = config.registry
+        sm = self.registry
         sm.__init__('base')
 
         self._init_ptah()
 
-        sm = config.registry
+        sm = self.registry
         sm.subscribers((Context(IContext),), None)
         self.assertTrue(len(events) == 1)
 

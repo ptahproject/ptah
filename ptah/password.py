@@ -84,7 +84,7 @@ class PasswordTool(object):
     def can_change_password(self, principal):
         """ can principal password be changed """
         return ptah.extract_uri_schema(principal.uri) in \
-            config.registry.storage[PASSWORD_CHANGER_ID]
+            config.get_cfg_storage(PASSWORD_CHANGER_ID)
 
     def get_principal(self, passcode):
         """ generate passcode for principal """
@@ -108,7 +108,7 @@ class PasswordTool(object):
         self.remove_passcode(passcode)
 
         if principal is not None:
-            changers = config.registry.storage[PASSWORD_CHANGER_ID]
+            changers = config.get_cfg_storage(PASSWORD_CHANGER_ID)
 
             changer = changers.get(ptah.extract_uri_schema(principal.uri))
             if changer is not None:
@@ -142,7 +142,7 @@ def password_changer(schema):
         info.attach(
             config.Action(
                 lambda config, schema, changer: \
-                    config.storage[PASSWORD_CHANGER_ID].update(
+                    config.get_cfg_storage(PASSWORD_CHANGER_ID).update(
                             {schema: changer}),
                 (schema, changer),
                 discriminator = (PASSWORD_CHANGER_ID, schema))

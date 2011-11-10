@@ -33,7 +33,7 @@ class TestManageModule(Base):
 
         self._init_ptah()
 
-        MODULES = config.registry.storage[MANAGE_ID]
+        MODULES = config.get_cfg_storage(MANAGE_ID)
         self.assertIn('test-module', MODULES)
 
         request = self._makeRequest()
@@ -246,6 +246,6 @@ class TestInstrospection(Base):
 
         self._init_ptah()
 
-        INTROSPECTIONS = config.registry.storage[INTROSPECT_ID]
+        INTROSPECTIONS = config.get_cfg_storage(INTROSPECT_ID)
         self.assertIn('test-module', INTROSPECTIONS)
         self.assertIs(INTROSPECTIONS['test-module'], TestModule)

@@ -35,8 +35,9 @@ class Base(unittest.TestCase):
         st = dict(self._settings)
         if settings is not None:
             st.update(settings)
-        config.initialize(('ptah', self.__class__.__module__),
-                          registry = self.p_config.registry)
+        config.initialize(
+            self.p_config, ('ptah', self.__class__.__module__),
+            initsettings = False)
         config.initialize_settings(st, self.p_config)
 
         # create sql tables
@@ -49,6 +50,7 @@ class Base(unittest.TestCase):
         self.request = request = self._makeRequest()
         self.p_config = testing.setUp(request=request)
         self.p_config.get_routes_mapper()
+        self.registry = self.p_config.registry
 
     def _setRequest(self, request): #pragma: no cover
         self.request = request

@@ -42,7 +42,7 @@ class SnippetType(object):
 
 
 def render_snippet(stype, context, request):
-    snippet = config.registry.queryMultiAdapter(
+    snippet = request.registry.queryMultiAdapter(
         (context, request), ISnippet, stype)
     if snippet is None:
         raise HTTPNotFound
@@ -61,7 +61,7 @@ def snippettype(name, context=None, title='', description=''):
     info.attach(
         config.Action(
             lambda config, name, stype: \
-                config.storage[STYPE_ID].update({name: stype}),
+                config.get_cfg_storage(STYPE_ID).update({name: stype}),
             (name, stype,),
             discriminator = (STYPE_ID, name), order = 1))
 
@@ -79,13 +79,13 @@ def register_snippet(name, context=None, klass=None, template=None, layer=''):
         )
 
 
-def register_snippet_impl(config, klass, stype, context, template):
+def register_snippet_impl(cfg, klass, stype, context, template):
     cdict = {}
     if template is not None:
         cdict['template'] = template
 
     # find SnippetType info
-    if stype not in config.storage.get(STYPE_ID, ()):
+    if stype not in cfg.get_cfg_storage(STYPE_ID):
         log.warning("Can't find SnippetType %s", stype)
 
     requires = [context, interface.Interface]
@@ -105,5 +105,5 @@ def register_snippet_impl(config, klass, stype, context, template):
         snippet_class = type('Snippet %s'%klass, bases, cdict)
 
     # register snippet
-    config.registry.registerAdapter(
+    cfg.registry.registerAdapter(
         snippet_class, requires, ISnippet, name = stype)

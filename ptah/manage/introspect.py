@@ -105,7 +105,7 @@ class UriResolver(form.Form):
         if uri is None:
             uri = [self.request.GET.get('uri','')]
 
-        resolvers = config.registry.storage[RESOLVER_ID]
+        resolvers = config.get_cfg_storage(RESOLVER_ID)
 
         self.data = data = []
         for u in uri:
@@ -167,7 +167,7 @@ class PackageView(view.View):
             ndata[tp] = actions
 
         itypes = []
-        intros = config.registry.storage[INTROSPECT_ID]
+        intros = config.get_cfg_storage(INTROSPECT_ID)
         for key, cls in intros.items():
             if key in self.data:
                 itypes.append((cls.title, cls(self.request)))
@@ -193,7 +193,7 @@ class EventsView(view.View):
     def update(self):
         ev = self.request.params.get('ev')
 
-        all_events = config.registry.storage[directives.EVENT_ID]
+        all_events = config.get_cfg_storage(directives.EVENT_ID)
         self.event = event = all_events.get(ev)
 
         if event is None:
@@ -271,7 +271,7 @@ class RoutesView(view.View):
                             viewactions.append(
                                 (route, name, context, factory, action))
 
-            sm = config.registry
+            sm = self.request.registry
 
             # add pyramid routes
             for route in sm.getUtility(IRoutesMapper).get_routes():
@@ -354,7 +354,7 @@ class EventDirective(object):
     def renderActions(self, *actions):
         return self.actions(
             actions = actions,
-            events = config.registry.storage[directives.EVENT_ID],
+            events = config.get_cfg_storage(directives.EVENT_ID),
             manage_url = ptah.PTAH_CONFIG.manage_url,
             request = self.request)
 
@@ -409,7 +409,7 @@ class SnippetTypeDirective(object):
 
     def renderActions(self, *actions):
         STYPE_ID = sys.modules['ptah.view.snippet'].STYPE_ID
-        stypes = config.registry.storage[STYPE_ID]
+        stypes = config.get_cfg_storage(STYPE_ID)
         return self.actions(
             actions = actions,
             stypes = stypes,
@@ -453,12 +453,12 @@ class SubscriberDirective(object):
         if len(action.args[2]) > 1:
             obj = action.args[2][0]
             klass = action.args[2][-1]
-            event = config.registry.storage[directives.EVENT_ID].get(
+            event = config.get_cfg_storage(directives.EVENT_ID).get(
                 action.args[2][-1], None)
         else:
             obj = None
             klass = action.args[2][0]
-            event = config.registry.storage[directives.EVENT_ID].get(
+            event = config.get_cfg_storage(directives.EVENT_ID).get(
                 action.args[2][0], None)
 
         return locals()

@@ -24,7 +24,7 @@ def typeInfoResolver(uri):
        :Returns:
          - :py:class:`ptah.cms.TypeInformation`
     """
-    return config.registry.storage[TYPES_DIR_ID].get(uri)
+    return config.get_cfg_storage(TYPES_DIR_ID).get(uri)
 
 
 def get_type(uri):
@@ -35,7 +35,7 @@ def get_type(uri):
       - :py:class:`ptah.cms.TypeInformation`
 
     """
-    return config.registry.storage[TYPES_DIR_ID].get(uri)
+    return config.get_cfg_storage(TYPES_DIR_ID).get(uri)
 
 
 def get_types():
@@ -43,7 +43,7 @@ def get_types():
     :Returns:
       - mapping of all registered identifier and TypeInformation
     """
-    return config.registry.storage[TYPES_DIR_ID]
+    return config.get_cfg_storage(TYPES_DIR_ID)
 
 
 class TypeInformation(object):
@@ -91,7 +91,7 @@ class TypeInformation(object):
             return ()
 
         types = []
-        all_types = config.registry.storage[TYPES_DIR_ID]
+        all_types = config.get_cfg_storage(TYPES_DIR_ID)
 
         if self.filter_content_types:
             for tinfo in self.allowed_content_types:
@@ -193,7 +193,7 @@ def register_type_impl(
     tinfo.cls = cls
     tinfo.permission = permission
 
-    config.storage[TYPES_DIR_ID][tinfo.__uri__] = tinfo
+    config.get_cfg_storage(TYPES_DIR_ID)[tinfo.__uri__] = tinfo
 
     # build cms actions
     build_class_actions(cls)

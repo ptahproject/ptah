@@ -38,7 +38,7 @@ class TestLibraryManagement(Base):
         self._init_ptah()
 
         from ptah.view.library import LIBRARY_ID
-        lib = config.registry.storage[LIBRARY_ID]['test-lib']
+        lib = config.get_cfg_storage(LIBRARY_ID)['test-lib']
 
         self.assertEqual(lib.name, 'test-lib')
         self.assertEqual(len(lib.entries), 1)
@@ -53,7 +53,7 @@ class TestLibraryManagement(Base):
             'test-lib', path='http://ptah.org/test.js', type='js')
         self._init_ptah()
         from ptah.view.library import LIBRARY_ID
-        lib = config.registry.storage[LIBRARY_ID]['test-lib']
+        lib = config.get_cfg_storage(LIBRARY_ID)['test-lib']
 
         self.assertEqual(
             lib.render(self.request),
@@ -64,7 +64,7 @@ class TestLibraryManagement(Base):
             'test-lib', path='http://ptah.org/style.css', type='css')
         self._init_ptah()
         from ptah.view.library import LIBRARY_ID
-        lib = config.registry.storage[LIBRARY_ID]['test-lib']
+        lib = config.get_cfg_storage(LIBRARY_ID)['test-lib']
 
         self.assertEqual(
             lib.render(self.request),
@@ -76,7 +76,7 @@ class TestLibraryManagement(Base):
             prefix='<!--[if lt IE 7 ]>', postfix='<![endif]-->')
         self._init_ptah()
         from ptah.view.library import LIBRARY_ID
-        lib = config.registry.storage[LIBRARY_ID]['test-lib']
+        lib = config.get_cfg_storage(LIBRARY_ID)['test-lib']
 
         self.assertEqual(
             lib.render(self.request),
@@ -88,7 +88,7 @@ class TestLibraryManagement(Base):
             extra={'test': "extra"})
         self._init_ptah()
         from ptah.view.library import LIBRARY_ID
-        lib = config.registry.storage[LIBRARY_ID]['test-lib']
+        lib = config.get_cfg_storage(LIBRARY_ID)['test-lib']
 
         self.assertEqual(
             lib.render(self.request),

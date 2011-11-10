@@ -37,10 +37,10 @@ def initializing(ev):
             kwargs[attr] = SECURITY.get(attr)
 
         policy = policyFactory(*settings, **kwargs)
-        config.registry.registerUtility(policy, IAuthenticationPolicy)
+        ev.registry.registerUtility(policy, IAuthenticationPolicy)
 
     if SECURITY.authorization:
-        config.registry.registerUtility(
+        ev.registry.registerUtility(
             ACLAuthorizationPolicy(), IAuthorizationPolicy)
 
     # mail

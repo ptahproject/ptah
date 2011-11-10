@@ -1,5 +1,6 @@
 """ paste commands """
 import os.path, shutil, textwrap
+from pyramid import testing
 from paste.script.command import Command
 
 from ptah import config
@@ -41,8 +42,9 @@ class StaticCommand(Command):
 
     def command(self):
         # load all ptah packages
-        config.initialize(self._include, autoinclude=True)
-        registry = config.registry.storage[resources.STATIC_ID]
+        pconfig = testing.setUp()
+        config.initialize(pconfig, self._include, autoinclude=True)
+        registry = config.get_cfg_storage(resources.STATIC_ID)
 
         if self.options.dump:
             basepath = self.options.dump.strip()

@@ -40,9 +40,9 @@ class PtahModule(object):
 def module(id):
     info = config.DirectiveInfo(allowed_scope=('class',))
 
-    def _complete(config, cls, id):
+    def _complete(cfg, cls, id):
         cls.name = id
-        config.storage[MANAGE_ID][id] = cls
+        cfg.get_cfg_storage(MANAGE_ID)[id] = cls
 
     info.attach(
         config.ClassAction(
@@ -54,9 +54,9 @@ def module(id):
 def introspection(id):
     info = config.DirectiveInfo(allowed_scope=('class',))
 
-    def _complete(config, cls, id):
+    def _complete(cfg, cls, id):
         cls.name = id
-        config.storage[INTROSPECT_ID][id] = cls
+        cfg.get_cfg_storage(INTROSPECT_ID)[id] = cls
 
     info.attach(
         config.ClassAction(
@@ -96,9 +96,6 @@ class PtahManageRoute(object):
         self.request = request
 
         userid = authService.get_userid()
-        if not userid:
-            raise HTTPForbidden()
-
         if not ACCESS_MANAGER(userid):
             raise HTTPForbidden()
 
@@ -106,7 +103,7 @@ class PtahManageRoute(object):
 
     def __getitem__(self, key):
         if key not in PTAH_CONFIG.disable_modules:
-            mod = config.registry.storage[MANAGE_ID].get(key)
+            mod = config.get_cfg_storage(MANAGE_ID).get(key)
 
             if mod is not None:
                 return mod(self, self.request)
@@ -157,7 +154,7 @@ class ManageView(view.View):
         request = self.request
 
         mods = []
-        for name, mod in config.registry.storage[MANAGE_ID].items():
+        for name, mod in config.get_cfg_storage(MANAGE_ID).items():
             if name in PTAH_CONFIG.disable_modules:
                 continue
             mods.append((mod.title, mod))

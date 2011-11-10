@@ -18,9 +18,11 @@ class SettingsInitializing(object):
     event('Settings initializing event')
 
     config = None
+    registry = None
 
-    def __init__(self, config):
+    def __init__(self, config, registry):
         self.config = config
+        self.registry = registry
 
 
 class SettingsInitialized(object):
@@ -28,9 +30,11 @@ class SettingsInitialized(object):
     event('Settings initialized event')
 
     config = None
+    registry = None
 
-    def __init__(self, config):
+    def __init__(self, config, registry):
         self.config = config
+        self.registry = registry
 
 
 _marker = object()
@@ -41,7 +45,7 @@ SETTINGS_GROUP_ID = 'ptah.config:settings-group'
 
 
 def get_settings():
-    return api.registry.storage.get(SETTINGS_OB_ID)
+    return api.get_cfg_storage(SETTINGS_OB_ID)
 
 
 @subscriber(api.Initialized)
@@ -54,15 +58,15 @@ def init_settings(ev):
         settings.register(grp)
 
 
-def initialize_settings(cfg, config=None, section=ConfigParser.DEFAULTSECT):
-    settings = api.registry.storage[SETTINGS_OB_ID]
+def initialize_settings(cfg, pconfig, section=ConfigParser.DEFAULTSECT):
+    settings = pconfig.registry.storage[SETTINGS_OB_ID]
     if settings.initialized:
         raise RuntimeError(
             "initialize_settings has been called more than once.")
 
     log.info('Initializing ptah settings')
 
-    settings.config = config
+    settings.config = pconfig
     settings.initialized = True
 
     here = cfg.get('here', './')
@@ -77,13 +81,15 @@ def initialize_settings(cfg, config=None, section=ConfigParser.DEFAULTSECT):
                     parser.has_section(section):
                 cfg.update(parser.items(section, vars={'here': here}))
 
-    settings.init(cfg)
-
+    pconfig.begin()
     try:
-        api.notify(SettingsInitializing(config))
-        api.notify(SettingsInitialized(config))
+        settings.init(cfg)
+        api.notify(SettingsInitializing(pconfig, pconfig.registry))
+        api.notify(SettingsInitialized(pconfig, pconfig.registry))
     except Exception, e:
         raise api.StopException(e)
+    finally:
+        pconfig.end()
 
 
 def register_settings(name, *nodes, **kw):
@@ -110,8 +116,8 @@ def register_settings(name, *nodes, **kw):
             group.schema.validator.add(v)
 
     ac = Action(
-        lambda config, group: config.storage[SETTINGS_GROUP_ID].update(
-            {group.name: group}),
+        lambda config, group: config.get_cfg_storage(SETTINGS_GROUP_ID)\
+            .update({group.name: group}),
         (group,),
         discriminator = (SETTINGS_GROUP_ID, name))
 
@@ -258,7 +264,7 @@ class Group(object):
 
     def get(self, name, default=None):
         try:
-            data = api.registry.storage[SETTINGS_ID][self.name]
+            data = api.get_cfg_storage(SETTINGS_ID)[self.name]
             if name in data:
                 return data[name]
         except (KeyError, AttributeError):
@@ -276,7 +282,7 @@ class Group(object):
         return [(key, self.get(key)) for key in self.keys()]
 
     def update(self, data):
-        api.registry.storage[SETTINGS_ID][self.name].update(data)
+        api.get_cfg_storage(SETTINGS_ID)[self.name].update(data)
 
     def __getattr__(self, attr, default=_marker):
         res = self.get(attr, default)
@@ -291,4 +297,4 @@ class Group(object):
         return res
 
     def __setitem__(self, name, value):
-        api.registry.storage[SETTINGS_ID][self.name][name] = value
+        api.get_cfg_storage(SETTINGS_ID)[self.name][name] = value

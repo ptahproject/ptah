@@ -23,8 +23,8 @@ def RestService(name, title, description=''):
     apidoc = ServiceAPIDoc(name)
     srv.actions['apidoc'] = Action(apidoc, 'apidoc', apidoc.title)
 
-    def _register(config, srv):
-        config.storage[REST_ID][name] = srv
+    def _register(cfg, srv):
+        cfg.get_cfg_storage(REST_ID)[name] = srv
 
     info = config.DirectiveInfo()
     info.attach(
@@ -76,7 +76,7 @@ class ServiceAPIDoc(object):
         self.srvname = name
 
     def __call__(self, request):
-        srv = config.registry.storage[REST_ID][self.srvname]
+        srv = config.get_cfg_storage(REST_ID)[self.srvname]
         url = request.application_url
 
         info = OrderedDict(
@@ -199,7 +199,7 @@ class Api(object):
 
         # execute action for specific service
         try:
-            result = config.registry.storage[REST_ID][service](
+            result = config.get_cfg_storage(REST_ID)[service](
                 request, action, *arguments)
         except WSGIHTTPException, exc:
             request.response.status = exc.status

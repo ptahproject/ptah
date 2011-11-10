@@ -46,10 +46,6 @@ class Action(object):
         return True
 
 
-def _contentAction(config, id, context, ac):
-    config.registry.registerAdapter(ac, (context,), IAction, id)
-
-
 def uiaction(context, id, title,
              description = '',
              action='', condition=None, permission=None,
@@ -73,7 +69,9 @@ def uiaction(context, id, title,
 
     info.attach(
         config.Action(
-            _contentAction, (id, context, ac,),
+            lambda cfg, id, context, ac: \
+                cfg.registry.registerAdapter(ac, (context,), IAction, id),
+            (id, context, ac,),
             discriminator = ('ptah-cms:ui-action', id, context))
         )
 
@@ -82,7 +80,7 @@ def list_uiactions(content, request):
     url = request.resource_url(content)
 
     actions = []
-    for name, action in config.registry.adapters.lookupAll(
+    for name, action in request.registry.adapters.lookupAll(
         (interface.providedBy(content),), IAction):
         if action.check(content, request):
             actions.append(

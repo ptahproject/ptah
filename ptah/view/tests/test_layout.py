@@ -36,7 +36,7 @@ class TestLayout(Base):
         view.register_layout('test')
         self._init_ptah()
 
-        layout = config.registry.getMultiAdapter(
+        layout = self.registry.getMultiAdapter(
             (object(), self.request), ILayout, 'test')
 
         self.assertEqual(layout.name, 'test')
@@ -52,7 +52,7 @@ class TestLayout(Base):
         view.register_layout('test', klass=MyLayout)
         self._init_ptah()
 
-        layout = config.registry.getMultiAdapter(
+        layout = self.registry.getMultiAdapter(
             (object(), self.request), ILayout, 'test')
 
         self.assertTrue(isinstance(layout, MyLayout))
@@ -271,7 +271,7 @@ class TestLayout(Base):
         layout = query_layout(Context(), self.request, 'test')
         self.assertIsNone(layout)
 
-        request_iface = config.registry.getUtility(
+        request_iface = self.registry.getUtility(
             IRouteRequest, name='test-route')
         interface.directlyProvides(self.request, request_iface)
 

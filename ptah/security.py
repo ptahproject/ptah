@@ -4,6 +4,7 @@ from pyramid.location import lineage
 from pyramid.security import ACLDenied, Allow, Deny
 from pyramid.security import ALL_PERMISSIONS, NO_PERMISSION_REQUIRED
 from pyramid.interfaces import IAuthorizationPolicy
+from pyramid.threadlocal import get_current_registry
 from pyramid.httpexceptions import HTTPForbidden
 
 from ptah import authService
@@ -18,15 +19,15 @@ PERMISSION_ID = 'ptah:permission'
 
 
 def get_acls():
-    return config.registry.storage[ACL_ID]
+    return config.get_cfg_storage(ACL_ID)
 
 
 def get_roles():
-    return config.registry.storage[ROLE_ID]
+    return config.get_cfg_storage(ROLE_ID)
 
 
 def get_permissions():
-    return config.registry.storage[PERMISSION_ID]
+    return config.get_cfg_storage(PERMISSION_ID)
 
 
 class PermissionInfo(str):
@@ -45,7 +46,8 @@ def Permission(name, title, description=u''):
 
     info.attach(
         config.Action(
-            lambda config, p: config.storage[PERMISSION_ID].update({str(p): p}),
+            lambda config, p: \
+                config.get_cfg_storage(PERMISSION_ID).update({str(p): p}),
             (permission,),
             discriminator = (PERMISSION_ID, name))
         )
@@ -78,7 +80,8 @@ class ACL(list):
         info = config.DirectiveInfo()
         info.attach(
             config.Action(
-                lambda config, p: config.storage[ACL_ID].update({name: p}),
+                lambda config, p: \
+                    config.get_cfg_storage(ACL_ID).update({name: p}),
                 (self,), discriminator = ('ptah:acl-map', name))
             )
         self.directiveInfo = info
@@ -154,7 +157,7 @@ class ACLsMerge(object):
         self.acls = acls
 
     def __iter__(self):
-        acls = config.registry.storage[ACL_ID]
+        acls = config.get_cfg_storage(ACL_ID)
         for aname in self.acls:
             acl = acls.get(aname)
             if acl is not None:
@@ -207,7 +210,8 @@ class Role(object):
         info = config.DirectiveInfo()
         info.attach(
             config.Action(
-                lambda config, r: config.storage[ROLE_ID].update({r.name: r}),
+                lambda config, r: \
+                    config.get_cfg_storage(ROLE_ID).update({r.name: r}),
                 (self,), discriminator = (ROLE_ID, name))
             )
 
@@ -290,7 +294,7 @@ def check_permission(permission, context, request=None, throw=False):
     if userid == SUPERUSER_URI:
         return True
 
-    AUTHZ = config.registry.getUtility(IAuthorizationPolicy)
+    AUTHZ = get_current_registry().getUtility(IAuthorizationPolicy)
 
     principals = [Everyone.id]
 

@@ -20,7 +20,7 @@ class TestRestRegistrations(Base):
         srv = ptah.rest.RestService('test', 'Test service')
         self._init_ptah()
 
-        services = config.registry.storage[ptah.rest.REST_ID]
+        services = config.get_cfg_storage(ptah.rest.REST_ID)
 
         self.assertEqual(srv.name, 'test')
         self.assertIn('test', services)
@@ -60,7 +60,7 @@ class TestRestRegistrations(Base):
         ptah.rest.RestService('test', 'Test service')
         self._init_ptah()
 
-        srv = config.registry.storage[ptah.rest.REST_ID]['test']
+        srv = config.get_cfg_storage(ptah.rest.REST_ID)['test']
 
         @srv.action('action', 'Action')
         def raction(request, *args):
@@ -136,8 +136,8 @@ class TestRestView(Base):
         from ptah import authentication
         self._init_ptah()
 
-        config.registry.storage[
-            authentication.AUTH_PROVIDER_ID]['test'] = Provider()
+        config.get_cfg_storage(
+            authentication.AUTH_PROVIDER_ID)['test'] = Provider()
         request = DummyRequest(params = {'login': 'admin', 'password': '12345'})
 
         login = Login(request)
@@ -151,8 +151,8 @@ class TestRestView(Base):
         from ptah import authentication
         self._init_ptah()
 
-        config.registry.storage[
-            authentication.AUTH_PROVIDER_ID]['test'] = Provider()
+        config.get_cfg_storage(
+            authentication.AUTH_PROVIDER_ID)['test'] = Provider()
 
         request = DummyRequest(params = {'login': 'admin', 'password': '12345'})
 
@@ -198,7 +198,7 @@ class TestRestApi(Base):
         from ptah.rest import Api, REST_ID
         self._init_ptah()
 
-        services = config.registry.storage[REST_ID]
+        services = config.get_cfg_storage(REST_ID)
 
         data = []
         def service(request, action, *args):
@@ -220,7 +220,7 @@ class TestRestApi(Base):
         from ptah.rest import Api, REST_ID
         self._init_ptah()
 
-        services = config.registry.storage[REST_ID]
+        services = config.get_cfg_storage(REST_ID)
 
         def service(request, action, *args):
             raise HTTPNotFound()
@@ -239,14 +239,14 @@ class TestRestApi(Base):
         from ptah.rest import Api, REST_ID
         self._init_ptah()
 
-        services = config.registry.storage[REST_ID]
+        services = config.get_cfg_storage(REST_ID)
 
         def service(request, action, *args):
             return HTTPNotFound()
 
         services['test'] = service
 
-        request = DummyRequest()
+        request = DummyRequest(registry=self.p_config.registry)
         request.matchdict = {'service': 'test',
                              'subpath': ('action:test','1','2')}
         api = Api(request)
@@ -258,7 +258,7 @@ class TestRestApi(Base):
         from ptah.rest import Api, REST_ID
         self._init_ptah()
 
-        services = config.registry.storage[REST_ID]
+        services = config.get_cfg_storage(REST_ID)
 
         def service(request, action, *args):
             return {'dt': datetime.datetime.now()}

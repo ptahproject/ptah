@@ -22,7 +22,7 @@ class TestSnippet(Base):
         self._init_ptah()
 
         from ptah.view.snippet import STYPE_ID
-        stypes = config.registry.storage[STYPE_ID]
+        stypes = config.get_cfg_storage(STYPE_ID)
 
         self.assertTrue('test' in stypes)
 
@@ -38,7 +38,7 @@ class TestSnippet(Base):
         view.register_snippet('unknown', Context, TestSnippet)
         self._init_ptah()
 
-        snippet = config.registry.getMultiAdapter(
+        snippet = self.registry.getMultiAdapter(
             (Context(), None), ISnippet, name='unknown')
         self.assertIsInstance(snippet, TestSnippet)
 
@@ -91,7 +91,7 @@ class TestSnippet(Base):
         view.register_snippet('test', Context)
         self._init_ptah()
 
-        snippet = config.registry.getMultiAdapter(
+        snippet = self.registry.getMultiAdapter(
             (Context(), self.request), ISnippet, 'test')
 
         self.assertTrue(isinstance(snippet, Snippet))
@@ -106,7 +106,7 @@ class TestSnippet(Base):
         view.register_snippet('test', Context, TestSnippet)
         self._init_ptah()
 
-        snippet = config.registry.getMultiAdapter(
+        snippet = self.registry.getMultiAdapter(
             (Context(), self.request), ISnippet, 'test')
 
         self.assertTrue(isinstance(snippet, Snippet))

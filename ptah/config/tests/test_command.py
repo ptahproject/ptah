@@ -1,6 +1,7 @@
 import sys
 import unittest, colander
 from StringIO import StringIO
+from pyramid.testing import setUp, tearDown
 from ptah import config
 from ptah.config import commands
 
@@ -8,10 +9,15 @@ from ptah.config import commands
 class BaseTesting(unittest.TestCase):
 
     def _init_ptah(self, settings={}, *args, **kw):
-        config.initialize(('ptah.config', self.__class__.__module__))
+        config.initialize(self.config, ('ptah.config',self.__class__.__module__))
+
+    def setUp(self):
+        self.config = setUp()
+        self.registry = self.config.registry
 
     def tearDown(self):
         config.cleanup_system(self.__class__.__module__)
+        tearDown()
 
 
 class TestCommand(BaseTesting):

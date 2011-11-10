@@ -16,14 +16,14 @@ class TestSecurityInit(Base):
         from ptah.settings import SECURITY
         self._init_ptah({'auth.policy': 'no-policy'})
 
-        auth = config.registry.queryUtility(IAuthenticationPolicy)
+        auth = self.registry.queryUtility(IAuthenticationPolicy)
         self.assertIsNone(auth)
 
     def test_srvinit_authtkt(self):
         self._init_ptah({'auth.policy': 'auth_tkt',
                          'auth.secret': 'test-secret'})
 
-        auth = config.registry.queryUtility(IAuthenticationPolicy)
+        auth = self.registry.queryUtility(IAuthenticationPolicy)
         self.assertIsInstance(auth, AuthTktAuthenticationPolicy)
         self.assertEqual(auth.cookie.secret, 'test-secret')
 

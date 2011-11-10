@@ -20,7 +20,7 @@ from ptah.view.renderers import \
 
 
 def render_view(name, context, request):
-    adapters = config.registry.adapters
+    adapters = request.registry.adapters
 
     view_callable = adapters.lookup(
         (IViewClassifier, providedBy(request), providedBy(context)),
@@ -74,7 +74,7 @@ def register_view(
         )
 
 
-def register_view_impl(config, factory, name, context, template, route_name,
+def register_view_impl(cfg, factory, name, context, template, route_name,
                        layout, permission):
     chain = []
 
@@ -109,7 +109,7 @@ def register_view_impl(config, factory, name, context, template, route_name,
     else:
         view_classifier = IViewClassifier
 
-    sm = config.registry
+    sm = cfg.registry
 
     request_iface = IRequest
     if route_name is not None:
@@ -117,7 +117,7 @@ def register_view_impl(config, factory, name, context, template, route_name,
 
     pview = PyramidView(chain)
     factory.__renderer__ = pview
-    pview.__config_action__ = config.action
+    pview.__config_action__ = cfg.action
 
     sm.registerAdapter(
         pview,

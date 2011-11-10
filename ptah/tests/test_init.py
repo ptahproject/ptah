@@ -12,7 +12,7 @@ class TestPtahInit(unittest.TestCase):
         config = Configurator()
         config.include('ptah')
 
-        self.assertTrue(hasattr(config, 'ptah_init'))
+        self.assertTrue(hasattr(config, 'ptah_initialize'))
 
     def test_init_ptah_init(self):
         config = Configurator(
@@ -35,7 +35,7 @@ class TestPtahInit(unittest.TestCase):
             (ptah.config.SettingsInitialized,))
 
         config.include('ptah')
-        config.ptah_init(autoinclude=True)
+        config.ptah_initialize(autoinclude=True)
 
         self.assertTrue(data[0])
         self.assertTrue(data[1])
@@ -58,7 +58,7 @@ class TestPtahInit(unittest.TestCase):
         config.include('ptah')
 
         try:
-            config.ptah_init()
+            config.ptah_initialize()
         except Exception, err:
             pass
 
@@ -83,7 +83,7 @@ class TestPtahInit(unittest.TestCase):
         config.include('ptah')
 
         try:
-            config.ptah_init(autoinclude=True)
+            config.ptah_initialize(autoinclude=True)
         except Exception, err:
             pass
 
@@ -96,22 +96,22 @@ class TestPtahInit(unittest.TestCase):
 
     def test_init_wsgi_app_exception(self):
         orig_exit = sys.exit
-        orig_ptah_init = ptah.ptah_init
+        orig_ptah_init = ptah.ptah_initialize
 
         data = [False]
         def exit(status):
             data[0] = True
 
-        def ptah_init(config, packages=None, autoinclude=False):
+        def ptah_initialize(config, packages=None, autoinclude=False):
             raise ptah.config.StopException('')
 
         sys.exit = exit
-        ptah.ptah_init = ptah_init
+        ptah.ptah_initialize = ptah_initialize
 
         app = ptah.make_wsgi_app({})
 
         sys.exit = orig_exit
-        ptah.ptah_init = orig_ptah_init
+        ptah.ptah_initialize = orig_ptah_init
 
         self.assertIsNone(app)
         self.assertTrue(data[0])

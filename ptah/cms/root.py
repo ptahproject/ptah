@@ -3,6 +3,7 @@ import sqlalchemy as sqla
 import ptah
 from ptah import config
 from zope import interface
+from pyramid.threadlocal import get_current_registry
 
 from tinfo import Type
 from node import Node, Session, set_policy
@@ -14,7 +15,7 @@ from interfaces import IApplicationPolicy
 APPFACTORY_ID = 'ptah-cms:appfactory'
 
 def get_app_factories():
-    return config.registry.storage.get(APPFACTORY_ID, {})
+    return config.get_cfg_storage(APPFACTORY_ID)
 
 
 class ApplicationRoot(Container):
@@ -58,14 +59,15 @@ class ApplicationFactory(object):
         self.factory = factory
         self.policy = policy
 
-        if hasattr(config, 'registry') and hasattr(config.registry, 'storage'):
-            config.registry.storage[APPFACTORY_ID][self.id] = self
+        registry = get_current_registry()
+        if registry is not None:
+            config.get_cfg_storage(APPFACTORY_ID)[self.id] = self
 
         info = config.DirectiveInfo()
         info.attach(
             config.Action(
-                lambda config: config.storage[APPFACTORY_ID].update(
-                    {self.id:self}),
+                lambda cfg: cfg.get_cfg_storage(APPFACTORY_ID)\
+                    .update({self.id:self}),
                 discriminator=(APPFACTORY_ID, path))
             )
 

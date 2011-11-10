@@ -33,8 +33,9 @@ class Base(unittest.TestCase):
     def _init_ptah(self, settings=None, handler=None, *args, **kw):
         if settings is None:
             settings = self._settings
-        config.initialize(('ptah', self.__class__.__module__))
-        config.initialize_settings(settings, self.p_config)
+        config.initialize(self.config, ('ptah', self.__class__.__module__),
+                          initsettings=False)
+        config.initialize_settings(settings, self.config)
 
         # create sql tables
         Base = sqlahelper.get_base()
@@ -44,14 +45,16 @@ class Base(unittest.TestCase):
 
     def _setup_pyramid(self):
         self.request = request = self._makeRequest()
-        self.p_config = testing.setUp(request=request)
-        self.p_config.get_routes_mapper()
+        self.config = testing.setUp(request=request)
+        self.config.get_routes_mapper()
+        self.registry = self.config.registry
+        self.request.registry = self.config.registry
 
     def _setRequest(self, request): #pragma: no cover
         self.request = request
-        self.p_config.end()
-        self.p_config.begin(request)
-        request.registry = self.p_config.registry
+        self.config.end()
+        self.config.begin(request)
+        request.registry = self.config.registry
 
     def setUp(self):
         self._setup_pyramid()
@@ -60,7 +63,7 @@ class Base(unittest.TestCase):
     def tearDown(self):
         transaction.abort()
         config.cleanup_system()
-        sm = self.p_config
+        sm = self.config
         sm.__init__('base')
         testing.tearDown()
 

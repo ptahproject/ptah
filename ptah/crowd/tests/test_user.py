@@ -59,10 +59,7 @@ class TestCreateUser(Base):
         mod = CrowdModule(None, request)
 
         view = CreateUserForm(mod, request)
-        try:
-            view.update()
-        except Exception, res:
-            pass
+        res = view.update()
 
         self.assertIsInstance(res, HTTPFound)
         self.assertEqual(res.headers['location'], '.')

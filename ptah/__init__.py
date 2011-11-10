@@ -92,7 +92,7 @@ from ptah import crowd
 
 
 def includeme(config):
-    config.add_directive('ptah_init', ptah_init)
+    config.add_directive('ptah_initialize', ptah_initialize)
 
 
 def make_wsgi_app(global_settings, **settings):
@@ -107,19 +107,20 @@ def make_wsgi_app(global_settings, **settings):
     """
     import sys
     import ptah
+    import sqlahelper
+    import transaction
     from pyramid.config import Configurator
 
     authService.set_userid(SUPERUSER_URI)
 
     # configuration
-    global_settings.update(settings)
-    config = Configurator(settings=global_settings)
+    config = Configurator(settings=settings)
 
     # initialization
     packages = settings.get('packages', None)
     autoinclude = settings.get('autoinclude', True)
     try:
-        ptah_init(config, packages, autoinclude)
+        ptah_initialize(config, packages, autoinclude)
     except Exception, e:
         if isinstance(e, ptah.config.StopException):
             print e.print_tb()
@@ -127,22 +128,31 @@ def make_wsgi_app(global_settings, **settings):
         sys.exit(0)
         return
 
+    config.commit()
+
+    # create sql tables
+    Base = sqlahelper.get_base()
+    Base.metadata.create_all()
+
+    # commit possible transaction
+    transaction.commit()
+
     # create wsgi app
     return config.make_wsgi_app()
 
 
 # initialize ptah
-def ptah_init(configurator, packages=None, autoinclude=False):
+def ptah_initialize(configurator, packages=None, autoinclude=False):
     """ Initialize ptah packages.
     Load all ptah packages and intialize ptah settings system.
 
     This function automatically called by :py:func:`make_wsgi_app` function.
     """
     import ptah
-    import transaction
-    import sqlahelper
+    from pyramid.exceptions import  ConfigurationExecutionError
 
     configurator.include('pyramid_tm')
+    configurator.begin()
 
     try:
         settings = configurator.registry.settings
@@ -155,24 +165,21 @@ def ptah_init(configurator, packages=None, autoinclude=False):
 
         # load packages
         ptah.config.initialize(
-            packages, excludes, configurator.registry, autoinclude)
+            configurator, packages, excludes, autoinclude, initsettings=True)
 
-        # load settings
-        ptah.config.initialize_settings(settings, configurator)
-
-        # create sql tables
-        Base = sqlahelper.get_base()
-        Base.metadata.create_all()
+        configurator.commit()
 
         # send AppStarting event
         ptah.config.start(configurator)
     except Exception, e:
+        if isinstance(e, ConfigurationExecutionError):
+            e = e.evalue
+
         if not isinstance(e, ptah.config.StopException):
             ptah.config.shutdown()
             raise ptah.config.StopException(e)
 
         ptah.config.shutdown()
-        raise
-
-    # commit possible transaction
-    transaction.commit()
+        raise e
+    finally:
+        configurator.end()

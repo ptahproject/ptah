@@ -39,9 +39,9 @@ def library(name,
         )
 
 
-def library_impl(config, name, path, resource, type,
+def library_impl(cfg, name, path, resource, type,
                  require, prefix, postfix, extra):
-    data = config.storage[LIBRARY_ID]
+    data = cfg.get_cfg_storage(LIBRARY_ID)
 
     lib = data.get(name)
     if lib is None:
@@ -65,7 +65,7 @@ def include(name, request):
 
 
 def render_includes(request):
-    _libraries = config.registry.storage[LIBRARY_ID]
+    _libraries = config.get_cfg_storage(LIBRARY_ID)
 
     seen = set()
     libraries = []

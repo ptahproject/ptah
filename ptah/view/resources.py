@@ -50,8 +50,8 @@ def static(name, path, layer=''):
     info = config.DirectiveInfo()
     info.attach(
         config.Action(
-            LayerWrapper(lambda config, a1,a2,a3: \
-                         config.storage[STATIC_ID]\
+            LayerWrapper(lambda cfg, a1,a2,a3: \
+                         cfg.get_cfg_storage(STATIC_ID)\
                              .update({a1: (a2, a3)}), discriminator),
             (name, abspath, pkg),
             discriminator = discriminator))
@@ -92,7 +92,7 @@ def buildTree(path, not_allowed=re.compile('^[.~$#]')):
 def initialize(ev):
     url = STATIC.url
     if not urlparse(url)[0]:
-        registry = config.registry.storage[STATIC_ID]
+        registry = config.get_cfg_storage(STATIC_ID)
         for name, (abspath, pkg) in registry.items():
             prefix = '%s/%s'%(url, name)
             rname = '%s-%s'%(url, name)

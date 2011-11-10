@@ -15,7 +15,7 @@ def query_layout(context, request, name=''):
     assert IRequest.providedBy(request), u"must pass in a request object"
 
     for context in lineage(context):
-        layout = config.registry.queryMultiAdapter(
+        layout = request.registry.queryMultiAdapter(
             (context, request), ILayout, name)
         if layout is not None:
             return layout
@@ -106,7 +106,7 @@ def register_layout(
 
 
 def register_layout_impl(
-    config, klass, name, context, template, parent, route_name):
+    cfg, klass, name, context, template, parent, route_name):
 
     if not parent:
         layout = None
@@ -129,13 +129,13 @@ def register_layout_impl(
     else:
         layout_class = type(str('Layout<%s>'%name), (Layout,), cdict)
 
-    layout_class.__config_action__ = config.action
+    layout_class.__config_action__ = cfg.action
 
     # register layout
     request_iface = IRequest
     if route_name is not None:
-        request_iface = config.registry.getUtility(
+        request_iface = cfg.registry.getUtility(
             IRouteRequest, name=route_name)
 
-    config.registry.registerAdapter(
+    cfg.registry.registerAdapter(
         layout_class, (context, request_iface), ILayout, name)

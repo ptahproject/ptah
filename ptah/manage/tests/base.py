@@ -34,7 +34,8 @@ class Base(unittest.TestCase):
     def _init_ptah(self, settings=None, handler=None, *args, **kw):
         if settings is None:
             settings = self._settings
-        config.initialize(('ptah', self.__class__.__module__))
+        config.initialize(self.p_config, ('ptah', self.__class__.__module__),
+                          initsettings=False)
         config.initialize_settings(settings, self.p_config)
 
         # create sql tables
@@ -47,6 +48,8 @@ class Base(unittest.TestCase):
         self.request = request = self._makeRequest()
         self.p_config = testing.setUp(request=request)
         self.p_config.get_routes_mapper()
+        self.registry = self.p_config.registry
+        self.request.registry = self.p_config.registry
 
     def _setRequest(self, request): #pragma: no cover
         self.request = request

@@ -17,7 +17,9 @@ class Base(unittest.TestCase):
         from pyramid.request import Request
         if environ is None:
             environ = self._makeEnviron()
-        return Request(environ)
+        request = Request(environ)
+        request.registry = self.p_config.registry
+        return request
 
     def _makeEnviron(self, **extras):
         environ = {
@@ -35,8 +37,9 @@ class Base(unittest.TestCase):
     def _init_ptah(self, settings=None, handler=None, *args, **kw):
         if settings is None:
             settings = self._settings
-        config.initialize(('ptah', self.__class__.__module__),
-                          registry = self.p_config.registry)
+        config.initialize(
+            self.p_config, ('ptah', self.__class__.__module__),
+            initsettings = False)
         config.initialize_settings(settings, self.p_config)
 
         # create sql tables
@@ -50,6 +53,7 @@ class Base(unittest.TestCase):
         request.params = {}
         self.p_config = testing.setUp(request=request)
         self.p_config.get_routes_mapper()
+        self.request.registry = self.p_config.registry
 
     def _setup_ptah(self):
         self._init_ptah()

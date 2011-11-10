@@ -46,7 +46,7 @@ class TestRestApi(RestBase):
         import ptah.rest
         self._init_ptah()
 
-        services = config.registry.storage[ptah.rest.REST_ID]
+        services = config.get_cfg_storage(ptah.rest.REST_ID)
 
         self.assertIn('cms', services)
 
@@ -209,7 +209,7 @@ class TestCMSRestAction(RestBase):
 
         self._init_ptah()
 
-        adapters = config.registry.adapters
+        adapters = self.p_config.registry.adapters
 
         action = adapters.lookup(
             (IRestActionClassifier, interface.implementedBy(Content)),
@@ -249,6 +249,7 @@ class TestCMSRestAction(RestBase):
 
         content = Content()
         request = self._makeRequest()
+        request.registry = self.p_config.registry
         info = rest.apidocAction(content, request)
         self.assertEqual(len(info), 5)
         self.assertEqual(info[0]['name'], 'info')

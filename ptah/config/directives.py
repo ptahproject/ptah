@@ -47,8 +47,8 @@ def event(title='', category=''):
             discriminator = descriminator)
         )
 
-def _event(config, klass, title, category):
-    storage = config.storage[EVENT_ID]
+def _event(cfg, klass, title, category):
+    storage = cfg.get_cfg_storage(EVENT_ID)
     ev = EventDescriptor(klass, title, category)
     storage[klass] = ev
     storage[ev.name] = ev
@@ -99,13 +99,13 @@ def subscriber(*required):
     return wrapper
 
 
-def _register(config, methodName, *args, **kw):
-    method = getattr(api.registry, methodName)
+def _register(cfg, methodName, *args, **kw):
+    method = getattr(cfg.registry, methodName)
     method(*args, **kw)
 
 
-def _adapts(config, factory, required, name):
-    api.registry.registerAdapter(factory, required, name=name)
+def _adapts(cfg, factory, required, name):
+    cfg.registry.registerAdapter(factory, required, name=name)
 
 
 def _getProvides(factory):
@@ -143,10 +143,10 @@ class Action(object):
             return self._discriminator(self)
         return self._discriminator
 
-    def __call__(self, config):
+    def __call__(self, cfg):
         if self.callable:
             try:
-                self.callable(config, *self.args, **self.kw)
+                self.callable(cfg, *self.args, **self.kw)
             except: # pragma: no cover
                 log.exception(self.discriminator)
                 raise
@@ -154,9 +154,9 @@ class Action(object):
 
 class ClassAction(Action):
 
-    def __call__(self, config):
+    def __call__(self, cfg):
         try:
-            self.callable(config, self.info.context, *self.args, **self.kw)
+            self.callable(cfg, self.info.context, *self.args, **self.kw)
         except: # pragma: no cover
             log.exception(self.discriminator)
             raise

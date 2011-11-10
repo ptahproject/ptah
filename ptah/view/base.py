@@ -60,9 +60,11 @@ class View(object):
         if context is None:
             context = self.context
 
+        request = self.request
+
         try:
-            snippet = config.registry.queryMultiAdapter(
-                (context, self.request), ISnippet, stype)
+            snippet = request.registry.queryMultiAdapter(
+                (context, request), ISnippet, stype)
             if snippet is not None:
                 return snippet()
         except Exception, e:

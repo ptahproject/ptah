@@ -117,7 +117,7 @@ class TestPasswordChangerDecl(Base):
         self._init_ptah()
 
         from ptah.password import PASSWORD_CHANGER_ID
-        changers = config.registry.storage[PASSWORD_CHANGER_ID]
+        changers = config.get_cfg_storage(PASSWORD_CHANGER_ID)
 
         self.assertIn('test-schema', changers)
         self.assertIs(changers['test-schema'], changer)

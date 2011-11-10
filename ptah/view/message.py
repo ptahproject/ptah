@@ -28,7 +28,9 @@ class MessageService(object):
             self.session = {}
 
     def add(self, text, type='info'):
-        message = config.registry.getAdapter(self.request, IMessage, type)
+        request = self.request
+
+        message = request.registry.getAdapter(request, IMessage, type)
 
         messages = self.session.get(self.SESSIONKEY, [])
 
@@ -100,7 +102,7 @@ class ErrorMessage(Message):
 @config.adapter(IRequest)
 @interface.implementer(IStatusMessage)
 def getMessageService(request):
-    service = config.registry.queryUtility(IStatusMessage)
+    service = request.registry.queryUtility(IStatusMessage)
     if service is None:
         service = MessageService(request)
     return service
