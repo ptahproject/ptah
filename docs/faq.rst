@@ -13,9 +13,7 @@ Ptah Manage aims at provide 100% visibility into ALL aspects of your application
 Where does Pyramid and Ptah differ?
 -----------------------------------
 
-This needs to be fixed.  A lot has changed nad Ptah only adds API and
-is practical "yet another library" which can be used from any Pyramid
-application.
+This needs to be fixed.  A lot has changed nad Ptah only adds API and is practical "yet another library" which can be used from any Pyramid application.
 
 In Pyramid you must create a configurator and explicitly include/configure everything.  Ptah has config step which can scan and load all modules on initialization.  So if you have a module which defines a ptah entry-point in your setup.py; it will automatically get loaded.  Any module with a ptah entry-point needs to be excluded for it *not* to be loaded.
 
