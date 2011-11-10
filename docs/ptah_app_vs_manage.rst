@@ -49,8 +49,10 @@ The default "modules" for Ptah Manage are:
   
   All templates which are registered through Ptah/Memphis will show up.  They are grouped by package in which the template is defined.  All templates are overridable.  
 
-Your App
---------
+Ptah 301 App
+------------
+
+The Ptah301 scaffold is Your App.
 
 Your App provides a primitive UI which provides a starting point for you to create an application.  You can see your application at /
 
@@ -87,4 +89,4 @@ Conclusion
 ----------
 Ptah Manage is useful for managing configuration and providing visibility into how your application(s) are configured.  It's prime goal is to make you feel comfortable with what, how, where your application is configured.  If you do not feel comfortable with Ptah Manage - please let us know.  Asking for additional features (search for configuration variables) is out of scope.  If the information is there but you have to click around a bit -- we can fix this with UI, else let us know.
 
-Your App is a default implementation of the `ptah.cms` and the software stack.  It is your application.  You are building a web application, right?  So here is a start.
+Ptah 301 scaffold is a default implementation of the `ptah.cms` and the software stack.  It is your application.  You are building a web application, right?  So here is a start.

@@ -1,77 +1,31 @@
-Virtualenv and Pip
-==================
-virtualenv and pip are convienant ways to install python packages.  
+Virtualenv
+==========
+virtualenv is a convienant way to install python packages.  
 
 You will need Python 2.7 and git installed on your machine.  
 
-Install virtualenv
-------------------
+  $ curl -k -O https://raw.github.com/pypa/virtualenv/master/virtualenv.py
+  $ python2.7 virtualenv.py --no-site-packages venv
+  $ cd venv
+  venv$ git clone git://github.com/ptahproject/ptah.git
+  venv$ cd ptah
+  venv/ptah$ ../bin/python setup.py develop
+  
+If you like tests, run the tests::
 
-You need 1.6.4 of virtualenv or greater for Git support.  
-use your existing virtualenv.  It takes < 15 seconds to grab it. 
+  venv/ptah$ ../bin/python setup.py test
 
-install virtualenv::
+Use paster to create **your own application**.  The default username is **admin** and password is **12345**.  Check myapp/__init__.py for more information::
 
- ~$ curl -O https://raw.github.com/pypa/virtualenv/master/virtualenv.py
- ~$ python2.7 virtualenv.py --no-site-packages venv
- ~$ cd venv
+  venv/ptah$ cd ..
+  venv$ bin/paster create -t ptah101 myapp
+  venv$ cd myapp
+  venv/myapp$ ../bin/python setup.py develop
+  
+Start application via Paster::
 
-install ptah::
+  venv/myapp$ ../bin/paster serve settings.ini --reload
 
- ~/venv$ bin/pip install -e git+https://github.com/ptahproject/ptah.git#egg=ptah
- ~/venv$ cd src/ptah
- ~/venv/src/ptah$ ../../bin/python setup.py develop
- 
-Create ptah addon 
-~~~~~~~~~~~~~~~~~
+Login by opening your web browser to http://localhost:6543/ with credentials, login **admin** and password **12345**
 
-Let's create ptah addon with paster::
-
- ~/venv/src/ptah$ cd ..
- ~/venv/src$ ../bin/paster create -t ptahdemo myapp
- ~/venv/src$ cd myapp
- ~/venv/src/myapp$ ../../bin/python2.7 setup.py develop
-
-
-Start app
-~~~~~~~~~
-
-Start paster server::
-
- ~/venv$ bin/paster serve development.ini
-
-Login
-~~~~~
-
-A default user is created for you. login: admin and password: 12345
-
-Open your browser to see Ptah App, http://localhost:6543/
-
-You can see Ptah Manage, http://localhost:6543/ptah-manage/
-
-These are 2 separate wsgi apps.  They are both optional.  The "DT" tab
-on the right hand side of the screen is the Debug Toolbar from Pyramid.
-
-Run Tests
-~~~~~~~~~
-
-We use the `nose` test runner to collect which tests to run.  You can
-read up how to use coverage integration.  This is standard python usage
-of the the nose library; nothing fancy.
-
-Run ptah tests::
-
-    ~$ cd src/ptah
-    ptah$ ../bin/python setup.py develop
-    ptah$ ../bin/python setup.py test
-
-Run myapp tests::
-
-    ~$ cd myapp
-    myapp$ ../bin/python setup.py test
-
-Summary
-~~~~~~~
-
-Look inside myapp/__init__.py and you will see the application 
-startup configuration.
+You should read the source of myapp, after all it is your application.  A good place to start is myapp/__init__.py
