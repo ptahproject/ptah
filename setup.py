@@ -55,7 +55,6 @@ setup(name='ptah',
             ],
         'paste.global_paster_command': [
             'static = ptah.view.commands:StaticCommand',
-            'templates = ptah.view.commands:TemplatesCommand',
             ],
         },
       )
