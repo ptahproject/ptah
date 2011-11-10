@@ -77,8 +77,6 @@ Utilities
   .. autoclass:: Pagination
 
   .. py:data:: tldata
-
-  .. autoclass:: QueryFreezer
   
   .. autoclass:: JsonDictType
 

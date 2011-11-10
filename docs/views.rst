@@ -1,206 +1,8 @@
-Views and Layouts
-=================
+ptah.view
+=========
 
-This is similiar to how Pyramid resolves views but using templates/layouts.
-This is independent of Ptah App we just use it as example.  We use Chameleon but this can work with Jinja and Mako.
-
-Conceptual Model
-----------------
-
-Let's use Ptah App as an example.  There is a `front-page` content, its
-class is ptah.cmsapp.content.Page.  The default view for this page is::
-
-    ptah.view.register_view(
-        context = Page,
-        layout = u'', # empty string means `default layout`
-        permission = ptah.cms.View,
-        template = ptah.view.template('ptah.cmsapp:templates/page.pt'))
-
-NOTE: The layout '' means default.  You can also pass None which means no layout.  If you want
-to return a file from a view (you dont need a layout).
-
-So if you render this view::
-    >>> from pyramid.requests import Request
-    >>> from ptah.cms import get_app_factories    
-    >>> import ptah
-    >>> root = get_app_factories()['root']()
-    >>> request = Request.blank('/')
-    >>> request.root = root
-    >>> request.registry = # put registry
-    >>> full_html = ptah.view.render_view('', root['front-page'], request) 
-    ... the entire html page with all layout applied
-
-This is ptah.cmsapp/templates/page.pt rendered against the page.  This page
-does not contain *any* layout.  Then the ptah.view machinery walks up
-the layout chain calling each layout with the previous html rendered.
-
-System queries layout for this view::
-
-    >>> snippet = '<div>The result of a view without layout</div>.'
-    >>> layout = ptah.view.query_layout(request, root['front-page'], u'')
-    >>> layout
-    <ptah.cmsapp.views.ContentLayout object at ...>
-    >>> layout.template
-    <PageTemplateFile .. \ptah.cmsapp\templates\layoutcontent.pt>
-    >>> layout.update() # Since layouts have behavior; you must initialize
-    >>> layout.render(snippet)
-    .. This will show the layout and substiute ${content} with the snippet.
-    >>> layout.(snippet)
-    .. this will walk the layout chain and render the full HTML
-
-If we want to walk the layout chain upwards we would see that the ContentLayout's parent essentially is WorkspaceLayout.  Let's take a look
-at it by opening ptah.cmsapp\views.py and see ContentLayout::
-
-    class ContentLayout(view.Layout):
-        """ interface.IContent can be replaced with ptah.cms.Content """
-        view.layout('', interfaces.IContent, parent="workspace",
-                template=view.template("ptah.cmsapp:templates/layoutcontent.pt"))
-
-        def update(self):
-            self.actions = list_uiactions(self.context, self.request)
-
-You will notice that the parent attribute for the layout is `workspace`.
-So the layout engine continues walking up the Layout lineage doing this
-same thing::
-
-    snippet = layout.render(snippet)
-    p_layout = layout.layout # will be renamed in future
-    parent = ptah.view.query_layout(request, root['front-page'], p_layout)
-    snippet = parent.render(snippet)
-    ...
-    continues until there is no parent on a layout.  the top level parent
-    will have the <html></html>
-
-Great.  We have reinvented jinja inheritance or METAL.  Not so fast.  It
-is true that if you use Pyramid routes and you are not using __parent__ in
-your models; the Layout system is of little value.  
-
-Layout's can use Content Heirarchy
-----------------------------------
-
-Keep calm and carry on through this section and you will realize why layout
-exists.
-
-Presumably in a complex website you have different layouts which depend on
-the heirarchy of the website.  For instance, top-level sections will have
-a "branded" elements to know you are in the top-level section.  
-
-This is where the layout system comes into play.  Ran out of time. 
-Pseudo-code::
-
-  view = pyramid.render_view('/path/to/some/view')
-  snippet = templateengine.render(view.__template__(model))
-  layout = query_layout(request, model, '')
-  while 1:
-      snippet = layout.render(snippet)
-      layout = query_layout(request, model, layout.parent)
-      if layout is None:
-          break
-  snippet is the full HTML.
-  
-Let's presume we have the following content model heriarchy::
-
-    / 
-    -- section1
-      -- page1
-    -- section2
-      -- page2
-
-Presume we have defined layouts like this::
-
-    PageLayout, this has the <html><body>
-      -- WorkspaceLayout, this has <div class="container">
-        -- ADiscreteLayout, turtles all the way down
-
-We want to see different HTML in section1 and section2::
-
-    class Section1Layout(view.Layout):
-        view.layout('workspace', Section1Model, parent="page")
-    
-    class Section2Layout(view.Layout):
-        view.layout('workspace', Section2Model, parent='page')
-
-Now let's see what happens when we follow layout rendering.  This
-happens when rendering page1 and page2::
-
-    page1 model/template gets rendered into snippet.
-    layout = query_layout(request, page1, 'workspace') 
-    print layout
-    <Section1Layout...>
-    page2 model/template gets rendered into snippet.
-    layout = query_layout(request, page2, 'workspace')
-    print layout
-    <Section2Layout...>    
-
-Layout API
-~~~~~~~~~~
-from ptah.view import layout
-from ptah.view import Layout
-from ptah.view import query_layout
-from ptah.view import register_layout
-
-Views
------
-ptah.view.View is the base class for all views.  If you use this as your base class then the
-renderer will automatically use layout='' (default layout).  If you use function or do not inherient
-from ptah.view.View then the default value for layout = None.
-
-Really no different at all in Pyramid other than configuration statements. There are 2 ways to customize a view.  Override the entire View or you can override the template on a view.
-
-View Templates
-~~~~~~~~~~~~~~
-An additional feature is that templates which are bound to views can be overridden separately from their views.  You can also list all templates, where it was defined and where it exists on the filesystem.
-
-Template support is currently only Chameleon but its very easy to reimplement this support for Jinja and other template engines.
-
-Layouts
--------
-This concept provides ability to nest different HTML generation facilities to create a web page.  You do not have to use Layouts.  You can (and should) use your native template engines macro/inheritance facilities.  You do not have to use/learn Layouts to use Ptah.  Ptah App does use this facility.
-
-Ptah App and Ptah Manage both use Layouts to generate their structure and render full pages.  In reality you will just use a Layout or define your own.  Knowing the ins and outs may not be very interesting to you.  
-
-Layout in Ptah is based on the context in which the template is being rendered.  It is not really a replacement for template composition available inside of the different template implementations.  It is more 
-
-Snippets
---------
-
-An example of Snippet usage can be found in Ptah Manage. If you goto the Introspect module, in the top bar, you see: Introspect, Routes, Events.
-If you goto Settings module, in the top bar, you see: Settings.  
-
-You can not use a function to override a snippet.  You can use either a template or a class.  Let's keep it simple and just override the Settings module's snippet.
-
-First let's find the name:
-  - Open up Ptah Manage
-  - Click on Introspect, then click on ptah
-  - Look for `Snippet Types`
-  - The name is `ptah-module-actions`
-  - If you click on it the hyperlink you will be brought to the definition in source code.  Look for the register_snippet and we see:
-  
-  view.register_snippet(
-    'ptah-module-actions',
-    template = view.template('ptah:templates/moduleactions.pt'))
-
-Now lets override the snippet for the Settings module:
-
-  - Unfotunately at this time we dont have introspection on the Ptah Modules.  This is using Pyramid routes/views.  So lets go and look at source:.
-  - Open ptah/manage/settings.py
-  
-  - We see the name of the Module, SettingsModule and registration of it ptah.manageModule('settings')
-  
-Now lets override the snippet in myapp:
-  - Copy the ptah/ptah.cmsapp/templates/moduleactions.pt into myapp/templates/settings-snippet.pt
-  - Edit the .pt and add a <li>Modified</li> in the HTML snippet
-  - Now open up myapp/views.py and add::
-
-      from ptah import view
-      from ptah.manage.settings import SettingsModule
-      view.register_snippet(
-          'ptah-module-actions',
-          context = SettingsModule,
-          template = view.template('myapp:templates/settings-snippet.pt'))
-
-Restart and goto ptah-manage and then click on settings.  Look at the
-upper left hand side of the screen.
+The public api consists of registering static resource directories
+and wrapping such resources into a higher level concept, a library.
 
 Static Resources
 ----------------
@@ -245,6 +47,10 @@ Your production application when generating urls will use the static.url and you
 
 Libraries
 ---------
+
+Ptah101 has an example of creating a library.  In the example it uses a
+3rd party JQuery plugin Colorpicker.
+
 This name may change.  Main idea is that if your Snippet needs tags inserted into the HEAD you can use the library feature to ensure those HTML supporting assets exist.  An example:
 
   - The TinyMCE widget is a form field and when it is rendered it does have access to HEAD.
@@ -285,36 +91,15 @@ And your request will get all assets for the library.
 view.render_includes
 ~~~~~~~~~~~~~~~~~~~~
 
-If you want to manually render items in head, use render_includes in your
-Layout class.
+TBD
 
-If you want to add dojo, on myapp.layouts.PageLayout add render_includes::
+Removed features
+~~~~~~~~~~~~~~~~
+This section is for historical reasons.  Features which were in ptah.view
+but are no longer a part of public API or will be removed:
 
-    def render_includes(self):
-        includes = super(PageLayout, self).render_includes()
-        
-        includes += """
-        <script src="/static/newapp/dojo/dojo.js" 
-        data-dojo-config="isDebug: true,parseOnLoad: true">
-        </script>
-        """
- 
-        return includes
-
-Formatters
-----------
-
-Convienance functions which provide helpers to display information.  The 
-registered formatters are callable.  They are located in ptah.view.format. 
-An example of this would be for localization, in your settings.ini file 
-you can specify the date format to be displayed.  So if you use the 
-view.format.date_short(datetime.date(2011, 12,12)) the resulting format 
-will be based on the localization settings file.
-
-The goal is to have consistent format for values across a variety of 
-applications, e.g. datetime, timezone, currency.
-
-Messages
---------
-This is a reimplementation of pyramid flashmessages.  This will move.
-
+  * view.pview (view wrapper)
+  * view.messages
+  * view.snippets
+  * view.layout
+  

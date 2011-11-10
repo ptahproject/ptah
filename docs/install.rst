@@ -12,16 +12,23 @@ Requirements
   
   * git
 
-virtualenv & pip
-~~~~~~~~~~~~~~~~
+virtualenv
+~~~~~~~~~~
 
-This is recommended for the public.  Read more,  
-`installing with virtualenv <https://github.com/ptahproject/ptah/blob/master/docs/virtualenv.rst>`_
+This is the recommend way for people to install Ptah. 
+Grab a copy of the latest virtualenv. 
+
+  * git clone https://github.com/ptahproject/ptah
+  * cd ptah; python setup.py develop
+  * cd ..; bin/paster create -t ptah101 myapp
+  * cd ptah101; python setup.py develop
+  * cd ..; bin/paster serve myapp/settings.ini --reload
 
 buildout
 ~~~~~~~~
 
-This is not recommended for public.  Skip to next section.
+This is not recommended for people to install Ptah.
+Although many developers really like this approach.
 
 Grab buildout::
 
@@ -76,29 +83,6 @@ You will also notice in ~/devel/rest.py there is a module which exercises
 the REST API.  It maybe of interest and if your up for hacking on it - go
 for it.  We want models, schemas, type, and nearly all facilities to be
 exposed automatically when consuming high level APIs of Ptah.
-
-Websocket
----------
-
-This is experimental and no support is offered.  Please do not ask
-questions about this functionality.  It will be supported in 1.0 but
-not at this time.
-
-If you have greenlets and gevent installed by running
-`bin/buidout -c devel-socket.cfg` you will have an extra
-script inside of bin called `socket-server`.  You can just
-run it::
-
-  ~/devel$ bin/socket-server
-  it will spew lots of ugliness onto console.  disregard for now
-
-Once you have the socket server running you can login to Ptah CMS
-with 2 separate modern browsers.  Create/edit/delete content in
-one browser.  You will notice Growl-style notifications being
-displayed in the browser were you did not modify content.
-
-This functionality is currently very primitive but it will be a
-core service of Ptah and security will be applied to events.
 
 Conclusion
 ----------

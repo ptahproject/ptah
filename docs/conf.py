@@ -160,7 +160,7 @@ htmlhelp_basename = 'atemplatedoc'
 # (source start file, target name, title,
 #  author, document class [howto/manual]).
 latex_documents = [
-  ('index', 'atemplate.tex', 'Ptah CMS Documentation',
+  ('index', 'atemplate.tex', 'Ptah Framework Documentation',
    'Developers', 'manual'),
 ]
 

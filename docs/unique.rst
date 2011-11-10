@@ -1,28 +1,25 @@
 What Makes Ptah Unique
 ======================
 
+What it ain't
+-------------
+
+Ptah is not an application.  You build software.  You do not *extend it*.
+It's quite high level and should get you where you are going quickly. But
+it will not do your job (building an application) for you.
+
 Pyramid
 -------
 
 Since Ptah is built on top of Pyramid you should familiarize yourself
 with what makes `Pyramid Unique <https://docs.pylonsproject.org/projects/pyramid/1.2/narr/introduction.html#what-makes-pyramid-unique>_`
-    
-Ptah is trying to keep with the Pyramid motif, "Eat what you pay for".
-Although a CMS does need to have an opinion, which we have in spades. 
-Ptah shares many of the values and design decisions of Pyramid.  Runtime
-flexibility of every possible aspect of the CMS is a waste of resources.
-We want to compute as much as possible at startup time and carefully outline
-WHAT limitations we will impose on runtime configuration.  For instance you 
-can not add ad-hoc Permissions at runtime.  You add a Permission and restart 
-the server.  After all if you are adding Permissions at runtime - there is
-certainly a better way.  
 
 Eat What You Pay For
 --------------------
 
-CMS and Application frameworks are not known for their "eat what you pay for".  
-We have designed the system so you can use most of the Ptah core features without 
-having to use "the entire web ui, CMS and associated features".  
+Many frameworks are not known for their "eat what you pay for".  Ptah was
+designed so you can use most of the features without having to agree to
+all of the choices. You can pick what you like and use only what you like.  
 
 Performance
 -----------
@@ -115,17 +112,6 @@ One thing that Plone has taught us is that if there is a service/persistence
 engine; people will want to integrate into it (and expect it to participate 
 in all of the CMS services).  URI are the token which represents a record, 
 be that a user record or a content record.  
-    
-Other storages
---------------
-
-Aim to support ZODB, Mongo and other NoSQL databases integrations in a natural 
-way.  We have a lot of experience with ZODB, BerkelyDB and other "No SQL" 
-systems.  We believe we can provide a cohesive way to mix such "No SQL" records
-into the CMS system.  What does that mean?  That records in those external 
-systems can have security applied if they are being loaded through Ptah.  
-Security, workflow, and other services Ptah provides.  Ptah will never have a
-`pluggable` storage engine.  
 
 Easy to Fork
 ------------
@@ -146,31 +132,4 @@ Future Proof
 ------------
 
 Ptah aims to be the first comprehensive CMS framework which will work with
-Python 3.  All work done on Ptah around User Interface and User Experience
-will use HTML5, CSS3, websockets and ARIA.  While many browsers do not 
-fully support this at the end of 2011.  Browsers will in the next 12 months.
-We hope to release a stable version around the time these browser features 
-are widely available.  
-
-Interactivity
--------------
-The default ptah.cmsapp UI will require websockets for interactivity.
-Ptah will still work by running simply 1 server (HTTP) but it will be 
-recommended to run a second server dedicated to websockets.  We aim to provide
-facilities which will make developing security interactive web applications
-pleasant.
-
-Exclusion over Inclusion
-------------------------
-We know this is controversial and possible anti-Pyramid but hear us out.
-Pyramid requires the developer to be explicit and you specifically say you
-want to load a package.  Ptah *does not* do this.  If you have a package
-in your PYTHONPATH that has a entry-point for `ptah`; it will get loaded.
-This is the default behavior and, of course, you can manually Configure your
-usage of Ptah the same way you configure Pyramid.  
-
-But why?  Because the goal of Ptah is to support a class of developer who
-wants to casually experiment with the system.  They should be able to install
-a egg and restart service and have it work.  We do understand that this goes
-against the Pyramid culture - so we will strive to document and support the
-Pyramid way.
+Python 3.  

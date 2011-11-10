@@ -1,5 +1,5 @@
-Ptah CMS
-========
+Ptah Framework
+==============
 
 .. toctree::
    :maxdepth: 2
