@@ -222,7 +222,7 @@ class Field(object):
     params = {}
     mode = None
     value = null
-    form_value = null
+    form_value = None
 
     id = None
     klass = None

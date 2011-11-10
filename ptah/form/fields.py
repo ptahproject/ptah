@@ -160,7 +160,7 @@ class BaseMultiChoiceField(VocabularyField):
     def update(self, request):
         super(BaseMultiChoiceField, self).update(request)
 
-        if self.form_value is null:
+        if self.form_value in (null, None):
             self.form_value = []
 
         self.update_items()

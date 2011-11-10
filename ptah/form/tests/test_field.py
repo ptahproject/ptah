@@ -392,7 +392,7 @@ class TestField(Base):
         field = MyField('test')
         widget = field.bind('field.', form.null, {})
         widget.update(request)
-        self.assertIs(widget.form_value, form.null)
+        self.assertIs(widget.form_value, None)
 
         field = MyField('test', default='default value')
         widget = field.bind('field.', form.null, {})
