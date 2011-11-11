@@ -6,7 +6,6 @@ from pyramid.security import authenticated_userid
 
 from ptah import config, view, form, cms, resolve
 
-from {{package}}.app import ApplicationRoot
 from {{package}} import models
 
 # logger, check Debug Toolbar logging section or stdout
@@ -28,10 +27,7 @@ class Telephone(form.Regex):
 # This is a "class view", you do not need to use a class for your 
 # view. You can use a Function view as provided below.
 
-@view_config(renderer='templates/homepage.pt',
-             context=ApplicationRoot,
-             route_name='root')
-             
+@view_config(renderer='templates/homepage.pt', route_name='root')
 class HomepageView(object):
     """ Homepage view """
     
@@ -54,14 +50,11 @@ class HomepageView(object):
 # This is a "function view", you do not need to use a function for your 
 # view.  You can use a Class view as provided above.
 
-@view_config(renderer='templates/template.pt', 
-             context=ApplicationRoot, 
-             route_name='contact-us')
-
+@view_config(renderer='templates/template.pt', route_name='contact-us')
 def contact_us(context, request):
 
     contactform = form.Form(context, request)
- 
+
     contactform.fields = form.Fieldset(
 
         form.TextField(

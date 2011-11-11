@@ -23,12 +23,10 @@ class StopException(Exception):
             self.isexc = False
 
     def __str__(self):
-        if self.isexc:
-            return str(self.exc)
-        return self.exc
+        return '\n%s'%self.print_tb()
 
     def print_tb(self):
-        if self.isexc:
+        if self.isexc and self.exc_value:
             out = StringIO.StringIO()
             traceback.print_exception(
                 self.exc_type, self.exc_value, self.exc_traceback, file=out)

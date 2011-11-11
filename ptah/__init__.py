@@ -104,7 +104,6 @@ def make_wsgi_app(global_settings, **settings):
     import sys
     import ptah
     import sqlahelper
-    import transaction
     from pyramid.config import Configurator
 
     authService.set_userid(SUPERUSER_URI)
@@ -126,18 +125,6 @@ def make_wsgi_app(global_settings, **settings):
 
     config.commit()
 
-    # create sql tables
-    Base = sqlahelper.get_base()
-    Base.metadata.create_all()
-
-    # send AppStarting event
-    config.begin()
-    ptah.config.start(config)
-    config.end()
-
-    # commit possible transaction
-    transaction.commit()
-
     # create wsgi app
     return config.make_wsgi_app()
 
@@ -150,6 +137,9 @@ def ptah_initialize(configurator, packages=None, autoinclude=False):
     This function automatically called by :py:func:`make_wsgi_app` function.
     """
     import ptah
+    import sqlahelper
+    import StringIO
+    import transaction
     from pyramid.exceptions import  ConfigurationExecutionError
 
     configurator.include('pyramid_tm')
@@ -169,13 +159,24 @@ def ptah_initialize(configurator, packages=None, autoinclude=False):
             configurator, packages, excludes, autoinclude, initsettings=True)
 
         configurator.commit()
+
+        # create sql tables
+        Base = sqlahelper.get_base()
+        Base.metadata.create_all()
+
+        # send AppStarting event
+        ptah.config.start(configurator)
+
+        # commit possible transaction
+        transaction.commit()
     except Exception, e:
         if isinstance(e, ConfigurationExecutionError):
             e = e.evalue
 
         if not isinstance(e, ptah.config.StopException):
             ptah.config.shutdown()
-            raise ptah.config.StopException(e)
+            e = ptah.config.StopException(e)
+            raise e
 
         ptah.config.shutdown()
         raise e
