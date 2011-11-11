@@ -34,7 +34,7 @@ sqla.url = sqlite:///%(here)s/db.sqlite
 template.chameleon_reload = true
 
 # ptah
-ptah.managers.0 = admin
+ptah.managers.0 = *
 
 [server:main]
 use = egg:Paste#http
