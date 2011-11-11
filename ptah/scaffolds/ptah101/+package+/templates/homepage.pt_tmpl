@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>ree5, made with Ptah!</title>
+    <title>{{package}}, made with Ptah!</title>
     <meta name="description" content="">
     <meta name="author" content="">
 
@@ -26,7 +26,7 @@
     <div class="topbar">
       <div class="topbar-inner">
         <div class="container-fluid">
-          <a class="brand" href="#">Project ree5</a>
+          <a class="brand" href="#">Project {{package}}</a>
           <ul class="nav">
             <li class="active"><a href="#">Home</a></li>
             <li><a href="/contact-us.html">Contact</a></li>
@@ -53,8 +53,8 @@
       <div class="content">
         <!-- Main hero unit for a primary marketing message or call to action -->
         <div class="hero-unit">
-          <h1>Welcome to ree5!</h1>
-          <p>The ree5 application uses Ptah, a modern web publishing framework.  
+          <h1>Welcome to {{package}}!</h1>
+          <p>The {{package}} application uses Ptah, a modern web publishing framework.  
           Ptah enables you to build web applications and web sites - very fast.  The 
           best part is Ptah works like you expect.  It uses well-documented technologies.
           You can pick what features you want and leave behind the opinions which you disagree.
