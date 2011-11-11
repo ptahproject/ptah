@@ -101,11 +101,11 @@ def main(global_config, **settings):
         'ptah-manage','/ptah-manage/*traverse',
         factory=ptah.manage.PtahManageRoute, use_global_views=True)
 
-    config.add_route('contact-us', '/contact-us.html')
-        
-    config.add_route(
-        'edit-links', '/links/{id}/edit',
-        factory=models.factory, use_global_views=True)
+    # we love them routes
+    config.add_route('root', '/')    
+    config.add_route('contact-us', '/contact-us.html')        
+    config.add_route('edit-links', '/links/{id}/edit',
+                     factory=models.factory, use_global_views=True)
         
     config.scan()
 

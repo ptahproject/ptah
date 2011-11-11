@@ -10,16 +10,14 @@
          render_includes actually generates the HTML of the includes
     -->
 
-    ${view.include('bootstrap')}
-    ${view.include('bootstrap-js')}
-    <tal:block content="structure view.render_includes()" />
-    <link type="text/css" rel="stylesheet" href="${view.static_url('{{package}}', 'app.css')}" />
+    <tal:block content="structure view.rendered_includes" />
+    <link type="text/css" rel="stylesheet" href="${'%s/app.css' % static_url}" />
 
     <!-- Le fav and touch icons -->
-    <link rel="shortcut icon" href="${view.static_url('{{package}}', 'ico/favicon.ico')}">
-    <link rel="apple-touch-icon" href="${view.static_url('{{package}}', 'ico/apple-touch-icon.png')}">
-    <link rel="apple-touch-icon" sizes="72x72" href="${view.static_url('{{package}}', 'ico/apple-touch-icon-72x72.png')}">
-    <link rel="apple-touch-icon" sizes="114x114" href="${view.static_url('{{package}}', 'ico/apple-touch-icon-114x114.png')}">
+    <link rel="shortcut icon" href="${'%s/ico/favicon.ico' % static_url}">
+    <link rel="apple-touch-icon" href="${'%s/ico/apple-touch-icon.png' % static_url}">
+    <link rel="apple-touch-icon" sizes="72x72" href="${'%s/ico/apple-touch-icon-72x72.png' % static_url}">
+    <link rel="apple-touch-icon" sizes="114x114" href="${'%s/ico/apple-touch-icon-114x114.png' % static_url}">
 
   </head>
 
@@ -64,7 +62,12 @@
           <p>The default login is <strong>admin</strong> and the 
              password is <strong>12345</strong>
           </p>
-          <p><a class="btn primary large" href="/ptah-manage/">Goto Ptah Manange UI &raquo;</a></p>
+          <p tal:condition="view.user is not None">
+            <a class="btn primary large" href="/ptah-manage/">Goto Ptah Manange UI &raquo;</a>
+          </p>
+          <p tal:condition="view.user is None">
+            <a class="btn primary large" href="/login.html">Login first &raquo;</a>
+          </p>
         </div>
 
         <!-- Example row of columns -->

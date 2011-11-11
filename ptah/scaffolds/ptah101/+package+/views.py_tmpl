@@ -28,19 +28,28 @@ class Telephone(form.Regex):
 # This is a "class view", you do not need to use a class for your 
 # view. You can use a Function view as provided below.
 
-class HomepageView(view.View):
+@view_config(renderer='templates/homepage.pt',
+             context=ApplicationRoot,
+             route_name='root')
+             
+class HomepageView(object):
     """ Homepage view """
     
-    view.pview(context=ApplicationRoot,
-               template=view.template('templates/homepage.pt'))
-
+    def __init__(self, request):
+        self.request = request
+        view.include('bootstrap', request)
+        view.include('bootstrap-js', request)
+        
     def get_links(self):
         return cms.Session.query(models.Link)
 
-    def update(self):
-        """ update is called before template applied for ptah.view.View """
-        self.principal = authenticated_userid(self.request)
+    def __call__(self):
+        request = self.request
+        self.rendered_includes = view.render_includes(request)
+        self.rendered_messages = view.render_messages(request)
+        self.principal = authenticated_userid(request)
         self.user = resolve(self.principal)
+        return {'static_url':view.static_url('{{package}}', '', request)}
 
 # This is a "function view", you do not need to use a function for your 
 # view.  You can use a Class view as provided above.
