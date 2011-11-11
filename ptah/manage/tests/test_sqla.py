@@ -7,16 +7,14 @@ from base import Base
 class TestSqlaModule(Base):
 
     def test_sqla_module(self):
-        from ptah.manage.manage import PtahManageRoute
+        from ptah.manage.manage import CONFIG, PtahManageRoute
         from ptah.manage.sqla import SQLAModule, Table
 
         request = DummyRequest()
 
-        ptah.authService.set_userid('test')
-        ptah.PTAH_CONFIG['managers'] = ('*',)
+        CONFIG['managers'] = ['*']
         mr = PtahManageRoute(request)
         mod = mr['sqla']
-
         self.assertIsInstance(mod, SQLAModule)
 
         self.assertRaises(KeyError, mod.__getitem__, 'psqla-unknown')

@@ -116,13 +116,13 @@ class TestFieldPreviews(Base):
 class TestFieldsModule(Base):
 
     def test_fields_module(self):
-        from ptah.manage.manage import PtahManageRoute
+        from ptah.manage.manage import CONFIG, PtahManageRoute
         from ptah.manage.fields import FieldsModule
 
         request = DummyRequest()
 
         ptah.authService.set_userid('test')
-        ptah.PTAH_CONFIG['managers'] = ('*',)
+        CONFIG['managers'] = ('*',)
         mr = PtahManageRoute(request)
         mod = mr['fields']
 

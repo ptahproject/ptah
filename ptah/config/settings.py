@@ -297,4 +297,9 @@ class Group(object):
         return res
 
     def __setitem__(self, name, value):
-        api.get_cfg_storage(SETTINGS_ID)[self.name][name] = value
+        data = api.get_cfg_storage(SETTINGS_ID)
+        try:
+            data[self.name][name] = value
+        except KeyError:
+            data[self.name] = {}
+            data[self.name][name] = value

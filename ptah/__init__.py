@@ -46,7 +46,7 @@ from ptah.security import NOT_ALLOWED
 from pyramid.security import NO_PERMISSION_REQUIRED
 
 # password tool
-from ptah.password import passwordTool
+from ptah.password import pwd_tool
 from ptah.password import password_changer
 
 # formatter
@@ -61,9 +61,6 @@ from ptah import events
 
 # mail templates
 from ptah import mail
-
-# ptah settings
-from ptah.settings import PTAH_CONFIG, MAIL
 
 # pagination
 from ptah.util import Pagination
@@ -87,10 +84,7 @@ from ptah import manage
 # cms
 from ptah import cms
 
-# crowd
-from ptah import crowd
-
-
+# pyramid include
 def includeme(config):
     config.add_directive('ptah_initialize', ptah_initialize)
 

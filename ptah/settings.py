@@ -7,54 +7,6 @@ from pyramid.authentication import AuthTktAuthenticationPolicy
 _ = translationstring.TranslationStringFactory('ptah')
 
 
-PTAH_CONFIG = config.register_settings(
-    'ptah',
-
-    config.SchemaNode(
-        config.Sequence(), colander.SchemaNode(colander.Str()),
-        name = 'managers',
-        title = 'Managers',
-        description = 'List of user logins with access rights to '\
-            'ptah management ui.',
-        default = ()),
-
-    config.SchemaNode(
-        colander.Str(),
-        name = 'login',
-        title = 'Login url',
-        default = ''),
-
-    config.SchemaNode(
-        colander.Str(),
-        name = 'pwdmanager',
-        title = 'Password manager',
-        description = 'Available password managers ("plain", "ssha", "bcrypt")',
-        default = 'plain'),
-
-    config.SchemaNode(
-        colander.Str(),
-        name = 'manage_url',
-        title = 'Ptah manage url',
-        default = '/ptah-manage'),
-
-    config.SchemaNode(
-        config.Sequence(), colander.SchemaNode(colander.Str()),
-        name = 'disable_modules',
-        title = 'Hide Modules in Management UI',
-        description = 'List of modules names to hide in manage ui',
-        default = ()),
-
-    config.SchemaNode(
-        config.Sequence(), colander.SchemaNode(colander.Str()),
-        name = 'disable_models',
-        title = 'Hide Models in Model Management UI',
-        description = 'List of models to hide in model manage ui',
-        default = ('cms-type:sqlblob',)),
-
-    title = 'Ptah settings',
-    )
-
-
 types = {
     '': (),
     'auth_tkt': (AuthTktAuthenticationPolicy, ('secret',), ('callback',)),

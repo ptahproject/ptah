@@ -236,8 +236,7 @@ class RoutesView(view.View):
     __intr_path__ = '/ptah-manage/introspect/routes.html'
 
     def update(self):
-        #ev = self.request.params.get('ev')
-        self.route = route = None #directives.events.get(ev)
+        self.route = route = None
 
         if route is None:
             packages = list_packages()
@@ -336,7 +335,7 @@ class UriIntrospection(object):
         return self.actions(
             actions = actions,
             rst_to_html = ptah.rst_to_html,
-            manage_url = ptah.PTAH_CONFIG.manage_url,
+            manage_url = manage.CONFIG.manage_url,
             request = self.request)
 
 
@@ -355,7 +354,7 @@ class EventDirective(object):
         return self.actions(
             actions = actions,
             events = config.get_cfg_storage(directives.EVENT_ID),
-            manage_url = ptah.PTAH_CONFIG.manage_url,
+            manage_url = manage.CONFIG.manage_url,
             request = self.request)
 
 
@@ -392,7 +391,7 @@ class AdapterDirective(object):
         return self.actions(
             actions = actions,
             getInfo = self.getInfo,
-            manage_url = ptah.PTAH_CONFIG.manage_url,
+            manage_url = manage.CONFIG.manage_url,
             request = self.request)
 
 
@@ -413,7 +412,7 @@ class SnippetTypeDirective(object):
         return self.actions(
             actions = actions,
             stypes = stypes,
-            manage_url = ptah.PTAH_CONFIG.manage_url,
+            manage_url = manage.CONFIG.manage_url,
             request = self.request)
 
 
@@ -431,7 +430,7 @@ class RouteDirective(object):
     def renderActions(self, *actions):
         return self.actions(
             actions = actions,
-            manage_url = ptah.PTAH_CONFIG.manage_url,
+            manage_url = manage.CONFIG.manage_url,
             request = self.request)
 
 
@@ -467,7 +466,7 @@ class SubscriberDirective(object):
         return self.actions(
             getInfo = self.getInfo,
             actions = actions,
-            manage_url = ptah.PTAH_CONFIG.manage_url,
+            manage_url = manage.CONFIG.manage_url,
             request = self.request)
 
 
@@ -517,5 +516,5 @@ class ViewDirective(object):
         return self.actions(
             getInfo = self.getInfo,
             actions = actions,
-            manage_url = ptah.PTAH_CONFIG.manage_url,
+            manage_url = manage.CONFIG.manage_url,
             request = self.request)
