@@ -9,7 +9,6 @@ from datetime import timedelta
 import ptah
 from ptah import config, form, token
 
-from settings import PTAH_CONFIG
 from interfaces import _
 
 PASSWORD_CHANGER_ID = 'ptah:password-changer'
@@ -63,14 +62,23 @@ class PasswordTool(object):
     pm = {'{plain}': PlainPasswordManager(),
           '{ssha}': SSHAPasswordManager(),
           }
-    passwordManager = pm['{plain}']
+
+    PWD_ID = 'ptah.password:tool'
+
+    @property
+    def manager(self):
+        data = config.get_cfg_storage(self.PWD_ID)
+        return self.pm[data.get('manager', '{plain}')]
+
+    def set_pwd_manager(self, id):
+        config.get_cfg_storage(self.PWD_ID)['manager'] = id
 
     def check(self, encoded, password):
         """ check encoded password with plain password """
         try:
             pm, pwd = encoded.split('}', 1)
         except:
-            return self.passwordManager.check(encoded, password)
+            return self.manager.check(encoded, password)
 
         manager = self.pm.get('%s}'%pm)
         if manager is not None:
@@ -132,7 +140,7 @@ class PasswordTool(object):
             return _('Password should contain letters in mixed case.')
 
 
-passwordTool = PasswordTool()
+pwd_tool = PasswordTool()
 
 
 def password_changer(schema):
@@ -154,7 +162,7 @@ def password_changer(schema):
 
 
 def passwordValidator(field, appstruct):
-    err = passwordTool.validate(appstruct)
+    err = pwd_tool.validate(appstruct)
     if err is not None:
         raise form.Invalid(field, err)
 
@@ -189,15 +197,3 @@ PasswordSchema = form.Fieldset(
 
     validator = passwordSchemaValidator
 )
-
-
-@config.subscriber(config.SettingsInitializing)
-def initializing(ev):
-    mng = PasswordTool.pm.get(PTAH_CONFIG.pwdmanager)
-    if mng is None:
-        mng = PasswordTool.pm.get('{%s}'%PTAH_CONFIG.pwdmanager)
-
-    if mng is None:
-        mng = PasswordTool.pm['{plain}']
-
-    passwordTool.manager = mng

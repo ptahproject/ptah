@@ -7,14 +7,18 @@ from base import Base
 
 class TestIntrospectModule(Base):
 
+    def tearDown(self):
+        ptah.config.cleanup_system(self.__class__.__module__)
+        super(TestIntrospectModule, self).tearDown()
+
     def test_introspect_module(self):
-        from ptah.manage.manage import PtahManageRoute
+        from ptah.manage.manage import CONFIG, PtahManageRoute
         from ptah.manage.introspect import IntrospectModule, Package
 
         request = DummyRequest()
 
         ptah.authService.set_userid('test')
-        ptah.PTAH_CONFIG['managers'] = ('*',)
+        CONFIG['managers'] = ('*',)
         mr = PtahManageRoute(request)
         mod = mr['introspect']
 
@@ -61,8 +65,9 @@ class TestIntrospectModule(Base):
         mod = IntrospectModule(None, request)
 
         res = RoutesView.__renderer__(mod, request)
-        self.assertIn("Routes <small>registered pyramid routes</small>",
-                      res.body)
+
+        self.assertIn(
+            "Routes <small>registered pyramid routes</small>", res.body)
 
     def test_introspect_events(self):
         from ptah.manage.introspect import IntrospectModule, EventsView

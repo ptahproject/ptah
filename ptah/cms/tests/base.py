@@ -1,6 +1,6 @@
-""" base class """
 import unittest
 import sqlahelper
+import sqlalchemy
 import transaction
 from ptah import config
 from pyramid import testing
@@ -64,6 +64,13 @@ class Base(unittest.TestCase):
         self.p_config.begin(request)
 
     def setUp(self):
+        try:
+            engine = sqlahelper.get_engine()
+        except:
+            engine = sqlalchemy.engine_from_config(
+                {'sqlalchemy.url': 'sqlite://'})
+            sqlahelper.add_engine(engine)
+
         self._setup_pyramid()
         self._setup_ptah()
 

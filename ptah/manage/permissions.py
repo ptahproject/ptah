@@ -23,7 +23,7 @@ class PermissionsView(view.View):
         template=view.template('ptah.manage:templates/permissions.pt'))
 
     def update(self):
-        self.manage_url = ptah.PTAH_CONFIG.manage_url
+        self.manage_url = manage.CONFIG.manage_url
         self.permissions = ptah.get_permissions().values()
         self.permissions.sort(key = lambda p: p.title)
 
@@ -58,7 +58,7 @@ class RoleIntrospection(object):
         return self.actions(
             roles = ptah.get_roles(),
             actions = actions,
-            manage_url = ptah.PTAH_CONFIG.manage_url,
+            manage_url = manage.CONFIG.manage_url,
             request = self.request)
 
 
@@ -76,5 +76,5 @@ class PermissionIntrospection(object):
     def renderActions(self, *actions):
         return self.actions(
             actions = actions,
-            manage_url = ptah.PTAH_CONFIG.manage_url,
+            manage_url = manage.CONFIG.manage_url,
             request = self.request)

@@ -63,7 +63,7 @@ class ModelModuleView(view.View):
     def update(self):
         types = []
         for ti in cms.get_types().values():
-            if ti.__uri__ in ptah.PTAH_CONFIG['disable_models']:
+            if ti.__uri__ in manage.CONFIG['disable_models']:
                 continue
             types.append((ti.title, ti))
         types.sort()
@@ -200,7 +200,7 @@ class EditRecord(form.Form):
         return self.context.tinfo.fieldset
 
     def update(self):
-        self.manage_url = ptah.PTAH_CONFIG.manage_url
+        self.manage_url = manage.CONFIG.manage_url
         super(EditRecord, self).update()
 
     def form_content(self):
@@ -252,5 +252,5 @@ class TypeIntrospection(object):
             types = cms.get_types(),
             actions = actions,
             rst_to_html = ptah.rst_to_html,
-            manage_url = ptah.PTAH_CONFIG.manage_url,
+            manage_url = manage.CONFIG.manage_url,
             request = self.request)
