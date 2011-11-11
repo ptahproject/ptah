@@ -33,8 +33,6 @@ Before we start lets review what the structure will look like after you complete
       development.ini
       myapp/
           
-You may ask, Why the duplication of nested folders?  It's how Python packages are structured.
-
 On Windows you will have a venv/Scripts directory not a venv/bin directory. 
 
 Lets do the needful::
