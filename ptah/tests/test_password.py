@@ -82,21 +82,38 @@ class TestSHAPasswordManager(unittest.TestCase):
         self.assertTrue(manager.check(encoded, password))
 
 
+class TestPlainPasswordManager(unittest.TestCase):
+
+    def test_password_plain(self):
+        from ptah.password import PlainPasswordManager
+
+        manager = PlainPasswordManager()
+
+        password = u"test pwd"
+        encoded = manager.encode(password, salt="")
+
+        self.assertEqual(encoded, '{plain}test pwd')
+        self.assertTrue(manager.check(encoded, password))
+        self.assertTrue(manager.check(password, password))
+        self.assertFalse(manager.check(encoded, password + u"wrong"))
+
+        encoded = manager.encode(password)
+        self.assertTrue(manager.check(encoded, password))
+
+
 class TestPasswordSettings(Base):
 
     def test_password_settings(self):
         self._init_ptah()
 
         from ptah.password import \
-             initializing, PlainPasswordManager, SSHAPasswordManager
+             PlainPasswordManager, SSHAPasswordManager
 
-        ptah.PTAH_CONFIG['pwdmanager'] = 'unknown'
-        initializing(None)
+        ptah.PWD_CONFIG['manager'] = 'unknown'
 
         self.assertIsInstance(ptah.pwd_tool.manager, PlainPasswordManager)
 
-        ptah.PTAH_CONFIG['pwdmanager'] = 'ssha'
-        initializing(None)
+        ptah.PWD_CONFIG['manager'] = 'ssha'
 
         self.assertIsInstance(ptah.pwd_tool.manager, SSHAPasswordManager)
 
@@ -160,16 +177,16 @@ class TestPasswordTool(Base):
     def test_password_encode(self):
         from ptah.password import PasswordTool
 
-        ptah.pwd_tool.set_pwd_manager('plain')
+        ptah.PWD_CONFIG['manager'] = 'plain'
 
         encoded = ptah.pwd_tool.encode('12345')
         self.assertEqual(encoded, '{plain}12345')
 
     def test_password_check(self):
         from ptah.password import PasswordTool
-        ptah.pwd_tool.set_pwd_manager(PasswordTool.pm['{ssha}'])
+        ptah.PWD_CONFIG['manager'] = 'ssha'
 
-        self.assertTrue(ptah.pwd_tool.check('12345', '12345'))
+        self.assertFalse(ptah.pwd_tool.check('12345', '12345'))
         self.assertTrue(ptah.pwd_tool.check('{plain}12345', '12345'))
         self.assertFalse(ptah.pwd_tool.check('{plain}12345', '123455'))
         self.assertFalse(ptah.pwd_tool.check('{unknown}12345', '123455'))
@@ -224,15 +241,15 @@ class TestPasswordTool(Base):
         self.assertFalse(ptah.pwd_tool.change_password('unknown', '12345'))
 
     def test_password_validate(self):
-        ptah.pwd_tool.min_length = 5
+        ptah.PWD_CONFIG['min_length'] = 5
         self.assertEqual(ptah.pwd_tool.validate('1234'),
                          'Password should be at least 5 characters.')
 
-        ptah.pwd_tool.letters_digits = True
+        ptah.PWD_CONFIG['letters_digits'] = True
         self.assertEqual(ptah.pwd_tool.validate('123456'),
                          'Password should contain both letters and digits.')
 
-        ptah.pwd_tool.letters_mixed_case = True
+        ptah.PWD_CONFIG['letters_mixed_case'] = True
         self.assertEqual(ptah.pwd_tool.validate('abs456'),
                          'Password should contain letters in mixed case.')
 

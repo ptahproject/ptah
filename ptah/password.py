@@ -1,4 +1,6 @@
 """ password tool """
+import colander
+import translationstring
 from os import urandom
 from random import randint
 from codecs import getencoder
@@ -9,9 +11,45 @@ from datetime import timedelta
 import ptah
 from ptah import config, form, token
 
-from interfaces import _
+_ = translationstring.TranslationStringFactory('ptah')
 
-PASSWORD_CHANGER_ID = 'ptah:password-changer'
+
+PWD_CONFIG = config.register_settings(
+    'ptah-password',
+
+    config.SchemaNode(
+        colander.Str(),
+        name = 'manager',
+        title = 'Password manager',
+        description = 'Available password managers ("plain", "ssha", "bcrypt")',
+        default = 'plain'),
+
+    config.SchemaNode(
+        colander.Int(),
+        name = 'min_length',
+        title = 'Length',
+        description = 'Password minimium length.',
+        default = 5),
+
+    config.SchemaNode(
+        colander.Bool(),
+        name = 'letters_digits',
+        title = 'Letters and digits',
+        description = 'Use letters and digits in password.',
+        default = False),
+
+    config.SchemaNode(
+        colander.Bool(),
+        name = 'letters_mixed_case',
+        title = 'Letters mixed case',
+        description = 'Use letters in mixed case.',
+        default = False),
+
+    title = 'Password tool settings',
+    )
+
+
+PASSWORD_CHANGER_ID = 'ptah.password:changer'
 
 
 TOKEN_TYPE = token.TokenType(
@@ -55,23 +93,16 @@ class SSHAPasswordManager(object):
 class PasswordTool(object):
     """ Password management utility. """
 
-    min_length = 5
-    letters_digits = False
-    letters_mixed_case = False
-
     pm = {'{plain}': PlainPasswordManager(),
           '{ssha}': SSHAPasswordManager(),
           }
 
-    PWD_ID = 'ptah.password:tool'
-
     @property
     def manager(self):
-        data = config.get_cfg_storage(self.PWD_ID)
-        return self.pm[data.get('manager', '{plain}')]
-
-    def set_pwd_manager(self, id):
-        config.get_cfg_storage(self.PWD_ID)['manager'] = id
+        try:
+            return self.pm['{%s}'%PWD_CONFIG.manager]
+        except KeyError:
+            return self.pm['{plain}']
 
     def check(self, encoded, password):
         """ check encoded password with plain password """
@@ -127,15 +158,15 @@ class PasswordTool(object):
 
     def validate(self, password):
         """ Validate password """
-        if len(password) < self.min_length:
+        if len(password) < PWD_CONFIG.min_length:
             #return _('Password should be at least ${count} characters.',
             #         mapping={'count': self.min_length})
             return 'Password should be at least %s characters.'%\
-                self.min_length
-        elif self.letters_digits and \
+                PWD_CONFIG.min_length
+        elif PWD_CONFIG.letters_digits and \
                 (password.isalpha() or password.isdigit()):
             return _('Password should contain both letters and digits.')
-        elif self.letters_mixed_case and \
+        elif PWD_CONFIG.letters_mixed_case and \
                 (password.isupper() or password.islower()):
             return _('Password should contain letters in mixed case.')
 

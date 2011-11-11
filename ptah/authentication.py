@@ -31,9 +31,9 @@ def superuser_resolver(uri):
         return SUPERUSER
 
 
-AUTH_CHECKER_ID = 'ptah:auth-checker'
-AUTH_PROVIDER_ID = 'ptah:auth-provider'
-AUTH_SEARCHER_ID = 'ptah:auth-searcher'
+AUTH_CHECKER_ID = 'ptah.auth:checker'
+AUTH_PROVIDER_ID = 'ptah.auth:provider'
+AUTH_SEARCHER_ID = 'ptah.auth:searcher'
 
 
 def auth_checker(checker):

@@ -2,10 +2,14 @@ import unittest
 import sqlahelper
 import sqlalchemy
 import transaction
-from ptah import config
 from pyramid import testing
 from pyramid.threadlocal import manager
-from zope.interface.registry import Components
+from pyramid.interfaces import IAuthenticationPolicy, IAuthorizationPolicy
+from pyramid.authorization import ACLAuthorizationPolicy
+from pyramid.authentication import AuthTktAuthenticationPolicy
+
+import ptah
+from ptah import config
 
 
 class Base(unittest.TestCase):
@@ -53,7 +57,17 @@ class Base(unittest.TestCase):
         request.params = {}
         self.p_config = testing.setUp(request=request)
         self.p_config.get_routes_mapper()
+        self.registry = self.p_config.registry
         self.request.registry = self.p_config.registry
+
+        policy = AuthTktAuthenticationPolicy(
+            'secret', callback= ptah.get_local_roles)
+
+        self.registry.registerUtility(
+            policy, IAuthenticationPolicy)
+
+        self.registry.registerUtility(
+            ACLAuthorizationPolicy(), IAuthorizationPolicy)
 
     def _setup_ptah(self):
         self._init_ptah()

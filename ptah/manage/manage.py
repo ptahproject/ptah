@@ -11,7 +11,7 @@ MANAGE_ID = 'ptah.manage:module'
 INTROSPECT_ID = 'ptah.manage:introspection'
 
 CONFIG = config.register_settings(
-    'ptah-manage',
+    'manage',
 
     config.SchemaNode(
         config.Sequence(), colander.SchemaNode(colander.Str()),

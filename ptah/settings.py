@@ -2,27 +2,20 @@
 import colander
 import translationstring
 from ptah import config
-from pyramid.authentication import AuthTktAuthenticationPolicy
 
 _ = translationstring.TranslationStringFactory('ptah')
-
-
-types = {
-    '': (),
-    'auth_tkt': (AuthTktAuthenticationPolicy, ('secret',), ('callback',)),
-}
 
 
 SECURITY = config.register_settings(
     'auth',
 
     config.SchemaNode(
-        colander.Str(),
+        colander.Bool(),
         name = 'policy',
         title = _('Authentication policy'),
-        validator = colander.OneOf(types.keys()),
+        description = _('Enable authentication policy.'),
         required = False,
-        default = ''),
+        default = False),
 
     config.SchemaNode(
         colander.Str(),
@@ -41,7 +34,6 @@ SECURITY = config.register_settings(
         default = True),
 
     title = _('Pyramid authentication settings'),
-    validator = config.RequiredWithDependency('secret','policy','auth_tkt',''),
 )
 
 

@@ -3,9 +3,14 @@ import unittest
 import sqlahelper
 import sqlalchemy
 import transaction
-from ptah import config
 from pyramid import testing
 from pyramid.threadlocal import manager
+from pyramid.interfaces import IAuthenticationPolicy, IAuthorizationPolicy
+from pyramid.authorization import ACLAuthorizationPolicy
+from pyramid.authentication import AuthTktAuthenticationPolicy
+
+import ptah
+from ptah import config
 
 
 class Base(unittest.TestCase):
@@ -32,14 +37,11 @@ class Base(unittest.TestCase):
         environ.update(extras)
         return environ
 
-    def _init_ptah(self, settings=None, handler=None, *args, **kw):
-        st = dict(self._settings)
-        if settings is not None:
-            st.update(settings)
+    def _init_ptah(self, handler=None, *args, **kw):
         config.initialize(
             self.p_config, ('ptah', self.__class__.__module__),
             initsettings = False)
-        config.initialize_settings(st, self.p_config)
+        config.initialize_settings(self._settings, self.p_config)
 
         # create sql tables
         Base = sqlahelper.get_base()
@@ -52,6 +54,16 @@ class Base(unittest.TestCase):
         self.p_config = testing.setUp(request=request)
         self.p_config.get_routes_mapper()
         self.registry = self.p_config.registry
+        self.request.registry = self.registry
+
+        policy = AuthTktAuthenticationPolicy(
+            'secret', callback= ptah.get_local_roles)
+
+        self.registry.registerUtility(
+            policy, IAuthenticationPolicy)
+
+        self.registry.registerUtility(
+            ACLAuthorizationPolicy(), IAuthorizationPolicy)
 
     def _setRequest(self, request): #pragma: no cover
         self.request = request
@@ -61,7 +73,7 @@ class Base(unittest.TestCase):
     def setUp(self):
         try:
             engine = sqlahelper.get_engine()
-        except:
+        except: # pragma: no cover
             engine = sqlalchemy.engine_from_config(
                 {'sqlalchemy.url': 'sqlite://'})
             sqlahelper.add_engine(engine)

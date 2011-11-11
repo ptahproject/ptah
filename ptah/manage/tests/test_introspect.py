@@ -60,6 +60,9 @@ class TestIntrospectModule(Base):
     def test_introspect_routes(self):
         from ptah.manage.introspect import IntrospectModule, RoutesView
 
+        self.p_config.add_route('test-route', '/test/')
+
+
         request = DummyRequest()
 
         mod = IntrospectModule(None, request)

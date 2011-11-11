@@ -61,7 +61,7 @@ class Base(unittest.TestCase):
     def setUp(self):
         try:
             engine = sqlahelper.get_engine()
-        except:
+        except: # pragma: no cover
             engine = sqlalchemy.engine_from_config(
                 {'sqlalchemy.url': 'sqlite://'})
             sqlahelper.add_engine(engine)

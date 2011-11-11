@@ -48,6 +48,7 @@ from pyramid.security import NO_PERMISSION_REQUIRED
 # password tool
 from ptah.password import pwd_tool
 from ptah.password import password_changer
+from ptah.password import PWD_CONFIG
 
 # formatter
 from ptah.formatter import format
@@ -61,6 +62,7 @@ from ptah import events
 
 # mail templates
 from ptah import mail
+from ptah.settings import MAIL
 
 # pagination
 from ptah.util import Pagination
