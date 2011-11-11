@@ -8,32 +8,8 @@ pyramid.debug_routematch = false
 pyramid.debug_templates = false
 pyramid.default_locale_name = en
 
-# auth
-auth.policy = auth_tkt
-auth.secret = secret
-
-# session settings
-session.type = file
-session.data_dir = %(here)s/var/sessions/data
-session.lock_dir = %(here)s/var/sessions/lock
-session.key = session
-session.secret = secret
-
-# mailer settings
-mail.host = localhost
-mail.port = 25
-mail.queue_path = None
-mail.default_sender = Ptah <info@ptahproject.org>
-mail.debug = true
-
 # sqlalchemy
-sqla.url = sqlite:///%(here)s/db.sqlite
-
-# custom templates
-template.chameleon_reload = true
-
-# ptah
-ptah.managers.0 = admin
+sqlalchemy.url = sqlite:///%(here)s/db.sqlite
 
 [server:main]
 use = egg:Paste#http
