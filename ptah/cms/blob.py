@@ -18,8 +18,6 @@ class Blob(Node):
     __id__ = sqla.Column('id', sqla.Integer,
                          sqla.ForeignKey('ptah_cms_nodes.id'), primary_key=True)
 
-    __type__ = Type('sqlblob', 'SQL Blob')
-
     mimetype = sqla.Column(sqla.String(), default='')
     filename = sqla.Column(sqla.String(), default='')
     size = sqla.Column(sqla.Integer, default=0)

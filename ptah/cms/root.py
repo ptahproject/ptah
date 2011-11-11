@@ -3,16 +3,13 @@ import sqlalchemy as sqla
 import ptah
 from ptah import config
 from zope import interface
-from pyramid.threadlocal import get_current_registry
 
-from tinfo import Type
 from node import Node, Session, set_policy
 from container import Container
-from interfaces import IApplicationRoot
-from interfaces import IApplicationPolicy
+from interfaces import IApplicationRoot, IApplicationPolicy
 
 
-APPFACTORY_ID = 'ptah-cms:appfactory'
+APPFACTORY_ID = 'ptah.cms:appfactory'
 
 def get_app_factories():
     return config.get_cfg_storage(APPFACTORY_ID)
@@ -43,7 +40,7 @@ class ApplicationPolicy(object):
 class ApplicationFactory(object):
 
     def __init__(self, factory, path='', name='', title='',
-                 policy = ApplicationPolicy, default_root = None):
+                 policy = ApplicationPolicy, default_root = None, config=None):
         self.id = '-'.join(part for part in path.split('/') if part)
         self.path = path if path.endswith('/') else '%s/'%path
         self.name = name
@@ -59,13 +56,13 @@ class ApplicationFactory(object):
         self.factory = factory
         self.policy = policy
 
-        registry = get_current_registry()
-        if registry is not None:
-            config.get_cfg_storage(APPFACTORY_ID)[self.id] = self
+        if config is not None:
+            ptah.config.get_cfg_storage(
+                APPFACTORY_ID, registry=config.registry)[self.id] = self
 
-        info = config.DirectiveInfo()
+        info = ptah.config.DirectiveInfo()
         info.attach(
-            config.Action(
+            ptah.config.Action(
                 lambda cfg: cfg.get_cfg_storage(APPFACTORY_ID)\
                     .update({self.id:self}),
                 discriminator=(APPFACTORY_ID, path))

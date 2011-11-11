@@ -130,6 +130,11 @@ def make_wsgi_app(global_settings, **settings):
     Base = sqlahelper.get_base()
     Base.metadata.create_all()
 
+    # send AppStarting event
+    config.begin()
+    ptah.config.start(config)
+    config.end()
+
     # commit possible transaction
     transaction.commit()
 
@@ -164,9 +169,6 @@ def ptah_initialize(configurator, packages=None, autoinclude=False):
             configurator, packages, excludes, autoinclude, initsettings=True)
 
         configurator.commit()
-
-        # send AppStarting event
-        ptah.config.start(configurator)
     except Exception, e:
         if isinstance(e, ConfigurationExecutionError):
             e = e.evalue

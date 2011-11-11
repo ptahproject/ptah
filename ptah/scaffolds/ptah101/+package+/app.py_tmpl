@@ -30,30 +30,20 @@ def main(global_config, **settings):
     config = Configurator(root_factory=APP_FACTORY, settings=settings)
 
     config.include('ptah')
+    config.include('pyramid_tm')
     
     # mcdonc says people want to see the guts.
     # you could use config.ptah_init() and be home by now
     
-    # --- start ptah.ptah_init() ---
-    config.include('pyramid_tm')
-
-    settings = config.registry.settings
-
-    # load packages
-    ptah.config.initialize(('{{package}}', 'ptah'), registry=config.registry)
-    
-    # load settings
-    ptah.config.initialize_settings(settings, config)
+    # --- start ptah initialize ---
+    config.ptah_initialize(('{{package}}', 'ptah'))
+    config.commit()
+    # --- end ptah.ptah_init() ---
 
     # create sql tables
     import sqlahelper
     Base = sqlahelper.get_base()
     Base.metadata.create_all()
-
-    # send AppStarting event
-    ptah.config.start(config)
-    
-    # --- end ptah.ptah_init() ---
      
     # your application configuration
     root = APP_FACTORY()

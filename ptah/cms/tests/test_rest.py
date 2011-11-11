@@ -68,7 +68,7 @@ class TestRestApi(RestBase):
         self.assertEqual(info, [])
 
         factory = ptah.cms.ApplicationFactory(
-            ApplicationRoot, '/test', 'root', 'Root App')
+            ApplicationRoot, '/test', 'root', 'Root App', config=self.p_config)
 
         info = cmsApplications(request)
         self.assertEqual(len(info), 1)
@@ -79,7 +79,7 @@ class TestRestApi(RestBase):
                 info[0]['__mount__'], info[0]['__uri__']))
 
         factory = ptah.cms.ApplicationFactory(
-            ApplicationRoot, '/test2', 'root2', 'Root App')
+            ApplicationRoot, '/test2', 'root2', 'Root App',config=self.p_config)
         self.assertEqual(len(cmsApplications(request)), 2)
 
         self._allow = False
@@ -98,7 +98,7 @@ class TestRestApi(RestBase):
         self.assertEqual(info, [])
 
         factory = ptah.cms.ApplicationFactory(
-            ApplicationRoot, '/', 'root', 'Root App')
+            ApplicationRoot, '/', 'root', 'Root App', config=self.p_config)
 
         info = cmsApplications(request)
         self.assertEqual(len(info), 1)
@@ -135,7 +135,7 @@ class TestRestApi(RestBase):
         request = DummyRequest(
             subpath=('content:test',), environ=self._makeEnviron())
         factory = ptah.cms.ApplicationFactory(
-            ApplicationRoot, '/test', 'root', 'Root App')
+            ApplicationRoot, '/test', 'root', 'Root App', config=self.p_config)
         root = factory(request)
         root.__uri__ = 'cms-app:test'
         transaction.commit()
@@ -164,7 +164,7 @@ class TestRestApi(RestBase):
         request = DummyRequest(subpath=('content',),environ=self._makeEnviron())
 
         factory = ptah.cms.ApplicationFactory(
-            ApplicationRoot, '/', 'root', 'Root App')
+            ApplicationRoot, '/', 'root', 'Root App', config=self.p_config)
         root = factory(request)
         root.__uri__ = 'cms-app:test'
         transaction.commit()

@@ -123,8 +123,9 @@ def initialize(config, packages=None, excludes=(),
             (config.registry.settings, config))
 
 
-def get_cfg_storage(id):
-    registry = get_current_registry()
+def get_cfg_storage(id, registry=None):
+    if registry is None:
+        registry = get_current_registry()
 
     try:
         storage = registry.storage
@@ -136,7 +137,7 @@ def get_cfg_storage(id):
 
 
 def start(cfg):
-    notify(AppStarting(cfg))
+    cfg.registry.notify(AppStarting(cfg))
 
 
 def exclude(modname, excludes=()):
