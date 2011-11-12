@@ -8,7 +8,7 @@ class Link(cms.Node):
    
     # Required primary field
     __id__ = sqla.Column('id', sqla.Integer,
-                         sqla.ForeignKey('ptah_cms_nodes.id'),
+                         sqla.ForeignKey('ptah_nodes.id'),
                          primary_key=True)
 
     # Your custom fields
