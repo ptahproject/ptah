@@ -166,6 +166,18 @@ class TestView(BaseView):
         resp = view.render_view('index.html', Context(), self.request)
         self.assertIsInstance(resp, HTTPForbidden)
 
+    def test_view_httpresp_from_update_return(self):
+        class MyView(view.View):
+            def update(self):
+                return HTTPForbidden()
+
+        view.register_view('index.html', MyView, Context,
+                          template = view.template('templates/test.pt'))
+        self._init_ptah()
+
+        resp = view.render_view('index.html', Context(), self.request)
+        self.assertIsInstance(resp, HTTPForbidden)
+
     def test_view_httpresp_from_render(self):
         class MyView(view.View):
             def render(self):

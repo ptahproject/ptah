@@ -176,6 +176,11 @@ class PackageView(view.View):
         self.itypes = [it for _t, it in itypes]
 
 
+def lineno(ob):
+    if ob is not None:
+        return inspect.getsourcelines(ob)[-1]
+
+
 class EventsView(view.View):
     view.pview(
         'events.html', IntrospectModule,
@@ -186,9 +191,7 @@ class EventsView(view.View):
 
     events = None
     actions = None
-
-    def lineno(self, ob):
-        return inspect.getsourcelines(ob)[-1]
+    lineno = staticmethod(lineno)
 
     def update(self):
         ev = self.request.params.get('ev')
@@ -220,11 +223,6 @@ class EventsView(view.View):
                             actions.append(action)
 
             self.actions = actions
-
-
-def lineno(ob):
-    if ob is not None:
-        return inspect.getsourcelines(ob)[-1]
 
 
 class RoutesView(view.View):
@@ -383,7 +381,7 @@ class AdapterDirective(object):
         provided = list(interface.implementedBy(context))
         if len(provided):
             iface = provided[0]
-        else:
+        else: # pragma: no cover
             iface = 'unknown'
         return locals()
 

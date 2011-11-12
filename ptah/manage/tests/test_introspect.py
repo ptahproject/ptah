@@ -4,6 +4,16 @@ from pyramid.httpexceptions import HTTPFound
 
 from base import Base
 
+class TestEvent(object):
+    ptah.config.event('Test event')
+
+@ptah.config.subscriber(TestEvent)
+@ptah.config.subscriber(TestEvent, TestEvent)
+def eventHandler(ev):
+    """ """
+
+ptah.view.register_route('test-introspect', '/test/introspect')
+
 
 class TestIntrospectModule(Base):
 
@@ -61,7 +71,6 @@ class TestIntrospectModule(Base):
         from ptah.manage.introspect import IntrospectModule, RoutesView
 
         self.p_config.add_route('test-route', '/test/')
-
 
         request = DummyRequest()
 
