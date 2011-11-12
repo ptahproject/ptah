@@ -84,6 +84,8 @@ def cmsContent(request, app='', uri=None, action='', *args):
 
     name = getattr(request, 'subpath', ('content',))[0]
     if ':' not in name:
+        if not action:
+            action = uri or ''
         uri = app
         app = u''
 
@@ -98,13 +100,7 @@ def cmsContent(request, app='', uri=None, action='', *args):
             content = root
 
     if content is None:
-        try:
-            content = load(uri)
-        except:
-            import traceback
-            traceback.print_exc()
-            raise
-        print (uri, content)
+        content = load(uri)
 
     adapters = request.registry.adapters
 
@@ -168,7 +164,7 @@ def restaction(name, context, permission):
     return wrapper
 
 
-@restaction('', IContent, View)
+@restaction('', INode, View)
 def nodeInfo(content, request, *args):
     info = wrap(content).info()
     info['__link__'] = '%s%s/'%(request.application_url, content.__uri__)
@@ -203,7 +199,7 @@ def containerNodeInfo(content, request, *args):
     return info
 
 
-@restaction('apidoc', INode, View)
+@restaction('apidoc', INode, ptah.NO_PERMISSION_REQUIRED)
 def apidocAction(content, request, *args):
     """api doc"""
     actions = []
