@@ -134,7 +134,7 @@ def Type(name, title=None, fieldset=None, **kw):
     if '__id__' not in f_locals and '__tablename__' in f_locals:
         f_locals['__id__'] = sqla.Column(
             'id', sqla.Integer,
-            sqla.ForeignKey('ptah_cms_content.id'), primary_key=True)
+            sqla.ForeignKey('ptah_content.id'), primary_key=True)
     if '__uri_factory__' not in f_locals:
         f_locals['__uri_factory__'] = ptah.UriFactory('cms-%s'%name)
 

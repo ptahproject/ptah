@@ -55,7 +55,7 @@ def library_impl(cfg, name, path, resource, type,
         lib.add(path, resource, type, require, prefix, postfix, extra)
 
 
-def include(name, request):
+def include(request, name):
     libs = getattr(request, '__includes', None)
     if libs is None:
         libs = []
@@ -125,7 +125,7 @@ class Entry(object):
         urls = list(self.urls)
 
         for path in self.paths:
-            urls.append(static_url(self.resource, path, request))
+            urls.append(static_url(request, self.resource, path))
 
         if self.type == 'css':
             s = '<link %shref="%s" />'

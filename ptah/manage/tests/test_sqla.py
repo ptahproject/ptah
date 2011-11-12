@@ -30,7 +30,7 @@ class TestSqlaModule(Base):
 
         mod = SQLAModule(None, request)
 
-        table = mod['psqla-ptah_cms_nodes']
+        table = mod['psqla-ptah_nodes']
         self.assertIsInstance(table, Table)
 
         self.assertRaises(KeyError, mod.__getitem__, 'unknown')

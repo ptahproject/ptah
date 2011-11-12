@@ -99,7 +99,7 @@ class TestLibraryManagement(Base):
             'test-lib', path='http://ptah.org/style.css', type='css')
         self._init_ptah()
 
-        view.include('test-lib', self.request)
+        view.include(self.request, 'test-lib')
         self.assertEqual(
             view.render_includes(self.request),
             '<link type="text/css" rel="stylesheet" href="http://ptah.org/style.css" />')
@@ -109,7 +109,7 @@ class TestLibraryManagement(Base):
         self.assertEqual(view.render_includes(self.request), '')
 
         # include unknown
-        view.include('test-lib-test', self.request)
+        view.include(self.request, 'test-lib-test')
         self.assertEqual(view.render_includes(self.request), '')
 
     def test_library_include_recursive(self):
@@ -129,8 +129,8 @@ class TestLibraryManagement(Base):
             require=('test-lib1', 'test-lib2'))
         self._init_ptah()
 
-        view.include('test-lib3', self.request)
-        view.include('test-lib4', self.request)
+        view.include(self.request, 'test-lib3')
+        view.include(self.request, 'test-lib4')
 
         self.assertEqual(
             view.render_includes(self.request),
@@ -147,7 +147,7 @@ class TestLibraryManagement(Base):
 
         request = self._makeRequest()
 
-        view.include('test-lib', request)
+        view.include(request, 'test-lib')
 
         self.assertEqual(
             view.render_includes(request),

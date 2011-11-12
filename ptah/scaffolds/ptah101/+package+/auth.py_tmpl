@@ -23,7 +23,7 @@ class AuthProvider(object):
 
 class User(Base):
 
-    __tablename__ = 'users'
+    __tablename__ = '{{package}}_users'
 
     pid = sqla.Column(sqla.Integer, primary_key=True)
     uri = sqla.Column(sqla.Unicode(45), unique=True, info={'uri': True})

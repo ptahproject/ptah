@@ -57,7 +57,7 @@ def static(name, path, layer=''):
             discriminator = discriminator))
 
 
-def static_url(name, path, request, **kw):
+def static_url(request, name, path='', **kw):
     url = STATIC.url
 
     if STATIC.isurl:

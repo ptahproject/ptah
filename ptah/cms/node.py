@@ -57,7 +57,7 @@ class Node(Base):
                          ptah.IOwnersAware,
                          ptah.ILocalRolesAware)
 
-    __tablename__ = 'ptah_cms_nodes'
+    __tablename__ = 'ptah_nodes'
 
     __id__ = sqla.Column('id', sqla.Integer, primary_key=True)
     __type_id__ = sqla.Column('type', sqla.String, info={'uri':True})
