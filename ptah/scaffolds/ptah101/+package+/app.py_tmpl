@@ -1,73 +1,55 @@
 from pyramid.config import Configurator
 from pyramid.asset import abspath_from_asset_spec
+from pyramid.authentication import AuthTktAuthenticationPolicy
+from pyramid.session import UnencryptedCookieSessionFactoryConfig
 
 import ptah
-from ptah.crowd.provider import CrowdUser, Session
 
 # Your custom application permissions
 from {{package}}.permissions import Manager
 
+# Your custom auth plugin
+from {{package}}.auth import User, Session
+
 # Import models
 from {{package}} import models
 
-class ApplicationRoot(ptah.cms.ApplicationRoot):
-    """
-    ApplicationRoot is a Container which has a record in database. 
-    """
-    __type__ = ptah.cms.Type('{{package}}-app',
-        title='Application Root',
-        description='A root for the {{package}} Application')
+auth_policy = AuthTktAuthenticationPolicy('secret')
+session_factory = UnencryptedCookieSessionFactoryConfig('secret')
 
-APP_FACTORY = ptah.cms.ApplicationFactory(
-    ApplicationRoot,
-    name='{{project}}', 
-    title='{{project}} Application')
 
 # WSGI Entry Point
 def main(global_config, **settings):
     """ This is your application startup.
     """
-    config = Configurator(root_factory=APP_FACTORY, settings=settings)
+    config = Configurator(settings=settings,
+                          session_factory = session_factory,
+                          authentication_policy = auth_policy)
 
     config.include('ptah')
+    config.include('pyramid_tm')
     
     # mcdonc says people want to see the guts.
-    # you could use config.ptah_init() and be home by now
-    
-    # --- start ptah.ptah_init() ---
-    config.include('pyramid_tm')
 
-    settings = config.registry.settings
-
-    # load packages
-    ptah.config.initialize(('{{package}}', 'ptah'), registry=config.registry)
+    import sqlahelper, sqlalchemy
+    engine = sqlalchemy.engine_from_config(settings, 'sqlalchemy.')
+    sqlahelper.add_engine(engine)
     
-    # load settings
-    ptah.config.initialize_settings(settings, config)
+    # --- start ptah initialize ---
+    config.ptah_initialize(('{{package}}', 'ptah'))
+    config.commit()
+    # --- end ptah.ptah_init() ---
 
     # create sql tables
-    import sqlahelper
     Base = sqlahelper.get_base()
     Base.metadata.create_all()
-
-    # send AppStarting event
-    ptah.config.start(config)
-    
-    # --- end ptah.ptah_init() ---
      
-    # your application configuration
-    root = APP_FACTORY()
-
     # admin user
-    user = Session.query(CrowdUser).first()
+    user = Session.query(User).first()
     if user is None:
-        user = CrowdUser('Admin', 'admin', 'admin@ptahproject.org', '12345')
+        user = User('Admin', 'admin', 'admin@ptahproject.org', '12345')
         Session.add(user)
 
-    # give manager role to admin
-    if user.uri not in root.__local_roles__:
-        root.__local_roles__[user.uri] = [Manager.id]
-    
     # set authcontext as admin user
     ptah.authService.set_userid(user.uri)
 
@@ -101,11 +83,19 @@ def main(global_config, **settings):
         'ptah-manage','/ptah-manage/*traverse',
         factory=ptah.manage.PtahManageRoute, use_global_views=True)
 
+    config.begin()
+    ptah.manage.CONFIG['managers'] = ['admin']
+    ptah.manage.CONFIG['disable_modules'] = [
+        'rest', 'introspect', 'apps', 'permissions', 'settings']
+    config.end()
+
     # we love them routes
     config.add_route('root', '/')    
     config.add_route('contact-us', '/contact-us.html')        
     config.add_route('edit-links', '/links/{id}/edit',
                      factory=models.factory, use_global_views=True)
+    config.add_route('login', '/login.html')
+    config.add_route('logout', '/logout.html')
         
     config.scan()
 

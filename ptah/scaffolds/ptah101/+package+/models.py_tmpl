@@ -4,7 +4,7 @@ from ptah import cms
 class Link(cms.Node):
     """ A basic model. """
     
-    __tablename__ = 'intro_links'
+    __tablename__ = '{{package}}_links'
    
     # Required primary field
     __id__ = sqla.Column('id', sqla.Integer,

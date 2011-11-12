@@ -46,8 +46,9 @@ from ptah.security import NOT_ALLOWED
 from pyramid.security import NO_PERMISSION_REQUIRED
 
 # password tool
-from ptah.password import passwordTool
+from ptah.password import pwd_tool
 from ptah.password import password_changer
+from ptah.password import PWD_CONFIG
 
 # formatter
 from ptah.formatter import format
@@ -61,9 +62,7 @@ from ptah import events
 
 # mail templates
 from ptah import mail
-
-# ptah settings
-from ptah.settings import PTAH_CONFIG, MAIL
+from ptah.settings import MAIL
 
 # pagination
 from ptah.util import Pagination
@@ -87,12 +86,9 @@ from ptah import manage
 # cms
 from ptah import cms
 
-# crowd
-from ptah import crowd
-
-
+# pyramid include
 def includeme(config):
-    config.add_directive('ptah_init', ptah_init)
+    config.add_directive('ptah_initialize', ptah_initialize)
 
 
 def make_wsgi_app(global_settings, **settings):
@@ -107,19 +103,19 @@ def make_wsgi_app(global_settings, **settings):
     """
     import sys
     import ptah
+    import sqlahelper
     from pyramid.config import Configurator
 
     authService.set_userid(SUPERUSER_URI)
 
     # configuration
-    global_settings.update(settings)
-    config = Configurator(settings=global_settings)
+    config = Configurator(settings=settings)
 
     # initialization
     packages = settings.get('packages', None)
     autoinclude = settings.get('autoinclude', True)
     try:
-        ptah_init(config, packages, autoinclude)
+        ptah_initialize(config, packages, autoinclude)
     except Exception, e:
         if isinstance(e, ptah.config.StopException):
             print e.print_tb()
@@ -127,22 +123,27 @@ def make_wsgi_app(global_settings, **settings):
         sys.exit(0)
         return
 
+    config.commit()
+
     # create wsgi app
     return config.make_wsgi_app()
 
 
 # initialize ptah
-def ptah_init(configurator, packages=None, autoinclude=False):
+def ptah_initialize(configurator, packages=None, autoinclude=False):
     """ Initialize ptah packages.
     Load all ptah packages and intialize ptah settings system.
 
     This function automatically called by :py:func:`make_wsgi_app` function.
     """
     import ptah
-    import transaction
     import sqlahelper
+    import StringIO
+    import transaction
+    from pyramid.exceptions import  ConfigurationExecutionError
 
     configurator.include('pyramid_tm')
+    configurator.begin()
 
     try:
         settings = configurator.registry.settings
@@ -155,10 +156,9 @@ def ptah_init(configurator, packages=None, autoinclude=False):
 
         # load packages
         ptah.config.initialize(
-            packages, excludes, configurator.registry, autoinclude)
+            configurator, packages, excludes, autoinclude, initsettings=True)
 
-        # load settings
-        ptah.config.initialize_settings(settings, configurator)
+        configurator.commit()
 
         # create sql tables
         Base = sqlahelper.get_base()
@@ -166,13 +166,19 @@ def ptah_init(configurator, packages=None, autoinclude=False):
 
         # send AppStarting event
         ptah.config.start(configurator)
+
+        # commit possible transaction
+        transaction.commit()
     except Exception, e:
+        if isinstance(e, ConfigurationExecutionError):
+            e = e.evalue
+
         if not isinstance(e, ptah.config.StopException):
             ptah.config.shutdown()
-            raise ptah.config.StopException(e)
+            e = ptah.config.StopException(e)
+            raise e
 
         ptah.config.shutdown()
-        raise
-
-    # commit possible transaction
-    transaction.commit()
+        raise e
+    finally:
+        configurator.end()

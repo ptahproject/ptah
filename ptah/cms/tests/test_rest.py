@@ -46,7 +46,7 @@ class TestRestApi(RestBase):
         import ptah.rest
         self._init_ptah()
 
-        services = config.registry.storage[ptah.rest.REST_ID]
+        services = config.get_cfg_storage(ptah.rest.REST_ID)
 
         self.assertIn('cms', services)
 
@@ -68,7 +68,7 @@ class TestRestApi(RestBase):
         self.assertEqual(info, [])
 
         factory = ptah.cms.ApplicationFactory(
-            ApplicationRoot, '/test', 'root', 'Root App')
+            ApplicationRoot, '/test', 'root', 'Root App', config=self.p_config)
 
         info = cmsApplications(request)
         self.assertEqual(len(info), 1)
@@ -79,7 +79,7 @@ class TestRestApi(RestBase):
                 info[0]['__mount__'], info[0]['__uri__']))
 
         factory = ptah.cms.ApplicationFactory(
-            ApplicationRoot, '/test2', 'root2', 'Root App')
+            ApplicationRoot, '/test2', 'root2', 'Root App',config=self.p_config)
         self.assertEqual(len(cmsApplications(request)), 2)
 
         self._allow = False
@@ -98,7 +98,7 @@ class TestRestApi(RestBase):
         self.assertEqual(info, [])
 
         factory = ptah.cms.ApplicationFactory(
-            ApplicationRoot, '/', 'root', 'Root App')
+            ApplicationRoot, '/', 'root', 'Root App', config=self.p_config)
 
         info = cmsApplications(request)
         self.assertEqual(len(info), 1)
@@ -135,7 +135,7 @@ class TestRestApi(RestBase):
         request = DummyRequest(
             subpath=('content:test',), environ=self._makeEnviron())
         factory = ptah.cms.ApplicationFactory(
-            ApplicationRoot, '/test', 'root', 'Root App')
+            ApplicationRoot, '/test', 'root', 'Root App', config=self.p_config)
         root = factory(request)
         root.__uri__ = 'cms-app:test'
         transaction.commit()
@@ -164,7 +164,7 @@ class TestRestApi(RestBase):
         request = DummyRequest(subpath=('content',),environ=self._makeEnviron())
 
         factory = ptah.cms.ApplicationFactory(
-            ApplicationRoot, '/', 'root', 'Root App')
+            ApplicationRoot, '/', 'root', 'Root App', config=self.p_config)
         root = factory(request)
         root.__uri__ = 'cms-app:test'
         transaction.commit()
@@ -209,7 +209,7 @@ class TestCMSRestAction(RestBase):
 
         self._init_ptah()
 
-        adapters = config.registry.adapters
+        adapters = self.p_config.registry.adapters
 
         action = adapters.lookup(
             (IRestActionClassifier, interface.implementedBy(Content)),
@@ -249,6 +249,7 @@ class TestCMSRestAction(RestBase):
 
         content = Content()
         request = self._makeRequest()
+        request.registry = self.p_config.registry
         info = rest.apidocAction(content, request)
         self.assertEqual(len(info), 5)
         self.assertEqual(info[0]['name'], 'info')

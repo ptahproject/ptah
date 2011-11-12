@@ -12,13 +12,11 @@ from interfaces import IBlob, IBlobStorage
 class Blob(Node):
     interface.implements(IBlob)
 
-    __tablename__ = 'ptah_cms_blobs'
+    __tablename__ = 'ptah_blobs'
     __uri_factory__ = ptah.UriFactory('blob-sql')
 
     __id__ = sqla.Column('id', sqla.Integer,
-                         sqla.ForeignKey('ptah_cms_nodes.id'), primary_key=True)
-
-    __type__ = Type('sqlblob', 'SQL Blob')
+                         sqla.ForeignKey('ptah_nodes.id'), primary_key=True)
 
     mimetype = sqla.Column(sqla.String(), default='')
     filename = sqla.Column(sqla.String(), default='')

@@ -34,21 +34,21 @@ def register_route(name, pattern=None, factory=None, header=None,
             order = 1))
 
 
-def register_route_impl(config, name, pattern, factory,
+def register_route_impl(cfg, name, pattern, factory,
                         predicates, pregenerator, use_global_views):
-    request_iface = config.registry.queryUtility(IRouteRequest, name=name)
+    request_iface = cfg.registry.queryUtility(IRouteRequest, name=name)
     if request_iface is None:
         if use_global_views:
             bases = (IRequest,)
         else:
             bases = ()
         request_iface = route_request_iface(name, bases)
-        config.registry.registerUtility(request_iface, IRouteRequest, name=name)
+        cfg.registry.registerUtility(request_iface, IRouteRequest, name=name)
 
-    mapper = config.registry.queryUtility(IRoutesMapper)
+    mapper = cfg.registry.queryUtility(IRoutesMapper)
     if mapper is None:
         mapper = RoutesMapper()
-        config.registry.registerUtility(mapper, IRoutesMapper)
+        cfg.registry.registerUtility(mapper, IRoutesMapper)
 
     return mapper.connect(name, pattern, factory, predicates=predicates,
                           pregenerator=pregenerator, static=False)

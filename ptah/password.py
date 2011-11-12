@@ -1,4 +1,6 @@
 """ password tool """
+import colander
+import translationstring
 from os import urandom
 from random import randint
 from codecs import getencoder
@@ -9,10 +11,45 @@ from datetime import timedelta
 import ptah
 from ptah import config, form, token
 
-from settings import PTAH_CONFIG
-from interfaces import _
+_ = translationstring.TranslationStringFactory('ptah')
 
-PASSWORD_CHANGER_ID = 'ptah:password-changer'
+
+PWD_CONFIG = config.register_settings(
+    'ptah-password',
+
+    config.SchemaNode(
+        colander.Str(),
+        name = 'manager',
+        title = 'Password manager',
+        description = 'Available password managers ("plain", "ssha", "bcrypt")',
+        default = 'plain'),
+
+    config.SchemaNode(
+        colander.Int(),
+        name = 'min_length',
+        title = 'Length',
+        description = 'Password minimium length.',
+        default = 5),
+
+    config.SchemaNode(
+        colander.Bool(),
+        name = 'letters_digits',
+        title = 'Letters and digits',
+        description = 'Use letters and digits in password.',
+        default = False),
+
+    config.SchemaNode(
+        colander.Bool(),
+        name = 'letters_mixed_case',
+        title = 'Letters mixed case',
+        description = 'Use letters in mixed case.',
+        default = False),
+
+    title = 'Password tool settings',
+    )
+
+
+PASSWORD_CHANGER_ID = 'ptah.password:changer'
 
 
 TOKEN_TYPE = token.TokenType(
@@ -56,21 +93,23 @@ class SSHAPasswordManager(object):
 class PasswordTool(object):
     """ Password management utility. """
 
-    min_length = 5
-    letters_digits = False
-    letters_mixed_case = False
-
     pm = {'{plain}': PlainPasswordManager(),
           '{ssha}': SSHAPasswordManager(),
           }
-    passwordManager = pm['{plain}']
+
+    @property
+    def manager(self):
+        try:
+            return self.pm['{%s}'%PWD_CONFIG.manager]
+        except KeyError:
+            return self.pm['{plain}']
 
     def check(self, encoded, password):
         """ check encoded password with plain password """
         try:
             pm, pwd = encoded.split('}', 1)
         except:
-            return self.passwordManager.check(encoded, password)
+            return self.manager.check(encoded, password)
 
         manager = self.pm.get('%s}'%pm)
         if manager is not None:
@@ -84,7 +123,7 @@ class PasswordTool(object):
     def can_change_password(self, principal):
         """ can principal password be changed """
         return ptah.extract_uri_schema(principal.uri) in \
-            config.registry.storage[PASSWORD_CHANGER_ID]
+            config.get_cfg_storage(PASSWORD_CHANGER_ID)
 
     def get_principal(self, passcode):
         """ generate passcode for principal """
@@ -108,7 +147,7 @@ class PasswordTool(object):
         self.remove_passcode(passcode)
 
         if principal is not None:
-            changers = config.registry.storage[PASSWORD_CHANGER_ID]
+            changers = config.get_cfg_storage(PASSWORD_CHANGER_ID)
 
             changer = changers.get(ptah.extract_uri_schema(principal.uri))
             if changer is not None:
@@ -119,20 +158,20 @@ class PasswordTool(object):
 
     def validate(self, password):
         """ Validate password """
-        if len(password) < self.min_length:
+        if len(password) < PWD_CONFIG.min_length:
             #return _('Password should be at least ${count} characters.',
             #         mapping={'count': self.min_length})
             return 'Password should be at least %s characters.'%\
-                self.min_length
-        elif self.letters_digits and \
+                PWD_CONFIG.min_length
+        elif PWD_CONFIG.letters_digits and \
                 (password.isalpha() or password.isdigit()):
             return _('Password should contain both letters and digits.')
-        elif self.letters_mixed_case and \
+        elif PWD_CONFIG.letters_mixed_case and \
                 (password.isupper() or password.islower()):
             return _('Password should contain letters in mixed case.')
 
 
-passwordTool = PasswordTool()
+pwd_tool = PasswordTool()
 
 
 def password_changer(schema):
@@ -142,7 +181,7 @@ def password_changer(schema):
         info.attach(
             config.Action(
                 lambda config, schema, changer: \
-                    config.storage[PASSWORD_CHANGER_ID].update(
+                    config.get_cfg_storage(PASSWORD_CHANGER_ID).update(
                             {schema: changer}),
                 (schema, changer),
                 discriminator = (PASSWORD_CHANGER_ID, schema))
@@ -154,7 +193,7 @@ def password_changer(schema):
 
 
 def passwordValidator(field, appstruct):
-    err = passwordTool.validate(appstruct)
+    err = pwd_tool.validate(appstruct)
     if err is not None:
         raise form.Invalid(field, err)
 
@@ -189,15 +228,3 @@ PasswordSchema = form.Fieldset(
 
     validator = passwordSchemaValidator
 )
-
-
-@config.subscriber(config.SettingsInitializing)
-def initializing(ev):
-    mng = PasswordTool.pm.get(PTAH_CONFIG.pwdmanager)
-    if mng is None:
-        mng = PasswordTool.pm.get('{%s}'%PTAH_CONFIG.pwdmanager)
-
-    if mng is None:
-        mng = PasswordTool.pm['{plain}']
-
-    passwordTool.manager = mng

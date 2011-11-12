@@ -89,10 +89,10 @@ class Content(Node):
 
     interface.implements(IContent)
 
-    __tablename__ = 'ptah_cms_content'
+    __tablename__ = 'ptah_content'
 
     __id__ = sqla.Column('id', sqla.Integer,
-                         sqla.ForeignKey('ptah_cms_nodes.id'), primary_key=True)
+                         sqla.ForeignKey('ptah_nodes.id'), primary_key=True)
     __path__ = sqla.Column('path', sqla.Unicode, default=u'')
     __name_id__ = sqla.Column('name', sqla.Unicode(255))
 

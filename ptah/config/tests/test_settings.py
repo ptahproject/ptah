@@ -1,10 +1,11 @@
 import sys, os, time
 import unittest, shutil, tempfile, colander
+from pyramid.testing import setUp, tearDown
 from zope.interface.registry import Components
 from zope.interface.interface import InterfaceClass
 from zope.interface.interfaces import IObjectEvent
 
-from ptah import config
+import ptah
 from ptah.config.api import objectEventNotify
 from ptah.config.settings import get_settings
 
@@ -12,23 +13,28 @@ from ptah.config.settings import get_settings
 class BaseTesting(unittest.TestCase):
 
     def _init_ptah(self, settings={}, *args, **kw):
-        config.initialize(
-            ('ptah.config', self.__class__.__module__),
-            registry = Components('test'))
+        ptah.config.initialize(
+            self.config, ('ptah.config', self.__class__.__module__),
+            initsettings = False)
+
+    def setUp(self):
+        self.config = setUp()
+        self.registry = self.config.registry
 
     def tearDown(self):
-        config.cleanup_system(self.__class__.__module__)
+        ptah.config.cleanup_system(self.__class__.__module__)
+        tearDown()
 
 
 class TestSettings(BaseTesting):
 
     def test_settings_group_uninitialized(self):
-        node = config.SchemaNode(
+        node = ptah.config.SchemaNode(
                 colander.Str(),
                 name = 'node',
                 default = 'test')
 
-        group = config.register_settings(
+        group = ptah.config.register_settings(
             'group1', node,
             title = 'Section title',
             description = 'Section description',
@@ -39,7 +45,7 @@ class TestSettings(BaseTesting):
     def test_settings_register_errs(self):
         self.assertRaises(
             RuntimeError,
-            config.register_settings,
+            ptah.config.register_settings,
             'section',
             colander.SchemaNode(
                 colander.Str(),
@@ -47,12 +53,12 @@ class TestSettings(BaseTesting):
             )
 
     def test_settings_register_simple(self):
-        node = config.SchemaNode(
+        node = ptah.config.SchemaNode(
                 colander.Str(),
                 name = 'node',
                 default = 'test')
 
-        group = config.register_settings(
+        group = ptah.config.register_settings(
             'group1', node,
             title = 'Section title',
             description = 'Section description',
@@ -84,12 +90,12 @@ class TestSettings(BaseTesting):
         def validator(node, appstruct):
             raise colander.Invalid(node['node'], 'Error')
 
-        node = config.SchemaNode(
+        node = ptah.config.SchemaNode(
                 colander.Str(),
                 name = 'node',
                 default = 'test')
 
-        group = config.register_settings(
+        group = ptah.config.register_settings(
             'group2', node, validator=validator)
 
         self._init_ptah()
@@ -107,17 +113,17 @@ class TestSettings(BaseTesting):
         def validator2(node, appstruct):
             raise colander.Invalid(node, 'Error2')
 
-        node1 = config.SchemaNode(
+        node1 = ptah.config.SchemaNode(
                 colander.Str(),
                 name = 'node1',
                 default = 'test')
 
-        node2 = config.SchemaNode(
+        node2 = ptah.config.SchemaNode(
                 colander.Str(),
                 name = 'node2',
                 default = 'test')
 
-        group = config.register_settings(
+        group = ptah.config.register_settings(
             'group3', node1, node2, validator=(validator1, validator2))
 
         self._init_ptah()
@@ -133,17 +139,17 @@ class TestSettings(BaseTesting):
                          {'group3.group3': 'Error2', 'group3.node1': 'Error1'})
 
     def test_settings_export(self):
-        node1 = config.SchemaNode(
+        node1 = ptah.config.SchemaNode(
                 colander.Str(),
                 name = 'node1',
                 default = 'test')
 
-        node2 = config.SchemaNode(
+        node2 = ptah.config.SchemaNode(
                 colander.Str(),
                 name = 'node2',
                 default = 'test')
 
-        group = config.register_settings('group4', node1, node2)
+        group = ptah.config.register_settings('group4', node1, node2)
 
         self._init_ptah()
 
@@ -162,17 +168,17 @@ class TestSettings(BaseTesting):
         self.assertEqual(data, {'group4.node2': 'changed'})
 
     def _create_default_group(self):
-        node1 = config.SchemaNode(
+        node1 = ptah.config.SchemaNode(
                 colander.Str(),
                 name = 'node1',
                 default = 'default1')
 
-        node2 = config.SchemaNode(
+        node2 = ptah.config.SchemaNode(
                 colander.Int(),
                 name = 'node2',
                 default = 10)
 
-        group = config.register_settings('group', node1, node2)
+        group = ptah.config.register_settings('group', node1, node2)
         self._init_ptah()
 
         return group
@@ -221,12 +227,12 @@ class TestSettings(BaseTesting):
                          {'node1': 'default1', 'node2': 10})
 
     def test_settings_load_defaults_rawdata_with_errors_in_colander(self):
-        node = config.SchemaNode(
-            config.Sequence(), colander.SchemaNode(colander.Str()),
+        node = ptah.config.SchemaNode(
+            ptah.config.Sequence(), colander.SchemaNode(colander.Str()),
             name = 'node1',
             default = ())
 
-        group = config.register_settings('group', node)
+        group = ptah.config.register_settings('group', node)
         self._init_ptah()
 
         self.assertRaises(
@@ -251,7 +257,7 @@ class TestSettings(BaseTesting):
 class TestSettingsInitialization(BaseTesting):
 
     def setUp(self):
-        config.cleanup_system()
+        ptah.config.cleanup_system()
         BaseTesting.setUp(self)
         self.dir = tempfile.mkdtemp()
 
@@ -262,7 +268,7 @@ class TestSettingsInitialization(BaseTesting):
     def test_settings_initialize_events(self):
         self._init_ptah()
 
-        sm = config.registry
+        sm = self.config.registry
 
         events = []
         def h1(ev):
@@ -270,62 +276,62 @@ class TestSettingsInitialization(BaseTesting):
         def h2(ev):
             events.append(ev)
 
-        sm.registerHandler(h1, (config.SettingsInitializing,))
-        sm.registerHandler(h2, (config.SettingsInitialized,))
+        sm.registerHandler(h1, (ptah.config.SettingsInitializing,))
+        sm.registerHandler(h2, (ptah.config.SettingsInitialized,))
 
         settings = get_settings()
 
-        conf = object()
-        config.initialize_settings({}, conf)
+        ptah.config.initialize_settings({}, self.config)
 
-        self.assertTrue(isinstance(events[0], config.SettingsInitializing))
-        self.assertTrue(isinstance(events[1], config.SettingsInitialized))
+        self.assertTrue(isinstance(events[0], ptah.config.SettingsInitializing))
+        self.assertTrue(isinstance(events[1], ptah.config.SettingsInitialized))
 
-        self.assertTrue(events[0].config is conf)
-        self.assertTrue(events[1].config is conf)
+        self.assertTrue(events[0].config is self.config)
+        self.assertTrue(events[1].config is self.config)
 
     def test_settings_initialize_events_exceptions(self):
         self._init_ptah()
 
-        sm = config.registry
+        sm = self.config.registry
 
         events = []
         err = TypeError()
         def h1(ev):
             raise err
 
-        sm.registerHandler(h1, (config.SettingsInitializing,))
+        sm.registerHandler(h1, (ptah.config.SettingsInitializing,))
         try:
-            config.initialize_settings({}, object())
+            ptah.config.initialize_settings({}, self.config)
         except Exception, exc:
             pass
 
-        self.assertIsInstance(exc, config.StopException)
+        self.assertIsInstance(exc, ptah.config.StopException)
         self.assertIs(exc.exc, err)
 
     def test_settings_initialize_only_once(self):
         self._init_ptah()
-        config.initialize_settings({})
+        ptah.config.initialize_settings({}, self.config)
 
         self.assertRaises(
             RuntimeError,
-            config.initialize_settings, {})
+            ptah.config.initialize_settings, {}, self.config)
 
     def test_settings_initialize_load_default(self):
-        node1 = config.SchemaNode(
+        node1 = ptah.config.SchemaNode(
                 colander.Str(),
                 name = 'node1',
                 default = 'default1')
 
-        node2 = config.SchemaNode(
+        node2 = ptah.config.SchemaNode(
                 colander.Int(),
                 name = 'node2',
                 default = 10)
 
-        group = config.register_settings('group', node1, node2)
+        group = ptah.config.register_settings('group', node1, node2)
         self._init_ptah()
 
-        config.initialize_settings({'group.node1': 'setting from ini'})
+        ptah.config.initialize_settings(
+            {'group.node1': 'setting from ini'}, self.config)
 
         self.assertEqual(group['node1'], 'setting from ini')
         self.assertEqual(group['node2'], 10)
@@ -336,20 +342,20 @@ class TestSettingsInitialization(BaseTesting):
         f.write('[DEFAULT]\ngroup.node1 = value\n\n')
         f.close()
 
-        node1 = config.SchemaNode(
+        node1 = ptah.config.SchemaNode(
                 colander.Str(),
                 name = 'node1',
                 default = 'default1')
 
-        node2 = config.SchemaNode(
+        node2 = ptah.config.SchemaNode(
                 colander.Int(),
                 name = 'node2',
                 default = 10)
 
-        group = config.register_settings('group', node1, node2)
+        group = ptah.config.register_settings('group', node1, node2)
         self._init_ptah()
 
-        config.initialize_settings({'include': path})
+        ptah.config.initialize_settings({'include': path}, self.config)
 
         self.assertEqual(group['node1'], 'value')
         self.assertEqual(group['node2'], 10)

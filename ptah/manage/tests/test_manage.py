@@ -29,11 +29,11 @@ class TestManageModule(Base):
             title = 'Test module'
             module('test-module')
 
-        set_access_manager(PtahAccessManager)
-
         self._init_ptah()
 
-        MODULES = config.registry.storage[MANAGE_ID]
+        set_access_manager(PtahAccessManager)
+
+        MODULES = config.get_cfg_storage(MANAGE_ID)
         self.assertIn('test-module', MODULES)
 
         request = self._makeRequest()
@@ -59,16 +59,14 @@ class TestManageModule(Base):
         self.assertRaises(KeyError, route.__getitem__, 'unknown')
 
     def test_manage_access_manager(self):
-        from ptah.settings import PTAH_CONFIG
-        from ptah.manage.manage import get_access_manager, PtahAccessManager
+        from ptah.manage.manage import CONFIG
+        from ptah.manage.manage import PtahAccessManager
 
-        self.assertIs(get_access_manager(), PtahAccessManager)
-
-        PTAH_CONFIG.managers = ['*']
+        CONFIG['managers'] = ['*']
 
         self.assertTrue(PtahAccessManager('test:user'))
 
-        PTAH_CONFIG.managers = ['admin@ptahproject.org']
+        CONFIG['managers'] = ['admin@ptahproject.org']
 
         self.assertFalse(PtahAccessManager('test:user'))
 
@@ -83,6 +81,8 @@ class TestManageModule(Base):
             return principal
 
         self._init_ptah()
+
+        CONFIG['managers'] = ['admin@ptahproject.org']
         self.assertTrue(PtahAccessManager('test:user'))
 
     def test_manage_view(self):
@@ -100,10 +100,10 @@ class TestManageModule(Base):
         def accessManager(id):
             return True
 
+        self._init_ptah()
+
         set_access_manager(accessManager)
         ptah.authService.set_userid('test-user')
-
-        self._init_ptah()
 
         request = self._makeRequest()
         route = PtahManageRoute(request)
@@ -128,10 +128,10 @@ class TestManageModule(Base):
         def accessManager(id):
             return True
 
+        self._init_ptah()
+
         set_access_manager(accessManager)
         ptah.authService.set_userid('test-user')
-
-        self._init_ptah()
 
         request = self._makeRequest()
         route = PtahManageRoute(request)
@@ -140,7 +140,7 @@ class TestManageModule(Base):
         self.assertIsInstance(mod, TestModule)
 
     def test_manage_disable_modules(self):
-        from ptah.manage.manage import \
+        from ptah.manage.manage import CONFIG, \
             module, PtahModule, PtahManageRoute, ManageView, set_access_manager
 
         global TestModule
@@ -153,12 +153,12 @@ class TestManageModule(Base):
         def accessManager(id):
             return True
 
+        self._init_ptah()
+
         set_access_manager(accessManager)
         ptah.authService.set_userid('test-user')
 
-        self._init_ptah()
-
-        ptah.PTAH_CONFIG['disable_modules'] = ('test-module',)
+        CONFIG['disable_modules'] = ('test-module',)
 
         request = DummyRequest()
         route = PtahManageRoute(request)
@@ -170,7 +170,7 @@ class TestManageModule(Base):
             self.assertFalse(isinstance(mod, TestModule))
 
     def test_manage_disable_modules_traverse(self):
-        from ptah.manage.manage import \
+        from ptah.manage.manage import CONFIG, \
             module, PtahModule, PtahManageRoute, ManageView, set_access_manager
 
         global TestModule
@@ -183,12 +183,12 @@ class TestManageModule(Base):
         def accessManager(id):
             return True
 
+        self._init_ptah()
+
         set_access_manager(accessManager)
         ptah.authService.set_userid('test-user')
 
-        self._init_ptah()
-
-        ptah.PTAH_CONFIG['disable_modules'] = ('test-module',)
+        CONFIG['disable_modules'] = ('test-module',)
 
         request = DummyRequest()
         route = PtahManageRoute(request)
@@ -246,6 +246,6 @@ class TestInstrospection(Base):
 
         self._init_ptah()
 
-        INTROSPECTIONS = config.registry.storage[INTROSPECT_ID]
+        INTROSPECTIONS = config.get_cfg_storage(INTROSPECT_ID)
         self.assertIn('test-module', INTROSPECTIONS)
         self.assertIs(INTROSPECTIONS['test-module'], TestModule)

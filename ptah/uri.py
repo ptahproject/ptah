@@ -20,7 +20,7 @@ def resolve(uri):
         return None
 
     try:
-        return config.registry.storage[RESOLVER_ID][schema](uri)
+        return config.get_cfg_storage(RESOLVER_ID)[schema](uri)
     except KeyError:
         pass
 
@@ -78,8 +78,8 @@ def register_uri_resolver(schema, resolver, depth=1):
         )
 
 
-def _register_uri_resolver(config, schema, resolver):
-    config.storage[RESOLVER_ID][schema] = resolver
+def _register_uri_resolver(cfg, schema, resolver):
+    cfg.get_cfg_storage(RESOLVER_ID)[schema] = resolver
 
 
 class UriFactory(object):

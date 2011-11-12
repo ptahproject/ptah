@@ -3,6 +3,7 @@ import traceback
 import sys, pkg_resources
 from collections import defaultdict
 from ptah.config import directives
+from pyramid.threadlocal import get_current_registry
 from zope.interface.registry import Components
 from zope.interface.interface import adapter_hooks
 from zope.interface.interfaces import IObjectEvent
@@ -22,12 +23,10 @@ class StopException(Exception):
             self.isexc = False
 
     def __str__(self):
-        if self.isexc:
-            return str(self.exc)
-        return self.exc
+        return '\n%s'%self.print_tb()
 
     def print_tb(self):
-        if self.isexc:
+        if self.isexc and self.exc_value:
             out = StringIO.StringIO()
             traceback.print_exception(
                 self.exc_type, self.exc_value, self.exc_traceback, file=out)
@@ -67,17 +66,16 @@ class Config(object):
         from settings import SETTINGS_ID
         registry.storage[SETTINGS_ID] = defaultdict(lambda: dict())
 
+    def get_cfg_storage(self, id):
+        return self.storage[id]
 
-def initialize(packages=None, excludes=(), registry=None, autoinclude=False):
+
+def initialize(config, packages=None, excludes=(),
+               autoinclude=False, initsettings=True):
     """ Load ptah packages, scan and execute all configuration
     directives. """
-
-    if registry is None:
-        registry = Components('ptah')
-        registry.registerHandler(objectEventNotify, (IObjectEvent,))
-
-    sys.modules['ptah.config'].registry = registry
-    sys.modules['ptah.config.api'].registry = registry
+    registry = config.registry
+    registry.registerHandler(objectEventNotify, (IObjectEvent,))
 
     def exclude_filter(modname):
         if modname in packages:
@@ -101,20 +99,43 @@ def initialize(packages=None, excludes=(), registry=None, autoinclude=False):
     for pkg in packages:
         actions.extend(directives.scan(pkg, seen, exclude_filter))
 
-    config = Config(registry, actions)
+    cfg = Config(registry, actions)
 
     # execute actions
     actions = directives.resolveConflicts(actions)
 
-    for action in actions:
-        config.action = action
-        action(config)
+    def runaction(action, cfg):
+        cfg.action = action
+        action(cfg)
 
-    notify(Initialized(registry))
+    for action in actions:
+        config.action(action.discriminator, runaction, (action, cfg))
+
+    config.action(None, registry.notify, (Initialized(registry),))
+
+    if initsettings:
+        import settings
+
+        config.action(
+            None, settings.initialize_settings,
+            (config.registry.settings, config))
+
+
+def get_cfg_storage(id, registry=None):
+    if registry is None:
+        registry = get_current_registry()
+
+    try:
+        storage = registry.storage
+    except:
+        storage = defaultdict(lambda: dict())
+        registry.storage = storage
+
+    return storage[id]
 
 
 def start(cfg):
-    notify(AppStarting(cfg))
+    cfg.registry.notify(AppStarting(cfg))
 
 
 def exclude(modname, excludes=()):
@@ -188,17 +209,11 @@ def list_packages(include_packages=None, excludes=None):
 
 def notify(*event):
     """ Send event to event listeners """
-    registry.subscribers(event, None)
+    get_current_registry().subscribers(event, None)
 
 
 def objectEventNotify(event):
-    registry.subscribers((event.object, event), None)
-
-
-def adapterHook(iface, obj, name='', default=None):
-    return registry.queryAdapter(obj, iface, name, default)
-
-adapter_hooks.append(adapterHook)
+    get_current_registry().subscribers((event.object, event), None)
 
 
 _cleanups = set()
@@ -210,7 +225,6 @@ def cleanup(handler):
 
 def cleanup_system(*modIds):
     mods.clear()
-    registry.storage.clear()
 
     for h in _cleanups:
         h()

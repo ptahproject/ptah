@@ -1,9 +1,8 @@
 # ptah.config package public API
 
-registry = None
-
 from ptah.config.api import initialize
 from ptah.config.api import notify
+from ptah.config.api import get_cfg_storage
 
 from ptah.config.api import start
 from ptah.config.api import Initialized

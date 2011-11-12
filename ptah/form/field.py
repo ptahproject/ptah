@@ -40,7 +40,7 @@ def fieldpreview(cls):
         info.attach(
             config.Action(
                 lambda config, cls, func:
-                    config.storage[PREVIEW_ID].update({cls: func}),
+                    config.get_cfg_storage(PREVIEW_ID).update({cls: func}),
                 (cls, func), discriminator = (PREVIEW_ID, cls))
             )
         return func
@@ -48,17 +48,17 @@ def fieldpreview(cls):
     return wrapper
 
 
-def register_field_impl(config, cls, name):
+def register_field_impl(cfg, cls, name):
     cls.__field__ = name
-    config.storage[FIELD_ID][name] = cls
+    cfg.get_cfg_storage(FIELD_ID)[name] = cls
 
 
 def get_field_factory(name):
-    return config.registry.storage[FIELD_ID].get(name, None)
+    return config.get_cfg_storage(FIELD_ID).get(name, None)
 
 
 def get_field_preview(cls):
-    return config.registry.storage[PREVIEW_ID].get(cls, None)
+    return config.get_cfg_storage(PREVIEW_ID).get(cls, None)
 
 
 class Fieldset(OrderedDict):
@@ -327,7 +327,7 @@ class FieldFactory(Field):
 
     def bind(self, prefix, value, params):
         try:
-            cls = config.registry.storage[FIELD_ID][self.__field__]
+            cls = config.get_cfg_storage(FIELD_ID)[self.__field__]
         except:
             cls = None
 

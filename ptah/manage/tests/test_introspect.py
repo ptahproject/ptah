@@ -4,17 +4,31 @@ from pyramid.httpexceptions import HTTPFound
 
 from base import Base
 
+class TestEvent(object):
+    ptah.config.event('Test event')
+
+@ptah.config.subscriber(TestEvent)
+@ptah.config.subscriber(TestEvent, TestEvent)
+def eventHandler(ev):
+    """ """
+
+ptah.view.register_route('test-introspect', '/test/introspect')
+
 
 class TestIntrospectModule(Base):
 
+    def tearDown(self):
+        ptah.config.cleanup_system(self.__class__.__module__)
+        super(TestIntrospectModule, self).tearDown()
+
     def test_introspect_module(self):
-        from ptah.manage.manage import PtahManageRoute
+        from ptah.manage.manage import CONFIG, PtahManageRoute
         from ptah.manage.introspect import IntrospectModule, Package
 
         request = DummyRequest()
 
         ptah.authService.set_userid('test')
-        ptah.PTAH_CONFIG['managers'] = ('*',)
+        CONFIG['managers'] = ('*',)
         mr = PtahManageRoute(request)
         mod = mr['introspect']
 
@@ -56,13 +70,16 @@ class TestIntrospectModule(Base):
     def test_introspect_routes(self):
         from ptah.manage.introspect import IntrospectModule, RoutesView
 
+        self.p_config.add_route('test-route', '/test/')
+
         request = DummyRequest()
 
         mod = IntrospectModule(None, request)
 
         res = RoutesView.__renderer__(mod, request)
-        self.assertIn("Routes <small>registered pyramid routes</small>",
-                      res.body)
+
+        self.assertIn(
+            "Routes <small>registered pyramid routes</small>", res.body)
 
     def test_introspect_events(self):
         from ptah.manage.introspect import IntrospectModule, EventsView

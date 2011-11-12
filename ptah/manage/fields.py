@@ -18,8 +18,8 @@ class FieldsView(view.View):
     def update(self):
         data = []
 
-        fields = config.registry.storage[FIELD_ID]
-        previews = config.registry.storage[PREVIEW_ID]
+        fields = config.get_cfg_storage(FIELD_ID)
+        previews = config.get_cfg_storage(PREVIEW_ID)
 
         for name, cls in fields.items():
             data.append({'name': name,

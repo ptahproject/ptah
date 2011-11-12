@@ -34,11 +34,11 @@ class TestStaticManagement(Base):
         self._setRequest(request)
 
         self.assertEquals(
-            view.static_url('tests', 'styles.css', request),
+            view.static_url(request, 'tests', 'styles.css'),
             'http://localhost:8080/static/tests/styles.css')
 
         self.assertEquals(
-            view.static_url('tests', '', request),
+            view.static_url(request, 'tests'),
             'http://localhost:8080/static/tests')
 
     def test_static_register_url(self):
@@ -49,7 +49,7 @@ class TestStaticManagement(Base):
         self._init_ptah()
 
         self.assertEquals(
-            view.static_url('tests', 'styles.css', self.request),
+            view.static_url(self.request, 'tests', 'styles.css'),
             'http://ptah.org/static/tests/styles.css')
 
     def test_static_buildtree(self):

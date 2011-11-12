@@ -1,11 +1,15 @@
-""" base class """
 import unittest
 import sqlahelper
+import sqlalchemy
 import transaction
-from ptah import config
 from pyramid import testing
 from pyramid.threadlocal import manager
-from zope.interface.registry import Components
+from pyramid.interfaces import IAuthenticationPolicy, IAuthorizationPolicy
+from pyramid.authorization import ACLAuthorizationPolicy
+from pyramid.authentication import AuthTktAuthenticationPolicy
+
+import ptah
+from ptah import config
 
 
 class Base(unittest.TestCase):
@@ -17,7 +21,9 @@ class Base(unittest.TestCase):
         from pyramid.request import Request
         if environ is None:
             environ = self._makeEnviron()
-        return Request(environ)
+        request = Request(environ)
+        request.registry = self.p_config.registry
+        return request
 
     def _makeEnviron(self, **extras):
         environ = {
@@ -35,8 +41,9 @@ class Base(unittest.TestCase):
     def _init_ptah(self, settings=None, handler=None, *args, **kw):
         if settings is None:
             settings = self._settings
-        config.initialize(('ptah', self.__class__.__module__),
-                          registry = self.p_config.registry)
+        config.initialize(
+            self.p_config, ('ptah', self.__class__.__module__),
+            initsettings = False)
         config.initialize_settings(settings, self.p_config)
 
         # create sql tables
@@ -50,6 +57,17 @@ class Base(unittest.TestCase):
         request.params = {}
         self.p_config = testing.setUp(request=request)
         self.p_config.get_routes_mapper()
+        self.registry = self.p_config.registry
+        self.request.registry = self.p_config.registry
+
+        policy = AuthTktAuthenticationPolicy(
+            'secret', callback= ptah.get_local_roles)
+
+        self.registry.registerUtility(
+            policy, IAuthenticationPolicy)
+
+        self.registry.registerUtility(
+            ACLAuthorizationPolicy(), IAuthorizationPolicy)
 
     def _setup_ptah(self):
         self._init_ptah()
@@ -60,6 +78,13 @@ class Base(unittest.TestCase):
         self.p_config.begin(request)
 
     def setUp(self):
+        try:
+            engine = sqlahelper.get_engine()
+        except:
+            engine = sqlalchemy.engine_from_config(
+                {'sqlalchemy.url': 'sqlite://'})
+            sqlahelper.add_engine(engine)
+
         self._setup_pyramid()
         self._setup_ptah()
 

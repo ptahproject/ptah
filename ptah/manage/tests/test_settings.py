@@ -7,13 +7,15 @@ from base import Base
 class TestSettingsModule(Base):
 
     def test_settings_module(self):
-        from ptah.manage.manage import PtahManageRoute
+        self._init_ptah()
+
+        from ptah.manage.manage import CONFIG, PtahManageRoute
         from ptah.manage.settings import SettingsModule
 
         request = DummyRequest()
 
         ptah.authService.set_userid('test')
-        ptah.PTAH_CONFIG['managers'] = ('*',)
+        CONFIG['managers'] = ('*',)
         mr = PtahManageRoute(request)
         mod = mr['settings']
 

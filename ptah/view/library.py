@@ -39,9 +39,9 @@ def library(name,
         )
 
 
-def library_impl(config, name, path, resource, type,
+def library_impl(cfg, name, path, resource, type,
                  require, prefix, postfix, extra):
-    data = config.storage[LIBRARY_ID]
+    data = cfg.get_cfg_storage(LIBRARY_ID)
 
     lib = data.get(name)
     if lib is None:
@@ -55,7 +55,7 @@ def library_impl(config, name, path, resource, type,
         lib.add(path, resource, type, require, prefix, postfix, extra)
 
 
-def include(name, request):
+def include(request, name):
     libs = getattr(request, '__includes', None)
     if libs is None:
         libs = []
@@ -65,7 +65,7 @@ def include(name, request):
 
 
 def render_includes(request):
-    _libraries = config.registry.storage[LIBRARY_ID]
+    _libraries = config.get_cfg_storage(LIBRARY_ID)
 
     seen = set()
     libraries = []
@@ -125,7 +125,7 @@ class Entry(object):
         urls = list(self.urls)
 
         for path in self.paths:
-            urls.append(static_url(self.resource, path, request))
+            urls.append(static_url(request, self.resource, path))
 
         if self.type == 'css':
             s = '<link %shref="%s" />'

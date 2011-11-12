@@ -8,7 +8,7 @@ class StopExceptionTesting(unittest.TestCase):
 
         err = api.StopException('Error message')
 
-        self.assertEqual(str(err), 'Error message')
+        self.assertEqual(str(err), '\nError message')
         self.assertEqual(err.print_tb(), 'Error message')
 
     def test_api_stopexception_exc(self):
@@ -21,7 +21,6 @@ class StopExceptionTesting(unittest.TestCase):
 
         err = api.StopException(exc)
 
-        self.assertEqual(str(err), 'err')
         self.assertIn("raise ValueError('err')", err.print_tb())
 
 
@@ -51,4 +50,4 @@ class LoadpackageTesting(unittest.TestCase):
 
         exc = api.StopException(err)
         self.assertIs(exc.exc, err)
-        self.assertEqual(str(exc), 'test')
+        self.assertEqual(str(exc), '\ntest')

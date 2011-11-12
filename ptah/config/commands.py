@@ -2,6 +2,7 @@
 import argparse, textwrap
 import StringIO, ConfigParser
 from collections import OrderedDict
+from pyramid.config import Configurator
 
 from ptah import config
 from ptah.config import api, directives
@@ -31,7 +32,7 @@ nameDescriptionWrap = textwrap.TextWrapper(
 
 def settingsCommand(init=True):
     if init: # pragma: no cover
-        config.initialize(autoinclude=True)
+        config.initialize(Configurator(), autoinclude=True)
 
     args = SettingsCommand.parser.parse_args()
     cmd = SettingsCommand(args)

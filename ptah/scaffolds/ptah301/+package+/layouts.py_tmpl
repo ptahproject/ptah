@@ -44,7 +44,7 @@ class WorkspaceLayout(view.Layout):
 
     def update(self):
         self.user = ptah.authService.get_current_principal()
-        self.ptahManager = manage.get_access_manager()(ptah.authService.get_userid()) 
+        self.ptahManager = manage.check_access(ptah.authService.get_userid()) 
         self.isAnon = self.user is None
 
 

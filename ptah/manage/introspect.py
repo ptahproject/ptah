@@ -105,7 +105,7 @@ class UriResolver(form.Form):
         if uri is None:
             uri = [self.request.GET.get('uri','')]
 
-        resolvers = config.registry.storage[RESOLVER_ID]
+        resolvers = config.get_cfg_storage(RESOLVER_ID)
 
         self.data = data = []
         for u in uri:
@@ -167,13 +167,18 @@ class PackageView(view.View):
             ndata[tp] = actions
 
         itypes = []
-        intros = config.registry.storage[INTROSPECT_ID]
+        intros = config.get_cfg_storage(INTROSPECT_ID)
         for key, cls in intros.items():
             if key in self.data:
                 itypes.append((cls.title, cls(self.request)))
 
         itypes.sort()
         self.itypes = [it for _t, it in itypes]
+
+
+def lineno(ob):
+    if ob is not None:
+        return inspect.getsourcelines(ob)[-1]
 
 
 class EventsView(view.View):
@@ -186,14 +191,12 @@ class EventsView(view.View):
 
     events = None
     actions = None
-
-    def lineno(self, ob):
-        return inspect.getsourcelines(ob)[-1]
+    lineno = staticmethod(lineno)
 
     def update(self):
         ev = self.request.params.get('ev')
 
-        all_events = config.registry.storage[directives.EVENT_ID]
+        all_events = config.get_cfg_storage(directives.EVENT_ID)
         self.event = event = all_events.get(ev)
 
         if event is None:
@@ -222,11 +225,6 @@ class EventsView(view.View):
             self.actions = actions
 
 
-def lineno(ob):
-    if ob is not None:
-        return inspect.getsourcelines(ob)[-1]
-
-
 class RoutesView(view.View):
     view.pview(
         'routes.html', IntrospectModule,
@@ -236,8 +234,7 @@ class RoutesView(view.View):
     __intr_path__ = '/ptah-manage/introspect/routes.html'
 
     def update(self):
-        #ev = self.request.params.get('ev')
-        self.route = route = None #directives.events.get(ev)
+        self.route = route = None
 
         if route is None:
             packages = list_packages()
@@ -271,7 +268,7 @@ class RoutesView(view.View):
                             viewactions.append(
                                 (route, name, context, factory, action))
 
-            sm = config.registry
+            sm = self.request.registry
 
             # add pyramid routes
             for route in sm.getUtility(IRoutesMapper).get_routes():
@@ -336,7 +333,7 @@ class UriIntrospection(object):
         return self.actions(
             actions = actions,
             rst_to_html = ptah.rst_to_html,
-            manage_url = ptah.PTAH_CONFIG.manage_url,
+            manage_url = manage.CONFIG.manage_url,
             request = self.request)
 
 
@@ -354,8 +351,8 @@ class EventDirective(object):
     def renderActions(self, *actions):
         return self.actions(
             actions = actions,
-            events = config.registry.storage[directives.EVENT_ID],
-            manage_url = ptah.PTAH_CONFIG.manage_url,
+            events = config.get_cfg_storage(directives.EVENT_ID),
+            manage_url = manage.CONFIG.manage_url,
             request = self.request)
 
 
@@ -384,7 +381,7 @@ class AdapterDirective(object):
         provided = list(interface.implementedBy(context))
         if len(provided):
             iface = provided[0]
-        else:
+        else: # pragma: no cover
             iface = 'unknown'
         return locals()
 
@@ -392,7 +389,7 @@ class AdapterDirective(object):
         return self.actions(
             actions = actions,
             getInfo = self.getInfo,
-            manage_url = ptah.PTAH_CONFIG.manage_url,
+            manage_url = manage.CONFIG.manage_url,
             request = self.request)
 
 
@@ -409,11 +406,11 @@ class SnippetTypeDirective(object):
 
     def renderActions(self, *actions):
         STYPE_ID = sys.modules['ptah.view.snippet'].STYPE_ID
-        stypes = config.registry.storage[STYPE_ID]
+        stypes = config.get_cfg_storage(STYPE_ID)
         return self.actions(
             actions = actions,
             stypes = stypes,
-            manage_url = ptah.PTAH_CONFIG.manage_url,
+            manage_url = manage.CONFIG.manage_url,
             request = self.request)
 
 
@@ -431,7 +428,7 @@ class RouteDirective(object):
     def renderActions(self, *actions):
         return self.actions(
             actions = actions,
-            manage_url = ptah.PTAH_CONFIG.manage_url,
+            manage_url = manage.CONFIG.manage_url,
             request = self.request)
 
 
@@ -453,12 +450,12 @@ class SubscriberDirective(object):
         if len(action.args[2]) > 1:
             obj = action.args[2][0]
             klass = action.args[2][-1]
-            event = config.registry.storage[directives.EVENT_ID].get(
+            event = config.get_cfg_storage(directives.EVENT_ID).get(
                 action.args[2][-1], None)
         else:
             obj = None
             klass = action.args[2][0]
-            event = config.registry.storage[directives.EVENT_ID].get(
+            event = config.get_cfg_storage(directives.EVENT_ID).get(
                 action.args[2][0], None)
 
         return locals()
@@ -467,7 +464,7 @@ class SubscriberDirective(object):
         return self.actions(
             getInfo = self.getInfo,
             actions = actions,
-            manage_url = ptah.PTAH_CONFIG.manage_url,
+            manage_url = manage.CONFIG.manage_url,
             request = self.request)
 
 
@@ -517,5 +514,5 @@ class ViewDirective(object):
         return self.actions(
             getInfo = self.getInfo,
             actions = actions,
-            manage_url = ptah.PTAH_CONFIG.manage_url,
+            manage_url = manage.CONFIG.manage_url,
             request = self.request)

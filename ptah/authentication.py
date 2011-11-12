@@ -31,17 +31,17 @@ def superuser_resolver(uri):
         return SUPERUSER
 
 
-AUTH_CHECKER_ID = 'ptah:auth-checker'
-AUTH_PROVIDER_ID = 'ptah:auth-provider'
-AUTH_SEARCHER_ID = 'ptah:auth-searcher'
+AUTH_CHECKER_ID = 'ptah.auth:checker'
+AUTH_PROVIDER_ID = 'ptah.auth:provider'
+AUTH_SEARCHER_ID = 'ptah.auth:searcher'
 
 
 def auth_checker(checker):
     info = config.DirectiveInfo()
     info.attach(
         config.Action(
-            lambda config: config.storage[AUTH_CHECKER_ID].\
-                update({id(checker): checker}),
+            lambda config: config.get_cfg_storage(AUTH_CHECKER_ID)\
+                .update({id(checker): checker}),
             discriminator = (AUTH_CHECKER_ID, checker))
         )
     return checker
@@ -52,7 +52,7 @@ def register_auth_provider(name, provider):
 
     info.attach(
         config.Action(
-            lambda config, n, p: config.storage[AUTH_PROVIDER_ID]\
+            lambda config, n, p: config.get_cfg_storage(AUTH_PROVIDER_ID)\
                 .update({n:p}),
             (name, provider),
             discriminator = (AUTH_PROVIDER_ID, name))
@@ -81,7 +81,7 @@ class Authentication(object):
     def authenticate(self, credentials):
         info = AuthInfo()
 
-        providers = config.registry.storage[AUTH_PROVIDER_ID]
+        providers = config.get_cfg_storage(AUTH_PROVIDER_ID)
         for pname, provider in providers.items():
             principal = provider.authenticate(credentials)
             if principal is not None:
@@ -89,7 +89,7 @@ class Authentication(object):
                 info.principal = principal
 
                 for checker in \
-                        config.registry.storage[AUTH_CHECKER_ID].values():
+                        config.get_cfg_storage(AUTH_CHECKER_ID).values():
                     if not checker(info):
                         return info
 
@@ -104,7 +104,7 @@ class Authentication(object):
         info.principal = principal
 
         for checker in \
-                config.registry.storage[AUTH_CHECKER_ID].values():
+                config.get_cfg_storage(AUTH_CHECKER_ID).values():
             if not checker(info):
                 return info
 
@@ -128,7 +128,7 @@ class Authentication(object):
         return resolve(self.get_userid())
 
     def get_principal_bylogin(self, login):
-        providers = config.registry.storage[AUTH_PROVIDER_ID]
+        providers = config.get_cfg_storage(AUTH_PROVIDER_ID)
 
         for pname, provider in providers.items():
             principal = provider.get_principal_bylogin(login)
@@ -139,7 +139,7 @@ authService = Authentication()
 
 
 def search_principals(term):
-    searchers = config.registry.storage[AUTH_SEARCHER_ID]
+    searchers = config.get_cfg_storage(AUTH_SEARCHER_ID)
     for name, searcher in searchers.items():
         for principal in searcher(term):
             yield principal
@@ -150,7 +150,7 @@ def register_principal_searcher(name, searcher):
     info.attach(
         config.Action(
             lambda config, name, searcher:
-               config.storage[AUTH_SEARCHER_ID].update({name: searcher}),
+               config.get_cfg_storage(AUTH_SEARCHER_ID).update({name:searcher}),
             (name, searcher),
             discriminator = (AUTH_SEARCHER_ID, name))
         )
@@ -163,7 +163,8 @@ def principal_searcher(name):
         info.attach(
             config.Action(
                 lambda config, name, searcher:
-                    config.storage[AUTH_SEARCHER_ID].update({name: searcher}),
+                    config.get_cfg_storage(AUTH_SEARCHER_ID)\
+                        .update({name: searcher}),
                 (name, searcher),
                 discriminator = (AUTH_SEARCHER_ID, name))
             )

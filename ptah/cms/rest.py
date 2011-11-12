@@ -84,22 +84,25 @@ def cmsContent(request, app='', uri=None, action='', *args):
 
     name = getattr(request, 'subpath', ('content',))[0]
     if ':' not in name:
-        app = u''
+        if not action:
+            action = uri or ''
         uri = app
+        app = u''
+
+    content = None
 
     appfactory = ptah.cms.get_app_factories().get(app)
-    if appfactory is None:
-        raise NotFound()
+    if appfactory is not None:
+        root = appfactory(request)
+        request.root = root
 
-    root = appfactory(request)
-    request.root = root
+        if not uri:
+            content = root
 
-    if not uri:
-        content = root
-    else:
+    if content is None:
         content = load(uri)
 
-    adapters = config.registry.adapters
+    adapters = request.registry.adapters
 
     action = adapters.lookup(
         (IRestActionClassifier, providedBy(content)),
@@ -144,9 +147,9 @@ class Action(object):
 def restaction(name, context, permission):
     info = config.DirectiveInfo()
 
-    def _register(config, callable, name, context, permission):
+    def _register(cfg, callable, name, context, permission):
         ac = Action(callable, name, permission)
-        config.registry.registerAdapter(
+        cfg.registry.registerAdapter(
             ac, (IRestActionClassifier, context), IRestAction, name)
 
     def wrapper(func):
@@ -161,7 +164,7 @@ def restaction(name, context, permission):
     return wrapper
 
 
-@restaction('', IContent, View)
+@restaction('', INode, View)
 def nodeInfo(content, request, *args):
     info = wrap(content).info()
     info['__link__'] = '%s%s/'%(request.application_url, content.__uri__)
@@ -196,12 +199,12 @@ def containerNodeInfo(content, request, *args):
     return info
 
 
-@restaction('apidoc', INode, View)
+@restaction('apidoc', INode, ptah.NO_PERMISSION_REQUIRED)
 def apidocAction(content, request, *args):
     """api doc"""
     actions = []
     url = request.application_url
-    for name, action in config.registry.adapters.lookupAll(
+    for name, action in request.registry.adapters.lookupAll(
         (IRestActionClassifier, providedBy(content)), IRestAction):
 
         if not ptah.check_permission(

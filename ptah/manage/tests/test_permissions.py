@@ -7,13 +7,13 @@ from base import Base
 class TestPermissionsModule(Base):
 
     def test_perms_module(self):
-        from ptah.manage.manage import PtahManageRoute
+        from ptah.manage.manage import CONFIG, PtahManageRoute
         from ptah.manage.permissions import PermissionsModule
 
         request = DummyRequest()
 
         ptah.authService.set_userid('test')
-        ptah.PTAH_CONFIG['managers'] = ('*',)
+        CONFIG['managers'] = ('*',)
         mr = PtahManageRoute(request)
         mod = mr['permissions']
 

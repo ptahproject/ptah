@@ -42,7 +42,7 @@ class View(object):
         return u''
 
     def include(self, name):
-        include(name, self.request)
+        include(self.request, name)
 
     def render_includes(self):
         return render_includes(self.request)
@@ -54,15 +54,17 @@ class View(object):
         return render_messages(self.request)
 
     def static_url(self, name, path=''):
-        return static_url(name, path, self.request)
+        return static_url(self.request, name, path)
 
     def snippet(self, stype, context=None):
         if context is None:
             context = self.context
 
+        request = self.request
+
         try:
-            snippet = config.registry.queryMultiAdapter(
-                (context, self.request), ISnippet, stype)
+            snippet = request.registry.queryMultiAdapter(
+                (context, request), ISnippet, stype)
             if snippet is not None:
                 return snippet()
         except Exception, e:

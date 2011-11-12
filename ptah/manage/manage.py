@@ -1,15 +1,48 @@
-import urlparse
+import urlparse, colander
 from pyramid.security import authenticated_userid
 from pyramid.httpexceptions import HTTPFound, HTTPForbidden
 
 import ptah
 from ptah import view, config
-from ptah.settings import PTAH_CONFIG
 from ptah.authentication import authService
 
+CONFIG_ID = 'ptah.manage:config'
+MANAGE_ID = 'ptah.manage:module'
+INTROSPECT_ID = 'ptah.manage:introspection'
 
-MANAGE_ID = 'ptah:manage-module'
-INTROSPECT_ID = 'ptah:introspection'
+CONFIG = config.register_settings(
+    'manage',
+
+    config.SchemaNode(
+        config.Sequence(), colander.SchemaNode(colander.Str()),
+        name = 'managers',
+        title = 'Managers',
+        description = 'List of user logins with access rights to '\
+            'ptah management ui.',
+        default = ()),
+
+    config.SchemaNode(
+        colander.Str(),
+        name = 'manage_url',
+        title = 'Ptah manage url',
+        default = '/ptah-manage'),
+
+    config.SchemaNode(
+        config.Sequence(), colander.SchemaNode(colander.Str()),
+        name = 'disable_modules',
+        title = 'Hide Modules in Management UI',
+        description = 'List of modules names to hide in manage ui',
+        default = ()),
+
+    config.SchemaNode(
+        config.Sequence(), colander.SchemaNode(colander.Str()),
+        name = 'disable_models',
+        title = 'Hide Models in Model Management UI',
+        description = 'List of models to hide in model manage ui',
+        default = ('cms-type:sqlblob',)),
+
+    title = 'Ptah manage settings',
+    )
 
 
 class PtahModule(object):
@@ -26,7 +59,7 @@ class PtahModule(object):
 
     def url(self):
         """ return url to this module """
-        return '%s/%s'%(PTAH_CONFIG.manage_url, self.name)
+        return '%s/%s'%(CONFIG.manage_url, self.name)
 
     @property
     def __name__(self):
@@ -40,9 +73,9 @@ class PtahModule(object):
 def module(id):
     info = config.DirectiveInfo(allowed_scope=('class',))
 
-    def _complete(config, cls, id):
+    def _complete(cfg, cls, id):
         cls.name = id
-        config.storage[MANAGE_ID][id] = cls
+        cfg.get_cfg_storage(MANAGE_ID)[id] = cls
 
     info.attach(
         config.ClassAction(
@@ -54,9 +87,9 @@ def module(id):
 def introspection(id):
     info = config.DirectiveInfo(allowed_scope=('class',))
 
-    def _complete(config, cls, id):
+    def _complete(cfg, cls, id):
         cls.name = id
-        config.storage[INTROSPECT_ID][id] = cls
+        cfg.get_cfg_storage(INTROSPECT_ID)[id] = cls
 
     info.attach(
         config.ClassAction(
@@ -67,26 +100,25 @@ def introspection(id):
 
 def PtahAccessManager(id):
     """ default access manager """
-    if '*' in PTAH_CONFIG.managers:
+    managers = CONFIG.managers
+
+    if '*' in managers:
         return True
 
     principal = ptah.resolve(id)
 
-    if principal is not None and principal.login in PTAH_CONFIG.managers:
+    if principal is not None and principal.login in managers:
         return True
 
     return False
 
 
-ACCESS_MANAGER = PtahAccessManager
+def check_access(userid):
+    return CONFIG.get('access_manager', PtahAccessManager)(userid)
+
 
 def set_access_manager(func):
-    global ACCESS_MANAGER
-    ACCESS_MANAGER = func
-
-
-def get_access_manager():
-    return ACCESS_MANAGER
+    CONFIG['access_manager'] = func
 
 
 class PtahManageRoute(object):
@@ -96,17 +128,14 @@ class PtahManageRoute(object):
         self.request = request
 
         userid = authService.get_userid()
-        if not userid:
+        if not check_access(userid):
             raise HTTPForbidden()
 
-        if not ACCESS_MANAGER(userid):
-            raise HTTPForbidden()
-
-        self.manage_url = PTAH_CONFIG.manage_url
+        self.manage_url = CONFIG.manage_url
 
     def __getitem__(self, key):
-        if key not in PTAH_CONFIG.disable_modules:
-            mod = config.registry.storage[MANAGE_ID].get(key)
+        if key not in CONFIG.disable_modules:
+            mod = config.get_cfg_storage(MANAGE_ID).get(key)
 
             if mod is not None:
                 return mod(self, self.request)
@@ -130,7 +159,7 @@ class LayoutManage(view.Layout):
                 template=view.template("ptah.manage:templates/ptah-manage.pt"))
 
     def update(self):
-        self.manage_url = PTAH_CONFIG.manage_url
+        self.manage_url = CONFIG.manage_url
         self.user = authService.get_current_principal()
 
         mod = self.request.context
@@ -157,8 +186,8 @@ class ManageView(view.View):
         request = self.request
 
         mods = []
-        for name, mod in config.registry.storage[MANAGE_ID].items():
-            if name in PTAH_CONFIG.disable_modules:
+        for name, mod in config.get_cfg_storage(MANAGE_ID).items():
+            if name in CONFIG.disable_modules:
                 continue
             mods.append((mod.title, mod))
 

@@ -24,7 +24,7 @@ def typeInfoResolver(uri):
        :Returns:
          - :py:class:`ptah.cms.TypeInformation`
     """
-    return config.registry.storage[TYPES_DIR_ID].get(uri)
+    return config.get_cfg_storage(TYPES_DIR_ID).get(uri)
 
 
 def get_type(uri):
@@ -35,7 +35,7 @@ def get_type(uri):
       - :py:class:`ptah.cms.TypeInformation`
 
     """
-    return config.registry.storage[TYPES_DIR_ID].get(uri)
+    return config.get_cfg_storage(TYPES_DIR_ID).get(uri)
 
 
 def get_types():
@@ -43,7 +43,7 @@ def get_types():
     :Returns:
       - mapping of all registered identifier and TypeInformation
     """
-    return config.registry.storage[TYPES_DIR_ID]
+    return config.get_cfg_storage(TYPES_DIR_ID)
 
 
 class TypeInformation(object):
@@ -91,7 +91,7 @@ class TypeInformation(object):
             return ()
 
         types = []
-        all_types = config.registry.storage[TYPES_DIR_ID]
+        all_types = config.get_cfg_storage(TYPES_DIR_ID)
 
         if self.filter_content_types:
             for tinfo in self.allowed_content_types:
@@ -106,12 +106,6 @@ class TypeInformation(object):
                     types.append(tinfo)
 
         return types
-
-
-# we have to generate seperate sql query for each type
-_sql_get = ptah.QueryFreezer(
-    lambda: Session.query(Content)
-    .filter(Content.__uri__ == sqla.sql.bindparam('uri')))
 
 
 def Type(name, title=None, fieldset=None, **kw):
@@ -140,12 +134,12 @@ def Type(name, title=None, fieldset=None, **kw):
     if '__id__' not in f_locals and '__tablename__' in f_locals:
         f_locals['__id__'] = sqla.Column(
             'id', sqla.Integer,
-            sqla.ForeignKey('ptah_cms_content.id'), primary_key=True)
+            sqla.ForeignKey('ptah_content.id'), primary_key=True)
     if '__uri_factory__' not in f_locals:
         f_locals['__uri_factory__'] = ptah.UriFactory('cms-%s'%name)
 
         def resolve_content(uri):
-            return _sql_get.first(uri=uri)
+            return typeinfo.cls.__uri_sql_get__.first(uri=uri)
 
         resolve_content.__doc__ = 'CMS Content resolver for %s type'%title
 
@@ -193,7 +187,12 @@ def register_type_impl(
     tinfo.cls = cls
     tinfo.permission = permission
 
-    config.storage[TYPES_DIR_ID][tinfo.__uri__] = tinfo
+    config.get_cfg_storage(TYPES_DIR_ID)[tinfo.__uri__] = tinfo
+
+    # sql query for content resolver
+    cls.__uri_sql_get__ = ptah.QueryFreezer(
+        lambda: Session.query(cls)
+        .filter(cls.__uri__ == sqla.sql.bindparam('uri')))
 
     # build cms actions
     build_class_actions(cls)

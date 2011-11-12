@@ -22,7 +22,7 @@ class LayoutPreview(view.View):
 
         self.view_name = view_name = request.GET.get('view', '')
 
-        adapters = config.registry.adapters
+        adapters = request.registry.adapters
 
         view_callable = adapters.lookup(
             (IViewClassifier, providedBy(request), providedBy(context)),

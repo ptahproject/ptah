@@ -52,7 +52,7 @@ class TestFieldset(Base):
         self._init_ptah()
 
         from ptah.form.field import PREVIEW_ID
-        previews = config.registry.storage[PREVIEW_ID]
+        previews = config.get_cfg_storage(PREVIEW_ID)
 
         self.assertIn(MyField, previews)
         self.assertIs(previews[MyField], preview)

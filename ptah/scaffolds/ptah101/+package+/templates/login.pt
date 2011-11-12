@@ -1,0 +1,11 @@
+<div>
+  <div class="page-header">
+    <h1 i18n:translate="">Please log in</h1>
+  </div>
+  <p i18n:translate="">
+    To access this part of the site, 
+    you need to log in with your user name and password.
+  </p>
+  
+  <tal:block content="structure rendered_login_form" />
+</div>
