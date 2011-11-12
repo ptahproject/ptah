@@ -108,12 +108,6 @@ class TypeInformation(object):
         return types
 
 
-# we have to generate seperate sql query for each type
-_sql_get = ptah.QueryFreezer(
-    lambda: Session.query(Content)
-    .filter(Content.__uri__ == sqla.sql.bindparam('uri')))
-
-
 def Type(name, title=None, fieldset=None, **kw):
     """ Declare new type. This function has to be called within a content
     class declaration.
@@ -145,7 +139,7 @@ def Type(name, title=None, fieldset=None, **kw):
         f_locals['__uri_factory__'] = ptah.UriFactory('cms-%s'%name)
 
         def resolve_content(uri):
-            return _sql_get.first(uri=uri)
+            return typeinfo.cls.__uri_sql_get__.first(uri=uri)
 
         resolve_content.__doc__ = 'CMS Content resolver for %s type'%title
 
@@ -194,6 +188,11 @@ def register_type_impl(
     tinfo.permission = permission
 
     config.get_cfg_storage(TYPES_DIR_ID)[tinfo.__uri__] = tinfo
+
+    # sql query for content resolver
+    cls.__uri_sql_get__ = ptah.QueryFreezer(
+        lambda: Session.query(cls)
+        .filter(cls.__uri__ == sqla.sql.bindparam('uri')))
 
     # build cms actions
     build_class_actions(cls)

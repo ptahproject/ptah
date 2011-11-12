@@ -84,20 +84,27 @@ def cmsContent(request, app='', uri=None, action='', *args):
 
     name = getattr(request, 'subpath', ('content',))[0]
     if ':' not in name:
-        app = u''
         uri = app
+        app = u''
+
+    content = None
 
     appfactory = ptah.cms.get_app_factories().get(app)
-    if appfactory is None:
-        raise NotFound()
+    if appfactory is not None:
+        root = appfactory(request)
+        request.root = root
 
-    root = appfactory(request)
-    request.root = root
+        if not uri:
+            content = root
 
-    if not uri:
-        content = root
-    else:
-        content = load(uri)
+    if content is None:
+        try:
+            content = load(uri)
+        except:
+            import traceback
+            traceback.print_exc()
+            raise
+        print (uri, content)
 
     adapters = request.registry.adapters
 
