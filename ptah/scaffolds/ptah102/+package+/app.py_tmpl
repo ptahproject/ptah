@@ -4,6 +4,12 @@ from pyramid.asset import abspath_from_asset_spec
 from pyramid.authentication import AuthTktAuthenticationPolicy
 from pyramid.session import UnencryptedCookieSessionFactoryConfig
 
+# Your custom auth plugin
+from {{package}}.auth import User, Session
+
+# Import models
+from {{package}} import models
+
 auth_policy = AuthTktAuthenticationPolicy('secret')
 session_factory = UnencryptedCookieSessionFactoryConfig('secret')
 
@@ -34,6 +40,34 @@ def main(global_config, **settings):
     Base = sqlahelper.get_base()
     Base.metadata.create_all()
 
+    # admin user
+    user = Session.query(User).first()
+    if user is None:
+        user = User('Admin', 'admin', 'admin@ptahproject.org', '12345')
+        Session.add(user)
+
+    # Bootstrap application data with some links; we use SQLAlchemy
+    # directly so there are not application events being fired to apply owner
+
+    links = {'sqlalchemy':'http://www.sqlalchemy.org/',
+             'pyramid':'http://docs.pylonsproject.org/',
+             'enfoldsystems':'http://www.enfoldsystems.com/',
+             'bootstrap':'http://twitter.github.com/bootstrap/',
+             'chameleon':'http://chameleon.repoze.org/',
+             'sqlite':'http://www.sqlite.org/'}
+             
+    for name, url in links.items():
+        if not Session.query(models.Link)\
+               .filter(models.Link.href == url).all():
+            link = models.Link(title=name,
+                               href=url,
+                               color='#0000ff')
+            Session.add(link)
+
+    # Need to commit links to database manually.
+    import transaction
+    transaction.commit()
+
     # enable ptah-manage, see ptah.managers in .ini for users whom can access
     config.add_route(
         'ptah-manage', '/ptah-manage/*traverse',
@@ -41,14 +75,18 @@ def main(global_config, **settings):
 
     # configure ptah manage
     config.begin()
-    ptah.manage.CONFIG['managers'] = ['*']
+    ptah.manage.CONFIG['managers'] = ['admin']
     ptah.manage.CONFIG['disable_modules'] = [
-        'rest', 'introspect', 'apps', 'permissions', 'settings', 'models']
+        'rest', 'introspect', 'apps', 'permissions', 'settings']
     config.end()
 
     # we love them routes
     config.add_route('root', '/')
     config.add_route('contact-us', '/contact-us.html')
+    config.add_route('edit-links', '/links/{id}/edit',
+                     factory=models.factory, use_global_views=True)
+    config.add_route('login', '/login.html')
+    config.add_route('logout', '/logout.html')
 
     config.scan()
 

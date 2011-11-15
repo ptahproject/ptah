@@ -31,12 +31,29 @@
             <li class="active"><a href="/">Home</a></li>
             <li><a href="/contact-us.html">Contact</a></li>
           </ul>
+          <p class="pull-right" tal:condition="user is not None">Logged in as <a href="#">${user.name}</a></p>
         </div>
       </div>
     </div>
 
     <div class="container-fluid app-body">
+      <div class="sidebar">
+        <div class="well">
+          <h5>Links</h5>
+          <ul>
+            <li tal:repeat="link links">
+              <a style="color:${link.color};" href="${link.href}">${link.title}</a>
+              <span class="label success">
+              <a href="/links/${link.__id__}/edit">edit</a>
+              </span>
+            </li>
+          </ul>
+        </div>
+      </div>
+            
       <div class="content">
+        ${rendered_messages}
+
         ${rendered_form}
       </div>
 

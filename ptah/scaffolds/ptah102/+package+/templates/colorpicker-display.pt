@@ -1,0 +1,13 @@
+${view.include('colorpicker')}
+
+<script>
+  $(function() {
+     $("${context.id}" ).ColorPicker();
+  });
+</script>
+
+<span class="uneditable-input"
+      tal:attributes="id context.id;
+		              title context.title;
+                      lang context.lang;">
+</span>

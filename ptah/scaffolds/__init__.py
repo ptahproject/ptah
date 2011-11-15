@@ -23,10 +23,18 @@ class PtahTemplate(Template):
     def out(self, msg): # pragma: no cover (replaceable testing hook)
         print msg
 
+
 class Ptah101ProjectTemplate(PtahTemplate):
     _template_dir = 'ptah101'
+    summary = 'demonstrates form, limited mgmt ui'
+    template_renderer = staticmethod(paste_script_template_renderer)
+
+
+class Ptah102ProjectTemplate(PtahTemplate):
+    _template_dir = 'ptah102'
     summary = 'demonstrates form, models, limited mgmt ui'
     template_renderer = staticmethod(paste_script_template_renderer)
+
 
 class Ptah301ProjectTemplate(PtahTemplate):
     _template_dir = 'ptah301'

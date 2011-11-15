@@ -1,8 +1,11 @@
 import logging
 from pyramid.view import view_config
 from pyramid.httpexceptions import HTTPFound
+from pyramid.security import authenticated_userid
 
-from ptah import view, form, resolve
+from ptah import config, view, form, cms, resolve
+
+from {{package}} import models
 
 # logger, check Debug Toolbar logging section or stdout
 log = logging.getLogger(__name__)
@@ -27,16 +30,20 @@ class Telephone(form.Regex):
 @view_config(renderer='templates/homepage.pt', route_name='root')
 class HomepageView(object):
     """ Homepage view """
-
+    
     def __init__(self, request):
         self.request = request
         view.include(request, 'bootstrap')
         view.include(request, 'bootstrap-js')
+        
+    def get_links(self):
+        return cms.Session.query(models.Link)
 
     def __call__(self):
         request = self.request
         self.rendered_includes = view.render_includes(request)
         self.rendered_messages = view.render_messages(request)
+        self.user = resolve(authenticated_userid(request))
         return {'static_url':view.static_url(request, '{{package}}')}
 
 
@@ -94,7 +101,6 @@ def contact_us(context, request):
        
         log.info('The form was updated successfully')
 
-    contactform.label = u'Contact us'
     contactform.buttons.add_action('Update', action=updateAction)
     contactform.buttons.add_action('Cancel', action=cancelAction)
 
@@ -109,13 +115,68 @@ def contact_us(context, request):
     # render form into HTML
     rendered_form = contactform.render()
 
+    # render messages
+    rendered_messages = view.render_messages(request)
+
+    # query for links to populate links box
+    links = cms.Session.query(models.Link)
+
     #include library dependencies
     view.include(request, 'bootstrap')
 
     # render all the included libraries into html
     rendered_includes = view.render_includes(request)
+    
+    # pyramid authenticated_userid returns a uri
+    user = resolve(authenticated_userid(request))
 
-    return {'rendered_form':rendered_form,
-            'rendered_includes':rendered_includes,
-            'static_url':view.static_url(request, '{{package}}'),
-            'request':request}
+    return {'links':links,
+             'rendered_form':rendered_form,
+             'rendered_messages':rendered_messages,
+             'rendered_includes':rendered_includes,
+             'static_url':view.static_url(request, '{{package}}'),
+             'user':user,
+             'request':request}
+
+
+@view_config(renderer='templates/template.pt', 
+             context=models.Link, 
+             route_name='edit-links')
+def edit_link(context, request):
+    linkform = form.Form(context,request)
+    linkform.fields = models.Link.__type__.fieldset
+
+    def cancelAction(form):
+        return HTTPFound(location='/')
+
+    def updateAction(form):
+        data, errors = form.extract()
+        if errors:
+            return
+        form.context.title = data['title']
+        form.context.href = data['href']
+        form.context.color = data['color']
+
+    linkform.buttons.add_action('Update', action=updateAction)
+    linkform.buttons.add_action('Back', action=cancelAction)
+    linkform.content = {'title':context.title,
+                        'href':context.href,
+                        'color':context.color}
+
+    result = linkform.update() # prepare form for rendering
+    if isinstance(result, HTTPFound):
+        return result
+
+    rendered_form = linkform.render()
+    rendered_messages = view.render_messages(request)
+
+    view.include(request, 'bootstrap')
+    rendered_includes = view.render_includes(request)
+
+    return {'links': cms.Session.query(models.Link),
+            'rendered_form': rendered_form,
+            'rendered_messages': rendered_messages,
+            'rendered_includes': rendered_includes,
+            'static_url': view.static_url(request, '{{package}}'),
+            'user':  resolve(authenticated_userid(request)),
+            'request': request}
