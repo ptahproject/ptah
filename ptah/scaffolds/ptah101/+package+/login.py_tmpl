@@ -1,6 +1,7 @@
 from pyramid import security
 from pyramid.view import view_config
 from pyramid.httpexceptions import HTTPFound
+from pyramid.security import authenticated_userid
 
 import ptah
 from ptah import form
@@ -33,7 +34,6 @@ def login_form(request):
             return
 
         info = ptah.authService.authenticate(data)
-
         if info.status:
             headers = security.remember(request, info.principal.uri)
             return HTTPFound(headers = headers, 
@@ -44,18 +44,13 @@ def login_form(request):
     if isinstance(res, HTTPFound):
         return res
 
-    return {'rendered_login_form': login_form.render()}
+    return {'rendered_login_form': login_form.render(),
+            'user': ptah.resolve(authenticated_userid(request))}
 
 
 @view_config(route_name='logout')
 def logout_form(request):
-    uid = ptah.authService.get_userid()
-        
-    if uid is not None:
-        ptah.authService.set_userid(None)
-        headers = security.forget(request)
-        return HTTPFound(
-            headers = headers,
-            location = request.application_url)
-    else:
-        return HTTPFound(location = request.application_url)
+    headers = security.forget(request)
+    return HTTPFound(
+        headers = headers,
+        location = request.application_url)

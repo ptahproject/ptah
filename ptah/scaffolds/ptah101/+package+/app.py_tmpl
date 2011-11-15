@@ -1,12 +1,8 @@
+import ptah
 from pyramid.config import Configurator
 from pyramid.asset import abspath_from_asset_spec
 from pyramid.authentication import AuthTktAuthenticationPolicy
 from pyramid.session import UnencryptedCookieSessionFactoryConfig
-
-import ptah
-
-# Your custom application permissions
-from {{package}}.permissions import Manager
 
 # Your custom auth plugin
 from {{package}}.auth import User, Session
@@ -20,8 +16,8 @@ session_factory = UnencryptedCookieSessionFactoryConfig('secret')
 
 # WSGI Entry Point
 def main(global_config, **settings):
-    """ This is your application startup.
-    """
+    """ This is your application startup."""
+    
     config = Configurator(settings=settings,
                           session_factory = session_factory,
                           authentication_policy = auth_policy)
@@ -43,19 +39,16 @@ def main(global_config, **settings):
     # create sql tables
     Base = sqlahelper.get_base()
     Base.metadata.create_all()
-     
+
     # admin user
     user = Session.query(User).first()
     if user is None:
         user = User('Admin', 'admin', 'admin@ptahproject.org', '12345')
         Session.add(user)
 
-    # set authcontext as admin user
-    ptah.authService.set_userid(user.uri)
-
     # Bootstrap application data with some links; we use SQLAlchemy
     # directly so there are not application events being fired to apply owner
-    
+
     links = {'sqlalchemy':'http://www.sqlalchemy.org/',
              'pyramid':'http://docs.pylonsproject.org/',
              'enfoldsystems':'http://www.enfoldsystems.com/',
@@ -71,15 +64,16 @@ def main(global_config, **settings):
                                color='#0000ff')
             Session.add(link)
 
-    # Not in HTTP request. Need to commit links to database manually.
+    # Need to commit links to database manually.
     import transaction
     transaction.commit()
 
     # enable ptah-manage, see ptah.managers in .ini for users whom can access
     config.add_route(
-        'ptah-manage','/ptah-manage/*traverse',
+        'ptah-manage', '/ptah-manage/*traverse',
         factory=ptah.manage.PtahManageRoute, use_global_views=True)
 
+    # configure ptah manage
     config.begin()
     ptah.manage.CONFIG['managers'] = ['admin']
     ptah.manage.CONFIG['disable_modules'] = [
@@ -87,13 +81,13 @@ def main(global_config, **settings):
     config.end()
 
     # we love them routes
-    config.add_route('root', '/')    
-    config.add_route('contact-us', '/contact-us.html')        
+    config.add_route('root', '/')
+    config.add_route('contact-us', '/contact-us.html')
     config.add_route('edit-links', '/links/{id}/edit',
                      factory=models.factory, use_global_views=True)
     config.add_route('login', '/login.html')
     config.add_route('logout', '/logout.html')
-        
+
     config.scan()
 
     return config.make_wsgi_app()

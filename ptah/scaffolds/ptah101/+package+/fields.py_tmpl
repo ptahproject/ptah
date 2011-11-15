@@ -1,8 +1,9 @@
-from ptah import form
-from ptah import view
+from ptah import form, view
+
 
 # register colorpicker assets
 view.static('colorpicker', '{{package}}:static/colorpicker')
+
 
 # register colorpicker assets as library
 view.library(
@@ -18,6 +19,7 @@ view.library(
     resource="colorpicker",
     type='css')
 
+
 class ColorPickerField(form.fields.InputField):
     __doc__ = u'Colorpicker input widget'
 
@@ -30,6 +32,7 @@ class ColorPickerField(form.fields.InputField):
         "templates/colorpicker-input.pt")
     tmpl_display = view.template(
         "templates/colorpicker-display.pt")
+
 
 @form.fieldpreview(ColorPickerField)
 def colorpickerPreview(request):

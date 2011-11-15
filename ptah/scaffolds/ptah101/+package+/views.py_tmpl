@@ -1,5 +1,4 @@
 import logging
-
 from pyramid.view import view_config
 from pyramid.httpexceptions import HTTPFound
 from pyramid.security import authenticated_userid
@@ -13,6 +12,7 @@ log = logging.getLogger(__name__)
 
 # register static asset directory
 view.static('{{package}}', '{{package}}:static')
+
 
 class Telephone(form.Regex):
     """ An example validator.  See ptah.form.validators for more info."""
@@ -43,9 +43,9 @@ class HomepageView(object):
         request = self.request
         self.rendered_includes = view.render_includes(request)
         self.rendered_messages = view.render_messages(request)
-        self.principal = authenticated_userid(request)
-        self.user = resolve(self.principal)
+        self.user = resolve(authenticated_userid(request))
         return {'static_url':view.static_url(request, '{{package}}')}
+
 
 # This is a "function view", you do not need to use a function for your 
 # view.  You can use a Class view as provided above.
@@ -54,7 +54,6 @@ class HomepageView(object):
 def contact_us(context, request):
 
     contactform = form.Form(context, request)
-
     contactform.fields = form.Fieldset(
 
         form.TextField(
@@ -89,7 +88,6 @@ def contact_us(context, request):
         data, errors = form.extract()
 
         if errors:
-            form.message(errors, 'form-error')
             return
 
         # form.context is ...
@@ -98,10 +96,9 @@ def contact_us(context, request):
         form.context.email = data['email']
         form.context.subject = data['subject']
 
-        form.message('Form has been updated.', 'info')
         # You would add any logic/database updates/insert here.
         # You would probably also redirect.
-        
+       
         log.info('The form was updated successfully')
 
     contactform.buttons.add_action('Update', action=updateAction)
@@ -131,8 +128,7 @@ def contact_us(context, request):
     rendered_includes = view.render_includes(request)
     
     # pyramid authenticated_userid returns a uri
-    principal = authenticated_userid(request)
-    user = resolve(principal)
+    user = resolve(authenticated_userid(request))
 
     return {'links':links,
              'rendered_form':rendered_form,
@@ -142,15 +138,17 @@ def contact_us(context, request):
              'user':user,
              'request':request}
 
+
 @view_config(renderer='templates/template.pt', 
              context=models.Link, 
              route_name='edit-links')
-
 def edit_link(context, request):
     linkform = form.Form(context,request)
     linkform.fields = models.Link.__type__.fieldset
+
     def cancelAction(form):
         return HTTPFound(location='/')
+
     def updateAction(form):
         data, errors = form.extract()
         if errors:
@@ -171,15 +169,14 @@ def edit_link(context, request):
 
     rendered_form = linkform.render()
     rendered_messages = view.render_messages(request)
-    links = cms.Session.query(models.Link)
+
     view.include(request, 'bootstrap')
     rendered_includes = view.render_includes(request)
-    principal = authenticated_userid(request)
-    user = resolve(principal)
-    return {'links':links,
-             'rendered_form':rendered_form,
-             'rendered_messages':rendered_messages,
-             'rendered_includes':rendered_includes,
-             'static_url':view.static_url(request, '{{package}}'),
-             'user': user,
-             'request':request}
+
+    return {'links': cms.Session.query(models.Link),
+            'rendered_form': rendered_form,
+            'rendered_messages': rendered_messages,
+            'rendered_includes': rendered_includes,
+            'static_url': view.static_url(request, '{{package}}'),
+            'user':  resolve(authenticated_userid(request)),
+            'request': request}

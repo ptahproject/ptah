@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>{{package}}, made with Ptah!</title>
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <link type="text/css" rel="stylesheet" 
+	  href="/static/bootstrap/bootstrap-1.4.0.min.css" />
+  </head>
+
+  <body>
+    
+    <div class="topbar">
+      <div class="topbar-inner">
+        <div class="container-fluid">
+          <a class="brand" href="#">Project {{package}}</a>
+          <ul class="nav">
+            <li class="active"><a href="#">Home</a></li>
+            <li><a href="/contact-us.html">Contact</a></li>
+          </ul>
+          <p class="pull-right" 
+	     tal:condition="user is not None">
+	    Logged in as <a href="#">${user.name}</a></p>
+        </div>
+      </div>
+    </div>
+    <br /><br /><br />
+
+    <div class="row">
+      <div class="span10 offset3">
+	<div class="page-header">
+	  <h1 i18n:translate="">Please log in</h1>
+	</div>
+	<p i18n:translate="">
+	  To access this part of the site, 
+	  you need to log in with your user name and password.
+	</p>
+	
+	<tal:block content="structure rendered_login_form" />
+      </div>
+    </div>
+    
+  </body>
+</html>
