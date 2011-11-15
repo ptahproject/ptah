@@ -1,5 +1,4 @@
 import ptah
-import transaction
 import simplejson
 from ptah import config
 from pyramid.testing import DummyRequest
@@ -102,7 +101,6 @@ class TestRestView(Base):
         super(TestRestView, self).tearDown()
 
     def test_rest_enable_api(self):
-        from pyramid.interfaces import IRoutesMapper
         from ptah.rest import RestLoginRoute, RestApiRoute
 
         mapper = self.p_config.get_routes_mapper()
@@ -211,7 +209,7 @@ class TestRestApi(Base):
                              'subpath': ('action:test','1','2')}
 
         api = Api(request)
-        res = api.render()
+        api.render()
 
         self.assertEqual(data[0], "action")
         self.assertEqual(data[1], ('test', '1', '2'))

@@ -3,7 +3,7 @@ import datetime, iso8601, decimal
 from ptah import view
 from ptah.form import vocabulary
 from ptah.form.field import field, Field
-from ptah.form.interfaces import _, null, required, Invalid, ITerm
+from ptah.form.interfaces import _, null, Invalid, ITerm
 
 
 class InputField(Field, view.View):

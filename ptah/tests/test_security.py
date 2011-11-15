@@ -24,8 +24,8 @@ class TestPermission(Base):
     def test_permission_register_same_name(self):
         import ptah
 
-        perm = ptah.Permission('perm', 'Permission1')
-        perm2 = ptah.Permission('perm', 'Permission2')
+        ptah.Permission('perm', 'Permission1')
+        ptah.Permission('perm', 'Permission2')
 
         self.assertRaises(config.ConflictError, self._init_ptah)
 
@@ -50,8 +50,8 @@ class TestACL(Base):
     def test_acl_register_same_name(self):
         import ptah
 
-        pmap1 = ptah.ACL('map', 'acl1')
-        pmap2 = ptah.ACL('map', 'acl2')
+        ptah.ACL('map', 'acl1')
+        ptah.ACL('map', 'acl2')
 
         self.assertRaises(config.ConflictError, self._init_ptah)
 
@@ -293,8 +293,8 @@ class TestRole(Base):
     def test_role_register_conflict(self):
         import ptah
 
-        role1 = ptah.Role('myrole', 'MyRole1')
-        role2 = ptah.Role('myrole', 'MyRole2')
+        ptah.Role('myrole', 'MyRole1')
+        ptah.Role('myrole', 'MyRole2')
 
         self.assertRaises(config.ConflictError, self._init_ptah)
 

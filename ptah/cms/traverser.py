@@ -4,8 +4,7 @@ from ptah import config
 from sqlalchemy import sql
 from zope import interface
 from pyramid.interfaces import ITraverser
-from pyramid.traversal import ResourceTreeTraverser
-from pyramid.traversal import traversal_path, quote_path_segment
+from pyramid.traversal import traversal_path, ResourceTreeTraverser
 
 from node import Session
 from content import Content
@@ -31,8 +30,6 @@ class ContentTraverser(object):
         path = '/%s/'%'/'.join(traversal_path(environ.get('PATH_INFO','/')))
 
         vroot_tuple = ()
-        vpath = path
-        vroot_idx = -1
 
         l_path = len(root.__root_path__)
 

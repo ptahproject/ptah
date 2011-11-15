@@ -1,7 +1,5 @@
-import transaction
-
 import ptah
-from ptah import config
+import transaction
 
 from base import Base
 

@@ -1,9 +1,7 @@
 import ptah
-import transaction
-import simplejson
-from ptah import config, view
+from ptah import config
 from pyramid.testing import DummyRequest
-from pyramid.httpexceptions import HTTPNotFound, HTTPForbidden
+from pyramid.httpexceptions import HTTPForbidden
 
 from base import Base
 
@@ -108,15 +106,14 @@ class TestManageModule(Base):
         request = self._makeRequest()
         route = PtahManageRoute(request)
 
-        view = ManageView(route, request)
-        view.update()
+        v = ManageView(route, request)
+        v.update()
 
-        self.assertIsInstance(view.modules[-1], TestModule)
+        self.assertIsInstance(v.modules[-1], TestModule)
 
     def test_manage_traverse(self):
         from ptah.manage.manage import \
-            module, PtahModule, PtahManageRoute, ManageView, \
-            set_access_manager
+            module, PtahModule, PtahManageRoute, set_access_manager
 
         global TestModule
         class TestModule(PtahModule):
@@ -171,7 +168,7 @@ class TestManageModule(Base):
 
     def test_manage_disable_modules_traverse(self):
         from ptah.manage.manage import CONFIG, \
-            module, PtahModule, PtahManageRoute, ManageView, set_access_manager
+            module, PtahModule, PtahManageRoute, set_access_manager
 
         global TestModule
         class TestModule(PtahModule):
@@ -197,7 +194,7 @@ class TestManageModule(Base):
 
     def test_manage_layout(self):
         from ptah.manage.manage import \
-            module, PtahModule, PtahManageRoute, LayoutManage
+            module, PtahModule, LayoutManage
 
         global TestModule
         class TestModule(PtahModule):

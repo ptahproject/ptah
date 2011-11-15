@@ -4,8 +4,6 @@ import sys, pkg_resources
 from collections import defaultdict
 from ptah.config import directives
 from pyramid.threadlocal import get_current_registry
-from zope.interface.registry import Components
-from zope.interface.interface import adapter_hooks
 from zope.interface.interfaces import IObjectEvent
 
 mods = set()

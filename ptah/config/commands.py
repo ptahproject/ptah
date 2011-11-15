@@ -5,7 +5,6 @@ from collections import OrderedDict
 from pyramid.config import Configurator
 
 from ptah import config
-from ptah.config import api, directives
 from ptah.config.settings import get_settings
 
 

@@ -9,7 +9,7 @@ from ptah import view, config
 from ptah.form.field import Field, Fieldset
 from ptah.form.button import Buttons, Actions
 from ptah.form.interfaces import _, Invalid, FORM_INPUT, FORM_DISPLAY
-from ptah.form.interfaces import IForm, IInputForm, IDisplayForm
+from ptah.form.interfaces import IForm
 
 CSRF = None
 

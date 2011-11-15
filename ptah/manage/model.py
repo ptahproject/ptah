@@ -1,5 +1,4 @@
 """ content types module """
-import sqlalchemy as sqla
 import ptah
 from ptah import cms, view, form, manage
 

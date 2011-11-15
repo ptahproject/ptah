@@ -175,15 +175,12 @@ class TestPasswordTool(Base):
         super(TestPasswordTool, self).tearDown()
 
     def test_password_encode(self):
-        from ptah.password import PasswordTool
-
         ptah.PWD_CONFIG['manager'] = 'plain'
 
         encoded = ptah.pwd_tool.encode('12345')
         self.assertEqual(encoded, '{plain}12345')
 
     def test_password_check(self):
-        from ptah.password import PasswordTool
         ptah.PWD_CONFIG['manager'] = 'ssha'
 
         self.assertFalse(ptah.pwd_tool.check('12345', '12345'))

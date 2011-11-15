@@ -1,4 +1,3 @@
-import ptah
 from pyramid.testing import DummyRequest
 
 from base import Base
@@ -46,7 +45,7 @@ class TestSqlaModule(Base):
         self.assertEqual(res.status, '200 OK')
 
     def test_table_view(self):
-        from ptah.manage.sqla import SQLAModule, Table, TableView
+        from ptah.manage.sqla import SQLAModule, TableView
 
         request = DummyRequest()
 
@@ -57,7 +56,7 @@ class TestSqlaModule(Base):
         self.assertEqual(res.status, '200 OK')
 
     def test_sqla_table_traverse(self):
-        from ptah.manage.sqla import SQLAModule, Table, Record
+        from ptah.manage.sqla import SQLAModule, Record
 
         from ptah import token
         from ptah.util import CSRFService

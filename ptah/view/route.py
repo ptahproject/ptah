@@ -2,7 +2,6 @@
 from ptah import config
 from pyramid.config.util import make_predicates
 from pyramid.request import route_request_iface
-from pyramid.traversal import DefaultRootFactory
 from pyramid.urldispatch import RoutesMapper
 from pyramid.interfaces import IRequest, IRouteRequest, IRoutesMapper
 

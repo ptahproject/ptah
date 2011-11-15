@@ -1,7 +1,5 @@
-import ptah
 import transaction
 from cStringIO import StringIO
-from ptah import config
 
 from base import Base
 
@@ -43,7 +41,7 @@ class TestBlob(Base):
         self.assertEqual(info['mimetype'], 'text/plain')
 
     def test_blob_resolver(self):
-        import ptah, ptah.cms
+        import ptah
 
         blob = ptah.cms.blobStorage.add(StringIO('blob data'))
 
@@ -55,7 +53,7 @@ class TestBlob(Base):
         self.assertEqual(blob.read(), 'blob data')
 
     def test_blob_with_parent(self):
-        import ptah, ptah.cms
+        import ptah
 
         class MyContent(ptah.cms.Node):
             __name__ = ''
@@ -77,7 +75,7 @@ class TestBlob(Base):
         self.assertEqual(blob.__uri__, blob_uri)
 
     def test_blob_write(self):
-        import ptah, ptah.cms
+        import ptah
 
         blob_uri = ptah.cms.blobStorage.add(StringIO('blob data')).__uri__
         blob = ptah.resolve(blob_uri)

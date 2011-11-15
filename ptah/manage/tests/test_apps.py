@@ -1,4 +1,3 @@
-import transaction
 import ptah
 from ptah import cms, config
 from pyramid.testing import DummyRequest
@@ -37,10 +36,10 @@ class TestAppsModule(Base):
         from ptah.manage.apps import ApplicationsModule
         from ptah.manage.apps import ApplicationsModuleView
 
-        factory1 = cms.ApplicationFactory(
+        cms.ApplicationFactory(
             TestApp1, '/test1', 'app1', 'Root App 1')
 
-        factory2 = cms.ApplicationFactory(
+        cms.ApplicationFactory(
             TestApp2, '/test2', 'app2', 'Root App 2')
 
         self._init_ptah()
@@ -92,7 +91,6 @@ class TestAppSharingForm(Base):
 
     def _make_app(self, request=None):
         from ptah.manage.manage import CONFIG, PtahManageRoute
-        from ptah.manage.apps import ApplicationsModule
 
         class Principal(object):
             id = 'test-user'
@@ -109,10 +107,10 @@ class TestAppSharingForm(Base):
         def principalSearcher(term):
             return (principal,)
 
-        factory1 = cms.ApplicationFactory(
+        cms.ApplicationFactory(
             TestApp1, '/test1', 'app1', 'Root App 1')
 
-        factory2 = cms.ApplicationFactory(
+        cms.ApplicationFactory(
             TestApp2, '/test2', 'app2', 'Root App 2')
 
         self.TestRole = ptah.Role('test', 'Test role')

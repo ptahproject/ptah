@@ -120,8 +120,6 @@ class Entry(object):
                 paths.append(p)
 
     def render(self, request):
-        result = [self.prefix]
-
         urls = list(self.urls)
 
         for path in self.paths:

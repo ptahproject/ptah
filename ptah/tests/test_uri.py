@@ -1,4 +1,3 @@
-import unittest
 from ptah import config
 
 from base import Base

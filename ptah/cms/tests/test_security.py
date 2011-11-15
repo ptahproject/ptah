@@ -1,8 +1,4 @@
-import transaction
-from zope import interface
 from ptah import config
-from pyramid.httpexceptions import HTTPForbidden
-
 from base import Base
 
 

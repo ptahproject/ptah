@@ -1,4 +1,3 @@
-import unittest
 from ptah import view, mail
 from pyramid.testing import DummyRequest
 

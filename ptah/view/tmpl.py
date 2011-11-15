@@ -1,4 +1,4 @@
-import os, sys, imp, pkg_resources
+import os, pkg_resources
 from pyramid.path import caller_package
 from chameleon.zpt.template import PageTemplateFile
 from chameleon.zpt.template import PageTextTemplateFile

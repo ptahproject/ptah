@@ -129,7 +129,6 @@ class TestTypeInfo(Base):
 
         self._init_ptah()
 
-        content = MyContent()
         container = MyContainer()
         self.assertEqual(MyContainer.__type__.list_types(container), [])
 

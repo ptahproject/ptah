@@ -5,9 +5,6 @@ from pyramid.interfaces import IAuthorizationPolicy
 from pyramid.interfaces import IAuthenticationPolicy
 from pyramid.threadlocal import get_current_registry
 
-from ptah import config
-from ptah.view.layout import query_layout, query_layout_chain
-
 
 checkPermission = None
 

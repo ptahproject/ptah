@@ -103,7 +103,6 @@ def make_wsgi_app(global_settings, **settings):
     """
     import sys
     import ptah
-    import sqlahelper
     from pyramid.config import Configurator
 
     authService.set_userid(SUPERUSER_URI)
@@ -138,7 +137,6 @@ def ptah_initialize(configurator, packages=None, autoinclude=False):
     """
     import ptah
     import sqlahelper
-    import StringIO
     import transaction
     from pyramid.exceptions import  ConfigurationExecutionError
 

@@ -4,7 +4,6 @@ import sqlahelper
 import sqlalchemy
 import transaction
 from pyramid import testing
-from pyramid.threadlocal import manager
 from pyramid.interfaces import IAuthenticationPolicy, IAuthorizationPolicy
 from pyramid.authorization import ACLAuthorizationPolicy
 from pyramid.authentication import AuthTktAuthenticationPolicy

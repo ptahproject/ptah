@@ -1,9 +1,7 @@
 """ test for static assets api """
-import unittest, os.path
-from ptah import config, view
-from ptah.view import resources
+import os.path
+from ptah import view
 from ptah.view.base import View
-from ptah.view.resources import buildTree
 from ptah.view.resources import StaticView
 
 from base import Base

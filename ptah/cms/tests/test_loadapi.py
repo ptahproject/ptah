@@ -1,10 +1,7 @@
 import transaction
-from ptah import config
 from pyramid.httpexceptions import HTTPNotFound, HTTPForbidden
 
 import ptah
-from ptah.cms import content
-
 from base import Base
 
 

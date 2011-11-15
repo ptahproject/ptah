@@ -109,7 +109,6 @@ def _adapts(cfg, factory, required, name):
 
 
 def _getProvides(factory):
-    provides = None
     p = list(interface.implementedBy(factory))
     if len(p) == 1:
         return p[0]

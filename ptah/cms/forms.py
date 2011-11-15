@@ -1,12 +1,10 @@
 """ content helper forms """
 import re
-from ptah import config, view, form
+from ptah import view, form
 from pyramid.decorator import reify
 from pyramid.httpexceptions import HTTPFound
 
 from security import wrap
-from content import Content
-from permissions import ModifyContent
 from interfaces import ContentNameSchema
 
 
@@ -72,8 +70,6 @@ class AddForm(form.Form):
         super(AddForm, self).validate(data, errors)
 
         if self.name_widgets and '__name__' in data and data['__name__']:
-            widget = self.name_widgets['__name__']
-
             name = data['__name__']
             if name in self.container.keys():
                 error = form.Invalid(

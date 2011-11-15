@@ -1,4 +1,3 @@
-import ptah
 from pyramid.testing import DummyRequest
 from pyramid.httpexceptions import HTTPFound
 

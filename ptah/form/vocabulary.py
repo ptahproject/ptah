@@ -13,7 +13,7 @@
 ##############################################################################
 """ vocabulary implementation from zope.schema """
 from zope import interface
-from ptah.form.interfaces import _, ITerm, IVocabulary
+from ptah.form.interfaces import ITerm, IVocabulary
 
 
 class SimpleTerm(object):

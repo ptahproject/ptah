@@ -1,7 +1,7 @@
 import inspect
 import simplejson as json
 from collections import OrderedDict
-from ptah import view, config
+from ptah import view
 from ptah.view.view import PyramidView
 
 from zope.interface import providedBy

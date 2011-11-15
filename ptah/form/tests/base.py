@@ -2,8 +2,6 @@
 import unittest
 from ptah import config
 from pyramid import testing
-from pyramid.threadlocal import manager
-from zope.interface.registry import Components
 
 
 class Base(unittest.TestCase):

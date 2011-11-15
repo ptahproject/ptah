@@ -1,6 +1,3 @@
-import unittest
-from ptah import form
-
 from base import Base
 
 

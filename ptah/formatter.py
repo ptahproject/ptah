@@ -2,7 +2,7 @@
 import pytz
 import colander
 import translationstring
-from datetime import date, datetime, timedelta
+from datetime import datetime, timedelta
 from pyramid.i18n import get_localizer
 from pyramid.threadlocal import get_current_request
 
@@ -53,7 +53,7 @@ class Timezone(colander.SchemaType):
                 return pytz.timezone(v)
             except:
                 return pytz.timezone(_tzs[v.lower()])
-        except Exception, e:
+        except:
             raise colander.Invalid(
                 node, _('"${val}" is not a timezone', mapping={'val':cstruct}))
 

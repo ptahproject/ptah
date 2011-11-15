@@ -1,18 +1,13 @@
 """ view tests """
-import sys, unittest
 from zope import interface
-from pyramid.response import Response
 from pyramid.interfaces import IView, IRequest, IRouteRequest
 from pyramid.interfaces import IViewClassifier
 from pyramid.interfaces import IExceptionViewClassifier
 from pyramid.interfaces import IAuthorizationPolicy
 from pyramid.interfaces import IAuthenticationPolicy
-from pyramid.httpexceptions import HTTPForbidden, HTTPNotFound, HTTPFound
+from pyramid.httpexceptions import HTTPForbidden, HTTPFound
 
 from ptah import config, view
-from ptah.config import api
-from ptah.view.base import View
-from ptah.view.renderers import ViewRenderer
 
 from base import Base, Context
 

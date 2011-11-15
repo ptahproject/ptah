@@ -1,5 +1,4 @@
 """ formatter tests """
-import unittest
 import colander, pytz
 from datetime import datetime, timedelta
 from ptah import formatter

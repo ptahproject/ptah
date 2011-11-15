@@ -1,10 +1,9 @@
 """ message tests """
-import os, sys, unittest
+import os
 from zope import interface
 from pyramid.interfaces import IRequest
 
-from ptah import config, view
-from ptah.view.message import InformationMessage
+from ptah import view
 from ptah.view.interfaces import IMessage, IStatusMessage
 
 from base import Base
@@ -59,7 +58,6 @@ class TestStatusMessages(Base):
 
         del self.request.session
 
-        service = IStatusMessage(self.request)
         self.test_messages_service(True)
 
     def test_messages_warning_msg(self):

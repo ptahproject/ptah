@@ -1,16 +1,15 @@
 """ rest api for cms """
 from zope import interface
 from zope.interface import providedBy
-from ptah import config, form
 from collections import OrderedDict
 
 import ptah
+from ptah import config
 from ptah.cms import wrap
 from ptah.cms.node import load
-from ptah.cms.content import Content
 from ptah.cms.container import Container
 
-from interfaces import Error, NotFound, CmsException
+from interfaces import NotFound, CmsException
 from interfaces import INode, IBlob, IContent, IContainer
 from permissions import View, ModifyContent, DeleteContent
 
@@ -80,8 +79,6 @@ def typeInfo(tinfo, request):
 
 @CMS.action('content', 'CMS content')
 def cmsContent(request, app='', uri=None, action='', *args):
-    info = {}
-
     name = getattr(request, 'subpath', ('content',))[0]
     if ':' not in name:
         if not action:

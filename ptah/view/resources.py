@@ -1,7 +1,6 @@
 """ static resource management api """
-import sys, os, re, colander
-from urlparse import urljoin, urlparse
-from paste import request
+import os, re, colander
+from urlparse import urlparse
 
 from pyramid.static import _FileResponse
 from pyramid.httpexceptions import HTTPNotFound
@@ -26,7 +25,6 @@ STATIC = config.register_settings(
 
     title = 'Static resources management',
 )
-STATIC.isurl = False
 
 STATIC_ID = 'ptah.view:static'
 
@@ -60,10 +58,9 @@ def static(name, path, layer=''):
 def static_url(request, name, path='', **kw):
     url = STATIC.url
 
-    if STATIC.isurl:
+    if STATIC.get('isurl', False):
         return '%s/%s/%s'%(url, name, path)
     else:
-        rname = '%s-%s'%(url, name)
         url = request.route_url('%s-%s'%(url, name), subpath = path)
         if not path:
             return url[:-1]
@@ -103,7 +100,7 @@ def initialize(ev):
                 route_name =rname,
                 view = StaticView(abspath, prefix))
     else:
-        STATIC.isurl = True
+        STATIC['isurl'] = True
 
 
 class StaticView(object):

@@ -1,5 +1,3 @@
-""" """
-import unittest
 from ptah import config, view
 
 from base import Base
@@ -113,18 +111,18 @@ class TestLibraryManagement(Base):
         self.assertEqual(view.render_includes(self.request), '')
 
     def test_library_include_recursive(self):
-        lib1 = view.library(
+        view.library(
             'test-lib1', path='http://ptah.org/style1.css', type='css')
 
-        lib2 = view.library(
+        view.library(
             'test-lib2', path='http://ptah.org/style2.css', type='css',
             require='test-lib1')
 
-        lib3 = view.library(
+        view.library(
             'test-lib3', path='http://ptah.org/style3.css', type='css',
             require=('test-lib1', 'test-lib2'))
 
-        lib4 = view.library(
+        view.library(
             'test-lib4', path='http://ptah.org/style4.css', type='css',
             require=('test-lib1', 'test-lib2'))
         self._init_ptah()

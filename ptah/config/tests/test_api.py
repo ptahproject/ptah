@@ -1,4 +1,4 @@
-import sys, unittest
+import unittest
 
 
 class StopExceptionTesting(unittest.TestCase):

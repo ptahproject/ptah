@@ -1,7 +1,8 @@
-import ptah
 import transaction
-from ptah import config
 from pyramid.interfaces import ITraverser
+
+import ptah
+from ptah import config
 
 from base import Base
 
@@ -67,7 +68,6 @@ class TestTraverser(Base):
 
     def test_traverser_default_root(self):
         import ptah.cms
-        from ptah.cms.traverser import ContentTraverser
 
         request = self._makeRequest(
             {'PATH_INFO': '/test/index.html',
@@ -84,7 +84,6 @@ class TestTraverser(Base):
         self.assertEqual(info['view_name'], 'test')
 
     def test_traverser_root_no_view(self):
-        import ptah.cms
         self._create_content()
 
         request = self._makeRequest({'PATH_INFO': '/test/'})
@@ -97,7 +96,6 @@ class TestTraverser(Base):
         self.assertEqual(info['view_name'], '')
 
     def test_traverser_folder(self):
-        import ptah.cms
         self._create_content()
 
         request = self._makeRequest({'PATH_INFO': '/test/folder'})
@@ -111,7 +109,6 @@ class TestTraverser(Base):
         self.assertEqual(info['traversed'], ('folder',))
 
     def test_traverser_folder_2(self):
-        import ptah.cms
         self._create_content()
 
         request = self._makeRequest({'PATH_INFO': '/test/folder/'})
@@ -125,7 +122,6 @@ class TestTraverser(Base):
         self.assertEqual(info['traversed'], ('folder',))
 
     def test_traverser_folder_view(self):
-        import ptah.cms
         self._create_content()
 
         request = self._makeRequest({'PATH_INFO': '/test/folder/index.html'})
@@ -139,7 +135,6 @@ class TestTraverser(Base):
         self.assertEqual(info['traversed'], ('folder',))
 
     def test_traverser_folder_subcontent1(self):
-        import ptah.cms
         self._create_content()
 
         request = self._makeRequest({'PATH_INFO': '/test/folder/content'})
@@ -153,7 +148,6 @@ class TestTraverser(Base):
         self.assertEqual(info['traversed'], ('folder','content'))
 
     def test_traverser_folder_subcontent2(self):
-        import ptah.cms
         self._create_content()
 
         request = self._makeRequest({'PATH_INFO': '/test/folder/content/'})
@@ -167,7 +161,6 @@ class TestTraverser(Base):
         self.assertEqual(info['traversed'], ('folder','content'))
 
     def test_traverser_folder_subcontent_view(self):
-        import ptah.cms
         self._create_content()
 
         request = self._makeRequest(
@@ -182,7 +175,6 @@ class TestTraverser(Base):
         self.assertEqual(info['traversed'], ('folder','content'))
 
     def test_traverser_folder_subcontent_view2(self):
-        import ptah.cms
         self._create_content()
 
         request = self._makeRequest(

@@ -1,8 +1,6 @@
 """ security ptah module """
-from zope import interface
-
 import ptah
-from ptah import config, view, manage
+from ptah import view, manage
 
 
 class PermissionsModule(manage.PtahModule):

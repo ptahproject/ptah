@@ -1,12 +1,8 @@
-import transaction
 import ptah
-from ptah import config
-from pyramid.testing import DummyRequest
-from pyramid.httpexceptions import HTTPFound, HTTPForbidden
-
 from ptah import form, config
 from ptah.form.field import PREVIEW_ID
 from ptah.manage import fieldpreviews
+from pyramid.testing import DummyRequest
 
 from base import Base
 
@@ -138,10 +134,9 @@ class TestFieldsModule(Base):
         res = FieldsView.__renderer__(mod, request)
         self.assertEqual(res.status, '200 OK')
 
-        from ptah.form.field import FIELD_ID, PREVIEW_ID
+        from ptah.form.field import FIELD_ID
 
         fields = config.get_cfg_storage(FIELD_ID)
-        previews = config.get_cfg_storage(PREVIEW_ID)
 
         view = FieldsView(None, request)
         view.update()

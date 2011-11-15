@@ -78,7 +78,7 @@ class TestRestApi(RestBase):
                          'http://localhost:8080/content:%s/%s/'%(
                 info[0]['__mount__'], info[0]['__uri__']))
 
-        factory = ptah.cms.ApplicationFactory(
+        ptah.cms.ApplicationFactory(
             ApplicationRoot, '/test2', 'root2', 'Root App',config=self.p_config)
         self.assertEqual(len(cmsApplications(request)), 2)
 
@@ -97,7 +97,7 @@ class TestRestApi(RestBase):
         info = cmsApplications(request)
         self.assertEqual(info, [])
 
-        factory = ptah.cms.ApplicationFactory(
+        ptah.cms.ApplicationFactory(
             ApplicationRoot, '/', 'root', 'Root App', config=self.p_config)
 
         info = cmsApplications(request)
@@ -111,7 +111,7 @@ class TestRestApi(RestBase):
     def test_rest_types(self):
         from ptah.cms.rest import cmsTypes
 
-        ApplicationRoot = self._make_app()
+        self._make_app()
         self._init_ptah()
 
         request = self._makeRequest()
@@ -306,7 +306,6 @@ class TestCMSRestAction(RestBase):
 
     def test_rest_cms_create(self):
         from ptah.cms import rest
-        from ptah.cms import tinfo
         self._init_ptah()
 
         all_types = ptah.cms.get_types()

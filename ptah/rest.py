@@ -6,8 +6,7 @@ from simplejson import dumps
 from collections import OrderedDict
 from pyramid.response import Response
 from pyramid.authentication import parse_ticket, AuthTicket, BadTicket
-from pyramid.httpexceptions import \
-     WSGIHTTPException, HTTPServerError, HTTPNotFound
+from pyramid.httpexceptions import WSGIHTTPException, HTTPNotFound
 
 from ptah import view, config
 
@@ -145,7 +144,6 @@ class Login(object):
 
     def get_token(self, request, userid):
         secret = SECURITY.secret
-        environ = request.environ
         remote_addr = '0.0.0.0'
 
         ticket = AuthTicket(

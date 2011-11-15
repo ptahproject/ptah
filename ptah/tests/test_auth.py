@@ -1,5 +1,4 @@
 """ role """
-from zope import interface
 from ptah import config
 
 from base import Base

@@ -1,5 +1,4 @@
-import sys, os, time
-import unittest, shutil, tempfile, colander
+import unittest, os, shutil, tempfile, colander
 from pyramid.testing import setUp, tearDown
 from zope.interface.registry import Components
 from zope.interface.interface import InterfaceClass

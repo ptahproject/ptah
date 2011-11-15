@@ -240,7 +240,7 @@ class TestForm(unittest.TestCase):
         form_ob.fields = form.Fieldset(form.TextField('test'))
         form_ob.update()
 
-        html = form_ob.render()
+        form_ob.render()
 
         def template(**data):
             return 'Form rendered'

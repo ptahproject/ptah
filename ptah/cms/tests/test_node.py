@@ -1,7 +1,4 @@
-import ptah
 import transaction
-from ptah import config
-
 from base import Base
 
 
@@ -70,7 +67,7 @@ class TestNode(Base):
         self.assertTrue(c.__parent_ref__.__uri__ == parent_uri)
 
     def test_node_local_roles(self):
-        import ptah, ptah.cms
+        import ptah
 
         class MyContent(ptah.cms.Node):
             __uri_factory__ = ptah.UriFactory('test')
@@ -95,7 +92,7 @@ class TestNode(Base):
         self.assertTrue(c.__local_roles__ == {u'userid': [u'role:1']})
 
     def test_node_owners(self):
-        import ptah, ptah.cms
+        import ptah
 
         class MyContent(ptah.cms.Node):
             __mapper_args__ = {'polymorphic_identity': 'mycontent'}
@@ -120,7 +117,7 @@ class TestNode(Base):
         self.assertTrue(c.__owner__ == u'userid')
 
     def test_node_permissions(self):
-        import ptah, ptah.cms
+        import ptah
 
         class MyContent(ptah.cms.Node):
             __mapper_args__ = {'polymorphic_identity': 'mycontent'}

@@ -1,5 +1,5 @@
 """ view implementation """
-import sys, inspect
+import inspect
 from zope import interface
 from zope.interface import providedBy
 

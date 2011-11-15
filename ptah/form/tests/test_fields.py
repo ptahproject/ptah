@@ -184,8 +184,6 @@ class TestLinesField(Base):
 class TestVocabularyField(Base):
 
     def test_vocabulary_field(self):
-        request = DummyRequest()
-
         voc = form.SimpleVocabulary.from_items(
             (1, 'one', 'One'),
             (2, 'two', 'Two'),

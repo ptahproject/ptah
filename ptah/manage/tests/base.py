@@ -5,7 +5,6 @@ import sqlalchemy
 import transaction
 from ptah import config
 from pyramid import testing
-from pyramid.threadlocal import manager
 
 
 class Base(unittest.TestCase):

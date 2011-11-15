@@ -1,5 +1,5 @@
 """ snippet implementation """
-import sys, logging
+import logging
 from zope import interface
 from pyramid.httpexceptions import HTTPNotFound
 

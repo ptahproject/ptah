@@ -1,5 +1,5 @@
 """ settings module """
-from ptah import config, view, manage
+from ptah import view, manage
 from ptah.config.settings import get_settings
 
 

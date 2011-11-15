@@ -29,8 +29,8 @@ class TestTokenType(Base):
     def test_token_type(self):
         from ptah import token
 
-        tt1 = token.TokenType('unique-id', timedelta(minutes=20))
-        tt2 = token.TokenType('unique-id', timedelta(minutes=20))
+        token.TokenType('unique-id', timedelta(minutes=20))
+        token.TokenType('unique-id', timedelta(minutes=20))
 
         self.assertRaises(config.ConflictError, self._init_ptah)
 

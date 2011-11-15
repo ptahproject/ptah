@@ -1,10 +1,9 @@
 """ layout tests """
-import os, unittest, tempfile, shutil
+import os, tempfile, shutil
 from zope import interface
 from pyramid.interfaces import IRouteRequest
-from pyramid.httpexceptions import HTTPNotFound
 
-from ptah import config, view
+from ptah import view
 from ptah.view.interfaces import ILayout
 from ptah.view.layout import Layout, LayoutRenderer, \
     query_layout, query_layout_chain
@@ -28,9 +27,9 @@ class TestLayout(Base):
     def test_layout_register_class_errors(self):
         self.assertRaises(ValueError, view.register_layout, 'test',klass=None)
 
-        class Layout(object):
+        class LayoutCls(object):
             pass
-        self.assertRaises(ValueError, view.register_layout, 'test',klass=Layout)
+        self.assertRaises(ValueError, view.register_layout, 'test',klass=LayoutCls)
 
     def test_layout_register_simple(self):
         view.register_layout('test')

@@ -1,4 +1,3 @@
-import sys
 import httplib
 import os
 import pkg_resources

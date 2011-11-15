@@ -141,7 +141,7 @@ class TestFieldset(Base):
         fieldset = form.Fieldset(field, validator=validator)
         self.assertRaises(form.Invalid, fieldset.validate, {})
 
-        fs = fieldset.bind()
+        fieldset.bind()
         self.assertRaises(form.Invalid, fieldset.validate, {})
 
     def _makeOne(self, name, **kw):

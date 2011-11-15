@@ -1,7 +1,4 @@
 """ directives """
-import inspect
-from pyramid.interfaces import IRequest
-
 from ptah import config
 from ptah.view.customize import LayerWrapper
 from ptah.view.view import unset, register_view_impl

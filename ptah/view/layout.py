@@ -1,5 +1,4 @@
 """ layout implementation """
-import sys
 from zope import interface
 from pyramid.location import lineage
 from pyramid.interfaces import IRequest, IRouteRequest

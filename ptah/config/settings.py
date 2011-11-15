@@ -1,13 +1,10 @@
 """ settings """
 import colander
 import logging, os.path, ConfigParser
-from datetime import datetime, timedelta
-from collections import OrderedDict
 from zope import interface
-from zope.interface.interfaces import ObjectEvent
 from zope.interface.interface import InterfaceClass
 
-import api, schema, shutdown
+import api, schema
 from directives import event, subscriber, DirectiveInfo, Action
 
 log = logging.getLogger('ptah.config')
@@ -141,7 +138,7 @@ class Settings(dict):
             rawdata = dict((k.lower(), v) for k, v in rawdata.items())
             data = self.schema.unflatten(rawdata)
         except Exception, exc:
-            log.error('Error loading settings')
+            log.error('Error loading settings: %s', exc)
             if setdefaults:
                 raise
             return

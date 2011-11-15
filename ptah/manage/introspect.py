@@ -1,8 +1,7 @@
 """ introspect module """
-import pkg_resources, inspect, os, sys
+import inspect, sys
 from pyramid.interfaces import IRoutesMapper, IRouteRequest
 from pyramid.interfaces import IViewClassifier, IExceptionViewClassifier
-from pyramid.httpexceptions import HTTPFound
 
 from zope import interface
 from zope.interface.interface import InterfaceClass
@@ -259,7 +258,6 @@ class RoutesView(view.View):
                             context = action.args[1]
                             route = action.args[3]
                         else:
-                            isclass = False
                             factory = action.args[0]
                             name = action.args[1]
                             context = action.args[2]
@@ -383,7 +381,12 @@ class AdapterDirective(object):
             iface = provided[0]
         else: # pragma: no cover
             iface = 'unknown'
-        return locals()
+
+        return {'iface': iface,
+                'context': context,
+                'provided': provided,
+                'name': name,
+                'requires': requires}
 
     def renderActions(self, *actions):
         return self.actions(

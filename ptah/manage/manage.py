@@ -1,6 +1,5 @@
-import urlparse, colander
-from pyramid.security import authenticated_userid
-from pyramid.httpexceptions import HTTPFound, HTTPForbidden
+import colander
+from pyramid.httpexceptions import HTTPForbidden
 
 import ptah
 from ptah import view, config

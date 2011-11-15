@@ -6,7 +6,7 @@ import ptah
 from ptah import config
 
 from ptah.cms import events
-from ptah.cms.node import Node, Session, load_parents
+from ptah.cms.node import Session, load_parents
 from ptah.cms.content import Content
 from ptah.cms.security import action
 from ptah.cms.permissions import DeleteContent

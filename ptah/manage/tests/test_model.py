@@ -1,7 +1,7 @@
 import sqlalchemy as sqla
 import transaction
 import ptah
-from ptah import cms, config
+from ptah import cms
 from webob.multidict import MultiDict
 from pyramid.testing import DummyRequest
 from pyramid.httpexceptions import HTTPFound
@@ -82,7 +82,7 @@ class TestModelModule(Base):
 class TestModel(Base):
 
     def test_model_traverse(self):
-        from ptah.manage.model import ModelModule, ModelView, Record
+        from ptah.manage.model import ModelModule, Record
 
         content = Content1()
         content.title = u'Content test'

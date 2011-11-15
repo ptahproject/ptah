@@ -4,14 +4,13 @@ from sqlalchemy.ext.hybrid import hybrid_property
 
 from zope import interface
 from ptah import config, form
-from collections import OrderedDict
 
 import ptah
 from ptah.cms import events
-from ptah.cms.node import Node, Session, load_parents
+from ptah.cms.node import Node, Session
 from ptah.cms.interfaces import Error, IContent
 from ptah.cms.security import action
-from ptah.cms.permissions import View, DeleteContent, ModifyContent
+from ptah.cms.permissions import DeleteContent, ModifyContent
 
 
 class Content(Node):

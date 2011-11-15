@@ -1,9 +1,7 @@
 """ snippet tests """
-import sys, unittest
 from zope import interface
 from pyramid.httpexceptions import HTTPNotFound
 from ptah import config, view
-from ptah.config import api
 from ptah.view.snippet import ISnippet, Snippet, SnippetType, render_snippet
 
 from base import Base

@@ -1,6 +1,5 @@
 import inspect
 from ptah import config
-from zope.interface import providedBy, Interface, implements
 
 import ptah
 from permissions import View

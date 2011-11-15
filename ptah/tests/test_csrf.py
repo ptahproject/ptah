@@ -1,7 +1,4 @@
-import transaction
-from datetime import timedelta
 from ptah import config
-
 from base import Base
 
 
@@ -12,7 +9,6 @@ class TestCsrf(Base):
         super(TestCsrf, self).tearDown()
 
     def test_csrf_service(self):
-        import ptah
         from ptah.util import CSRFService
 
         self._init_ptah()

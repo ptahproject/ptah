@@ -1,7 +1,6 @@
 """ base view class with access to various api's """
 import logging
 from zope import interface
-from ptah import config
 from ptah.formatter import format
 from ptah.view.resources import static_url
 from ptah.view.message import add_message, render_messages

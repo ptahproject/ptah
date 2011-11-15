@@ -1,7 +1,7 @@
 """ Form buttons """
 import sys, re
+from ptah import view
 from collections import OrderedDict
-from ptah import config, view
 
 AC_DEFAULT = 0
 AC_PRIMARY = 1

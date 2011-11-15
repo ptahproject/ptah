@@ -1,4 +1,3 @@
-import ptah
 import transaction
 from ptah import cms, config
 

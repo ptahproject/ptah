@@ -2,7 +2,6 @@
 import colander
 import translationstring
 from os import urandom
-from random import randint
 from codecs import getencoder
 from hashlib import sha1
 from base64 import urlsafe_b64encode, urlsafe_b64decode

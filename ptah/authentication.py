@@ -1,10 +1,8 @@
-import threading
 from zope import interface
-from ptah import config
-from pyramid.interfaces import INewRequest
 from pyramid.security import authenticated_userid
 from pyramid.threadlocal import get_current_request
 
+from ptah import config
 from ptah.uri import resolve, resolver
 from ptah.util import tldata
 from ptah.interfaces import IAuthInfo, IAuthentication

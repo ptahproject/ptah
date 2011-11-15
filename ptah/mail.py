@@ -1,15 +1,12 @@
 """ mail settings """
 import os.path
-from email.Utils import formataddr
 from email import Encoders
 from email.MIMEText import MIMEText
 from email.MIMEMultipart import MIMEMultipart
 from email.MIMENonMultipart import MIMENonMultipart
 from email.Utils import formatdate, formataddr
 from email.Header import make_header
-from email.Charset import Charset
 
-from ptah import config
 from ptah.settings import MAIL
 
 
@@ -203,7 +200,7 @@ class MailTemplate(object):
 
     def send(self, email=None, **kw):
         if email:
-            self.to_address = emails # pragma: no cover
+            self.to_address = email # pragma: no cover
 
         message = self(**kw)
 

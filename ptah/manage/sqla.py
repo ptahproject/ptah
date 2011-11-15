@@ -6,7 +6,7 @@ from pyramid.decorator import reify
 from pyramid.httpexceptions import HTTPFound
 
 import ptah
-from ptah import config, view, form, manage
+from ptah import view, form, manage
 
 Session = psa.get_session()
 metadata = psa.get_base().metadata
