@@ -46,6 +46,21 @@ class TestModelModule(Base):
         self.assertIn('content1', res.body)
         self.assertIn('content2', res.body)
 
+    def test_model_view_disabled(self):
+        from ptah.manage.manage import CONFIG
+        from ptah.manage.model import ModelModule, ModelModuleView
+
+        CONFIG['disable_models'] = ['cms-type:content2']
+
+        request = DummyRequest()
+
+        mod = ModelModule(None, request)
+
+        res = ModelModuleView.__renderer__(mod, request)
+        self.assertEqual(res.status, '200 OK')
+        self.assertIn('content1', res.body)
+        self.assertNotIn('content2', res.body)
+
     def test_model_traverse(self):
         from ptah.manage.model import ModelModule, Model
 
@@ -386,3 +401,23 @@ class TestEditRecord(Base):
         content = ptah.cms.Session.query(Content2) \
             .filter(Content2.__id__ == rowid).first()
         self.assertEqual(content.title, u'Content')
+
+
+class TestTypeIntrospect(Base):
+
+    def test_type_introspect(self):
+        from ptah.config import directives
+        from ptah.manage.model import TypeIntrospection
+
+        data = directives.scan(self.__class__.__module__, set())
+
+        actions = []
+        for action in data:
+            if action.discriminator[0] == 'ptah-cms:type':
+                actions.append(action)
+
+        ti = TypeIntrospection(self.request)
+        res = ti.renderActions(*actions)
+
+        self.assertIn('<small>cms-type:content1</small>', res)
+        self.assertIn('<small>cms-type:content2</small>', res)
