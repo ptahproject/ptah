@@ -31,6 +31,7 @@
             <li class="active"><a href="/">Home</a></li>
             <li><a href="/contact-us.html">Contact</a></li>
           </ul>
+          <p class="pull-right" tal:condition="user is not None">Logged in as <a href="#">${user.name}</a></p>
         </div>
       </div>
     </div>
@@ -49,8 +50,10 @@
           </ul>
         </div>
       </div>
-
+            
       <div class="content">
+        ${rendered_messages}
+
         ${rendered_form}
       </div>
 

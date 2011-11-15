@@ -8,6 +8,6 @@ ${view.include('colorpicker')}
 
 <span class="uneditable-input"
       tal:attributes="id context.id;
-                      title context.title;
+		              title context.title;
                       lang context.lang;">
 </span>

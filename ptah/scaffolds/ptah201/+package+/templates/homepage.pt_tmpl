@@ -31,6 +31,7 @@
             <li class="active"><a href="#">Home</a></li>
             <li><a href="/contact-us.html">Contact</a></li>
           </ul>
+          <p class="pull-right" tal:condition="view.user is not None">Logged in as <a href="#">${view.user.name}</a></p>
         </div>
       </div>
     </div>
@@ -61,8 +62,11 @@
           <p>The default login is <strong>admin</strong> and the 
              password is <strong>12345</strong>
           </p>
-          <p>
+          <p tal:condition="view.user is not None">
             <a class="btn primary large" href="/ptah-manage/">Goto Ptah Manange UI &raquo;</a>
+          </p>
+          <p tal:condition="view.user is None">
+            <a class="btn primary large" href="/login.html">Login first &raquo;</a>
           </p>
         </div>
 
@@ -75,6 +79,26 @@
                can look on the filesystem in models.py to see the Link model.
             </p>
             <p><a class="btn" href="/ptah-manage/models/">View models &raquo;</a></p>
+          </div>
+          <div class="span5">
+            <h2>Settings</h2>
+             <p>You started Ptah with telling paster to serve a .ini file.
+                You can use the same software with different settings and have
+                a very different expereince.  Ptah and Pyramid both provide 
+                mechanisms to easily create your own settings attributes.  This
+                way you can store application settings on filesystem instead of
+                in a database where version control isnt practical.
+            </p>
+            <p><a class="btn" href="/ptah-manage/settings/">View settings &raquo;</a></p>
+         </div>
+          <div class="span5">
+            <h2>Users</h2>
+            <p>Ptah comes with a default user subsystem.  You can use it to 
+               create, edit, delete, suspend and activate users.  The user 
+               system is invoked in __init__.py of your application to create
+               the default login/password for this application. 
+            </p>
+            <p><a class="btn" href="/ptah-manage/crowd/">View users &raquo;</a></p>
           </div>
         </div>
 

@@ -1,0 +1,41 @@
+${view.include('colorpicker')}
+
+<script>
+  $(function() {    
+    $('#colorSelector').ColorPicker({
+        color: '#0000ff',
+        onShow: function (colpkr) {
+            $(colpkr).fadeIn(500);
+            return false;
+        },
+        onHide: function (colpkr) {
+            $(colpkr).fadeOut(500);
+            return false;
+        },
+        onChange: function (hsb, hex, rgb) {
+            $('#colorSelector div').css('backgroundColor', '#'+hex);
+            $('#${context.id}').val('#'+hex);
+        }
+    });
+
+  });
+</script>
+
+<input type="text" 
+       tal:attributes="id context.id;
+                       name context.name;
+                       class context.klass;
+                       title context.title;
+                       lang context.lang;
+                       value context.form_value;
+                       disabled context.disabled;
+                       tabindex context.tabindex;
+                       readonly context.readonly;
+                       alt context.alt;
+                       accesskey context.accesskey;
+                       size context.size;
+                       maxlength context.maxlength" />
+
+<div class="input" id="colorSelector">
+    <div style="background-color: ${context.form_value}"></div>
+</div>

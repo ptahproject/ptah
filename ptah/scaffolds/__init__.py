@@ -36,6 +36,12 @@ class Ptah102ProjectTemplate(PtahTemplate):
     template_renderer = staticmethod(paste_script_template_renderer)
 
 
+class Ptah201ProjectTemplate(PtahTemplate):
+    _template_dir = 'ptah201'
+    summary = 'demonstrates form, models, limited mgmt ui and auth'
+    template_renderer = staticmethod(paste_script_template_renderer)
+
+
 class Ptah301ProjectTemplate(PtahTemplate):
     _template_dir = 'ptah301'
     summary = 'demonstrates traversal, localroles, full mgmt ui'
