@@ -161,7 +161,7 @@ class TableView(form.Form):
 
         self.inheritance = get_inheritance(table)
 
-        if table.name == 'ptah_cms_nodes' or self.inheritance:
+        if table.name == 'ptah_nodes' or self.inheritance:
             self.show_actions = False
         else:
             self.show_actions = True
@@ -226,11 +226,11 @@ class TableView(form.Form):
                 pass
 
         if not ids:
-            self.message('Please select records for removing', 'warning')
+            self.message('Please select records for removing.', 'warning')
             return
 
         self.table.delete(self.pcolumn.in_(ids)).execute()
-        self.message('Select records have been removed')
+        self.message('Select records have been removed.')
 
 
 class EditRecord(form.Form):
@@ -249,11 +249,12 @@ class EditRecord(form.Form):
     @reify
     def fields(self):
         return ptah.build_sqla_fieldset(
-            [(cl.name, cl) for cl in self.context.table.columns])
+            [(cl.name, cl) for cl in self.context.table.columns],
+            skipPrimaryKey=True)
 
     def update(self):
         self.inheritance = get_inheritance(self.context.table)
-        if self.context.table.name == 'ptah_cms_nodes' or self.inheritance:
+        if self.context.table.name == 'ptah_nodes' or self.inheritance:
             self.show_remove = False
         else:
             self.show_remove = True
@@ -269,7 +270,7 @@ class EditRecord(form.Form):
 
     @form.button('Cancel')
     def cancel_handler(self):
-        raise HTTPFound(location='../')
+        raise HTTPFound(location='..')
 
     @form.button('Modify', actype=form.AC_PRIMARY)
     def modify_handler(self):
@@ -282,7 +283,7 @@ class EditRecord(form.Form):
         self.context.table.update(
             self.context.pcolumn == self.context.__name__, data).execute()
         self.message('Table record has been modified.', 'success')
-        raise HTTPFound(location='../')
+        raise HTTPFound(location='..')
 
     @form.button('Remove', actype=form.AC_DANGER,
                  condition=lambda form: form.show_remove)
@@ -292,7 +293,7 @@ class EditRecord(form.Form):
         self.context.table.delete(
             self.context.pcolumn == self.context.__name__).execute()
         self.message('Table record has been removed.')
-        raise HTTPFound(location='../')
+        raise HTTPFound(location='..')
 
 
 class AddRecord(form.Form):
@@ -310,7 +311,8 @@ class AddRecord(form.Form):
     @reify
     def fields(self):
         return ptah.build_sqla_fieldset(
-            [(cl.name, cl) for cl in self.context.table.columns])
+            [(cl.name, cl) for cl in self.context.table.columns],
+            skipPrimaryKey = True)
 
     @form.button('Create', actype=form.AC_PRIMARY)
     def create(self):
@@ -322,14 +324,14 @@ class AddRecord(form.Form):
 
         try:
             self.context.table.insert(values = data).execute()
-        except Exception, e:
+        except Exception, e: # pragma: no cover
             self.message(e, 'error')
             return
 
         self.message('Table record has been created.', 'success')
-        raise HTTPFound(location='./')
+        raise HTTPFound(location='.')
 
-    @form.button('Save & Create new', actype=form.AC_PRIMARY)
+    @form.button('Save & Create new', name='createmulti',actype=form.AC_PRIMARY)
     def create_multiple(self):
         data, errors = self.extract()
 
@@ -339,7 +341,7 @@ class AddRecord(form.Form):
 
         try:
             self.context.table.insert(values = data).execute()
-        except Exception, e:
+        except Exception, e: # pragma: no cover
             self.message(e, 'error')
             return
 
@@ -347,4 +349,4 @@ class AddRecord(form.Form):
 
     @form.button('Back')
     def cancel(self):
-        raise HTTPFound(location='./')
+        raise HTTPFound(location='.')
