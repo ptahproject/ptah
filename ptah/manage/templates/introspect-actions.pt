@@ -2,5 +2,5 @@
   <li><a href="${url}/">${context.title}</a></li>
   <li><a href="${url}/routes.html">Routes</a></li>
   <li><a href="${url}/events.html">Events</a></li>
-  <li><a href="${url}/uri.html">URI</a></li>
+  <li><a href="${url}/../uri.html">URI</a></li>
 </ul>

@@ -33,7 +33,7 @@
 		   value="${getattr(row, view.primary)}" />
 	  </td>
 	  <td tal:repeat="val row">
-	    <a href="../../introspect/uri.html?uri=${view.quote(val)}"
+	    <a href="../../uri.html?uri=${view.quote(val)}"
 	       tal:condition="val is not None"
 	       tal:omit-tag="repeat['val'].index not in view.uris">
 	      <tal:block tal:on-error="nothing" 

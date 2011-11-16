@@ -8,7 +8,6 @@ from zope.interface.interface import InterfaceClass
 
 import ptah
 from ptah import config, view, manage, form
-from ptah.uri import RESOLVER_ID
 from ptah.config import directives
 from ptah.config.api import exclude, list_packages
 
@@ -70,75 +69,6 @@ class MainView(view.View):
 
     def update(self):
         self.packages = self.context.list_packages()
-
-
-class UriResolver(form.Form):
-    view.pview('uri.html', context = IntrospectModule,
-               template = view.template('ptah.manage:templates/uri.pt'))
-
-    fields = form.Fieldset(
-        form.LinesField(
-            'uri',
-            title = 'Uri',
-            description = "List of uri's",
-            klass = 'xxlarge'))
-
-    uri = None
-    rst_to_html = staticmethod(ptah.rst_to_html)
-
-    def form_content(self):
-        return {'uri': [self.request.GET.get('uri','')]}
-
-    @form.button('Show', actype=form.AC_PRIMARY)
-    def showHandler(self):
-        data, errors = self.extract()
-        if errors:
-            self.message(errors, 'form-error')
-        else:
-            self.uri = data['uri']
-
-    def update(self):
-        super(UriResolver, self).update()
-
-        uri = self.uri
-        if uri is None:
-            uri = [self.request.GET.get('uri','')]
-
-        resolvers = config.get_cfg_storage(RESOLVER_ID)
-
-        self.data = data = []
-        for u in uri:
-            if u:
-                schema = ptah.extract_uri_schema(u)
-                resolver = resolvers.get(schema)
-                info = {'uri': u,
-                        'resolver': None,
-                        'module': None,
-                        'line': None,
-                        'obj': None,
-                        'cls': None,
-                        'clsdoc': None}
-
-                if resolver is not None:
-                    info['resolver'] = resolver.__doc__ or resolver.__name__
-                    info['module'] = resolver.__module__
-                    info['name'] = '%s.%s'%(
-                        resolver.__module__, resolver.__name__)
-                    info['line'] = inspect.getsourcelines(resolver)[-1]
-
-                    obj = ptah.resolve(u)
-                    info['obj'] = obj
-
-                    if obj is not None:
-                        cls = getattr(obj, '__class__', None)
-                        info['cls'] = cls
-                        info['clsdoc'] = getattr(cls, '__doc__', '')
-
-                        if cls is not None:
-                            info['clsmod'] = cls.__module__
-                            info['clsline'] = inspect.getsourcelines(cls)[-1]
-
-                data.append(info)
 
 
 view.register_snippet(
@@ -314,25 +244,6 @@ class RoutesView(view.View):
 
             views.sort()
             self.views = views
-
-
-class UriIntrospection(object):
-    """ """
-
-    title = 'Uri resolver'
-    manage.introspection('ptah:uri-resolver')
-
-    actions = view.template('ptah.manage:templates/directive-uriresolver.pt')
-
-    def __init__(self, request):
-        self.request = request
-
-    def renderActions(self, *actions):
-        return self.actions(
-            actions = actions,
-            rst_to_html = ptah.rst_to_html,
-            manage_url = manage.CONFIG.manage_url,
-            request = self.request)
 
 
 class EventDirective(object):
