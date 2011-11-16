@@ -76,7 +76,7 @@ if __name__ == '__main__':     # pragma: no cover
                 raise ValueError(returncode)
         subprocess.check_call = check_call
 
-    templates = ['ptahdemo']
+    templates = ['ptah101']
 
     for name in templates:
         test = TemplateTest()

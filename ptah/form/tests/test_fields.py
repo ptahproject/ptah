@@ -633,3 +633,67 @@ class TestFileField(Base):
         res = field.extract()
         self.assertIs(type(res), dict)
         self.assertEqual(res['filename'], 'test.jpg')
+
+
+class TestJSDateTimeField(Base):
+
+    def _makeOne(self, name, **kw):
+        from ptah.form.jsfields import JSDateTimeField
+        return JSDateTimeField(name, **kw)
+
+    def test_fields_jsdatetime_update(self):
+        from datetime import datetime
+
+        request = DummyRequest()
+        field = self._makeOne('test')
+
+        f = field.bind('', form.null, {})
+        f.update(request)
+
+        self.assertEqual(f.date_part, u'')
+        self.assertEqual(f.time_part, u'')
+
+        dt = datetime(2011, 1, 1, 10, 10)
+
+        f = field.bind('', dt, {})
+        f.update(request)
+
+        self.assertEqual(f.date_part, '01/01/2011')
+        self.assertEqual(f.time_part, '10:10 AM')
+
+    def test_fields_jsdatetime_extract(self):
+        from datetime import datetime
+
+        request = DummyRequest()
+        field = self._makeOne('test')
+
+        f = field.bind('', form.null, {})
+        f.update(request)
+        self.assertIs(f.extract('default'), 'default')
+
+        f = field.bind('', form.null, {'test.date': ''})
+        f.update(request)
+        self.assertIs(f.extract(), form.null)
+
+        f = field.bind('', form.null,
+                       {'test.date': '12/01/2011'})
+        f.update(request)
+        self.assertIs(f.extract('default'), 'default')
+
+        f = field.bind('', form.null,
+                       {'test.date': '12/01/2011',
+                        'test.time': ''})
+        f.update(request)
+        self.assertIs(f.extract(), form.null)
+
+        f = field.bind('', form.null,
+                       {'test.date': 'exception',
+                        'test.time': 'exception'})
+        f.update(request)
+        self.assertIs(f.extract(), form.null)
+
+        f = field.bind('', form.null,
+                       {'test.date': '12/01/2011',
+                        'test.time': '10:10 AM'})
+        f.update(request)
+        self.assertEqual(f.extract(), '2011-12-01T10:10:00')

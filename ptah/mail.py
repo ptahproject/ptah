@@ -200,7 +200,7 @@ class MailTemplate(object):
 
     def send(self, email=None, **kw):
         if email:
-            self.to_address = email # pragma: no cover
+            self.to_address = email
 
         message = self(**kw)
 

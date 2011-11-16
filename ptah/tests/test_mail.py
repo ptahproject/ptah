@@ -164,3 +164,33 @@ class TestMailTemplate(Base):
         payload = msg.get_payload()
         self.assertEqual(msg['x-tmpl'], 'Template1')
         self.assertEqual(payload[1]['x-tmpl'], 'Template2')
+
+    def test_mailtmpl_send(self):
+        from ptah.settings import MAIL
+
+        self._init_ptah()
+
+        cls = self._make_one()
+        tmpl = cls(Content(), DummyRequest())
+
+        data = []
+        class Mailer(object):
+
+            def send(self, frm, to, msg):
+                data.append((frm, to, msg))
+
+        MAIL.Mailer = Mailer()
+
+        tmpl.send()
+
+        self.assertEqual(
+            data[0][0], 'Site administrator <administrator@localhost.org>')
+        self.assertEqual(
+            data[0][1], None)
+        self.assertIn('From: Site administrator <administrator@localhost.org>',
+                      data[0][2].as_string())
+
+        tmpl.send('test@ptahproject.org')
+        self.assertEqual(data[-1][1], 'test@ptahproject.org')
+
+        del MAIL.Mailer

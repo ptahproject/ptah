@@ -202,11 +202,11 @@ class TableView(form.Form):
 
     def val(self, val):
         try:
-            if isinstance(val, str):
+            if isinstance(val, str): # pragma: no cover
                 val = unicode(val, 'utf-8', 'ignore')
             elif not isinstance(val, unicode):
                 val = str(val)
-        except:
+        except: # pragma: no cover
             val = u"Can't show"
         return val[:100]
 

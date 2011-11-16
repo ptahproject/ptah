@@ -7,10 +7,12 @@ from pyramid.httpexceptions import HTTPFound
 
 from base import Base
 
+
 class TestSqlaModuleContent(ptah.cms.Content):
 
-    __tablename__ = 'test_sqla_module'
+    __tablename__ = 'test_sqla_content'
     __type__ = ptah.cms.Type('Test')
+    name = sqla.Column(sqla.Unicode())
 
 
 class TestSqlaModuleTable(ptah.cms.Base):
@@ -87,13 +89,40 @@ class TestSqlaModule(Base):
         request = DummyRequest()
 
         mod = SQLAModule(None, request)
-        table = mod['psqla-test_sqla_module']
+        table = mod['psqla-test_sqla_content']
 
         res = TableView.__renderer__(table, request).body
         self.assertIn('Inherits from:', res)
         self.assertIn('ptah_node', res)
         self.assertIn('ptah_content', res)
         self.assertNotIn('form.buttons.add', res)
+
+    def test_sqla_table_view_model_nodes(self):
+        from ptah.manage.sqla import SQLAModule, TableView
+
+        rec = TestSqlaModuleContent(title='test')
+        ptah.cms.Session.add(rec)
+        ptah.cms.Session.flush()
+
+        uri = rec.__uri__
+        type_uri = rec.__type__.__uri__
+
+        request = DummyRequest(params={'batch': 1})
+
+        mod = SQLAModule(None, request)
+        table = mod['psqla-ptah_nodes']
+
+        res = TableView.__renderer__(table, request).body
+        self.assertIn(uri, res)
+        self.assertIn(type_uri, res)
+
+        request = DummyRequest(params={'batch': 'unknown'})
+        res = TableView.__renderer__(table, request).body
+        self.assertIn(uri, res)
+
+        request = DummyRequest(params={'batch': '0'})
+        res = TableView.__renderer__(table, request).body
+        self.assertIn(uri, res)
 
     def test_sqla_table_view_inheritance(self):
         from ptah.manage.sqla import SQLAModule, TableView
@@ -409,3 +438,23 @@ class TestSqlaModule(Base):
         rec = ptah.cms.Session.query(TestSqlaModuleTable).filter(
             TestSqlaModuleTable.id == rec_id).first()
         self.assertIsNone(rec, None)
+
+    def test_sqla_table_no_remove_for_edit_model(self):
+        from ptah.manage.sqla import SQLAModule, EditRecord
+
+        rec = TestSqlaModuleContent()
+        rec.name = 'Test record'
+        ptah.cms.Session.add(rec)
+        ptah.cms.Session.flush()
+
+        rec_id = rec.__id__
+
+        mod = SQLAModule(None, DummyRequest())
+        table = mod['psqla-test_sqla_content']
+
+        rec = table[rec_id]
+
+        form = EditRecord(rec, DummyRequest())
+        form.update()
+
+        self.assertNotIn('form.buttons.remove', form.render())

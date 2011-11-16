@@ -194,7 +194,7 @@ class DirectiveInfo(object):
         if self.scope == 'module':
             return self.module
         else:
-            return getattr(self.module, self.name)
+            return getattr(self.module, self.name, None)
 
     def attach(self, action):
         action.info = self

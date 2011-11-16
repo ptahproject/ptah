@@ -77,20 +77,20 @@ class JSDateTimeField(DateTimeField):
             return default
 
         if not date:
-            return ''
+            return null
 
         time = self.params.get(self.time_name, default)
         if time is default:
             return default
 
         if not time:
-            return ''
+            return null
 
         format = '%s %s'%(
             '%m/%d/%Y', formatter.FORMAT.time_short)
         try:
-            dt = datetime.strptime('%s %s'%(date, time), format)
+            dt = datetime.datetime.strptime('%s %s'%(date, time), format)
         except ValueError:
-            return '--------'
+            return null
 
         return dt.replace(tzinfo=self.tzinfo).isoformat()

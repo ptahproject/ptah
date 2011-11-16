@@ -19,7 +19,7 @@ port = 6543
 # Begin logging configuration
 
 [loggers]
-keys = root, {{package_logger}}
+keys = root, {{package}}
 
 [handlers]
 keys = console
@@ -31,7 +31,7 @@ keys = generic
 level = WARN
 handlers = console
 
-[logger_{{package_logger}}]
+[logger_{{package}}]
 level = WARN
 handlers =
 qualname = {{package}}
