@@ -20,8 +20,8 @@ PWD_CONFIG = config.register_settings(
         colander.Str(),
         name = 'manager',
         title = 'Password manager',
-        description = 'Available password managers \
-            ("plain", "ssha", "bcrypt")',
+        description = 'Available password managers '\
+            '("plain", "ssha", "bcrypt")',
         default = 'plain'),
 
     config.SchemaNode(
