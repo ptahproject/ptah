@@ -94,7 +94,7 @@ Ptah 301, a CMS
 
 This is a fairly sophisticated example which is nearly a mini-CMS. It demonstrates nearly all the features of Ptah but is probably overwhelming for newbies.    
 
-Use paster to create a sample application::
+Use paster to create a mini-cms application::
 
   venv$ bin/paster create -t ptah301 cmsapp
   venv$ cd cmsapp
