@@ -261,7 +261,7 @@ class Field(object):
             else:
                 self.mode = FORM_INPUT
 
-        # Step 1.1: extract from request
+        # extract from request
         widget_value = self.extract()
         if widget_value is not null:
             self.form_value = widget_value
@@ -269,17 +269,18 @@ class Field(object):
 
         value = null
 
-        # Step 1.2: get from value
+        # get from value
         if self.value is not null:
             value = self.value
 
-        # Step 1.2.2: default
+        # use default
         if value is null:
             value = self.default
 
-        # Step 1.4: Convert the value to one that the widget can understand
+        # Convert the value to one that the widget can understand
         if value is not null:
-            self.form_value = self.serialize(value)
+            value = self.serialize(value)
+            self.form_value = value if value is not null else None
 
     def serialize(self, value):
         raise NotImplementedError()

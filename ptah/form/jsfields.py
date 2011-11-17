@@ -2,9 +2,9 @@
 import datetime
 from ptah import view, formatter
 
-from interfaces import null
+from interfaces import _, null, Invalid
 from field import field
-from fields import TextAreaField, DateField, DateTimeField
+from fields import TextAreaField, TextField, DateTimeField
 
 
 class TinymceField(TextAreaField):
@@ -22,7 +22,7 @@ class TinymceField(TextAreaField):
         "ptah.form:templates/fields/tinymce_input.pt")
 
 
-class JSDateField(DateField):
+class JSDateField(TextField):
     __doc__ = u'Date input widget with JQuery Datepicker.'
 
     field('date')
@@ -32,6 +32,29 @@ class JSDateField(DateField):
 
     tmpl_input = view.template(
         "ptah.form:templates/fields/jsdate-input.pt")
+
+    def serialize(self, value):
+        if value is null or value is None:
+            return null
+
+        if isinstance(value, datetime.datetime):
+            value = value.date()
+
+        if not isinstance(value, datetime.date):
+            raise Invalid(self,
+                          _('"${val}" is not a date object',
+                            mapping={'val': value}))
+
+        return value.strftime('%m/%d/%Y')
+
+    def deserialize(self, value):
+        if not value:
+            return null
+        try:
+            return datetime.datetime.strptime(value, '%m/%d/%Y').date()
+        except Exception, e:
+            raise Invalid(
+                self, _('Invalid date', mapping={'val': value, 'err': e}))
 
 
 class JSDateTimeField(DateTimeField):

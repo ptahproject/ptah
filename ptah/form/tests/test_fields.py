@@ -697,3 +697,74 @@ class TestJSDateTimeField(Base):
                         'test.time': '10:10 AM'})
         f.update(request)
         self.assertEqual(f.extract(), '2011-12-01T10:10:00')
+
+
+class TestJSDateField(Base):
+
+    def _makeOne(self, **kw):
+        from ptah.form.jsfields import JSDateField
+        return JSDateField('test', **kw)
+
+    def test_serialize_null(self):
+        typ = self._makeOne()
+        result = typ.serialize(form.null)
+        self.assertEqual(result, form.null)
+
+    def test_serialize_with_garbage(self):
+        typ = self._makeOne()
+        e = invalid_exc(typ.serialize, 'garbage')
+        self.assertEqual(e.msg.interpolate(),
+                         '"garbage" is not a date object')
+
+    def test_serialize_with_date(self):
+        import datetime
+        typ = self._makeOne()
+        date = datetime.date.today()
+        result = typ.serialize(date)
+        expected = date.strftime('%m/%d/%Y')
+        self.assertEqual(result, expected)
+
+    def test_serialize_with_datetime(self):
+        import datetime
+        typ = self._makeOne()
+        dt = datetime.datetime.now()
+        result = typ.serialize(dt)
+        expected = dt.strftime('%m/%d/%Y')
+        self.assertEqual(result, expected)
+
+    def test_deserialize_invalid(self):
+        typ = self._makeOne()
+        e = invalid_exc(typ.deserialize, 'garbage')
+        self.failUnless('Invalid' in e.msg)
+
+    def test_deserialize_invalid_weird(self):
+        typ = self._makeOne()
+        e = invalid_exc(typ.deserialize, '10-10-10-10')
+        self.failUnless('Invalid' in e.msg)
+
+    def test_deserialize_null(self):
+        typ = self._makeOne()
+        result = typ.deserialize(form.null)
+        self.assertEqual(result, form.null)
+
+    def test_deserialize_empty(self):
+        typ = self._makeOne()
+        result = typ.deserialize('')
+        self.assertEqual(result, form.null)
+
+    def test_deserialize_success_date(self):
+        import datetime
+        typ = self._makeOne()
+        date = datetime.date.today()
+        iso = date.strftime('%m/%d/%Y')
+        result = typ.deserialize(iso)
+        self.assertEqual(result, date)
+
+    def test_deserialize_success_datetime(self):
+        import datetime
+
+        dt = datetime.datetime.now()
+        typ = self._makeOne()
+        iso = dt.strftime('%m/%d/%Y')
+        result = typ.deserialize(iso)
+        self.assertEqual(result.isoformat(), dt.date().isoformat())
