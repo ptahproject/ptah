@@ -50,8 +50,8 @@ class JSDateTimeField(DateTimeField):
         "ptah.form:templates/fields/jsdatetime-input.pt")
 
     def update(self, request):
-        self.date_name = '%s.date'%self.name
-        self.time_name = '%s.time'%self.name
+        self.date_name = '%s.date' % self.name
+        self.time_name = '%s.time' % self.name
 
         super(JSDateTimeField, self).update(request)
 
@@ -86,10 +86,9 @@ class JSDateTimeField(DateTimeField):
         if not time:
             return null
 
-        format = '%s %s'%(
-            '%m/%d/%Y', formatter.FORMAT.time_short)
+        format = '%s %s' % ('%m/%d/%Y', formatter.FORMAT.time_short)
         try:
-            dt = datetime.datetime.strptime('%s %s'%(date, time), format)
+            dt = datetime.datetime.strptime('%s %s' % (date, time), format)
         except ValueError:
             return null
 

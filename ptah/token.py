@@ -1,7 +1,9 @@
 """ simple token service """
-import datetime, uuid
+import datetime
+import uuid
 import sqlahelper as psa
 import sqlalchemy as sqla
+
 from ptah import config
 from sqla import QueryFreezer
 
@@ -31,7 +33,7 @@ class TokenType(object):
                 lambda config, id, tp: \
                     config.get_cfg_storage(TOKEN_TYPE).update({id: tp}),
                 (id, self),
-                discriminator = (TOKEN_TYPE, id))
+                discriminator=(TOKEN_TYPE, id))
             )
 
 
@@ -40,12 +42,12 @@ class TokenService(object):
 
     _sql_get = QueryFreezer(
         lambda: Session.query(Token).filter(
-            Token.token==sqla.sql.bindparam('token')))
+            Token.token == sqla.sql.bindparam('token')))
 
     _sql_get_by_data = QueryFreezer(
         lambda: Session.query(Token).filter(
-            sqla.sql.and_(Token.data==sqla.sql.bindparam('data'),
-                          Token.typ==sqla.sql.bindparam('typ'))))
+            sqla.sql.and_(Token.data == sqla.sql.bindparam('data'),
+                          Token.typ == sqla.sql.bindparam('typ'))))
 
     def generate(self, typ, data):
         """ Generate and return string token.

@@ -1,5 +1,9 @@
 """ directives """
-import sys, inspect, imp, logging
+import imp
+import inspect
+import logging
+import sys
+
 from zope import interface
 from pkgutil import walk_packages
 from collections import OrderedDict
@@ -23,16 +27,16 @@ class EventDescriptor(object):
     #: Event class or interface
     instance = None
 
-
     def __init__(self, inst, title, category):
         self.instance = inst
         self.title = title
         self.category = category
         self.description = inst.__doc__
-        self.name = '%s.%s'%(inst.__module__, inst.__name__)
+        self.name = '%s.%s' % (inst.__module__, inst.__name__)
 
 
 EVENT_ID = 'ptah.config:event'
+
 
 def event(title='', category=''):
     """ Register event object, it is used for introspection only. """
@@ -44,8 +48,9 @@ def event(title='', category=''):
     info.attach(
         ClassAction(
             _event, (title, category),
-            discriminator = descriminator)
+            discriminator=descriminator)
         )
+
 
 def _event(cfg, klass, title, category):
     storage = cfg.get_cfg_storage(EVENT_ID)
@@ -65,14 +70,14 @@ def adapter(*required, **kw):
         return ('ptah.config:adapter',
                 required, _getProvides(action.info.context), name)
 
-    if info.scope in ('module', 'function call'): # function decorator
+    if info.scope in ('module', 'function call'):  # function decorator
         def wrapper(func):
             info.attach(
                 Action(
                     _register,
                     ('registerAdapter', func, required), {'name': name},
-                    discriminator = ('ptah.config:adapter',
-                                     required, _getProvides(func), name))
+                    discriminator=('ptah.config:adapter',
+                                   required, _getProvides(func), name))
                 )
             return func
         return wrapper
@@ -80,7 +85,7 @@ def adapter(*required, **kw):
         info.attach(
             ClassAction(
                 _adapts, (required, name),
-                discriminator = descriminator)
+                discriminator=descriminator)
             )
 
 
@@ -92,8 +97,8 @@ def subscriber(*required):
         info.attach(
             Action(
                 _register, ('registerHandler', func, required),
-                discriminator = ('ptah.config:subscriber',
-                                 func, tuple(required)))
+                discriminator=('ptah.config:subscriber',
+                                func, tuple(required)))
             )
         return func
     return wrapper
@@ -119,6 +124,7 @@ def _getProvides(factory):
 
 
 ATTACH_ATTR = '__ptah_actions__'
+
 
 class Action(object):
 
@@ -146,7 +152,7 @@ class Action(object):
         if self.callable:
             try:
                 self.callable(cfg, *self.args, **self.kw)
-            except: # pragma: no cover
+            except:  # pragma: no cover
                 log.exception(self.discriminator)
                 raise
 
@@ -156,20 +162,20 @@ class ClassAction(Action):
     def __call__(self, cfg):
         try:
             self.callable(cfg, self.info.context, *self.args, **self.kw)
-        except: # pragma: no cover
+        except:  # pragma: no cover
             log.exception(self.discriminator)
             raise
 
 
 class DirectiveInfo(object):
 
-    def __init__(self, depth=1, moduleLevel = False, allowed_scope=None):
+    def __init__(self, depth=1, moduleLevel=False, allowed_scope=None):
         scope, module, f_locals, f_globals, codeinfo = \
-            getFrameInfo(sys._getframe(depth+1))
+            getFrameInfo(sys._getframe(depth + 1))
 
         if allowed_scope and scope not in allowed_scope:
             raise TypeError("This directive is not allowed "
-                            "to run in this scope: %s"%scope)
+                            "to run in this scope: %s" % scope)
 
         if scope == 'module':
             self.name = f_locals['__name__']
@@ -208,7 +214,7 @@ class DirectiveInfo(object):
 
         if action.hash in data:
             raise TypeError(
-                "Directive registered twice: %s"%(action.discriminator,))
+                "Directive registered twice: %s" % (action.discriminator,))
         data[action.hash] = action
 
 
@@ -227,7 +233,7 @@ def getFrameInfo(frame):
     hasName = '__name__' in f_globals
 
     sameName = hasModule and hasName
-    sameName = sameName and f_globals['__name__']==f_locals['__module__']
+    sameName = sameName and f_globals['__name__'] == f_locals['__module__']
 
     module = hasName and sys.modules.get(f_globals['__name__']) or None
 
@@ -236,12 +242,12 @@ def getFrameInfo(frame):
     frameinfo = inspect.getframeinfo(frame)
     try:
         sourceline = frameinfo[3][0].strip()
-    except: # pragma: no cover
+    except:  # pragma: no cover
         sourceline = frameinfo[3]
 
     codeinfo = frameinfo[0], frameinfo[1], frameinfo[2], sourceline
 
-    if not namespaceIsModule: # pragma: no cover
+    if not namespaceIsModule:  # pragma: no cover
         # some kind of funky exec
         kind = "exec"
     elif sameNamespace and not hasModule:
@@ -273,11 +279,11 @@ def scan(package, seen, exclude_filter=None):
     if hasattr(package, ATTACH_ATTR):
         actions.extend(getattr(package, ATTACH_ATTR).values())
 
-    if hasattr(package, '__path__'): # package, not module
-        results = walk_packages(package.__path__, package.__name__+'.')
+    if hasattr(package, '__path__'):  # package, not module
+        results = walk_packages(package.__path__, package.__name__ + '.')
 
         for importer, modname, ispkg in results:
-            if modname in seen: # pragma: no cover
+            if modname in seen:  # pragma: no cover
                 continue
 
             seen.add(modname)
@@ -351,10 +357,10 @@ class ConflictError(TypeError):
             for info in infos:
                 filename, line, function, source = info.codeinfo
                 s = ' File "%s", line %d, in %s\n' \
-                    '      %s\n'% (filename, line, function, source)
+                    '      %s\n' % (filename, line, function, source)
 
                 for line in unicode(s).rstrip().split(u'\n'):
-                    r.append(u"    "+line)
+                    r.append(u"    " + line)
                 r.append(u'')
 
         return "\n".join(r)

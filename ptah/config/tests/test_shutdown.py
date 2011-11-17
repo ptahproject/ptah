@@ -1,5 +1,7 @@
+import signal
 import sys
-import unittest, signal
+import unittest
+
 from ptah import config
 
 

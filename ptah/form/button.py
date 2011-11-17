@@ -1,5 +1,7 @@
 """ Form buttons """
-import sys, re
+import re
+import sys
+
 from ptah import view
 from collections import OrderedDict
 
@@ -45,8 +47,8 @@ class Button(object):
         self.condition = condition
 
     def __repr__(self):
-        return '<%s %r : %r>' %(
-            self.__class__.__name__, self.name, self.title)
+        return '<%s %r : %r>' % (self.__class__.__name__, self.name,
+                                 self.title)
 
     def __call__(self, context):
         if self.actionName is not None:
@@ -65,16 +67,14 @@ class Button(object):
         widget.params = params
         widget.context = context
         widget.request = request
-        widget.klass = u'%s %s'%(widget.klass, css.get(widget.actype, ''))
+        widget.klass = u'%s %s' % (widget.klass, css.get(widget.actype, ''))
         return widget
 
     def activated(self):
         return self.params.get(self.name, None) is not None
 
     def render(self):
-        return self.template(
-            context = self,
-            request = self.request)
+        return self.template(context=self, request=self.request)
 
 
 class Buttons(OrderedDict):
@@ -131,7 +131,7 @@ class Actions(OrderedDict):
         params = form.form_params()
 
         # Create a unique prefix.
-        prefix = '%s%s'%(form.prefix, self.prefix)
+        prefix = '%s%s' % (form.prefix, self.prefix)
 
         # Walk through each node, making a widget out of it.
         for field in self.form.buttons.values():
@@ -156,6 +156,7 @@ class Actions(OrderedDict):
 
 
 _identifier = re.compile('[A-Za-z][a-zA-Z0-9_]*$')
+
 
 def create_btn_id(name):
     if _identifier.match(name):

@@ -1,10 +1,14 @@
 """ settings """
 import colander
-import logging, os.path, ConfigParser
+import ConfigParser
+import logging
+import os.path
+
 from zope import interface
 from zope.interface.interface import InterfaceClass
 
-import api, schema
+import api
+import schema
 from directives import event, subscriber, DirectiveInfo, Action
 
 log = logging.getLogger('ptah.config')
@@ -99,8 +103,8 @@ def register_settings(name, *nodes, **kw):
         iname = iname.replace(ch, '_')
 
     category = InterfaceClass(
-        'SettingsGroup:%s'%iname.upper(), (),
-        __doc__='Settings group: %s' %name,
+        'SettingsGroup:%s' % iname.upper(), (),
+        __doc__='Settings group: %s' % name,
         __module__='ptah.config.settings')
 
     group = Group(name, title, description, category, *nodes)
@@ -116,7 +120,7 @@ def register_settings(name, *nodes, **kw):
         lambda config, group: config.get_cfg_storage(SETTINGS_GROUP_ID)\
             .update({group.name: group}),
         (group,),
-        discriminator = (SETTINGS_GROUP_ID, name))
+        discriminator=(SETTINGS_GROUP_ID, name))
 
     info = DirectiveInfo()
     info.attach(ac)
@@ -148,12 +152,12 @@ class Settings(dict):
         except colander.Invalid, e:
             errs = e.asdict()
             if setdefaults:
-                log.error('Error loading default settings: \n%s'%(
-                        '\n'.join('%s: %s'%(k, v) for k, v in errs.items())))
+                log.error('Error loading default settings: \n%s' % (
+                        '\n'.join('%s: %s' % (k, v) for k, v in errs.items())))
                 return
 
-            log.error('Error loading settings, reloading with defaults: \n%s'%(
-                    '\n'.join('%s: %s'%(k, v) for k, v in errs.items())))
+            log.error('Error loading settings, reloading with defaults: \n%s' %
+                    ('\n'.join('%s: %s' % (k, v) for k, v in errs.items())))
 
             defaults = self.schema.flatten(self.schema.serialize())
 
@@ -255,7 +259,7 @@ class Group(object):
             if not isinstance(node, schema.SchemaNode):
                 raise RuntimeError(
                     "Node '%s' has to be instance of "
-                    "ptah.config.SchemaNode"%node.name)
+                    "ptah.config.SchemaNode" % node.name)
 
             self.schema.add(node)
 

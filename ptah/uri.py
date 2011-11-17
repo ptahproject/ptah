@@ -4,6 +4,7 @@ from ptah import config
 
 RESOLVER_ID = 'ptah:uri-resolver'
 
+
 def resolve(uri):
     """ Resolve uri, return resolved object.
 
@@ -48,7 +49,7 @@ def resolver(schema):
         info.attach(
             config.Action(
                 _register_uri_resolver, (schema, func),
-                discriminator = (RESOLVER_ID, schema))
+                discriminator=(RESOLVER_ID, schema))
             )
 
         return func
@@ -74,7 +75,7 @@ def register_uri_resolver(schema, resolver, depth=1):
     info.attach(
         config.Action(
             _register_uri_resolver, (schema, resolver),
-            discriminator = (RESOLVER_ID, schema))
+            discriminator=(RESOLVER_ID, schema))
         )
 
 
@@ -99,4 +100,4 @@ class UriFactory(object):
 
     def __call__(self):
         """ Generate new uri using supplied schema """
-        return '%s:%s'%(self.schema, uuid.uuid4().get_hex())
+        return '%s:%s' % (self.schema, uuid.uuid4().get_hex())

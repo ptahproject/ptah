@@ -1,6 +1,8 @@
+import pkg_resources
 import StringIO
+import sys
 import traceback
-import sys, pkg_resources
+
 from collections import defaultdict
 from ptah.config import directives
 from pyramid.threadlocal import get_current_registry
@@ -21,7 +23,7 @@ class StopException(Exception):
             self.isexc = False
 
     def __str__(self):
-        return '\n%s'%self.print_tb()
+        return '\n%s' % self.print_tb()
 
     def print_tb(self):
         if self.isexc and self.exc_value:
@@ -137,7 +139,7 @@ def start(cfg):
 
 
 def exclude(modname, excludes=()):
-    for n in ('.test','.ftest'):
+    for n in ('.test', '.ftest'):
         if n in modname:
             return False
 
@@ -215,6 +217,7 @@ def objectEventNotify(event):
 
 
 _cleanups = set()
+
 
 def cleanup(handler):
     _cleanups.add(handler)

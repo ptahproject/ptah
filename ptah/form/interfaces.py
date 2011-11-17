@@ -16,10 +16,10 @@ class Invalid(Exception):
         self.msg = msg
 
     def __str__(self):
-        return 'Invalid: %s: <%s>'%(self.field, self.msg)
+        return 'Invalid: %s: <%s>' % (self.field, self.msg)
 
     def __repr__(self):
-        return 'Invalid(%s: <%s>)'%(self.field, self.msg)
+        return 'Invalid(%s: <%s>)' % (self.field, self.msg)
 
 
 class _null(object):
@@ -168,6 +168,7 @@ class ISequenceWidget(IWidget):
         This method can be used by external components to get the terms
         without having to worry whether they are already created or not.
         """
+
 
 class IWidgets(mapping.IEnumerableMapping):
     """A widget manager"""

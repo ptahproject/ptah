@@ -1,8 +1,12 @@
 """ process shutdown """
-import sys, signal, logging
+import logging
+import signal
+import sys
+
 from signal import SIGINT, SIGTERM
 
 handlers = []
+
 
 def shutdown_handler(handler):
     handlers.append(handler)
@@ -37,7 +41,7 @@ def processShutdown(sig, frame):
     if sig == SIGINT and callable(_handler_int):
         _handler_int(sig, frame)
 
-    if sig == SIGTERM and callable(_handler_term): # pragma: no cover
+    if sig == SIGTERM and callable(_handler_term):  # pragma: no cover
         _handler_term(sig, frame)
 
     if sig == SIGTERM:

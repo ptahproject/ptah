@@ -137,7 +137,6 @@ class Range(object):
     min_err = _('${val} is less than minimum value ${min}')
     max_err = _('${val} is greater than maximum value ${max}')
 
-
     def __init__(self, min=None, max=None, min_err=None, max_err=None):
         self.min = min
         self.max = max
@@ -149,12 +148,14 @@ class Range(object):
     def __call__(self, field, value):
         if self.min is not None:
             if value < self.min:
-                min_err = _(self.min_err, mapping={'val':value, 'min':self.min})
+                min_err = _(self.min_err,
+                            mapping={'val': value, 'min': self.min})
                 raise Invalid(field, min_err)
 
         if self.max is not None:
             if value > self.max:
-                max_err = _(self.max_err, mapping={'val':value, 'max':self.max})
+                max_err = _(self.max_err,
+                            mapping={'val': value, 'max': self.max})
                 raise Invalid(field, max_err)
 
 
@@ -171,13 +172,13 @@ class Length(object):
         if self.min is not None:
             if len(value) < self.min:
                 min_err = _('Shorter than minimum length ${min}',
-                            mapping={'min':self.min})
+                            mapping={'min': self.min})
                 raise Invalid(field, min_err)
 
         if self.max is not None:
             if len(value) > self.max:
                 max_err = _('Longer than maximum length ${max}',
-                            mapping={'max':self.max})
+                            mapping={'max': self.max})
                 raise Invalid(field, max_err)
 
 
@@ -192,5 +193,5 @@ class OneOf(object):
         if not value in self.choices:
             choices = ', '.join(['%s' % x for x in self.choices])
             err = _('"${val}" is not one of ${choices}',
-                    mapping={'val':value, 'choices':choices})
+                    mapping={'val': value, 'choices': choices})
             raise Invalid(field, err)

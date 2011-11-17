@@ -4,9 +4,9 @@ from ptah import config
 class PrincipalEvent(object):
     """ base class for all principal related events """
 
-    principal = None # IPrincipal object
+    principal = None  # IPrincipal object
 
-    def __init__(self, principal): # pragma: no cover
+    def __init__(self, principal):  # pragma: no cover
         self.principal = principal
 
 
@@ -21,7 +21,7 @@ class LoginFailedEvent(PrincipalEvent):
 
     message = ''
 
-    def __init__(self, principal, message=u''): # pragma: no cover
+    def __init__(self, principal, message=u''):  # pragma: no cover
         self.principal = principal
         self.message = message
 

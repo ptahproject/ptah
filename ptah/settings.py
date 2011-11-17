@@ -44,28 +44,37 @@ SESSION = config.register_settings(
         colander.Str(),
         name = 'type',
         title = _('The name of the back-end'),
-        description = _('Available back-ends supplied with Beaker: file, dbm, memory, ext:memcached, ext:database, ext:google'),
+        description = _('Available back-ends supplied with Beaker: file, dbm, \
+            memory, ext:memcached, ext:database, ext:google'),
         default = ''),
 
     config.SchemaNode(
         colander.Str(),
         name = 'data_dir',
         title = _('Data directory'),
-        description = _('Used with any back-end that stores its data in physical files, such as the dbm or file-based back-ends. This path should be an absolute path to the directory that stores the files.'),
+        description = _('Used with any back-end that stores its data in \
+            physical files, such as the dbm or file-based back-ends. This \
+            path should be an absolute path to the directory that stores the \
+            files.'),
         default = ''),
 
     config.SchemaNode(
         colander.Str(),
         name = 'lock_dir',
         title = _('Lock directory'),
-        description = _("Used with every back-end, to coordinate locking. With caching, this lock file is used to ensure that multiple processes/threads aren't attempting to re-create the same value at the same time (The Dog-Pile Effect)"),
+        description = _("Used with every back-end, to coordinate locking. \
+            With caching, this lock file is used to ensure that multiple \
+            processes/threads aren't attempting to re-create the same value at\
+            the same time (The Dog-Pile Effect)"),
         default = ''),
 
     config.SchemaNode(
         colander.Str(),
         name = 'url',
         title = _('URL'),
-        description = _('URL is specific to use of either ext:memcached or ext:database. When using one of those types, this option is required.'),
+        description = _('URL is specific to use of either ext:memcached or \
+            ext:database. When using one of those types, this option is \
+            required.'),
         default = ''),
 
     config.SchemaNode(
@@ -82,7 +91,8 @@ SESSION = config.register_settings(
         required = False,
         title = _('Secret'),
         default = '',
-        description = _('Used with the HMAC to ensure session integrity. This value should ideally be a randomly generated string.')),
+        description = _('Used with the HMAC to ensure session integrity. \
+            This value should ideally be a randomly generated string.')),
 
     title = _('Pyramid session'),
     description = _('Beaker session configuration settings'),
