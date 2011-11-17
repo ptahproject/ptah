@@ -22,7 +22,7 @@
 	    <li>
 	      <h5>
 		<a href="${request.application_url}/">
-		  ${unicode(view.user)}:
+		  ${unicode(view.user.name)}:
 		</a>
 	      </h5>
 	    </li>
