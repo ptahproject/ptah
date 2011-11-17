@@ -54,16 +54,16 @@
         <!-- Main hero unit for a primary marketing message or call to action -->
         <div class="hero-unit">
           <h1>Welcome to {{package}}!</h1>
-          <p>The {{package}} application uses Ptah, a modern web publishing framework.  
-          Ptah enables you to build web applications and web sites - very fast.  The 
+          <p>The {{package}} application uses Ptah, a modern web publishing framework.
+          Ptah enables you to build web applications and web sites - very fast.  The
           best part is Ptah works like you expect.  It uses well-documented technologies.
           You can pick what features you want and leave behind the opinions which you disagree.
           </p>
-          <p>The default login is <strong>admin</strong> and the 
+          <p>The default login is <strong>admin</strong> and the
              password is <strong>12345</strong>
           </p>
           <p tal:condition="view.user is not None">
-            <a class="btn primary large" href="/ptah-manage/">Goto Ptah Manange UI &raquo;</a>
+            <a class="btn primary large" href="/ptah-manage/">Goto Ptah Manage UI &raquo;</a>
           </p>
           <p tal:condition="view.user is None">
             <a class="btn primary large" href="/login.html">Login first &raquo;</a>
@@ -84,7 +84,7 @@
             <h2>Settings</h2>
              <p>You started Ptah with telling paster to serve a .ini file.
                 You can use the same software with different settings and have
-                a very different expereince.  Ptah and Pyramid both provide 
+                a very different expereince.  Ptah and Pyramid both provide
                 mechanisms to easily create your own settings attributes.  This
                 way you can store application settings on filesystem instead of
                 in a database where version control isnt practical.
@@ -93,10 +93,10 @@
          </div>
           <div class="span5">
             <h2>Users</h2>
-            <p>Ptah comes with a default user subsystem.  You can use it to 
-               create, edit, delete, suspend and activate users.  The user 
+            <p>Ptah comes with a default user subsystem.  You can use it to
+               create, edit, delete, suspend and activate users.  The user
                system is invoked in __init__.py of your application to create
-               the default login/password for this application. 
+               the default login/password for this application.
             </p>
             <p><a class="btn" href="/ptah-manage/crowd/">View users &raquo;</a></p>
           </div>
