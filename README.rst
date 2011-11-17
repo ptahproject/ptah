@@ -87,7 +87,7 @@ Use paster to create a ptah201 application::
 Start application via Paster::
 
   venv$ cd myapp201
-  venv/myapp102$ ../bin/paster serve settings.ini --reload
+  venv/myapp201$ ../bin/paster serve settings.ini --reload
 
 Ptah 301, a CMS
 ---------------
