@@ -1,9 +1,7 @@
 Ptah
 ====
 
-Ptah is a fast, fun, open source high-level Python web development environment.
-Ptah is built on top of the Pyramid web framework.  Ptah's goal is to make 
-developing interactive web sites and applications fun. 
+Ptah is a fast, fun, open source high-level Python web development environment. Ptah is built on top of the Pyramid web framework.  Ptah's goal is to make developing interactive web sites and applications fun. 
 
 Ptah is loosely affiliated with the Pyramid, Django, Drupal and Zope/Plone communities.
 
@@ -48,31 +46,58 @@ If you like tests, run the tests::
 
   venv/ptah$ ../bin/python setup.py test
 
-Use paster to create **your own application**.  The default username is **admin** and password is **12345**.  Check myapp/__init__.py for more information::
+Ptah 101, the Basics
+--------------------
+
+The first scaffolding, ptah101, provides an example of the ptah manage facility, as well, how the form machinery works.
+
+Use paster to create a ptah101 application::
 
   venv/ptah$ cd ..
-  venv$ bin/paster create -t ptah101 myapp
-  venv$ cd myapp
-  venv/myapp$ ../bin/python setup.py develop
-  
+  venv$ bin/paster create -t ptah101 myapp101
+
 Start application via Paster::
 
-  venv/myapp$ ../bin/paster serve settings.ini --reload
+  venv$ cd myapp101
+  venv/myapp101$ ../bin/paster serve settings.ini --reload
 
-Login by opening your web browser to http://localhost:6543/ with credentials, login **admin** and password **12345**
+Ptah 102, Models
+----------------
 
-You should read the source of myapp, after all it is your application.  A good place to start is myapp/__init__.py
+The second scaffold, ptah102, provides an example of using a sqlalchemy model and enables more features of the management ui.
 
-Sophisticated App
------------------
+Use paster to create a ptah102 application::
 
-Ptah101 scaffold generates a simple application which has an example form, view, a model called Link.  Ptah101 is meant to get your feet wet.  There is a more sophisticated example in the Ptah301 scaffold.  If you have not written a Pyramid application and/or you are not familiar with traversal do not attempt to use Ptah301.  
+  venv$ bin/paster create -t ptah102 myapp102
 
-Let's create a new application & install it using ptah301 scaffold::
+Start application via Paster::
+
+  venv$ cd myapp102
+  venv/myapp102$ ../bin/paster serve settings.ini --reload
+
+Ptah 201, Security
+------------------
+
+The third scaffold adds security and demonstrates creating your own user system and protecting a resource with security (ptah-manage).
+
+Use paster to create a ptah201 application::
+
+  venv$ bin/paster create -t ptah201 myapp201
+
+Start application via Paster::
+
+  venv$ cd myapp201
+  venv/myapp201$ ../bin/paster serve settings.ini --reload
+
+Ptah 301, a CMS
+---------------
+
+This is a fairly sophisticated example which is nearly a mini-CMS. It demonstrates nearly all the features of Ptah but is probably overwhelming for newbies.    
+
+Use paster to create a mini-cms application::
 
   venv$ bin/paster create -t ptah301 cmsapp
   venv$ cd cmsapp
-  venv/cmsapp$ ../bin/python setup.py develop
 
 Start application via Paster::
 
