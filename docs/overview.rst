@@ -2,16 +2,16 @@
 Why Ptah?
 =========
 
-Because at Enfold Systems we build complicated systems for customers with a 
-fixed price or need to estimate a relatively accurate cost for project 
+Because at Enfold Systems we build complicated systems for customers with a
+fixed price or need to estimate a relatively accurate cost for project
 completion.  Customers are asking for interactive features which require
-a lot of javascript (e.g. REST representations of models).  Many of our 
+a lot of javascript (e.g. REST representations of models).  Many of our
 customers care deeply about security and work inside of discrete groups
-among themselves.  Therefore we needed a model which provided relatively 
+among themselves.  Therefore we needed a model which provided relatively
 fine-grain security in the framework.  Our projects use other open source
 communities code to do work.  We want to facilitate sharing addons with
 this framework so we can solve our customers requirements with less effort.
-Lastly Pyramid appealed to us because of its documentation, test coverage, 
+Lastly Pyramid appealed to us because of its documentation, test coverage,
 and attention to API design.
 
 =============
@@ -20,10 +20,10 @@ What is Ptah?
 
 Ptah is a Python based web development framework whose goal is to allow
 developers to more predictably develop complex web applications.  Ptah
-is cross platform and runs on Windows, OSX and Linux.  Ptah is built on 
+is cross platform and runs on Windows, OSX and Linux.  Ptah is built on
 top of the Pyramid framework and lets Pyramid do most of the heavy lifting.
-Ptah uses SQLAlchemy for relational database abstraction/connectivity.  
-Ptah runs on Python 2.7 and will soon run on Python 3.2.  
+Ptah uses SQLAlchemy for relational database abstraction/connectivity.
+Ptah runs on Python 2.7 and will soon run on Python 3.2.
 
 Ptah is also the Egyptian god of craftsmanship.  He built the sky.
 
@@ -33,7 +33,7 @@ Ptah CMS
 
 The ptah.cms package depends on the ptah package and contains no policy or
 user interface.  The pixels you see on the screen resulting from the
-:doc:`install` document is ptah.cmsapp.  The kernel of the CMS exists in ptah.cms.  
+:doc:`install` document is ptah.cmsapp.  The kernel of the CMS exists in ptah.cms.
 If you want an alternative datastore, fork the ptah.cms package and change the
 models to use mongo, zodb, etc.
 
@@ -77,7 +77,7 @@ You must have at least one ApplicationFactory call or else you will be unable
 to use the CMS.  The ApplicationFactory will return the ApplicationRoot based
 on where you `mount` the Application into your heirarchy.
 
-  e.g.:::
+  e.g.::
 
     factory = ptah.cms.ApplicationFactory('/', 'root', 'Ptah CMS')
     ptah.config.add_route('root-app', '/*traverse',
@@ -154,7 +154,7 @@ TypeInformation and Actions
 ===========================
 
 The type/action classes enable you to describe your model and
-application "actions" at an application level.  For instance, 
+application "actions" at an application level.  For instance,
 what URL you will need to go to in the browser to generate an Edit screen
 and what permission you will need to Add, Edit or Delete a model are
 examples of information you pass in via the `Type` class.  The ``Action``
@@ -202,21 +202,21 @@ Node
 ~~~~
 
 :py:class:`ptah.cms.node.Node` is the primary table.  Columns for the
-``ptah_cms_nodes`` table: 
-  
+``ptah_cms_nodes`` table:
+
 id
    Primary key which is an internal implementation detail for SQLAlchemy.
 
    SQLAlchemy Entity property: ``__id__``
    Database column name: ``id``
-     
+
 uri
-   A required unique string which is used throughout the system to refer to 
+   A required unique string which is used throughout the system to refer to
    the record.  A common pattern is to use URI to reference models instead of
    their primary key.  An example, blob+sql:9f4b24205c704dbc99a24abdd2f55350
-   
+
    SQLAlchemy Entity property: ``__uuid__``
-   
+
    Database column name: ``ptah_cms_nodes.uri`` (VARCHAR)
 
 type
@@ -233,13 +233,13 @@ owner
    Owner is the URI of a Principal URI.
    This field gets set by the subscriber for :py:class:`ptah.cms.events.ContentCreatedEvent`
    An example, user+crowd:301067f19db649098d51659a8b8aa572
-   
+
 roles
    A :py:class:`ptah.utils.JSONType` which will contain which roles have custom permissions.
    A node with the following data would give Principal the manager role::
-   
-     {u'user+crowd:301067f19db649098d51659a8b8aa572': [u'role:manager']} 
-   
+
+     {u'user+crowd:301067f19db649098d51659a8b8aa572': [u'role:manager']}
+
 acls
    A :py:class:`ptah.utils.JSONType` which will contain a sequence of named ACL maps.
 
@@ -358,7 +358,7 @@ In Ptah all models have a URI in the form ``scheme:UID``. For example::
        u'cms+page:a0b87c1d3f354183bafb3da5a94a097f']
 
 For instance, the default User/Properties system is `ptah-crowd:$UID` for
-a user.  And for ptah.cms.ApplicationRoot it is `ptah-app:$UID`. 
+a user.  And for ptah.cms.ApplicationRoot it is `ptah-app:$UID`.
 
 URI resolution is a core facility and contract of the system. Given any
 UUID, the application should be able to load the corresponding model.  This

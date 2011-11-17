@@ -2,21 +2,21 @@
 Installing Ptah
 ===============
 
-Currently Ptah is quite rough around the edges.  virtualenv is the prefered
+Currently Ptah is quite rough around the edges. virtualenv is the prefered
 mode of installation at this time.
 
 Requirements
 ------------
 
   * Python 2.7
-  
+
   * git
 
 virtualenv
 ~~~~~~~~~~
 
-This is the recommend way for people to install Ptah. 
-Grab a copy of the latest virtualenv. 
+This is the recommend way for people to install Ptah.
+Grab a copy of the latest virtualenv.
 
   * git clone https://github.com/ptahproject/ptah
   * cd ptah; python setup.py develop
@@ -33,17 +33,17 @@ Although many developers really like this approach.
 Grab buildout::
 
   ~$ git clone https://github.com/ptahproject/devel
-  
+
   ~$ cd devel
-  
+
   ~/devel$ python2.7 bootstrap.py -c devel.cfg
   You will see it download setuptools & will create bin directory
-  
+
   ~/devel$ bin/buildout -c devel.cfg
   Go grab some coffee. It will take awhile.
   If you are adventurous you can bin/buildout - c devel-socket.cfg
   which will install the websocket server which `ptah_app` uses.
-  
+
   ~/devel$ bin/paster serve ptah.ini
   Some paster output and it will say listening on port 8080.  Pyramid
   and Ptah are now running.
