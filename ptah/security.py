@@ -49,7 +49,7 @@ def Permission(name, title, description=u''):
             lambda config, p: \
                 config.get_cfg_storage(PERMISSION_ID).update({str(p): p}),
             (permission,),
-            discriminator = (PERMISSION_ID, name))
+            discriminator=(PERMISSION_ID, name))
         )
 
     return permission
@@ -82,7 +82,8 @@ class ACL(list):
             config.Action(
                 lambda config, p: \
                     config.get_cfg_storage(ACL_ID).update({name: p}),
-                (self,), discriminator = ('ptah:acl-map', name))
+                (self,),
+                discriminator=('ptah:acl-map', name))
             )
         self.directiveInfo = info
 
@@ -195,7 +196,7 @@ class Role(object):
 
     def __init__(self, name, title, description='',
                  prefix='role:', system=False):
-        id = '%s%s'%(prefix, name)
+        id = '%s%s' % (prefix, name)
 
         self.id = id
         self.name = name
@@ -212,11 +213,12 @@ class Role(object):
             config.Action(
                 lambda config, r: \
                     config.get_cfg_storage(ROLE_ID).update({r.name: r}),
-                (self,), discriminator = (ROLE_ID, name))
+                (self, ),
+                discriminator=(ROLE_ID, name))
             )
 
     def __str__(self):
-        return 'Role<%s>'%self.title
+        return 'Role<%s>' % self.title
 
     def __repr__(self):
         return self.id

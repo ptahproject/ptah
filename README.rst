@@ -1,7 +1,7 @@
 Ptah
 ====
 
-Ptah is a fast, fun, open source high-level Python web development environment. Ptah is built on top of the Pyramid web framework.  Ptah's goal is to make developing interactive web sites and applications fun. 
+Ptah is a fast, fun, open source high-level Python web development environment. Ptah is built on top of the Pyramid web framework.  Ptah's goal is to make developing interactive web sites and applications fun.
 
 Ptah is loosely affiliated with the Pyramid, Django, Drupal and Zope/Plone communities.
 
@@ -30,8 +30,8 @@ Before we start lets review what the structure will look like after you complete
       setup.py
       development.ini
       myapp/
-          
-On Windows you will have a venv/Scripts directory not a venv/bin directory. 
+
+On Windows you will have a venv/Scripts directory not a venv/bin directory.
 
 Lets do the needful::
 
@@ -41,7 +41,7 @@ Lets do the needful::
   venv$ git clone git://github.com/ptahproject/ptah.git
   venv$ cd ptah
   venv/ptah$ ../bin/python setup.py develop
-  
+
 If you like tests, run the tests::
 
   venv/ptah$ ../bin/python setup.py test
@@ -92,11 +92,11 @@ Start application via Paster::
 Ptah 301, a CMS
 ---------------
 
-This is a fairly sophisticated example which is nearly a mini-CMS. It demonstrates nearly all the features of Ptah but is probably overwhelming for newbies.    
+This is a fairly sophisticated example which is nearly a mini-CMS. It demonstrates nearly all the features of Ptah but is probably overwhelming for newbies.
 
 Use paster to create a mini-cms application::
 
-  venv$ bin/paster create -t ptah301 cmsapp
+  venv$ bin/paster create -t ptah301 myapp301
   venv$ cd cmsapp
 
 Start application via Paster::

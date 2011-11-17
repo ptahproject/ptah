@@ -13,6 +13,7 @@ from ptah.form.interfaces import IForm
 
 CSRF = None
 
+
 def setCsrfUtility(util):
     global CSRF
     CSRF = util
@@ -30,9 +31,9 @@ class FormErrorMessage(view.Message):
                   if isinstance(err, Invalid) and err.field is None]
 
         return self.template(
-            errors = errors,
-            message = self.formErrorsMessage,
-            request = self.request)
+            errors=errors,
+            message=self.formErrorsMessage,
+            request=self.request)
 
 
 class FormWidgets(OrderedDict):
@@ -54,7 +55,7 @@ class FormWidgets(OrderedDict):
     def update(self):
         params = self.form.form_params()
         content = self.form.form_content()
-        prefix = '%s%s'%(self.form.prefix, self.prefix)
+        prefix = '%s%s' % (self.form.prefix, self.prefix)
 
         self.fieldset = self.form_fields.bind(content, params)
         self.fieldsets = fieldsets = []
@@ -66,7 +67,7 @@ class FormWidgets(OrderedDict):
             for widget in fieldset.fields():
                 if widget.mode is None:
                     widget.mode = self.mode
-                widget.id = ('%s%s'%(prefix, widget.name)).replace('.', '-')
+                widget.id = ('%s%s' % (prefix, widget.name)).replace('.', '-')
                 widget.update(self.request)
                 widgets.append(widget)
                 self[widget.name] = widget
@@ -112,7 +113,7 @@ class Form(view.View):
     actions = None
 
     #: Instance of py:class:`FormWidgets` class
-    widgets  = None
+    widgets = None
 
     #: Form content, it should be `None` or dictionary with data for fields.
     content = None
@@ -178,7 +179,7 @@ class Form(view.View):
 
     @reify
     def tokenData(self):
-        return '%s.%s:%s'%(self.__module__,self.__class__.__name__,
+        return '%s.%s:%s' % (self.__module__, self.__class__.__name__,
                            security.authenticated_userid(self.request))
 
     def validate(self, data, errors):
@@ -238,20 +239,20 @@ view.snippettype(FORM_DISPLAY_WIDGET, Field, 'Form display widget')
 
 view.register_snippet(
     'form-view', Form,
-    template = view.template('ptah.form:templates/form.pt'))
+    template=view.template('ptah.form:templates/form.pt'))
 
 view.register_snippet(
     'form-view', DisplayForm,
-    template = view.template('ptah.form:templates/form-display.pt'))
+    template=view.template('ptah.form:templates/form-display.pt'))
 
 view.register_snippet(
     'form-actions', Form,
-    template = view.template('ptah.form:templates/form-actions.pt'))
+    template=view.template('ptah.form:templates/form-actions.pt'))
 
 view.register_snippet(
     'form-widget', Field,
-    template = view.template('ptah.form:templates/widget.pt'))
+    template=view.template('ptah.form:templates/widget.pt'))
 
 view.register_snippet(
     'form-display-widget', Field,
-    template = view.template('ptah.form:templates/widget-display.pt'))
+    template=view.template('ptah.form:templates/widget-display.pt'))

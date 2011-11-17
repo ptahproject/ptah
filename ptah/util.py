@@ -22,6 +22,7 @@ class ThreadLocalManager(threading.local):
 
 tldata = ThreadLocalManager()
 
+
 @config.subscriber(INewRequest)
 def resetThreadLocalData(ev):
     tldata.clear()
@@ -57,13 +58,13 @@ class Pagination(object):
         self.right_neighbours = right_neighbours
 
     def offset(self, current):
-        return (current-1)*self.page_size, self.page_size
+        return (current - 1) * self.page_size, self.page_size
 
     def __call__(self, total, current):
         if not current:
             raise ValueError(current)
 
-        size = int(round(total/float(self.page_size)+0.4))
+        size = int(round(total / float(self.page_size) + 0.4))
 
         pages = []
 
@@ -92,8 +93,8 @@ class Pagination(object):
             pages.append(last)
 
         # prev/next idx
-        prevLink = None if current <= 1 else current-1
-        nextLink = None if current >= size else current+1
+        prevLink = None if current <= 1 else current - 1
+        nextLink = None if current >= size else current + 1
 
         return pages, prevLink, nextLink
 

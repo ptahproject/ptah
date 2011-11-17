@@ -6,7 +6,7 @@ What is scope of Ptah?
 
 Ptah aims to provide a framework which makes low level choices for developers so the programmer can get on with solving their problem on a unrealistic deadline.  It is high level compared to Pyramid but lower level compared to something like Plone or Drupal.  ptah.cms is a API it is not a CMS, it will not have advanced CMS functionality such as staging, workflow or versioning; those will be optional and if support is required in data model we will ensure it is not required and that such features can be optional (e.g. ptah_cms_nodes.parent).
 
-Ptah is a framework, an implementation and set of opinions around the Pyramid web framework.  It supports `URL dispatch`, `Traversal`, a SQL data model, pyramid view-level security, content heirarchy, multiple applications living in the same content heirarchy, a high level security policy (permissions, roles, and principals). 
+Ptah is a framework, an implementation and set of opinions around the Pyramid web framework.  It supports `URL dispatch`, `Traversal`, a SQL data model, pyramid view-level security, content heirarchy, multiple applications living in the same content heirarchy, a high level security policy (permissions, roles, and principals).
 
 Ptah Manage aims at provide 100% visibility into ALL aspects of your application and how its using the Ptah framework.  Ptah Manage is about transparency of configuration for developers/administrators.  Your App is what you write and solves your customers/end user problems.
 
@@ -34,14 +34,14 @@ Because we do not use colander for form schema.
 Why we do not use colander for forms
 ------------------------------------
 
-Colander is nice general schema language.  We use it for settings management.  In many cases when you are working with forms you want to work logically with a Field (schemanode and widget).  It is the case with colander that responsibilities are separated in which (de)serialization is done with colander and the widget turns that into internal structure for the widget.  If you make your own widget you will need to keep in mind how colander schemas can use your widget and you may end up having to keep a colander schemanode in sync with your widget.  We believe that most people desire a tighter coupling between widget and schema when working with widgets; they would like to see everything in one place.  
+Colander is nice general schema language.  We use it for settings management.  In many cases when you are working with forms you want to work logically with a Field (schemanode and widget).  It is the case with colander that responsibilities are separated in which (de)serialization is done with colander and the widget turns that into internal structure for the widget.  If you make your own widget you will need to keep in mind how colander schemas can use your widget and you may end up having to keep a colander schemanode in sync with your widget.  We believe that most people desire a tighter coupling between widget and schema when working with widgets; they would like to see everything in one place.
 
 If you understand colander, ptah.form will be familiar.  After all we sort of forked it and folded it into ptah.form.  The big difference is we have removed some additional flexibility from colander, such as nesting of schema nodes.  ptah.form.fields has both schema and field definition in one class, Field.
 
 Why does Ptah use a Folder paradigm?
 ------------------------------------
 
-It *does not* require a Folder paradigm or containment.  ptah.cmsapp demonstrates the features of ptah.cms and one of those features are content heirarchies.  Thus the Page/Folder experience in ptah.cmsapp.  We currently have a Poll add-on which does not participate in Page/Folder heirarchy.
+It *does not* require a Folder paradigm or containment.  ptah.cmsapp demonstrates the features of ptah.cms and one of those features are content hierarchies.  Thus the Page/Folder experience in ptah.cmsapp.  We currently have a Poll add-on which does not participate in Page/Folder heirarchy.
 
 Why does Ptah not use ZODB?
 ---------------------------
@@ -56,7 +56,7 @@ Why does Ptah not use Mongo?
 ----------------------------
 
 We envision a Ptah extension which will allow Mongo to be used as a first
-class citizen.  Mongo is not transactional and is for a sophisticated 
+class citizen.  Mongo is not transactional and is for a sophisticated
 developer profile which we do not target; so we do not intend to support it
 in the core system.  We hope the Ptah community will develop patterns to
 integrate Mongo into Ptah.
@@ -69,7 +69,7 @@ Ptah uses SQLAlchemy which supports many different database drivers.  sqlite shi
 Pyramid is not a bottleneck; Ptah is
 ------------------------------------
 
-Any experienced web developer will tell you that accessing data or going out of process for IO will slow down the responsiveness of the the application.  This is true of Ptah.  That is why we have such few SQL calls in the run-time.  We aim for Ptah *not* to be a bottleneck for your application.  Ptah goes out of its way to do as much as possible at start-up time.  You can see the SQLAlchemy queries per page using the pyramid_debugtoolbar that ships with development profile. 
+Any experienced web developer will tell you that accessing data or going out of process for IO will slow down the responsiveness of the the application.  This is true of Ptah.  That is why we have such few SQL calls in the run-time.  We aim for Ptah *not* to be a bottleneck for your application.  Ptah goes out of its way to do as much as possible at start-up time.  You can see the SQLAlchemy queries per page using the pyramid_debugtoolbar that ships with development profile.
 
 Ptah does not use Jinja, Mako, etc. Why?
 ----------------------------------------
@@ -94,7 +94,7 @@ SQLAlchemy is a comprehensive library and an effect of that is it can feel overw
 
 SQLAlchemy also has books written on it and is ported to Python 3.  There is a large friendly user community that is willing to answer questions.  It is a solid foundation to build on top.
 
-See content.rst for example of SQLAlchemy usage.  
+See content.rst for example of SQLAlchemy usage.
 
 Why do you say REST is First Class?
 ---------------------------------------------------
@@ -106,7 +106,7 @@ Ptah doesnt work in my browser
 
 As of this writing we have not started pushing the boundaries of HTML5.  We expect release of Ptah to not work in browsers without HTML5 support.  Ptah is aiming for web browsers IE9/10 and latest Firefox, Chrome and Safari as of end of 2011.  If your browser does not work - you can read the documentation and customize the templates to work with your or your customers browsers.
 
-Backwards compatibility (especially regarding browsers) is a non-priority for Ptah.  We are aiming to support current and future browser standards not standards we have had foisted upon us as of today. 
+Backwards compatibility (especially regarding browsers) is a non-priority for Ptah.  We are aiming to support current and future browser standards not standards we have had foisted upon us as of today.
 
 Ptah cheats and uses SQL like NoSQL
 -----------------------------------
@@ -117,16 +117,16 @@ exercise it is to help people get work done efficiently.  The core data
 model is simple enough that you can normalize your schema's however you
 like but that doesnt mean the core system needs to have that complexity.
 The other "cheat" is that we store path in the content table.  This enables
-fast lookups if using content heirarchies (1 simple SELECT).  ptah.cms
+fast lookups if using content hierarchies (1 simple SELECT).  ptah.cms
 has 3 tables and one of them (ptah_cms_content) is not required to be used
-unless you want heriarchies.  
+unless you want heriarchies.
 
 The data model is simple and modern.  It isnt cheating.  It is practical.
 
 Another note on the ptah_cms_content.path column is that many people have
 tried and failed to have "pure" heriarchies in SQL (Ars Digita) and if you
 go down that road you will end up having to specialize around a particular
-database (Oracle or Postgresql - most likely).  We can do that in an 
+database (Oracle or Postgresql - most likely).  We can do that in an
 extension to Ptah but not in the core framework.  The core framework must be database agnostic, simple, comprehensible, and fast.  So we make containment an application concern and the problem becomes much simpler.
 
 I hate traversal, why would I use Ptah?

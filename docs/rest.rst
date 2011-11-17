@@ -1,17 +1,24 @@
 REST
 ====
 
-REST is first class citizen in Ptah.  If you use the Content model then you get REST for free.  If you want 'low-level' Node interface you need to do more work.   The follow relies on Ptah App.  
+REST is first class citizen in Ptah.  If you use the Content model then you get
+REST for free.  If you want 'low-level' Node interface you need to do more work.
+The follow relies on Ptah App.
 
 You will need curl and ptah running for this example.
 
 Overview
 --------
-REST API is flat.  If your content participates in heirarchy the system will take this into account when computing security. 
+REST API is flat.  If your content participates in heirarchy the system will
+take this into account when computing security.
 
-Note that in the following values for __link__, __uri__ will be different in than what you will see.  You can figure this out.  For clarity we just use data available from our session.  
+Note that in the following values for __link__, __uri__ will be different in
+than what you will see.  You can figure this out.  For clarity we just use data
+available from our session.
 
-Also to note there is a ptahclient.py and a rest.py which support programatic usage of the REST API from python.  You do not need to use cURL.  We just use it for these examples.
+Also to note there is a ptahclient.py and a rest.py which support programatic
+usage of the REST API from python.  You do not need to use cURL.  We just use it
+for these examples.
 
 Basics
 ------
@@ -52,14 +59,19 @@ Quick look at out-of-the-box REST::
      ]
     }
 
-This is the default REST view for the cms, it is the `apidoc` view.  More information will describe why but once you understand more about REST this will become clear.  To be clear::
+This is the default REST view for the cms, it is the `apidoc` view.  More
+information will describe why but once you understand more about REST this will
+become clear.  To be clear::
 
   $ curl http://localhost:8080/__rest__/cms/
   .. output
-  is the same as 
+  is the same as
   $ curl http://localhost:8080/__rest__/cms/apidoc/
 
-Let's look at applications, currently there are quite a few since we are experimenting with multiple applications and mount points.  But for this example we are only interested in an application whose __mount__ is '' (the default).  This is the same application served at http://localhost:8080/ - back to code::
+Let's look at applications, currently there are quite a few since we are
+experimenting with multiple applications and mount points. But for this example
+we are only interested in an application whose __mount__ is '' (the default).
+This is the same application served at http://localhost:8080/ - back to code::
 
   $ curl http://localhost:8080/__rest__/cms/applications
     [
@@ -81,9 +93,11 @@ Let's look at applications, currently there are quite a few since we are experim
       "__link__": "http://localhost:8080/__rest__/cms/content:/cms+app:c24d0e245edc4
     13980a75f035ee3c8b2/"
      }
-    ] 
+    ]
 
-Now lets see the application.  Note in future the default will not show children since that will not work for large containers and will need batching support.  Let's just see how it is today::
+Now lets see the application.  Note in future the default will not show children
+since that will not work for large containers and will need batching support.
+Let's just see how it is today::
 
   $ curl http://localhost:8080/__rest__/cms/content:/cms+app:c24d0e245edc413980a75f035ee3c8b2/
 
@@ -131,7 +145,9 @@ Now lets see the application.  Note in future the default will not show children
      ]
     }
 
-Lets look at the apidoc for the application.  These are the REST actions that are available.  By default Anonymous can create a Page, therefore create is an available action (recognized its not a sensible default and will be changed in future)::
+Lets look at the apidoc for the application.  These are the REST actions that are
+available.  By default Anonymous can create a Page, therefore create is an
+available action (recognized its not a sensible default and will be changed in future)::
 
     $ curl http://localhost:8080/__rest__/cms/content:/cms+app:c24d0e245edc413980a75f035ee3c8b2/apidoc
     [
@@ -176,12 +192,15 @@ Now that we have the auth-token we will need to pass this as a HTTP HEADER, X-AU
     $ curl -H "X_AUTH_TOKEN:3b0ccaac40e16f2e74c7d00b2c5b2f0e4e95a5beuser%2Bcrowd%3A9a529386a
     61c4f20a2481da6a9f455cc" http://localhost:8080/__rest__/cms/
 
-This request is an authenticated request to Ptah with the admin user.  Currently you will not see any difference but this will change.  Let's see it with apidoc.
+This request is an authenticated request to Ptah with the admin user. Currently
+you will not see any difference but this will change. Let's see it with apidoc.
 
 Authenticated Example
 ---------------------
 
-Content actions can be protected by permissions.  Let us presume that our CMS root's __uri__ is `cms+app:c24d0e245edc413980a75f035ee3c8b2` and it's __link__ is `http://localhost:8080/__rest__/cms/content:/cms+app:c24d0e245edc413980a75f035ee3c8b2/`
+Content actions can be protected by permissions. Let us presume that our CMS
+root's __uri__ is `cms+app:c24d0e245edc413980a75f035ee3c8b2` and it's __link__ is
+`http://localhost:8080/__rest__/cms/content:/cms+app:c24d0e245edc413980a75f035ee3c8b2/`
 .  Let's look at APIDOC not logged in::
 
     $ curl http://localhost:8080/__rest__/cms/content:/cms+app:c24d0e245edc413980a75f035ee3c8b2/apidoc
@@ -211,7 +230,7 @@ Now let's look at APIDOC as a logged in user::
 
     $ curl -H "X_AUTH_TOKEN:8725da7fdf14e1442f1ed4670f3b61614e95a6bcuser%2Bcrowd%3A9a529386a61c4f20a2481da6a9f455cc" \
       http://localhost:8080/__rest__/cms/content:/cms+app:c24d0e245edc413980a75f035ee3c8b2/apidoc
-      
+
     [
      {
       "name": "info",
@@ -258,14 +277,14 @@ We can see a list of all available types available in the system.  The `Type`
 information contains:
 
    * __uri__, this is a resolvable string which is unique to the type information
-   
+
    * name, this is the internal type name which does not have to be unique
-   
+
    * title, human readable title of the type information
-   
+
    * permission, permission to create models of this type
-   
-   * fieldset, schema of the type. if you do not define one the system 
+
+   * fieldset, schema of the type. if you do not define one the system
      will create one by introspecting your model.
 
 Let's see all registered types::
@@ -385,9 +404,9 @@ Let's see all registered types::
 Create content
 --------------
 
-Let us create a Page whose name is 'foobar.html'. 
+Let us create a Page whose name is 'foobar.html'.
 
-There is a special feature of `container.create REST action` which allow you to create type 
+There is a special feature of `container.create REST action` which allow you to create type
 and update all values in one operation. Here is example of creating ptah.cmsapp.content.Page::
 
     $ curl -H "X_AUTH_TOKEN:8725da7fdf14e1442f1ed4670f3b61614e95a6bcuser%2Bcrowd%3A9a529386a61c4f20a2481da6a9f455cc" \
@@ -395,14 +414,16 @@ and update all values in one operation. Here is example of creating ptah.cmsapp.
     {
      "message": "cms+page:032e6b19a99c40fba264c1aeeaf08254"
     }
-    
-`tinfo` is the type's __uri__.  You can get a list of available types by querying __rest__/cms/types for instance, the default types available with ptah.cmsapp are:
+
+`tinfo` is the type's __uri__.  You can get a list of available types by
+querying __rest__/cms/types for instance, the default types available with ptah.cmsapp are:
 
    - cms+type:page
    - cms+type:folder
    - cms+type:file
-   
-The response of the message is the new URI for the content item.  Let's just CURL the item::
+
+The response of the message is the new URI for the content item. Let's just CURL
+the item::
 
     $ curl http://localhost:8080/__rest__/cms/content:/cms+page:032e6b19a99c40fba264c1aeeaf08254
     {
@@ -424,8 +445,9 @@ The response of the message is the new URI for the content item.  Let's just CUR
      "expires": null,
      "__link__": "http://localhost:8080/__rest__/cms/content:/cms+page:032e6b19a99c40fba264c1aeeaf08254/"
     }
-    
+
 Python REST Client
 ------------------
 
-Two files are of interst.  devapp/ptahclient.py which is a python REST client for Ptah. And rest.py which utilizes ptahclient.py.  
+Two files are of interst.  devapp/ptahclient.py which is a python REST client for
+Ptah. And rest.py which utilizes ptahclient.py.

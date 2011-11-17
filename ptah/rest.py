@@ -16,6 +16,7 @@ from ptah.settings import SECURITY
 
 REST_ID = 'ptah:rest-service'
 
+
 def RestService(name, title, description=''):
     srv = Service(name, title, description)
 
@@ -28,8 +29,8 @@ def RestService(name, title, description=''):
     info = config.DirectiveInfo()
     info.attach(
         config.Action(
-            _register, (srv,),
-            discriminator = (REST_ID, name))
+            _register, (srv, ),
+            discriminator=(REST_ID, name))
         )
 
     return srv
@@ -80,7 +81,7 @@ class ServiceAPIDoc(object):
 
         info = OrderedDict(
             (('name', srv.name),
-             ('__link__', '%s/'%url),
+             ('__link__', '%s/' % url),
              ('title', srv.title),
              ('description', srv.description),
              ('actions', [])))
@@ -93,7 +94,7 @@ class ServiceAPIDoc(object):
             info['actions'].append(
                 OrderedDict(
                     (('name', name),
-                     ('__link__', '%s/%s'%(url, name)),
+                     ('__link__', '%s/%s' % (url, name)),
                      ('title', title),
                      ('description', description))))
 
@@ -119,7 +120,7 @@ def dthandler(obj):
 
 
 class Login(object):
-    view.pview(context = RestLoginRoute)
+    view.pview(context=RestLoginRoute)
 
     def __init__(self, request):
         self.request = request
@@ -140,7 +141,7 @@ class Login(object):
             result = {'message': info.message or 'authentication failed'}
 
         request.response.headerslist = {'Content-Type': 'application/json'}
-        return '%s\n\n'%dumps(result, indent=True, default=dthandler)
+        return '%s\n\n' % dumps(result, indent=True, default=dthandler)
 
     def get_token(self, request, userid):
         secret = SECURITY.secret
@@ -159,7 +160,7 @@ class Login(object):
 
 
 class Api(object):
-    view.pview(context = RestApiRoute)
+    view.pview(context=RestApiRoute)
 
     def __init__(self, request):
         self.request = request
@@ -172,7 +173,9 @@ class Api(object):
         if token:
             try:
                 timestamp, userid, tokens, user_data = parse_ticket(
-                    SECURITY.secret, '%s!'%token, '0.0.0.0')
+                    SECURITY.secret,
+                    '%s!' % token,
+                    '0.0.0.0')
             except BadTicket:
                 userid = None
 
@@ -186,13 +189,13 @@ class Api(object):
             action = subpath[0]
             arguments = subpath[1:]
             if ':' in action:
-                action, arg = action.split(':',1)
+                action, arg = action.split(':', 1)
                 arguments = (arg,) + arguments
         else:
             action = 'apidoc'
             arguments = ()
 
-        request.environ['SCRIPT_NAME'] = '/__rest__/%s'%service
+        request.environ['SCRIPT_NAME'] = '/__rest__/%s' % service
         request.response.headerslist = {'Content-Type': 'application/json'}
 
         # execute action for specific service
@@ -214,7 +217,7 @@ class Api(object):
         if isinstance(result, Response):
             return result
 
-        return '%s\n\n'%dumps(result, indent=True, default=dthandler)
+        return '%s\n\n' % dumps(result, indent=True, default=dthandler)
 
 
 def enable_rest_api(config):
@@ -223,8 +226,8 @@ def enable_rest_api(config):
 
     config.add_route(
         'ptah-rest-login', '/__rest__/login',
-        factory = RestLoginRoute, use_global_views=True)
+        factory=RestLoginRoute, use_global_views=True)
 
     config.add_route(
         'ptah-rest', '/__rest__/{service}/*subpath',
-        factory = RestApiRoute, use_global_views=True)
+        factory=RestApiRoute, use_global_views=True)

@@ -1,5 +1,8 @@
 """ Basic fields """
-import datetime, iso8601, decimal
+import datetime
+import decimal
+import iso8601
+
 from ptah import view
 from ptah.form import vocabulary
 from ptah.form.field import field, Field
@@ -33,7 +36,7 @@ class InputField(Field, view.View):
             self.add_css_class('disabled')
 
     def add_css_class(self, css):
-        self.klass = ('%s %s'%(self.klass or '', css)).strip()
+        self.klass = ('%s %s' % (self.klass or '', css)).strip()
 
 
 class VocabularyField(InputField):
@@ -61,8 +64,8 @@ class VocabularyField(InputField):
                 label = term.title
                 desc = term.description
             self.items.append(
-                {'id':id, 'name': self.name, 'value': term.token,
-                 'label':label, 'description': desc, 'checked': checked})
+                {'id': id, 'name': self.name, 'value': term.token,
+                 'label': label, 'description': desc, 'checked': checked})
 
 
 class BaseChoiceField(VocabularyField):
@@ -79,7 +82,8 @@ class BaseChoiceField(VocabularyField):
             return self.vocabulary.get_term(value).token
         except Exception:
             raise Invalid(
-                self, _('"${val}" is not in vocabulary', mapping={'val':value}))
+                self, _('"${val}" is not in vocabulary',
+                        mapping={'val': value}))
 
     def deserialize(self, value):
         if not value:
@@ -89,7 +93,8 @@ class BaseChoiceField(VocabularyField):
             return self.vocabulary.get_term_bytoken(value).value
         except Exception:
             raise Invalid(
-                self, _('"${val}" is not in vocabulary', mapping={'val':value}))
+                self, _('"${val}" is not in vocabulary',
+                        mapping={'val': value}))
 
     def extract(self, default=null):
         value = self.params.get(self.name, default)
@@ -126,7 +131,8 @@ class BaseMultiChoiceField(VocabularyField):
             return res
         except (LookupError, TypeError):
             raise Invalid(
-                self, _('"${val}" is not in vocabulary', mapping={'val':value}))
+                self, _('"${val}" is not in vocabulary',
+                        mapping={'val': value}))
 
     def deserialize(self, value):
         if not value:
@@ -138,7 +144,8 @@ class BaseMultiChoiceField(VocabularyField):
             return res
         except Exception:
             raise Invalid(
-                self, _('"${val}" is not in vocabulary', mapping={'val':value}))
+                self, _('"${val}" is not in vocabulary',
+                        mapping={'val': value}))
 
     def extract(self, default=null):
         if self.name not in self.params:
@@ -204,7 +211,7 @@ class Number(object):
             return self.num(value)
         except Exception:
             raise Invalid(
-                self, _('"${val}" is not a number', mapping={'val':value}))
+                self, _('"${val}" is not a number', mapping={'val': value}))
 
 
 class IntegerField(Number, TextField):
@@ -380,13 +387,13 @@ class DateTimeField(TextField):
         if value is null or value is None:
             return null
 
-        if type(value) is datetime.date: # cant use isinstance; dt subs date
+        if type(value) is datetime.date:  # cannot use isinstance; dt subs date
             value = datetime.datetime.combine(value, datetime.time())
 
         if not isinstance(value, datetime.datetime):
             raise Invalid(
                 self, _('"${val}" is not a datetime object',
-                        mapping={'val':value}))
+                        mapping={'val': value}))
 
         if value.tzinfo is None:
             value = value.replace(tzinfo=self.default_tzinfo)
@@ -407,7 +414,7 @@ class DateTimeField(TextField):
                                            tzinfo=self.default_tzinfo)
             except Exception, e:
                 raise Invalid(self, _('Invalid date',
-                                      mapping={'val': value, 'err':e}))
+                                      mapping={'val': value, 'err': e}))
         return result
 
 

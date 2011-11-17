@@ -151,7 +151,7 @@ def _unflatten_mapping(node, paths, fstruct,
         if path == node_name or (prefix and not path.startswith(prefix)):
             # flattened structs contain non-leaf nodes which are ignored
             # during unflattening.
-            continue # pragma: no cover
+            continue  # pragma: no cover
         assert path.startswith(prefix), "Bad node: %s" % path
         subpath = path[prefix_len:]
         if '.' in subpath:

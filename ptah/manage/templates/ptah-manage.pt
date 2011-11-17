@@ -13,16 +13,16 @@
       <div class="fill">
 	<div class="container">
 	  <h3><a href="${view.manage_url}/">Ptah Manage</a></h3>
-	  <tal:block 
+	  <tal:block
 	     condition="view.module"
-	     content="structure 
+	     content="structure
 		      view.snippet('ptah-module-actions',view.module)" />
-	  
-	  <ul class="nav secondary-nav">
+
+	  <ul class="nav secondary-nav" tal:condition="view.user">
 	    <li>
 	      <h5>
 		<a href="${request.application_url}/">
-		  ${unicode(view.user)}:
+		  ${unicode(view.user.name)}:
 		</a>
 	      </h5>
 	    </li>

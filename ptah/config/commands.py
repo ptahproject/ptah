@@ -1,6 +1,9 @@
 """ paste commands """
-import argparse, textwrap
-import StringIO, ConfigParser
+import argparse
+import ConfigParser
+import StringIO
+import textwrap
+
 from collections import OrderedDict
 from pyramid.config import Configurator
 
@@ -30,7 +33,7 @@ nameDescriptionWrap = textwrap.TextWrapper(
 
 
 def settingsCommand(init=True):
-    if init: # pragma: no cover
+    if init:  # pragma: no cover
         config.initialize(Configurator(), autoinclude=True)
 
     args = SettingsCommand.parser.parse_args()
@@ -44,13 +47,13 @@ class SettingsCommand(object):
     parser = argparse.ArgumentParser(description="ptah settings management")
     parser.add_argument('-a', '--all', action="store_true",
                         dest='all',
-                        help = 'List all registered settings')
+                        help='List all registered settings')
     parser.add_argument('-l', '--list',
                         dest='section', default='',
-                        help = 'List registered settings')
+                        help='List registered settings')
     parser.add_argument('-p', '--print', action="store_true",
                         dest='printcfg',
-                        help = 'Print default settings in ConfigParser format')
+                        help='Print default settings in ConfigParser format')
 
     def __init__(self, args):
         self.options = args
@@ -99,7 +102,7 @@ class SettingsCommand(object):
             for node in group.schema:
                 default = '<required>' if node.required else node.default
                 print nameWrap.fill(
-                    '%s.%s: %s (%s: %s)'%(
+                    '%s.%s: %s (%s: %s)' % (
                         name, node.name, node.title,
                         node.typ.__class__.__name__, default))
 

@@ -146,7 +146,6 @@ class MailTemplate(object):
     return_address = ''
     errors_address = ''
 
-
     def __init__(self, context, request, **kwargs):
         self.__dict__.update(kwargs)
 

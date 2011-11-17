@@ -1,5 +1,7 @@
 """ directives tests """
-import sys, unittest
+import sys
+import unittest
+
 from pyramid import testing
 from zope import interface
 from zope.interface.registry import Components
@@ -16,7 +18,7 @@ class BaseTesting(unittest.TestCase):
     def _init_ptah(self, settings={}, pconfig=None, *args, **kw):
         if pconfig is None:
             pconfig = self.config
-        ptah.config.initialize(pconfig,('ptah.config', self.__class__.__module__))
+        ptah.config.initialize(pconfig, ('ptah.config', self.__class__.__module__))
 
     def setUp(self):
         self.config = testing.setUp()
@@ -45,11 +47,14 @@ class BaseTesting(unittest.TestCase):
 class IContext(interface.Interface):
     pass
 
+
 class IContext2(interface.Interface):
     pass
 
+
 class IAdapter(interface.Interface):
     pass
+
 
 class Context(object):
 
@@ -178,7 +183,7 @@ class TestAdapterDirective(BaseTesting):
         @config.adapter(IContext)
         @config.adapter(IContext2)
         @interface.implementer(IAdapter)
-        def testAdapter(context): # pragma: no cover
+        def testAdapter(context):  # pragma: no cover
             pass
 
         self._init_ptah()
@@ -199,7 +204,7 @@ class TestAdapterDirective(BaseTesting):
 
         @config.adapter(IContext, name='test')
         @interface.implementer(IAdapter)
-        def testAdapter(context): # pragma: no cover
+        def testAdapter(context):  # pragma: no cover
             pass
 
         self._init_ptah()
@@ -216,7 +221,7 @@ class TestAdapterDirective(BaseTesting):
 
         @config.adapter(IContext, IContext2, name='test')
         @interface.implementer(IAdapter)
-        def testAdapter(context): # pragma: no cover
+        def testAdapter(context):  # pragma: no cover
             pass
 
         self._init_ptah()
@@ -233,7 +238,7 @@ class TestAdapterDirective(BaseTesting):
 
         try:
             @config.adapter(IContext, name='test')
-            def testAdapter(context): # pragma: no cover
+            def testAdapter(context):  # pragma: no cover
                 pass
         except Exception, e:
             pass
@@ -257,7 +262,7 @@ class TestAdapterDirective(BaseTesting):
         @config.adapter(IContext)
         @config.adapter(IContext2)
         @interface.implementer(IAdapter)
-        def testAdapter(context): # pragma: no cover
+        def testAdapter(context):  # pragma: no cover
             pass
 
         self._init_ptah()
@@ -394,8 +399,7 @@ class TestExtraDirective(BaseTesting):
     def test_action(self):
         info = config.DirectiveInfo()
 
-        action = config.Action(
-            None, discriminator = ('test',))
+        action = config.Action(None, discriminator=('test', ))
 
         self.assertIsNone(action.hash)
 

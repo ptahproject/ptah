@@ -1,4 +1,9 @@
-import unittest, os, shutil, tempfile, colander
+import colander
+import os
+import shutil
+import tempfile
+import unittest
+
 from pyramid.testing import setUp, tearDown
 from zope.interface.registry import Components
 from zope.interface.interface import InterfaceClass
@@ -14,7 +19,7 @@ class BaseTesting(unittest.TestCase):
     def _init_ptah(self, settings={}, *args, **kw):
         ptah.config.initialize(
             self.config, ('ptah.config', self.__class__.__module__),
-            initsettings = False)
+            initsettings=False)
 
     def setUp(self):
         self.config = setUp()
@@ -109,6 +114,7 @@ class TestSettings(BaseTesting):
     def test_settings_group_multiple_validation(self):
         def validator1(node, appstruct):
             raise colander.Invalid(node['node1'], 'Error1')
+
         def validator2(node, appstruct):
             raise colander.Invalid(node, 'Error2')
 
@@ -270,8 +276,10 @@ class TestSettingsInitialization(BaseTesting):
         sm = self.config.registry
 
         events = []
+
         def h1(ev):
             events.append(ev)
+
         def h2(ev):
             events.append(ev)
 
@@ -295,6 +303,7 @@ class TestSettingsInitialization(BaseTesting):
 
         events = []
         err = TypeError()
+
         def h1(ev):
             raise err
 

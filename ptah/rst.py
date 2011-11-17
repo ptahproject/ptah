@@ -12,7 +12,7 @@ log = logging.getLogger('ptah.rst')
 
 local_data = threading.local()
 
-confdir = '%s/docs/'%pkg_resources.get_distribution('ptah').location
+confdir = '%s/docs/' % pkg_resources.get_distribution('ptah').location
 outdir = tempfile.mkdtemp()
 srcdir = tempfile.mkdtemp()
 doctreedir = tempfile.mkdtemp()
@@ -56,7 +56,7 @@ def rst_to_html(text):
         pub.publish()
     except:
         log.warning(u'ReST to HTML error\n %s', text)
-        return u'<pre>%s</pre>'%text
+        return u'<pre>%s</pre>' % text
 
     doctree = pub.document
     sphinx.env.filter_messages(doctree)

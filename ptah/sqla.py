@@ -38,9 +38,9 @@ class QueryFreezer(object):
             data.stmt = data.querycontext.statement
 
         conn = data.query._connection_from_session(
-            mapper = data.mapper,
-            clause = data.stmt,
-            close_with_result=True)
+                   mapper=data.mapper,
+                   clause=data.stmt,
+                   close_with_result=True)
 
         result = conn.execute(data.stmt, **params)
         return data.query.instances(result, data.querycontext)
@@ -91,7 +91,7 @@ class MutationList(Mutable, list):
         if not isinstance(value, MutationList):
             if isinstance(value, list):
                 return MutationList(value)
-            return Mutable.coerce(key, value) # pragma: no cover
+            return Mutable.coerce(key, value)  # pragma: no cover
         else:
             return value
 
@@ -115,7 +115,7 @@ class MutationDict(Mutable, dict):
         if not isinstance(value, MutationDict):
             if isinstance(value, dict):
                 return MutationDict(value)
-            return Mutable.coerce(key, value) # pragma: no cover
+            return Mutable.coerce(key, value)  # pragma: no cover
         else:
             return value
 

@@ -20,7 +20,8 @@ PWD_CONFIG = config.register_settings(
         colander.Str(),
         name = 'manager',
         title = 'Password manager',
-        description = 'Available password managers ("plain", "ssha", "bcrypt")',
+        description = 'Available password managers \
+            ("plain", "ssha", "bcrypt")',
         default = 'plain'),
 
     config.SchemaNode(
@@ -59,11 +60,11 @@ class PlainPasswordManager(object):
     """PLAIN password manager."""
 
     def encode(self, password, salt=None):
-        return '{plain}%s'%password
+        return '{plain}%s' % password
 
     def check(self, encoded, password):
         if encoded != password:
-            return encoded == '{plain}%s'%password
+            return encoded == '{plain}%s' % password
         return True
 
 
@@ -99,7 +100,7 @@ class PasswordTool(object):
     @property
     def manager(self):
         try:
-            return self.pm['{%s}'%PWD_CONFIG.manager]
+            return self.pm['{%s}' % PWD_CONFIG.manager]
         except KeyError:
             return self.pm['{plain}']
 
@@ -110,7 +111,7 @@ class PasswordTool(object):
         except:
             return self.manager.check(encoded, password)
 
-        manager = self.pm.get('%s}'%pm)
+        manager = self.pm.get('%s}' % pm)
         if manager is not None:
             return manager.check(encoded, password)
         return False
@@ -160,7 +161,7 @@ class PasswordTool(object):
         if len(password) < PWD_CONFIG.min_length:
             #return _('Password should be at least ${count} characters.',
             #         mapping={'count': self.min_length})
-            return 'Password should be at least %s characters.'%\
+            return 'Password should be at least %s characters.' % \
                 PWD_CONFIG.min_length
         elif PWD_CONFIG.letters_digits and \
                 (password.isalpha() or password.isdigit()):
@@ -183,7 +184,7 @@ def password_changer(schema):
                     config.get_cfg_storage(PASSWORD_CHANGER_ID).update(
                             {schema: changer}),
                 (schema, changer),
-                discriminator = (PASSWORD_CHANGER_ID, schema))
+                discriminator=(PASSWORD_CHANGER_ID, schema))
             )
 
         return changer

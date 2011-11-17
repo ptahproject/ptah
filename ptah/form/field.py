@@ -17,7 +17,8 @@ def field(name, layer=''):
     info.attach(
         config.ClassAction(
             view.LayerWrapper(register_field_impl, discriminator),
-            (name, ), discriminator = discriminator)
+            (name, ),
+            discriminator=discriminator)
         )
 
 
@@ -29,7 +30,8 @@ def register_field_factory(cls, name, layer=''):
     info.attach(
         config.Action(
             view.LayerWrapper(register_field_impl, discriminator),
-            (cls, name), discriminator = discriminator)
+            (cls, name),
+            discriminator=discriminator)
         )
 
 
@@ -41,7 +43,8 @@ def fieldpreview(cls):
             config.Action(
                 lambda config, cls, func:
                     config.get_cfg_storage(PREVIEW_ID).update({cls: func}),
-                (cls, func), discriminator = (PREVIEW_ID, cls))
+                (cls, func),
+                discriminator=(PREVIEW_ID, cls))
             )
         return func
 
@@ -68,7 +71,7 @@ class Fieldset(OrderedDict):
 
         self.name = kwargs.pop('name', u'')
         self.legend = kwargs.pop('legend', u'')
-        self.prefix = '%s.'%self.name if self.name else ''
+        self.prefix = '%s.' % self.name if self.name else ''
         self.lprefix = len(self.prefix)
 
         validator = kwargs.pop('validator', None)
@@ -125,10 +128,10 @@ class Fieldset(OrderedDict):
 
     def bind(self, data=None, params={}):
         clone = Fieldset(
-            name = self.name,
-            legend = self.legend,
-            prefix = self.prefix,
-            validator = self.validator.validators)
+            name=self.name,
+            legend=self.legend,
+            prefix=self.prefix,
+            validator=self.validator.validators)
 
         if data is None:
             data = {}
@@ -248,7 +251,7 @@ class Field(object):
         clone.__dict__.update(self.__dict__)
         clone.value = value
         clone.params = params
-        clone.name = '%s%s'%(prefix, self.name)
+        clone.name = '%s%s' % (prefix, self.name)
         clone.id = clone.name.replace('.', '-')
         return clone
 
@@ -304,14 +307,14 @@ class Field(object):
     def render(self, request):
         if self.mode == FORM_DISPLAY:
             return self.tmpl_display(
-                view = view,
-                context = self,
-                request = request)
+                view=view,
+                context=self,
+                request=request)
         else:
             return self.tmpl_input(
-                view = self,
-                context = self,
-                request = request)
+                view=self,
+                context=self,
+                request=request)
 
     def __repr__(self):
         return '<%s %r>' % (self.__class__.__name__, self.name)
@@ -334,11 +337,11 @@ class FieldFactory(Field):
 
         if cls is None:
             raise TypeError(
-                "Can't find field implementation for '%s'"%self.__field__)
+                "Can't find field implementation for '%s'" % self.__field__)
 
         clone = cls.__new__(cls)
         clone.__dict__.update(self.__dict__)
         clone.value = value
         clone.params = params
-        clone.name = '%s%s'%(prefix, self.name)
+        clone.name = '%s%s' % (prefix, self.name)
         return clone

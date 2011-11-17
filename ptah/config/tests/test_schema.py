@@ -1,5 +1,6 @@
-import unittest
 import colander
+import unittest
+
 from colander.tests import TestMapping, TestSequence, TestSchemaNode
 
 
@@ -22,7 +23,7 @@ class TestptahMapping(TestMapping):
                 name = 'b'),
             )
 
-        result = node.flatten({'a': 1, 'b':2})
+        result = node.flatten({'a': 1, 'b': 2})
         self.assertEqual(result, {'a': 1, 'b': 2})
 
     def test_schema_mapping_unflatten_without_name(self):
@@ -170,14 +171,13 @@ class TestRequiredWithDependency(unittest.TestCase):
         self.assertEqual(v(None, {}), None)
         self.assertEqual(v(None, {'depends': 'sothing diff'}), None)
         self.assertEqual(v(None,
-                           {'field':'val', 'depends': 'sothing diff'}), None)
+                           {'field': 'val', 'depends': 'sothing diff'}), None)
 
         self.assertRaises(
             Required,
             v, {'field':
                 colander.SchemaNode(colander.Str(), name='field')},
             {'depends': 'depvalue'})
-
 
         v = config.RequiredWithDependency('field', 'depends')
         self.assertRaises(
