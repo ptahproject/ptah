@@ -21,15 +21,23 @@ install_requires = ['setuptools',
 tests_require = ['nose']
 
 
+def read(f):
+    return open(os.path.join(os.path.dirname(__file__), f)).read().strip()
+
+
 setup(name='ptah',
       version=version,
+      description=('Ptah is a fast, fun, open source high-level '
+                   'Python web development environment.'),
+      long_description='\n\n'.join((read('README.rst'), read('CHANGES.txt'))),
       classifiers=[
-        'Environment :: Web Environment',
-        'Intended Audience :: Developers',
-        'Programming Language :: Python',
-        'Operating System :: OS Independent',
-        'Topic :: Internet :: WWW/HTTP',
-        'Topic :: Internet :: WWW/HTTP :: WSGI'],
+          'Framework :: Pylons',
+          'Environment :: Web Environment',
+          'Intended Audience :: Developers',
+          'Programming Language :: Python',
+          'Operating System :: OS Independent',
+          'Topic :: Internet :: WWW/HTTP',
+          'Topic :: Internet :: WWW/HTTP :: WSGI'],
       author='Ptah Project',
       author_email='ptahproject@googlegroups.com',
       url='https://github.com/ptahproject/ptah/',
