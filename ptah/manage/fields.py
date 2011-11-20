@@ -4,10 +4,10 @@ from ptah.form.field import FIELD_ID, PREVIEW_ID
 
 
 class FieldsModule(manage.PtahModule):
-    """A preview and listing of all form fields in the application.
-       This is useful to see what fields are available.  You may also
-       interact with the field to see how it works in display mode.
-    """
+    __doc__ = ('A preview and listing of all form fields in the '
+      'application. This is useful to see what fields are available. '
+      'You may also interact with the field to see how it works in '
+      'display mode.')
     title = 'Field types'
     manage.module('fields')
 
