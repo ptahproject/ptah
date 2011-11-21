@@ -97,11 +97,11 @@ This is a fairly sophisticated example which is nearly a mini-CMS. It demonstrat
 Use paster to create a mini-cms application::
 
   venv$ bin/paster create -t ptah301 myapp301
-  venv$ cd cmsapp
+  venv$ cd myapp301
 
 Start application via Paster::
 
-  venv/cmsapp$ ../bin/paster serve development.ini --reload
+  venv/myapp301$ ../bin/paster serve development.ini --reload
 
 Login by opening your web browser to http://localhost:6543/ with credentials, login **admin** and password **12345**
 
