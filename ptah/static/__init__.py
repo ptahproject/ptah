@@ -8,7 +8,7 @@ view.static('tiny_mce', 'ptah:static/tiny_mce')
 # jQuery library
 view.library(
     'jquery',
-    path="jquery-1.6.4.min.js",
+    path="jquery-1.7.min.js",
     resource="jquery",
     type="js")
 
