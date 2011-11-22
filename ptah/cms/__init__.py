@@ -12,6 +12,7 @@ from ptah.cms.node import get_policy, set_policy
 
 from ptah.cms.content import Content
 from ptah.cms.container import Container
+from ptah.cms.container import BaseContainer
 
 # type information
 from ptah.cms.tinfo import Type
@@ -20,6 +21,7 @@ from ptah.cms.tinfo import get_type, get_types
 
 # application root
 from ptah.cms.root import get_app_factories
+from ptah.cms.root import BaseApplicationRoot
 from ptah.cms.root import ApplicationRoot
 from ptah.cms.root import ApplicationPolicy
 from ptah.cms.root import ApplicationFactory

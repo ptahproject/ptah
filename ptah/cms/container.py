@@ -13,9 +13,8 @@ from ptah.cms.permissions import DeleteContent
 from ptah.cms.interfaces import IContainer, NotFound, Error
 
 
-class Container(Content):
+class BaseContainer(Content):
     """ Content container implementation. """
-    interface.implements(IContainer)
 
     _v_keys = None
     _v_keys_loaded = False
@@ -227,6 +226,12 @@ class Container(Content):
         raise NotImplements() # pragma: no cover
 
     def info(self):
-        info = super(Container, self).info()
+        info = super(BaseContainer, self).info()
         info['__container__'] = True
         return info
+
+
+class Container(BaseContainer):
+    """ container for content, it just for inheritance """
+
+    interface.implements(IContainer)

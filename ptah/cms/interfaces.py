@@ -44,7 +44,7 @@ class IApplicationPolicy(interface.Interface):
     """ application policy """
 
 
-class IApplicationRoot(IContent, IContainer):
+class IApplicationRoot(interface.Interface):
     """ application root object """
 
     __root_path__ = interface.Attribute('Current mount point')
