@@ -23,7 +23,7 @@ def render_view(name, context, request):
     adapters = request.registry.adapters
 
     view_callable = adapters.lookup(
-        (IViewClassifier, providedBy(request), providedBy(context)),
+        (IViewClassifier, request.request_iface, providedBy(context)),
         IView, name=name, default=None)
 
     return view_callable(context, request)

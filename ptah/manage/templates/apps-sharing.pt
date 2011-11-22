@@ -1,9 +1,9 @@
 <div class="page-header">
-  <h1>Local Roles for ${context.factory.title}</h1>
+  <h1>Local Roles for </h1> <!--{context.factory.title}-->
 </div>
 
 <div>
-  <p tal:condition="not view.local_roles">
+  <p tal:condition="not context.local_roles">
     There are no local roles defined.
   </p>
 

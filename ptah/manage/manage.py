@@ -123,6 +123,8 @@ def set_access_manager(func):
 class PtahManageRoute(object):
     """ ptah management route """
 
+    __parent__ = None
+
     def __init__(self, request):
         self.request = request
 
@@ -150,6 +152,10 @@ view.register_snippet(
 
 view.register_layout(
     '', PtahManageRoute, parent='ptah-manage',
+    template=view.template("ptah.manage:templates/ptah-layout.pt"))
+
+view.register_layout(
+    'ptah-page', PtahManageRoute, parent='ptah-manage',
     template=view.template("ptah.manage:templates/ptah-layout.pt"))
 
 

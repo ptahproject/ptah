@@ -13,11 +13,15 @@ def query_layout(context, request, name=''):
     """ query named layout for context """
     assert IRequest.providedBy(request), u"must pass in a request object"
 
+    iface = request.request_iface
+    adapters = request.registry.adapters
+
     for context in lineage(context):
-        layout = request.registry.queryMultiAdapter(
-            (context, request), ILayout, name)
-        if layout is not None:
-            return layout
+        layout_factory = adapters.lookup(
+            (interface.providedBy(context), iface), ILayout, name=name)
+
+        if layout_factory is not None:
+            return layout_factory(context, request)
 
     return None
 

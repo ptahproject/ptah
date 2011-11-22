@@ -1,7 +1,14 @@
 """ app management module """
 import ptah
-from ptah import view, form, manage, cms
+from ptah import view, form, cms
 from pyramid.httpexceptions import HTTPFound
+from pyramid.interfaces import IRequest, IRouteRequest
+
+from ptah.manage import manage
+
+MANAGE_APP_ROUTE = 'ptah-manage-app'
+
+view.register_route(MANAGE_APP_ROUTE, '!~~~~~~~~~~~~~', use_global_views=True)
 
 
 class ApplicationsModule(manage.PtahModule):
@@ -13,7 +20,13 @@ class ApplicationsModule(manage.PtahModule):
     def __getitem__(self, key):
         for id, factory in cms.get_app_factories().items():
             if factory.name == key:
-                return AppFactory(factory, self, self.request)
+                #return AppFactory(factory, self, self.request)
+                request = self.request
+                request.request_iface = request.registry.getUtility(
+                    IRouteRequest, name=MANAGE_APP_ROUTE)
+                app = factory(request)
+                app.__parent__ = self
+                return app
 
         raise KeyError(key)
 
@@ -44,7 +57,10 @@ class AppFactory(object):
 
 class SharingForm(form.Form):
     view.pview(
-        context = AppFactory,
+        'sharing.html',
+        #context = AppFactory,
+        context = cms.IContent,
+        route = MANAGE_APP_ROUTE,
         template = view.template('ptah.manage:templates/apps-sharing.pt'))
 
     csrf = True
@@ -72,7 +88,7 @@ class SharingForm(form.Form):
         super(SharingForm, self).update()
 
         request = self.request
-        context = self.context.app
+        context = self.context
 
         self.roles = [r for r in ptah.get_roles().values() if not r.system]
         self.local_roles = local_roles = context.__local_roles__
