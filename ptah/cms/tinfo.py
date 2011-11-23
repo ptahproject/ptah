@@ -6,7 +6,7 @@ from zope import interface
 
 from node import Session
 from content import Content
-from container import Container
+from container import BaseContainer
 from security import build_class_actions
 from events import ContentCreatedEvent
 from interfaces import Forbidden, ContentSchema, ITypeInformation
@@ -74,7 +74,7 @@ class TypeInformation(object):
         return content
 
     def is_allowed(self, container):
-        if not isinstance(container, Container):
+        if not isinstance(container, BaseContainer):
             return False
 
         if self.permission:
@@ -87,7 +87,7 @@ class TypeInformation(object):
 
     def list_types(self, container):
         if container.__type__ is not self or \
-               not isinstance(container, Container):
+               not isinstance(container, BaseContainer):
             return ()
 
         types = []
