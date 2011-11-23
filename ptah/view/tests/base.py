@@ -2,15 +2,18 @@
 import unittest
 from ptah import config
 from pyramid import testing
+from pyramid.request import Request
+from pyramid.interfaces import IRequest
 
 
 class Base(unittest.TestCase):
 
-    def _makeRequest(self, environ=None):
-        from pyramid.request import Request
+    def _makeRequest(self, environ=None, request_iface=IRequest):
         if environ is None:
             environ = self._makeEnviron()
-        return Request(environ)
+        request = Request(environ)
+        request.request_iface = request_iface
+        return request
 
     def _makeEnviron(self, **extras):
         environ = {
@@ -36,6 +39,7 @@ class Base(unittest.TestCase):
         self.p_config = testing.setUp(request=request)
         self.registry = self.p_config.registry
         self.request.registry = self.p_config.registry
+        self.request.request_iface = IRequest
 
     def _setup_ptah(self):
         config.initialize(self.p_config, ('ptah', self.__class__.__module__))

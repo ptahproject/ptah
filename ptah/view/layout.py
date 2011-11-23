@@ -13,7 +13,11 @@ def query_layout(context, request, name=''):
     """ query named layout for context """
     assert IRequest.providedBy(request), u"must pass in a request object"
 
-    iface = request.request_iface
+    try:
+        iface = request.request_iface
+    except AttributeError:
+        iface = IRequest
+
     adapters = request.registry.adapters
 
     for context in lineage(context):

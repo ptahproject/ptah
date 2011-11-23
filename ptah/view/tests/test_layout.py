@@ -263,7 +263,7 @@ class TestLayout(Base):
         self.assertTrue('test' == layout.render(v.render()))
 
     def test_layout_for_route(self):
-        view.register_route('test-route', '/test/', use_global_views=True)
+        view.register_route('test-route', '/test/', use_global_views=False)
         view.register_layout('test', route = 'test-route')
         self._init_ptah()
 
@@ -272,7 +272,7 @@ class TestLayout(Base):
 
         request_iface = self.registry.getUtility(
             IRouteRequest, name='test-route')
-        interface.directlyProvides(self.request, request_iface)
+        self.request.request_iface = request_iface
 
         layout = query_layout(Context(), self.request, 'test')
         self.assertIsNotNone(layout)
