@@ -14,6 +14,7 @@ class Action(object):
     id = ''
     title = ''
     description = ''
+    category = ''
     action = ''
     action_factory = None
     condition = None
@@ -46,14 +47,14 @@ class Action(object):
         return True
 
 
-def uiaction(context, id, title,
-             description = '',
+def uiaction(context, id, title, description='',
              action='', condition=None, permission=None,
-             sort_weight = 1.0, **kw):
+             category='', sort_weight = 1.0, **kw):
 
     kwargs = {'id': id,
               'title': title,
               'description': description,
+              'category': category,
               'condition': condition,
               'permission': permission,
               'sort_weight': sort_weight,
@@ -69,20 +70,21 @@ def uiaction(context, id, title,
 
     info.attach(
         config.Action(
-            lambda cfg, id, context, ac: \
-                cfg.registry.registerAdapter(ac, (context,), IAction, id),
-            (id, context, ac,),
-            discriminator = ('ptah-cms:ui-action', id, context))
+            lambda cfg, id, category, context, ac: \
+                cfg.registry.registerAdapter(\
+                   ac, (context,), IAction, '%s-%s'%(category, id)),
+            (id, category, context, ac,),
+            discriminator = ('ptah-cms:ui-action', id, context, category))
         )
 
 
-def list_uiactions(content, request):
+def list_uiactions(content, request, category=''):
     url = request.resource_url(content)
 
     actions = []
     for name, action in request.registry.adapters.lookupAll(
         (interface.providedBy(content),), IAction):
-        if action.check(content, request):
+        if (action.category == category) and action.check(content, request):
             actions.append(
                 (action.sort_weight,
                  {'id': action.id,
