@@ -217,6 +217,7 @@ class TestManageModule(Base):
 
         layout = LayoutManage(mod, request)
         layout.viewcontext = content
+        layout.context.userid = ''
         layout.update()
 
         self.assertIs(layout.module, mod)

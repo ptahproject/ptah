@@ -6,9 +6,9 @@ from pyramid.interfaces import IRequest, IRouteRequest
 
 from ptah.manage import manage
 
-MANAGE_APP_ROUTE = 'ptah-manage-app'
+MANAGE_APP_ROUTE = MANAGE_APP_CATEGORY = 'ptah-manage-app'
 
-view.register_route(MANAGE_APP_ROUTE, '!~~~~~~~~~~~~~', use_global_views=True)
+view.register_route(MANAGE_APP_ROUTE, '!~~~~~~~~~~~~~', use_global_views=False)
 
 
 class ApplicationsModule(manage.PtahModule):
@@ -20,12 +20,13 @@ class ApplicationsModule(manage.PtahModule):
     def __getitem__(self, key):
         for id, factory in cms.get_app_factories().items():
             if factory.name == key:
-                #return AppFactory(factory, self, self.request)
                 request = self.request
                 request.request_iface = request.registry.getUtility(
                     IRouteRequest, name=MANAGE_APP_ROUTE)
-                app = factory(request)
+                request.app_factory = factory
+                app = factory()
                 app.__parent__ = self
+                app.__root_path__ = '/ptah-manage/apps/%s/'%app.__name__
                 return app
 
         raise KeyError(key)
@@ -45,20 +46,44 @@ class ApplicationsModuleView(view.View):
         self.factories = [f for _t, f in factories]
 
 
-class AppFactory(object):
+class AppLayout(manage.LayoutManage):
+    view.layout('ptah-manage', manage.PtahManageRoute,
+                route=MANAGE_APP_ROUTE,
+                template=view.template("ptah.manage:templates/ptah-manage.pt"))
 
-    def __init__(self, factory, context, request):
-        self.__name__ = factory.id
-        self.__parent__ = context
-        self.request = request
-        self.factory = factory
-        self.app = factory(request)
+
+class AppContentLayout(view.Layout):
+    view.layout('', cms.Node,
+                parent="ptah-manage",
+                route=MANAGE_APP_ROUTE,
+                template=view.template("templates/apps-layout.pt"))
+
+    def update(self):
+        self.actions = cms.list_uiactions(
+            self.context, self.request, MANAGE_APP_CATEGORY)
+
+
+class ViewForm(form.DisplayForm):
+    view.pview(
+        context=cms.Content,
+        route=MANAGE_APP_ROUTE,
+        template=view.template("templates/apps-contentview.pt"))
+
+    @property
+    def fields(self):
+        return self.context.__type__.fieldset
+
+    def form_content(self):
+        data = {}
+        for name, field in self.context.__type__.fieldset.items():
+            data[name] = getattr(self.context, name, field.default)
+
+        return data
 
 
 class SharingForm(form.Form):
     view.pview(
         'sharing.html',
-        #context = AppFactory,
         context = cms.IContent,
         route = MANAGE_APP_ROUTE,
         template = view.template('ptah.manage:templates/apps-sharing.pt'))
@@ -126,3 +151,11 @@ class SharingForm(form.Form):
 
         self.request.session['apps-sharing-term'] = data['term']
         raise HTTPFound(location = self.request.url)
+
+
+cms.uiaction(
+    ptah.ILocalRolesAware, **{'id': 'sharing',
+                              'title': 'Sharing',
+                              'action': 'sharing.html',
+                              'category': MANAGE_APP_CATEGORY,
+                              'sort_weight': 10.0})

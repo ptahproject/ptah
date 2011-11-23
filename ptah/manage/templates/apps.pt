@@ -8,10 +8,10 @@
     <tr tal:repeat="f view.factories">
       <td>
 	<h3><a href="${f.name}/">${f.title}</a> <small>${f.name}</small></h3>
-	<p>${f.factory.description}</p>
+	<p>${f.type.description}</p>
 
 	<strong>Mount:</strong> ${f.path}<br />
-	<strong>Type:</strong> ${f.factory.title} <br />
+	<strong>Type:</strong> ${f.type.title} <br />
       </td>
     </tr>
   </tbody>

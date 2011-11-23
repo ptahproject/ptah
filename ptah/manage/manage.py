@@ -123,6 +123,7 @@ def set_access_manager(func):
 class PtahManageRoute(object):
     """ ptah management route """
 
+    __name__ = 'ptah-manage'
     __parent__ = None
 
     def __init__(self, request):
@@ -132,7 +133,10 @@ class PtahManageRoute(object):
         if not check_access(userid):
             raise HTTPForbidden()
 
+        self.userid = userid
         self.manage_url = CONFIG.manage_url
+
+        authService.set_userid(ptah.SUPERUSER_URI)
 
     def __getitem__(self, key):
         if key not in CONFIG.disable_modules:
@@ -165,7 +169,7 @@ class LayoutManage(view.Layout):
 
     def update(self):
         self.manage_url = CONFIG.manage_url
-        self.user = authService.get_current_principal()
+        self.user = ptah.resolve(self.context.userid)
 
         mod = self.request.context
         while not isinstance(mod, PtahModule):

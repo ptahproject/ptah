@@ -1,6 +1,7 @@
 import ptah
 from ptah import cms, config
 from pyramid.testing import DummyRequest
+from pyramid.interfaces import IRequest
 from pyramid.httpexceptions import HTTPFound
 
 from base import Base
@@ -45,6 +46,7 @@ class TestAppsModule(Base):
         self._init_ptah()
 
         request = DummyRequest()
+        request.request_iface = IRequest
 
         mod = ApplicationsModule(None, request)
 
@@ -57,7 +59,6 @@ class TestAppsModule(Base):
 
     def test_apps_traverse(self):
         from ptah.manage.apps import ApplicationsModule
-        from ptah.manage.apps import AppFactory
 
         factory1 = cms.ApplicationFactory(
             TestApp1, '/test1', 'app1', 'Root App 1')
@@ -72,14 +73,13 @@ class TestAppsModule(Base):
         mod = ApplicationsModule(None, request)
 
         item = mod['app1']
-        self.assertIsInstance(item, AppFactory)
-        self.assertIs(item.factory, factory1)
-        self.assertIsInstance(item.app, TestApp1)
+        self.assertIsInstance(item, TestApp1)
+        self.assertIs(request.app_factory, factory1)
 
         item = mod['app2']
-        self.assertIsInstance(item, AppFactory)
-        self.assertIs(item.factory, factory2)
-        self.assertIsInstance(item.app, TestApp2)
+        self.assertIsInstance(item, TestApp2)
+        self.assertIs(request.app_factory, factory2)
+
         self.assertRaises(KeyError, mod.__getitem__, 'app3')
 
 
@@ -170,7 +170,7 @@ class TestAppSharingForm(Base):
 
         self.assertEqual(len(form.users), 1)
         self.assertEqual(form.users[0].uri, 'test:user')
-        self.assertIs(form.local_roles, app.app.__local_roles__)
+        self.assertIs(form.local_roles, app.__local_roles__)
         self.assertEqual(len(form.roles), 1)
         self.assertIs(form.roles[0], self.TestRole)
         self.assertEqual(form.get_principal('test:user').uri, 'test:user')
@@ -188,14 +188,14 @@ class TestAppSharingForm(Base):
         form.csrf = False
         form.update()
 
-        self.assertIn('test:user', app.app.__local_roles__)
-        self.assertIn(self.TestRole.id, app.app.__local_roles__['test:user'])
+        self.assertIn('test:user', app.__local_roles__)
+        self.assertIn(self.TestRole.id, app.__local_roles__['test:user'])
 
     def test_sharingform_unset(self):
         from ptah.manage.apps import SharingForm
 
         app = self._make_app()
-        app.app.__local_roles__ = {'test:user': [self.TestRole.id]}
+        app.__local_roles__ = {'test:user': [self.TestRole.id]}
 
         form = SharingForm(app, DummyRequest(
                 session={'apps-sharing-term': 'email'},
@@ -204,4 +204,4 @@ class TestAppSharingForm(Base):
         form.csrf = False
         form.update()
 
-        self.assertNotIn('test:user', app.app.__local_roles__)
+        self.assertNotIn('test:user', app.__local_roles__)
