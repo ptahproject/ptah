@@ -135,7 +135,8 @@ def get_inheritance(table):
     while curr_mapper is not None:
         curr_mapper = curr_mapper.inherits
         if curr_mapper is not None and \
-                curr_mapper.local_table.name != table.name:
+                curr_mapper.local_table.name != table.name and \
+                curr_mapper.local_table.name not in inherits:
             inherits.append(curr_mapper.local_table.name)
 
     inherits.reverse()
