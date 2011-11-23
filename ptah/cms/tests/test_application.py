@@ -6,12 +6,6 @@ from base import Base
 
 class TestApplicationFactoryRegistration(Base):
 
-    def setUp(self):
-        super(TestApplicationFactoryRegistration, self).setUp()
-
-        import ptah.cms
-        ptah.cms.ApplicationFactory._sql_get_root.reset()
-
     def _setup_ptah(self):
         pass
 
@@ -122,12 +116,6 @@ class TestApplicationFactoryRegistration(Base):
 
 
 class TestApplicationFactoryCustom(Base):
-
-    def setUp(self):
-        super(TestApplicationFactoryCustom, self).setUp()
-
-        import ptah.cms
-        ptah.cms.ApplicationFactory._sql_get_root.reset()
 
     def tearDown(self):
         config.cleanup_system(self.__class__.__module__)

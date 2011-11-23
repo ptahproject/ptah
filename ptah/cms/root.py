@@ -42,7 +42,9 @@ class ApplicationPolicy(object):
 
 class ApplicationFactory(object):
 
-    def __init__(self, factory, path='', name='', title='',
+    type = None
+
+    def __init__(self, cls, path='', name='', title='',
                  policy = ApplicationPolicy, default_root = None, config=None):
         self.id = '-'.join(part for part in path.split('/') if part)
         self.path = path if path.endswith('/') else '%s/'%path
@@ -53,10 +55,8 @@ class ApplicationFactory(object):
         if not path and default_root is None:
             self.default_root = True
 
-        if isinstance(factory, type) and issubclass(factory, Node):
-            factory = factory.__type__
-
-        self.factory = factory
+        self.cls = cls
+        self.type = cls.__type__
         self.policy = policy
 
         if config is not None:
@@ -71,17 +71,16 @@ class ApplicationFactory(object):
                 discriminator=(APPFACTORY_ID, path))
             )
 
-    _sql_get_root = ptah.QueryFreezer(
-        lambda: Session.query(Container)\
-            .filter(sqla.sql.and_(
-                    Container.__name_id__ == sqla.sql.bindparam('name'),
-                    Container.__type_id__ == sqla.sql.bindparam('type'))))
+        self._sql_get_root = ptah.QueryFreezer(
+            lambda: Session.query(cls)\
+                .filter(sqla.sql.and_(
+                    cls.__name_id__ == sqla.sql.bindparam('name'),
+                    cls.__type_id__ == sqla.sql.bindparam('type'))))
 
     def __call__(self, request=None):
-        root = self._sql_get_root.first(
-            name=self.name, type=self.factory.__uri__)
+        root = self._sql_get_root.first(name=self.name, type=self.type.__uri__)
         if root is None:
-            root = self.factory.create(title=self.title)
+            root = self.type.create(title=self.title)
             root.__name_id__ = self.name
             root.__path__ = '/%s/'%root.__uri__
             Session.add(root)
@@ -91,8 +90,7 @@ class ApplicationFactory(object):
         root.__parent__ = policy = self.policy(request)
         root.__default_root__ = self.default_root
 
-        set_policy(policy)
-
         if request is not None:
+            set_policy(policy)
             request.root = root
         return root

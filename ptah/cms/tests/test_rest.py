@@ -31,7 +31,6 @@ class RestBase(Base):
 
         self.orig_check_permission = ptah.check_permission
         ptah.check_permission = self._check_perm
-        ptah.cms.ApplicationFactory._sql_get_root.reset()
 
     def tearDown(self):
         ptah.check_permission = self.orig_check_permission
