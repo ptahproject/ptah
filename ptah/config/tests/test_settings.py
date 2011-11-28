@@ -65,6 +65,23 @@ class TestSettings(BaseTesting):
         grp = get_settings('group1')
         self.assertIs(group, grp)
 
+    def test_settings_get_settings_pyramid(self):
+        node = ptah.config.SchemaNode(
+                colander.Str(),
+                name = 'node',
+                default = 'test')
+
+        group = ptah.config.register_settings(
+            'group1', node,
+            title = 'Section title',
+            description = 'Section description',
+            )
+
+        self._init_ptah()
+
+        grp = self.config.ptah_get_settings('group1')
+        self.assertIs(group, grp)
+
     def test_settings_register_errs(self):
         self.assertRaises(
             RuntimeError,

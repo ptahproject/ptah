@@ -51,6 +51,11 @@ def get_settings(grp):
     return settings_ob[grp]
 
 
+def pyramid_get_settings(config, grp):
+    settings_ob = api.get_cfg_storage(SETTINGS_OB_ID, config.registry)
+    return settings_ob[grp]
+
+
 def get_settings_ob():
     return api.get_cfg_storage(SETTINGS_OB_ID)
 

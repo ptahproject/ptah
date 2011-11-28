@@ -5,12 +5,13 @@ import ptah
 from ptah import view, config
 from ptah.authentication import authService
 
+CFG_ID = 'manage'
 CONFIG_ID = 'ptah.manage:config'
 MANAGE_ID = 'ptah.manage:module'
 INTROSPECT_ID = 'ptah.manage:introspection'
 
 CONFIG = config.register_settings(
-    'manage',
+    CFG_ID,
 
     config.SchemaNode(
         config.Sequence(), colander.SchemaNode(colander.Str()),

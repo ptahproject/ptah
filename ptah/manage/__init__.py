@@ -1,5 +1,6 @@
 # ptah manage api
 
+from ptah.manage.manage import CFG_ID
 from ptah.manage.manage import CONFIG
 
 from ptah.manage.manage import module

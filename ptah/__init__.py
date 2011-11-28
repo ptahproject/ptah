@@ -98,7 +98,13 @@ def includeme(config):
 
     # ptah.config directives
     from ptah.config.api import get_cfg_storage_imp
-    config.add_directive('get_cfg_storage', get_cfg_storage_imp)
+    config.add_directive(
+        'get_cfg_storage', get_cfg_storage_imp)
+
+    # ptah.config.settings directives
+    from ptah.config.settings import pyramid_get_settings
+    config.add_directive(
+        'ptah_get_settings', pyramid_get_settings)
 
     # ptah.authentication directives
     from ptah import authentication
