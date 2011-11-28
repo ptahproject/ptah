@@ -7,13 +7,13 @@ from ptah import config
 
 from ptah.cms import events
 from ptah.cms.node import Session, load_parents
-from ptah.cms.content import Content
+from ptah.cms.content import BaseContent
 from ptah.cms.security import action
 from ptah.cms.permissions import DeleteContent
-from ptah.cms.interfaces import IContainer, NotFound, Error
+from ptah.cms.interfaces import IContent, IContainer, NotFound, Error
 
 
-class BaseContainer(Content):
+class BaseContainer(BaseContent):
     """ Content container implementation. """
 
     _v_keys = None
@@ -21,12 +21,12 @@ class BaseContainer(Content):
     _v_items = None
 
     _sql_keys = ptah.QueryFreezer(
-        lambda: Session.query(Content.__name_id__)
-            .filter(Content.__parent_uri__ == sqla.sql.bindparam('uri')))
+        lambda: Session.query(BaseContent.__name_id__)
+            .filter(BaseContent.__parent_uri__ == sqla.sql.bindparam('uri')))
 
     _sql_values = ptah.QueryFreezer(
-        lambda: Session.query(Content)
-            .filter(Content.__parent_uri__ == sqla.sql.bindparam('uri')))
+        lambda: Session.query(BaseContent)
+            .filter(BaseContent.__parent_uri__ == sqla.sql.bindparam('uri')))
 
     def keys(self):
         """Return an list of the keys in the container."""
@@ -117,7 +117,7 @@ class BaseContainer(Content):
     def __setitem__(self, key, item):
         """Set a new item in the container."""
 
-        if not isinstance(item, Content):
+        if not isinstance(item, BaseContent):
             raise ValueError("Content object is required")
 
         if item.__uri__ == self.__uri__:
@@ -158,10 +158,10 @@ class BaseContainer(Content):
             for item in container.values():
                 item.__path__ = '%s%s/'%(path, item.__name__)
 
-                if isinstance(item, Container):
+                if isinstance(item, BaseContainer):
                     update_path(item)
 
-        if isinstance(item, Container):
+        if isinstance(item, BaseContainer):
             update_path(item)
 
         config.notify(event)
@@ -173,7 +173,7 @@ class BaseContainer(Content):
             item = self[item]
 
         if item.__parent_uri__ == self.__uri__:
-            if isinstance(item, Container):
+            if isinstance(item, BaseContainer):
                 for key in item.keys():
                     item.__delitem__(key, False)
 
@@ -234,4 +234,4 @@ class BaseContainer(Content):
 class Container(BaseContainer):
     """ container for content, it just for inheritance """
 
-    interface.implements(IContainer)
+    interface.implements(IContainer, IContent)

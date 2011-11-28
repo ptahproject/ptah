@@ -11,6 +11,7 @@ from ptah.cms.node import load_parents
 from ptah.cms.node import get_policy, set_policy
 
 from ptah.cms.content import Content
+from ptah.cms.content import BaseContent
 from ptah.cms.container import Container
 from ptah.cms.container import BaseContainer
 

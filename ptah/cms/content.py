@@ -13,7 +13,7 @@ from ptah.cms.security import action
 from ptah.cms.permissions import DeleteContent, ModifyContent
 
 
-class Content(Node):
+class BaseContent(Node):
     """ Base class for content objects. A content class should inherit from
     `Content` to participate in content hierarchy traversal.
 
@@ -86,8 +86,6 @@ class Content(Node):
        You could keep a sequence of principal URIs.
     """
 
-    interface.implements(IContent)
-
     __tablename__ = 'ptah_content'
 
     __id__ = sqla.Column('id', sqla.Integer,
@@ -112,20 +110,20 @@ class Content(Node):
 
     # sql queries
     _sql_get = ptah.QueryFreezer(
-        lambda: Session.query(Content)
-        .filter(Content.__uri__ == sqla.sql.bindparam('uri')))
+        lambda: Session.query(BaseContent)
+        .filter(BaseContent.__uri__ == sqla.sql.bindparam('uri')))
 
     _sql_get_in_parent = ptah.QueryFreezer(
-        lambda: Session.query(Content)
-            .filter(Content.__name_id__ == sqla.sql.bindparam('key'))
-            .filter(Content.__parent_uri__ == sqla.sql.bindparam('parent')))
+        lambda: Session.query(BaseContent)
+            .filter(BaseContent.__name_id__ == sqla.sql.bindparam('key'))
+            .filter(BaseContent.__parent_uri__ == sqla.sql.bindparam('parent')))
 
     _sql_parent = ptah.QueryFreezer(
-        lambda: Session.query(Content)
-            .filter(Content.__uri__ == sqla.sql.bindparam('parent')))
+        lambda: Session.query(BaseContent)
+            .filter(BaseContent.__uri__ == sqla.sql.bindparam('parent')))
 
     def __init__(self, **kw):
-        super(Content, self).__init__(**kw)
+        super(BaseContent, self).__init__(**kw)
 
         if self.__name__ and self.__parent__ is not None:
             self.__path__ = '%s%s/'%(self.__parent__.__path__, self.__name__)
@@ -179,9 +177,13 @@ class Content(Node):
         info['expires'] = self.expires
 
     def info(self):
-        info = super(Content, self).info()
+        info = super(BaseContent, self).info()
         info['__name__'] = self.__name__
         info['__content__'] = True
         info['__container__'] = False
         self._extra_info(info)
         return info
+
+
+class Content(BaseContent):
+    interface.implements(IContent)
