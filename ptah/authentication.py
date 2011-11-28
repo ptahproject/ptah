@@ -46,6 +46,19 @@ def auth_checker(checker):
     return checker
 
 
+def auth_provider(name):
+    info = config.DirectiveInfo(allowed_scope=('class',))
+
+    def _complete(cfg, cls, name):
+        cfg.get_cfg_storage(AUTH_PROVIDER_ID)[name] = cls()
+
+    info.attach(
+        config.ClassAction(
+            _complete, (name,),
+            discriminator=(AUTH_PROVIDER_ID, name))
+        )
+
+
 def register_auth_provider(name, provider):
     info = config.DirectiveInfo()
 
