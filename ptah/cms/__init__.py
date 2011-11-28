@@ -71,6 +71,6 @@ from ptah.cms.rest import restaction
 from ptah.cms.forms import AddForm
 from ptah.cms.forms import EditForm
 
-# simple ui actions
-from ptah.cms.uiactions import uiaction
-from ptah.cms.uiactions import list_uiactions
+# moved to ptah
+from ptah.uiactions import uiaction
+from ptah.uiactions import list_uiactions

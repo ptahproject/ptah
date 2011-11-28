@@ -59,7 +59,7 @@ class AppContentLayout(view.Layout):
                 template=view.template("templates/apps-layout.pt"))
 
     def update(self):
-        self.actions = cms.list_uiactions(
+        self.actions = ptah.list_uiactions(
             self.context, self.request, MANAGE_APP_CATEGORY)
 
 
@@ -153,7 +153,7 @@ class SharingForm(form.Form):
         raise HTTPFound(location = self.request.url)
 
 
-cms.uiaction(
+ptah.uiaction(
     ptah.ILocalRolesAware, **{'id': 'sharing',
                               'title': 'Sharing',
                               'action': 'sharing.html',

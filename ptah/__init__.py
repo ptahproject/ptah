@@ -81,6 +81,10 @@ from ptah.sqla import JsonListType
 from ptah.sqla import generate_fieldset
 from ptah.sqla import build_sqla_fieldset
 
+# simple ui actions
+from ptah.uiactions import uiaction
+from ptah.uiactions import list_uiactions
+
 # manage
 from ptah import manage
 
