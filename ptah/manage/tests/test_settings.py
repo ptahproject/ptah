@@ -1,14 +1,11 @@
 import ptah
+from ptah.testing import PtahTestCase
 from pyramid.testing import DummyRequest
 
-from base import Base
 
-
-class TestSettingsModule(Base):
+class TestSettingsModule(PtahTestCase):
 
     def test_settings_module(self):
-        self._init_ptah()
-
         from ptah.manage.manage import CONFIG, PtahManageRoute
         from ptah.manage.settings import SettingsModule
 

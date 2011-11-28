@@ -1,13 +1,10 @@
 from ptah import config
+from ptah.testing import PtahTestCase
 
-from base import Base
 
+class TestUri(PtahTestCase):
 
-class TestUri(Base):
-
-    def tearDown(self):
-        config.cleanup_system(self.__class__.__module__)
-        super(TestUri, self).tearDown()
+    _init_ptah = False
 
     def test_uri_registration(self):
         import ptah
@@ -19,7 +16,8 @@ class TestUri(Base):
 
         ptah.register_uri_resolver('test1', resolver1)
         ptah.register_uri_resolver('test2', resolver2)
-        self._init_ptah()
+
+        self.init_ptah()
 
         self.assertEqual(ptah.resolve('test1:uri'), 'Resolved1')
         self.assertEqual(ptah.resolve('test2:uri'), 'Resolved2')
@@ -39,7 +37,7 @@ class TestUri(Base):
         def resolver2(uri):
             return 'Resolved2'
 
-        self._init_ptah()
+        self.init_ptah()
 
         self.assertEqual(ptah.resolve('test1:uri'), 'Resolved1')
         self.assertEqual(ptah.resolve('test2:uri'), 'Resolved2')
@@ -53,7 +51,7 @@ class TestUri(Base):
         ptah.register_uri_resolver('test', None)
         ptah.register_uri_resolver('test', None)
 
-        self.assertRaises(config.ConflictError, self._init_ptah)
+        self.assertRaises(config.ConflictError, self.init_ptah)
 
     def test_uri_registration_decorator_conflicts(self):
         import ptah
@@ -66,7 +64,7 @@ class TestUri(Base):
         def resolver2(uri): # pragma: no cover
             return 'Resolved2'
 
-        self.assertRaises(config.ConflictError, self._init_ptah)
+        self.assertRaises(config.ConflictError, self.init_ptah)
 
     def test_uri_extract_type(self):
         import ptah

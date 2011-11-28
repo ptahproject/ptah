@@ -1,8 +1,7 @@
 import ptah
+from ptah.testing import PtahTestCase
 from pyramid.testing import DummyRequest
 from pyramid.httpexceptions import HTTPFound, HTTPForbidden
-
-from base import Base
 
 
 class Content(ptah.cms.Content):
@@ -18,7 +17,9 @@ class Container(ptah.cms.Container):
     __uri_factory__ = ptah.UriFactory('cms-container')
 
 
-class TestAddForm(Base):
+class TestAddForm(PtahTestCase):
+
+    _cleanup_mod = False
 
     def test_addform_ctor(self):
         from ptah.cms.forms import AddForm
@@ -318,7 +319,7 @@ class TestAddForm(Base):
         self.assertEqual(res.headers['location'], '.')
 
 
-class TestEditForm(Base):
+class TestEditForm(PtahTestCase):
 
     def test_editform_basics(self):
         from ptah.cms.forms import EditForm

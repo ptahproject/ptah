@@ -1,9 +1,8 @@
 import decimal
 import unittest
 from ptah import form
+from ptah.testing import PtahTestCase
 from webob.multidict import MultiDict
-
-from base import Base
 
 
 class DummyRequest(object):
@@ -26,7 +25,7 @@ def strip(str):
     return ' '.join(s.strip() for s in str.split())
 
 
-class TestInputField(Base):
+class TestInputField(PtahTestCase):
 
     def _makeOne(self, name, **kw):
         from ptah.form.fields import InputField
@@ -47,7 +46,7 @@ class TestInputField(Base):
         self.assertEqual(field.klass, 'disabled')
 
 
-class TestTextField(Base):
+class TestTextField(PtahTestCase):
 
     def _makeOne(self, name, **kw):
         return form.TextField(name, **kw)
@@ -82,7 +81,7 @@ class TestTextField(Base):
                          '<span class="uneditable-input" id="test" title="Test"> form </span>')
 
 
-class TestIntegerField(Base):
+class TestIntegerField(PtahTestCase):
 
     def _makeOne(self, name, **kw):
         return form.IntegerField(name, **kw)
@@ -106,7 +105,8 @@ class TestIntegerField(Base):
             strip(field.render(request)),
             '<input type="text" name="test" title="Test" value="10" id="test" class="int-widget" />')
 
-class TestFloatField(Base):
+
+class TestFloatField(PtahTestCase):
 
     def _makeOne(self, name, **kw):
         return form.FloatField(name, **kw)
@@ -131,7 +131,7 @@ class TestFloatField(Base):
             '<input type="text" name="test" title="Test" value="10.34" id="test" class="float-widget" />')
 
 
-class TestDeciamlField(Base):
+class TestDeciamlField(PtahTestCase):
 
     def _makeOne(self, name, **kw):
         return form.DecimalField(name, **kw)
@@ -156,7 +156,7 @@ class TestDeciamlField(Base):
             '<input type="text" name="test" title="Test" value="10.34" id="test" class="decimal-widget" />')
 
 
-class TestLinesField(Base):
+class TestLinesField(PtahTestCase):
 
     def _makeOne(self, name, **kw):
         return form.LinesField(name, **kw)
@@ -181,7 +181,7 @@ class TestLinesField(Base):
             '<textarea rows="5" name="test" title="Test" cols="40" id="test" class="textlines-widget">1 2 3</textarea>')
 
 
-class TestVocabularyField(Base):
+class TestVocabularyField(PtahTestCase):
 
     def test_vocabulary_field(self):
         voc = form.SimpleVocabulary.from_items(
@@ -252,7 +252,7 @@ class TestVocabularyField(Base):
                            'value': 'three'}])
 
 
-class TestBaseChoiceField(Base):
+class TestBaseChoiceField(PtahTestCase):
 
     def _makeOne(self, name, **kw):
         return form.BaseChoiceField(name, **kw)
@@ -288,7 +288,7 @@ class TestBaseChoiceField(Base):
         self.assertRaises(form.Invalid, field.deserialize, ['one','five'])
 
 
-class TestBaseMultiChoiceField(Base):
+class TestBaseMultiChoiceField(PtahTestCase):
 
     def _makeOne(self, name, **kw):
         return form.BaseMultiChoiceField(name, **kw)
@@ -332,7 +332,7 @@ class TestBaseMultiChoiceField(Base):
         self.assertEqual(field.extract(), ['one'])
 
 
-class TestChoiceField(Base):
+class TestChoiceField(PtahTestCase):
 
     def _makeOne(self, name, **kw):
         return form.ChoiceField(name, **kw)
@@ -389,7 +389,7 @@ class TestChoiceField(Base):
                            'value': 'two'}])
 
 
-class TestMultiChoiceField(Base):
+class TestMultiChoiceField(PtahTestCase):
 
     def _makeOne(self, name, **kw):
         return form.MultiChoiceField(name, **kw)
@@ -602,7 +602,7 @@ class TestDate(unittest.TestCase):
         self.assertEqual(result.isoformat(), dt.date().isoformat())
 
 
-class TestFileField(Base):
+class TestFileField(PtahTestCase):
 
     def _makeOne(self, name, **kw):
         from ptah.form.fields import FileField
@@ -635,7 +635,7 @@ class TestFileField(Base):
         self.assertEqual(res['filename'], 'test.jpg')
 
 
-class TestJSDateTimeField(Base):
+class TestJSDateTimeField(PtahTestCase):
 
     def _makeOne(self, name, **kw):
         from ptah.form.jsfields import JSDateTimeField
@@ -699,7 +699,7 @@ class TestJSDateTimeField(Base):
         self.assertEqual(f.extract(), '2011-12-01T10:10:00')
 
 
-class TestJSDateField(Base):
+class TestJSDateField(PtahTestCase):
 
     def _makeOne(self, **kw):
         from ptah.form.jsfields import JSDateField

@@ -1,12 +1,8 @@
 from ptah import config
-from base import Base
+from ptah.testing import PtahTestCase
 
 
-class TestAction(Base):
-
-    def tearDown(self):
-        config.cleanup_system(self.__class__.__module__)
-        super(TestAction, self).tearDown()
+class TestAction(PtahTestCase):
 
     def test_cms_action_reg(self):
         import ptah.cms
@@ -87,11 +83,7 @@ class TestAction(Base):
         self.assertIn('create', actions)
 
 
-class TestWrapper(Base):
-
-    def tearDown(self):
-        config.cleanup_system(self.__class__.__module__)
-        super(TestWrapper, self).tearDown()
+class TestWrapper(PtahTestCase):
 
     def test_cms_wrapper_not_found(self):
         import ptah.cms
@@ -133,14 +125,9 @@ class TestWrapper(Base):
         self.assertEqual(wrapper.update(), 'test')
 
 
-class TestCms(Base):
+class TestCms(PtahTestCase):
 
-    def _setup_ptah(self):
-        pass
-
-    def tearDown(self):
-        config.cleanup_system(self.__class__.__module__)
-        super(TestCms, self).tearDown()
+    _init_ptah = False
 
     def test_cms_not_found(self):
         import ptah.cms
@@ -181,7 +168,7 @@ class TestCms(Base):
         def res(uri):
             return t
 
-        self._init_ptah()
+        self.init_ptah()
 
         wrapper = wrap('test:1')
         self.assertIsInstance(wrapper, NodeWrapper)

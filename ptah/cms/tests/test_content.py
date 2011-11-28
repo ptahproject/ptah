@@ -1,17 +1,13 @@
 import time
-import ptah
 import transaction
-from ptah import config
 from datetime import datetime
 
-from base import Base
+import ptah
+from ptah import config
+from ptah.testing import PtahTestCase
 
 
-class TestContent(Base):
-
-    def tearDown(self):
-        config.cleanup_system(self.__class__.__module__)
-        super(TestContent, self).tearDown()
+class TestContent(PtahTestCase):
 
     def _make_app(self):
         global ApplicationRoot
@@ -24,7 +20,6 @@ class TestContent(Base):
 
     def test_content_path(self):
         import ptah.cms
-        self._setRequest(self._makeRequest())
 
         class MyContent(ptah.cms.Content):
 

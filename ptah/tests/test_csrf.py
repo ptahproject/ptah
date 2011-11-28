@@ -1,17 +1,10 @@
-from ptah import config
-from base import Base
+from ptah.testing import PtahTestCase
 
 
-class TestCsrf(Base):
-
-    def tearDown(self):
-        config.cleanup_system(self.__class__.__module__)
-        super(TestCsrf, self).tearDown()
+class TestCsrf(PtahTestCase):
 
     def test_csrf_service(self):
         from ptah.util import CSRFService
-
-        self._init_ptah()
 
         csrf = CSRFService()
         t = csrf.generate('test')

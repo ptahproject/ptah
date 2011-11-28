@@ -2,15 +2,10 @@
 import colander, pytz
 from datetime import datetime, timedelta
 from ptah import formatter
+from ptah.testing import PtahTestCase
 
-from base import Base
 
-
-class TestFormatter(Base):
-
-    def setUp(self):
-        self._setup_pyramid()
-        self._init_ptah()
+class TestFormatter(PtahTestCase):
 
     def test_formatter_registration(self):
         def simple(v):

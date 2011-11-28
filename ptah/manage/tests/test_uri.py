@@ -1,17 +1,14 @@
 import ptah
+from ptah.testing import PtahTestCase
 from pyramid.testing import DummyRequest
 
-from base import Base
 
+class TestUriView(PtahTestCase):
 
-class TestUriView(Base):
-
-    def setUp(self):
-        self._setup_pyramid()
+    _cleanup_mod = False
 
     def test_uri_view(self):
         from ptah.manage.uri import UriResolver
-        self._init_ptah()
 
         request = DummyRequest(
             GET = {'uri': 'ptah-auth:superuser'})
@@ -24,7 +21,6 @@ class TestUriView(Base):
 
     def test_uri_handler(self):
         from ptah.manage.uri import UriResolver
-        self._init_ptah()
 
         request = DummyRequest(
             POST = {'form.buttons.show': 'Show'})
@@ -47,7 +43,9 @@ def resolver(uri): # pragma: no cover
     return 'Resolved'
 
 
-class TestUriIntrospect(Base):
+class TestUriIntrospect(PtahTestCase):
+
+    _cleanup_mod = False
 
     def test_uri_introspect(self):
         from ptah.config import directives

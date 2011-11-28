@@ -1,10 +1,9 @@
 import ptah
+from ptah.testing import PtahTestCase
 from pyramid.testing import DummyRequest
 
-from base import Base
 
-
-class TestRestInspectorModule(Base):
+class TestRestInspectorModule(PtahTestCase):
 
     def test_rest_module(self):
         from ptah.manage.rest import RestModule

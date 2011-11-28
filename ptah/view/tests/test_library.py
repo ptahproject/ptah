@@ -1,16 +1,10 @@
 from ptah import config, view
+from ptah.testing import PtahTestCase
 
-from base import Base
 
+class TestLibraryManagement(PtahTestCase):
 
-class TestLibraryManagement(Base):
-
-    def _setup_ptah(self):
-        pass
-
-    def tearDown(self):
-        config.cleanup_system(self.__class__.__module__)
-        super(TestLibraryManagement, self).tearDown()
+    _init_ptah = False
 
     def test_library_register_fail(self):
         # path resuired
@@ -29,27 +23,25 @@ class TestLibraryManagement(Base):
                           'test', path='/test.js', type='js')
 
     def test_library_simple_css(self):
-        view.static('tests', 'ptah.view.tests:static/dir1')
-
-        view.library(
-            'test-lib', path='style.css', resource='tests', type='css')
-        self._init_ptah()
+        view.static('tests30', 'ptah.view.tests:static/dir1')
+        view.library('test-lib30',path='style.css',resource='tests',type='css')
+        self.init_ptah()
 
         from ptah.view.library import LIBRARY_ID
-        lib = config.get_cfg_storage(LIBRARY_ID)['test-lib']
+        lib = config.get_cfg_storage(LIBRARY_ID)['test-lib30']
 
-        self.assertEqual(lib.name, 'test-lib')
+        self.assertEqual(lib.name, 'test-lib30')
         self.assertEqual(len(lib.entries), 1)
         self.assertEqual(len(lib.entries), 1)
         self.assertTrue('style.css' in lib.entries[0].paths)
 
         self.assertEqual(
-            repr(lib), '<ptah.view.library.Library "test-lib">')
+            repr(lib), '<ptah.view.library.Library "test-lib30">')
 
     def test_library_simple_js(self):
         view.library(
             'test-lib', path='http://ptah.org/test.js', type='js')
-        self._init_ptah()
+        self.init_ptah()
         from ptah.view.library import LIBRARY_ID
         lib = config.get_cfg_storage(LIBRARY_ID)['test-lib']
 
@@ -60,7 +52,7 @@ class TestLibraryManagement(Base):
     def test_library_render_absurls(self):
         view.library(
             'test-lib', path='http://ptah.org/style.css', type='css')
-        self._init_ptah()
+        self.init_ptah()
         from ptah.view.library import LIBRARY_ID
         lib = config.get_cfg_storage(LIBRARY_ID)['test-lib']
 
@@ -72,7 +64,7 @@ class TestLibraryManagement(Base):
         view.library(
             'test-lib', path='http://ptah.org/style.css', type='css',
             prefix='<!--[if lt IE 7 ]>', postfix='<![endif]-->')
-        self._init_ptah()
+        self.init_ptah()
         from ptah.view.library import LIBRARY_ID
         lib = config.get_cfg_storage(LIBRARY_ID)['test-lib']
 
@@ -84,7 +76,7 @@ class TestLibraryManagement(Base):
         view.library(
             'test-lib', path='http://ptah.org/test.js', type='js',
             extra={'test': "extra"})
-        self._init_ptah()
+        self.init_ptah()
         from ptah.view.library import LIBRARY_ID
         lib = config.get_cfg_storage(LIBRARY_ID)['test-lib']
 
@@ -94,10 +86,10 @@ class TestLibraryManagement(Base):
 
     def test_library_include(self):
         view.library(
-            'test-lib', path='http://ptah.org/style.css', type='css')
-        self._init_ptah()
+            'test-lib2', path='http://ptah.org/style.css', type='css')
+        self.init_ptah()
 
-        view.include(self.request, 'test-lib')
+        view.include(self.request, 'test-lib2')
         self.assertEqual(
             view.render_includes(self.request),
             '<link type="text/css" rel="stylesheet" href="http://ptah.org/style.css" />')
@@ -112,23 +104,23 @@ class TestLibraryManagement(Base):
 
     def test_library_include_recursive(self):
         view.library(
-            'test-lib1', path='http://ptah.org/style1.css', type='css')
+            'test-lib1-r', path='http://ptah.org/style1.css', type='css')
 
         view.library(
-            'test-lib2', path='http://ptah.org/style2.css', type='css',
-            require='test-lib1')
+            'test-lib2-r', path='http://ptah.org/style2.css', type='css',
+            require='test-lib1-r')
 
         view.library(
-            'test-lib3', path='http://ptah.org/style3.css', type='css',
-            require=('test-lib1', 'test-lib2'))
+            'test-lib3-r', path='http://ptah.org/style3.css', type='css',
+            require=('test-lib1-r', 'test-lib2-r'))
 
         view.library(
-            'test-lib4', path='http://ptah.org/style4.css', type='css',
-            require=('test-lib1', 'test-lib2'))
-        self._init_ptah()
+            'test-lib4-r', path='http://ptah.org/style4.css', type='css',
+            require=('test-lib1-r', 'test-lib2-r'))
+        self.init_ptah()
 
-        view.include(self.request, 'test-lib3')
-        view.include(self.request, 'test-lib4')
+        view.include(self.request, 'test-lib3-r')
+        view.include(self.request, 'test-lib4-r')
 
         self.assertEqual(
             view.render_includes(self.request),
@@ -138,22 +130,20 @@ class TestLibraryManagement(Base):
 <link type="text/css" rel="stylesheet" href="http://ptah.org/style4.css" />""")
 
     def test_library_include_resource(self):
-        view.static('tests2', 'ptah.view.tests:static/dir1')
+        view.static('tests30', 'ptah.view.tests:static/dir1')
         view.library(
-            'test-lib', path='style.css', resource='tests2', type='css')
-        self._init_ptah()
+            'test-lib-30', path='style.css', resource='tests30', type='css')
+        self.init_ptah()
 
-        request = self._makeRequest()
-
-        view.include(request, 'test-lib')
+        view.include(self.request, 'test-lib-30')
 
         self.assertEqual(
-            view.render_includes(request),
-            '<link type="text/css" rel="stylesheet" href="http://localhost:8080/static/tests2/style.css" />')
+            view.render_includes(self.request),
+            '<link type="text/css" rel="stylesheet" href="http://example.com/static/tests30/style.css" />')
 
     def test_library_View_include(self):
         view.library('test-lib', path='http://ptah.org/test.js', type='js')
-        self._init_ptah()
+        self.init_ptah()
 
         base = view.View(None, self.request)
         base.include('test-lib')

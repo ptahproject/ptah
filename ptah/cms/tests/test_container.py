@@ -1,7 +1,7 @@
-import ptah
 import transaction
 
-from base import Base
+import ptah
+from ptah.testing import PtahTestCase
 
 
 class Content(ptah.cms.Content):
@@ -16,7 +16,9 @@ class Container(ptah.cms.Container):
     __uri_factory__ = ptah.UriFactory('cms-container')
 
 
-class TestContainer(Base):
+class TestContainer(PtahTestCase):
+
+    _cleanup_mod = False
 
     def test_container_basics(self):
         container = Container(__name__ = 'container', __path__ = '/container/')

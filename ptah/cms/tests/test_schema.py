@@ -1,7 +1,7 @@
-from base import Base
+from ptah.testing import PtahTestCase
 
 
-class TestNameSchema(Base):
+class TestNameSchema(PtahTestCase):
 
     def test_schema_name_validator(self):
         from ptah.cms.interfaces import ContentNameSchema

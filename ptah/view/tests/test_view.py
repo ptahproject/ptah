@@ -8,14 +8,17 @@ from pyramid.interfaces import IAuthenticationPolicy
 from pyramid.httpexceptions import HTTPForbidden, HTTPFound
 
 from ptah import config, view
+from ptah.testing import PtahTestCase
 
-from base import Base, Context
+
+class Context(object):
+
+    def __init__(self, parent=None, name=''):
+        self.__name__ = name
+        self.__parent__ = parent
 
 
-class BaseView(Base):
-
-    def _setup_ptah(self):
-        pass
+class BaseView(PtahTestCase):
 
     def _view(self, name, context, request):
         adapters = self.registry.adapters
@@ -44,7 +47,7 @@ class TestView(BaseView):
                 return '<html>view</html>'
 
         view.register_view('index.html', MyView)
-        self._init_ptah()
+        self.init_ptah()
 
         context = Context()
         v = self._view('index.html', context, self.request)
@@ -61,7 +64,7 @@ class TestView(BaseView):
             def render(self):
                 return '<html>view</html>'
 
-        self._init_ptah()
+        self.init_ptah()
 
         context = Context()
         v = self._view('index.html', context, self.request)
@@ -75,7 +78,7 @@ class TestView(BaseView):
             pass
 
         view.register_view('index.html', MyView, Context)
-        self._init_ptah()
+        self.init_ptah()
 
         context = Context()
         self.assertTrue(
@@ -93,7 +96,7 @@ class TestView(BaseView):
 
         view.register_view('index.html', MyView, Context)
         view.register_layout('', Context, klass=MyLayout)
-        self._init_ptah()
+        self.init_ptah()
 
         context = Context()
         res = view.render_view('index.html', context, self.request)
@@ -110,7 +113,7 @@ class TestView(BaseView):
 
         view.register_view('index.html', MyView, Context, layout=None)
         view.register_layout('', Context, klass=MyLayout)
-        self._init_ptah()
+        self.init_ptah()
 
         context = Context()
         res = view.render_view('index.html', context, self.request)
@@ -128,7 +131,7 @@ class TestView(BaseView):
                 return 'test'
 
         view.register_view('index.html', MyView, Context)
-        self._init_ptah()
+        self.init_ptah()
 
         res = view.render_view('index.html', Context(), self.request)
         self.assertEqual(res.status, '202 Accepted')
@@ -143,7 +146,7 @@ class TestView(BaseView):
                 return response
 
         view.register_view('index.html', MyView, Context)
-        self._init_ptah()
+        self.init_ptah()
 
         res = view.render_view('index.html', Context(), self.request)
         self.assertEqual(res.status, '202 Accepted')
@@ -156,7 +159,7 @@ class TestView(BaseView):
 
         view.register_view('index.html', MyView, Context,
                           template = view.template('templates/test.pt'))
-        self._init_ptah()
+        self.init_ptah()
 
         resp = view.render_view('index.html', Context(), self.request)
         self.assertIsInstance(resp, HTTPForbidden)
@@ -168,7 +171,7 @@ class TestView(BaseView):
 
         view.register_view('index.html', MyView, Context,
                           template = view.template('templates/test.pt'))
-        self._init_ptah()
+        self.init_ptah()
 
         resp = view.render_view('index.html', Context(), self.request)
         self.assertIsInstance(resp, HTTPForbidden)
@@ -179,7 +182,7 @@ class TestView(BaseView):
                 raise HTTPFound()
 
         view.register_view('index.html', MyView, Context)
-        self._init_ptah()
+        self.init_ptah()
 
         resp = view.render_view('index.html', Context(), self.request)
         self.assertIsInstance(resp, HTTPFound)
@@ -189,7 +192,7 @@ class TestView(BaseView):
             'index.html', view.View, Context,
             template=view.template('ptah.view.tests:templates/test.pt'))
 
-        self._init_ptah()
+        self.init_ptah()
 
         res = view.render_view('index.html', Context(), self.request)
         self.assertEqual(res.body.strip(), '<div>My snippet</div>')
@@ -206,7 +209,7 @@ class TestView(BaseView):
         class DecoView(view.View):
             view.pview('index.html', Context)
 
-        self._init_ptah()
+        self.init_ptah()
 
         res = view.render_view('index.html', Context(), self.request)
         self.assertEqual(res.body, 'decorator')
@@ -220,7 +223,7 @@ class TestView(BaseView):
                 return '<html>view: %s</html>'%(self.request is not None)
 
         view.register_view('index.html', MyView)
-        self._init_ptah()
+        self.init_ptah()
 
         context = Context()
         v = self._view('index.html', context, self.request)
@@ -231,7 +234,7 @@ class TestView(BaseView):
             return '<html>context: %s</html>'%(context is not None)
 
         view.register_view('index.html', render)
-        self._init_ptah()
+        self.init_ptah()
 
         context = Context()
         v = self._view('index.html', context, self.request)
@@ -242,7 +245,7 @@ class TestView(BaseView):
             return '<html>request: %s</html>'%(request is not None)
 
         view.register_view('index.html', render)
-        self._init_ptah()
+        self.init_ptah()
 
         context = Context()
         v = self._view('index.html', context, self.request)
@@ -254,7 +257,7 @@ class TestView(BaseView):
 
         view.register_view('index.html', render,
                           template = view.template('templates/test.pt'))
-        self._init_ptah()
+        self.init_ptah()
 
         context = Context()
         v = self._view('index.html', context, self.request)
@@ -266,7 +269,7 @@ class TestView(BaseView):
 
         view.register_view('index.html', render,
                           template = view.template('templates/test.pt'))
-        self._init_ptah()
+        self.init_ptah()
 
         context = Context()
         v = self._view('index.html', context, self.request)
@@ -283,7 +286,7 @@ class TestView(BaseView):
         view.register_view('index.html', render,
                           permission = check_permission)
 
-        self._init_ptah()
+        self.init_ptah()
 
         context = Context()
 
@@ -305,7 +308,7 @@ class TestView(BaseView):
         view.register_view('index.html', render,
                           permission = 'Protected')
 
-        self._init_ptah()
+        self.init_ptah()
 
         set_checkpermission(default_checkpermission)
 
@@ -345,7 +348,7 @@ class TestView(BaseView):
         def render(request):
             return '<html>content</html>'
 
-        self._init_ptah()
+        self.init_ptah()
 
         context = Context()
         v = self._view('index.html', context, self.request)
@@ -364,7 +367,7 @@ class TestView(BaseView):
             def render(self):
                 return str(self.updated)
 
-        self._init_ptah()
+        self.init_ptah()
 
         context = Context()
         v = self._view('index.html', context, self.request)
@@ -375,7 +378,7 @@ class TestView(BaseView):
         def render(request):
             return '<html>Forbidden</html>'
 
-        self._init_ptah()
+        self.init_ptah()
 
         context = HTTPForbidden()
 
@@ -397,7 +400,7 @@ class TestView(BaseView):
         def render(request):
             return '<html>Route view</html>'
 
-        self._init_ptah()
+        self.init_ptah()
 
         request_iface = self.registry.getUtility(
             IRouteRequest, name='test-route')
@@ -412,7 +415,7 @@ class TestRouteRegistration(BaseView):
 
     def test_view_route(self):
         view.register_route('test-route', '/test/')
-        self._init_ptah()
+        self.init_ptah()
 
         request_iface = self.registry.getUtility(
             IRouteRequest, name='test-route')
@@ -421,7 +424,7 @@ class TestRouteRegistration(BaseView):
 
     def test_view_route_global_view(self):
         view.register_route('test-route', '/test/', use_global_views=True)
-        self._init_ptah()
+        self.init_ptah()
 
         request_iface = self.registry.getUtility(
             IRouteRequest, name='test-route')
@@ -431,7 +434,7 @@ class TestRouteRegistration(BaseView):
     def test_view_route_conflict(self):
         view.register_route('test-route', '/test/')
         view.register_route('test-route', '/test2/')
-        self.assertRaises(config.ConflictError, self._init_ptah)
+        self.assertRaises(config.ConflictError, self.init_ptah)
 
 
 class TestViewView(BaseView):

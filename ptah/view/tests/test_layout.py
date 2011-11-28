@@ -4,25 +4,23 @@ from zope import interface
 from pyramid.interfaces import IRouteRequest
 
 from ptah import view
+from ptah.testing import PtahTestCase
 from ptah.view.interfaces import ILayout
 from ptah.view.layout import Layout, LayoutRenderer, \
     query_layout, query_layout_chain
 
-from base import Base
 
+class TestLayout(PtahTestCase):
 
-class TestLayout(Base):
+    _init_ptah = False
 
     def setUp(self):
-        Base.setUp(self)
+        PtahTestCase.setUp(self)
         self.dir = tempfile.mkdtemp()
 
     def tearDown(self):
-        Base.tearDown(self)
+        PtahTestCase.tearDown(self)
         shutil.rmtree(self.dir)
-
-    def _setup_ptah(self):
-        pass
 
     def test_layout_register_class_errors(self):
         self.assertRaises(ValueError, view.register_layout, 'test',klass=None)
@@ -33,7 +31,7 @@ class TestLayout(Base):
 
     def test_layout_register_simple(self):
         view.register_layout('test')
-        self._init_ptah()
+        self.init_ptah()
 
         layout = self.registry.getMultiAdapter(
             (object(), self.request), ILayout, 'test')
@@ -49,7 +47,7 @@ class TestLayout(Base):
             pass
 
         view.register_layout('test', klass=MyLayout)
-        self._init_ptah()
+        self.init_ptah()
 
         layout = self.registry.getMultiAdapter(
             (object(), self.request), ILayout, 'test')
@@ -65,7 +63,7 @@ class TestLayout(Base):
                 return '<html>%s</html>'%rendered
 
         view.register_layout('test', klass=Layout)
-        self._init_ptah()
+        self.init_ptah()
 
         v = View(Context(), self.request)
 
@@ -88,7 +86,7 @@ class TestLayout(Base):
             def render(self, rendered):
                 return '<html>%s</html>'%rendered
 
-        self._init_ptah()
+        self.init_ptah()
 
         v = View(Context(), self.request)
 
@@ -114,7 +112,7 @@ class TestLayout(Base):
                 return '<html>%s</html>'%content
 
         view.register_layout('test', klass=Layout, context=Context)
-        self._init_ptah()
+        self.init_ptah()
 
         v = View(Context(), self.request)
 
@@ -131,7 +129,7 @@ class TestLayout(Base):
                 return '<html>%s</html>'%content
 
         view.register_layout('', klass=Layout, context=Root)
-        self._init_ptah()
+        self.init_ptah()
 
         root = Root()
         context = Context(root)
@@ -152,7 +150,7 @@ class TestLayout(Base):
         tmpl.close()
 
         view.register_layout('test', template = view.template(fn))
-        self._init_ptah()
+        self.init_ptah()
 
         renderer = LayoutRenderer('test')
 
@@ -172,7 +170,7 @@ class TestLayout(Base):
 
         view.register_layout('', klass=LayoutPage, parent=None)
         view.register_layout('test', klass=LayoutTest, parent='.')
-        self._init_ptah()
+        self.init_ptah()
 
         context = Context()
         renderer = LayoutRenderer('test')
@@ -191,7 +189,7 @@ class TestLayout(Base):
 
         view.register_layout('', klass=LayoutPage, context=Root, parent=None)
         view.register_layout('test', klass=LayoutTest, parent='.')
-        self._init_ptah()
+        self.init_ptah()
 
         root = Root()
         context = Context(root)
@@ -221,7 +219,7 @@ class TestLayout(Base):
 
         view.register_layout('', klass=Layout1, context=Context, parent='.')
         view.register_layout('', klass=Layout2, context=Root, parent=None)
-        self._init_ptah()
+        self.init_ptah()
 
         root = Root()
         context1 = Context2(root)
@@ -238,7 +236,7 @@ class TestLayout(Base):
                 return '<div>%s</div>'%content
 
         view.register_layout('', klass=Layout, context=Context, parent='page')
-        self._init_ptah()
+        self.init_ptah()
 
         root = Root()
         context = Context(root)
@@ -254,7 +252,7 @@ class TestLayout(Base):
                 return 'test'
 
         view.register_layout('test')
-        self._init_ptah()
+        self.init_ptah()
 
         v = View(Context(), self.request)
 
@@ -265,7 +263,7 @@ class TestLayout(Base):
     def test_layout_for_route(self):
         view.register_route('test-route', '/test/', use_global_views=False)
         view.register_layout('test', route = 'test-route')
-        self._init_ptah()
+        self.init_ptah()
 
         layout = query_layout(Context(), self.request, 'test')
         self.assertIsNone(layout)
@@ -295,7 +293,7 @@ class TestLayout(Base):
         view.register_layout('l1', klass=Layout1, context=Context1)
         view.register_layout('l1', klass=Layout2, context=Context2, parent='l1')
         view.register_layout('l3', klass=Layout3, context=Context3, parent='l1')
-        self._init_ptah()
+        self.init_ptah()
 
         root = Root()
         context1 = Context1()

@@ -1,19 +1,13 @@
 import ptah
 from ptah import config
+from ptah.testing import PtahTestCase
 from pyramid.testing import DummyRequest
 from pyramid.httpexceptions import HTTPForbidden
 
-from base import Base
 
+class TestManageModule(PtahTestCase):
 
-class TestManageModule(Base):
-
-    def setUp(self):
-        self._setup_pyramid()
-
-    def tearDown(self):
-        config.cleanup_system(self.__class__.__module__)
-        super(TestManageModule, self).tearDown()
+    _init_ptah = False
 
     def test_manage_module(self):
         from ptah.manage.manage import \
@@ -27,27 +21,25 @@ class TestManageModule(Base):
             title = 'Test module'
             module('test-module')
 
-        self._init_ptah()
+        self.init_ptah()
 
         set_access_manager(PtahAccessManager)
 
         MODULES = config.get_cfg_storage(MANAGE_ID)
         self.assertIn('test-module', MODULES)
 
-        request = self._makeRequest()
-
-        self.assertRaises(HTTPForbidden, PtahManageRoute, request)
+        self.assertRaises(HTTPForbidden, PtahManageRoute, self.request)
 
         ptah.authService.set_userid('test-user')
 
-        self.assertRaises(HTTPForbidden, PtahManageRoute, request)
+        self.assertRaises(HTTPForbidden, PtahManageRoute, self.request)
 
         def accessManager(id):
             return True
 
         set_access_manager(accessManager)
 
-        route = PtahManageRoute(request)
+        route = PtahManageRoute(self.request)
         mod = route['test-module']
         self.assertIsInstance(mod, TestModule)
         self.assertTrue(mod.available())
@@ -78,7 +70,7 @@ class TestManageModule(Base):
         def principalResolver(uri):
             return principal
 
-        self._init_ptah()
+        self.init_ptah()
 
         CONFIG['managers'] = ['admin@ptahproject.org']
         self.assertTrue(PtahAccessManager('test:user'))
@@ -98,15 +90,14 @@ class TestManageModule(Base):
         def accessManager(id):
             return True
 
-        self._init_ptah()
+        self.init_ptah()
 
         set_access_manager(accessManager)
         ptah.authService.set_userid('test-user')
 
-        request = self._makeRequest()
-        route = PtahManageRoute(request)
+        route = PtahManageRoute(self.request)
 
-        v = ManageView(route, request)
+        v = ManageView(route, self.request)
         v.update()
 
         self.assertIsInstance(v.modules[-1], TestModule)
@@ -125,13 +116,12 @@ class TestManageModule(Base):
         def accessManager(id):
             return True
 
-        self._init_ptah()
+        self.init_ptah()
 
         set_access_manager(accessManager)
         ptah.authService.set_userid('test-user')
 
-        request = self._makeRequest()
-        route = PtahManageRoute(request)
+        route = PtahManageRoute(self.request)
 
         mod = route['test-module']
         self.assertIsInstance(mod, TestModule)
@@ -150,7 +140,7 @@ class TestManageModule(Base):
         def accessManager(id):
             return True
 
-        self._init_ptah()
+        self.init_ptah()
 
         set_access_manager(accessManager)
         ptah.authService.set_userid('test-user')
@@ -180,7 +170,7 @@ class TestManageModule(Base):
         def accessManager(id):
             return True
 
-        self._init_ptah()
+        self.init_ptah()
 
         set_access_manager(accessManager)
         ptah.authService.set_userid('test-user')
@@ -206,16 +196,14 @@ class TestManageModule(Base):
         class Content(object):
             __parent__ = None
 
-        self._init_ptah()
+        self.init_ptah()
 
-        request = self._makeRequest()
-
-        mod = TestModule(None, request)
+        mod = TestModule(None, self.request)
         content = Content()
         content.__parent__ = mod
-        request.context = content
+        self.request.context = content
 
-        layout = LayoutManage(mod, request)
+        layout = LayoutManage(mod, self.request)
         layout.viewcontext = content
         layout.context.userid = ''
         layout.update()
@@ -223,14 +211,9 @@ class TestManageModule(Base):
         self.assertIs(layout.module, mod)
 
 
-class TestInstrospection(Base):
+class TestInstrospection(PtahTestCase):
 
-    def setUp(self):
-        self._setup_pyramid()
-
-    def tearDown(self):
-        config.cleanup_system(self.__class__.__module__)
-        super(TestInstrospection, self).tearDown()
+    _init_ptah = False
 
     def test_manage_module(self):
         from ptah.manage.manage import INTROSPECT_ID, introspection
@@ -242,7 +225,7 @@ class TestInstrospection(Base):
             title = 'Test module'
             introspection('test-module')
 
-        self._init_ptah()
+        self.init_ptah()
 
         INTROSPECTIONS = config.get_cfg_storage(INTROSPECT_ID)
         self.assertIn('test-module', INTROSPECTIONS)

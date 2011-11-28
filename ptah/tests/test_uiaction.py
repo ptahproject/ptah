@@ -1,24 +1,20 @@
 import ptah
 from ptah import config
-from base import Base
+from ptah.testing import PtahTestCase
 
 
-class TestUIAction(Base):
+class TestUIAction(PtahTestCase):
 
-    def tearDown(self):
-        config.cleanup_system(self.__class__.__module__)
-        super(TestUIAction, self).tearDown()
+    _init_ptah = False
 
     def test_uiaction(self):
         class Content(object):
             __name__ = ''
 
         ptah.uiaction(Content, 'action1', 'Action 1')
-        self._init_ptah()
+        self.init_ptah()
 
-        request = self.request
-
-        actions = ptah.list_uiactions(Content(), request)
+        actions = ptah.list_uiactions(Content(), self.request)
 
         self.assertEqual(len(actions), 1)
         self.assertEqual(actions[0]['id'], 'action1')
@@ -29,7 +25,7 @@ class TestUIAction(Base):
 
         ptah.uiaction(Content, 'action1', 'Action 1')
         ptah.uiaction(Content, 'action1', 'Action 1')
-        self.assertRaises(config.ConflictError, self._init_ptah)
+        self.assertRaises(config.ConflictError, self.init_ptah)
 
     def test_uiaction_url(self):
 
@@ -37,25 +33,23 @@ class TestUIAction(Base):
             __name__ = ''
 
         ptah.uiaction(Content, 'action1', 'Action 1', action='test.html')
-        self._init_ptah()
-        request = self.request
+        self.init_ptah()
 
-        actions = ptah.list_uiactions(Content(), request)
-        self.assertEqual(actions[0]['url'], 'http://localhost:8080/test.html')
+        actions = ptah.list_uiactions(Content(), self.request)
+        self.assertEqual(actions[0]['url'], 'http://example.com/test.html')
 
     def test_uiaction_absolute_url(self):
 
         class Content(object):
             __name__ = ''
 
-        ptah.uiaction(Content, 'action1', 'Action 1',
-                      action='/content/about.html')
-        self._init_ptah()
-        request = self.request
+        ptah.uiaction(
+            Content, 'action1', 'Action 1', action='/content/about.html')
+        self.init_ptah()
 
-        actions = ptah.list_uiactions(Content(), request)
+        actions = ptah.list_uiactions(Content(), self.request)
         self.assertEqual(actions[0]['url'],
-                         'http://localhost:8080/content/about.html')
+                         'http://example.com/content/about.html')
 
     def test_uiaction_custom_url(self):
 
@@ -66,7 +60,8 @@ class TestUIAction(Base):
             return 'http://github.com/ptahproject'
 
         ptah.uiaction(Content, 'action1', 'Action 1', action=customAction)
-        self._init_ptah()
+
+        self.init_ptah()
 
         actions = ptah.list_uiactions(Content(), self.request)
         self.assertEqual(actions[0]['url'], 'http://github.com/ptahproject')
@@ -83,7 +78,8 @@ class TestUIAction(Base):
         ptah.uiaction(
             Content, 'action1', 'Action 1',
             action='test.html', condition=condition)
-        self._init_ptah()
+
+        self.init_ptah()
 
         actions = ptah.list_uiactions(Content(), self.request)
         self.assertEqual(len(actions), 0)
@@ -102,7 +98,8 @@ class TestUIAction(Base):
             return allow
 
         ptah.uiaction(Content, 'action1', 'Action 1', permission='View')
-        self._init_ptah()
+
+        self.init_ptah()
 
         orig_cp = ptah.check_permission
         ptah.check_permission = check_permission
@@ -123,7 +120,8 @@ class TestUIAction(Base):
 
         ptah.uiaction(Content, 'view', 'View', sort_weight=1.0)
         ptah.uiaction(Content, 'action', 'Action', sort_weight=2.0)
-        self._init_ptah()
+
+        self.init_ptah()
 
         actions = ptah.list_uiactions(Content(), self.request)
 
@@ -136,7 +134,8 @@ class TestUIAction(Base):
             __name__ = ''
 
         ptah.uiaction(Content, 'view', 'View', testinfo='test')
-        self._init_ptah()
+
+        self.init_ptah()
 
         actions = ptah.list_uiactions(Content(), self.request)
 
@@ -148,7 +147,8 @@ class TestUIAction(Base):
 
         ptah.uiaction(Content, 'action1', 'Action 1',
                       category='test')
-        self._init_ptah()
+
+        self.init_ptah()
 
         request = self.request
 
@@ -166,7 +166,7 @@ class TestUIAction(Base):
 
         ptah.uiaction(Content, 'action1', 'Action 10', category='test')
         ptah.uiaction(Content, 'action1', 'Action 11', category='test')
-        self.assertRaises(ptah.config.ConflictError, self._init_ptah)
+        self.assertRaises(ptah.config.ConflictError, self.init_ptah)
 
     def test_uiaction_category_reg(self):
         class Content(object):
@@ -174,9 +174,8 @@ class TestUIAction(Base):
 
         ptah.uiaction(Content, 'action1', 'Action 10')
         ptah.uiaction(Content, 'action1', 'Action 11', category='test')
-        self._init_ptah()
 
-        request = self.request
+        self.init_ptah()
 
         actions = ptah.list_uiactions(Content(), self.request)
         self.assertEqual(len(actions), 1)

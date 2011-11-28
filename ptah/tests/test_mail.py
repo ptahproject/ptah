@@ -1,14 +1,14 @@
 from ptah import view, mail
 from pyramid.testing import DummyRequest
 
-from base import Base
+from ptah.testing import PtahTestCase
 
 
 class Content(object):
     pass
 
 
-class TestMailTemplate(Base):
+class TestMailTemplate(PtahTestCase):
 
     def _make_one(self):
         from ptah.mail import MailTemplate
@@ -28,8 +28,6 @@ class TestMailTemplate(Base):
         self.assertEqual(tmpl.testattr, 'testattr')
 
     def test_mailtmpl_basics(self):
-        self._init_ptah()
-
         cls = self._make_one()
         cls.message_id = 'message id'
 
@@ -47,8 +45,6 @@ class TestMailTemplate(Base):
             tmpl['From'], 'Site administrator <administrator@localhost.org>')
 
     def test_mailtmpl_from(self):
-        self._init_ptah()
-
         cls = self._make_one()
 
         cls.from_name = 'Test'
@@ -58,8 +54,6 @@ class TestMailTemplate(Base):
         self.assertEqual(tmpl['From'], 'Test <ptah@ptahproject.com>')
 
     def test_mailtmpl_to(self):
-        self._init_ptah()
-
         cls = self._make_one()
 
         cls.to_address = 'ptah@ptahproject.com'
@@ -68,8 +62,6 @@ class TestMailTemplate(Base):
         self.assertEqual(tmpl['To'], 'ptah@ptahproject.com')
 
     def test_mailtmpl_headers(self):
-        self._init_ptah()
-
         cls = self._make_one()
 
         tmpl = cls(Content(), DummyRequest())
@@ -82,8 +74,6 @@ class TestMailTemplate(Base):
         self.assertEqual(msg['X-Mailer'], 'ptah')
 
     def test_mailtmpl_headers_encoding(self):
-        self._init_ptah()
-
         cls = self._make_one()
 
         tmpl = cls(Content(), DummyRequest())
@@ -93,8 +83,6 @@ class TestMailTemplate(Base):
         self.assertEqual(msg['X-Mailer'], '=?utf-8?q?ptah?=')
 
     def test_mailtmpl_headers_gen(self):
-        self._init_ptah()
-
         cls = self._make_one()
         tmpl = cls(Content(), DummyRequest())
 
@@ -105,8 +93,6 @@ class TestMailTemplate(Base):
         self.assertEqual(str(msg['X-Mailer']), '=?utf-8?q?ptah?=')
 
     def test_mailtmpl_attachment(self):
-        self._init_ptah()
-
         cls = self._make_one()
         tmpl = cls(Content(), DummyRequest())
         self.assertEqual(tmpl.get_attachments(), [])
@@ -127,8 +113,6 @@ class TestMailTemplate(Base):
             'attachment; filename="file.txt"')
 
     def test_mailtmpl_attachment_inline(self):
-        self._init_ptah()
-
         cls = self._make_one()
         tmpl = cls(Content(), DummyRequest())
         self.assertEqual(tmpl.get_attachments(), [])
@@ -147,8 +131,6 @@ class TestMailTemplate(Base):
             'inline; filename="file.txt"')
 
     def test_mailtmpl_alternative(self):
-        self._init_ptah()
-
         cls = self._make_one()
 
         tmpl = cls(Content(), DummyRequest())
@@ -167,8 +149,6 @@ class TestMailTemplate(Base):
 
     def test_mailtmpl_send(self):
         from ptah.settings import MAIL
-
-        self._init_ptah()
 
         cls = self._make_one()
         tmpl = cls(Content(), DummyRequest())

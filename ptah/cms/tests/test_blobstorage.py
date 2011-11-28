@@ -1,10 +1,9 @@
 import transaction
 from cStringIO import StringIO
+from ptah.testing import PtahTestCase
 
-from base import Base
 
-
-class TestBlob(Base):
+class TestBlob(PtahTestCase):
 
     def test_blob(self):
         import ptah.cms
@@ -46,6 +45,7 @@ class TestBlob(Base):
         blob = ptah.cms.blobStorage.add(StringIO('blob data'))
 
         blob_uri = blob.__uri__
+        transaction.commit()
 
         blob = ptah.resolve(blob_uri)
 
@@ -88,14 +88,11 @@ class TestBlob(Base):
     def test_blob_rest_data(self):
         import ptah.cms
         from ptah.cms.rest import blobData
-        from pyramid.testing import DummyRequest
 
         blob = ptah.cms.blobStorage.add(
             StringIO('blob data'), filename='test.txt', mimetype='text/plain')
 
-        request = DummyRequest()
-
-        response = blobData(blob, request)
+        response = blobData(blob, self.request)
         self.assertEqual(response.body, 'blob data')
         self.assertEqual(
             response.headerlist,

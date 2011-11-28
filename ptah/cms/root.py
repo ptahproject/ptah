@@ -67,7 +67,7 @@ class ApplicationFactory(object):
         info.attach(
             ptah.config.Action(
                 lambda cfg: cfg.get_cfg_storage(APPFACTORY_ID)\
-                    .update({self.id:self}),
+                    .update({self.id: self}),
                 discriminator=(APPFACTORY_ID, path))
             )
 

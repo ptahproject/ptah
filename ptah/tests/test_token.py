@@ -1,21 +1,19 @@
 import transaction
-from ptah import config
 from datetime import timedelta
 
-from base import Base
+from ptah.testing import PtahTestCase
+from ptah.config import ConflictError
 
 
-class TestTokenType(Base):
+class TestTokenType(PtahTestCase):
 
-    def tearDown(self):
-        config.cleanup_system(self.__class__.__module__)
-        super(TestTokenType, self).tearDown()
+    _init_ptah = False
 
     def test_token(self):
         from ptah import token
 
         tt = token.TokenType('unique-id', timedelta(minutes=20))
-        self._init_ptah()
+        self.init_ptah()
 
         t = token.service.generate(tt, 'data')
         transaction.commit()
@@ -32,7 +30,7 @@ class TestTokenType(Base):
         token.TokenType('unique-id', timedelta(minutes=20))
         token.TokenType('unique-id', timedelta(minutes=20))
 
-        self.assertRaises(config.ConflictError, self._init_ptah)
+        self.assertRaises(ConflictError, self.init_ptah)
 
     def test_token_remove_expired(self):
         pass

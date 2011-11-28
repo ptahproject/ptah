@@ -4,20 +4,18 @@ from ptah import config
 from pyramid.testing import DummyRequest
 from pyramid.httpexceptions import HTTPNotFound
 
-from base import Base
+from ptah.testing import PtahTestCase
 
 
-class TestRestRegistrations(Base):
+class TestRestRegistrations(PtahTestCase):
 
-    def tearDown(self):
-        config.cleanup_system(self.__class__.__module__)
-        super(TestRestRegistrations, self).tearDown()
+    _init_ptah = False
 
     def test_rest_registerService(self):
         import ptah.rest
 
         srv = ptah.rest.RestService('test', 'Test service')
-        self._init_ptah()
+        self.init_ptah()
 
         services = config.get_cfg_storage(ptah.rest.REST_ID)
 
@@ -31,7 +29,7 @@ class TestRestRegistrations(Base):
         ptah.rest.RestService('test', 'Test service')
         ptah.rest.RestService('test', 'Test service2')
 
-        self.assertRaises(config.ConflictError, self._init_ptah)
+        self.assertRaises(config.ConflictError, self.init_ptah)
 
     def test_rest_registerService_action(self):
         import ptah.rest
@@ -57,7 +55,7 @@ class TestRestRegistrations(Base):
         import ptah.rest
 
         ptah.rest.RestService('test', 'Test service')
-        self._init_ptah()
+        self.init_ptah()
 
         srv = config.get_cfg_storage(ptah.rest.REST_ID)['test']
 
@@ -67,7 +65,7 @@ class TestRestRegistrations(Base):
 
         self.assertIn('apidoc', srv.actions)
 
-        info = srv(self._makeRequest(), 'apidoc')
+        info = srv(self.make_request(), 'apidoc')
 
         self.assertEqual(info['name'], 'test')
         self.assertEqual(info['title'], 'Test service')
@@ -75,10 +73,10 @@ class TestRestRegistrations(Base):
 
         self.assertEqual(info['actions'][0]['name'], 'apidoc')
         self.assertEqual(
-            info['actions'][0]['__link__'], 'http://localhost:8080/apidoc')
+            info['actions'][0]['__link__'], 'http://example.com/apidoc')
         self.assertEqual(info['actions'][1]['name'], 'action')
         self.assertEqual(
-            info['actions'][1]['__link__'], 'http://localhost:8080/action')
+            info['actions'][1]['__link__'], 'http://example.com/action')
 
 
 class Principal(object):
@@ -94,21 +92,20 @@ class Provider(object):
         return self.principal
 
 
-class TestRestView(Base):
+class TestRestView(PtahTestCase):
 
-    def tearDown(self):
-        config.cleanup_system(self.__class__.__module__)
-        super(TestRestView, self).tearDown()
+    _init_ptah = False
+    _settings = {'auth.secret': 'test'}
 
     def test_rest_enable_api(self):
         from ptah.rest import RestLoginRoute, RestApiRoute
 
-        mapper = self.p_config.get_routes_mapper()
+        mapper = self.config.get_routes_mapper()
 
         self.assertIsNone(mapper.get_route('ptah-rest'))
         self.assertIsNone(mapper.get_route('ptah-rest-login'))
 
-        ptah.enable_rest_api(self.p_config)
+        ptah.enable_rest_api(self.config)
 
         marker = object()
 
@@ -132,7 +129,7 @@ class TestRestView(Base):
     def test_rest_login_success(self):
         from ptah.rest import Login
         from ptah import authentication
-        self._init_ptah()
+        self.init_ptah()
 
         config.get_cfg_storage(
             authentication.AUTH_PROVIDER_ID)['test'] = Provider()
@@ -147,12 +144,13 @@ class TestRestView(Base):
     def test_rest_api_auth(self):
         from ptah.rest import Api, Login
         from ptah import authentication
-        self._init_ptah()
+        self.init_ptah()
 
         config.get_cfg_storage(
             authentication.AUTH_PROVIDER_ID)['test'] = Provider()
 
-        request = DummyRequest(params = {'login': 'admin', 'password': '12345'})
+        request = DummyRequest(
+            params = {'login': 'admin', 'password': '12345'})
 
         login = Login(request)
         info = simplejson.loads(login.render())
@@ -174,15 +172,13 @@ class TestRestView(Base):
         self.assertEqual(ptah.authService.get_userid(), 'testprincipal:1')
 
 
-class TestRestApi(Base):
+class TestRestApi(PtahTestCase):
 
-    def tearDown(self):
-        config.cleanup_system(self.__class__.__module__)
-        super(TestRestApi, self).tearDown()
+    _init_ptah = False
 
     def test_rest_unknown_service(self):
         from ptah.rest import Api
-        self._init_ptah()
+        self.init_ptah()
 
         request = DummyRequest()
         request.matchdict = {'service': 'test', 'subpath': ()}
@@ -194,7 +190,7 @@ class TestRestApi(Base):
 
     def test_rest_arguments(self):
         from ptah.rest import Api, REST_ID
-        self._init_ptah()
+        self.init_ptah()
 
         services = config.get_cfg_storage(REST_ID)
 
@@ -216,7 +212,7 @@ class TestRestApi(Base):
 
     def test_rest_httpexception(self):
         from ptah.rest import Api, REST_ID
-        self._init_ptah()
+        self.init_ptah()
 
         services = config.get_cfg_storage(REST_ID)
 
@@ -235,7 +231,7 @@ class TestRestApi(Base):
 
     def test_rest_response(self):
         from ptah.rest import Api, REST_ID
-        self._init_ptah()
+        self.init_ptah()
 
         services = config.get_cfg_storage(REST_ID)
 
@@ -244,7 +240,7 @@ class TestRestApi(Base):
 
         services['test'] = service
 
-        request = DummyRequest(registry=self.p_config.registry)
+        request = DummyRequest(registry=self.config.registry)
         request.matchdict = {'service': 'test',
                              'subpath': ('action:test','1','2')}
         api = Api(request)
@@ -254,7 +250,7 @@ class TestRestApi(Base):
     def test_rest_response_data(self):
         import datetime
         from ptah.rest import Api, REST_ID
-        self._init_ptah()
+        self.init_ptah()
 
         services = config.get_cfg_storage(REST_ID)
 

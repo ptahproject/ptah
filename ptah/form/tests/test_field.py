@@ -1,5 +1,6 @@
 from ptah import form
-from base import Base
+from ptah.testing import PtahTestCase
+
 
 field = form.TextField(
     'test', title = 'Test node')
@@ -8,7 +9,7 @@ field1 = form.TextField(
     'test1', title = 'Test node')
 
 
-class TestFieldset(Base):
+class TestFieldset(PtahTestCase):
 
     def test_fieldset_name_title(self):
         fieldset = form.Fieldset(field)
@@ -222,7 +223,7 @@ class TestFieldset(Base):
         self.assertEqual(len(errors), 1)
 
 
-class TestFieldsetErrors(Base):
+class TestFieldsetErrors(PtahTestCase):
 
     def test_fieldset_errors(self):
         err1 = form.Invalid(field, 'error1')
@@ -244,7 +245,7 @@ class TestFieldsetErrors(Base):
         self.assertEqual(repr(form.required), '<widget.required>')
 
 
-class TestField(Base):
+class TestField(PtahTestCase):
 
     def test_field_ctor(self):
         from ptah import form
@@ -409,7 +410,9 @@ class TestField(Base):
         self.assertEqual(widget.form_value, 'form value')
 
 
-class TestFieldFactory(Base):
+class TestFieldFactory(PtahTestCase):
+
+    _init_ptah = False
 
     def test_field_factory(self):
         from ptah import form
@@ -418,7 +421,7 @@ class TestFieldFactory(Base):
         class MyField(form.Field):
             form.field('my-field')
 
-        self._init_ptah()
+        self.init_ptah()
 
         field = form.FieldFactory(
             'my-field', 'test', title='Test field')

@@ -2,12 +2,11 @@ import ptah
 from ptah import form, config
 from ptah.form.field import PREVIEW_ID
 from ptah.manage import fieldpreviews
+from ptah.testing import PtahTestCase
 from pyramid.testing import DummyRequest
 
-from base import Base
 
-
-class TestFieldPreviews(Base):
+class TestFieldPreviews(PtahTestCase):
 
     def test_multiChoicePreview(self):
         previews = config.get_cfg_storage(PREVIEW_ID)
@@ -109,7 +108,7 @@ class TestFieldPreviews(Base):
         self.assertIn('Password field', html)
 
 
-class TestFieldsModule(Base):
+class TestFieldsModule(PtahTestCase):
 
     def test_fields_module(self):
         from ptah.manage.manage import CONFIG, PtahManageRoute

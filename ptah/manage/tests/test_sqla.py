@@ -1,11 +1,11 @@
 import transaction
-import ptah
 import sqlalchemy as sqla
 from webob.multidict import MultiDict
 from pyramid.testing import DummyRequest
 from pyramid.httpexceptions import HTTPFound
 
-from base import Base
+import ptah
+from ptah.testing import PtahTestCase
 
 
 class TestSqlaModuleContent(ptah.cms.Content):
@@ -24,11 +24,7 @@ class TestSqlaModuleTable(ptah.cms.Base):
 
 
 
-class TestSqlaModule(Base):
-
-    def tearDown(self):
-        ptah.config.cleanup_system(self.__class__.__module__)
-        super(TestSqlaModule, self).tearDown()
+class TestSqlaModule(PtahTestCase):
 
     def test_sqla_module(self):
         from ptah.manage.manage import CONFIG, PtahManageRoute

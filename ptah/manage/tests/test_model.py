@@ -2,11 +2,10 @@ import sqlalchemy as sqla
 import transaction
 import ptah
 from ptah import cms
+from ptah.testing import PtahTestCase
 from webob.multidict import MultiDict
 from pyramid.testing import DummyRequest
 from pyramid.httpexceptions import HTTPFound
-
-from base import Base
 
 
 class Content1(cms.Content):
@@ -19,7 +18,9 @@ class Content2(cms.Node):
     title = sqla.Column(sqla.Unicode, default=u'')
 
 
-class TestModelModule(Base):
+class TestModelModule(PtahTestCase):
+
+    _cleanup_mod = False
 
     def test_model_module(self):
         from ptah.manage.model import ModelModule
@@ -79,7 +80,9 @@ class TestModelModule(Base):
         self.assertRaises(KeyError, mod.__getitem__, 'unknown')
 
 
-class TestModel(Base):
+class TestModel(PtahTestCase):
+
+    _cleanup_mod = False
 
     def test_model_traverse(self):
         from ptah.manage.model import ModelModule, Record
@@ -197,7 +200,9 @@ class TestModel(Base):
         self.assertEqual(res.headers['location'], 'add.html')
 
 
-class TestAddRecord(Base):
+class TestAddRecord(PtahTestCase):
+
+    _cleanup_mod = False
 
     def test_model_add_errors(self):
         from ptah.manage.model import ModelModule, AddRecord
@@ -287,7 +292,9 @@ class TestAddRecord(Base):
         self.assertEqual(content.title, u'Test content')
 
 
-class TestEditRecord(Base):
+class TestEditRecord(PtahTestCase):
+
+    _cleanup_mod = False
 
     def test_model_edit_back(self):
         from ptah.manage.model import ModelModule, EditRecord
@@ -403,7 +410,9 @@ class TestEditRecord(Base):
         self.assertEqual(content.title, u'Content')
 
 
-class TestTypeIntrospect(Base):
+class TestTypeIntrospect(PtahTestCase):
+
+    _cleanup_mod = False
 
     def test_type_introspect(self):
         from ptah.config import directives

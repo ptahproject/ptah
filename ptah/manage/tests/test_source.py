@@ -1,10 +1,9 @@
+from ptah.testing import PtahTestCase
 from pyramid.testing import DummyRequest
 from pyramid.httpexceptions import HTTPFound
 
-from base import Base
 
-
-class TestSourceView(Base):
+class TestSourceView(PtahTestCase):
 
     def test_source(self):
         from ptah.manage.source import SourceView

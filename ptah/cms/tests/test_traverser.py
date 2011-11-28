@@ -3,8 +3,7 @@ from pyramid.interfaces import ITraverser
 
 import ptah
 from ptah import config
-
-from base import Base
+from ptah.testing import PtahTestCase
 
 
 class ApplicationRoot(ptah.cms.ApplicationRoot):
@@ -12,11 +11,7 @@ class ApplicationRoot(ptah.cms.ApplicationRoot):
     __type__ = ptah.cms.Type('traverserapp')
 
 
-class TestTraverser(Base):
-
-    def tearDown(self):
-        config.cleanup_system(self.__class__.__module__)
-        super(TestTraverser, self).tearDown()
+class TestTraverser(PtahTestCase):
 
     def _create_content(self):
         import ptah.cms
@@ -53,8 +48,8 @@ class TestTraverser(Base):
 
         self._create_content()
 
-        request = self._makeRequest(
-            {'PATH_INFO': '/test/index.html'})
+        request = self.make_request(
+            environ={'PATH_INFO': '/test/index.html'})
 
         root = self.factory(request)
 
@@ -69,8 +64,8 @@ class TestTraverser(Base):
     def test_traverser_default_root(self):
         import ptah.cms
 
-        request = self._makeRequest(
-            {'PATH_INFO': '/test/index.html',
+        request = self.make_request(
+            environ={'PATH_INFO': '/test/index.html',
              'bfg.routes.route': {}})
 
         factory = ptah.cms.ApplicationFactory(
@@ -86,7 +81,7 @@ class TestTraverser(Base):
     def test_traverser_root_no_view(self):
         self._create_content()
 
-        request = self._makeRequest({'PATH_INFO': '/test/'})
+        request = self.make_request(environ={'PATH_INFO': '/test/'})
 
         root = self.factory(request)
         traverser = ITraverser(root)
@@ -98,7 +93,7 @@ class TestTraverser(Base):
     def test_traverser_folder(self):
         self._create_content()
 
-        request = self._makeRequest({'PATH_INFO': '/test/folder'})
+        request = self.make_request(environ={'PATH_INFO': '/test/folder'})
 
         root = self.factory(request)
         traverser = ITraverser(root)
@@ -111,7 +106,7 @@ class TestTraverser(Base):
     def test_traverser_folder_2(self):
         self._create_content()
 
-        request = self._makeRequest({'PATH_INFO': '/test/folder/'})
+        request = self.make_request(environ={'PATH_INFO': '/test/folder/'})
 
         root = self.factory(request)
         traverser = ITraverser(root)
@@ -124,7 +119,8 @@ class TestTraverser(Base):
     def test_traverser_folder_view(self):
         self._create_content()
 
-        request = self._makeRequest({'PATH_INFO': '/test/folder/index.html'})
+        request = self.make_request(
+            environ={'PATH_INFO': '/test/folder/index.html'})
 
         root = self.factory(request)
         traverser = ITraverser(root)
@@ -137,7 +133,8 @@ class TestTraverser(Base):
     def test_traverser_folder_subcontent1(self):
         self._create_content()
 
-        request = self._makeRequest({'PATH_INFO': '/test/folder/content'})
+        request = self.make_request(
+            environ={'PATH_INFO': '/test/folder/content'})
 
         root = self.factory(request)
         traverser = ITraverser(root)
@@ -150,7 +147,8 @@ class TestTraverser(Base):
     def test_traverser_folder_subcontent2(self):
         self._create_content()
 
-        request = self._makeRequest({'PATH_INFO': '/test/folder/content/'})
+        request = self.make_request(
+            environ={'PATH_INFO': '/test/folder/content/'})
 
         root = self.factory(request)
         traverser = ITraverser(root)
@@ -163,8 +161,8 @@ class TestTraverser(Base):
     def test_traverser_folder_subcontent_view(self):
         self._create_content()
 
-        request = self._makeRequest(
-            {'PATH_INFO': '/test/folder/content/index.html'})
+        request = self.make_request(
+            environ={'PATH_INFO': '/test/folder/content/index.html'})
 
         root = self.factory(request)
         traverser = ITraverser(root)
@@ -177,8 +175,8 @@ class TestTraverser(Base):
     def test_traverser_folder_subcontent_view2(self):
         self._create_content()
 
-        request = self._makeRequest(
-            {'PATH_INFO': '/test//folder//content/index.html'})
+        request = self.make_request(
+            environ={'PATH_INFO': '/test//folder//content/index.html'})
 
         root = self.factory(request)
         traverser = ITraverser(root)

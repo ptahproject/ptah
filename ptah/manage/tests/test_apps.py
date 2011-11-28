@@ -1,10 +1,10 @@
 import ptah
 from ptah import cms, config
+from ptah.testing import PtahTestCase
 from pyramid.testing import DummyRequest
 from pyramid.interfaces import IRequest
 from pyramid.httpexceptions import HTTPFound
 
-from base import Base
 
 class TestApp1(cms.ApplicationRoot):
     __type__ = cms.Type('app1')
@@ -14,15 +14,14 @@ class TestApp2(cms.ApplicationRoot):
     __type__ = cms.Type('app2')
 
 
-class TestAppsModule(Base):
+class TestAppsModule(PtahTestCase):
 
-    def tearDown(self):
-        config.cleanup_system(self.__class__.__module__)
-        super(TestAppsModule, self).tearDown()
+    _init_ptah = False
 
     def test_apps_module(self):
         from ptah.manage.manage import CONFIG, PtahManageRoute
         from ptah.manage.apps import ApplicationsModule
+        self.init_ptah()
 
         request = DummyRequest()
 
@@ -43,7 +42,7 @@ class TestAppsModule(Base):
         cms.ApplicationFactory(
             TestApp2, '/test2', 'app2', 'Root App 2')
 
-        self._init_ptah()
+        self.init_ptah()
 
         request = DummyRequest()
         request.request_iface = IRequest
@@ -66,7 +65,7 @@ class TestAppsModule(Base):
         factory2 = cms.ApplicationFactory(
             TestApp2, '/test2', 'app2', 'Root App 2')
 
-        self._init_ptah()
+        self.init_ptah()
 
         request = DummyRequest()
 
@@ -83,11 +82,9 @@ class TestAppsModule(Base):
         self.assertRaises(KeyError, mod.__getitem__, 'app3')
 
 
-class TestAppSharingForm(Base):
+class TestAppSharingForm(PtahTestCase):
 
-    def tearDown(self):
-        config.cleanup_system(self.__class__.__module__)
-        super(TestAppSharingForm, self).tearDown()
+    _init_ptah = False
 
     def _make_app(self, request=None):
         from ptah.manage.manage import CONFIG, PtahManageRoute
@@ -115,7 +112,7 @@ class TestAppSharingForm(Base):
 
         self.TestRole = ptah.Role('test', 'Test role')
 
-        self._init_ptah()
+        self.init_ptah()
 
         if request is None:
             request = DummyRequest()

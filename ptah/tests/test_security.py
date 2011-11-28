@@ -1,20 +1,21 @@
-""" role """
 from zope import interface
 from ptah import config
 from pyramid.security import Allow, Deny, ALL_PERMISSIONS, DENY_ALL
 from pyramid.security import NO_PERMISSION_REQUIRED
 from pyramid.httpexceptions import HTTPForbidden
 
-from base import Base
+from ptah.testing import PtahTestCase
 
 
-class TestPermission(Base):
+class TestPermission(PtahTestCase):
+
+    _init_ptah = False
 
     def test_permission_register(self):
         import ptah
 
         perm = ptah.Permission('perm', 'Permission', 'Test permission')
-        self._init_ptah()
+        self.init_ptah()
 
         self.assertTrue(perm == 'perm')
         self.assertTrue(perm.title == 'Permission')
@@ -27,20 +28,18 @@ class TestPermission(Base):
         ptah.Permission('perm', 'Permission1')
         ptah.Permission('perm', 'Permission2')
 
-        self.assertRaises(config.ConflictError, self._init_ptah)
+        self.assertRaises(config.ConflictError, self.init_ptah)
 
 
-class TestACL(Base):
+class TestACL(PtahTestCase):
 
-    def tearDown(self):
-        config.cleanup_system(self.__class__.__module__)
-        super(TestACL, self).tearDown()
+    _init_ptah = False
 
     def test_acl_register(self):
         import ptah
 
         pmap = ptah.ACL('map', 'ACL', 'Map')
-        self._init_ptah()
+        self.init_ptah()
 
         self.assertTrue(pmap.name == 'map')
         self.assertTrue(pmap.title == 'ACL')
@@ -53,7 +52,7 @@ class TestACL(Base):
         ptah.ACL('map', 'acl1')
         ptah.ACL('map', 'acl2')
 
-        self.assertRaises(config.ConflictError, self._init_ptah)
+        self.assertRaises(config.ConflictError, self.init_ptah)
 
     def test_acl_allow(self):
         import ptah
@@ -230,11 +229,9 @@ class TestACL(Base):
         self.assertEqual(pmap[1][2], set(('perm1','perm2')))
 
 
-class TestACLsProps(Base):
+class TestACLsProps(PtahTestCase):
 
-    def tearDown(self):
-        config.cleanup_system(self.__class__.__module__)
-        super(TestACLsProps, self).tearDown()
+    _init_ptah = False
 
     def test_acls(self):
         import ptah
@@ -245,7 +242,7 @@ class TestACLsProps(Base):
         acl2 = ptah.ACL('acl2', 'acl2')
         acl2.deny('role1', 'perm1', 'perm2')
 
-        self._init_ptah()
+        self.init_ptah()
 
         class Content(object):
             __acl__ = ptah.ACLsProperty()
@@ -272,11 +269,9 @@ class TestACLsProps(Base):
                           ['Allow', 'role1', set(['perm2', 'perm1'])]])
 
 
-class TestRole(Base):
+class TestRole(PtahTestCase):
 
-    def tearDown(self):
-        config.cleanup_system(self.__class__.__module__)
-        super(TestRole, self).tearDown()
+    _init_ptah = False
 
     def test_role_register(self):
         import ptah
@@ -296,13 +291,13 @@ class TestRole(Base):
         ptah.Role('myrole', 'MyRole1')
         ptah.Role('myrole', 'MyRole2')
 
-        self.assertRaises(config.ConflictError, self._init_ptah)
+        self.assertRaises(config.ConflictError, self.init_ptah)
 
     def test_role_roles(self):
         import ptah
 
         role = ptah.Role('myrole', 'MyRole')
-        self._init_ptah()
+        self.init_ptah()
 
         self.assertTrue('myrole' in ptah.get_roles())
         self.assertTrue(ptah.get_roles()['myrole'] is role)
@@ -360,11 +355,10 @@ class TestRole(Base):
         self.assertEqual(len(DEFAULT_ACL), 0)
 
 
-class TestDefaultRoles(Base):
+class TestDefaultRoles(PtahTestCase):
 
     def test_role_defaults(self):
         import ptah
-        self._init_ptah()
 
         roles = list(ptah.get_roles().keys())
         roles.sort()
@@ -388,7 +382,7 @@ class Content(object):
             interface.directlyProvides(self, iface)
 
 
-class TestLocalRoles(Base):
+class TestLocalRoles(PtahTestCase):
 
     def test_local_role_simple(self):
         from ptah import security
@@ -477,7 +471,7 @@ class Content2(object):
             interface.directlyProvides(self, iface)
 
 
-class TestOwnerLocalRoles(Base):
+class TestOwnerLocalRoles(PtahTestCase):
 
     def test_owner_role_simple(self):
         from ptah import security
@@ -505,11 +499,9 @@ class TestOwnerLocalRoles(Base):
             security.get_local_roles('user', context=parent), ['system.Owner'])
 
 
-class TestCheckPermission(Base):
+class TestCheckPermission(PtahTestCase):
 
-    def setUp(self):
-        super(TestCheckPermission, self).setUp()
-        self._init_ptah()
+    _init_auth = True
 
     def test_checkpermission_allow(self):
         import ptah

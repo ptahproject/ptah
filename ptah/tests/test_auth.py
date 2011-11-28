@@ -1,7 +1,5 @@
-""" role """
 from ptah import config
-
-from base import Base
+from ptah.testing import PtahTestCase
 
 
 class Principal(object):
@@ -12,13 +10,12 @@ class Principal(object):
         self.login = login
 
 
-class TestAuthentication(Base):
+class TestAuthentication(PtahTestCase):
 
-    def tearDown(self):
-        config.cleanup_system(self.__class__.__module__)
-        super(TestAuthentication, self).tearDown()
+    _init_ptah = False
+    _init_auth = True
 
-    def test_auth_simple(self):
+    def test_auth_provider(self):
         import ptah
 
         info = ptah.authService.authenticate(
@@ -32,7 +29,26 @@ class TestAuthentication(Base):
                     return Principal('1', 'user', 'user')
 
         ptah.register_auth_provider('test-provider', Provider())
-        self._init_ptah()
+        self.init_ptah()
+
+        info = ptah.authService.authenticate(
+            {'login': 'user', 'password': '12345'})
+
+        self.assertTrue(info.status)
+        self.assertEqual(info.uri, '1')
+
+    def test_auth_provider_declarative(self):
+        import ptah
+
+        global Provider
+        class Provider(object):
+            ptah.auth_provider('test-provider')
+
+            def authenticate(self, creds):
+                if creds['login'] == 'user':
+                    return Principal('1', 'user', 'user')
+
+        self.init_ptah()
 
         info = ptah.authService.authenticate(
             {'login': 'user', 'password': '12345'})
@@ -42,7 +58,7 @@ class TestAuthentication(Base):
 
     def test_auth_checker_default(self):
         import ptah
-        self._init_ptah()
+        self.init_ptah()
 
         principal = Principal('1', 'user', 'user')
 
@@ -70,7 +86,7 @@ class TestAuthentication(Base):
             info.arguments['additional'] = 'test'
             return False
 
-        self._init_ptah()
+        self.init_ptah()
 
         info = ptah.authService.authenticate(
             {'login': 'user', 'password': '12345'})
@@ -109,7 +125,7 @@ class TestAuthentication(Base):
                 return principal
 
         ptah.register_uri_resolver('test', resolver)
-        self._init_ptah()
+        self.init_ptah()
 
         self.assertEqual(ptah.authService.get_current_principal(), None)
 
@@ -126,7 +142,7 @@ class TestAuthentication(Base):
                     return principal
 
         ptah.register_auth_provider('test-provider', Provider())
-        self._init_ptah()
+        self.init_ptah()
 
         self.assertEqual(
             ptah.authService.get_principal_bylogin('user2'), None)
@@ -135,7 +151,9 @@ class TestAuthentication(Base):
             ptah.authService.get_principal_bylogin('user'), principal)
 
 
-class TestPrincipalSearcher(Base):
+class TestPrincipalSearcher(PtahTestCase):
+
+    _init_ptah = False
 
     def test_principal_searcher(self):
         import ptah
@@ -146,17 +164,19 @@ class TestPrincipalSearcher(Base):
                 yield principal
 
         ptah.register_principal_searcher('test-provider', search)
-        self._init_ptah()
+        self.init_ptah()
 
         self.assertEqual(list(ptah.search_principals('user')), [principal])
 
 
-class TestSuperUser(Base):
+class TestSuperUser(PtahTestCase):
+
+    _init_ptah = False
 
     def test_superuser_resolver(self):
         import ptah
         from ptah.authentication import SUPERUSER
-        self._init_ptah()
+        self.init_ptah()
 
         user = ptah.resolve(ptah.SUPERUSER_URI)
         self.assertIs(user, SUPERUSER)

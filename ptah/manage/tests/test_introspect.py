@@ -1,14 +1,9 @@
 import ptah
+from ptah.testing import PtahTestCase
 from pyramid.testing import DummyRequest
 
-from base import Base
 
-
-class TestIntrospectModule(Base):
-
-    def tearDown(self):
-        ptah.config.cleanup_system(self.__class__.__module__)
-        super(TestIntrospectModule, self).tearDown()
+class TestIntrospectModule(PtahTestCase):
 
     def test_introspect_module(self):
         from ptah.manage.manage import CONFIG, PtahManageRoute
@@ -70,9 +65,9 @@ class TestIntrospectModule(Base):
         def view(request):
             """ """
 
-        self.p_config.add_route('test-route', '/test/')
+        self.config.add_route('test-route', '/test/')
 
-        self._init_ptah()
+        self.init_ptah()
 
         request = DummyRequest()
 
@@ -104,7 +99,7 @@ class TestIntrospectModule(Base):
         def eventHandler2(context, ev):
             """ """
 
-        self._init_ptah()
+        self.init_ptah()
 
         request = DummyRequest()
         mod = IntrospectModule(None, request)
@@ -122,7 +117,7 @@ class TestIntrospectModule(Base):
         self.assertIn('eventHandler2', res.body)
 
 
-class TestSubscriberIntrospect(Base):
+class TestSubscriberIntrospect(PtahTestCase):
 
     def test_introspect_subscriber_introspect(self):
         from ptah.config import directives
@@ -150,7 +145,7 @@ class TestSubscriberIntrospect(Base):
         self.assertIn('ptah.manage.tests.test_introspect.eventHandler2', res)
 
 
-class TestRouteIntrospect(Base):
+class TestRouteIntrospect(PtahTestCase):
 
     def test_introspect_route_introspect(self):
         from ptah.config import directives
@@ -170,7 +165,7 @@ class TestRouteIntrospect(Base):
         self.assertIn('test-introspect: /test/introspect', res)
 
 
-class TestViewIntrospect(Base):
+class TestViewIntrospect(PtahTestCase):
 
     def test_introspect_view_introspect(self):
         from ptah.config import directives

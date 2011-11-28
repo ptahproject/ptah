@@ -1,13 +1,11 @@
 import transaction
 from ptah import cms, config
+from ptah.testing import PtahTestCase
 
-from base import Base
 
+class TestApplicationFactoryRegistration(PtahTestCase):
 
-class TestApplicationFactoryRegistration(Base):
-
-    def _setup_ptah(self):
-        pass
+    _init_ptah = False
 
     def _make_app(self):
         global ApplicationRoot
@@ -16,12 +14,11 @@ class TestApplicationFactoryRegistration(Base):
 
         return ApplicationRoot
 
-
     def test_app_factory(self):
         import ptah.cms
         ApplicationRoot = self._make_app()
 
-        self._init_ptah()
+        self.init_ptah()
 
         factory = ptah.cms.ApplicationFactory(
             ApplicationRoot, '/test', 'root', 'Root App')
@@ -31,8 +28,6 @@ class TestApplicationFactoryRegistration(Base):
         self.assertTrue(factory.name == 'root')
         self.assertTrue(factory.title == 'Root App')
         self.assertTrue(factory.policy is ptah.cms.ApplicationPolicy)
-
-        self._setRequest(self._makeRequest())
 
         root = factory(self.request)
         r_uri = root.__uri__
@@ -75,15 +70,15 @@ class TestApplicationFactoryRegistration(Base):
         import ptah.cms
 
         factory1 = ptah.cms.ApplicationFactory(
-            ApplicationRoot, '/test', 'root', 'Root App1')
+            ApplicationRoot, '/', 'root1', 'Root App1')
         factory2 = ptah.cms.ApplicationFactory(
-            ApplicationRoot, '/', 'root', 'Root App2')
+            ApplicationRoot, '/', 'root2', 'Root App2')
 
-        self.assertRaises(config.ConflictError, self._init_ptah)
+        self.assertRaises(config.ConflictError, self.init_ptah)
 
     def test_app_factory_mutiple_same_applications(self):
         import ptah.cms
-        self._init_ptah()
+        self.init_ptah()
 
         factory1 = ptah.cms.ApplicationFactory(
             ApplicationRoot, '/app1', 'root', 'Root App')
@@ -111,15 +106,11 @@ class TestApplicationFactoryRegistration(Base):
         factory = ptah.cms.ApplicationFactory(
             ApplicationRoot, '/app1', 'root', 'Root App', CustomPolicy)
 
-        root = factory(self._makeRequest())
+        root = factory(self.request)
         self.assertTrue(isinstance(root.__parent__, CustomPolicy))
 
 
-class TestApplicationFactoryCustom(Base):
-
-    def tearDown(self):
-        config.cleanup_system(self.__class__.__module__)
-        super(TestApplicationFactoryCustom, self).tearDown()
+class TestApplicationFactoryCustom(PtahTestCase):
 
     def test_app_factory_custom_app(self):
         import ptah.cms

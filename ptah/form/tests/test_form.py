@@ -126,7 +126,8 @@ class TestForm(unittest.TestCase):
         request = DummyRequest()
         form_ob = MyForm(None, request)
 
-        self.assertEqual(form_ob.tokenData, 'test_form.MyForm:None')
+        self.assertEqual(form_ob.tokenData,
+                         'ptah.form.tests.test_form.MyForm:None')
 
         def authId(request):
             return 'userId'
@@ -135,7 +136,8 @@ class TestForm(unittest.TestCase):
         form.security.authenticated_userid = authId
 
         form_ob = MyForm(None, request)
-        self.assertEqual(form_ob.tokenData, 'test_form.MyForm:userId')
+        self.assertEqual(form_ob.tokenData,
+                         'ptah.form.tests.test_form.MyForm:userId')
 
         form.security.authenticated_userid = orig_func
 

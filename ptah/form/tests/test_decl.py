@@ -1,9 +1,10 @@
 from ptah import form, config
+from ptah.testing import PtahTestCase
 
-from base import Base
 
+class TestFieldset(PtahTestCase):
 
-class TestFieldset(Base):
+    _init_ptah = False
 
     def test_decl(self):
         global MyField
@@ -12,7 +13,7 @@ class TestFieldset(Base):
 
             form.field('my-field')
 
-        self._init_ptah()
+        self.init_ptah()
         self.assertIs(form.get_field_factory('my-field'), MyField)
 
     def test_decl_register(self):
@@ -22,7 +23,7 @@ class TestFieldset(Base):
 
         form.register_field_factory(MyField, 'my-field')
 
-        self._init_ptah()
+        self.init_ptah()
         self.assertIs(form.get_field_factory('my-field'), MyField)
 
     def test_decl_conflict(self):
@@ -37,7 +38,7 @@ class TestFieldset(Base):
 
             form.field('my-field')
 
-        self.assertRaises(config.ConflictError, self._init_ptah)
+        self.assertRaises(config.ConflictError, self.init_ptah)
 
     def test_decl_preview(self):
         global MyField
@@ -49,7 +50,7 @@ class TestFieldset(Base):
         def preview(request):
             """ """
 
-        self._init_ptah()
+        self.init_ptah()
 
         from ptah.form.field import PREVIEW_ID
         previews = config.get_cfg_storage(PREVIEW_ID)

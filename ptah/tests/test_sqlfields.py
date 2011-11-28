@@ -2,14 +2,13 @@ import transaction
 import sqlahelper
 import sqlalchemy as sqla
 from ptah import form
-
-from base import Base
+from ptah.testing import PtahTestCase
 
 SqlaBase = sqlahelper.get_base()
 Session = sqlahelper.get_session()
 
 
-class TestSqlSchema(Base):
+class TestSqlSchema(PtahTestCase):
 
     def test_sqlschema_fields(self):
         import ptah
@@ -100,6 +99,46 @@ class TestSqlSchema(Base):
         self.assertEqual(m_field.title, 'Custom')
         self.assertIs(m_field, field)
 
+    def test_sqlschema_custom_type(self):
+        import ptah
+
+        class Test31(SqlaBase):
+            __tablename__ = 'test31'
+            id = sqla.Column('id', sqla.Integer, primary_key=True)
+            name = sqla.Column(sqla.Unicode(), info={'field_type': 'int'})
+
+        fieldset = ptah.generate_fieldset(Test31)
+
+        m_field = fieldset['name']
+
+        self.assertEqual(m_field.__field__, 'int')
+
+    def test_sqlschema_custom_factory(self):
+        import ptah
+
+        class Test32(SqlaBase):
+            __tablename__ = 'test32'
+            id = sqla.Column('id', sqla.Integer, primary_key=True)
+            name = sqla.Column(sqla.Unicode(),
+                               info={'field_type': form.IntegerField})
+
+        fieldset = ptah.generate_fieldset(Test32)
+
+        m_field = fieldset['name']
+        self.assertIsInstance(m_field, form.IntegerField)
+
+    def test_sqlschema_skip(self):
+        import ptah
+
+        class Test34(SqlaBase):
+            __tablename__ = 'test34'
+            id = sqla.Column('id', sqla.Integer, primary_key=True)
+            name = sqla.Column(sqla.Unicode(), info={'skip': True})
+
+        fieldset = ptah.generate_fieldset(Test34)
+
+        self.assertNotIn('name', fieldset)
+
     def test_sqlschema_unknown(self):
         import ptah
 
@@ -115,7 +154,7 @@ class TestSqlSchema(Base):
         self.assertNotIn('json', fieldset)
 
 
-class TestQueryFreezer(Base):
+class TestQueryFreezer(PtahTestCase):
 
     def test_freezer_one(self):
         import ptah
@@ -143,7 +182,6 @@ class TestQueryFreezer(Base):
 
         rec = sql_get.one(name='test')
         self.assertEqual(rec.name, 'test')
-
 
         rec = Test()
         rec.name = 'test'
@@ -184,7 +222,7 @@ class TestQueryFreezer(Base):
         self.assertEqual(rec.name, 'test')
 
 
-class TestJsonDict(Base):
+class TestJsonDict(PtahTestCase):
 
     def test_jsondict(self):
         import ptah
@@ -222,7 +260,7 @@ class TestJsonDict(Base):
         self.assertEqual(rec.data, {'test2': 'val2'})
 
 
-class TestJsonList(Base):
+class TestJsonList(PtahTestCase):
 
     def test_jsonlist(self):
         import ptah

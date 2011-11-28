@@ -1,8 +1,8 @@
 import transaction
-from base import Base
+from ptah.testing import PtahTestCase
 
 
-class TestNode(Base):
+class TestNode(PtahTestCase):
 
     def test_node_ctor(self):
         import ptah.cms

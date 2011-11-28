@@ -2,20 +2,18 @@ import transaction
 from zope import interface
 import ptah, ptah.cms
 from ptah import config
+from ptah.testing import PtahTestCase
 from pyramid.testing import DummyRequest
 
-from base import Base
 
-
-class RestBase(Base):
+class RestBase(PtahTestCase):
 
     _allow = True
+    _init_ptah = False
+    _cleanup_mod = False
 
     def _check_perm(self, perm, content, request=None, throw=False):
         return self._allow
-
-    def _setup_ptah(self):
-        pass
 
     def _make_app(self):
         global ApplicationRoot
@@ -35,15 +33,16 @@ class RestBase(Base):
     def tearDown(self):
         ptah.check_permission = self.orig_check_permission
 
-        config.cleanup_system(self.__class__.__module__)
         super(RestBase, self).tearDown()
 
 
 class TestRestApi(RestBase):
 
+    _cleanup_mod = True
+
     def test_rest_srv(self):
         import ptah.rest
-        self._init_ptah()
+        self.init_ptah()
 
         services = config.get_cfg_storage(ptah.rest.REST_ID)
 
@@ -59,62 +58,57 @@ class TestRestApi(RestBase):
 
         ApplicationRoot = self._make_app()
 
-        self._init_ptah()
+        self.init_ptah()
 
-        request = self._makeRequest()
-
-        info = cmsApplications(request)
+        info = cmsApplications(self.request)
         self.assertEqual(info, [])
 
         factory = ptah.cms.ApplicationFactory(
-            ApplicationRoot, '/test', 'root', 'Root App', config=self.p_config)
+            ApplicationRoot, '/test', 'root', 'Root App', config=self.config)
 
-        info = cmsApplications(request)
+        info = cmsApplications(self.request)
         self.assertEqual(len(info), 1)
         self.assertEqual(info[0]['__name__'], 'root')
         self.assertEqual(info[0]['__mount__'], 'test')
         self.assertEqual(info[0]['__link__'],
-                         'http://localhost:8080/content:%s/%s/'%(
-                info[0]['__mount__'], info[0]['__uri__']))
+                         'http://example.com/content:%s/%s/'%(
+                             info[0]['__mount__'], info[0]['__uri__']))
 
         ptah.cms.ApplicationFactory(
-            ApplicationRoot, '/test2', 'root2', 'Root App',config=self.p_config)
-        self.assertEqual(len(cmsApplications(request)), 2)
+            ApplicationRoot, '/test2', 'root2', 'Root App',config=self.config)
+        self.assertEqual(len(cmsApplications(self.request)), 2)
 
         self._allow = False
-        self.assertEqual(len(cmsApplications(request)), 0)
+        self.assertEqual(len(cmsApplications(self.request)), 0)
 
     def test_rest_applications_default(self):
         from ptah.cms.rest import cmsApplications
 
         ApplicationRoot = self._make_app()
 
-        self._init_ptah()
+        self.init_ptah()
 
-        request = self._makeRequest()
-
-        info = cmsApplications(request)
+        info = cmsApplications(self.request)
         self.assertEqual(info, [])
 
         ptah.cms.ApplicationFactory(
-            ApplicationRoot, '/', 'root', 'Root App', config=self.p_config)
+            ApplicationRoot, '/', 'root', 'Root App', config=self.config)
 
-        info = cmsApplications(request)
+        info = cmsApplications(self.request)
         self.assertEqual(len(info), 1)
         self.assertEqual(info[0]['__name__'], 'root')
         self.assertEqual(info[0]['__mount__'], '')
         self.assertEqual(
             info[0]['__link__'],
-            'http://localhost:8080/content/%s/'%(info[0]['__uri__'],))
+            'http://example.com/content/%s/'%(info[0]['__uri__'],))
 
     def test_rest_types(self):
         from ptah.cms.rest import cmsTypes
 
         self._make_app()
-        self._init_ptah()
+        self.init_ptah()
 
-        request = self._makeRequest()
-        info = cmsTypes(request)
+        info = cmsTypes(self.request)
 
         self.assertEqual(info[0]['name'], 'app')
         self.assertEqual(info[0]['__uri__'], 'cms-type:app')
@@ -125,16 +119,14 @@ class TestRestApi(RestBase):
     def test_rest_content(self):
         from ptah.cms.rest import cmsContent
         ApplicationRoot = self._make_app()
-        self._init_ptah()
+        self.init_ptah()
 
-        request = DummyRequest(
-            subpath=('content:root',), environ=self._makeEnviron())
+        request = DummyRequest(subpath=('content:root',))
         self.assertRaises(ptah.cms.NotFound, cmsContent, request, 'root')
 
-        request = DummyRequest(
-            subpath=('content:test',), environ=self._makeEnviron())
+        request = DummyRequest(subpath=('content:test',),environ=self._environ)
         factory = ptah.cms.ApplicationFactory(
-            ApplicationRoot, '/test', 'root', 'Root App', config=self.p_config)
+            ApplicationRoot, '/test', 'root', 'Root App', config=self.config)
         root = factory(request)
         root.__uri__ = 'cms-app:test'
         transaction.commit()
@@ -158,12 +150,12 @@ class TestRestApi(RestBase):
     def test_rest_content_default(self):
         from ptah.cms.rest import cmsContent
         ApplicationRoot = self._make_app()
-        self._init_ptah()
+        self.init_ptah()
 
-        request = DummyRequest(subpath=('content',),environ=self._makeEnviron())
+        request = DummyRequest(subpath=('content',), environ=self._environ)
 
         factory = ptah.cms.ApplicationFactory(
-            ApplicationRoot, '/', 'root', 'Root App', config=self.p_config)
+            ApplicationRoot, '/', 'root', 'Root App', config=self.config)
         root = factory(request)
         root.__uri__ = 'cms-app:test'
         transaction.commit()
@@ -199,6 +191,8 @@ class Container(ptah.cms.Container):
 
 class TestCMSRestAction(RestBase):
 
+    _cleanup_mod = True
+
     def test_rest_cms_action(self):
         from ptah.cms.rest import IRestAction, IRestActionClassifier
 
@@ -206,9 +200,9 @@ class TestCMSRestAction(RestBase):
         def update(content, request, *args):
             """ doc string """
 
-        self._init_ptah()
+        self.init_ptah()
 
-        adapters = self.p_config.registry.adapters
+        adapters = self.config.registry.adapters
 
         action = adapters.lookup(
             (IRestActionClassifier, interface.implementedBy(Content)),
@@ -228,66 +222,63 @@ class TestCMSRestAction(RestBase):
         def update2(content, request, *args):
             """ doc string """
 
-        self.assertRaises(config.ConflictError, self._init_ptah)
+        self.assertRaises(config.ConflictError, self.init_ptah)
 
     def test_rest_cms_node_info(self):
         from ptah.cms import rest
-        self._init_ptah()
+        self.init_ptah()
 
         content = Content()
-        request = self._makeRequest()
-        info = rest.nodeInfo(content, request)
+        info = rest.nodeInfo(content, self.request)
 
         self.assertEqual(info['__uri__'], content.__uri__)
-        self.assertEqual(info['__link__'],
-                         '%s%s/'%(request.application_url, content.__uri__))
+        self.assertEqual(
+            info['__link__'],
+            '%s%s/'%(self.request.application_url, content.__uri__))
 
     def test_rest_cms_apidoc(self):
         from ptah.cms import rest
-        self._init_ptah()
+        self.init_ptah()
 
         content = Content()
-        request = self._makeRequest()
-        request.registry = self.p_config.registry
-        info = rest.apidocAction(content, request)
+        info = rest.apidocAction(content, self.request)
         self.assertEqual(len(info), 5)
         self.assertEqual(info[0]['name'], 'info')
 
         self._allow = False
-        info = rest.apidocAction(content, request)
+        info = rest.apidocAction(content, self.request)
         self.assertEqual(len(info), 0)
 
     def test_rest_cms_container_info(self):
         from ptah.cms import rest
-        self._init_ptah()
+        self.init_ptah()
 
         container = Container()
         container['content'] = Content()
 
-        request = self._makeRequest()
-        info = rest.containerNodeInfo(container, request)
+        info = rest.containerNodeInfo(container, self.request)
 
         self.assertEqual(info['__uri__'], container.__uri__)
-        self.assertEqual(info['__link__'],
-                         '%s%s/'%(request.application_url, container.__uri__))
+        self.assertEqual(
+            info['__link__'],
+            '%s%s/'%(self.request.application_url, container.__uri__))
         self.assertEqual(len(info['__contents__']), 1)
         self.assertEqual(info['__contents__'][0]['__uri__'],
                          container['content'].__uri__)
 
     def test_rest_cms_delete(self):
         from ptah.cms import rest
-        self._init_ptah()
+        self.init_ptah()
 
         container = Container()
         container['content'] = Content()
 
-        request = self._makeRequest()
-        rest.deleteAction(container['content'], request)
+        rest.deleteAction(container['content'], self.request)
         self.assertEqual(container.keys(), [])
 
     def test_rest_cms_update(self):
         from ptah.cms import rest
-        self._init_ptah()
+        self.init_ptah()
 
         content = Content(title='Test')
 
@@ -305,7 +296,7 @@ class TestCMSRestAction(RestBase):
 
     def test_rest_cms_create(self):
         from ptah.cms import rest
-        self._init_ptah()
+        self.init_ptah()
 
         all_types = ptah.cms.get_types()
 

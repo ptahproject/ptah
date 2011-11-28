@@ -2,7 +2,7 @@ import transaction
 from pyramid.httpexceptions import HTTPNotFound, HTTPForbidden
 
 import ptah
-from base import Base
+from ptah.testing import PtahTestCase
 
 
 class Content(ptah.cms.Content):
@@ -17,8 +17,10 @@ class Container(ptah.cms.Container):
     __uri_factory__ = ptah.UriFactory('cms-container')
 
 
-class TestLoadApi(Base):
+class TestLoadApi(PtahTestCase):
     """ fixme: redesign tests to use custom resolver """
+
+    _cleanup_mod = False
 
     def test_loadapi_load(self):
         content = Content(title='Content')

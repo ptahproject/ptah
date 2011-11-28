@@ -1,23 +1,15 @@
-import ptah
 import sqlahelper
 import sqlalchemy
 from pyramid.testing import DummyRequest
 from pyramid.httpexceptions import HTTPNotFound
 
-from base import Base
+import ptah
+from ptah.testing import PtahTestCase
 
 
-class TestLayoutPreview(Base):
+class TestLayoutPreview(PtahTestCase):
 
-    def setUp(self):
-        try:
-            engine = sqlahelper.get_engine()
-        except: # pragma: no cover
-            engine = sqlalchemy.engine_from_config(
-                {'sqlalchemy.url': 'sqlite://'})
-            sqlahelper.add_engine(engine)
-
-        self._setup_pyramid()
+    _init_ptah = False
 
     def test_layout_preview_notfound(self):
         from ptah.manage.layout import LayoutPreview
@@ -39,7 +31,7 @@ class TestLayoutPreview(Base):
             def render(self):
                 return 'test' # pragma: no cover
 
-        self._init_ptah()
+        self.init_ptah()
 
         request = DummyRequest()
 
@@ -70,7 +62,7 @@ class TestLayoutPreview(Base):
             def render(self, content):
                 return '<div>%s</div>'%content
 
-        self._init_ptah()
+        self.init_ptah()
 
         request = DummyRequest()
 
@@ -105,7 +97,7 @@ class TestLayoutPreview(Base):
             def render(self, content):
                 return '<div>%s</div>'%content
 
-        self._init_ptah()
+        self.init_ptah()
 
         request = DummyRequest()
 

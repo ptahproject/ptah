@@ -1,10 +1,9 @@
 import ptah
+from ptah.testing import PtahTestCase
 from pyramid.testing import DummyRequest
 
-from base import Base
 
-
-class TestPermissionsModule(Base):
+class TestPermissionsModule(PtahTestCase):
 
     def test_perms_module(self):
         from ptah.manage.manage import CONFIG, PtahManageRoute

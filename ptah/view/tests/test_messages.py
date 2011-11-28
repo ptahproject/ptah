@@ -4,19 +4,17 @@ from zope import interface
 from pyramid.interfaces import IRequest
 
 from ptah import view
+from ptah.testing import PtahTestCase
 from ptah.view.interfaces import IMessage, IStatusMessage
 
-from base import Base
 
+class TestStatusMessages(PtahTestCase):
 
-class TestStatusMessages(Base):
-
-    def _setup_ptah(self):
-        pass
+    _init_ptah = False
 
     def test_messages_service(self, skip=False):
         if not skip:
-            self._init_ptah()
+            self.init_ptah()
 
         service = IStatusMessage(self.request)
         self.assertTrue(IStatusMessage.providedBy(service))
@@ -42,7 +40,7 @@ class TestStatusMessages(Base):
         self.assertEqual(service.clear(), ())
 
     def test_messages_addmessage(self):
-        self._init_ptah()
+        self.init_ptah()
 
         service = IStatusMessage(self.request)
 
@@ -54,14 +52,14 @@ class TestStatusMessages(Base):
         self.assertEqual(service.clear(), ())
 
     def test_messages_service_no_session(self):
-        self._init_ptah()
+        self.init_ptah()
 
         del self.request.session
 
         self.test_messages_service(True)
 
     def test_messages_warning_msg(self):
-        self._init_ptah()
+        self.init_ptah()
 
         service = IStatusMessage(self.request)
 
@@ -72,7 +70,7 @@ class TestStatusMessages(Base):
            [u'<div class="alert-message warning">\n  <a class="close" href="#">\xd7</a>\n  <p>warning</p>\n</div>\n'])
 
     def test_messages_error_msg(self):
-        self._init_ptah()
+        self.init_ptah()
 
         try:
             raise ValueError('Test')
@@ -101,7 +99,7 @@ class TestStatusMessages(Base):
             def render(self, message):
                 return '<div class="customMsg">%s</div>'%message
 
-        self._init_ptah()
+        self.init_ptah()
 
         sm = self.registry
         sm.registerAdapter(CustomMessage, (IRequest,), IMessage, name='custom')
@@ -114,7 +112,7 @@ class TestStatusMessages(Base):
             [u'<div class="customMsg">message</div>'])
 
     def test_messages_render(self):
-        self._init_ptah()
+        self.init_ptah()
 
         view.add_message(self.request, 'message')
         msg = view.render_messages(self.request)
@@ -127,7 +125,7 @@ class TestStatusMessages(Base):
         self.assertEqual(msg, '')
 
     def test_messages_View(self):
-        self._init_ptah()
+        self.init_ptah()
 
         v = view.View(None, self.request)
 
