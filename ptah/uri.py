@@ -83,6 +83,14 @@ def _register_uri_resolver(cfg, schema, resolver):
     cfg.get_cfg_storage(RESOLVER_ID)[schema] = resolver
 
 
+def pyramid_uri_resolver(config, schema, resolver):
+    config.action(
+        (RESOLVER_ID, schema),
+        lambda config, schema, resolver:
+            config.get_cfg_storage(RESOLVER_ID).update({schema:resolver}),
+        (config, schema, resolver))
+
+
 class UriFactory(object):
     """ Uri Generator
 

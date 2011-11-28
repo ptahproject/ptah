@@ -192,6 +192,14 @@ def password_changer(schema):
     return wrapper
 
 
+def pyramid_password_changer(config, schema, changer):
+    config.action(
+        (PASSWORD_CHANGER_ID, schema),
+        lambda config, schema, changer: \
+           config.get_cfg_storage(PASSWORD_CHANGER_ID).update({schema:changer}),
+        (config, schema, changer))
+
+
 def passwordValidator(field, appstruct):
     err = pwd_tool.validate(appstruct)
     if err is not None:

@@ -55,8 +55,7 @@ class Initialized(object):
 
 def initialize(config, packages=None, excludes=(),
                autoinclude=False, initsettings=True):
-    """ Load ptah packages, scan and execute all configuration
-    directives. """
+    """ Load ptah packages, scan and execute all configuration directives. """
     registry = config.registry
     registry.registerHandler(objectEventNotify, (IObjectEvent,))
 

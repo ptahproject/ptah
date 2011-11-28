@@ -1,5 +1,6 @@
 from ptah import config
 from ptah.testing import PtahTestCase
+from pyramid import testing
 
 
 class Principal(object):
@@ -56,6 +57,28 @@ class TestAuthentication(PtahTestCase):
         self.assertTrue(info.status)
         self.assertEqual(info.uri, '1')
 
+    def test_auth_provider_pyramid(self):
+        import ptah
+
+        class Provider(object):
+            def authenticate(self, creds):
+                if creds['login'] == 'user':
+                    return Principal('1', 'user', 'user')
+
+        config = testing.setUp()
+        config.include('ptah')
+
+        self.assertTrue(getattr(config, 'ptah_auth_provider'))
+
+        config.ptah_auth_provider('test-provider', Provider())
+        config.commit()
+
+        info = ptah.authService.authenticate(
+            {'login': 'user', 'password': '12345'})
+
+        self.assertTrue(info.status)
+        self.assertEqual(info.uri, '1')
+
     def test_auth_checker_default(self):
         import ptah
         self.init_ptah()
@@ -87,6 +110,43 @@ class TestAuthentication(PtahTestCase):
             return False
 
         self.init_ptah()
+
+        info = ptah.authService.authenticate(
+            {'login': 'user', 'password': '12345'})
+
+        self.assertFalse(info.status)
+        self.assertEqual(info.uri, '1')
+        self.assertEqual(info.message, 'Suspended')
+        self.assertEqual(info.arguments, {'additional': 'test'})
+
+        principal = Principal('1', 'user', 'user')
+
+        info = ptah.authService.authenticate_principal(principal)
+        self.assertFalse(info.status)
+        self.assertEqual(info.uri, '1')
+        self.assertEqual(info.message, 'Suspended')
+        self.assertEqual(info.arguments, {'additional': 'test'})
+
+    def test_auth_checker_pyramid(self):
+        import ptah
+
+        principal = Principal('1', 'user', 'user')
+
+        class Provider(object):
+            def authenticate(self, creds):
+                if creds['login'] == 'user':
+                    return Principal('1', 'user', 'user')
+
+        config = testing.setUp()
+        config.include('ptah')
+
+        def checker(info):
+            info.message = 'Suspended'
+            info.arguments['additional'] = 'test'
+            return False
+
+        config.ptah_auth_checker(checker)
+        config.ptah_auth_provider('test-provider', Provider())
 
         info = ptah.authService.authenticate(
             {'login': 'user', 'password': '12345'})
@@ -165,6 +225,20 @@ class TestPrincipalSearcher(PtahTestCase):
 
         ptah.register_principal_searcher('test-provider', search)
         self.init_ptah()
+
+        self.assertEqual(list(ptah.search_principals('user')), [principal])
+
+    def test_principal_searcher_pyramid(self):
+        import ptah
+
+        principal = Principal('1', 'user', 'user')
+        def search(term=''):
+            if term == 'user':
+                yield principal
+
+        config = testing.setUp()
+        config.include('ptah')
+        config.ptah_principal_searcher('test-provider', search)
 
         self.assertEqual(list(ptah.search_principals('user')), [principal])
 

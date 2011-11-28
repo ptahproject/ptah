@@ -1,3 +1,4 @@
+from pyramid import testing
 from ptah import config
 from ptah.testing import PtahTestCase
 
@@ -25,6 +26,19 @@ class TestUri(PtahTestCase):
         self.assertEqual(ptah.resolve(None), None)
         self.assertEqual(ptah.resolve('unknown'), None)
         self.assertEqual(ptah.resolve('unknown:uri'), None)
+
+    def test_uri_resolver_pyramid(self):
+        import ptah
+
+        def resolver1(uri):
+            return 'Resolved-pyramid'
+
+        config = testing.setUp()
+        config.include('ptah')
+        config.ptah_uri_resolver('test1', resolver1)
+        config.commit()
+
+        self.assertEqual(ptah.resolve('test1:uri'), 'Resolved-pyramid')
 
     def test_uri_registration_decorator(self):
         import ptah

@@ -100,6 +100,25 @@ def includeme(config):
     from ptah.config.api import get_cfg_storage_imp
     config.add_directive('get_cfg_storage', get_cfg_storage_imp)
 
+    # ptah.authentication directives
+    from ptah import authentication
+    config.add_directive(
+        'ptah_auth_checker', authentication.pyramid_auth_checker)
+    config.add_directive(
+        'ptah_auth_provider', authentication.pyramid_auth_provider)
+    config.add_directive(
+        'ptah_principal_searcher', authentication.pyramid_principal_searcher)
+
+    # ptah.uri directives
+    from ptah import uri
+    config.add_directive(
+        'ptah_uri_resolver', uri.pyramid_uri_resolver)
+
+    # ptah.password directives
+    from ptah import password
+    config.add_directive(
+        'ptah_password_changer', password.pyramid_password_changer)
+
 
 def make_wsgi_app(global_settings, **settings):
     """ Create wsgi application, this function initialize

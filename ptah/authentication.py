@@ -46,6 +46,14 @@ def auth_checker(checker):
     return checker
 
 
+def pyramid_auth_checker(config, checker):
+    config.action(
+        (AUTH_CHECKER_ID, checker),
+        lambda config, checker: config.get_cfg_storage(AUTH_CHECKER_ID)\
+            .update({id(checker): checker}),
+        (config, checker))
+
+
 def auth_provider(name):
     info = config.DirectiveInfo(allowed_scope=('class',))
 
@@ -69,6 +77,14 @@ def register_auth_provider(name, provider):
             (name, provider),
             discriminator=(AUTH_PROVIDER_ID, name))
         )
+
+
+def pyramid_auth_provider(config, name, provider):
+    config.action(
+        (AUTH_PROVIDER_ID, name),
+        lambda config, n, p: \
+            config.get_cfg_storage(AUTH_PROVIDER_ID).update({n: p}),
+        (config, name, provider))
 
 
 class AuthInfo(object):
@@ -162,10 +178,18 @@ def register_principal_searcher(name, searcher):
     info.attach(
         config.Action(
             lambda config, name, searcher:
-               config.get_cfg_storage(AUTH_SEARCHER_ID).update({name: searcher}),
+               config.get_cfg_storage(AUTH_SEARCHER_ID).update({name:searcher}),
             (name, searcher),
             discriminator=(AUTH_SEARCHER_ID, name))
         )
+
+
+def pyramid_principal_searcher(config, name, searcher):
+    config.action(
+        (AUTH_SEARCHER_ID, name),
+        lambda config, name, searcher:
+            config.get_cfg_storage(AUTH_SEARCHER_ID).update({name:searcher}),
+        (config, name, searcher))
 
 
 def principal_searcher(name):

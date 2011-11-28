@@ -2,6 +2,7 @@ import unittest
 import ptah
 from ptah import form, config
 from ptah.testing import PtahTestCase
+from pyramid import testing
 
 
 class Principal(object):
@@ -112,7 +113,7 @@ class TestPasswordSettings(PtahTestCase):
         self.assertIsInstance(ptah.pwd_tool.manager, SSHAPasswordManager)
 
 
-class TestPasswordChangerDecl(PtahTestCase):
+class TestPasswordChanger(PtahTestCase):
 
     def test_password_changer_decl(self):
         import ptah
@@ -156,6 +157,19 @@ class TestPasswordChangerDecl(PtahTestCase):
 
         p = Principal('unknown-schema:numbers_numbers', 'name', 'login')
         self.assertFalse(ptah.pwd_tool.can_change_password(p))
+
+    def test_password_changer_pyramid(self):
+        import ptah
+
+        def changer(schema):
+            """ """
+
+        config = testing.setUp()
+        config.include('ptah')
+        config.ptah_password_changer('test-schema', changer)
+
+        p = Principal('test-schema:numbers_numbers', 'name', 'login')
+        self.assertTrue(ptah.pwd_tool.can_change_password(p))
 
 
 class TestPasswordTool(PtahTestCase):
