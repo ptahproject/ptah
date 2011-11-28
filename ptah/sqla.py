@@ -217,6 +217,9 @@ def build_sqla_fieldset(columns, skipPrimaryKey=False):
     fields = []
 
     for name, cl in columns:
+        if cl.info.get('skip', False):
+            continue
+
         if 'field' in cl.info:
             field = cl.info['field']
             fields.append(field)
@@ -225,7 +228,10 @@ def build_sqla_fieldset(columns, skipPrimaryKey=False):
         if cl.primary_key and skipPrimaryKey:
             continue
 
-        typ = cl.info.get('field_type')
+        typ = cl.info.get('factory')
+        if typ is None:
+            typ = cl.info.get('field_type')
+
         if typ is None:
             for cls, field_type in mapping.items():
                 if isinstance(cl.type, cls):
@@ -242,7 +248,10 @@ def build_sqla_fieldset(columns, skipPrimaryKey=False):
         if cl.primary_key and (typ == 'int'):
             kwargs['readonly'] = True
 
-        field = form.FieldFactory(typ, name, **kwargs)
+        if callable(typ):
+            field = typ(name, **kwargs)
+        else:
+            field = form.FieldFactory(typ, name, **kwargs)
         fields.append(field)
 
     return form.Fieldset(*fields)
