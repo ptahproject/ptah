@@ -15,6 +15,7 @@ class Base(unittest.TestCase):
         self.request = request = testing.DummyRequest()
         request.params = {}
         self.p_config = testing.setUp(request=request)
+        self.p_config.include('ptah')
         self.p_config.get_routes_mapper()
         self.registry = self.p_config.registry
         self.request.registry = self.p_config.registry

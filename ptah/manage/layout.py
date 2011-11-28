@@ -46,7 +46,6 @@ class LayoutPreview(view.View):
 
         self.view = view_renderer
         self.action = view_callable.__config_action__
-        self.info = view_callable.__config_action__.info
 
         if self.layout is None:
             raise HTTPNotFound()
@@ -75,8 +74,8 @@ class LayoutPreview(view.View):
         return data
 
     def build_view_info(self, view):
-        info = self.info
         action = self.action
+        info = action.info
 
         if inspect.isclass(info.context):
             factory = info.context

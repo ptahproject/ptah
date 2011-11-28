@@ -136,7 +136,7 @@ def register_layout_impl(
     else:
         layout_class = type(str('Layout<%s>'%name), (Layout,), cdict)
 
-    layout_class.__config_action__ = cfg.action
+    layout_class.__config_action__ = cfg.__ptah_action__
 
     # register layout
     request_iface = IRequest

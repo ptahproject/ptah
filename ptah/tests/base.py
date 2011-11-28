@@ -51,6 +51,7 @@ class Base(unittest.TestCase):
     def _setup_pyramid(self):
         self.request = request = self._makeRequest()
         self.p_config = testing.setUp(request=request)
+        self.p_config.include('ptah')
         self.p_config.get_routes_mapper()
         self.registry = self.p_config.registry
         self.request.registry = self.registry

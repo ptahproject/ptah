@@ -23,6 +23,7 @@ class BaseTesting(unittest.TestCase):
 
     def setUp(self):
         self.config = setUp()
+        self.config.include('ptah')
         self.registry = self.config.registry
 
     def tearDown(self):

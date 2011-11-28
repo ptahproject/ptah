@@ -51,16 +51,18 @@ def get_settings():
 
 @subscriber(api.Initialized)
 def init_settings(ev):
+    registry = ev.config.registry
+
     settings = Settings()
-    ev.registry.storage[SETTINGS_OB_ID] = settings
+    registry.__ptah_storage__[SETTINGS_OB_ID] = settings
 
     # complete settings initialization
-    for grp in ev.registry.storage[SETTINGS_GROUP_ID].values():
+    for grp in registry.__ptah_storage__[SETTINGS_GROUP_ID].values():
         settings.register(grp)
 
 
 def initialize_settings(cfg, pconfig, section=ConfigParser.DEFAULTSECT):
-    settings = pconfig.registry.storage[SETTINGS_OB_ID]
+    settings = pconfig.registry.__ptah_storage__[SETTINGS_OB_ID]
     if settings.initialized:
         raise RuntimeError(
             "initialize_settings has been called more than once.")
@@ -283,7 +285,8 @@ class Group(object):
         return [(key, self.get(key)) for key in self.keys()]
 
     def update(self, data):
-        api.get_cfg_storage(SETTINGS_ID)[self.name].update(data)
+        gdata = api.get_cfg_storage(SETTINGS_ID).setdefault(self.name, {})
+        gdata.update(data)
 
     def __getattr__(self, attr, default=_marker):
         res = self.get(attr, default)

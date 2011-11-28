@@ -117,7 +117,7 @@ def register_view_impl(cfg, factory, name, context, template, route_name,
 
     pview = PyramidView(chain)
     factory.__renderer__ = pview
-    pview.__config_action__ = cfg.action
+    pview.__config_action__ = cfg.__ptah_action__
 
     sm.registerAdapter(
         pview,

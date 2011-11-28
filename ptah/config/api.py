@@ -49,25 +49,8 @@ class Initialized(object):
     """ ptah sends this after ptah.config.initialize """
     directives.event('Ptah config initialized event')
 
-    def __init__(self, registry):
-        self.registry = registry
-
-
-class Config(object):
-
-    def __init__(self, registry, actions):
-        self.registry = registry
-        self.actions = actions
-        self.storage = defaultdict(lambda: dict())
-        registry.storage = self.storage
-        registry.storage['actions'] = actions
-
-        # settings
-        from settings import SETTINGS_ID
-        registry.storage[SETTINGS_ID] = defaultdict(lambda: dict())
-
-    def get_cfg_storage(self, id):
-        return self.storage[id]
+    def __init__(self, config):
+        self.config = config
 
 
 def initialize(config, packages=None, excludes=(),
@@ -99,19 +82,17 @@ def initialize(config, packages=None, excludes=(),
     for pkg in packages:
         actions.extend(directives.scan(pkg, seen, exclude_filter))
 
-    cfg = Config(registry, actions)
-
     # execute actions
     actions = directives.resolveConflicts(actions)
 
     def runaction(action, cfg):
-        cfg.action = action
+        cfg.__ptah_action__ = action
         action(cfg)
 
     for action in actions:
-        config.action(action.discriminator, runaction, (action, cfg))
+        config.action(action.discriminator, runaction, (action, config))
 
-    config.action(None, registry.notify, (Initialized(registry),))
+    config.action(None, registry.notify, (Initialized(config),))
 
     if initsettings:
         import settings
@@ -126,12 +107,16 @@ def get_cfg_storage(id, registry=None):
         registry = get_current_registry()
 
     try:
-        storage = registry.storage
-    except:
+        storage = registry.__ptah_storage__
+    except AttributeError:
         storage = defaultdict(lambda: dict())
-        registry.storage = storage
+        registry.__ptah_storage__ = storage
 
     return storage[id]
+
+
+def get_cfg_storage_imp(config, id):
+    return get_cfg_storage(id, config.registry)
 
 
 def start(cfg):

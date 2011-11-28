@@ -11,10 +11,12 @@ from ptah.config import commands
 class BaseTesting(unittest.TestCase):
 
     def _init_ptah(self, settings={}, *args, **kw):
-        config.initialize(self.config, ('ptah.config', self.__class__.__module__))
+        config.initialize(
+            self.config, ('ptah.config', self.__class__.__module__))
 
     def setUp(self):
         self.config = setUp()
+        self.config.include('ptah')
         self.registry = self.config.registry
 
     def tearDown(self):

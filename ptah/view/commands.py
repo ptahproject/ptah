@@ -43,6 +43,7 @@ class StaticCommand(Command):
     def command(self):
         # load all ptah packages
         pconfig = testing.setUp()
+        pconfig.include('ptah')
         config.initialize(pconfig, self._include, autoinclude=True)
         registry = config.get_cfg_storage(resources.STATIC_ID)
 

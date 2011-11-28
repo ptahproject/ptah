@@ -18,10 +18,12 @@ class BaseTesting(unittest.TestCase):
     def _init_ptah(self, settings={}, pconfig=None, *args, **kw):
         if pconfig is None:
             pconfig = self.config
-        ptah.config.initialize(pconfig, ('ptah.config', self.__class__.__module__))
+        ptah.config.initialize(
+            pconfig, ('ptah.config', self.__class__.__module__))
 
     def setUp(self):
         self.config = testing.setUp()
+        self.config.include('ptah')
         self.registry = self.config.registry
 
     def tearDown(self):

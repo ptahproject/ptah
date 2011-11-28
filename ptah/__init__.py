@@ -12,6 +12,7 @@ from ptah.authentication import authService
 from ptah.authentication import SUPERUSER_URI
 
 from ptah.authentication import auth_checker
+from ptah.authentication import auth_provider
 from ptah.authentication import register_auth_provider
 
 from ptah.authentication import search_principals
@@ -91,6 +92,10 @@ from ptah import cms
 def includeme(config):
     config.add_directive('ptah_initialize', ptah_initialize)
 
+    # ptah.config directives
+    from ptah.config.api import get_cfg_storage_imp
+    config.add_directive('get_cfg_storage', get_cfg_storage_imp)
+
 
 def make_wsgi_app(global_settings, **settings):
     """ Create wsgi application, this function initialize
@@ -110,6 +115,7 @@ def make_wsgi_app(global_settings, **settings):
 
     # configuration
     config = Configurator(settings=settings)
+    config.include('ptah')
 
     # initialization
     packages = settings.get('packages', None)
