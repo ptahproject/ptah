@@ -179,7 +179,7 @@ class TestMailTemplate(Base):
             def send(self, frm, to, msg):
                 data.append((frm, to, msg))
 
-        MAIL.Mailer = Mailer()
+        MAIL['Mailer'] = Mailer()
 
         tmpl.send()
 
@@ -193,4 +193,4 @@ class TestMailTemplate(Base):
         tmpl.send('test@ptahproject.org')
         self.assertEqual(data[-1][1], 'test@ptahproject.org')
 
-        del MAIL.Mailer
+        #del MAIL.Mailer

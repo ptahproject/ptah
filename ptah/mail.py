@@ -197,13 +197,17 @@ class MailTemplate(object):
 
         return self.template(**kwargs)
 
-    def send(self, email=None, **kw):
+    def send(self, email=None, mailer=None, **kw):
         if email:
             self.to_address = email
 
         message = self(**kw)
 
-        MAIL.Mailer.send(message['from'], message['to'], message)
+        if mailer is None:
+            mailer = MAIL.get('Mailer')
+
+        if mailer is not None:
+            mailer.send(message['from'], message['to'], message)
 
     def __call__(self, **kw):
         for key, value in kw.items():
