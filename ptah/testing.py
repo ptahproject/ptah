@@ -1,4 +1,5 @@
 """ base class """
+import sys
 import unittest
 import sqlahelper
 import sqlalchemy
@@ -34,8 +35,13 @@ class PtahTestCase(unittest.TestCase):
         return request
 
     def init_ptah(self, handler=None, *args, **kw):
+        parts = self.__class__.__module__.split('.')
+        packages = ['ptah']
+        for l in range(len(parts)):
+            packages.append('.'.join(parts[:l+1]))
+
         config.initialize(
-            self.config, ('ptah', self.__class__.__module__),
+            self.config, packages,
             initsettings = False)
         config.initialize_settings(self.registry.settings, self.config)
 
