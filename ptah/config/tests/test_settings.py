@@ -11,7 +11,7 @@ from zope.interface.interfaces import IObjectEvent
 
 import ptah
 from ptah.config.api import objectEventNotify
-from ptah.config.settings import get_settings
+from ptah.config.settings import get_settings_ob
 
 
 class BaseTesting(unittest.TestCase):
@@ -46,6 +46,24 @@ class TestSettings(BaseTesting):
             )
 
         self.assertEqual(group.get('node'), 'test')
+
+    def test_settings_get_settings(self):
+        node = ptah.config.SchemaNode(
+                colander.Str(),
+                name = 'node',
+                default = 'test')
+
+        group = ptah.config.register_settings(
+            'group1', node,
+            title = 'Section title',
+            description = 'Section description',
+            )
+
+        self._init_ptah()
+
+        from ptah.config.settings import get_settings
+        grp = get_settings('group1')
+        self.assertIs(group, grp)
 
     def test_settings_register_errs(self):
         self.assertRaises(
@@ -159,7 +177,7 @@ class TestSettings(BaseTesting):
 
         self._init_ptah()
 
-        settings = get_settings()
+        settings = get_settings_ob()
 
         # changed settings
         self.assertEqual(settings.export(), {})
@@ -192,7 +210,7 @@ class TestSettings(BaseTesting):
     def test_settings_load_rawdata(self):
         group = self._create_default_group()
 
-        get_settings()._load({'group.node1': 'val1'})
+        get_settings_ob()._load({'group.node1': 'val1'})
 
         # new value
         self.assertEqual(group['node1'], 'val1')
@@ -204,7 +222,7 @@ class TestSettings(BaseTesting):
         group = self._create_default_group()
 
         # change defaults
-        get_settings()._load({'group.node2': 30}, setdefaults=True)
+        get_settings_ob()._load({'group.node2': 30}, setdefaults=True)
 
         # new values
         self.assertEqual(group['node1'], 'default1')
@@ -216,19 +234,19 @@ class TestSettings(BaseTesting):
     def test_settings_load_rawdata_with_errors_in_rawdata(self):
         group = self._create_default_group()
 
-        get_settings()._load({10: 'value'})
+        get_settings_ob()._load({10: 'value'})
         self.assertEqual(dict(group), {'node1': 'default1', 'node2': 10})
 
     def test_settings_load_rawdata_with_errors_in_values(self):
         group = self._create_default_group()
 
-        get_settings()._load({'group.node2': 'vadfw234lue'})
+        get_settings_ob()._load({'group.node2': 'vadfw234lue'})
         self.assertEqual(dict(group), {'node1': 'default1', 'node2': 10})
 
     def test_settings_load_defaults_rawdata_with_errors_in_values(self):
         group = self._create_default_group()
 
-        get_settings()._load({'group.node2': 'vadfw234lue'}, setdefaults=True)
+        get_settings_ob()._load({'group.node2': 'vadfw234lue'}, setdefaults=True)
         self.assertEqual(dict(group),
                          {'node1': 'default1', 'node2': 10})
 
@@ -243,15 +261,15 @@ class TestSettings(BaseTesting):
 
         self.assertRaises(
             KeyError,
-            get_settings()._load,
+            get_settings_ob()._load,
             {'group.node1.0': '1',
              'group.node1.3': '1'}, setdefaults=True)
 
     def test_settings_init_with_no_loader_with_defaults(self):
         group = self._create_default_group()
 
-        get_settings().init({'group.node1': 'new-default',
-                             'group.node2': 50})
+        get_settings_ob().init({'group.node1': 'new-default',
+                                'group.node2': 50})
 
         self.assertEqual(group['node1'], 'new-default')
         self.assertEqual(group['node2'], 50)
@@ -287,7 +305,7 @@ class TestSettingsInitialization(BaseTesting):
         sm.registerHandler(h1, (ptah.config.SettingsInitializing,))
         sm.registerHandler(h2, (ptah.config.SettingsInitialized,))
 
-        settings = get_settings()
+        settings = get_settings_ob()
 
         ptah.config.initialize_settings({}, self.config)
 

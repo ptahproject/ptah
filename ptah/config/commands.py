@@ -8,7 +8,7 @@ from collections import OrderedDict
 from pyramid.config import Configurator
 
 from ptah import config
-from ptah.config.settings import get_settings
+from ptah.config.settings import get_settings_ob
 
 
 grpTitleWrap = textwrap.TextWrapper(
@@ -61,7 +61,7 @@ class SettingsCommand(object):
     def run(self):
         # print defaults
         if self.options.printcfg:
-            data = get_settings().export(True)
+            data = get_settings_ob().export(True)
 
             parser = ConfigParser.ConfigParser(dict_type=OrderedDict)
             items = data.items()
@@ -84,7 +84,7 @@ class SettingsCommand(object):
             section = self.options.section
 
         # print description
-        groups = get_settings().items()
+        groups = get_settings_ob().items()
         groups.sort()
 
         for name, group in groups:

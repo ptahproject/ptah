@@ -23,6 +23,7 @@ from ptah.config.directives import ClassAction
 from ptah.config.directives import DirectiveInfo
 from ptah.config.directives import ConflictError
 
+from ptah.config.settings import get_settings
 from ptah.config.settings import register_settings
 from ptah.config.settings import initialize_settings
 from ptah.config.settings import SettingsInitialized

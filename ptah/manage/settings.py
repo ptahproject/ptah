@@ -1,6 +1,6 @@
 """ settings module """
 from ptah import view, manage
-from ptah.config.settings import get_settings
+from ptah.config.settings import get_settings_ob
 
 
 class SettingsModule(manage.PtahModule):
@@ -19,7 +19,7 @@ class SettingsView(view.View):
     __intr_path__ = '/ptah-manage/settings/index.html'
 
     def update(self):
-        groups = get_settings().items()
+        groups = get_settings_ob().items()
         groups.sort()
 
         data = []

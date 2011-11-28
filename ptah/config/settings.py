@@ -45,7 +45,13 @@ SETTINGS_OB_ID = 'ptah.config:settings'
 SETTINGS_GROUP_ID = 'ptah.config:settings-group'
 
 
-def get_settings():
+def get_settings(grp):
+    """ get settings group by group id """
+    settings_ob = api.get_cfg_storage(SETTINGS_OB_ID)
+    return settings_ob[grp]
+
+
+def get_settings_ob():
     return api.get_cfg_storage(SETTINGS_OB_ID)
 
 
