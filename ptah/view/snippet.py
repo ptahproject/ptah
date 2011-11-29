@@ -45,7 +45,7 @@ def render_snippet(stype, context, request):
     snippet = request.registry.queryMultiAdapter(
         (context, request), ISnippet, stype)
     if snippet is None:
-        raise HTTPNotFound
+        raise HTTPNotFound()
 
     try:
         return snippet()

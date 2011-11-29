@@ -65,7 +65,7 @@ class Service(object):
         if action:
             return action.callable(request, *args)
         else:
-            raise HTTPNotFound
+            raise HTTPNotFound()
 
 
 class ServiceAPIDoc(object):
