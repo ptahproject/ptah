@@ -118,7 +118,7 @@ ContentSchema = form.Fieldset(
         'textarea',
         'description',
         title = 'Description',
-        missing = u''),
+        missing = ''),
     )
 
 
@@ -137,6 +137,6 @@ ContentNameSchema = form.Fieldset(
         title = 'Short Name',
         description = 'Short name is the part that shows up in '\
                             'the URL of the item.',
-        missing = u'',
+        missing = '',
         validator = specialSymbols)
     )

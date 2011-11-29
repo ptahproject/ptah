@@ -6,7 +6,7 @@ from pyramid.decorator import reify
 from pyramid.httpexceptions import HTTPFound
 
 class ModelModule(manage.PtahModule):
-    __doc__ = u'A listing of all registered models.'
+    __doc__ = 'A listing of all registered models.'
 
     title = 'Models'
     manage.module('models')

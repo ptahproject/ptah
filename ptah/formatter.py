@@ -71,58 +71,58 @@ FORMAT = config.register_settings(
     config.SchemaNode(
         colander.Str(),
         name = 'date_short',
-        default = u'%m/%d/%y',
-        title = _(u'Date'),
-        description = _(u'Date short format')),
+        default = '%m/%d/%y',
+        title = _('Date'),
+        description = _('Date short format')),
 
     config.SchemaNode(
         colander.Str(),
         name = 'date_medium',
-        default = u'%b %d, %Y',
-        title = _(u'Date'),
-        description = _(u'Date medium format')),
+        default = '%b %d, %Y',
+        title = _('Date'),
+        description = _('Date medium format')),
 
     config.SchemaNode(
         colander.Str(),
         name = 'date_long',
-        default = u'%B %d, %Y',
-        title = _(u'Date'),
-        description = _(u'Date long format')),
+        default = '%B %d, %Y',
+        title = _('Date'),
+        description = _('Date long format')),
 
     config.SchemaNode(
         colander.Str(),
         name = 'date_full',
-        default = u'%A, %B %d, %Y',
-        title = _(u'Date'),
-        description = _(u'Date full format')),
+        default = '%A, %B %d, %Y',
+        title = _('Date'),
+        description = _('Date full format')),
 
     config.SchemaNode(
         colander.Str(),
         name = 'time_short',
-        default = u'%I:%M %p',
-        title = _(u'Time'),
-        description = _(u'Time short format')),
+        default = '%I:%M %p',
+        title = _('Time'),
+        description = _('Time short format')),
 
     config.SchemaNode(
         colander.Str(),
         name = 'time_medium',
-        default = u'%I:%M %p',
-        title = _(u'Time'),
-        description = _(u'Time medium format')),
+        default = '%I:%M %p',
+        title = _('Time'),
+        description = _('Time medium format')),
 
     config.SchemaNode(
         colander.Str(),
         name = 'time_long',
-        default = u'%I:%M %p %z',
-        title = _(u'Time'),
-        description = _(u'Time long format')),
+        default = '%I:%M %p %z',
+        title = _('Time'),
+        description = _('Time long format')),
 
     config.SchemaNode(
         colander.Str(),
         name = 'time_full',
-        default = u'%I:%M:%S %p %Z',
-        title = _(u'Time'),
-        description = _(u'Time full format')),
+        default = '%I:%M:%S %p %Z',
+        title = _('Time'),
+        description = _('Time full format')),
 
     title = 'Site formats',
     )

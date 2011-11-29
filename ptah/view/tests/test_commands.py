@@ -3,11 +3,11 @@ import sys, os
 import unittest
 import tempfile, shutil
 from cStringIO import StringIO
-from paste.script.command import run
+#from paste.script.command import run
 from ptah import config, view
 
 
-class TestStaticCommand(unittest.TestCase):
+class _TestStaticCommand(unittest.TestCase):
 
     def setUp(self):
         self.out = StringIO()

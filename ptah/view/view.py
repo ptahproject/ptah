@@ -42,7 +42,7 @@ class PyramidView(object):
                 content = renderer(context, request, content)
                 if isinstance(content, Response):
                     return content
-        except WSGIHTTPException, resp:
+        except WSGIHTTPException as resp:
             return resp
 
         response = request.response
@@ -57,7 +57,7 @@ class PyramidView(object):
 unset = object()
 
 def register_view(
-    name=u'', factory=View, context=None, template=None, route=None,
+    name='', factory=View, context=None, template=None, route=None,
     layout=unset, permission=NO_PERMISSION_REQUIRED, layer=''):
 
     if factory is None or not callable(factory):

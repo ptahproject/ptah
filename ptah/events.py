@@ -21,7 +21,7 @@ class LoginFailedEvent(PrincipalEvent):
 
     message = ''
 
-    def __init__(self, principal, message=u''):  # pragma: no cover
+    def __init__(self, principal, message=''):  # pragma: no cover
         self.principal = principal
         self.message = message
 

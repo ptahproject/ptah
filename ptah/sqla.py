@@ -1,5 +1,5 @@
 """ sqlalchemy query wrapper """
-import simplejson
+import json
 from ptah import form
 from threading import local
 
@@ -75,12 +75,12 @@ class JsonType(TypeDecorator):
 
     def process_bind_param(self, value, dialect):
         if value is not None:
-            value = simplejson.dumps(value)
+            value = json.dumps(value)
         return value
 
     def process_result_value(self, value, dialect):
         if value is not None:
-            value = simplejson.loads(value)
+            value = json.loads(value)
         return value
 
 

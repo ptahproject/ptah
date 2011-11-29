@@ -72,7 +72,7 @@ def render_includes(request):
 
     libs = getattr(request, '__includes', None)
     if libs is None:
-        return u''
+        return ''
 
     def _process(l_id):
         lib = _libraries.get(l_id)
@@ -91,7 +91,7 @@ def render_includes(request):
         if id not in seen:
             _process(id)
 
-    return u'\n'.join(lib.render(request) for lib in libraries)
+    return '\n'.join(lib.render(request) for lib in libraries)
 
 
 class Entry(object):

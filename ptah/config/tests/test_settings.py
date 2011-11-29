@@ -346,7 +346,7 @@ class TestSettingsInitialization(BaseTesting):
         sm.registerHandler(h1, (ptah.config.SettingsInitializing,))
         try:
             ptah.config.initialize_settings({}, self.config)
-        except Exception, exc:
+        except Exception as exc:
             pass
 
         self.assertIsInstance(exc, ptah.config.StopException)

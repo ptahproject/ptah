@@ -15,7 +15,7 @@ from manage import INTROSPECT_ID
 
 
 class IntrospectModule(manage.PtahModule):
-    __doc__ = u'Insight into all configuration and registrations.'
+    __doc__ = 'Insight into all configuration and registrations.'
 
     title = 'Introspect'
     manage.module('introspect')

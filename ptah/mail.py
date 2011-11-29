@@ -134,9 +134,9 @@ class MailGenerator(object):
 class MailTemplate(object):
     """ mail template with base features """
 
-    subject = u''
-    charset = u'utf-8'
-    content_type = u'text/plain'
+    subject = ''
+    charset = 'utf-8'
+    content_type = 'text/plain'
     message_id = None
     template = None
 

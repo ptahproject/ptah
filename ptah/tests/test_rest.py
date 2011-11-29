@@ -1,5 +1,5 @@
 import ptah
-import simplejson
+import json
 from ptah import config
 from pyramid.testing import DummyRequest
 from pyramid.httpexceptions import HTTPNotFound
@@ -136,7 +136,7 @@ class TestRestView(PtahTestCase):
         request = DummyRequest(params = {'login': 'admin', 'password': '12345'})
 
         login = Login(request)
-        info = simplejson.loads(login.render())
+        info = json.loads(login.render())
 
         self.assertIn('auth-token', info)
         self.assertEqual(request.response.status, '200 OK')
@@ -153,7 +153,7 @@ class TestRestView(PtahTestCase):
             params = {'login': 'admin', 'password': '12345'})
 
         login = Login(request)
-        info = simplejson.loads(login.render())
+        info = json.loads(login.render())
 
         request = DummyRequest(environ = {'HTTP_X_AUTH_TOKEN': 'unknown'})
         request.matchdict = {'service': 'cms', 'subpath': ()}
@@ -184,7 +184,7 @@ class TestRestApi(PtahTestCase):
         request.matchdict = {'service': 'test', 'subpath': ()}
 
         api = Api(request)
-        res = simplejson.loads(api.render())
+        res = json.loads(api.render())
         self.assertEqual(res['message'], "'test'")
         self.assertIn("KeyError: 'test'", res['traceback'])
 
@@ -225,7 +225,7 @@ class TestRestApi(PtahTestCase):
         request.matchdict = {'service': 'test',
                              'subpath': ('action:test','1','2')}
         api = Api(request)
-        res = simplejson.loads(api.render())
+        res = json.loads(api.render())
         self.assertEqual(
             res['message'], 'The resource could not be found.')
 
@@ -263,5 +263,5 @@ class TestRestApi(PtahTestCase):
         request.matchdict = {'service': 'test',
                              'subpath': ('action:test','1','2')}
         api = Api(request)
-        res = simplejson.loads(api.render())
+        res = json.loads(api.render())
         self.assertIn('dt', res)

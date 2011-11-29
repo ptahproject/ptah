@@ -58,7 +58,7 @@ class UriResolver(form.Form):
 
                 if resolver is not None:
                     info['resolver'] = resolver.__name__
-                    info['r_doc'] = ptah.rst_to_html(resolver.__doc__ or u'')
+                    info['r_doc'] = ptah.rst_to_html(resolver.__doc__ or '')
                     info['module'] = resolver.__module__
                     info['name'] = '%s.%s'%(
                         resolver.__module__, resolver.__name__)
@@ -71,7 +71,7 @@ class UriResolver(form.Form):
                         cls = getattr(obj, '__class__', None)
                         info['cls'] = cls
                         info['clsdoc'] = ptah.rst_to_html(
-                            getattr(cls, '__doc__', u'') or u'')
+                            getattr(cls, '__doc__', '') or '')
 
                         if cls is not None:
                             info['clsmod'] = cls.__module__

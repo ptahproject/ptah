@@ -1,9 +1,9 @@
 from ptah import config, view
 from collections import OrderedDict
 
-from validator import All
-from interfaces import _, null, required
-from interfaces import Invalid, FORM_INPUT, FORM_DISPLAY
+from ptah.form.validator import All
+from ptah.form.interfaces import _, null, required
+from ptah.form.interfaces import Invalid, FORM_INPUT, FORM_DISPLAY
 
 FIELD_ID = 'ptah.form:field'
 PREVIEW_ID = 'ptah.form:field-preview'
@@ -69,8 +69,8 @@ class Fieldset(OrderedDict):
     def __init__(self, *args, **kwargs):
         super(Fieldset, self).__init__()
 
-        self.name = kwargs.pop('name', u'')
-        self.legend = kwargs.pop('legend', u'')
+        self.name = kwargs.pop('name', '')
+        self.legend = kwargs.pop('legend', '')
         self.prefix = '%s.' % self.name if self.name else ''
         self.lprefix = len(self.prefix)
 
@@ -175,16 +175,16 @@ class Fieldset(OrderedDict):
 
                 if field.preparer is not None:
                     value = field.preparer(value)
-            except Invalid, error:
-                errors.append(error)
+            except Invalid as e:
+                errors.append(e)
 
             data[field.name[self.lprefix:]] = value
 
         if not errors:
             try:
                 self.validate(data)
-            except Invalid, error:
-                errors.append(error)
+            except Invalid as e:
+                errors.append(e)
 
         return data, errors
 
@@ -217,8 +217,8 @@ class Field(object):
     __field__ = ''
 
     name = ''
-    title = u''
-    description = u''
+    title = ''
+    description = ''
     required = False
 
     error = None
@@ -238,7 +238,7 @@ class Field(object):
 
         self.name = name
         self.title = kw.get('title', name.capitalize())
-        self.description = kw.get('description', u'')
+        self.description = kw.get('description', '')
         self.readonly = kw.get('readonly', None)
         self.default = kw.get('default', null)
         self.missing = kw.get('missing', required)

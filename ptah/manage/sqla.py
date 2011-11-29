@@ -13,7 +13,7 @@ metadata = psa.get_base().metadata
 
 
 class SQLAModule(manage.PtahModule):
-    __doc__ = u'A listing of all tables with ability to view and edit records'
+    __doc__ = 'A listing of all tables with ability to view and edit records'
 
     title = 'SQLAlchemy'
     manage.module('sqla')
@@ -325,7 +325,7 @@ class AddRecord(form.Form):
 
         try:
             self.context.table.insert(values = data).execute()
-        except Exception, e: # pragma: no cover
+        except Exception as e: # pragma: no cover
             self.message(e, 'error')
             return
 
@@ -342,7 +342,7 @@ class AddRecord(form.Form):
 
         try:
             self.context.table.insert(values = data).execute()
-        except Exception, e: # pragma: no cover
+        except Exception as e: # pragma: no cover
             self.message(e, 'error')
             return
 

@@ -220,19 +220,19 @@ PasswordSchema = form.Fieldset(
     form.FieldFactory(
         'password',
         'password',
-        title = _(u'Password'),
-        description = _(u'Enter password. '\
-                        u'No spaces or special characters, should contain '\
-                        u'digits and letters in mixed case.'),
-        default = u''),
+        title = _('Password'),
+        description = _('Enter password. '\
+                        'No spaces or special characters, should contain '\
+                        'digits and letters in mixed case.'),
+        default = ''),
 
     form.FieldFactory(
         'password',
         'confirm_password',
-        title = _(u'Confirm password'),
-        description = _(u'Re-enter the password. '
-                        u'Make sure the passwords are identical.'),
-        default = u''),
+        title = _('Confirm password'),
+        description = _('Re-enter the password. '
+                        'Make sure the passwords are identical.'),
+        default = ''),
 
     validator = passwordSchemaValidator
 )

@@ -32,11 +32,11 @@ def get_permissions():
 
 class PermissionInfo(str):
 
-    title = u''
-    description = u''
+    title = ''
+    description = ''
 
 
-def Permission(name, title, description=u''):
+def Permission(name, title, description=''):
     """ Register new permission. """
     info = config.DirectiveInfo()
 
@@ -72,7 +72,7 @@ class ACL(list):
 
     # do we need somthing like Unset, to unset permission from parent
 
-    def __init__(self, name, title, description=u''):
+    def __init__(self, name, title, description=''):
         self.name = name
         self.title = title
         self.description = description

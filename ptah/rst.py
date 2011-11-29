@@ -55,8 +55,8 @@ def rst_to_html(text):
     try:
         pub.publish()
     except:
-        log.warning(u'ReST to HTML error\n %s', text)
-        return u'<pre>%s</pre>' % text
+        log.warning('ReST to HTML error\n %s', text)
+        return '<pre>%s</pre>' % text
 
     doctree = pub.document
     sphinx.env.filter_messages(doctree)
@@ -67,8 +67,8 @@ def rst_to_html(text):
     pub.writer.assemble_parts()
 
     parts = pub.writer.parts
-    return u''.join((parts['body_pre_docinfo'],
-                     parts['docinfo'], parts['body']))
+    return ''.join((parts['body_pre_docinfo'],
+                    parts['docinfo'], parts['body']))
 
 
 class CustomHTMLTranslator(HTMLTranslator):

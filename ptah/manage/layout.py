@@ -1,5 +1,5 @@
 import inspect
-import simplejson as json
+import json
 from collections import OrderedDict
 from ptah import view
 from ptah.view.view import PyramidView
@@ -109,8 +109,8 @@ class LayoutPreview(view.View):
         res = []
 
         content = self.view(self.context, self.request, '')
-        content = u'\n<!-- view:\n%s \n-->\n'\
-                  u'<div style="border: 2px solid red">%s</div>'%(
+        content = '\n<!-- view:\n%s \n-->\n'\
+                  '<div style="border: 2px solid red">%s</div>'%(
             json.dumps(self.build_view_info(self.view), indent=True),
             content)
 
@@ -119,8 +119,8 @@ class LayoutPreview(view.View):
 
             res = layout.render(content)
             idx = self.layout.index(layout)
-            content = u'\n<!-- layout:\n%s \n-->\n'\
-                      u'<div style="border: 4px solid %s">%s</div>'%(
+            content = '\n<!-- layout:\n%s \n-->\n'\
+                      '<div style="border: 4px solid %s">%s</div>'%(
                 json.dumps(self.build_layout_info(layout), indent=True),
                 self.colors[idx], res)
 

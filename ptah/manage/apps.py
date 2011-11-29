@@ -12,7 +12,7 @@ view.register_route(MANAGE_APP_ROUTE, '!~~~~~~~~~~~~~', use_global_views=False)
 
 
 class ApplicationsModule(manage.PtahModule):
-    __doc__ = u'A listing of all registered Ptah Applications.'
+    __doc__ = 'A listing of all registered Ptah Applications.'
 
     title = 'Applications'
     manage.module('apps')
@@ -93,10 +93,10 @@ class SharingForm(form.Form):
         form.FieldFactory(
             'text',
             'term',
-            title = u'Search term',
+            title = 'Search term',
             description = 'Searches users by login and email',
-            missing = u'',
-            default = u'')
+            missing = '',
+            default = '')
         )
 
 

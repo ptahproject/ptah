@@ -1,7 +1,7 @@
 """ paste commands """
 import os.path, shutil, textwrap
 from pyramid import testing
-from paste.script.command import Command
+#from paste.script.command import Command
 
 from ptah import config
 from ptah.view import resources
@@ -25,18 +25,18 @@ nameTitleWrap = textwrap.TextWrapper(
     subsequent_indent='       ', width = 80)
 
 
-class StaticCommand(Command):
+class StaticCommand(object):
     """ 'static' paste command"""
 
     summary = "ptah static assets management"
     usage = ""
     group_name = "ptah"
-    parser = Command.standard_parser(verbose=False)
-    parser.add_option('-l', '--list', dest='section',
-                      action="store_true",
-                      help = 'List registered static sections')
-    parser.add_option('-d', '--dump', dest='dump',
-                      help = 'Dump static assets')
+    #parser = Command.standard_parser(verbose=False)
+    #parser.add_option('-l', '--list', dest='section',
+    #                  action="store_true",
+    #                  help = 'List registered static sections')
+    #parser.add_option('-d', '--dump', dest='dump',
+    #                  help = 'Dump static assets')
 
     _include = None
 

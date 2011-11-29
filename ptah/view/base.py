@@ -38,7 +38,7 @@ class View(object):
                 kwargs.update(params)
             return self.template(**kwargs)
 
-        return u''
+        return ''
 
     def include(self, name):
         include(self.request, name)
@@ -66,7 +66,7 @@ class View(object):
                 (context, request), ISnippet, stype)
             if snippet is not None:
                 return snippet()
-        except Exception, e:
+        except Exception as e:
             log.exception(str(e))
 
-        return u''
+        return ''

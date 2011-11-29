@@ -174,12 +174,12 @@ class BaseMultiChoiceField(VocabularyField):
 
 
 class TextField(InputField):
-    __doc__ = _(u'HTML Text input widget')
+    __doc__ = _('HTML Text input widget')
 
     field('text')
 
-    klass = u'text-widget'
-    value = u''
+    klass = 'text-widget'
+    value = ''
 
     tmpl_input = view.template(
         "ptah.form:templates/fields/text-input.pt")
@@ -215,44 +215,44 @@ class Number(object):
 
 
 class IntegerField(Number, TextField):
-    __doc__ = _(u'Integer input widget')
+    __doc__ = _('Integer input widget')
 
     field('int')
 
-    klass = u'int-widget'
+    klass = 'int-widget'
     value = 0
 
     num = int
 
 
 class FloatField(Number, TextField):
-    __doc__ = _(u'Float input widget')
+    __doc__ = _('Float input widget')
 
     field('float')
 
-    klass = u'float-widget'
+    klass = 'float-widget'
 
     num = float
 
 
 class DecimalField(Number, TextField):
-    __doc__ = _(u'Decimal input widget')
+    __doc__ = _('Decimal input widget')
 
     field('decimal')
 
-    klass = u'decimal-widget'
+    klass = 'decimal-widget'
 
     def num(self, val):
         return decimal.Decimal(str(val))
 
 
 class TextAreaField(TextField):
-    __doc__ = _(u'HTML Text Area input widget')
+    __doc__ = _('HTML Text Area input widget')
 
     field('textarea')
 
-    klass = u'textarea-widget'
-    value = u''
+    klass = 'textarea-widget'
+    value = ''
 
     rows = 5
     cols = 40
@@ -262,10 +262,10 @@ class TextAreaField(TextField):
 
 
 class FileField(TextField):
-    __doc__ = _(u'HTML File input widget')
+    __doc__ = _('HTML File input widget')
 
     field('file')
-    klass = u'input-file'
+    klass = 'input-file'
 
     tmpl_input = view.template(
         "ptah.form:templates/fields/file-input.pt")
@@ -289,14 +289,14 @@ class LinesField(TextAreaField):
                 'sequence element.')
 
     field('lines')
-    klass = u'textlines-widget'
+    klass = 'textlines-widget'
 
     def serialize(self, value):
         if value is null or not value:
             return null
 
         try:
-            return u'\n'.join(value)
+            return '\n'.join(value)
         except Exception:
             raise Invalid(self,
                           _('"${val}" is not a list',
@@ -321,7 +321,7 @@ class PasswordField(TextField):
 
     field('password')
 
-    klass = u'password-widget'
+    klass = 'password-widget'
 
     tmpl_input = view.template(
         "ptah.form:templates/fields/password-input.pt")
@@ -334,13 +334,13 @@ class MultiChoiceField(BaseMultiChoiceField):
 
     field('multichoice')
 
-    klass = u'multichoice-widget'
+    klass = 'multichoice-widget'
     tmpl_input = view.template(
         "ptah.form:templates/fields/multichoice-input.pt")
 
 
 class DateField(TextField):
-    __doc__ = _(u'Simple date input field.')
+    __doc__ = _('Simple date input field.')
 
     tmpl_display = view.template(
         "ptah.form:templates/fields/date-display.pt")
@@ -369,7 +369,7 @@ class DateField(TextField):
             try:
                 year, month, day = map(int, value.split('-', 2))
                 result = datetime.date(year, month, day)
-            except Exception, e:
+            except Exception as e:
                 raise Invalid(
                     self, _('Invalid date', mapping={'val': value, 'err': e}))
 
@@ -407,12 +407,12 @@ class DateTimeField(TextField):
         try:
             result = iso8601.parse_date(
                 value, default_timezone=self.default_tzinfo)
-        except (iso8601.ParseError, TypeError), e:
+        except (iso8601.ParseError, TypeError) as e:
             try:
                 year, month, day = map(int, value.split('-', 2))
                 result = datetime.datetime(year, month, day,
                                            tzinfo=self.default_tzinfo)
-            except Exception, e:
+            except Exception as e:
                 raise Invalid(self, _('Invalid date',
                                       mapping={'val': value, 'err': e}))
         return result
@@ -423,7 +423,7 @@ class RadioField(BaseChoiceField):
 
     field('radio')
 
-    klass = u'radio-widget'
+    klass = 'radio-widget'
     tmpl_input = view.template(
         "ptah.form:templates/fields/radio-input.pt")
 
@@ -447,7 +447,7 @@ class ChoiceField(BaseChoiceField):
     field('choice')
 
     size = 1
-    klass = u'select-widget'
+    klass = 'select-widget'
     multiple = None
     promptMessage = _('select a value ...')
 
@@ -464,7 +464,7 @@ class ChoiceField(BaseChoiceField):
                     'value': self.noValueToken,
                     'label': self.promptMessage,
                     'checked': self.form_value is null,
-                    'description': u'',
+                    'description': '',
                     })
 
 

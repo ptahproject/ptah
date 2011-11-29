@@ -16,7 +16,7 @@ class StopExceptionTesting(unittest.TestCase):
 
         try:
             raise ValueError('err')
-        except Exception, exc:
+        except Exception as exc:
             pass
 
         err = api.StopException(exc)

@@ -113,6 +113,6 @@ def render_messages(request):
     if service is not None:
         messages = service.clear()
         if messages:
-            return u'\n'.join(messages)
+            return '\n'.join(messages)
 
-    return u''
+    return ''

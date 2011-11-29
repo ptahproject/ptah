@@ -1,12 +1,16 @@
 """ ptah rest api """
 import traceback
 from datetime import datetime
-from cStringIO import StringIO
-from simplejson import dumps
+from json import dumps
 from collections import OrderedDict
 from pyramid.response import Response
 from pyramid.authentication import parse_ticket, AuthTicket, BadTicket
 from pyramid.httpexceptions import WSGIHTTPException, HTTPNotFound
+
+try:
+    from io import StringIO
+except ImportError:
+    from cStringIO import StringIO
 
 from ptah import view, config
 
@@ -202,10 +206,10 @@ class Api(object):
         try:
             result = config.get_cfg_storage(REST_ID)[service](
                 request, action, *arguments)
-        except WSGIHTTPException, exc:
+        except WSGIHTTPException as exc:
             request.response.status = exc.status
             result = {'message': str(exc)}
-        except Exception, exc:
+        except Exception as exc:
             request.response.status = 500
 
             out = StringIO()

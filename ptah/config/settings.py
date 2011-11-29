@@ -1,15 +1,19 @@
 """ settings """
 import colander
-import ConfigParser
 import logging
 import os.path
+
+try:
+    import configparser
+except ImportError:
+    import ConfigParser as configparser
 
 from zope import interface
 from zope.interface.interface import InterfaceClass
 
-import api
-import schema
-from directives import event, subscriber, DirectiveInfo, Action
+from ptah.config import api
+from ptah.config import schema
+from ptah.config.directives import event, subscriber, DirectiveInfo, Action
 
 log = logging.getLogger('ptah.config')
 
@@ -72,7 +76,7 @@ def init_settings(ev):
         settings.register(grp)
 
 
-def initialize_settings(cfg, pconfig, section=ConfigParser.DEFAULTSECT):
+def initialize_settings(cfg, pconfig, section=configparser.DEFAULTSECT):
     settings = pconfig.registry.__ptah_storage__[SETTINGS_OB_ID]
     if settings.initialized:
         raise RuntimeError(
@@ -89,9 +93,9 @@ def initialize_settings(cfg, pconfig, section=ConfigParser.DEFAULTSECT):
     for f in include.split('\n'):
         f = f.strip()
         if f and os.path.exists(f):
-            parser = ConfigParser.SafeConfigParser()
+            parser = configparser.SafeConfigParser()
             parser.read(f)
-            if section == ConfigParser.DEFAULTSECT or \
+            if section == configparser.DEFAULTSECT or \
                     parser.has_section(section):
                 cfg.update(parser.items(section, vars={'here': here}))
 
@@ -100,7 +104,7 @@ def initialize_settings(cfg, pconfig, section=ConfigParser.DEFAULTSECT):
         settings.init(cfg)
         api.notify(SettingsInitializing(pconfig, pconfig.registry))
         api.notify(SettingsInitialized(pconfig, pconfig.registry))
-    except Exception, e:
+    except Exception as e:
         raise api.StopException(e)
     finally:
         pconfig.end()
@@ -154,7 +158,7 @@ class Settings(dict):
         try:
             rawdata = dict((k.lower(), v) for k, v in rawdata.items())
             data = self.schema.unflatten(rawdata)
-        except Exception, exc:
+        except Exception as exc:
             log.error('Error loading settings: %s', exc)
             if setdefaults:
                 raise
@@ -162,7 +166,7 @@ class Settings(dict):
 
         try:
             data = self.schema.deserialize(data)
-        except colander.Invalid, e:
+        except colander.Invalid as e:
             errs = e.asdict()
             if setdefaults:
                 log.error('Error loading default settings: \n%s' % (
@@ -240,7 +244,7 @@ class GroupValidator(object):
         for validator in self._validators:
             try:
                 validator(node, appstruct)
-            except colander.Invalid, e:
+            except colander.Invalid as e:
                 if error is None:
                     error = colander.Invalid(node)
 

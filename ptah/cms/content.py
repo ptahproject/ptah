@@ -90,13 +90,13 @@ class BaseContent(Node):
 
     __id__ = sqla.Column('id', sqla.Integer,
                          sqla.ForeignKey('ptah_nodes.id'), primary_key=True)
-    __path__ = sqla.Column('path', sqla.Unicode, default=u'')
+    __path__ = sqla.Column('path', sqla.Unicode, default='')
     __name_id__ = sqla.Column('name', sqla.Unicode(255))
 
-    title = sqla.Column(sqla.Unicode, default=u'')
-    description = sqla.Column(sqla.Unicode, default=u'',
-                              info = {'missing': u'', 'field_type': 'textarea'})
-    view = sqla.Column(sqla.Unicode, default=u'')
+    title = sqla.Column(sqla.Unicode, default='')
+    description = sqla.Column(sqla.Unicode, default='',
+                              info = {'missing': '', 'field_type': 'textarea'})
+    view = sqla.Column(sqla.Unicode, default='')
 
     created = sqla.Column(sqla.DateTime)
     modified = sqla.Column(sqla.DateTime)
@@ -105,7 +105,7 @@ class BaseContent(Node):
 
     creators = sqla.Column(ptah.JsonListType(), default=[])
     subjects = sqla.Column(ptah.JsonListType(), default=[])
-    publisher = sqla.Column(sqla.Unicode, default=u'')
+    publisher = sqla.Column(sqla.Unicode, default='')
     contributors = sqla.Column(ptah.JsonListType(), default=[])
 
     # sql queries

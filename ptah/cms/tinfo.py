@@ -50,7 +50,7 @@ class TypeInformation(object):
     interface.implements(ITypeInformation)
 
     fieldset = None
-    description = u''
+    description = ''
     permission = ptah.NOT_ALLOWED
 
     addview = None # addview action, path relative to current container

@@ -41,8 +41,7 @@ class PtahTestCase(unittest.TestCase):
             packages.append('.'.join(parts[:l+1]))
 
         config.initialize(
-            self.config, packages,
-            initsettings = False)
+            self.config, packages, initsettings = False)
         config.initialize_settings(self.registry.settings, self.config)
 
         if self._init_sqla:

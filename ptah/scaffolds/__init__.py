@@ -1,6 +1,5 @@
 import os
-from paste.script.templates import Template
-from paste.util.template import paste_script_template_renderer
+from pyramid.scaffolds.template import Template
 
 
 class PtahTemplate(Template):
@@ -15,22 +14,18 @@ class PtahTemplate(Template):
 class Ptah101ProjectTemplate(PtahTemplate):
     _template_dir = 'ptah101'
     summary = 'demonstrates form, limited mgmt ui'
-    template_renderer = staticmethod(paste_script_template_renderer)
 
 
 class Ptah102ProjectTemplate(PtahTemplate):
     _template_dir = 'ptah102'
     summary = 'demonstrates form, models, limited mgmt ui'
-    template_renderer = staticmethod(paste_script_template_renderer)
 
 
 class Ptah201ProjectTemplate(PtahTemplate):
     _template_dir = 'ptah201'
     summary = 'demonstrates form, models, limited mgmt ui and auth'
-    template_renderer = staticmethod(paste_script_template_renderer)
 
 
 class Ptah301ProjectTemplate(PtahTemplate):
     _template_dir = 'ptah301'
     summary = 'demonstrates traversal, localroles, full mgmt ui'
-    template_renderer = staticmethod(paste_script_template_renderer)

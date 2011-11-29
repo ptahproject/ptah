@@ -90,7 +90,7 @@ def pyramid_auth_provider(config, name, provider):
 class AuthInfo(object):
     interface.implements(IAuthInfo)
 
-    def __init__(self, status=False, principal=None, uri=None, message=u''):
+    def __init__(self, status=False, principal=None, uri=None, message=''):
         self.status = status
         self.message = message
         self.principal = principal

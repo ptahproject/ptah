@@ -49,7 +49,7 @@ def render_snippet(stype, context, request):
 
     try:
         return snippet()
-    except Exception, e:
+    except Exception as e:
         log.exception(str(e))
         raise
 

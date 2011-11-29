@@ -2,17 +2,17 @@
 import datetime
 from ptah import view, formatter
 
-from interfaces import _, null, Invalid
-from field import field
-from fields import TextAreaField, TextField, DateTimeField
+from ptah.form.interfaces import _, null, Invalid
+from ptah.form.field import field
+from ptah.form.fields import TextAreaField, TextField, DateTimeField
 
 
 class TinymceField(TextAreaField):
-    __doc__ = u'TinyMCE Text Area input widget'
+    __doc__ = 'TinyMCE Text Area input widget'
 
     field('tinymce')
 
-    klass = u'tinymce-widget'
+    klass = 'tinymce-widget'
 
     width = '400px'
     height = '300px'
@@ -23,12 +23,12 @@ class TinymceField(TextAreaField):
 
 
 class JSDateField(TextField):
-    __doc__ = u'Date input widget with JQuery Datepicker.'
+    __doc__ = 'Date input widget with JQuery Datepicker.'
 
     field('date')
 
-    klass = u'date-widget'
-    value = u''
+    klass = 'date-widget'
+    value = ''
 
     tmpl_input = view.template(
         "ptah.form:templates/fields/jsdate-input.pt")
@@ -52,18 +52,18 @@ class JSDateField(TextField):
             return null
         try:
             return datetime.datetime.strptime(value, '%m/%d/%Y').date()
-        except Exception, e:
+        except Exception as e:
             raise Invalid(
                 self, _('Invalid date', mapping={'val': value, 'err': e}))
 
 
 class JSDateTimeField(DateTimeField):
-    __doc__ = u'DateTime input widget with JQuery Datepicker.'
+    __doc__ = 'DateTime input widget with JQuery Datepicker.'
 
     field('datetime')
 
-    klass = u'datetime-widget'
-    value = u''
+    klass = 'datetime-widget'
+    value = ''
 
     time_part = null
     date_part = null
@@ -90,9 +90,9 @@ class JSDateTimeField(DateTimeField):
                 self.time_part = raw.strftime(formatter.FORMAT.time_short)
 
         if self.date_part is null:
-            self.date_part = u''
+            self.date_part = ''
         if self.time_part is null:
-            self.time_part = u''
+            self.time_part = ''
 
     def extract(self, default=null):
         date = self.params.get(self.date_name, default)

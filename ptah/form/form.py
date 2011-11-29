@@ -22,7 +22,7 @@ def setCsrfUtility(util):
 class FormErrorMessage(view.Message):
     config.adapter(None, name='form-error')
 
-    formErrorsMessage = _(u'Please fix indicated errors.')
+    formErrorsMessage = _('Please fix indicated errors.')
 
     template = view.template('ptah.form:templates/form-error.pt')
 

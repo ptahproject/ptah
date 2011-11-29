@@ -27,7 +27,7 @@ class Button(object):
     accesskey = None
     disabled = False
     tabindex = None
-    klass = u'btn'
+    klass = 'btn'
 
     template = view.template("ptah.form:templates/submit.pt")
 
@@ -67,7 +67,7 @@ class Button(object):
         widget.params = params
         widget.context = context
         widget.request = request
-        widget.klass = u'%s %s' % (widget.klass, css.get(widget.actype, ''))
+        widget.klass = '%s %s' % (widget.klass, css.get(widget.actype, ''))
         return widget
 
     def activated(self):

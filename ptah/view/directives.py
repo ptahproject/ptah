@@ -19,7 +19,7 @@ def snippet(name, context=None, template=None, layer=''):
         )
 
 
-def pview(name=u'', context=None, route=None,
+def pview(name='', context=None, route=None,
           template=None, layout=unset,
           permission='__no_permission_required__', layer=''):
 

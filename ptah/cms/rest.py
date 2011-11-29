@@ -84,7 +84,7 @@ def cmsContent(request, app='', uri=None, action='', *args):
         if not action:
             action = uri or ''
         uri = app
-        app = u''
+        app = ''
 
     content = None
 

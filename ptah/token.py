@@ -5,7 +5,7 @@ import sqlahelper as psa
 import sqlalchemy as sqla
 
 from ptah import config
-from sqla import QueryFreezer
+from ptah.sqla import QueryFreezer
 
 __all__ = ['TokenType', 'service']
 

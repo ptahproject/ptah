@@ -1,6 +1,6 @@
 """ Code from `colander` package """
 import re
-from interfaces import _, Invalid
+from ptah.form.interfaces import _, Invalid
 
 
 class All(object):
@@ -15,7 +15,7 @@ class All(object):
         for validator in self.validators:
             try:
                 validator(field, value)
-            except Invalid, e:
+            except Invalid as e:
                 msgs.append(e.msg)
 
         if msgs:
@@ -106,7 +106,7 @@ class Email(Regex):
             msg = _("Invalid email address")
 
         super(Email, self).__init__(
-            u'(?i)^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$', msg=msg)
+            '(?i)^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$', msg=msg)
 
 
 class Range(object):

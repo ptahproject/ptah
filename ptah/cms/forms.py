@@ -35,10 +35,10 @@ class AddForm(form.Form):
         return self.tinfo.description
 
     def chooseName(self, **kw):
-        name = kw.get('title', u'')
+        name = kw.get('title', '')
 
         name = re.sub(
-            r'-{2,}', '-',
+            '-{2,}', '-',
             re.sub('^\w-|-\w-|-\w$', '-',
                    re.sub(r'\W', '-', name.strip()))).strip('-').lower()
 
@@ -47,7 +47,7 @@ class AddForm(form.Form):
         i = 0
         while n in self.container:
             i += 1
-            n = u'%s-%s%s'%(name, i, suffix)
+            n = '%s-%s%s'%(name, i, suffix)
 
         return n.replace('/', '-').lstrip('+@')
 

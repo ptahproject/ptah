@@ -11,7 +11,7 @@ from ptah.view.customize import LayerWrapper
 
 def query_layout(context, request, name=''):
     """ query named layout for context """
-    assert IRequest.providedBy(request), u"must pass in a request object"
+    #assert IRequest.providedBy(request), u"must pass in a request object"
 
     try:
         iface = request.request_iface
