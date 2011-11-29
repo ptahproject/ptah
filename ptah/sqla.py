@@ -189,8 +189,7 @@ def generate_fieldset(model, fieldNames=None, namesFilter=None,
             idx = order.index((cl.table.name, cl.name))
             columns.append((idx, attr.key, cl))
 
-    columns.sort()
-    columns = [(name, cl) for i, name, cl in columns]
+    columns = [(name, cl) for i, name, cl in sorted(columns)]
 
     return build_sqla_fieldset(columns, skipPrimaryKey)
 

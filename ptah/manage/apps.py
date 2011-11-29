@@ -42,8 +42,7 @@ class ApplicationsModuleView(view.View):
         for factory in cms.get_app_factories().values():
             factories.append((factory.title, factory))
 
-        factories.sort()
-        self.factories = [f for _t, f in factories]
+        self.factories = [f for _t, f in sorted(factories)]
 
 
 class AppLayout(manage.LayoutManage):

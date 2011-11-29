@@ -70,9 +70,7 @@ class TestSnippet(PtahTestCase):
             pass
 
         def template(*args, **kw):
-            keys = kw.keys()
-            keys.sort()
-            return '|'.join(keys)
+            return '|'.join(sorted(kw.keys()))
 
         view.snippettype('test', Context)
         view.register_snippet('test', klass=TestSnippet, template = template)
@@ -134,9 +132,7 @@ class TestSnippet(PtahTestCase):
                 return {'param1': 1, 'param2': 2}
 
         def template(*args, **kw):
-            keys = kw.keys()
-            keys.sort()
-            return '|'.join(keys)
+            return '|'.join(sorted(kw.keys()))
 
         view.snippettype('test', Context)
         view.register_snippet('test', klass=TestSnippet, template = template)

@@ -28,5 +28,4 @@ class FieldsView(view.View):
                          'doc': cls.__doc__,
                          'preview': previews.get(cls)})
 
-        data.sort()
-        self.fields = data
+        self.fields = sorted(data)

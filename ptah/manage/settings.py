@@ -20,10 +20,9 @@ class SettingsView(view.View):
 
     def update(self):
         groups = get_settings_ob().items()
-        groups.sort()
 
         data = []
-        for name, group in groups:
+        for name, group in sorted(groups):
             title = group.title or name
             description = group.description
 

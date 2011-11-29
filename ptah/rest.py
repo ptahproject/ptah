@@ -88,9 +88,8 @@ class ServiceAPIDoc(object):
 
         actions = [(a.title, a.name, a.description)
                    for a in srv.actions.values()]
-        actions.sort()
 
-        for title, name, description in actions:
+        for title, name, description in sorted(actions):
             info['actions'].append(
                 OrderedDict(
                     (('name', name),

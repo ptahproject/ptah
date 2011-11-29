@@ -48,8 +48,7 @@ def cmsTypes(request, *args):
     for name, tinfo in ptah.cms.get_types().items():
         types.append((tinfo.title, name, typeInfo(tinfo, request)))
 
-    types.sort()
-    return [info for _t, name, info in types]
+    return [info for _t, name, info in sorted(types)]
 
 
 def typeInfo(tinfo, request):
@@ -216,8 +215,7 @@ def apidocAction(content, request, *args):
                      ('title', action.title),
                      ('description', action.description)))))
 
-    actions.sort()
-    return [action for _t, _n, action in actions]
+    return [action for _t, _n, action in sorted(actions)]
 
 
 @restaction('delete', IContent, DeleteContent)

@@ -93,5 +93,4 @@ def list_uiactions(content, request, category=''):
                   'description': action.description,
                   'data': action.data}))
 
-    actions.sort()
-    return [ac for _w, ac in actions]
+    return [ac for _w, ac in sorted(actions)]

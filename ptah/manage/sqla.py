@@ -116,11 +116,9 @@ class MainView(view.View):
             for name, table in md.tables.items():
                 data.append((name, self.printTable(table)))
 
-            data.sort()
-            tables.append((title, id, data))
+            tables.append((title, id, sorted(data)))
 
-        tables.sort()
-        self.tables = tables
+        self.tables = sorted(tables)
 
 
 def get_inheritance(table):

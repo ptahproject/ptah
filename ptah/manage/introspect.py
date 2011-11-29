@@ -24,8 +24,8 @@ class IntrospectModule(manage.PtahModule):
 
     def list_packages(self):
         if self.packages is None:
-            self.packages = list_packages()
-            self.packages.sort()
+            self.packages = sorted(list_packages())
+
         return self.packages
 
     def __getitem__(self, key):
@@ -101,8 +101,7 @@ class PackageView(view.View):
             if key in self.data:
                 itypes.append((cls.title, cls(self.request)))
 
-        itypes.sort()
-        self.itypes = [it for _t, it in itypes]
+        self.itypes = [it for _t, it in sorted(itypes)]
 
 
 def lineno(ob):
@@ -134,8 +133,7 @@ class EventsView(view.View):
                 if isinstance(n, basestring):
                     events.append((ev.title, ev))
 
-            events.sort()
-            self.events = [ev for _t, ev in events]
+            self.events = [ev for _t, ev in sorted(events)]
         else:
             pkgs = list_packages()
             evinst = event.instance
@@ -213,11 +211,9 @@ class RoutesView(view.View):
                 rdata.append([getattr(factory, '__intr_path__', name),
                               action.info.module.__name__, lineno(factory),
                               factory, action.discriminator[-1]])
-                rdata.sort()
+                rdata = sorted(rdata)
 
-            routes = routes.values()
-            routes.sort()
-            self.routes = routes
+            self.routes = sorted(routes.values())
 
             # views
             route_requests = [i for n, i in sm.getUtilitiesFor(IRouteRequest)]
@@ -242,8 +238,7 @@ class RoutesView(view.View):
                                     views.append(
                                         (context,name,classifier,req,factory))
 
-            views.sort()
-            self.views = views
+            self.views = sorted(views)
 
 
 class EventDirective(object):

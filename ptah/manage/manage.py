@@ -201,5 +201,4 @@ class ManageView(view.View):
                 continue
             mods.append((mod.title, mod))
 
-        mods.sort()
-        self.modules = [mod(context, request) for _t, mod in mods]
+        self.modules = [mod(context, request) for _t, mod in sorted(mods)]

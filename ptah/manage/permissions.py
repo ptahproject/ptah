@@ -22,12 +22,12 @@ class PermissionsView(view.View):
 
     def update(self):
         self.manage_url = manage.CONFIG.manage_url
-        self.permissions = ptah.get_permissions().values()
-        self.permissions.sort(key = lambda p: p.title)
+        self.permissions = sorted(ptah.get_permissions().values(),
+                                  key = lambda p: p.title)
 
         acls = ptah.get_acls()
-        self.acls = [acl for acl in acls.values() if acl.name != '']
-        self.acls.sort(key = lambda a: a.title)
+        self.acls = sorted([acl for acl in acls.values() if acl.name != ''],
+                           key = lambda a: a.title)
         self.acls.insert(0, ptah.DEFAULT_ACL)
 
 
@@ -37,8 +37,8 @@ class RolesView(view.View):
         template=view.template('ptah.manage:templates/roles.pt'))
 
     def update(self):
-        self.roles = ptah.get_roles().values()
-        self.roles.sort(key = lambda r: r.title)
+        self.roles = sorted(ptah.get_roles().values(),
+                            key = lambda r: r.title)
 
 
 class RoleIntrospection(object):

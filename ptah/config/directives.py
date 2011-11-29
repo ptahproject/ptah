@@ -323,10 +323,9 @@ def resolveConflicts(actions):
 
     # Check for conflicts
     conflicts = {}
-    for discriminator, dups in unique.items():
+    for discriminator, dups in sorted(unique.items()):
         # We need to sort the actions by the paths so that the shortest
         # path with a given prefix comes first:
-        dups.sort()
         basepath, order, action = dups[0]
 
         output.append((order, action))
@@ -339,8 +338,7 @@ def resolveConflicts(actions):
 
     # Now put the output back in the original order, and return it:
     r = []
-    output.sort()
-    for order, action in output:
+    for order, action in sorted(output):
         r.append(action)
 
     return r
@@ -354,8 +352,7 @@ class ConflictError(TypeError):
     def __str__(self):
         r = ["Conflicting configuration actions\n"]
         items = self._conflicts.items()
-        items.sort()
-        for discriminator, infos in items:
+        for discriminator, infos in sorted(items):
             r.append("  For: %s\n" % (discriminator, ))
             for info in infos:
                 filename, line, function, source = info.codeinfo

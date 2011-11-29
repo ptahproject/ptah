@@ -72,8 +72,8 @@ class TestStaticCommand(unittest.TestCase):
 
         val = self.out.getvalue()
         self.assertTrue("* Coping from 'ptah.view.tests'" in val)
-        files = os.listdir(os.path.join(dir, 'tests'))
-        files.sort()
+
+        files = sorted(os.listdir(os.path.join(dir, 'tests')))
         self.assertTrue(files == ['style.css', 'text.txt'])
 
     def test_commands_static_dump_skipping_existing(self):

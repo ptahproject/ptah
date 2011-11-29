@@ -360,9 +360,7 @@ class TestDefaultRoles(PtahTestCase):
     def test_role_defaults(self):
         import ptah
 
-        roles = list(ptah.get_roles().keys())
-        roles.sort()
-        roles = roles[:3]
+        roles = sorted(list(ptah.get_roles().keys()))[:3]
 
         self.assertTrue(['Authenticated', 'Everyone', 'Owner'] == roles)
         self.assertTrue(ptah.get_roles()['Everyone'].id == 'system.Everyone')
@@ -420,8 +418,7 @@ class TestLocalRoles(PtahTestCase):
         parent.__local_roles__['userid'] = ('role:test',)
         content.__local_roles__['userid'] = ('role:test2',)
 
-        lr = security.get_local_roles('userid', context=content)
-        lr.sort()
+        lr = sorted(security.get_local_roles('userid', context=content))
 
         self.assertTrue(lr == ['role:test', 'role:test2'])
 

@@ -64,15 +64,12 @@ class StaticCommand(object):
                 return
 
             items = registry.items()
-            items.sort()
-            for name, (path, pkg) in items:
+            for name, (path, pkg) in sorted(items):
                 print "* Coping from '%s' %s"%(pkg, path)
 
                 d = resources.buildTree(path)
-                di = d.items()
-                di.sort()
 
-                for p, _t in di:
+                for p, _t in sorted(d.items()):
                     bp = os.path.join(basepath, name, p)
                     dest_dir = os.path.split(bp)[0]
                     if not os.path.exists(dest_dir):
@@ -93,9 +90,8 @@ class StaticCommand(object):
         # list static sections
         if self.options.section:
             items = registry.items()
-            items.sort()
 
-            for name, (path, pkg) in items:
+            for name, (path, pkg) in sorted(items):
                 print grpTitleWrap.fill(name)
                 print nameWrap.fill('by: %s'%pkg)
                 p = path.split(pkg, 1)[-1]

@@ -64,9 +64,7 @@ class SettingsCommand(object):
             data = get_settings_ob().export(True)
 
             parser = configparser.ConfigParser(dict_type=OrderedDict)
-            items = data.items()
-            items.sort()
-            for key, val in items:
+            for key, val in sorted(data.items()):
                 parser.set(configparser.DEFAULTSECT, key, val)
 
             fp = io.BytesIO()
@@ -84,8 +82,7 @@ class SettingsCommand(object):
             section = self.options.section
 
         # print description
-        groups = get_settings_ob().items()
-        groups.sort()
+        groups = sorted(get_settings_ob().items())
 
         for name, group in groups:
             if section and name != section:

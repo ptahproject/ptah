@@ -65,8 +65,8 @@ class ModelModuleView(view.View):
             if ti.__uri__ in manage.CONFIG['disable_models']:
                 continue
             types.append((ti.title, ti))
-        types.sort()
-        self.types = [f for _t, f in types]
+
+        self.types = [f for _t, f in sorted(types)]
 
 
 class ModelView(form.Form):
