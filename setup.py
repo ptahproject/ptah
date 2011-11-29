@@ -55,7 +55,7 @@ setup(name='ptah',
             ],
         'paste.app_factory': [
             'app = ptah:make_wsgi_app'],
-        'paste.paster_create_template': [
+        'pyramid.scaffold': [
             'ptah101 = ptah.scaffolds:Ptah101ProjectTemplate',
             'ptah102 = ptah.scaffolds:Ptah102ProjectTemplate',
             'ptah201 = ptah.scaffolds:Ptah201ProjectTemplate',
