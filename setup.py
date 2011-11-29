@@ -50,7 +50,8 @@ setup(name='ptah',
       entry_points = {
         'ptah': ['package = ptah'],
         'console_scripts': [
-            'settings = ptah.config.commands:settingsCommand',
+            'static = ptah.scripts.pstatic:main',
+            'settings = ptah.scripts.settings:main',
             ],
         'paste.app_factory': [
             'app = ptah:make_wsgi_app'],
@@ -59,9 +60,6 @@ setup(name='ptah',
             'ptah102 = ptah.scaffolds:Ptah102ProjectTemplate',
             'ptah201 = ptah.scaffolds:Ptah201ProjectTemplate',
             'ptah301 = ptah.scaffolds:Ptah301ProjectTemplate',
-            ],
-        'paste.global_paster_command': [
-            'static = ptah.view.commands:StaticCommand',
             ],
         },
       )

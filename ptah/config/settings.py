@@ -3,13 +3,9 @@ import colander
 import logging
 import os.path
 
-try:
-    import configparser
-except ImportError:
-    import ConfigParser as configparser
-
 from zope import interface
 from zope.interface.interface import InterfaceClass
+from pyramid.compat import configparser
 
 from ptah.config import api
 from ptah.config import schema

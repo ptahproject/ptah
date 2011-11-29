@@ -103,7 +103,7 @@ class TestAdaptsDirective(BaseTesting):
         self.assertTrue(adapters[0][0] == '')
         self.assertTrue(adapters[0][1] is TestClass)
 
-        adapter = IAdapter(Context(IContext))
+        adapter = sm.getAdapter(Context(IContext), IAdapter)
         self.assertTrue(isinstance(adapter, TestClass))
 
     def test_adapts_named(self):
@@ -410,3 +410,4 @@ class TestExtraDirective(BaseTesting):
         self.assertIsNotNone(action.hash)
         self.assertIsNotNone(hash(action))
         self.assertRaises(TypeError, info.attach, action)
+        self.assertEqual(repr(action), '<Action "test">')

@@ -53,7 +53,7 @@ class TestTraverser(PtahTestCase):
 
         root = self.factory(request)
 
-        traverser = ITraverser(root)
+        traverser = self.registry.getAdapter(root, ITraverser)
 
         self.assertTrue(isinstance(traverser, ContentTraverser))
 
@@ -72,7 +72,7 @@ class TestTraverser(PtahTestCase):
             ApplicationRoot, '', 'root', 'Root App')
         root = factory(request)
 
-        traverser = ITraverser(root)
+        traverser = self.registry.getAdapter(root, ITraverser)
 
         info = traverser(request)
         self.assertTrue(info['context'] is root)
@@ -84,7 +84,7 @@ class TestTraverser(PtahTestCase):
         request = self.make_request(environ={'PATH_INFO': '/test/'})
 
         root = self.factory(request)
-        traverser = ITraverser(root)
+        traverser = self.registry.getAdapter(root, ITraverser)
 
         info = traverser(request)
         self.assertTrue(info['context'] is root)
@@ -96,7 +96,7 @@ class TestTraverser(PtahTestCase):
         request = self.make_request(environ={'PATH_INFO': '/test/folder'})
 
         root = self.factory(request)
-        traverser = ITraverser(root)
+        traverser = self.registry.getAdapter(root, ITraverser)
 
         info = traverser(request)
         self.assertEqual(info['context'].__uri__, self.folder_uri)
@@ -109,7 +109,7 @@ class TestTraverser(PtahTestCase):
         request = self.make_request(environ={'PATH_INFO': '/test/folder/'})
 
         root = self.factory(request)
-        traverser = ITraverser(root)
+        traverser = self.registry.getAdapter(root, ITraverser)
 
         info = traverser(request)
         self.assertEqual(info['context'].__uri__, self.folder_uri)
@@ -123,7 +123,7 @@ class TestTraverser(PtahTestCase):
             environ={'PATH_INFO': '/test/folder/index.html'})
 
         root = self.factory(request)
-        traverser = ITraverser(root)
+        traverser = self.registry.getAdapter(root, ITraverser)
 
         info = traverser(request)
         self.assertEqual(info['context'].__uri__, self.folder_uri)
@@ -137,7 +137,7 @@ class TestTraverser(PtahTestCase):
             environ={'PATH_INFO': '/test/folder/content'})
 
         root = self.factory(request)
-        traverser = ITraverser(root)
+        traverser = self.registry.getAdapter(root, ITraverser)
 
         info = traverser(request)
         self.assertEqual(info['context'].__uri__, self.content_uri)
@@ -151,7 +151,7 @@ class TestTraverser(PtahTestCase):
             environ={'PATH_INFO': '/test/folder/content/'})
 
         root = self.factory(request)
-        traverser = ITraverser(root)
+        traverser = self.registry.getAdapter(root, ITraverser)
 
         info = traverser(request)
         self.assertEqual(info['context'].__uri__, self.content_uri)
@@ -165,7 +165,7 @@ class TestTraverser(PtahTestCase):
             environ={'PATH_INFO': '/test/folder/content/index.html'})
 
         root = self.factory(request)
-        traverser = ITraverser(root)
+        traverser = self.registry.getAdapter(root, ITraverser)
 
         info = traverser(request)
         self.assertEqual(info['context'].__uri__, self.content_uri)
@@ -179,7 +179,7 @@ class TestTraverser(PtahTestCase):
             environ={'PATH_INFO': '/test//folder//content/index.html'})
 
         root = self.factory(request)
-        traverser = ITraverser(root)
+        traverser = self.registry.getAdapter(root, ITraverser)
 
         info = traverser(request)
         self.assertEqual(info['context'].__uri__, self.content_uri)

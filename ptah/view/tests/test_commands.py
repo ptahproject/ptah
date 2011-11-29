@@ -2,15 +2,15 @@
 import sys, os
 import unittest
 import tempfile, shutil
-from cStringIO import StringIO
-#from paste.script.command import run
+from io import BytesIO
 from ptah import config, view
+from ptah.scripts import pstatic
 
 
-class _TestStaticCommand(unittest.TestCase):
+class TestStaticCommand(unittest.TestCase):
 
     def setUp(self):
-        self.out = StringIO()
+        self.out = BytesIO()
         self._stdout = sys.stdout
         sys.stdout = self.out
         self.dir = tempfile.mkdtemp()
@@ -26,16 +26,11 @@ class _TestStaticCommand(unittest.TestCase):
 
         _out = sys.stdout
 
-        sys.argv[:] = ['paste', 'static', '-l']
+        sys.argv[1:] = ['-l']
 
-        out = StringIO()
+        out = BytesIO()
         sys.stdout = out
-
-        try:
-            print run()
-        except SystemExit:
-            pass
-
+        pstatic.main()
         sys.stdout = _out
 
         val = out.getvalue()
@@ -43,8 +38,7 @@ class _TestStaticCommand(unittest.TestCase):
         self.assertTrue('by: ptah.view.tests' in val)
 
     def test_commands_static_dump_errors(self):
-        from ptah.view.commands import StaticCommand
-        StaticCommand._include = ('ptah', self.__class__.__module__)
+        pstatic.StaticCommand._include = ('ptah', self.__class__.__module__)
 
         view.static('tests', 'ptah.view.tests:static/dir2')
 
@@ -55,32 +49,26 @@ class _TestStaticCommand(unittest.TestCase):
         f.write(' ')
         f.close()
 
-        sys.argv[:] = ['paste', 'static', '-d %s'%file]
-        out = StringIO()
+        sys.argv[1:] = ['-d %s'%file]
+        out = BytesIO()
+
         sys.stdout = out
-
-        try:
-            run()
-        except SystemExit:
-            pass
-
+        pstatic.main()
         sys.stdout = _out
+
         val = out.getvalue()
         self.assertTrue('Output path is not directory.' in val)
 
     def test_commands_static_dump(self):
         view.static('tests', 'ptah.view.tests:static/dir2')
 
-        from ptah.view.commands import StaticCommand
-        StaticCommand._include = ('ptah', self.__class__.__module__)
+        pstatic.StaticCommand._include = ('ptah', self.__class__.__module__)
 
         dir = os.path.join(self.dir, 'subdir')
 
-        sys.argv[:] = ['paste', 'static', '-d %s'%dir]
-        try:
-            run()
-        except SystemExit:
-            pass
+        sys.argv[1:] = ['-d %s'%dir]
+
+        pstatic.main()
 
         val = self.out.getvalue()
         self.assertTrue("* Coping from 'ptah.view.tests'" in val)
@@ -89,8 +77,7 @@ class _TestStaticCommand(unittest.TestCase):
         self.assertTrue(files == ['style.css', 'text.txt'])
 
     def test_commands_static_dump_skipping_existing(self):
-        from ptah.view.commands import StaticCommand
-        StaticCommand._include = ('ptah', self.__class__.__module__)
+        pstatic.StaticCommand._include = ('ptah', self.__class__.__module__)
 
         view.static('tests', 'ptah.view.tests:static/dir2')
 
@@ -100,11 +87,9 @@ class _TestStaticCommand(unittest.TestCase):
         f.write('test existing file')
         f.close()
 
-        sys.argv[:] = ['paste', 'static', '-d %s'%self.dir]
-        try:
-            run()
-        except SystemExit:
-            pass
+        sys.argv[1:] = ['-d %s'%self.dir]
+
+        pstatic.main()
 
         val = self.out.getvalue()
         self.assertTrue("skipping ../ptah.view.tests/text.txt" in val)

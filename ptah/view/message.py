@@ -9,9 +9,21 @@ from ptah.view.interfaces import IMessage, IStatusMessage
 
 
 def add_message(request, msg, type='info'):
-    srv = IStatusMessage(request, None)
+    srv = get_message_service(request)
     if srv is not None:
         srv.add(msg, type)
+
+
+def get_message_service(request):
+    return MessageService(request)
+
+
+def render_messages(request):
+    service = get_message_service(request)
+    messages = service.clear()
+    if messages:
+        return '\n'.join(messages)
+    return ''
 
 
 class MessageService(object):
@@ -97,22 +109,3 @@ class ErrorMessage(Message):
             message = e
 
         return super(ErrorMessage, self).render(message)
-
-
-@config.adapter(IRequest)
-@interface.implementer(IStatusMessage)
-def getMessageService(request):
-    service = request.registry.queryUtility(IStatusMessage)
-    if service is None:
-        service = MessageService(request)
-    return service
-
-
-def render_messages(request):
-    service = IStatusMessage(request, None)
-    if service is not None:
-        messages = service.clear()
-        if messages:
-            return '\n'.join(messages)
-
-    return ''

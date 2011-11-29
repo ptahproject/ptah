@@ -1,7 +1,8 @@
-""" paste commands """
-import os.path, shutil, textwrap
+""" static commands """
+import os.path, shutil
+import argparse
+import textwrap
 from pyramid import testing
-#from paste.script.command import Command
 
 from ptah import config
 from ptah.view import resources
@@ -24,23 +25,29 @@ nameTitleWrap = textwrap.TextWrapper(
     initial_indent='       ',
     subsequent_indent='       ', width = 80)
 
+def main():
+    args = StaticCommand.parser.parse_args()
+    cmd = StaticCommand(args)
+    cmd.run()
+
 
 class StaticCommand(object):
-    """ 'static' paste command"""
+    """ 'static' command"""
 
-    summary = "ptah static assets management"
-    usage = ""
-    group_name = "ptah"
-    #parser = Command.standard_parser(verbose=False)
-    #parser.add_option('-l', '--list', dest='section',
-    #                  action="store_true",
-    #                  help = 'List registered static sections')
-    #parser.add_option('-d', '--dump', dest='dump',
-    #                  help = 'Dump static assets')
+    parser = argparse.ArgumentParser(
+        description="ptah static assets management")
+    parser.add_argument('-l', '--list', dest='section',
+                        action="store_true",
+                        help = 'List registered static sections')
+    parser.add_argument('-d', '--dump', dest='dump',
+                        help = 'Dump static assets')
 
-    _include = None
+    _include = None # tests
 
-    def command(self):
+    def __init__(self, args):
+        self.options = args
+
+    def run(self):
         # load all ptah packages
         pconfig = testing.setUp()
         pconfig.include('ptah')

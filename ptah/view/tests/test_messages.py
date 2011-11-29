@@ -5,6 +5,7 @@ from pyramid.interfaces import IRequest
 
 from ptah import view
 from ptah.testing import PtahTestCase
+from ptah.view import get_message_service
 from ptah.view.interfaces import IMessage, IStatusMessage
 
 
@@ -16,7 +17,7 @@ class TestStatusMessages(PtahTestCase):
         if not skip:
             self.init_ptah()
 
-        service = IStatusMessage(self.request)
+        service = get_message_service(self.request)
         self.assertTrue(IStatusMessage.providedBy(service))
         self.assertEqual(service.messages(), ())
 
@@ -42,7 +43,7 @@ class TestStatusMessages(PtahTestCase):
     def test_messages_addmessage(self):
         self.init_ptah()
 
-        service = IStatusMessage(self.request)
+        service = get_message_service(self.request)
 
         # add_message
         view.add_message(self.request, 'message')
@@ -61,7 +62,7 @@ class TestStatusMessages(PtahTestCase):
     def test_messages_warning_msg(self):
         self.init_ptah()
 
-        service = IStatusMessage(self.request)
+        service = get_message_service(self.request)
 
         # add simple msg
         service.add('warning', 'warning')
@@ -77,7 +78,7 @@ class TestStatusMessages(PtahTestCase):
         except:
             pass
 
-        service = IStatusMessage(self.request)
+        service = get_message_service(self.request)
 
         service.add('error', 'error')
         self.assertEqual(
@@ -104,7 +105,7 @@ class TestStatusMessages(PtahTestCase):
         sm = self.registry
         sm.registerAdapter(CustomMessage, (IRequest,), IMessage, name='custom')
 
-        service = IStatusMessage(self.request)
+        service = get_message_service(self.request)
 
         service.add('message', 'custom')
         self.assertEqual(
@@ -131,7 +132,7 @@ class TestStatusMessages(PtahTestCase):
 
         v.message('message')
 
-        service = IStatusMessage(self.request)
+        service = get_message_service(self.request)
 
         self.assertEqual(
             ['\n'.join(service.messages()[0].split(os.linesep))],

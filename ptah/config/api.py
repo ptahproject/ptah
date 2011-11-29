@@ -1,7 +1,7 @@
-import pkg_resources
-import StringIO
 import sys
 import traceback
+import pkg_resources
+from io import BytesIO
 
 from collections import defaultdict
 from ptah.config import directives
@@ -27,7 +27,7 @@ class StopException(Exception):
 
     def print_tb(self):
         if self.isexc and self.exc_value:
-            out = StringIO.StringIO()
+            out = BytesIO()
             traceback.print_exception(
                 self.exc_type, self.exc_value, self.exc_traceback, file=out)
             return out.getvalue()

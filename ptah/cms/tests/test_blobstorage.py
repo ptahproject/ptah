@@ -1,5 +1,5 @@
 import transaction
-from cStringIO import StringIO
+from io import BytesIO
 from ptah.testing import PtahTestCase
 
 
@@ -8,7 +8,7 @@ class TestBlob(PtahTestCase):
     def test_blob(self):
         import ptah.cms
 
-        blob = ptah.cms.blobStorage.add(StringIO('blob data'))
+        blob = ptah.cms.blobStorage.add(BytesIO('blob data'))
         self.assertTrue(ptah.cms.IBlob.providedBy(blob))
         self.assertEqual(blob.read(), 'blob data')
         self.assertTrue(ptah.cms.IBlobStorage.providedBy(ptah.cms.blobStorage))
@@ -24,7 +24,7 @@ class TestBlob(PtahTestCase):
         import ptah.cms
 
         blob = ptah.cms.blobStorage.add(
-            StringIO('blob data'), filename='test.txt', mimetype='text/plain')
+            BytesIO('blob data'), filename='test.txt', mimetype='text/plain')
 
         self.assertEqual(blob.filename, 'test.txt')
         self.assertEqual(blob.mimetype, 'text/plain')
@@ -32,7 +32,7 @@ class TestBlob(PtahTestCase):
     def test_blob_info(self):
         import ptah.cms
         blob = ptah.cms.blobStorage.add(
-            StringIO('blob data'), filename='test.txt', mimetype='text/plain')
+            BytesIO('blob data'), filename='test.txt', mimetype='text/plain')
 
         info = blob.info()
         self.assertEqual(info['__uri__'], blob.__uri__)
@@ -42,7 +42,7 @@ class TestBlob(PtahTestCase):
     def test_blob_resolver(self):
         import ptah
 
-        blob = ptah.cms.blobStorage.add(StringIO('blob data'))
+        blob = ptah.cms.blobStorage.add(BytesIO('blob data'))
 
         blob_uri = blob.__uri__
         transaction.commit()
@@ -65,7 +65,7 @@ class TestBlob(PtahTestCase):
         ptah.cms.Session.add(content)
 
         blob_uri = ptah.cms.blobStorage.add(
-            StringIO('blob data'), content).__uri__
+            BytesIO('blob data'), content).__uri__
         transaction.commit()
 
         blob = ptah.resolve(blob_uri)
@@ -77,7 +77,7 @@ class TestBlob(PtahTestCase):
     def test_blob_write(self):
         import ptah
 
-        blob_uri = ptah.cms.blobStorage.add(StringIO('blob data')).__uri__
+        blob_uri = ptah.cms.blobStorage.add(BytesIO('blob data')).__uri__
         blob = ptah.resolve(blob_uri)
         blob.write('new data')
         transaction.commit()
@@ -90,7 +90,7 @@ class TestBlob(PtahTestCase):
         from ptah.cms.rest import blobData
 
         blob = ptah.cms.blobStorage.add(
-            StringIO('blob data'), filename='test.txt', mimetype='text/plain')
+            BytesIO('blob data'), filename='test.txt', mimetype='text/plain')
 
         response = blobData(blob, self.request)
         self.assertEqual(response.body, 'blob data')

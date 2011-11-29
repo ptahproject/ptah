@@ -1,11 +1,10 @@
 import colander
 import sys
 import unittest
-
-from StringIO import StringIO
+from io import BytesIO
 from pyramid.testing import setUp, tearDown
 from ptah import config
-from ptah.config import commands
+from ptah.scripts import settings
 
 
 class BaseTesting(unittest.TestCase):
@@ -50,10 +49,10 @@ class TestCommand(BaseTesting):
         sys.argv[1:] = ['-a']
 
         stdout = sys.stdout
-        out = StringIO()
+        out = BytesIO()
         sys.stdout = out
 
-        commands.settingsCommand(False)
+        settings.main(False)
         sys.stdout = stdout
 
         val = out.getvalue()
@@ -66,10 +65,10 @@ class TestCommand(BaseTesting):
         sys.argv[1:] = ['-l', 'group1']
 
         stdout = sys.stdout
-        out = StringIO()
+        out = BytesIO()
         sys.stdout = out
 
-        commands.settingsCommand(False)
+        settings.main(False)
         sys.stdout = stdout
 
         val = out.getvalue()
@@ -82,10 +81,10 @@ class TestCommand(BaseTesting):
         sys.argv[1:] = ['-p']
 
         stdout = sys.stdout
-        out = StringIO()
+        out = BytesIO()
         sys.stdout = out
 
-        commands.settingsCommand(False)
+        settings.main(False)
         sys.stdout = stdout
 
         val = out.getvalue().strip()

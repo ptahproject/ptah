@@ -53,3 +53,4 @@ from ptah.view.directives import snippet
 from ptah.view.message import Message
 from ptah.view.message import add_message
 from ptah.view.message import render_messages
+from ptah.view.message import get_message_service

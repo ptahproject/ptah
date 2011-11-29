@@ -1,11 +1,11 @@
 """ paste commands """
 import argparse
-import ConfigParser
-import StringIO
+import io
 import textwrap
 
 from collections import OrderedDict
 from pyramid.config import Configurator
+from pyramid.compat import configparser
 
 from ptah import config
 from ptah.config.settings import get_settings_ob
@@ -32,7 +32,7 @@ nameDescriptionWrap = textwrap.TextWrapper(
     subsequent_indent='')
 
 
-def settingsCommand(init=True):
+def main(init=True):
     if init:  # pragma: no cover
         config.initialize(Configurator(), autoinclude=True)
 
@@ -42,7 +42,7 @@ def settingsCommand(init=True):
 
 
 class SettingsCommand(object):
-    """ 'settings' paste command"""
+    """ 'settings' command"""
 
     parser = argparse.ArgumentParser(description="ptah settings management")
     parser.add_argument('-a', '--all', action="store_true",
@@ -63,13 +63,13 @@ class SettingsCommand(object):
         if self.options.printcfg:
             data = get_settings_ob().export(True)
 
-            parser = ConfigParser.ConfigParser(dict_type=OrderedDict)
+            parser = configparser.ConfigParser(dict_type=OrderedDict)
             items = data.items()
             items.sort()
             for key, val in items:
-                parser.set(ConfigParser.DEFAULTSECT, key, val)
+                parser.set(configparser.DEFAULTSECT, key, val)
 
-            fp = StringIO.StringIO()
+            fp = io.BytesIO()
             try:
                 parser.write(fp)
             finally:
