@@ -4,6 +4,7 @@ import sqlahelper
 import sqlalchemy as sqla
 from zope import interface
 from collections import OrderedDict
+from pyramid.compat import text_type
 
 from ptah.cms import action
 from permissions import View
@@ -69,7 +70,8 @@ class Node(Base):
                                  sqla.String,sqla.ForeignKey(__uri__),
                                  info={'uri': True})
 
-    __owner__ = sqla.Column('owner', sqla.String, default='', info={'uri':True})
+    __owner__ = sqla.Column('owner',
+                            sqla.String, default=text_type(''), info={'uri':True})
     __local_roles__ = sqla.Column('roles', ptah.JsonDictType(), default={})
     __acls__ = sqla.Column('acls', ptah.JsonListType(), default=[])
 

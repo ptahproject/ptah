@@ -2,6 +2,7 @@
 import os
 import sqlalchemy as sqla
 from zope import interface
+from pyramid.compat import text_type
 
 import ptah
 from node import Node, Session
@@ -17,8 +18,8 @@ class Blob(Node):
     __id__ = sqla.Column('id', sqla.Integer,
                          sqla.ForeignKey('ptah_nodes.id'), primary_key=True)
 
-    mimetype = sqla.Column(sqla.String(), default='')
-    filename = sqla.Column(sqla.String(), default='')
+    mimetype = sqla.Column(sqla.String(), default=text_type(''))
+    filename = sqla.Column(sqla.String(), default=text_type(''))
     size = sqla.Column(sqla.Integer, default=0)
     data = sqla.orm.deferred(sqla.Column(sqla.LargeBinary))
 

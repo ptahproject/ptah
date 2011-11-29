@@ -1,5 +1,6 @@
 """ introspect module """
 import inspect, sys
+from pyramid.compat import string_types
 from pyramid.interfaces import IRoutesMapper, IRouteRequest
 from pyramid.interfaces import IViewClassifier, IExceptionViewClassifier
 
@@ -130,7 +131,7 @@ class EventsView(view.View):
         if event is None:
             events = []
             for n, ev in all_events.items():
-                if isinstance(n, basestring):
+                if isinstance(n, string_types):
                     events.append((ev.title, ev))
 
             self.events = [ev for _t, ev in sorted(events)]

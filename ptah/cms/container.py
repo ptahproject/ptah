@@ -1,6 +1,7 @@
 """ Base container class implementation """
 import sqlalchemy as sqla
 from zope import interface
+from pyramid.compat import string_types
 
 import ptah
 from ptah import config
@@ -169,7 +170,7 @@ class BaseContainer(BaseContent):
     def __delitem__(self, item, flush=True):
         """Delete a value from the container using the key."""
 
-        if isinstance(item, basestring):
+        if isinstance(item, string_types):
             item = self[item]
 
         if item.__parent_uri__ == self.__uri__:

@@ -1,5 +1,6 @@
 from ptah import config, view
 from collections import OrderedDict
+from pyramid.compat import string_types
 from pyramid.location import lineage
 from pyramid.security import ACLDenied, Allow, Deny
 from pyramid.security import ALL_PERMISSIONS, NO_PERMISSION_REQUIRED
@@ -97,7 +98,7 @@ class ACL(list):
     def allow(self, role, *permissions):
         """ Give permissions to role """
 
-        if not isinstance(role, basestring):
+        if not isinstance(role, string_types):
             role = role.id
 
         rec = self.get(Allow, role)
@@ -116,7 +117,7 @@ class ACL(list):
     def deny(self, role, *permissions):
         """ Deny permissions for role """
 
-        if not isinstance(role, basestring):
+        if not isinstance(role, string_types):
             role = role.id
 
         rec = self.get(Deny, role)

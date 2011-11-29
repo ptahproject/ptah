@@ -1,11 +1,11 @@
 """ Base content class """
 import sqlalchemy as sqla
 from sqlalchemy.ext.hybrid import hybrid_property
-
 from zope import interface
-from ptah import config, form
+from pyramid.compat import text_type
 
 import ptah
+from ptah import config, form
 from ptah.cms import events
 from ptah.cms.node import Node, Session
 from ptah.cms.interfaces import Error, IContent
@@ -90,13 +90,13 @@ class BaseContent(Node):
 
     __id__ = sqla.Column('id', sqla.Integer,
                          sqla.ForeignKey('ptah_nodes.id'), primary_key=True)
-    __path__ = sqla.Column('path', sqla.Unicode, default='')
+    __path__ = sqla.Column('path', sqla.Unicode, default=text_type(''))
     __name_id__ = sqla.Column('name', sqla.Unicode(255))
 
-    title = sqla.Column(sqla.Unicode, default='')
-    description = sqla.Column(sqla.Unicode, default='',
+    title = sqla.Column(sqla.Unicode, default=text_type(''))
+    description = sqla.Column(sqla.Unicode, default=text_type(''),
                               info = {'missing': '', 'field_type': 'textarea'})
-    view = sqla.Column(sqla.Unicode, default='')
+    view = sqla.Column(sqla.Unicode, default=text_type(''))
 
     created = sqla.Column(sqla.DateTime)
     modified = sqla.Column(sqla.DateTime)
@@ -105,7 +105,7 @@ class BaseContent(Node):
 
     creators = sqla.Column(ptah.JsonListType(), default=[])
     subjects = sqla.Column(ptah.JsonListType(), default=[])
-    publisher = sqla.Column(sqla.Unicode, default='')
+    publisher = sqla.Column(sqla.Unicode, default=text_type(''))
     contributors = sqla.Column(ptah.JsonListType(), default=[])
 
     # sql queries

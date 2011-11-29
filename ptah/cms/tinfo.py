@@ -3,6 +3,7 @@ import ptah, sys, logging
 import sqlalchemy as sqla
 from ptah import config
 from zope import interface
+from pyramid.compat import string_types
 
 from node import Session
 from content import Content
@@ -95,7 +96,7 @@ class TypeInformation(object):
 
         if self.filter_content_types:
             for tinfo in self.allowed_content_types:
-                if isinstance(tinfo, basestring):
+                if isinstance(tinfo, string_types):
                     tinfo = all_types.get('cms-type:%s'%tinfo)
 
                 if tinfo and tinfo.is_allowed(container):

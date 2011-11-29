@@ -1,5 +1,6 @@
 """ Code from `colander` package """
 import re
+from pyramid.compat import string_types
 from ptah.form.interfaces import _, Invalid
 
 
@@ -59,7 +60,7 @@ class Function(object):
         if not result:
             raise Invalid(field, self.message)
 
-        if isinstance(result, basestring):
+        if isinstance(result, string_types):
             raise Invalid(field, result)
 
 
@@ -81,7 +82,7 @@ class Regex(object):
     """
 
     def __init__(self, regex, msg=None):
-        if isinstance(regex, basestring):
+        if isinstance(regex, string_types):
             self.match_object = re.compile(regex)
         else:
             self.match_object = regex

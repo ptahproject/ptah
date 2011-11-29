@@ -1,5 +1,6 @@
 """ resource library """
-from urlparse import urlparse
+from pyramid.compat import string_types, urlparse
+
 from ptah import config
 from ptah.view.resources import static_url
 
@@ -16,15 +17,15 @@ def library(name,
     if type not in ('js', 'css'):
         raise ValueError("Uknown type '%s'"%type)
 
-    if isinstance(path, basestring):
+    if isinstance(path, string_types):
         path = (path,)
 
-    if require and isinstance(require, basestring):
+    if require and isinstance(require, string_types):
         require = (require,)
 
     if not resource:
         for p in path:
-            if not urlparse(p)[0]:
+            if not urlparse.urlparse(p)[0]:
                 raise ValueError("If resource is not defined "
                                  "path has to be absolute url")
 
@@ -114,7 +115,7 @@ class Entry(object):
         self.urls = urls = []
         self.paths = paths = []
         for p in path:
-            if urlparse(p)[0]:
+            if urlparse.urlparse(p)[0]:
                 urls.append(p)
             else:
                 paths.append(p)

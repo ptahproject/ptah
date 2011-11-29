@@ -3,6 +3,7 @@ import imp
 import inspect
 import logging
 import sys
+from pyramid.compat import string_types
 
 from zope import interface
 from pkgutil import walk_packages
@@ -267,7 +268,7 @@ def getFrameInfo(frame):
 
 
 def scan(package, seen, exclude_filter=None):
-    if isinstance(package, basestring):
+    if isinstance(package, string_types):
         __import__(package)
         package = sys.modules[package]
 

@@ -1,7 +1,7 @@
 """ static resource management api """
 import os, re, colander
-from urlparse import urlparse
 
+from pyramid.compat import urlparse
 from pyramid.static import _FileResponse
 from pyramid.httpexceptions import HTTPNotFound
 
@@ -88,7 +88,7 @@ def buildTree(path, not_allowed=re.compile('^[.~$#]')):
 @config.subscriber(config.AppStarting)
 def initialize(ev):
     url = STATIC.url
-    if not urlparse(url)[0]:
+    if not urlparse.urlparse(url)[0]:
         registry = config.get_cfg_storage(STATIC_ID)
         for name, (abspath, pkg) in registry.items():
             prefix = '%s/%s'%(url, name)

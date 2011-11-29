@@ -1,13 +1,15 @@
 import inspect
-from ptah import config
+from pyramid.compat import string_types
 
 import ptah
+from ptah import config
+
 from permissions import View
 from interfaces import NotFound, Forbidden
 
 
 def wrap(content):
-    if isinstance(content, basestring):
+    if isinstance(content, string_types):
         content = ptah.cms.load(content)
     else:
         ptah.cms.load_parents(content)
