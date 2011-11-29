@@ -80,7 +80,7 @@ class TestForm(unittest.TestCase):
 
     def test_csrf_token(self):
         from ptah.form import form
-        form.setCsrfUtility(None)
+        form.set_csrf_utility(None)
 
         class MyForm(form.Form):
             pass
@@ -99,7 +99,7 @@ class TestForm(unittest.TestCase):
                 if retData:
                     return token.split(':', 1)[-1]
 
-        form.setCsrfUtility(CsrfService())
+        form.set_csrf_utility(CsrfService())
 
         token = form_ob.token
         self.assertIsNotNone(token)

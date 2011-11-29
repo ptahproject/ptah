@@ -13,14 +13,6 @@ ptah/__init__.py contains  public API that is used nearly everywhere.
 these APIs include security, uri, principal events, & token system.  
 canonical WSGI factory, make_wsgi_app. 
 
-ptah.addon
-----------
-
-This contains a prototype addon subsystem.  Not useful at this time unless
-you are a framework developer and interested in helping us build this.
-
-ptah.addon is optional.
-
 ptah.cms
 --------
 
@@ -30,12 +22,6 @@ API for this package.
 
 ptah.cms is required.
 
-ptah.cmsapp
------------
-
-This is a default application of the ptah.cms library.
-
-ptah.cmsapp is optional.
 
 ptah.config
 -----------
@@ -45,13 +31,6 @@ declarative style configuration of ptah functionality.
 
 ptah.config is required.
 
-ptah.crowd
-----------
-
-the default user management facilities. supports User and User Properties
-models. login, logout, resetpassword, registration, validation and suspend.
-
-ptah.crowd is optional.
 
 ptah.form
 ---------
@@ -69,8 +48,8 @@ nice interface into SQLAlchemy models.
 
 ptah.manage is optional.
 
-view
-----
+ptah.view
+---------
 
 contains the view, library facilitiy, snippet, layout, static resource 
 registration, flash messages, formatters.  

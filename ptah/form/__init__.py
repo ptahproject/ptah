@@ -65,7 +65,7 @@ from ptah.form.fields import BaseMultiChoiceField
 from ptah.form.form import Form
 from ptah.form.form import DisplayForm
 from ptah.form.form import FormWidgets
-from ptah.form.form import setCsrfUtility
+from ptah.form.form import set_csrf_utility
 
 # form snippets
 from ptah.form.form import FORM_VIEW

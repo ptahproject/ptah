@@ -59,7 +59,7 @@ Password changer
 
 A function which is responsible for changing a user's password. An example::
 
-    ptah.passwordTool.register_password_changer('user+crowd', change_pw)
+    ptah.pwd_tool.register_password_changer('user+crowd', change_pw)
 
 Password changer is optional.
 

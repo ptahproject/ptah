@@ -14,7 +14,7 @@ from ptah.form.interfaces import IForm
 CSRF = None
 
 
-def setCsrfUtility(util):
+def set_csrf_utility(util):
     global CSRF
     CSRF = util
 

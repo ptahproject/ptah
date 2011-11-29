@@ -53,7 +53,7 @@ Optional. If you are using ptah.make_wsgi_app some extra features are available:
 This function returns a WSGIApp.
 
 I have 2 ways to do registration?
------------------------------
+---------------------------------
 Yes.  But its easier to think about it this way.  Pyramid is a agnostic
 web framework.  Ptah is a application/web framework with opinions.
 Ptah registration revolve around services (uri resolvers, models and a

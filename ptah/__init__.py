@@ -19,19 +19,18 @@ from ptah.authentication import search_principals
 from ptah.authentication import principal_searcher
 from ptah.authentication import register_principal_searcher
 
-from ptah.interfaces import IACLsAware
-from ptah.interfaces import IOwnersAware
-from ptah.interfaces import ILocalRolesAware
-
 # acl
 from ptah.security import ACL
 from ptah.security import ACLsProperty
 from ptah.security import get_acls
+from ptah.interfaces import IACLsAware
 
 # role
 from ptah.security import Role
 from ptah.security import get_roles
 from ptah.security import get_local_roles
+from ptah.interfaces import IOwnersAware
+from ptah.interfaces import ILocalRolesAware
 
 # permission
 from ptah.security import Permission

@@ -46,7 +46,7 @@ class CSRFService(object):
     def remove(self, t):
         return token.service.remove(t)
 
-form.setCsrfUtility(CSRFService())
+form.set_csrf_utility(CSRFService())
 
 
 class Pagination(object):
