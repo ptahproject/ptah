@@ -8,7 +8,7 @@ from pyramid import testing
 class Principal(object):
 
     def __init__(self, uri, name, login):
-        self.uri = uri
+        self.__uri__ = uri
         self.name = name
         self.login = login
 

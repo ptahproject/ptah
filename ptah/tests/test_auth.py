@@ -6,7 +6,7 @@ from pyramid import testing
 class Principal(object):
 
     def __init__(self, uri, name, login):
-        self.uri = uri
+        self.__uri__ = uri
         self.name = name
         self.login = login
 
@@ -23,6 +23,7 @@ class TestAuthentication(PtahTestCase):
             {'login': 'user', 'password': '12345'})
 
         self.assertFalse(info.status)
+        self.assertIsNone(info.principal)
 
         class Provider(object):
             def authenticate(self, creds):
@@ -36,7 +37,7 @@ class TestAuthentication(PtahTestCase):
             {'login': 'user', 'password': '12345'})
 
         self.assertTrue(info.status)
-        self.assertEqual(info.uri, '1')
+        self.assertEqual(info.__uri__, '1')
 
     def test_auth_provider_declarative(self):
         import ptah
@@ -55,7 +56,7 @@ class TestAuthentication(PtahTestCase):
             {'login': 'user', 'password': '12345'})
 
         self.assertTrue(info.status)
-        self.assertEqual(info.uri, '1')
+        self.assertEqual(info.__uri__, '1')
 
     def test_auth_provider_pyramid(self):
         import ptah
@@ -77,7 +78,7 @@ class TestAuthentication(PtahTestCase):
             {'login': 'user', 'password': '12345'})
 
         self.assertTrue(info.status)
-        self.assertEqual(info.uri, '1')
+        self.assertEqual(info.__uri__, '1')
 
     def test_auth_checker_default(self):
         import ptah
@@ -87,7 +88,7 @@ class TestAuthentication(PtahTestCase):
 
         info = ptah.authService.authenticate_principal(principal)
         self.assertTrue(info.status)
-        self.assertEqual(info.uri, '1')
+        self.assertEqual(info.__uri__, '1')
         self.assertEqual(info.message, '')
         self.assertEqual(info.arguments, {})
 
@@ -115,7 +116,7 @@ class TestAuthentication(PtahTestCase):
             {'login': 'user', 'password': '12345'})
 
         self.assertFalse(info.status)
-        self.assertEqual(info.uri, '1')
+        self.assertEqual(info.__uri__, '1')
         self.assertEqual(info.message, 'Suspended')
         self.assertEqual(info.arguments, {'additional': 'test'})
 
@@ -123,7 +124,7 @@ class TestAuthentication(PtahTestCase):
 
         info = ptah.authService.authenticate_principal(principal)
         self.assertFalse(info.status)
-        self.assertEqual(info.uri, '1')
+        self.assertEqual(info.__uri__, '1')
         self.assertEqual(info.message, 'Suspended')
         self.assertEqual(info.arguments, {'additional': 'test'})
 
@@ -152,7 +153,7 @@ class TestAuthentication(PtahTestCase):
             {'login': 'user', 'password': '12345'})
 
         self.assertFalse(info.status)
-        self.assertEqual(info.uri, '1')
+        self.assertEqual(info.__uri__, '1')
         self.assertEqual(info.message, 'Suspended')
         self.assertEqual(info.arguments, {'additional': 'test'})
 
@@ -160,7 +161,7 @@ class TestAuthentication(PtahTestCase):
 
         info = ptah.authService.authenticate_principal(principal)
         self.assertFalse(info.status)
-        self.assertEqual(info.uri, '1')
+        self.assertEqual(info.__uri__, '1')
         self.assertEqual(info.message, 'Suspended')
         self.assertEqual(info.arguments, {'additional': 'test'})
 

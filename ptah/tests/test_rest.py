@@ -80,7 +80,7 @@ class TestRestRegistrations(PtahTestCase):
 
 
 class Principal(object):
-    uri = 'testprincipal:1'
+    __uri__ = 'testprincipal:1'
     name = 'admin'
     login = 'admin'
 

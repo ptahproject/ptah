@@ -15,7 +15,7 @@ class IURIResolver(interface.Interface):
 class IPrincipal(interface.Interface):
     """ principal """
 
-    uri = interface.Attribute('Unique principal id')
+    __uri__ = interface.Attribute('Unique principal id')
 
     name = interface.Attribute('Human readable principal name')
 
@@ -32,7 +32,7 @@ class IPasswordChanger(interface.Interface):
 class IAuthInfo(interface.Interface):
     """ auth info """
 
-    uri = interface.Attribute('Principal UUID')
+    __uri__ = interface.Attribute('Principal UUID')
 
     status = interface.Attribute('Status of authentication call')
 

@@ -133,7 +133,7 @@ class Login(object):
         credentials = {'login': login, 'password': password}
         info = ptah.authService.authenticate(credentials)
         if info.status:
-            token = self.get_token(request, info.uri)
+            token = self.get_token(request, info.__uri__)
             result = {'message': '', 'auth-token': token[:-1]}
         else:
             request.response.status = 403

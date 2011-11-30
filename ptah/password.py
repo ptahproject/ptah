@@ -122,7 +122,7 @@ class PasswordTool(object):
 
     def can_change_password(self, principal):
         """ can principal password be changed """
-        return ptah.extract_uri_schema(principal.uri) in \
+        return ptah.extract_uri_schema(principal.__uri__) in \
             config.get_cfg_storage(PASSWORD_CHANGER_ID)
 
     def get_principal(self, passcode):
@@ -134,7 +134,7 @@ class PasswordTool(object):
 
     def generate_passcode(self, principal):
         """ generate passcode for principal """
-        return token.service.generate(TOKEN_TYPE, principal.uri)
+        return token.service.generate(TOKEN_TYPE, principal.__uri__)
 
     def remove_passcode(self, passcode):
         """ remove passcode """
@@ -149,7 +149,7 @@ class PasswordTool(object):
         if principal is not None:
             changers = config.get_cfg_storage(PASSWORD_CHANGER_ID)
 
-            changer = changers.get(ptah.extract_uri_schema(principal.uri))
+            changer = changers.get(ptah.extract_uri_schema(principal.__uri__))
             if changer is not None:
                 changer(principal, self.encode(password))
                 return True

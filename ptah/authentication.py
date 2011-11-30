@@ -11,7 +11,7 @@ from ptah.interfaces import IAuthInfo, IAuthentication
 class _Superuser(object):
 
     def __init__(self):
-        self.uri = 'ptah-auth:superuser'
+        self.__uri__ = 'ptah-auth:superuser'
         self.login = ''
         self.name = 'Manager'
 
@@ -90,11 +90,11 @@ def pyramid_auth_provider(config, name, provider):
 class AuthInfo(object):
     interface.implements(IAuthInfo)
 
-    def __init__(self, status=False, principal=None, uri=None, message=''):
+    def __init__(self, principal, status=False, message=''):
+        self.__uri__ = getattr(principal, '__uri__', None)
+        self.principal = principal
         self.status = status
         self.message = message
-        self.principal = principal
-        self.uri = uri
         self.arguments = {}
 
 
@@ -107,14 +107,11 @@ class Authentication(object):
     interface.implements(IAuthentication)
 
     def authenticate(self, credentials):
-        info = AuthInfo()
-
         providers = config.get_cfg_storage(AUTH_PROVIDER_ID)
         for pname, provider in providers.items():
             principal = provider.authenticate(credentials)
             if principal is not None:
-                info.uri = principal.uri
-                info.principal = principal
+                info = AuthInfo(principal)
 
                 for checker in \
                         config.get_cfg_storage(AUTH_CHECKER_ID).values():
@@ -124,12 +121,10 @@ class Authentication(object):
                 info.status = True
                 return info
 
-        return info
+        return AuthInfo(None)
 
     def authenticate_principal(self, principal):
-        info = AuthInfo()
-        info.uri = principal.uri
-        info.principal = principal
+        info = AuthInfo(principal)
 
         for checker in \
                 config.get_cfg_storage(AUTH_CHECKER_ID).values():
