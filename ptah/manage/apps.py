@@ -31,6 +31,9 @@ class ApplicationsModule(manage.PtahModule):
 
         raise KeyError(key)
 
+    def available(self):
+        return bool(cms.get_app_factories())
+
 
 class ApplicationsModuleView(view.View):
     view.pview(

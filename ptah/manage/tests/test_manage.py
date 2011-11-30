@@ -102,6 +102,41 @@ class TestManageModule(PtahTestCase):
 
         self.assertIsInstance(v.modules[-1], TestModule)
 
+    def test_manage_view_unavailable(self):
+        from ptah.manage.manage import \
+            module, PtahModule, PtahManageRoute, ManageView, \
+            set_access_manager
+
+        global TestModule
+        class TestModule(PtahModule):
+            """ module description """
+
+            title = 'Test module'
+            module('test-module')
+
+            def available(self):
+                return False
+
+        def accessManager(id):
+            return True
+
+        self.init_ptah()
+
+        set_access_manager(accessManager)
+        ptah.authService.set_userid('test-user')
+
+        route = PtahManageRoute(self.request)
+
+        v = ManageView(route, self.request)
+        v.update()
+
+        found = False
+        for mod in v.modules:
+            if isinstance(mod, TestModule): # pragma: no cover
+                found = True
+
+        self.assertFalse(found)
+
     def test_manage_traverse(self):
         from ptah.manage.manage import \
             module, PtahModule, PtahManageRoute, set_access_manager

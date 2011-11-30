@@ -5,6 +5,7 @@ from ptah import cms, view, form, manage
 from pyramid.decorator import reify
 from pyramid.httpexceptions import HTTPFound
 
+
 class ModelModule(manage.PtahModule):
     __doc__ = 'A listing of all registered models.'
 
@@ -18,6 +19,9 @@ class ModelModule(manage.PtahModule):
             return Model(ti, self, self.request)
 
         raise KeyError(key)
+
+    def available(self):
+        return bool(cms.get_types())
 
 
 class Model(object):

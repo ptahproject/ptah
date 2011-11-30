@@ -199,6 +199,9 @@ class ManageView(view.View):
         for name, mod in config.get_cfg_storage(MANAGE_ID).items():
             if name in CONFIG.disable_modules:
                 continue
+            mod = mod(context, request)
+            if not mod.available():
+                continue
             mods.append((mod.title, mod))
 
-        self.modules = [mod(context, request) for _t, mod in sorted(mods)]
+        self.modules = [mod for _t, mod in sorted(mods)]
