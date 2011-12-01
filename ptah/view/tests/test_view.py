@@ -413,6 +413,8 @@ class TestView(BaseView):
 
 class TestRouteRegistration(BaseView):
 
+    _init_ptah = False
+
     def test_view_route(self):
         view.register_route('test-route', '/test/')
         self.init_ptah()
@@ -435,6 +437,17 @@ class TestRouteRegistration(BaseView):
         view.register_route('test-route', '/test/')
         view.register_route('test-route', '/test2/')
         self.assertRaises(config.ConflictError, self.init_ptah)
+
+    def test_view_route_derived(self):
+        view.register_route('test-route1', '/test/')
+        view.register_route('test-route2', '/test2/',
+                            derived_route='test-route1')
+        self.init_ptah()
+
+        iface1 = self.registry.getUtility(IRouteRequest, name='test-route1')
+        iface2 = self.registry.getUtility(IRouteRequest, name='test-route2')
+
+        self.assertTrue(iface2.isOrExtends(iface1))
 
 
 class TestViewView(BaseView):

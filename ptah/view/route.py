@@ -7,7 +7,8 @@ from pyramid.interfaces import IRequest, IRouteRequest, IRoutesMapper
 
 
 def register_route(name, pattern=None, factory=None, header=None,
-                   traverse=None, pregenerator=None, use_global_views=False,
+                   traverse=None, pregenerator=None,
+                   use_global_views=False, derived_route=None,
                    xhr=False, request_method=None,
                    path_info=None, request_param=None,
                    accept=None, custom_predicates=()):
@@ -28,26 +29,34 @@ def register_route(name, pattern=None, factory=None, header=None,
     info.attach(
         config.Action(
             register_route_impl,
-            (name,pattern,factory,predicates,pregenerator,use_global_views),
+            (name, pattern, factory, predicates, pregenerator,
+             use_global_views, derived_route),
             discriminator = ('ptah.view:route', name),
-            order = 1))
+            ))
 
 
-def register_route_impl(cfg, name, pattern, factory,
-                        predicates, pregenerator, use_global_views):
-    request_iface = cfg.registry.queryUtility(IRouteRequest, name=name)
+def register_route_impl(cfg, name, pattern, factory, predicates,
+                        pregenerator, use_global_views, derived_route):
+    registry = cfg.registry
+
+    request_iface = registry.queryUtility(IRouteRequest, name=name)
     if request_iface is None:
         if use_global_views:
             bases = (IRequest,)
         else:
             bases = ()
-        request_iface = route_request_iface(name, bases)
-        cfg.registry.registerUtility(request_iface, IRouteRequest, name=name)
 
-    mapper = cfg.registry.queryUtility(IRoutesMapper)
+        if derived_route is not None:
+            bases = (registry.getUtility(IRouteRequest, name=derived_route),)+\
+                    bases
+
+        request_iface = route_request_iface(name, bases)
+        registry.registerUtility(request_iface, IRouteRequest, name=name)
+
+    mapper = registry.queryUtility(IRoutesMapper)
     if mapper is None:
         mapper = RoutesMapper()
-        cfg.registry.registerUtility(mapper, IRoutesMapper)
+        registry.registerUtility(mapper, IRoutesMapper)
 
     return mapper.connect(name, pattern, factory, predicates=predicates,
                           pregenerator=pregenerator, static=False)
