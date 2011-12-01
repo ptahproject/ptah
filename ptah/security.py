@@ -293,7 +293,7 @@ def check_permission(permission, context, request=None, throw=False):
             raise HTTPForbidden()
         return False
 
-    userid = authService.get_userid()
+    userid = authService.get_effective_userid()
     if userid == SUPERUSER_URI:
         return True
 

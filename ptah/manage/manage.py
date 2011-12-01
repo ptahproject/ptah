@@ -143,9 +143,9 @@ class PtahManageRoute(object):
             raise HTTPForbidden()
 
         self.userid = userid
-        self.manage_url = CONFIG.manage_url
+        self.manage_url = CONFIG['manage_url']
 
-        authService.set_userid(ptah.SUPERUSER_URI)
+        authService.set_effective_userid(ptah.SUPERUSER_URI)
 
     def __getitem__(self, key):
         if key not in CONFIG.disable_modules:

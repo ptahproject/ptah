@@ -176,6 +176,27 @@ class TestAuthentication(PtahTestCase):
         ptah.util.resetThreadLocalData(None)
         self.assertEqual(ptah.authService.get_userid(), None)
 
+    def test_auth_get_set_effective_userid(self):
+        import ptah
+        import ptah.util
+
+        self.assertEqual(ptah.authService.get_effective_userid(), None)
+
+        ptah.authService.set_effective_userid('user')
+        self.assertEqual(ptah.authService.get_effective_userid(), 'user')
+
+        ptah.util.resetThreadLocalData(None)
+        self.assertEqual(ptah.authService.get_effective_userid(), None)
+
+        ptah.authService.set_userid('user')
+        self.assertEqual(ptah.authService.get_effective_userid(), 'user')
+
+        ptah.authService.set_effective_userid('user2')
+        self.assertEqual(ptah.authService.get_effective_userid(), 'user2')
+
+        ptah.authService.set_userid('user3')
+        self.assertEqual(ptah.authService.get_effective_userid(), 'user2')
+
     def test_auth_principal(self):
         import ptah
 

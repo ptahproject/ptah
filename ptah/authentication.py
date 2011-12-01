@@ -104,7 +104,8 @@ class AuthInfo(object):
 
 _not_set = object()
 
-USER_KEY = '__ptah_auth_userid__'
+USER_KEY = '__ptah_userid__'
+EFFECTIVE_USER_KEY = '__ptah_effective__userid__'
 
 
 class Authentication(object):
@@ -138,18 +139,27 @@ class Authentication(object):
         info.status = True
         return info
 
-    def set_userid(self, uid):
-        tldata.set(USER_KEY, uid)
+    def set_userid(self, uri):
+        tldata.set(USER_KEY, uri)
 
     def get_userid(self):
-        uid = tldata.get(USER_KEY, _not_set)
-        if uid is _not_set:
+        uri = tldata.get(USER_KEY, _not_set)
+        if uri is _not_set:
             try:
                 self.set_userid(authenticated_userid(get_current_request()))
             except:  # pragma: no cover
                 self.set_userid(None)
             return tldata.get(USER_KEY)
-        return uid
+        return uri
+
+    def set_effective_userid(self, uri):
+        tldata.set(EFFECTIVE_USER_KEY, uri)
+
+    def get_effective_userid(self):
+        uri = tldata.get(EFFECTIVE_USER_KEY, _not_set)
+        if uri is _not_set:
+            return self.get_userid()
+        return uri
 
     def get_current_principal(self):
         return resolve(self.get_userid())

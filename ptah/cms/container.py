@@ -235,4 +235,4 @@ class BaseContainer(BaseContent):
 class Container(BaseContainer):
     """ container for content, it just for inheritance """
 
-    interface.implements(IContainer, IContent)
+    interface.implements(IContainer)
