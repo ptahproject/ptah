@@ -95,7 +95,11 @@ class TypeInformation(object):
         all_types = config.get_cfg_storage(TYPES_DIR_ID)
 
         if self.filter_content_types:
-            for tinfo in self.allowed_content_types:
+            allowed_types = self.allowed_content_types
+            if callable(allowed_types):
+                allowed_types = allowed_types(container)
+
+            for tinfo in allowed_types:
                 if isinstance(tinfo, string_types):
                     tinfo = all_types.get('cms-type:%s'%tinfo)
 

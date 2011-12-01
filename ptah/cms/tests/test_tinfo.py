@@ -131,6 +131,28 @@ class TestTypeInfo(PtahTestCase):
         self.assertEqual(MyContainer.__type__.list_types(container),
                          [MyContent.__type__])
 
+    def test_tinfo_list_filtered_callable(self):
+        import ptah.cms
+
+        global MyContent, MyContainer
+        class MyContent(ptah.cms.Content):
+            __type__ = ptah.cms.Type('mycontent', 'Content', permission=None)
+        class MyContainer(ptah.cms.Container):
+            __type__ = ptah.cms.Type(
+                'mycontainer', 'Container', filter_content_types=True)
+
+        self.init_ptah()
+
+        container = MyContainer()
+        self.assertEqual(MyContainer.__type__.list_types(container), [])
+
+        def filter(content):
+            return ('mycontent',)
+
+        MyContainer.__type__.allowed_content_types = filter
+        self.assertEqual(MyContainer.__type__.list_types(container),
+                         [MyContent.__type__])
+
     def test_tinfo_conflicts(self):
         import ptah.cms
 
