@@ -131,7 +131,7 @@ class Login(object):
         password = request.POST.get('password', '')
 
         credentials = {'login': login, 'password': password}
-        info = ptah.authService.authenticate(credentials)
+        info = ptah.auth_service.authenticate(credentials)
         if info.status:
             token = self.get_token(request, info.__uri__)
             result = {'message': '', 'auth-token': token[:-1]}
@@ -179,7 +179,7 @@ class Api(object):
                 userid = None
 
             if userid:
-                ptah.authService.set_userid(userid)
+                ptah.auth_service.set_userid(userid)
 
         # search service and action
         service = request.matchdict['service']

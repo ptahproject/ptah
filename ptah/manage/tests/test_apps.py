@@ -25,7 +25,7 @@ class TestAppsModule(PtahTestCase):
 
         request = DummyRequest()
 
-        ptah.authService.set_userid('test')
+        ptah.auth_service.set_userid('test')
         CONFIG['managers'] = ('*',)
         mr = PtahManageRoute(request)
         mod = mr['apps']
@@ -117,7 +117,7 @@ class TestAppSharingForm(PtahTestCase):
         if request is None:
             request = DummyRequest()
 
-        ptah.authService.set_userid(ptah.SUPERUSER_URI)
+        ptah.auth_service.set_userid(ptah.SUPERUSER_URI)
         CONFIG['managers'] = ('*',)
         mr = PtahManageRoute(request)
         mod = mr['apps']

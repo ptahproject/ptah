@@ -29,7 +29,7 @@ class TestManageModule(PtahTestCase):
 
         self.assertRaises(HTTPForbidden, PtahManageRoute, self.request)
 
-        ptah.authService.set_userid('test-user')
+        ptah.auth_service.set_userid('test-user')
 
         self.assertRaises(HTTPForbidden, PtahManageRoute, self.request)
 
@@ -91,7 +91,7 @@ class TestManageModule(PtahTestCase):
         self.init_ptah()
 
         set_access_manager(accessManager)
-        ptah.authService.set_userid('test-user')
+        ptah.auth_service.set_userid('test-user')
 
         route = PtahManageRoute(self.request)
 
@@ -120,7 +120,7 @@ class TestManageModule(PtahTestCase):
         self.init_ptah()
 
         set_access_manager(accessManager)
-        ptah.authService.set_userid('test-user')
+        ptah.auth_service.set_userid('test-user')
 
         route = PtahManageRoute(self.request)
 
@@ -150,7 +150,7 @@ class TestManageModule(PtahTestCase):
         self.init_ptah()
 
         set_access_manager(accessManager)
-        ptah.authService.set_userid('test-user')
+        ptah.auth_service.set_userid('test-user')
 
         route = PtahManageRoute(self.request)
 
@@ -173,7 +173,7 @@ class TestManageModule(PtahTestCase):
         self.init_ptah()
 
         set_access_manager(accessManager)
-        ptah.authService.set_userid('test-user')
+        ptah.auth_service.set_userid('test-user')
 
         CONFIG['disable_modules'] = ('test-module',)
 
@@ -202,7 +202,7 @@ class TestManageModule(PtahTestCase):
         self.init_ptah()
 
         set_access_manager(accessManager)
-        ptah.authService.set_userid('test-user')
+        ptah.auth_service.set_userid('test-user')
 
         CONFIG['disable_modules'] = ('test-module',)
 

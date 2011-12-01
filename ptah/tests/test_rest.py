@@ -160,7 +160,7 @@ class TestRestView(PtahTestCase):
 
         api = Api(request)
         api.render()
-        self.assertEqual(ptah.authService.get_userid(), None)
+        self.assertEqual(ptah.auth_service.get_userid(), None)
 
         token = info['auth-token']
 
@@ -169,7 +169,7 @@ class TestRestView(PtahTestCase):
 
         api = Api(request)
         api.render()
-        self.assertEqual(ptah.authService.get_userid(), 'testprincipal:1')
+        self.assertEqual(ptah.auth_service.get_userid(), 'testprincipal:1')
 
 
 class TestRestApi(PtahTestCase):

@@ -19,7 +19,7 @@ class TestAuthentication(PtahTestCase):
     def test_auth_provider(self):
         import ptah
 
-        info = ptah.authService.authenticate(
+        info = ptah.auth_service.authenticate(
             {'login': 'user', 'password': '12345'})
 
         self.assertFalse(info.status)
@@ -33,7 +33,7 @@ class TestAuthentication(PtahTestCase):
         ptah.register_auth_provider('test-provider', Provider())
         self.init_ptah()
 
-        info = ptah.authService.authenticate(
+        info = ptah.auth_service.authenticate(
             {'login': 'user', 'password': '12345'})
 
         self.assertTrue(info.status)
@@ -51,7 +51,7 @@ class TestAuthentication(PtahTestCase):
 
         self.init_ptah()
 
-        info = ptah.authService.authenticate(
+        info = ptah.auth_service.authenticate(
             {'login': 'user', 'password': '12345'})
 
         self.assertTrue(info.status)
@@ -73,7 +73,7 @@ class TestAuthentication(PtahTestCase):
         config.ptah_auth_provider('test-provider', Provider())
         config.commit()
 
-        info = ptah.authService.authenticate(
+        info = ptah.auth_service.authenticate(
             {'login': 'user', 'password': '12345'})
 
         self.assertTrue(info.status)
@@ -85,7 +85,7 @@ class TestAuthentication(PtahTestCase):
 
         principal = Principal('1', 'user', 'user')
 
-        info = ptah.authService.authenticate_principal(principal)
+        info = ptah.auth_service.authenticate_principal(principal)
         self.assertTrue(info.status)
         self.assertEqual(info.__uri__, '1')
         self.assertEqual(info.message, '')
@@ -111,7 +111,7 @@ class TestAuthentication(PtahTestCase):
 
         self.init_ptah()
 
-        info = ptah.authService.authenticate(
+        info = ptah.auth_service.authenticate(
             {'login': 'user', 'password': '12345'})
 
         self.assertFalse(info.status)
@@ -121,7 +121,7 @@ class TestAuthentication(PtahTestCase):
 
         principal = Principal('1', 'user', 'user')
 
-        info = ptah.authService.authenticate_principal(principal)
+        info = ptah.auth_service.authenticate_principal(principal)
         self.assertFalse(info.status)
         self.assertEqual(info.__uri__, '1')
         self.assertEqual(info.message, 'Suspended')
@@ -148,7 +148,7 @@ class TestAuthentication(PtahTestCase):
         config.ptah_auth_checker(checker)
         config.ptah_auth_provider('test-provider', Provider())
 
-        info = ptah.authService.authenticate(
+        info = ptah.auth_service.authenticate(
             {'login': 'user', 'password': '12345'})
 
         self.assertFalse(info.status)
@@ -158,7 +158,7 @@ class TestAuthentication(PtahTestCase):
 
         principal = Principal('1', 'user', 'user')
 
-        info = ptah.authService.authenticate_principal(principal)
+        info = ptah.auth_service.authenticate_principal(principal)
         self.assertFalse(info.status)
         self.assertEqual(info.__uri__, '1')
         self.assertEqual(info.message, 'Suspended')
@@ -168,34 +168,34 @@ class TestAuthentication(PtahTestCase):
         import ptah
         import ptah.util
 
-        self.assertEqual(ptah.authService.get_userid(), None)
+        self.assertEqual(ptah.auth_service.get_userid(), None)
 
-        ptah.authService.set_userid('user')
-        self.assertEqual(ptah.authService.get_userid(), 'user')
+        ptah.auth_service.set_userid('user')
+        self.assertEqual(ptah.auth_service.get_userid(), 'user')
 
         ptah.util.resetThreadLocalData(None)
-        self.assertEqual(ptah.authService.get_userid(), None)
+        self.assertEqual(ptah.auth_service.get_userid(), None)
 
     def test_auth_get_set_effective_userid(self):
         import ptah
         import ptah.util
 
-        self.assertEqual(ptah.authService.get_effective_userid(), None)
+        self.assertEqual(ptah.auth_service.get_effective_userid(), None)
 
-        ptah.authService.set_effective_userid('user')
-        self.assertEqual(ptah.authService.get_effective_userid(), 'user')
+        ptah.auth_service.set_effective_userid('user')
+        self.assertEqual(ptah.auth_service.get_effective_userid(), 'user')
 
         ptah.util.resetThreadLocalData(None)
-        self.assertEqual(ptah.authService.get_effective_userid(), None)
+        self.assertEqual(ptah.auth_service.get_effective_userid(), None)
 
-        ptah.authService.set_userid('user')
-        self.assertEqual(ptah.authService.get_effective_userid(), 'user')
+        ptah.auth_service.set_userid('user')
+        self.assertEqual(ptah.auth_service.get_effective_userid(), 'user')
 
-        ptah.authService.set_effective_userid('user2')
-        self.assertEqual(ptah.authService.get_effective_userid(), 'user2')
+        ptah.auth_service.set_effective_userid('user2')
+        self.assertEqual(ptah.auth_service.get_effective_userid(), 'user2')
 
-        ptah.authService.set_userid('user3')
-        self.assertEqual(ptah.authService.get_effective_userid(), 'user2')
+        ptah.auth_service.set_userid('user3')
+        self.assertEqual(ptah.auth_service.get_effective_userid(), 'user2')
 
     def test_auth_principal(self):
         import ptah
@@ -208,10 +208,10 @@ class TestAuthentication(PtahTestCase):
         ptah.register_uri_resolver('test', resolver)
         self.init_ptah()
 
-        self.assertEqual(ptah.authService.get_current_principal(), None)
+        self.assertEqual(ptah.auth_service.get_current_principal(), None)
 
-        ptah.authService.set_userid('test:1')
-        self.assertEqual(ptah.authService.get_current_principal(), principal)
+        ptah.auth_service.set_userid('test:1')
+        self.assertEqual(ptah.auth_service.get_current_principal(), principal)
 
     def test_auth_principal_login(self):
         import ptah
@@ -226,10 +226,10 @@ class TestAuthentication(PtahTestCase):
         self.init_ptah()
 
         self.assertEqual(
-            ptah.authService.get_principal_bylogin('user2'), None)
+            ptah.auth_service.get_principal_bylogin('user2'), None)
 
         self.assertEqual(
-            ptah.authService.get_principal_bylogin('user'), principal)
+            ptah.auth_service.get_principal_bylogin('user'), principal)
 
 
 class TestPrincipalSearcher(PtahTestCase):

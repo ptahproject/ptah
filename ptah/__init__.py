@@ -8,7 +8,7 @@ from ptah.uri import extract_uri_schema
 from ptah.uri import UriFactory
 
 # security
-from ptah.authentication import authService
+from ptah.authentication import auth_service
 from ptah.authentication import SUPERUSER_URI
 
 from ptah.authentication import auth_checker
@@ -147,7 +147,7 @@ def make_wsgi_app(global_settings, **settings):
     import ptah
     from pyramid.config import Configurator
 
-    authService.set_userid(SUPERUSER_URI)
+    auth_service.set_userid(SUPERUSER_URI)
 
     # configuration
     config = Configurator(settings=settings)

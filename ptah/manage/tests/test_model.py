@@ -28,7 +28,7 @@ class TestModelModule(PtahTestCase):
 
         request = DummyRequest()
 
-        ptah.authService.set_userid('test')
+        ptah.auth_service.set_userid('test')
         CONFIG['managers'] = ('*',)
         mr = PtahManageRoute(request)
         mod = mr['models']

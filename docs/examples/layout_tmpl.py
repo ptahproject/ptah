@@ -37,7 +37,7 @@ class WorkspaceLayout(view.Layout):
     """ same as PageLayout, it uses 'page' as parent layout """
 
     def update(self):
-        self.user = ptah.authService.get_current_principal()
+        self.user = ptah.auth_service.get_current_principal()
         self.isAnon = self.user is None
 
 

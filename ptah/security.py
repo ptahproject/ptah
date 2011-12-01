@@ -8,7 +8,7 @@ from pyramid.interfaces import IAuthorizationPolicy
 from pyramid.threadlocal import get_current_registry
 from pyramid.httpexceptions import HTTPForbidden
 
-from ptah import authService
+from ptah import auth_service
 from ptah import SUPERUSER_URI
 from ptah.interfaces import IOwnersAware
 from ptah.interfaces import ILocalRolesAware
@@ -293,7 +293,7 @@ def check_permission(permission, context, request=None, throw=False):
             raise HTTPForbidden()
         return False
 
-    userid = authService.get_effective_userid()
+    userid = auth_service.get_effective_userid()
     if userid == SUPERUSER_URI:
         return True
 

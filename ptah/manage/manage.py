@@ -3,7 +3,7 @@ from pyramid.httpexceptions import HTTPForbidden
 
 import ptah
 from ptah import view, config
-from ptah.authentication import authService
+from ptah.authentication import auth_service
 
 CFG_ID = 'manage'
 CONFIG_ID = 'ptah.manage:config'
@@ -138,14 +138,14 @@ class PtahManageRoute(object):
     def __init__(self, request):
         self.request = request
 
-        userid = authService.get_userid()
+        userid = auth_service.get_userid()
         if not check_access(userid):
             raise HTTPForbidden()
 
         self.userid = userid
         self.manage_url = CONFIG['manage_url']
 
-        authService.set_effective_userid(ptah.SUPERUSER_URI)
+        auth_service.set_effective_userid(ptah.SUPERUSER_URI)
 
     def __getitem__(self, key):
         if key not in CONFIG.disable_modules:

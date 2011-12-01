@@ -33,7 +33,7 @@ def login_form(request):
         if errors:
             return
 
-        info = ptah.authService.authenticate(data)
+        info = ptah.auth_service.authenticate(data)
 
         if info.status:
             headers = security.remember(request, info.principal.uri)
@@ -50,10 +50,10 @@ def login_form(request):
 
 @view.pview(route='logout')
 def logout_form(request):
-    uid = ptah.authService.get_userid()
+    uid = ptah.auth_service.get_userid()
         
     if uid is not None:
-        ptah.authService.set_userid(None)
+        ptah.auth_service.set_userid(None)
         headers = security.forget(request)
         return HTTPFound(
             headers = headers,

@@ -78,22 +78,22 @@ Permissions
 Security
 ~~~~~~~~
 
-  .. py:data:: authService
-  
+  .. py:data:: auth_service
+
   .. py:data:: SUPERUSER_URI
 
   .. autofunction:: auth_checker
 
   .. autofunction:: auth_checker
-  
+
   .. autofunction:: register_auth_provider
 
   .. autofunction:: search_principals
-  
+
   .. autofunction:: principal_searcher
 
   .. autofunction:: principal_searcher
-  
+
   .. autofunction:: register_principal_searcher
 
 

@@ -539,7 +539,7 @@ class TestCheckPermission(PtahTestCase):
 
         self.assertFalse(ptah.check_permission('View', content, throw=False))
 
-        ptah.authService.set_userid('test-user')
+        ptah.auth_service.set_userid('test-user')
         self.assertTrue(ptah.check_permission('View', content, throw=False))
 
     def test_checkpermission_user(self):
@@ -548,7 +548,7 @@ class TestCheckPermission(PtahTestCase):
         content = Content(acl=[(Allow, 'test-user', 'View')])
         self.assertFalse(ptah.check_permission('View', content, throw=False))
 
-        ptah.authService.set_userid('test-user')
+        ptah.auth_service.set_userid('test-user')
         self.assertTrue(ptah.check_permission('View', content, throw=False))
 
     def test_checkpermission_effective_user(self):
@@ -556,8 +556,8 @@ class TestCheckPermission(PtahTestCase):
 
         content = Content(acl=[(Allow, 'test-user2', 'View')])
 
-        ptah.authService.set_userid('test-user')
-        ptah.authService.set_effective_userid('test-user2')
+        ptah.auth_service.set_userid('test-user')
+        ptah.auth_service.set_effective_userid('test-user2')
         self.assertTrue(ptah.check_permission('View', content, throw=False))
 
     def test_checkpermission_superuser(self):
@@ -567,7 +567,7 @@ class TestCheckPermission(PtahTestCase):
         content = Content(
             acl=[(Deny, ptah.SUPERUSER_URI, security.ALL_PERMISSIONS)])
 
-        ptah.authService.set_userid(ptah.SUPERUSER_URI)
+        ptah.auth_service.set_userid(ptah.SUPERUSER_URI)
         self.assertTrue(ptah.check_permission('View', content))
         self.assertFalse(ptah.check_permission(ptah.NOT_ALLOWED, content))
 
@@ -578,8 +578,8 @@ class TestCheckPermission(PtahTestCase):
         content = Content(
             acl=[(Deny, ptah.SUPERUSER_URI, security.ALL_PERMISSIONS)])
 
-        ptah.authService.set_userid('test-user')
-        ptah.authService.set_effective_userid(ptah.SUPERUSER_URI)
+        ptah.auth_service.set_userid('test-user')
+        ptah.auth_service.set_effective_userid(ptah.SUPERUSER_URI)
 
         self.assertTrue(ptah.check_permission('View', content))
         self.assertFalse(ptah.check_permission(ptah.NOT_ALLOWED, content))
@@ -591,7 +591,7 @@ class TestCheckPermission(PtahTestCase):
             iface=ptah.ILocalRolesAware,
             acl=[(Allow, 'role:test', 'View')])
 
-        ptah.authService.set_userid('test-user')
+        ptah.auth_service.set_userid('test-user')
         self.assertFalse(ptah.check_permission('View', content, throw=False))
 
         content.__local_roles__['test-user'] = ['role:test']
@@ -604,11 +604,11 @@ class TestCheckPermission(PtahTestCase):
             iface=ptah.ILocalRolesAware,
             acl=[(Allow, 'role:test', 'View')])
 
-        ptah.authService.set_userid('test-user2')
+        ptah.auth_service.set_userid('test-user2')
         self.assertFalse(ptah.check_permission('View', content, throw=False))
 
         content.__local_roles__['test-user'] = ['role:test']
         self.assertFalse(ptah.check_permission('View', content, throw=False))
 
-        ptah.authService.set_effective_userid('test-user')
+        ptah.auth_service.set_effective_userid('test-user')
         self.assertTrue(ptah.check_permission('View', content, throw=False))

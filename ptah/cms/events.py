@@ -48,7 +48,7 @@ def content_created_handler(ev):
     ev.object.created = now
     ev.object.modified = now
 
-    user = ptah.authService.get_userid()
+    user = ptah.auth_service.get_userid()
     if user:
         ev.object.__owner__ = user
 

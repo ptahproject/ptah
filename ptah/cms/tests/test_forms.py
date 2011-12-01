@@ -224,7 +224,7 @@ class TestAddForm(PtahTestCase):
 
     def test_addform_create_empty_name(self):
         from ptah.cms.forms import AddForm
-        ptah.authService.set_userid(ptah.SUPERUSER_URI)
+        ptah.auth_service.set_userid(ptah.SUPERUSER_URI)
 
         form = AddForm(Container(), DummyRequest())
 
@@ -240,7 +240,7 @@ class TestAddForm(PtahTestCase):
 
     def test_addform_create(self):
         from ptah.cms.forms import AddForm
-        ptah.authService.set_userid(ptah.SUPERUSER_URI)
+        ptah.auth_service.set_userid(ptah.SUPERUSER_URI)
 
         form = AddForm(Container(), DummyRequest())
 
@@ -256,7 +256,7 @@ class TestAddForm(PtahTestCase):
 
     def test_addform_add(self):
         from ptah.cms.forms import AddForm
-        ptah.authService.set_userid(ptah.SUPERUSER_URI)
+        ptah.auth_service.set_userid(ptah.SUPERUSER_URI)
 
         container = Container()
         request = DummyRequest(
@@ -283,7 +283,7 @@ class TestAddForm(PtahTestCase):
 
     def test_addform_add_errors(self):
         from ptah.cms.forms import AddForm
-        ptah.authService.set_userid(ptah.SUPERUSER_URI)
+        ptah.auth_service.set_userid(ptah.SUPERUSER_URI)
 
         container = Container()
         request = DummyRequest(
@@ -299,7 +299,7 @@ class TestAddForm(PtahTestCase):
 
     def test_addform_cancel(self):
         from ptah.cms.forms import AddForm
-        ptah.authService.set_userid(ptah.SUPERUSER_URI)
+        ptah.auth_service.set_userid(ptah.SUPERUSER_URI)
 
         container = Container()
         request = DummyRequest(
@@ -350,7 +350,7 @@ class TestEditForm(PtahTestCase):
 
     def test_editform_apply_changes(self):
         from ptah.cms.forms import EditForm
-        ptah.authService.set_userid(ptah.SUPERUSER_URI)
+        ptah.auth_service.set_userid(ptah.SUPERUSER_URI)
 
         content = Content()
         content.title = 'Test'
@@ -366,7 +366,7 @@ class TestEditForm(PtahTestCase):
 
     def test_editform_save(self):
         from ptah.cms.forms import EditForm
-        ptah.authService.set_userid(ptah.SUPERUSER_URI)
+        ptah.auth_service.set_userid(ptah.SUPERUSER_URI)
 
         content = Content()
         content.title = 'Test'
@@ -389,7 +389,7 @@ class TestEditForm(PtahTestCase):
 
     def test_editform_save_errors(self):
         from ptah.cms.forms import EditForm
-        ptah.authService.set_userid(ptah.SUPERUSER_URI)
+        ptah.auth_service.set_userid(ptah.SUPERUSER_URI)
 
         content = Content()
 
@@ -402,7 +402,7 @@ class TestEditForm(PtahTestCase):
 
     def test_editform_cancel(self):
         from ptah.cms.forms import EditForm
-        ptah.authService.set_userid(ptah.SUPERUSER_URI)
+        ptah.auth_service.set_userid(ptah.SUPERUSER_URI)
 
         content = Content()
 

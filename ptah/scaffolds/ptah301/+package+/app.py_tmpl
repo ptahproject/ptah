@@ -70,7 +70,7 @@ def main(global_config, **settings):
         root.__local_roles__[user.uri] = [Manager.id]
     
     # set authcontext as admin user
-    ptah.authService.set_userid(user.uri)
+    ptah.auth_service.set_userid(user.uri)
 
     # create default page
     if 'front-page' not in root.keys():

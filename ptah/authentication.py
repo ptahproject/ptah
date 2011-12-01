@@ -172,7 +172,7 @@ class Authentication(object):
             if principal is not None:
                 return principal
 
-authService = Authentication()
+auth_service = Authentication()
 
 
 def search_principals(term):
