@@ -108,8 +108,8 @@ class IACLsAware(interface.Interface):
     __acls__ = interface.Attribute('List of acl map ids')
 
 
-class IIntrospection(interface.Interface):
-    """ introspection handler """
+class IIntrospectionRenderer(interface.Interface):
+    """ introspection renderer """
 
     name = interface.Attribute('Name')
     title = interface.Attribute('Title')

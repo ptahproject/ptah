@@ -55,16 +55,20 @@ def pyramid_auth_checker(config, checker):
 
 
 def auth_provider(name):
-    info = config.DirectiveInfo(allowed_scope=('class',))
+    info = config.DirectiveInfo()
 
-    def _complete(cfg, cls, name):
-        cfg.get_cfg_storage(AUTH_PROVIDER_ID)[name] = cls()
+    def wrapper(cls):
+        def _complete(cfg, cls, name):
+            cfg.get_cfg_storage(AUTH_PROVIDER_ID)[name] = cls()
 
-    info.attach(
-        config.ClassAction(
-            _complete, (name,),
-            discriminator=(AUTH_PROVIDER_ID, name))
-        )
+        info.attach(
+            config.Action(
+                _complete, (cls, name,),
+                discriminator=(AUTH_PROVIDER_ID, name))
+            )
+        return cls
+
+    return wrapper
 
 
 def register_auth_provider(name, provider):

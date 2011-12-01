@@ -173,10 +173,10 @@ class BaseMultiChoiceField(VocabularyField):
         self.update_items()
 
 
+@field('text')
 class TextField(InputField):
     __doc__ = _('HTML Text input widget')
 
-    field('text')
 
     klass = 'text-widget'
     value = ''
@@ -214,31 +214,27 @@ class Number(object):
                 self, _('"${val}" is not a number', mapping={'val': value}))
 
 
+@field('int')
 class IntegerField(Number, TextField):
     __doc__ = _('Integer input widget')
 
-    field('int')
-
-    klass = 'int-widget'
-    value = 0
-
     num = int
+    value = 0
+    klass = 'int-widget'
 
 
+@field('float')
 class FloatField(Number, TextField):
     __doc__ = _('Float input widget')
 
-    field('float')
-
+    num = float
     klass = 'float-widget'
 
-    num = float
 
-
+@field('decimal')
 class DecimalField(Number, TextField):
     __doc__ = _('Decimal input widget')
 
-    field('decimal')
 
     klass = 'decimal-widget'
 
@@ -246,10 +242,9 @@ class DecimalField(Number, TextField):
         return decimal.Decimal(str(val))
 
 
+@field('textarea')
 class TextAreaField(TextField):
     __doc__ = _('HTML Text Area input widget')
-
-    field('textarea')
 
     klass = 'textarea-widget'
     value = ''
@@ -261,10 +256,10 @@ class TextAreaField(TextField):
         "ptah.form:templates/fields/textarea-input.pt")
 
 
+@field('file')
 class FileField(TextField):
     __doc__ = _('HTML File input widget')
 
-    field('file')
     klass = 'input-file'
 
     tmpl_input = view.template(
@@ -284,11 +279,11 @@ class FileField(TextField):
         return default
 
 
+@field('lines')
 class LinesField(TextAreaField):
     __doc__ = _('Text area based widget, each line is treated as '
                 'sequence element.')
 
-    field('lines')
     klass = 'textlines-widget'
 
     def serialize(self, value):
@@ -316,10 +311,9 @@ class LinesField(TextAreaField):
                           )
 
 
+@field('password')
 class PasswordField(TextField):
     __doc__ = _('HTML Password input widget.')
-
-    field('password')
 
     klass = 'password-widget'
 
@@ -329,10 +323,9 @@ class PasswordField(TextField):
         "ptah.form:templates/fields/password-display.pt")
 
 
+@field('multichoice')
 class MultiChoiceField(BaseMultiChoiceField):
     __doc__ = _('HTML Checkboxs input based widget.')
-
-    field('multichoice')
 
     klass = 'multichoice-widget'
     tmpl_input = view.template(
@@ -418,20 +411,18 @@ class DateTimeField(TextField):
         return result
 
 
+@field('radio')
 class RadioField(BaseChoiceField):
     __doc__ = _('HTML Radio input widget.')
-
-    field('radio')
 
     klass = 'radio-widget'
     tmpl_input = view.template(
         "ptah.form:templates/fields/radio-input.pt")
 
 
+@field('bool')
 class BoolField(BaseChoiceField):
     __doc__ = _('Boolean input widget.')
-
-    field('bool')
 
     vocabulary = vocabulary.SimpleVocabulary.from_items(
         (True, 'true',  _('yes')),
@@ -441,10 +432,9 @@ class BoolField(BaseChoiceField):
         "ptah.form:templates/fields/bool-input.pt")
 
 
+@field('choice')
 class ChoiceField(BaseChoiceField):
     __doc__ = _('HTML Select input widget.')
-
-    field('choice')
 
     size = 1
     klass = 'select-widget'
@@ -468,10 +458,9 @@ class ChoiceField(BaseChoiceField):
                     })
 
 
+@field('multiselect')
 class MultiSelectField(ChoiceField):
     __doc__ = _('HTML Multi Select input widget.')
 
     size = 5
     multiple = 'multiple'
-
-    field('multiselect')

@@ -90,6 +90,13 @@ from ptah import manage
 
 # cms
 from ptah import cms
+from ptah.cms import Session
+
+# form api
+from ptah import form
+
+# view api
+from ptah import view
 
 
 # pyramid include

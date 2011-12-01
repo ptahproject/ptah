@@ -1,4 +1,4 @@
-""" introspect module """
+""" sqla module """
 import urllib
 import sqlahelper as psa
 from sqlalchemy.orm.mapper import _mapper_registry
@@ -12,11 +12,11 @@ Session = psa.get_session()
 metadata = psa.get_base().metadata
 
 
+@manage.module('sqla')
 class SQLAModule(manage.PtahModule):
     __doc__ = 'A listing of all tables with ability to view and edit records'
 
     title = 'SQLAlchemy'
-    manage.module('sqla')
 
     metadata = {}
 

@@ -1,13 +1,14 @@
 """ security ptah module """
 import ptah
 from ptah import view, manage
+from ptah.manage import module, intr_renderer
 
 
+@module('permissions')
 class PermissionsModule(manage.PtahModule):
     __doc__ = 'A listing of all permission sets and their definitions'
 
     title = 'Permissions'
-    manage.module('permissions')
 
 
 view.register_snippet(
@@ -41,11 +42,11 @@ class RolesView(view.View):
                             key = lambda r: r.title)
 
 
+@intr_renderer('ptah:role')
 class RoleIntrospection(object):
     """ Role registrations """
 
     title = 'Role'
-    manage.introspection('ptah:role')
 
     actions = view.template('ptah.manage:templates/directive-role.pt')
 
@@ -60,11 +61,11 @@ class RoleIntrospection(object):
             request = self.request)
 
 
+@intr_renderer('ptah:permission')
 class PermissionIntrospection(object):
     """ Permission registrations """
 
     title = 'Permission'
-    manage.introspection('ptah:permission')
 
     actions = view.template('ptah.manage:templates/directive-permission.pt')
 

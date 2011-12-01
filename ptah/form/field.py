@@ -10,16 +10,20 @@ PREVIEW_ID = 'ptah.form:field-preview'
 
 
 def field(name, layer=''):
-    info = config.DirectiveInfo(allowed_scope=('class',))
+    info = config.DirectiveInfo()
 
     discriminator = (FIELD_ID, name, layer)
 
-    info.attach(
-        config.ClassAction(
-            view.LayerWrapper(register_field_impl, discriminator),
-            (name, ),
-            discriminator=discriminator)
-        )
+    def wrapper(cls):
+        info.attach(
+            config.Action(
+                view.LayerWrapper(register_field_impl, discriminator),
+                (cls, name, ),
+                discriminator=discriminator)
+            )
+        return cls
+
+    return wrapper
 
 
 def register_field_factory(cls, name, layer=''):

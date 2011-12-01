@@ -11,15 +11,16 @@ import ptah
 from ptah import config, view, manage, form
 from ptah.config import directives
 from ptah.config.api import exclude, list_packages
+from ptah.manage import intr_renderer
 
 from manage import INTROSPECT_ID
 
 
+@manage.module('introspect')
 class IntrospectModule(manage.PtahModule):
     __doc__ = 'Insight into all configuration and registrations.'
 
     title = 'Introspect'
-    manage.module('introspect')
 
     packages = None
 
@@ -242,12 +243,11 @@ class RoutesView(view.View):
             self.views = sorted(views)
 
 
+@intr_renderer('ptah.config:event')
 class EventDirective(object):
     """ zca event declarations """
 
     title = 'Events'
-    manage.introspection('ptah.config:event')
-
     actions = view.template('ptah.manage:templates/directive-event.pt')
 
     def __init__(self, request):
@@ -261,12 +261,11 @@ class EventDirective(object):
             request = self.request)
 
 
+@intr_renderer('ptah.config:adapter')
 class AdapterDirective(object):
     """ zc adapter registrations """
 
     title = 'zc adapters'
-    manage.introspection('ptah.config:adapter')
-
     actions = view.template('ptah.manage:templates/directive-adapter.pt')
 
     def __init__(self, request):
@@ -303,12 +302,11 @@ class AdapterDirective(object):
             request = self.request)
 
 
+@intr_renderer('ptah.view:snippettype')
 class SnippetTypeDirective(object):
     """ ptah snippet types """
 
     title = 'Snippet Types'
-    manage.introspection('ptah.view:snippettype')
-
     actions = view.template('ptah.manage:templates/directive-stype.pt')
 
     def __init__(self, request):
@@ -324,12 +322,11 @@ class SnippetTypeDirective(object):
             request = self.request)
 
 
+@intr_renderer('ptah.view:route')
 class RouteDirective(object):
     """ pyramid routes """
 
     title = 'Routes'
-    manage.introspection('ptah.view:route')
-
     actions = view.template('ptah.manage:templates/directive-route.pt')
 
     def __init__(self, request):
@@ -342,12 +339,11 @@ class RouteDirective(object):
             request = self.request)
 
 
+@intr_renderer('ptah.config:subscriber')
 class SubscriberDirective(object):
     """ zca event subscribers """
 
     title = 'Event subscribers'
-    manage.introspection('ptah.config:subscriber')
-
     actions = view.template('ptah.manage:templates/directive-subscriber.pt')
 
     def __init__(self, request):
@@ -378,12 +374,11 @@ class SubscriberDirective(object):
             request = self.request)
 
 
+@intr_renderer('ptah.view:view')
 class ViewDirective(object):
     """ pyramid views """
 
     title = 'Views'
-    manage.introspection('ptah.view:view')
-
     actions = view.template('ptah.manage:templates/directive-view.pt')
 
     def __init__(self, request):

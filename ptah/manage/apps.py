@@ -11,11 +11,11 @@ MANAGE_APP_ROUTE = MANAGE_APP_CATEGORY = 'ptah-manage-app'
 view.register_route(MANAGE_APP_ROUTE, '!~~~~~~~~~~~~~', use_global_views=False)
 
 
+@manage.module('apps')
 class ApplicationsModule(manage.PtahModule):
     __doc__ = 'A listing of all registered Ptah Applications.'
 
     title = 'Applications'
-    manage.module('apps')
 
     def __getitem__(self, key):
         for id, factory in cms.get_app_factories().items():

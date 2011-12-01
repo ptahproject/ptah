@@ -7,11 +7,9 @@ class TestFieldset(PtahTestCase):
     _init_ptah = False
 
     def test_decl(self):
-        global MyField
-
+        @form.field('my-field')
         class MyField(form.Field):
-
-            form.field('my-field')
+            pass
 
         self.init_ptah()
         self.assertIs(form.get_field_factory('my-field'), MyField)
@@ -27,24 +25,23 @@ class TestFieldset(PtahTestCase):
         self.assertIs(form.get_field_factory('my-field'), MyField)
 
     def test_decl_conflict(self):
-        global MyField, MyField2
 
+        @form.field('my-field')
         class MyField(form.Field):
+            pass
 
-            form.field('my-field')
 
-
+        @form.field('my-field')
         class MyField2(form.Field):
-
-            form.field('my-field')
+            pass
 
         self.assertRaises(config.ConflictError, self.init_ptah)
 
     def test_decl_preview(self):
-        global MyField
 
+        @form.field('my-field')
         class MyField(form.Field):
-            form.field('my-field')
+            pass
 
         @form.fieldpreview(MyField)
         def preview(request):

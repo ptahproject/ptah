@@ -14,12 +14,11 @@ class TestManageModule(PtahTestCase):
            module, MANAGE_ID, PtahModule, PtahManageRoute,\
            PtahAccessManager, set_access_manager
 
-        global TestModule
+        @module('test-module')
         class TestModule(PtahModule):
             """ module description """
 
             title = 'Test module'
-            module('test-module')
 
         self.init_ptah()
 
@@ -80,12 +79,11 @@ class TestManageModule(PtahTestCase):
             module, PtahModule, PtahManageRoute, ManageView, \
             set_access_manager
 
-        global TestModule
+        @module('test-module')
         class TestModule(PtahModule):
             """ module description """
 
             title = 'Test module'
-            module('test-module')
 
         def accessManager(id):
             return True
@@ -107,12 +105,11 @@ class TestManageModule(PtahTestCase):
             module, PtahModule, PtahManageRoute, ManageView, \
             set_access_manager
 
-        global TestModule
+        @module('test-module')
         class TestModule(PtahModule):
             """ module description """
 
             title = 'Test module'
-            module('test-module')
 
             def available(self):
                 return False
@@ -141,12 +138,11 @@ class TestManageModule(PtahTestCase):
         from ptah.manage.manage import \
             module, PtahModule, PtahManageRoute, set_access_manager
 
-        global TestModule
+        @module('test-module')
         class TestModule(PtahModule):
             """ module description """
 
             title = 'Test module'
-            module('test-module')
 
         def accessManager(id):
             return True
@@ -165,12 +161,11 @@ class TestManageModule(PtahTestCase):
         from ptah.manage.manage import CONFIG, \
             module, PtahModule, PtahManageRoute, ManageView, set_access_manager
 
-        global TestModule
+        @module('test-module')
         class TestModule(PtahModule):
             """ module description """
 
             title = 'Test module'
-            module('test-module')
 
         def accessManager(id):
             return True
@@ -195,12 +190,11 @@ class TestManageModule(PtahTestCase):
         from ptah.manage.manage import CONFIG, \
             module, PtahModule, PtahManageRoute, set_access_manager
 
-        global TestModule
+        @module('test-module')
         class TestModule(PtahModule):
             """ module description """
 
             title = 'Test module'
-            module('test-module')
 
         def accessManager(id):
             return True
@@ -221,12 +215,11 @@ class TestManageModule(PtahTestCase):
         from ptah.manage.manage import \
             module, PtahModule, LayoutManage
 
-        global TestModule
+        @module('test-module')
         class TestModule(PtahModule):
             """ module description """
 
             title = 'Test module'
-            module('test-module')
 
         class Content(object):
             __parent__ = None
@@ -251,14 +244,13 @@ class TestInstrospection(PtahTestCase):
     _init_ptah = False
 
     def test_manage_module(self):
-        from ptah.manage.manage import INTROSPECT_ID, introspection
+        from ptah.manage.manage import INTROSPECT_ID, intr_renderer
 
-        global TestModule
+        @intr_renderer('test-module')
         class TestModule(object):
             """ module description """
 
             title = 'Test module'
-            introspection('test-module')
 
         self.init_ptah()
 

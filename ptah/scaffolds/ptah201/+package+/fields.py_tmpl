@@ -20,10 +20,9 @@ view.library(
     type='css')
 
 
+@form.field('colorpicker')
 class ColorPickerField(form.fields.InputField):
     __doc__ = u'Colorpicker input widget'
-
-    form.field('colorpicker')
 
     klass = u'colorpicker-widget'
     value = u''

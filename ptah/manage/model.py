@@ -6,11 +6,11 @@ from pyramid.decorator import reify
 from pyramid.httpexceptions import HTTPFound
 
 
+@manage.module('models')
 class ModelModule(manage.PtahModule):
     __doc__ = 'A listing of all registered models.'
 
     title = 'Models'
-    manage.module('models')
 
     def __getitem__(self, key):
         ti = cms.get_type('cms-type:%s'%key)
@@ -238,13 +238,12 @@ class EditRecord(form.Form):
         raise HTTPFound(location='../')
 
 
+@manage.intr_renderer('ptah-cms:type')
 class TypeIntrospection(object):
     """ Ptah content types """
 
     name = 'ptah-cms:type'
     title = 'Content Types'
-    manage.introspection('ptah-cms:type')
-
     actions = view.template('ptah.manage:templates/directive-type.pt')
 
     def __init__(self, request):

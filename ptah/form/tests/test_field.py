@@ -417,9 +417,9 @@ class TestFieldFactory(PtahTestCase):
     def test_field_factory(self):
         from ptah import form
 
-        global MyField
+        @form.field('my-field')
         class MyField(form.Field):
-            form.field('my-field')
+            pass
 
         self.init_ptah()
 

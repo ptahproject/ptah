@@ -42,9 +42,8 @@ class TestAuthentication(PtahTestCase):
     def test_auth_provider_declarative(self):
         import ptah
 
-        global Provider
+        @ptah.auth_provider('test-provider')
         class Provider(object):
-            ptah.auth_provider('test-provider')
 
             def authenticate(self, creds):
                 if creds['login'] == 'user':

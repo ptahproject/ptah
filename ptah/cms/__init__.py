@@ -70,7 +70,3 @@ from ptah.cms.rest import restaction
 # content add/edit form helpers
 from ptah.cms.forms import AddForm
 from ptah.cms.forms import EditForm
-
-# moved to ptah
-from ptah.uiactions import uiaction
-from ptah.uiactions import list_uiactions

@@ -7,10 +7,9 @@ from ptah.form.field import field
 from ptah.form.fields import TextAreaField, TextField, DateTimeField
 
 
+@field('tinymce')
 class TinymceField(TextAreaField):
     __doc__ = 'TinyMCE Text Area input widget'
-
-    field('tinymce')
 
     klass = 'tinymce-widget'
 
@@ -22,10 +21,9 @@ class TinymceField(TextAreaField):
         "ptah.form:templates/fields/tinymce_input.pt")
 
 
+@field('date')
 class JSDateField(TextField):
     __doc__ = 'Date input widget with JQuery Datepicker.'
-
-    field('date')
 
     klass = 'date-widget'
     value = ''
@@ -57,10 +55,9 @@ class JSDateField(TextField):
                 self, _('Invalid date', mapping={'val': value, 'err': e}))
 
 
+@field('datetime')
 class JSDateTimeField(DateTimeField):
     __doc__ = 'DateTime input widget with JQuery Datepicker.'
-
-    field('datetime')
 
     klass = 'datetime-widget'
     value = ''

@@ -3,11 +3,11 @@ from ptah import view, manage
 from ptah.config.settings import get_settings_ob
 
 
+@manage.module('settings')
 class SettingsModule(manage.PtahModule):
     __doc__ = 'The current settings which include defaults not used by .ini'
 
     title = 'Settings'
-    manage.module('settings')
 
 
 class SettingsView(view.View):

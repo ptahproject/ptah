@@ -71,31 +71,39 @@ class PtahModule(object):
 
 
 def module(id):
-    info = config.DirectiveInfo(allowed_scope=('class',))
+    info = config.DirectiveInfo()
 
-    def _complete(cfg, cls, id):
-        cls.name = id
-        cfg.get_cfg_storage(MANAGE_ID)[id] = cls
+    def wrapper(cls):
+        def _complete(cfg, cls, id):
+            cls.name = id
+            cfg.get_cfg_storage(MANAGE_ID)[id] = cls
 
-    info.attach(
-        config.ClassAction(
-            _complete, (id,),
-            discriminator = (MANAGE_ID, id))
-        )
+        info.attach(
+            config.Action(
+                _complete, (cls, id,),
+                discriminator = (MANAGE_ID, id))
+            )
+        return cls
+
+    return wrapper
 
 
-def introspection(id):
-    info = config.DirectiveInfo(allowed_scope=('class',))
+def intr_renderer(id):
+    info = config.DirectiveInfo()
 
-    def _complete(cfg, cls, id):
-        cls.name = id
-        cfg.get_cfg_storage(INTROSPECT_ID)[id] = cls
+    def wrapper(cls):
+        def _complete(cfg, cls, id):
+            cls.name = id
+            cfg.get_cfg_storage(INTROSPECT_ID)[id] = cls
 
-    info.attach(
-        config.ClassAction(
-            _complete, (id,),
-            discriminator = (INTROSPECT_ID, id))
-        )
+        info.attach(
+            config.Action(
+                _complete, (cls, id,),
+                discriminator = (INTROSPECT_ID, id))
+            )
+        return cls
+
+    return wrapper
 
 
 def PtahAccessManager(id):

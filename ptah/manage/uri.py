@@ -80,11 +80,11 @@ class UriResolver(form.Form):
                 data.append(info)
 
 
+@manage.intr_renderer('ptah:uri-resolver')
 class UriIntrospection(object):
     """ uri introspection view """
 
     title = 'Uri resolver'
-    manage.introspection('ptah:uri-resolver')
 
     tmpl = view.template('ptah.manage:templates/directive-uriresolver.pt')
 
