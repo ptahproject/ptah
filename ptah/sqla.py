@@ -240,7 +240,8 @@ def build_sqla_fieldset(columns, skipPrimaryKey=False):
             continue
 
         kwargs = {}
-        for attr in ('missing', 'title', 'description', 'vocabulary'):
+        for attr in ('missing', 'title', 'description',
+                     'vocabulary', 'validator'):
             if attr in cl.info:
                 kwargs[attr] = cl.info[attr]
 
