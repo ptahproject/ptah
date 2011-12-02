@@ -73,8 +73,8 @@ class ACL(list):
 
     # do we need somthing like Unset, to unset permission from parent
 
-    def __init__(self, name, title, description=''):
-        self.name = name
+    def __init__(self, id, title, description=''):
+        self.id = id
         self.title = title
         self.description = description
 
@@ -82,9 +82,9 @@ class ACL(list):
         info.attach(
             config.Action(
                 lambda config, p: \
-                    config.get_cfg_storage(ACL_ID).update({name: p}),
+                    config.get_cfg_storage(ACL_ID).update({id: p}),
                 (self,),
-                discriminator=('ptah:acl-map', name))
+                discriminator=('ptah:acl-map', id))
             )
         self.directiveInfo = info
 

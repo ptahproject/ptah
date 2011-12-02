@@ -27,7 +27,7 @@ class PermissionsView(view.View):
                                   key = lambda p: p.title)
 
         acls = ptah.get_acls()
-        self.acls = sorted([acl for acl in acls.values() if acl.name != ''],
+        self.acls = sorted([acl for acl in acls.values() if acl.id != ''],
                            key = lambda a: a.title)
         self.acls.insert(0, ptah.DEFAULT_ACL)
 

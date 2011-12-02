@@ -41,7 +41,7 @@ class TestACL(PtahTestCase):
         pmap = ptah.ACL('map', 'ACL', 'Map')
         self.init_ptah()
 
-        self.assertTrue(pmap.name == 'map')
+        self.assertTrue(pmap.id == 'map')
         self.assertTrue(pmap.title == 'ACL')
         self.assertTrue(pmap.description == 'Map')
         self.assertTrue(ptah.get_acls()['map'] is pmap)
