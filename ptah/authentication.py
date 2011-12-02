@@ -145,10 +145,7 @@ class Authentication(object):
     def get_userid(self):
         uri = tldata.get(USER_KEY, _not_set)
         if uri is _not_set:
-            try:
-                self.set_userid(authenticated_userid(get_current_request()))
-            except:  # pragma: no cover
-                self.set_userid(None)
+            self.set_userid(authenticated_userid(get_current_request()))
             return tldata.get(USER_KEY)
         return uri
 
