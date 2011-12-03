@@ -64,9 +64,11 @@ class ModelModuleView(view.View):
     rst_to_html = staticmethod(ptah.rst_to_html)
 
     def update(self):
+        cfg = ptah.get_settings(ptah.CFG_ID_MANAGE, self.request.registry)
+
         types = []
         for ti in cms.get_types().values():
-            if ti.__uri__ in manage.CONFIG['disable_models']:
+            if ti.__uri__ in cfg['disable_models']:
                 continue
             types.append((ti.title, ti))
 
@@ -203,7 +205,9 @@ class EditRecord(form.Form):
         return self.context.tinfo.fieldset
 
     def update(self):
-        self.manage_url = manage.CONFIG.manage_url
+        cfg = ptah.get_settings(ptah.CFG_ID_MANAGE, self.request.registry)
+
+        self.manage_url = cfg['manage_url']
         super(EditRecord, self).update()
 
     def form_content(self):
@@ -250,9 +254,11 @@ class TypeIntrospection(object):
         self.request = request
 
     def renderActions(self, *actions):
+        cfg = ptah.get_settings(ptah.CFG_ID_MANAGE, self.request.registry)
+
         return self.actions(
             types = cms.get_types(),
             actions = actions,
             rst_to_html = ptah.rst_to_html,
-            manage_url = manage.CONFIG.manage_url,
+            manage_url = cfg['manage_url'],
             request = self.request)

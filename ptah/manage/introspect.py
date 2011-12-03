@@ -257,7 +257,8 @@ class EventDirective(object):
         return self.actions(
             actions = actions,
             events = config.get_cfg_storage(directives.EVENT_ID),
-            manage_url = manage.CONFIG.manage_url,
+            manage_url = ptah.get_settings(
+                ptah.CFG_ID_MANAGE, self.request.registry)['manage_url'],
             request = self.request)
 
 
@@ -298,7 +299,8 @@ class AdapterDirective(object):
         return self.actions(
             actions = actions,
             getInfo = self.getInfo,
-            manage_url = manage.CONFIG.manage_url,
+            manage_url = ptah.get_settings(
+                ptah.CFG_ID_MANAGE, self.request.registry)['manage_url'],
             request = self.request)
 
 
@@ -318,7 +320,8 @@ class SnippetTypeDirective(object):
         return self.actions(
             actions = actions,
             stypes = stypes,
-            manage_url = manage.CONFIG.manage_url,
+            manage_url = ptah.get_settings(
+                ptah.CFG_ID_MANAGE, self.request.registry)['manage_url'],
             request = self.request)
 
 
@@ -335,7 +338,8 @@ class RouteDirective(object):
     def renderActions(self, *actions):
         return self.actions(
             actions = actions,
-            manage_url = manage.CONFIG.manage_url,
+            manage_url = ptah.get_settings(
+                ptah.CFG_ID_MANAGE, self.request.registry)['manage_url'],
             request = self.request)
 
 
@@ -370,7 +374,8 @@ class SubscriberDirective(object):
         return self.actions(
             getInfo = self.getInfo,
             actions = actions,
-            manage_url = manage.CONFIG.manage_url,
+            manage_url = ptah.get_settings(
+                ptah.CFG_ID_MANAGE, self.request.registry)['manage_url'],
             request = self.request)
 
 
@@ -419,5 +424,6 @@ class ViewDirective(object):
         return self.actions(
             getInfo = self.getInfo,
             actions = actions,
-            manage_url = manage.CONFIG.manage_url,
+            manage_url = ptah.get_settings(
+                ptah.CFG_ID_MANAGE, self.request.registry)['manage_url'],
             request = self.request)

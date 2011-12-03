@@ -95,5 +95,6 @@ class UriIntrospection(object):
         return self.tmpl(
             actions = actions,
             rst_to_html = ptah.rst_to_html,
-            manage_url = manage.CONFIG.manage_url,
+            manage_url = ptah.get_settings(
+                ptah.CFG_ID_MANAGE, self.request.registry)['manage_url'],
             request = self.request)

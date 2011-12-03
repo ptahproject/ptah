@@ -104,12 +104,12 @@ class TestPasswordSettings(PtahTestCase):
         from ptah.password import \
              PlainPasswordManager, SSHAPasswordManager
 
-        ptah.PWD_CONFIG['manager'] = 'unknown'
+        cfg = ptah.get_settings(ptah.CFG_ID_PASSWORD, self.registry)
 
+        cfg['manager'] = 'unknown'
         self.assertIsInstance(ptah.pwd_tool.manager, PlainPasswordManager)
 
-        ptah.PWD_CONFIG['manager'] = 'ssha'
-
+        cfg['manager'] = 'ssha'
         self.assertIsInstance(ptah.pwd_tool.manager, SSHAPasswordManager)
 
 
@@ -175,13 +175,15 @@ class TestPasswordChanger(PtahTestCase):
 class TestPasswordTool(PtahTestCase):
 
     def test_password_encode(self):
-        ptah.PWD_CONFIG['manager'] = 'plain'
+        cfg = ptah.get_settings(ptah.CFG_ID_PASSWORD, self.registry)
+        cfg['manager'] = 'plain'
 
         encoded = ptah.pwd_tool.encode('12345')
         self.assertEqual(encoded, '{plain}12345')
 
     def test_password_check(self):
-        ptah.PWD_CONFIG['manager'] = 'ssha'
+        cfg = ptah.get_settings(ptah.CFG_ID_PASSWORD, self.registry)
+        cfg['manager'] = 'ssha'
 
         self.assertFalse(ptah.pwd_tool.check('12345', '12345'))
         self.assertTrue(ptah.pwd_tool.check('{plain}12345', '12345'))
@@ -238,15 +240,16 @@ class TestPasswordTool(PtahTestCase):
         self.assertFalse(ptah.pwd_tool.change_password('unknown', '12345'))
 
     def test_password_validate(self):
-        ptah.PWD_CONFIG['min_length'] = 5
+        cfg = ptah.get_settings(ptah.CFG_ID_PASSWORD, self.registry)
+        cfg['min_length'] = 5
         self.assertEqual(ptah.pwd_tool.validate('1234'),
                          'Password should be at least 5 characters.')
 
-        ptah.PWD_CONFIG['letters_digits'] = True
+        cfg['letters_digits'] = True
         self.assertEqual(ptah.pwd_tool.validate('123456'),
                          'Password should contain both letters and digits.')
 
-        ptah.PWD_CONFIG['letters_mixed_case'] = True
+        cfg['letters_mixed_case'] = True
         self.assertEqual(ptah.pwd_tool.validate('abs456'),
                          'Password should contain letters in mixed case.')
 

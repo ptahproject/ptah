@@ -9,7 +9,6 @@ from ptah.uri import UriFactory
 
 # settings
 from ptah.settings import get_settings
-from ptah.settings import get_settings_groups
 from ptah.settings import register_settings
 from ptah.settings import initialize_settings
 from ptah.settings import SettingsInitialized
@@ -54,10 +53,19 @@ from ptah.security import NOT_ALLOWED
 from pyramid.security import ALL_PERMISSIONS
 from pyramid.security import NO_PERMISSION_REQUIRED
 
+# ptah settings ids
+CFG_ID_MAIL = 'mail'
+CFG_ID_AUTH = 'auth'
+CFG_ID_FORMAT = 'format'
+CFG_ID_VIEW = 'view'
+CFG_ID_SESSION = 'session'
+CFG_ID_SQLA = 'sqla'
+CFG_ID_PASSWORD = 'password'
+CFG_ID_MANAGE = 'manage'
+
 # password tool
 from ptah.password import pwd_tool
 from ptah.password import password_changer
-from ptah.password import PWD_CONFIG
 
 # formatter
 from ptah.formatter import format
@@ -104,16 +112,6 @@ from ptah import form
 
 # view api
 from ptah import view
-
-# ptah settings ids
-CFG_ID_MAIL = 'mail'
-CFG_ID_AUTH = 'auth'
-CFG_ID_FORMAT = 'format'
-CFG_ID_VIEW = 'view'
-CFG_ID_SESSION = 'session'
-CFG_ID_SQLA = 'sqla'
-CFG_ID_PASSWORD = 'password'
-CFG_ID_MANAGE = 'manage'
 
 
 # pyramid include

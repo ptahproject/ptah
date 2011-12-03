@@ -1,6 +1,6 @@
 """ settings module """
-from ptah import view, manage
-from ptah.settings import get_settings_groups
+from ptah import view, manage, config
+from ptah.settings import SETTINGS_GROUP_ID
 
 
 @manage.module('settings')
@@ -19,7 +19,7 @@ class SettingsView(view.View):
     __intr_path__ = '/ptah-manage/settings/index.html'
 
     def update(self):
-        groups = get_settings_groups().items()
+        groups = config.get_cfg_storage(SETTINGS_GROUP_ID).items()
 
         data = []
         for name, group in sorted(groups):

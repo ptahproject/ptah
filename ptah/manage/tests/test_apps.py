@@ -19,14 +19,15 @@ class TestAppsModule(PtahTestCase):
     _init_ptah = False
 
     def test_apps_module(self):
-        from ptah.manage.manage import CONFIG, PtahManageRoute
+        from ptah.manage.manage import PtahManageRoute
         from ptah.manage.apps import ApplicationsModule
         self.init_ptah()
 
         request = DummyRequest()
 
         ptah.auth_service.set_userid('test')
-        CONFIG['managers'] = ('*',)
+        cfg = ptah.get_settings(ptah.CFG_ID_MANAGE, self.registry)
+        cfg['managers'] = ('*',)
         mr = PtahManageRoute(request)
         mod = mr['apps']
 
@@ -87,7 +88,7 @@ class TestAppSharingForm(PtahTestCase):
     _init_ptah = False
 
     def _make_app(self, request=None):
-        from ptah.manage.manage import CONFIG, PtahManageRoute
+        from ptah.manage.manage import PtahManageRoute
 
         class Principal(object):
             id = 'test-user'
@@ -118,7 +119,8 @@ class TestAppSharingForm(PtahTestCase):
             request = DummyRequest()
 
         ptah.auth_service.set_userid(ptah.SUPERUSER_URI)
-        CONFIG['managers'] = ('*',)
+        cfg = ptah.get_settings(ptah.CFG_ID_MANAGE, self.registry)
+        cfg['managers'] = ('*',)
         mr = PtahManageRoute(request)
         mod = mr['apps']
         return mod['app1']

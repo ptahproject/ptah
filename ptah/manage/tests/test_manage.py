@@ -47,17 +47,21 @@ class TestManageModule(PtahTestCase):
 
         self.assertRaises(KeyError, route.__getitem__, 'unknown')
 
-    def test_manage_access_manager(self):
-        from ptah.manage.manage import CONFIG
+    def test_manage_access_manager1(self):
         from ptah.manage.manage import PtahAccessManager
+        self.init_ptah()
 
-        CONFIG['managers'] = ['*']
+        cfg = ptah.get_settings(ptah.CFG_ID_MANAGE, self.registry)
+        cfg['managers'] = ['*']
 
         self.assertTrue(PtahAccessManager('test:user'))
 
-        CONFIG['managers'] = ['admin@ptahproject.org']
+        cfg['managers'] = ['admin@ptahproject.org']
 
         self.assertFalse(PtahAccessManager('test:user'))
+
+    def test_manage_access_manager2(self):
+        from ptah.manage.manage import PtahAccessManager
 
         class Principal(object):
             id = 'test-user'
@@ -71,7 +75,8 @@ class TestManageModule(PtahTestCase):
 
         self.init_ptah()
 
-        CONFIG['managers'] = ['admin@ptahproject.org']
+        cfg = ptah.get_settings(ptah.CFG_ID_MANAGE, self.registry)
+        cfg['managers'] = ['admin@ptahproject.org']
         self.assertTrue(PtahAccessManager('test:user'))
 
     def test_manage_view(self):
@@ -158,7 +163,7 @@ class TestManageModule(PtahTestCase):
         self.assertIsInstance(mod, TestModule)
 
     def test_manage_disable_modules(self):
-        from ptah.manage.manage import CONFIG, \
+        from ptah.manage.manage import \
             module, PtahModule, PtahManageRoute, ManageView, set_access_manager
 
         @module('test-module')
@@ -175,7 +180,8 @@ class TestManageModule(PtahTestCase):
         set_access_manager(accessManager)
         ptah.auth_service.set_userid('test-user')
 
-        CONFIG['disable_modules'] = ('test-module',)
+        cfg = ptah.get_settings(ptah.CFG_ID_MANAGE, self.registry)
+        cfg['disable_modules'] = ('test-module',)
 
         request = DummyRequest()
         route = PtahManageRoute(request)
@@ -187,7 +193,7 @@ class TestManageModule(PtahTestCase):
             self.assertFalse(isinstance(mod, TestModule))
 
     def test_manage_disable_modules_traverse(self):
-        from ptah.manage.manage import CONFIG, \
+        from ptah.manage.manage import \
             module, PtahModule, PtahManageRoute, set_access_manager
 
         @module('test-module')
@@ -204,7 +210,8 @@ class TestManageModule(PtahTestCase):
         set_access_manager(accessManager)
         ptah.auth_service.set_userid('test-user')
 
-        CONFIG['disable_modules'] = ('test-module',)
+        cfg = ptah.get_settings(ptah.CFG_ID_MANAGE, self.registry)
+        cfg['disable_modules'] = ('test-module',)
 
         request = DummyRequest()
         route = PtahManageRoute(request)

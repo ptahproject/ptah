@@ -10,6 +10,7 @@ from pyramid.compat import configparser
 import ptah
 from ptah import config
 from ptah.settings import SETTINGS_OB_ID
+from ptah.settings import SETTINGS_GROUP_ID
 
 
 grpTitleWrap = textwrap.TextWrapper(
@@ -40,7 +41,7 @@ def main(init=True):
         pconfig.include('ptah')
         config.initialize(pconfig, autoinclude=True)
         pconfig.commit()
-        ptah.initialize_settings(config, None)
+        ptah.initialize_settings(pconfig, None)
 
     args = SettingsCommand.parser.parse_args()
     cmd = SettingsCommand(args)
@@ -88,7 +89,7 @@ class SettingsCommand(object):
             section = self.options.section
 
         # print description
-        groups = sorted(ptah.get_settings_groups().items())
+        groups = sorted(config.get_cfg_storage(SETTINGS_GROUP_ID).items())
 
         for name, group in groups:
             if section and name != section:

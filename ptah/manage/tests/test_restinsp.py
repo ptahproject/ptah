@@ -7,12 +7,13 @@ class TestRestInspectorModule(PtahTestCase):
 
     def test_rest_module(self):
         from ptah.manage.rest import RestModule
-        from ptah.manage.manage import CONFIG, PtahManageRoute
+        from ptah.manage.manage import PtahManageRoute
 
         request = DummyRequest()
 
         ptah.auth_service.set_userid('test')
-        CONFIG['managers'] = ('*',)
+        cfg = ptah.get_settings(ptah.CFG_ID_MANAGE, self.registry)
+        cfg['managers'] = ('*',)
         mr = PtahManageRoute(request)
         mod = mr['rest']
 

@@ -1,6 +1,7 @@
 """ settings """
 import logging
 import os.path
+from collections import OrderedDict
 
 from zope import interface
 from zope.interface.interface import InterfaceClass
@@ -44,7 +45,7 @@ SETTINGS_OB_ID = 'ptah:settings'
 SETTINGS_GROUP_ID = 'ptah:settings-group'
 
 
-def get_settings(grp, registry):
+def get_settings(grp, registry=None):
     """ get settings group by group id """
     return config.get_cfg_storage(SETTINGS_GROUP_ID, registry)[grp]
 
@@ -53,20 +54,12 @@ def pyramid_get_settings(config, grp):
     return config.get_cfg_storage(SETTINGS_GROUP_ID)[grp]
 
 
-def get_settings_groups():
-    return config.get_cfg_storage(SETTINGS_GROUP_ID)
-
-
 @subscriber(config.Initialized)
 def init_settings(ev):
     registry = ev.config.registry
 
     settings = Settings()
     registry.__ptah_storage__[SETTINGS_OB_ID] = settings
-
-    # complete settings initialization
-    #for grp in registry.__ptah_storage__[SETTINGS_GROUP_ID].values():
-    #    settings.register(grp)
 
 
 def initialize_settings(pconfig, cfg, section=configparser.DEFAULTSECT):
@@ -77,7 +70,6 @@ def initialize_settings(pconfig, cfg, section=configparser.DEFAULTSECT):
 
     log.info('Initializing ptah settings')
 
-    settings.config = pconfig
     settings.initialized = True
 
     if cfg:
@@ -124,7 +116,7 @@ def register_settings(name, *fields, **kw):
 
     ac = Action(
         lambda config, group: config.get_cfg_storage(SETTINGS_GROUP_ID)\
-            .update({group.__name__: group}),
+            .update({group.__name__: group.clone()}),
         (group,),
         discriminator=(SETTINGS_GROUP_ID, name))
 
@@ -187,14 +179,21 @@ class Settings(object):
         return result
 
 
-class Group(object):
+class Group(OrderedDict):
 
     def __init__(self, *args, **kwargs):
+        super(Group, self).__init__()
+
         fields = form.Fieldset(*args, **kwargs)
         self.__name__ = fields.name
         self.__title__ = fields.title
         self.__description__ = fields.description
         self.__fields__ = fields
+
+    def clone(self):
+        clone = self.__class__.__new__(self.__class__)
+        clone.__dict__.update(self.__dict__)
+        return clone
 
     def extract(self, rawdata):
         fieldset = self.__fields__
@@ -231,9 +230,7 @@ class Group(object):
 
     def get(self, name, default=None):
         try:
-            data = config.get_cfg_storage(SETTINGS_ID)[self.__name__]
-            if name in data:
-                return data[name]
+            return super(Group, self).__getitem__(name)
         except (KeyError, AttributeError):
             pass
 
@@ -248,26 +245,8 @@ class Group(object):
     def items(self):
         return [(key, self.get(key)) for key in self.__fields__.keys()]
 
-    def update(self, data):
-        gdata = config.get_cfg_storage(SETTINGS_ID).setdefault(self.__name__,{})
-        gdata.update(data)
-
-    def __getattr__(self, attr, default=_marker):
-        res = self.get(attr, default)
-        if res is _marker:
-            raise AttributeError(attr)
-        return res
-
     def __getitem__(self, name):
         res = self.get(name, _marker)
         if res is _marker:
             raise KeyError(name)
         return res
-
-    def __setitem__(self, name, value):
-        data = config.get_cfg_storage(SETTINGS_ID)
-        try:
-            data[self.__name__][name] = value
-        except KeyError:
-            data[self.__name__] = {}
-            data[self.__name__][name] = value

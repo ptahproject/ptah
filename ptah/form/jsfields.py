@@ -86,7 +86,7 @@ class JSDateTimeField(DateTimeField):
                 self.date_part = raw.strftime('%m/%d/%Y')
             if self.time_part is null:
                 FORMAT = ptah.get_settings(ptah.CFG_ID_FORMAT, request.registry)
-                self.time_part = raw.strftime(FORMAT.time_short)
+                self.time_part = raw.strftime(FORMAT['time_short'])
 
         if self.date_part is null:
             self.date_part = ''
@@ -109,7 +109,7 @@ class JSDateTimeField(DateTimeField):
             return null
 
         FORMAT = ptah.get_settings(ptah.CFG_ID_FORMAT, self.request.registry)
-        format = '%s %s' % ('%m/%d/%Y', FORMAT.time_short)
+        format = '%s %s' % ('%m/%d/%Y', FORMAT['time_short'])
         try:
             dt = datetime.datetime.strptime('%s %s' % (date, time), format)
         except ValueError:

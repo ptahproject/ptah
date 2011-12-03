@@ -4,13 +4,13 @@ import ptah
 from ptah import view, config, form
 from ptah.authentication import auth_service
 
-CFG_ID = 'manage'
 CONFIG_ID = 'ptah.manage:config'
 MANAGE_ID = 'ptah.manage:module'
 INTROSPECT_ID = 'ptah.manage:introspection'
 
-CONFIG = ptah.register_settings(
-    CFG_ID,
+
+ptah.register_settings(
+    ptah.CFG_ID_MANAGE,
 
     form.LinesField(
         'managers',
@@ -54,7 +54,8 @@ class PtahModule(object):
 
     def url(self):
         """ return url to this module """
-        return '%s/%s'%(CONFIG.manage_url, self.name)
+        cfg = ptah.get_settings(ptah.CFG_ID_MANAGE, self.request.registry)
+        return '%s/%s'%(cfg['manage_url'], self.name)
 
     @property
     def __name__(self):
@@ -103,7 +104,8 @@ def intr_renderer(id):
 
 def PtahAccessManager(id):
     """ default access manager """
-    managers = CONFIG.managers
+    cfg = ptah.get_settings(ptah.CFG_ID_MANAGE)
+    managers = cfg['managers']
 
     if '*' in managers:
         return True
@@ -117,11 +119,13 @@ def PtahAccessManager(id):
 
 
 def check_access(userid):
-    return CONFIG.get('access_manager', PtahAccessManager)(userid)
+    cfg = ptah.get_settings(ptah.CFG_ID_MANAGE)
+    return cfg.get('access_manager', PtahAccessManager)(userid)
 
 
 def set_access_manager(func):
-    CONFIG['access_manager'] = func
+    cfg = ptah.get_settings(ptah.CFG_ID_MANAGE)
+    cfg['access_manager'] = func
 
 
 class PtahManageRoute(object):
@@ -138,12 +142,13 @@ class PtahManageRoute(object):
             raise HTTPForbidden()
 
         self.userid = userid
-        self.manage_url = CONFIG['manage_url']
+        self.cfg = ptah.get_settings(ptah.CFG_ID_MANAGE)
+        self.manage_url = self.cfg['manage_url']
 
         auth_service.set_effective_userid(ptah.SUPERUSER_URI)
 
     def __getitem__(self, key):
-        if key not in CONFIG.disable_modules:
+        if key not in self.cfg['disable_modules']:
             mod = config.get_cfg_storage(MANAGE_ID).get(key)
 
             if mod is not None:
@@ -172,7 +177,8 @@ class LayoutManage(view.Layout):
                 template=view.template("ptah.manage:templates/ptah-manage.pt"))
 
     def update(self):
-        self.manage_url = CONFIG.manage_url
+        self.cfg = ptah.get_settings(ptah.CFG_ID_MANAGE)
+        self.manage_url = self.cfg['manage_url']
         self.user = ptah.resolve(self.context.userid)
 
         mod = self.request.context
@@ -197,10 +203,11 @@ class ManageView(view.View):
     def update(self):
         context = self.context
         request = self.request
+        self.cfg = ptah.get_settings(ptah.CFG_ID_MANAGE)
 
         mods = []
         for name, mod in config.get_cfg_storage(MANAGE_ID).items():
-            if name in CONFIG.disable_modules:
+            if name in self.cfg['disable_modules']:
                 continue
             mod = mod(context, request)
             if not mod.available():

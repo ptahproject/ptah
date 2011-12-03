@@ -36,7 +36,7 @@ def datetimeFormatter(value, tp='medium', request=None):
 
     FORMAT = ptah.get_settings('format', request)
 
-    tz = FORMAT.timezone
+    tz = FORMAT['timezone']
     if value.tzinfo is None:
         value = datetime(value.year, value.month, value.day, value.hour,
                          value.minute, value.second, value.microsecond,

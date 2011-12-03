@@ -108,11 +108,7 @@ class TestSettings(BaseTesting):
 
         self.assertEqual(len(group.__fields__), 1)
         self.assertIn(node, group.__fields__.values())
-        self.assertEqual(group.node, 'test')
         self.assertEqual(group['node'], 'test')
-        self.assertRaises(
-            AttributeError,
-            group.__getattr__, 'unknown')
         self.assertRaises(
             KeyError,
             group.__getitem__, 'unknown')

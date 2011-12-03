@@ -27,12 +27,13 @@ class TestSqlaModuleTable(ptah.cms.Base):
 class TestSqlaModule(PtahTestCase):
 
     def test_sqla_module(self):
-        from ptah.manage.manage import CONFIG, PtahManageRoute
+        from ptah.manage.manage import PtahManageRoute
         from ptah.manage.sqla import SQLAModule, Table
 
         request = DummyRequest()
 
-        CONFIG['managers'] = ['*']
+        cfg = ptah.get_settings(ptah.CFG_ID_MANAGE, self.registry)
+        cfg['managers'] = ['*']
         mr = PtahManageRoute(request)
         mod = mr['sqla']
         self.assertIsInstance(mod, SQLAModule)

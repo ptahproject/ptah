@@ -186,9 +186,9 @@ class MailTemplate(object):
 
     def update(self):
         if not self.from_name:
-            self.from_name = self.cfg.from_name
+            self.from_name = self.cfg['from_name']
         if not self.from_address:
-            self.from_address = self.cfg.from_address
+            self.from_address = self.cfg['from_address']
 
     def render(self):
         kwargs = {'view': self,
