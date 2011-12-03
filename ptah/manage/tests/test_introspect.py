@@ -121,7 +121,7 @@ class TestIntrospectModule(PtahTestCase):
 class TestSubscriberIntrospect(PtahTestCase):
 
     def test_introspect_subscriber_introspect(self):
-        from ptah.config import directives
+        from ptah import config
         from ptah.manage.introspect import SubscriberDirective
 
         @ptah.config.subscriber(TestEvent)
@@ -132,7 +132,7 @@ class TestSubscriberIntrospect(PtahTestCase):
         def eventHandler2(context, ev):
             """ """
 
-        data = directives.scan(self.__class__.__module__, set())
+        data = config.scan(self.__class__.__module__, set())
 
         actions = []
         for action in data:
@@ -149,11 +149,11 @@ class TestSubscriberIntrospect(PtahTestCase):
 class TestRouteIntrospect(PtahTestCase):
 
     def test_introspect_route_introspect(self):
-        from ptah.config import directives
+        from ptah import config
         from ptah.manage.introspect import RouteDirective
 
         ptah.view.register_route('test-introspect', '/test/introspect')
-        data = directives.scan(self.__class__.__module__, set())
+        data = config.scan(self.__class__.__module__, set())
 
         actions = []
         for action in data:
@@ -169,7 +169,6 @@ class TestRouteIntrospect(PtahTestCase):
 class TestViewIntrospect(PtahTestCase):
 
     def test_introspect_view_introspect(self):
-        from ptah.config import directives
         from ptah.manage.introspect import ViewDirective
 
         ptah.view.register_route('test-introspect', '/test/introspect')
@@ -187,7 +186,7 @@ class TestViewIntrospect(PtahTestCase):
         class view3(ptah.view.View):
             ptah.view.pview('view3.html')
 
-        data = directives.scan(self.__class__.__module__, set())
+        data = ptah.config.scan(self.__class__.__module__, set())
 
         actions = []
         for action in data:

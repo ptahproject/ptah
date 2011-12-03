@@ -14,7 +14,7 @@ class TestShutdownHandlers(unittest.TestCase):
         def shutdown():
             shutdownExecuted.append(True)
 
-        shutdown = sys.modules['ptah.config.shutdown']
+        shutdown = sys.modules['ptah.config']
         shutdown._shutdown = False
 
         try:
@@ -48,7 +48,7 @@ class TestShutdownHandlers(unittest.TestCase):
         def shutdown():
             shutdownExecuted.append(True)
 
-        shutdown = sys.modules['ptah.config.shutdown']
+        shutdown = sys.modules['ptah.config']
         shutdown._shutdown = False
         try:
             shutdown.processShutdown(signal.SIGTERM, None)

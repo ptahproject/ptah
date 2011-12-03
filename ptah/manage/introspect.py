@@ -9,8 +9,6 @@ from zope.interface.interface import InterfaceClass
 
 import ptah
 from ptah import config, view, manage, form
-from ptah.config import directives
-from ptah.config.api import exclude, list_packages
 from ptah.manage import intr_renderer
 
 from manage import INTROSPECT_ID
@@ -26,7 +24,7 @@ class IntrospectModule(manage.PtahModule):
 
     def list_packages(self):
         if self.packages is None:
-            self.packages = sorted(list_packages())
+            self.packages = sorted(config.list_packages())
 
         return self.packages
 
@@ -48,7 +46,7 @@ class Package(object):
         self.request = request
 
     def actions(self):
-        actions = directives.scan(self.pkg, set(), exclude)
+        actions = config.scan(self.pkg, set(), exclude)
 
         info = {}
 
@@ -126,7 +124,7 @@ class EventsView(view.View):
     def update(self):
         ev = self.request.params.get('ev')
 
-        all_events = config.get_cfg_storage(directives.EVENT_ID)
+        all_events = config.get_cfg_storage(config.EVENT_ID)
         self.event = event = all_events.get(ev)
 
         if event is None:
@@ -137,13 +135,13 @@ class EventsView(view.View):
 
             self.events = [ev for _t, ev in sorted(events)]
         else:
-            pkgs = list_packages()
+            pkgs = config.list_packages()
             evinst = event.instance
 
             seen = set()
             actions = []
             for pkg in pkgs:
-                for action in directives.scan(pkg, seen, exclude):
+                for action in config.scan(pkg, seen, exclude):
                     if action.discriminator[0] == 'ptah.config:subscriber':
                         required = action.args[2]
                         if len(required) == 2 and required[1] == evinst:
@@ -166,14 +164,14 @@ class RoutesView(view.View):
         self.route = route = None
 
         if route is None:
-            packages = list_packages()
+            packages = config.list_packages()
 
             viewactions = []
 
             seen = set()
             routes = {}
             for pkg in packages:
-                actions = directives.scan(pkg, seen, exclude)
+                actions = config.scan(pkg, seen, exclude)
 
                 for action in actions:
                     d = action.discriminator[0]
@@ -256,7 +254,7 @@ class EventDirective(object):
     def renderActions(self, *actions):
         return self.actions(
             actions = actions,
-            events = config.get_cfg_storage(directives.EVENT_ID),
+            events = config.get_cfg_storage(config.EVENT_ID),
             manage_url = ptah.get_settings(
                 ptah.CFG_ID_MANAGE, self.request.registry)['manage_url'],
             request = self.request)
@@ -360,12 +358,12 @@ class SubscriberDirective(object):
         if len(action.args[2]) > 1:
             obj = action.args[2][0]
             klass = action.args[2][-1]
-            event = config.get_cfg_storage(directives.EVENT_ID).get(
+            event = config.get_cfg_storage(config.EVENT_ID).get(
                 action.args[2][-1], None)
         else:
             obj = None
             klass = action.args[2][0]
-            event = config.get_cfg_storage(directives.EVENT_ID).get(
+            event = config.get_cfg_storage(config.EVENT_ID).get(
                 action.args[2][0], None)
 
         return locals()

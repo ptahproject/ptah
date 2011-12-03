@@ -9,8 +9,6 @@ from zope.interface.interfaces import IObjectEvent
 
 import ptah
 from ptah import config
-from ptah.config import directives
-from ptah.config.api import objectEventNotify
 
 
 class BaseTesting(unittest.TestCase):
@@ -372,15 +370,15 @@ class TestSubscriberDirective(BaseTesting):
 class TestExtraDirective(BaseTesting):
 
     def test_scan_unknown(self):
-        self.assertRaises(ImportError,  directives.scan, 'unknown', [])
+        self.assertRaises(ImportError,  config.scan, 'unknown', [])
 
     def test_directive_info_limit_scope(self):
         self.assertRaises(
             TypeError,
-            directives.DirectiveInfo, 2, allowed_scope=('class',))
+            config.DirectiveInfo, 2, allowed_scope=('class',))
 
     def test_directive_info_context(self):
-        info = directives.DirectiveInfo(0)
+        info = config.DirectiveInfo(0)
         info.scope = 'module'
 
         self.assertEqual(info.module,
@@ -389,13 +387,13 @@ class TestExtraDirective(BaseTesting):
                          sys.modules[self.__class__.__module__])
 
     def test_api_loadpackage(self):
-        from ptah.config import api
+        from ptah import config
 
         seen = set()
-        packages = api.load_package('ptah.config', seen)
+        packages = config.load_package('ptah.config', seen)
         self.assertEqual(packages, ['ptah.config'])
 
-        packages = api.load_package('ptah.config', seen)
+        packages = config.load_package('ptah.config', seen)
         self.assertEqual(packages, [])
 
     def test_action(self):

@@ -119,7 +119,7 @@ def includeme(config):
     config.add_directive('ptah_initialize', ptah_initialize)
 
     # ptah.config directives
-    from ptah.config.api import get_cfg_storage_imp
+    from ptah.config import get_cfg_storage_imp
     config.add_directive(
         'get_cfg_storage', get_cfg_storage_imp)
 

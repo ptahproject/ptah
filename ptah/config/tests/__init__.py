@@ -1,1 +1,0 @@
-""" ptah.config tests """

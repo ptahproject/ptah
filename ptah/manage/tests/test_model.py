@@ -416,10 +416,9 @@ class TestTypeIntrospect(PtahTestCase):
     _cleanup_mod = False
 
     def test_type_introspect(self):
-        from ptah.config import directives
         from ptah.manage.model import TypeIntrospection
 
-        data = directives.scan(self.__class__.__module__, set())
+        data = ptah.config.scan(self.__class__.__module__, set())
 
         actions = []
         for action in data:

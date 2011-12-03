@@ -7,7 +7,6 @@ from zope.interface.interface import InterfaceClass
 from zope.interface.interfaces import IObjectEvent
 
 import ptah
-from ptah.config.api import objectEventNotify
 from ptah.settings import SETTINGS_OB_ID
 from ptah.testing import PtahTestCase
 

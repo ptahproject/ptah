@@ -9,7 +9,7 @@ from pyramid.compat import configparser
 
 from ptah import form, config
 from ptah.config import StopException
-from ptah.config.directives import event, subscriber, DirectiveInfo, Action
+from ptah.config import event, subscriber, DirectiveInfo, Action
 
 log = logging.getLogger('ptah.config')
 

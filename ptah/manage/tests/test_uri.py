@@ -48,10 +48,9 @@ class TestUriIntrospect(PtahTestCase):
     _cleanup_mod = False
 
     def test_uri_introspect(self):
-        from ptah.config import directives
         from ptah.manage.uri import RESOLVER_ID, UriIntrospection
 
-        data = directives.scan(self.__class__.__module__, set())
+        data = ptah.config.scan(self.__class__.__module__, set())
 
         actions = []
         for action in data:
