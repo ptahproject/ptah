@@ -50,6 +50,7 @@ from ptah.form.fields import BoolField
 from ptah.form.fields import ChoiceField
 from ptah.form.fields import MultiChoiceField
 from ptah.form.fields import MultiSelectField
+from ptah.form.fields import TimezoneField
 
 # js fields (temporary)
 from ptah.form.jsfields import JSDateField

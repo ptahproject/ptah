@@ -7,6 +7,14 @@ from ptah.uri import register_uri_resolver
 from ptah.uri import extract_uri_schema
 from ptah.uri import UriFactory
 
+# settings
+from ptah.settings import get_settings
+from ptah.settings import get_settings_groups
+from ptah.settings import register_settings
+from ptah.settings import initialize_settings
+from ptah.settings import SettingsInitialized
+from ptah.settings import SettingsInitializing
+
 # security
 from ptah.authentication import auth_service
 from ptah.authentication import SUPERUSER_URI
@@ -63,7 +71,6 @@ from ptah import events
 
 # mail templates
 from ptah import mail
-from ptah.settings import MAIL
 
 # pagination
 from ptah.util import Pagination
@@ -98,6 +105,16 @@ from ptah import form
 # view api
 from ptah import view
 
+# ptah settings ids
+CFG_ID_MAIL = 'mail'
+CFG_ID_AUTH = 'auth'
+CFG_ID_FORMAT = 'format'
+CFG_ID_VIEW = 'view'
+CFG_ID_SESSION = 'session'
+CFG_ID_SQLA = 'sqla'
+CFG_ID_PASSWORD = 'password'
+CFG_ID_MANAGE = 'manage'
+
 
 # pyramid include
 def includeme(config):
@@ -109,7 +126,7 @@ def includeme(config):
         'get_cfg_storage', get_cfg_storage_imp)
 
     # ptah.config.settings directives
-    from ptah.config.settings import pyramid_get_settings
+    from ptah.settings import pyramid_get_settings
     config.add_directive(
         'ptah_get_settings', pyramid_get_settings)
 
@@ -159,7 +176,7 @@ def make_wsgi_app(global_settings, **settings):
         ptah_initialize(config, packages, autoinclude)
     except Exception as e:
         if isinstance(e, ptah.config.StopException):
-            print e.print_tb()
+            print (e.print_tb())
 
         sys.exit(0)
         return
@@ -171,7 +188,7 @@ def make_wsgi_app(global_settings, **settings):
 
 
 # initialize ptah
-def ptah_initialize(configurator, packages=None, autoinclude=False):
+def ptah_initialize(config, packages=None, autoinclude=False):
     """ Initialize ptah packages.
     Load all ptah packages and intialize ptah settings system.
 
@@ -182,12 +199,12 @@ def ptah_initialize(configurator, packages=None, autoinclude=False):
     import transaction
     from pyramid.exceptions import  ConfigurationExecutionError
 
-    configurator.include('ptah')
-    configurator.include('pyramid_tm')
-    configurator.begin()
+    config.include('ptah')
+    config.include('pyramid_tm')
+    config.begin()
 
     try:
-        settings = configurator.registry.settings
+        settings = config.registry.settings
 
         # exclude
         excludes = []
@@ -197,16 +214,20 @@ def ptah_initialize(configurator, packages=None, autoinclude=False):
 
         # load packages
         ptah.config.initialize(
-            configurator, packages, excludes, autoinclude, initsettings=True)
+            config, packages, excludes, autoinclude, initsettings=True)
 
-        configurator.commit()
+        config.action(
+            None, initialize_settings,
+            (config, config.registry.settings))
+
+        config.commit()
 
         # create sql tables
         Base = sqlahelper.get_base()
         Base.metadata.create_all()
 
         # send AppStarting event
-        ptah.config.start(configurator)
+        ptah.config.start(config)
 
         # commit possible transaction
         transaction.commit()
@@ -222,4 +243,4 @@ def ptah_initialize(configurator, packages=None, autoinclude=False):
         ptah.config.shutdown()
         raise e
     finally:
-        configurator.end()
+        config.end()

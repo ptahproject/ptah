@@ -1,5 +1,6 @@
 """ test for static assets api """
 import os.path
+import ptah
 from ptah import view
 from ptah.testing import PtahTestCase
 from ptah.view.base import View
@@ -35,10 +36,9 @@ class TestStaticManagement(PtahTestCase):
             'http://example.com/static/tests')
 
     def test_static_register_url(self):
-        from ptah.view import resources
-        resources.STATIC.url = 'http://ptah.org/static'
-
         view.static('testsurl', 'ptah.view.tests:static/dir1')
+
+        self.registry.settings['view.static_url'] = 'http://ptah.org/static'
         self.init_ptah()
 
         self.assertEquals(
@@ -121,8 +121,8 @@ class TestStaticView(PtahTestCase):
         response = inst(None, request)
         self.assertIn('max-age=0', response.headers['Cache-Control'])
 
-        from ptah.view import resources
-        resources.STATIC.cache_max_age = 360
+        STATIC = ptah.get_settings('view', self.registry)
+        STATIC.cache_max_age = 360
 
         response = inst(None, request)
         self.assertTrue(response.headers['Cache-Control'],

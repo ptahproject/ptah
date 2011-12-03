@@ -1,3 +1,4 @@
+import ptah
 from ptah import view, mail
 from pyramid.testing import DummyRequest
 
@@ -148,7 +149,7 @@ class TestMailTemplate(PtahTestCase):
         self.assertEqual(payload[1]['x-tmpl'], 'Template2')
 
     def test_mailtmpl_send(self):
-        from ptah.settings import MAIL
+        MAIL = ptah.get_settings(ptah.CFG_ID_MAIL, self.registry)
 
         cls = self._make_one()
         tmpl = cls(Content(), DummyRequest())

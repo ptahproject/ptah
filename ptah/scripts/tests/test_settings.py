@@ -1,49 +1,37 @@
-import colander
 import sys
 import unittest
 from io import BytesIO
-from pyramid.testing import setUp, tearDown
-from ptah import config
+
+import ptah
 from ptah.scripts import settings
+from ptah.testing import PtahTestCase
 
 
-class BaseTesting(unittest.TestCase):
+class TestCommand(PtahTestCase):
 
-    def _init_ptah(self, settings={}, *args, **kw):
-        config.initialize(
-            self.config, ('ptah.config', self.__class__.__module__))
-
-    def setUp(self):
-        self.config = setUp()
-        self.config.include('ptah')
-        self.registry = self.config.registry
-
-    def tearDown(self):
-        config.cleanup_system(self.__class__.__module__)
-        tearDown()
-
-
-class TestCommand(BaseTesting):
+    _init_ptah = False
 
     def test_settings_command(self):
-        node = config.SchemaNode(
-                colander.Str(),
-                name = 'node',
-                default = 'test')
+        field = ptah.form.TextField(
+            'node',
+            default = 'test')
 
-        group1 = config.register_settings(
-            'group1', node,
+        ptah.register_settings(
+            'group1', field,
             title = 'Section1',
             description = 'Description1',
             )
 
-        group2 = config.register_settings(
-            'group2', node,
+        ptah.register_settings(
+            'group2', field,
             title = 'Section2',
             description = 'Description2',
             )
 
-        self._init_ptah()
+        self.init_ptah()
+
+        group1 = ptah.get_settings('group1', self.registry)
+        group2 = ptah.get_settings('group2', self.registry)
 
         # all
         sys.argv[1:] = ['-a']
@@ -88,5 +76,5 @@ class TestCommand(BaseTesting):
         sys.stdout = stdout
 
         val = out.getvalue().strip()
-        self.assertIn('group1.node = test', val)
-        self.assertIn('group2.node = test', val)
+        self.assertIn('group1.node = "test"', val)
+        self.assertIn('group2.node = "test"', val)

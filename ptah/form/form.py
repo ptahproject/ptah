@@ -75,7 +75,7 @@ class FormWidgets(OrderedDict):
             fieldsets.append(
                 {'fieldset': fieldset,
                  'name': fieldset.name,
-                 'legend': fieldset.legend,
+                 'title': fieldset.title,
                  'widgets': widgets})
 
     def extract(self):

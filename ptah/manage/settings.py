@@ -1,6 +1,6 @@
 """ settings module """
 from ptah import view, manage
-from ptah.config.settings import get_settings_ob
+from ptah.settings import get_settings_groups
 
 
 @manage.module('settings')
@@ -19,23 +19,23 @@ class SettingsView(view.View):
     __intr_path__ = '/ptah-manage/settings/index.html'
 
     def update(self):
-        groups = get_settings_ob().items()
+        groups = get_settings_groups().items()
 
         data = []
         for name, group in sorted(groups):
-            title = group.title or name
-            description = group.description
+            title = group.__title__ or name
+            description = group.__description__
 
             schema = []
-            for node in group.schema:
-                value = node.serialize(group[node.name])
+            for field in group.__fields__.values():
+                value = field.dumps(group[field.name])
 
                 schema.append(
-                    ({'name': '%s.%s'%(name, node.name),
-                      'value': '%s: %s'%(node.typ.__class__.__name__, value),
-                      'title': node.title,
-                      'description': node.description,
-                      'default': node.default}))
+                    ({'name': '%s.%s'%(name, field.name),
+                      'value': '%s: %s'%(field.__class__.__name__, value),
+                      'title': field.title,
+                      'description': field.description,
+                      'default': field.dumps(field.default)}))
 
             data.append(
                 ({'title': title,

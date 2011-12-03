@@ -15,13 +15,13 @@ class TestFieldset(PtahTestCase):
         fieldset = form.Fieldset(field)
 
         self.assertEqual(fieldset.name, '')
-        self.assertEqual(fieldset.legend, '')
+        self.assertEqual(fieldset.title, '')
         self.assertEqual(fieldset.prefix, '')
 
-        fieldset = form.Fieldset(field1, name='othername', legend='Other name')
+        fieldset = form.Fieldset(field1, name='othername', title='Other name')
 
         self.assertEqual(fieldset.name, 'othername')
-        self.assertEqual(fieldset.legend, 'Other name')
+        self.assertEqual(fieldset.title, 'Other name')
 
     def test_fieldset_nested(self):
         fieldset = form.Fieldset(

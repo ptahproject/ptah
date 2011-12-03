@@ -6,7 +6,6 @@ from pyramid.interfaces import IRequest, IRouteRequest
 from ptah import config
 from ptah.view.base import View
 from ptah.view.interfaces import ILayout
-from ptah.view.customize import LayerWrapper
 
 
 def query_layout(context, request, name=''):
@@ -106,7 +105,7 @@ def register_layout(
     info = config.DirectiveInfo()
     info.attach(
         config.Action(
-            LayerWrapper(register_layout_impl, discriminator),
+            config.LayerWrapper(register_layout_impl, discriminator),
             (klass, name, context, template, parent, route),
             discriminator = discriminator)
         )

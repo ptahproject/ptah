@@ -1,7 +1,8 @@
 """ various fields """
 import datetime
-from ptah import view, formatter
 
+import ptah
+from ptah import view, formatter
 from ptah.form.interfaces import _, null, Invalid
 from ptah.form.field import field
 from ptah.form.fields import TextAreaField, TextField, DateTimeField
@@ -84,7 +85,8 @@ class JSDateTimeField(DateTimeField):
             if self.date_part is null:
                 self.date_part = raw.strftime('%m/%d/%Y')
             if self.time_part is null:
-                self.time_part = raw.strftime(formatter.FORMAT.time_short)
+                FORMAT = ptah.get_settings(ptah.CFG_ID_FORMAT, request.registry)
+                self.time_part = raw.strftime(FORMAT.time_short)
 
         if self.date_part is null:
             self.date_part = ''
@@ -106,7 +108,8 @@ class JSDateTimeField(DateTimeField):
         if not time:
             return null
 
-        format = '%s %s' % ('%m/%d/%Y', formatter.FORMAT.time_short)
+        FORMAT = ptah.get_settings(ptah.CFG_ID_FORMAT, self.request.registry)
+        format = '%s %s' % ('%m/%d/%Y', FORMAT.time_short)
         try:
             dt = datetime.datetime.strptime('%s %s' % (date, time), format)
         except ValueError:

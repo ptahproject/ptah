@@ -1,19 +1,17 @@
-import colander
-from ptah import config
+import ptah
+from ptah import form
 
-{{package}} = config.register_settings(
+ptah.register_settings(
     '{{package}}',
 
-    config.SchemaNode(
-        colander.Str(),
-        name = 'band',
+    ptah.form.TextField(
+        'band',
         default = 'Primus',
         title = 'Favorite band',
         description = 'This is your favorite band.'),
 
-    config.SchemaNode(
-        colander.Bool(),
-        name = 'happy',
+    ptah.form.TextField(
+        'happy',
         default = True,
         title = 'Are you happy?',
         description = 'Does Ptah bring you happiness?'),

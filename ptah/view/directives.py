@@ -1,6 +1,5 @@
 """ directives """
 from ptah import config
-from ptah.view.customize import LayerWrapper
 from ptah.view.view import unset, register_view_impl
 from ptah.view.layout import register_layout_impl
 from ptah.view.snippet import register_snippet_impl
@@ -13,7 +12,7 @@ def snippet(name, context=None, template=None, layer=''):
 
     info.attach(
         config.ClassAction(
-            LayerWrapper(register_snippet_impl, discriminator),
+            config.LayerWrapper(register_snippet_impl, discriminator),
             (name, context, template),
             discriminator = discriminator)
         )
@@ -32,7 +31,7 @@ def pview(name='', context=None, route=None,
         def wrapper(factory):
             info.attach(
                 config.Action(
-                    LayerWrapper(register_view_impl, discriminator),
+                    config.LayerWrapper(register_view_impl, discriminator),
                     (factory, name, context, template, route,
                      layout, permission),
                     discriminator = discriminator)
@@ -43,7 +42,7 @@ def pview(name='', context=None, route=None,
         # class decorator
         info.attach(
             config.ClassAction(
-                LayerWrapper(register_view_impl, discriminator),
+                config.LayerWrapper(register_view_impl, discriminator),
                 (name, context, template, route, layout, permission),
                 discriminator = discriminator)
             )
@@ -56,7 +55,7 @@ def layout(name='', context=None, parent='', route=None,template=None,layer=''):
 
     info.attach(
         config.ClassAction(
-            LayerWrapper(register_layout_impl, discriminator),
+            config.LayerWrapper(register_layout_impl, discriminator),
             (name, context, template, parent, route),
             discriminator = discriminator)
         )

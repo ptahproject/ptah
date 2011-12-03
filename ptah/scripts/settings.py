@@ -7,8 +7,9 @@ from collections import OrderedDict
 from pyramid.config import Configurator
 from pyramid.compat import configparser
 
+import ptah
 from ptah import config
-from ptah.config.settings import get_settings_ob
+from ptah.settings import SETTINGS_OB_ID
 
 
 grpTitleWrap = textwrap.TextWrapper(
@@ -34,7 +35,12 @@ nameDescriptionWrap = textwrap.TextWrapper(
 
 def main(init=True):
     if init:  # pragma: no cover
-        config.initialize(Configurator(), autoinclude=True)
+        pconfig = Configurator()
+        pconfig.begin()
+        pconfig.include('ptah')
+        config.initialize(pconfig, autoinclude=True)
+        pconfig.commit()
+        ptah.initialize_settings(config, None)
 
     args = SettingsCommand.parser.parse_args()
     cmd = SettingsCommand(args)
@@ -61,7 +67,7 @@ class SettingsCommand(object):
     def run(self):
         # print defaults
         if self.options.printcfg:
-            data = get_settings_ob().export(True)
+            data = config.get_cfg_storage(SETTINGS_OB_ID).export(True)
 
             parser = configparser.ConfigParser(dict_type=OrderedDict)
             for key, val in sorted(data.items()):
@@ -73,7 +79,7 @@ class SettingsCommand(object):
             finally:
                 pass
 
-            print fp.getvalue()
+            print (fp.getvalue())
             return
 
         if self.options.all:
@@ -82,26 +88,27 @@ class SettingsCommand(object):
             section = self.options.section
 
         # print description
-        groups = sorted(get_settings_ob().items())
+        groups = sorted(ptah.get_settings_groups().items())
 
         for name, group in groups:
             if section and name != section:
                 continue
 
-            print ''
-            title = group.title or name
+            print ('')
+            title = group.__title__ or name
 
-            print grpTitleWrap.fill(title)
-            if group.description:
-                print grpDescriptionWrap.fill(group.description)
+            print (grpTitleWrap.fill(title.encode('utf-8')))
+            if group.__description__:
+                print (grpDescriptionWrap.fill(
+                    group.__description__.encode('utf-8')))
 
-            print
-            for node in group.schema:
+            print ('')
+            for node in group.__fields__.values():
                 default = '<required>' if node.required else node.default
-                print nameWrap.fill(
-                    '%s.%s: %s (%s: %s)' % (
+                print (nameWrap.fill(
+                    ('%s.%s: %s (%s: %s)' % (
                         name, node.name, node.title,
-                        node.typ.__class__.__name__, default))
+                        node.__class__.__name__, default)).encode('utf-8')))
 
-                print nameTitleWrap.fill(node.description)
-                print
+                print (nameTitleWrap.fill(node.description.encode('utf-8')))
+                print ('')

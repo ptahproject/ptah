@@ -1,30 +1,14 @@
 """ static resource management api """
-import os, re, colander
+import os, re
 
 from pyramid.compat import urlparse
 from pyramid.static import _FileResponse
 from pyramid.httpexceptions import HTTPNotFound
 
+import ptah
 from ptah import config
 from ptah.view import tmpl
-from ptah.view.customize import LayerWrapper
 
-
-STATIC = config.register_settings(
-    'static',
-
-    config.SchemaNode(
-        colander.Str(),
-        name = 'url',
-        default = 'static'),
-
-    config.SchemaNode(
-        colander.Int(),
-        name = 'cache_max_age',
-        default = 0),
-
-    title = 'Static resources management',
-)
 
 STATIC_ID = 'ptah.view:static'
 
@@ -48,7 +32,7 @@ def static(name, path, layer=''):
     info = config.DirectiveInfo()
     info.attach(
         config.Action(
-            LayerWrapper(lambda cfg, a1,a2,a3: \
+            config.LayerWrapper(lambda cfg, a1,a2,a3: \
                          cfg.get_cfg_storage(STATIC_ID)\
                              .update({a1: (a2, a3)}), discriminator),
             (name, abspath, pkg),
@@ -56,9 +40,10 @@ def static(name, path, layer=''):
 
 
 def static_url(request, name, path='', **kw):
-    url = STATIC.url
+    cfg = ptah.get_settings('view', request.registry)
+    url = cfg['static_url']
 
-    if STATIC.get('isurl', False):
+    if cfg.get('isurl', False):
         return '%s/%s/%s'%(url, name, path)
     else:
         url = request.route_url('%s-%s'%(url, name), subpath = path)
@@ -87,7 +72,9 @@ def buildTree(path, not_allowed=re.compile('^[.~$#]')):
 
 @config.subscriber(config.AppStarting)
 def initialize(ev):
-    url = STATIC.url
+    cfg = ptah.get_settings('view', ev.registry)
+
+    url = cfg['static_url']
     if not urlparse.urlparse(url)[0]:
         registry = config.get_cfg_storage(STATIC_ID)
         for name, (abspath, pkg) in registry.items():
@@ -100,7 +87,7 @@ def initialize(ev):
                 route_name =rname,
                 view = StaticView(abspath, prefix))
     else:
-        STATIC['isurl'] = True
+        cfg['isurl'] = True
 
 
 class StaticView(object):
@@ -120,6 +107,7 @@ class StaticView(object):
             self.path, os.path.join(*(path_info[self.lprefix:].split('/'))))
 
         if os.path.isfile(path):
-            return _FileResponse(path, STATIC.cache_max_age)
+            cfg = ptah.get_settings('view', request.registry)
+            return _FileResponse(path, cfg['cache_max_age'])
 
         return HTTPNotFound(request.url)

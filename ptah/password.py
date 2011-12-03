@@ -1,5 +1,4 @@
 """ password tool """
-import colander
 import translationstring
 from os import urandom
 from codecs import getencoder
@@ -13,34 +12,30 @@ from ptah import config, form, token
 _ = translationstring.TranslationStringFactory('ptah')
 
 
-PWD_CONFIG = config.register_settings(
+PWD_CONFIG = ptah.register_settings(
     'ptah-password',
 
-    config.SchemaNode(
-        colander.Str(),
+    form.TextField(
         name = 'manager',
         title = 'Password manager',
         description = 'Available password managers '\
             '("plain", "ssha", "bcrypt")',
         default = 'plain'),
 
-    config.SchemaNode(
-        colander.Int(),
-        name = 'min_length',
+    form.IntegerField(
+        'min_length',
         title = 'Length',
         description = 'Password minimium length.',
         default = 5),
 
-    config.SchemaNode(
-        colander.Bool(),
-        name = 'letters_digits',
+    form.BoolField(
+        'letters_digits',
         title = 'Letters and digits',
         description = 'Use letters and digits in password.',
         default = False),
 
-    config.SchemaNode(
-        colander.Bool(),
-        name = 'letters_mixed_case',
+    form.BoolField(
+        'letters_mixed_case',
         title = 'Letters mixed case',
         description = 'Use letters in mixed case.',
         default = False),

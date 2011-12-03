@@ -13,7 +13,6 @@ from pyramid.interfaces import IViewClassifier, IExceptionViewClassifier
 
 from ptah import config
 from ptah.view.base import View
-from ptah.view.customize import LayerWrapper
 from ptah.view.layout import LayoutRenderer
 from ptah.view.renderers import \
      PermissionRenderer, ViewRenderer, TemplateRenderer
@@ -68,7 +67,7 @@ def register_view(
     info = config.DirectiveInfo()
     info.attach(
         config.Action(
-            LayerWrapper(register_view_impl, discriminator),
+            config.LayerWrapper(register_view_impl, discriminator),
             (factory, name, context, template, route, layout, permission),
             discriminator = discriminator)
         )

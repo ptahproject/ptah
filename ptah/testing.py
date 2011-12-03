@@ -34,7 +34,7 @@ class PtahTestCase(unittest.TestCase):
         request.request_iface = IRequest
         return request
 
-    def init_ptah(self, handler=None, *args, **kw):
+    def init_ptah(self, *args, **kw):
         parts = self.__class__.__module__.split('.')
         packages = ['ptah']
         for l in range(len(parts)):
@@ -42,7 +42,7 @@ class PtahTestCase(unittest.TestCase):
 
         config.initialize(
             self.config, packages, initsettings = False)
-        config.initialize_settings(self.registry.settings, self.config)
+        ptah.initialize_settings(self.config, self.registry.settings)
 
         if self._init_sqla:
             # create sql tables

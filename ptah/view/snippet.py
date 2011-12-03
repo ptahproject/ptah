@@ -5,7 +5,6 @@ from pyramid.httpexceptions import HTTPNotFound
 
 from ptah import config
 from ptah.view.base import View
-from ptah.view.customize import LayerWrapper
 from ptah.view.interfaces import ISnippet
 
 log = logging.getLogger('ptah.view')
@@ -73,7 +72,7 @@ def register_snippet(name, context=None, klass=None, template=None, layer=''):
 
     info.attach(
         config.Action(
-            LayerWrapper(register_snippet_impl, discriminator),
+            config.LayerWrapper(register_snippet_impl, discriminator),
             (klass, name, context, template),
             discriminator = discriminator)
         )

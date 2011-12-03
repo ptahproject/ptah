@@ -1,6 +1,8 @@
 """ formatter tests """
-import colander, pytz
+import pytz
 from datetime import datetime, timedelta
+
+import ptah
 from ptah import formatter
 from ptah.testing import PtahTestCase
 
@@ -21,32 +23,6 @@ class TestFormatter(PtahTestCase):
         self.assertEqual(getattr(format, 'simple', None), None)
         self.assertFalse('simple' in format)
 
-    def test_timezone_schema_serialize(self):
-        typ = formatter.Timezone()
-
-        self.assertTrue(typ.serialize(None, colander.null) is colander.null)
-        self.assertEqual(typ.serialize(None, pytz.UTC), 'UTC')
-
-    def test_timezone_schema_deserialize(self):
-        typ = formatter.Timezone()
-
-        self.assertTrue(typ.deserialize(None, colander.null) is colander.null)
-        self.assertTrue(typ.deserialize(None, '') is colander.null)
-
-        # special case for 'GMT+X' timezones
-        self.assertEqual(repr(typ.deserialize(None, 'GMT+6')),
-                         "<StaticTzInfo 'Etc/GMT+6'>")
-
-        # general timezones
-        self.assertEqual(repr(typ.deserialize(None, 'US/Central')),
-                         "<DstTzInfo 'US/Central' CST-1 day, 18:00:00 STD>")
-
-        self.assertEqual(repr(typ.deserialize(None, 'us/central')),
-                         "<DstTzInfo 'US/Central' CST-1 day, 18:00:00 STD>")
-
-        # unknown timezone
-        self.assertRaises(colander.Invalid, typ.deserialize, None, 'unknown')
-
     def test_datetime_formatter(self):
         format = formatter.format
         self.assertTrue('datetime' in format)
@@ -65,6 +41,9 @@ class TestFormatter(PtahTestCase):
         self.assertEqual(format.datetime(dt, 'full'),
                          'Sunday, February 06, 2011 04:35:45 AM CST')
 
+    def test_datetime_formatter2(self):
+        format = formatter.format
+
         # datetime without timezone
         dt = datetime(2011, 2, 6, 10, 35, 45, 80)
         self.assertEqual(format.datetime(dt, 'short'),
@@ -72,7 +51,9 @@ class TestFormatter(PtahTestCase):
 
         # different format
         dt = datetime(2011, 2, 6, 10, 35, 45, 80, pytz.UTC)
-        formatter.FORMAT['date_short'] = '%b %d, %Y'
+
+        FORMAT = ptah.get_settings('format', self.registry)
+        FORMAT['date_short'] = '%b %d, %Y'
 
         self.assertEqual(format.datetime(dt, 'short'),
                          'Feb 06, 2011 04:35 AM')

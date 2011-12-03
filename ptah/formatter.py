@@ -1,11 +1,11 @@
 """ formatters """
 import pytz
-import colander
 import translationstring
 from datetime import datetime, timedelta
 from pyramid.i18n import get_localizer
 from pyramid.threadlocal import get_current_request
 
+import ptah
 from ptah import config
 
 _ = translationstring.TranslationStringFactory('ptah')
@@ -29,109 +29,12 @@ class FormatImpl(dict):
 format = FormatImpl()
 
 
-_tzs = dict((str(tz).lower(), str(tz)) for tz in pytz.all_timezones)
-
-
-class Timezone(colander.SchemaType):
-    """ timezone schema type """
-
-    def serialize(self, node, appstruct):
-        if appstruct is colander.null:
-            return colander.null
-
-        return str(appstruct)
-
-    def deserialize(self, node, cstruct):
-        if cstruct is colander.null or not cstruct:
-            return colander.null
-
-        try:
-            v = str(cstruct)
-            if v.startswith('GMT'):
-                v = 'Etc/%s' % v
-            try:
-                return pytz.timezone(v)
-            except:
-                return pytz.timezone(_tzs[v.lower()])
-        except:
-            raise colander.Invalid(node,
-                _('"${val}" is not a timezone', mapping={'val': cstruct}))
-
-
-FORMAT = config.register_settings(
-    'format',
-
-    config.SchemaNode(
-        Timezone(),
-        name = 'timezone',
-        default = pytz.timezone('US/Central'),
-        title = _('Timezone'),
-        description = _('Site wide timezone.')),
-
-    config.SchemaNode(
-        colander.Str(),
-        name = 'date_short',
-        default = '%m/%d/%y',
-        title = _('Date'),
-        description = _('Date short format')),
-
-    config.SchemaNode(
-        colander.Str(),
-        name = 'date_medium',
-        default = '%b %d, %Y',
-        title = _('Date'),
-        description = _('Date medium format')),
-
-    config.SchemaNode(
-        colander.Str(),
-        name = 'date_long',
-        default = '%B %d, %Y',
-        title = _('Date'),
-        description = _('Date long format')),
-
-    config.SchemaNode(
-        colander.Str(),
-        name = 'date_full',
-        default = '%A, %B %d, %Y',
-        title = _('Date'),
-        description = _('Date full format')),
-
-    config.SchemaNode(
-        colander.Str(),
-        name = 'time_short',
-        default = '%I:%M %p',
-        title = _('Time'),
-        description = _('Time short format')),
-
-    config.SchemaNode(
-        colander.Str(),
-        name = 'time_medium',
-        default = '%I:%M %p',
-        title = _('Time'),
-        description = _('Time medium format')),
-
-    config.SchemaNode(
-        colander.Str(),
-        name = 'time_long',
-        default = '%I:%M %p %z',
-        title = _('Time'),
-        description = _('Time long format')),
-
-    config.SchemaNode(
-        colander.Str(),
-        name = 'time_full',
-        default = '%I:%M:%S %p %Z',
-        title = _('Time'),
-        description = _('Time full format')),
-
-    title = 'Site formats',
-    )
-
-
 def datetimeFormatter(value, tp='medium', request=None):
     """ datetime format """
     if not isinstance(value, datetime):
         return value
+
+    FORMAT = ptah.get_settings('format', request)
 
     tz = FORMAT.timezone
     if value.tzinfo is None:

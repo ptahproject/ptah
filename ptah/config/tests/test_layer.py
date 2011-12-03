@@ -4,7 +4,7 @@ import unittest
 class TestViewLayersManager(unittest.TestCase):
 
     def test_register(self):
-        from ptah.view.customize import _ViewLayersManager
+        from ptah.config.directives import _ViewLayersManager
 
         manager = _ViewLayersManager()
 
@@ -15,7 +15,7 @@ class TestViewLayersManager(unittest.TestCase):
         self.assertEqual(manager.layers[(1,)], ['', 'test', 'test2'])
 
     def test_enabled(self):
-        from ptah.view.customize import _ViewLayersManager
+        from ptah.config.directives import _ViewLayersManager
 
         manager = _ViewLayersManager()
 

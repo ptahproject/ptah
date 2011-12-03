@@ -60,12 +60,12 @@ class StaticCommand(object):
                 os.makedirs(basepath)
 
             if not os.path.isdir(basepath):
-                print "Output path is not directory."
+                print ("Output path is not directory.")
                 return
 
             items = registry.items()
             for name, (path, pkg) in sorted(items):
-                print "* Coping from '%s' %s"%(pkg, path)
+                print ("* Coping from '{0}' {1}".format(pkg, path))
 
                 d = resources.buildTree(path)
 
@@ -77,14 +77,14 @@ class StaticCommand(object):
 
                     forp = '%s/%s'%(pkg, p.split(pkg, 1)[-1])
                     if os.path.exists(bp):
-                        print '   skipping ../%s'%forp
+                        print ('   skipping ../{0}'.format(forp))
                     else:
-                        print '   coping ../%s'%forp
+                        print ('   coping ../{0}'.format(forp))
                         shutil.copyfile(os.path.join(path, p), bp)
 
                 print
 
-            print basepath
+            print (basepath)
             return
 
         # list static sections
@@ -92,8 +92,8 @@ class StaticCommand(object):
             items = registry.items()
 
             for name, (path, pkg) in sorted(items):
-                print grpTitleWrap.fill(name)
-                print nameWrap.fill('by: %s'%pkg)
+                print (grpTitleWrap.fill(name))
+                print (nameWrap.fill('by: {0}'.format(pkg)))
                 p = path.split(pkg, 1)[-1]
-                print nameTitleWrap.fill(' ../%s%s'%(pkg, p))
-                print
+                print (nameTitleWrap.fill(' ../{0}{1}'.format(pkg, p)))
+                print ('')

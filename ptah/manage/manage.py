@@ -1,8 +1,7 @@
-import colander
 from pyramid.httpexceptions import HTTPForbidden
 
 import ptah
-from ptah import view, config
+from ptah import view, config, form
 from ptah.authentication import auth_service
 
 CFG_ID = 'manage'
@@ -10,33 +9,29 @@ CONFIG_ID = 'ptah.manage:config'
 MANAGE_ID = 'ptah.manage:module'
 INTROSPECT_ID = 'ptah.manage:introspection'
 
-CONFIG = config.register_settings(
+CONFIG = ptah.register_settings(
     CFG_ID,
 
-    config.SchemaNode(
-        config.Sequence(), colander.SchemaNode(colander.Str()),
-        name = 'managers',
+    form.LinesField(
+        'managers',
         title = 'Managers',
         description = 'List of user logins with access rights to '\
             'ptah management ui.',
         default = ()),
 
-    config.SchemaNode(
-        colander.Str(),
+    form.TextField(
         name = 'manage_url',
         title = 'Ptah manage url',
         default = '/ptah-manage'),
 
-    config.SchemaNode(
-        config.Sequence(), colander.SchemaNode(colander.Str()),
-        name = 'disable_modules',
+    form.LinesField(
+        'disable_modules',
         title = 'Hide Modules in Management UI',
         description = 'List of modules names to hide in manage ui',
         default = ()),
 
-    config.SchemaNode(
-        config.Sequence(), colander.SchemaNode(colander.Str()),
-        name = 'disable_models',
+    form.LinesField(
+        'disable_models',
         title = 'Hide Models in Model Management UI',
         description = 'List of models to hide in model manage ui',
         default = ('cms-type:sqlblob',)),

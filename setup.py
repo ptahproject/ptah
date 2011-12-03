@@ -5,9 +5,7 @@ version='0.2-dev'
 
 install_requires = ['setuptools',
                     'sphinx',
-                    'colander >= 0.9.4',
                     'pytz',
-                    'iso8601',
                     'chameleon == 2.4.5',
                     'pyramid',
                     'pyramid_tm',

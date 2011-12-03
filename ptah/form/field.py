@@ -1,6 +1,7 @@
-from ptah import config, view
+import json
 from collections import OrderedDict
 
+from ptah import config
 from ptah.form.validator import All
 from ptah.form.interfaces import _, null, required
 from ptah.form.interfaces import Invalid, FORM_INPUT, FORM_DISPLAY
@@ -17,7 +18,7 @@ def field(name, layer=''):
     def wrapper(cls):
         info.attach(
             config.Action(
-                view.LayerWrapper(register_field_impl, discriminator),
+                config.LayerWrapper(register_field_impl, discriminator),
                 (cls, name, ),
                 discriminator=discriminator)
             )
@@ -33,7 +34,7 @@ def register_field_factory(cls, name, layer=''):
 
     info.attach(
         config.Action(
-            view.LayerWrapper(register_field_impl, discriminator),
+            config.LayerWrapper(register_field_impl, discriminator),
             (cls, name),
             discriminator=discriminator)
         )
@@ -74,12 +75,13 @@ class Fieldset(OrderedDict):
         super(Fieldset, self).__init__()
 
         self.name = kwargs.pop('name', '')
-        self.legend = kwargs.pop('legend', '')
+        self.title = kwargs.pop('title', '')
+        self.description = kwargs.pop('description', '')
         self.prefix = '%s.' % self.name if self.name else ''
         self.lprefix = len(self.prefix)
 
         validator = kwargs.pop('validator', None)
-        if type(validator) is list:
+        if isinstance(validator, (tuple, list)):
             self.validator = All(*validator)
         else:
             self.validator = All()
@@ -133,7 +135,7 @@ class Fieldset(OrderedDict):
     def bind(self, data=None, params={}):
         clone = Fieldset(
             name=self.name,
-            legend=self.legend,
+            title=self.title,
             prefix=self.prefix,
             validator=self.validator.validators)
 
@@ -295,6 +297,15 @@ class Field(object):
     def deserialize(self, value):
         raise NotImplementedError()
 
+    def dumps(self, value):
+        return json.dumps(value)
+
+    def loads(self, s):
+        try:
+            return json.loads(s)
+        except Exception as e:
+            raise Invalid(self, 'Error in JSON format: {0}'.format(s))
+
     def validate(self, value):
         if value is required:
             raise Invalid(self, _('Required'))
@@ -311,7 +322,7 @@ class Field(object):
     def render(self, request):
         if self.mode == FORM_DISPLAY:
             return self.tmpl_display(
-                view=view,
+                view=self,
                 context=self,
                 request=request)
         else:

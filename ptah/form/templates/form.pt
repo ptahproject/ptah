@@ -7,7 +7,7 @@
       tal:attributes="autocomplete getattr(context, 'autocomplete', None)">
 
   <fieldset tal:repeat="fieldset context.widgets.fieldsets">
-    <legend tal:condition="fieldset['legend']">${fieldset['legend']}</legend>
+    <legend tal:condition="fieldset['title']">${fieldset['title']}</legend>
     <tal:block repeat="widget fieldset['widgets']">
       
     </tal:block>

@@ -8,10 +8,8 @@ from pyramid.response import Response
 from pyramid.authentication import parse_ticket, AuthTicket, BadTicket
 from pyramid.httpexceptions import WSGIHTTPException, HTTPNotFound
 
-from ptah import view, config
-
 import ptah
-from ptah.settings import SECURITY
+from ptah import view, config
 
 
 REST_ID = 'ptah:rest-service'
@@ -143,7 +141,8 @@ class Login(object):
         return '%s\n\n' % dumps(result, indent=True, default=dthandler)
 
     def get_token(self, request, userid):
-        secret = SECURITY.secret
+        secret = ptah.get_settings(
+            ptah.CFG_ID_AUTH, request.registry)['secret']
         remote_addr = '0.0.0.0'
 
         ticket = AuthTicket(
@@ -170,11 +169,12 @@ class Api(object):
         # authentication by token
         token = request.environ.get('HTTP_X_AUTH_TOKEN')
         if token:
+            secret = ptah.get_settings(
+                ptah.CFG_ID_AUTH, request.registry)['secret']
+
             try:
                 timestamp, userid, tokens, user_data = parse_ticket(
-                    SECURITY.secret,
-                    '%s!' % token,
-                    '0.0.0.0')
+                    secret, '%s!' % token, '0.0.0.0')
             except BadTicket:
                 userid = None
 

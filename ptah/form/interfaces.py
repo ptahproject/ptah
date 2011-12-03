@@ -142,6 +142,12 @@ class IWidget(interface.Interface):
     def deserialize(value):
         """ deserialize value """
 
+    def loads(value):
+        """ load value from json format """
+
+    def dumps(value):
+        """ dumps value to json format """
+
 
 class ISequenceWidget(IWidget):
     """Term based sequence widget base.

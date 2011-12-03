@@ -1,194 +1,273 @@
-""" ptah settings """
-import colander
-import translationstring
-from ptah import config
+""" settings """
+import logging
+import os.path
 
-_ = translationstring.TranslationStringFactory('ptah')
+from zope import interface
+from zope.interface.interface import InterfaceClass
+from pyramid.compat import configparser
 
+from ptah import form, config
+from ptah.config import StopException
+from ptah.config.directives import event, subscriber, DirectiveInfo, Action
 
-SECURITY = config.register_settings(
-    'auth',
-
-    config.SchemaNode(
-        colander.Bool(),
-        name = 'policy',
-        title = _('Authentication policy'),
-        description = _('Enable authentication policy.'),
-        required = False,
-        default = False),
-
-    config.SchemaNode(
-        colander.Str(),
-        name = 'secret',
-        title = _('Policy secret'),
-        description = _('The secret (a string) used for auth_tkt '
-                        'cookie signing'),
-        required = False),
-
-    config.SchemaNode(
-        colander.Bool(),
-        name = 'authorization',
-        title = _('Authorization policy'),
-        description = _('Enable/disable default authorization policy.'),
-        required = False,
-        default = True),
-
-    title = _('Pyramid authentication settings'),
-)
+log = logging.getLogger('ptah.config')
 
 
-SESSION = config.register_settings(
-    'session',
+class SettingsInitializing(object):
+    """ Settings initializing event """
+    event('Settings initializing event')
 
-    config.SchemaNode(
-        colander.Str(),
-        name = 'type',
-        title = _('The name of the back-end'),
-        description = _('Available back-ends supplied with Beaker: file, dbm, '
-                        'memory, ext:memcached, ext:database, ext:google'),
-        default = ''),
+    config = None
+    registry = None
 
-    config.SchemaNode(
-        colander.Str(),
-        name = 'data_dir',
-        title = _('Data directory'),
-        description = _('Used with any back-end that stores its data in '
-                        'physical files, such as the dbm or file-based '
-                        'back-ends. This path should be an absolute path '
-                        'to the directory that stores the files.'),
-        default = ''),
-
-    config.SchemaNode(
-        colander.Str(),
-        name = 'lock_dir',
-        title = _('Lock directory'),
-        description = _('Used with every back-end, to coordinate locking. '
-                        'With caching, this lock file is used to ensure that '
-                        "multiple processes/threads aren't attempting to "
-                        're-create the same value at the same '
-                        'time (The Dog-Pile Effect)'),
-        default = ''),
-
-    config.SchemaNode(
-        colander.Str(),
-        name = 'url',
-        title = _('URL'),
-        description = _('URL is specific to use of either ext:memcached or '
-                        'ext:database. When using one of those types, '
-                        'this option is required.'),
-        default = ''),
-
-    config.SchemaNode(
-        colander.Str(),
-        name = 'key',
-        required = False,
-        title = _('Key'),
-        default = '',
-        description = _('Name of the cookie key used to save the '
-                        'session under.')),
-
-    config.SchemaNode(
-        colander.Str(),
-        name = 'secret',
-        required = False,
-        title = _('Secret'),
-        default = '',
-        description = _('Used with the HMAC to ensure session integrity. '
-                        'This value should ideally be a randomly '
-                        'generated string.')),
-
-    title = _('Pyramid session'),
-    description = _('Beaker session configuration settings'),
-    validator = (config.RequiredWithDependency('key', 'type', default=''),
-                 config.RequiredWithDependency('secret', 'type', default='')),
-)
-
-SQLA = config.register_settings(
-    'sqla',
-
-    config.SchemaNode(
-        colander.Str(),
-        name = 'url',
-        default = '',
-        title = 'Engine URL',
-        description = 'SQLAlchemy database engine URL'),
-
-    config.SchemaNode(
-        colander.Bool(),
-        name = 'cache',
-        default = True,
-        title = 'Cache',
-        description = 'Eanble SQLAlchemy statement caching'),
-
-    title = 'SQLAlchemy settings',
-    description = 'Configuration settings for a SQLAlchemy database engine.'
-    )
+    def __init__(self, config, registry):
+        self.config = config
+        self.registry = registry
 
 
-MAIL = config.register_settings(
-    'mail',
+class SettingsInitialized(object):
+    """ ptah sends this event when settings initialization is completed. """
+    event('Settings initialized event')
 
-    config.SchemaNode(
-        colander.Str(),
-        name = 'host',
-        title = 'Host',
-        description = 'SMTP Server host name.',
-        default = 'localhost'),
+    config = None
+    registry = None
 
-    config.SchemaNode(
-        colander.Int(),
-        name = 'port',
-        title = 'Port',
-        description = 'SMTP Server port number.',
-        default = 25),
+    def __init__(self, config, registry):
+        self.config = config
+        self.registry = registry
 
-    config.SchemaNode(
-        colander.Str(),
-        name = 'username',
-        title = 'Username',
-        description = 'SMTP Auth username.',
-        default = ''),
 
-    config.SchemaNode(
-        colander.Str(),
-        name = 'password',
-        title = 'Password',
-        description = 'SMTP Auth password.',
-        default = ''),
+_marker = object()
 
-    config.SchemaNode(
-        colander.Bool(),
-        name = 'no_tls',
-        title = 'No tls',
-        description = 'Disable TLS.',
-        default = False),
+SETTINGS_ID = 'settings'
+SETTINGS_OB_ID = 'ptah:settings'
+SETTINGS_GROUP_ID = 'ptah:settings-group'
 
-    config.SchemaNode(
-        colander.Bool(),
-        name = 'force_tls',
-        title = 'Force TLS',
-        description = 'Force use TLS.',
-        default = False),
 
-    config.SchemaNode(
-        colander.Bool(),
-        name = 'debug',
-        title = 'Debug',
-        description = 'Debug smtp.',
-        default = False),
+def get_settings(grp, registry):
+    """ get settings group by group id """
+    return config.get_cfg_storage(SETTINGS_GROUP_ID, registry)[grp]
 
-    config.SchemaNode(
-        colander.Str(),
-        name = 'from_name',
-        default = 'Site administrator'),
 
-    config.SchemaNode(
-        colander.Str(),
-        name = 'from_address',
-        validator = colander.Email(),
-        required = False,
-        default = 'administrator@localhost.org'),
+def pyramid_get_settings(config, grp):
+    return config.get_cfg_storage(SETTINGS_GROUP_ID)[grp]
 
-    title = 'Mail settings',
-    description = 'Configuration settings for application mail.',
-)
+
+def get_settings_groups():
+    return config.get_cfg_storage(SETTINGS_GROUP_ID)
+
+
+@subscriber(config.Initialized)
+def init_settings(ev):
+    registry = ev.config.registry
+
+    settings = Settings()
+    registry.__ptah_storage__[SETTINGS_OB_ID] = settings
+
+    # complete settings initialization
+    #for grp in registry.__ptah_storage__[SETTINGS_GROUP_ID].values():
+    #    settings.register(grp)
+
+
+def initialize_settings(pconfig, cfg, section=configparser.DEFAULTSECT):
+    settings = pconfig.registry.__ptah_storage__[SETTINGS_OB_ID]
+    if settings.initialized:
+        raise RuntimeError(
+            "initialize_settings has been called more than once.")
+
+    log.info('Initializing ptah settings')
+
+    settings.config = pconfig
+    settings.initialized = True
+
+    if cfg:
+        here = cfg.get('here', './')
+
+        include = cfg.get('include', '')
+        for f in include.split('\n'):
+            f = f.strip()
+            if f and os.path.exists(f):
+                parser = configparser.SafeConfigParser()
+                parser.read(f)
+                if section == configparser.DEFAULTSECT or \
+                       parser.has_section(section):
+                    cfg.update(parser.items(section, vars={'here': here}))
+
+    pconfig.begin()
+    try:
+        settings.init(pconfig, cfg)
+        config.notify(SettingsInitializing(pconfig, pconfig.registry))
+        config.notify(SettingsInitialized(pconfig, pconfig.registry))
+    except Exception as e:
+        raise StopException(e)
+    finally:
+        pconfig.end()
+
+
+def register_settings(name, *fields, **kw):
+    iname = name
+    for ch in ('.', '-'):
+        iname = iname.replace(ch, '_')
+
+    category = InterfaceClass(
+        'SettingsGroup:%s' % iname.upper(), (),
+        __doc__='Settings group: %s' % name,
+        __module__='ptah.config.settings')
+
+    for field in fields:
+        field.required = False
+        if field.default is form.null:
+            raise StopException('field.default could not be "null"')
+
+    group = Group(name=name, *fields, **kw)
+    interface.directlyProvides(Group, category)
+
+    ac = Action(
+        lambda config, group: config.get_cfg_storage(SETTINGS_GROUP_ID)\
+            .update({group.__name__: group}),
+        (group,),
+        discriminator=(SETTINGS_GROUP_ID, name))
+
+    info = DirectiveInfo()
+    info.attach(ac)
+
+    return group
+
+
+class Settings(object):
+    """ settings management system """
+
+    initialized = False
+
+    def init(self, config, defaults=None):
+        groups = config.get_cfg_storage(SETTINGS_GROUP_ID).items()
+
+        for name, group in groups:
+            data = {}
+            for field in group.__fields__.values():
+                if field.default is not form.null:
+                    data[field.name] = field.default
+
+            group.update(data)
+
+        if defaults is None:
+            return
+
+        # load defaults
+        try:
+            rawdata = dict((k.lower(), v) for k, v in defaults.items())
+        except Exception as e:
+            raise StopException(e)
+
+        for name, group in groups:
+            data, errors = group.extract(rawdata)
+
+            if errors:
+                log.error(errors.msg)
+                raise StopException(errors)
+
+            for k, v in data.items():
+                if v is not form.null:
+                    group.__fields__[k].default = v
+
+            group.update(data)
+
+    def export(self, default=False):
+        groups = config.get_cfg_storage(SETTINGS_GROUP_ID).items()
+
+        result = {}
+        for name, group in groups:
+            for field in group.__fields__.values():
+                fname = field.name
+                if group[fname] == field.default and not default:
+                    continue
+
+                result['{0}.{1}'.format(name,fname)] = field.dumps(group[fname])
+
+        return result
+
+
+class Group(object):
+
+    def __init__(self, *args, **kwargs):
+        fields = form.Fieldset(*args, **kwargs)
+        self.__name__ = fields.name
+        self.__title__ = fields.title
+        self.__description__ = fields.description
+        self.__fields__ = fields
+
+    def extract(self, rawdata):
+        fieldset = self.__fields__
+        name = fieldset.name
+
+        data = {}
+        errors = form.FieldsetErrors(fieldset)
+
+        for field in fieldset.fields():
+            value = rawdata.get('{0}.{1}'.format(name, field.name), _marker)
+
+            if value is _marker:
+                value = field.default
+            else:
+                try:
+                    value = field.loads(value)
+                    field.validate(value)
+
+                    if field.preparer is not None:
+                        value = field.preparer(value)
+                except form.Invalid as e:
+                    errors.append(e)
+                    value = field.default
+
+            data[field.name] = value
+
+        if not errors:
+            try:
+                fieldset.validate(data)
+            except form.Invalid as e:
+                errors.append(e)
+
+        return data, errors
+
+    def get(self, name, default=None):
+        try:
+            data = config.get_cfg_storage(SETTINGS_ID)[self.__name__]
+            if name in data:
+                return data[name]
+        except (KeyError, AttributeError):
+            pass
+
+        if name in self.__fields__:
+            return self.__fields__[name].default
+
+        return default
+
+    def keys(self):
+        return [node.name for node in self.__fields__.values()]
+
+    def items(self):
+        return [(key, self.get(key)) for key in self.__fields__.keys()]
+
+    def update(self, data):
+        gdata = config.get_cfg_storage(SETTINGS_ID).setdefault(self.__name__,{})
+        gdata.update(data)
+
+    def __getattr__(self, attr, default=_marker):
+        res = self.get(attr, default)
+        if res is _marker:
+            raise AttributeError(attr)
+        return res
+
+    def __getitem__(self, name):
+        res = self.get(name, _marker)
+        if res is _marker:
+            raise KeyError(name)
+        return res
+
+    def __setitem__(self, name, value):
+        data = config.get_cfg_storage(SETTINGS_ID)
+        try:
+            data[self.__name__][name] = value
+        except KeyError:
+            data[self.__name__] = {}
+            data[self.__name__][name] = value

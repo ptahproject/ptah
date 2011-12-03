@@ -32,7 +32,7 @@ class TestPtahInit(unittest.TestCase):
             (ptah.config.Initialized,))
         sm.registerHandler(
             settings_initialized_handler,
-            (ptah.config.SettingsInitialized,))
+            (ptah.SettingsInitialized,))
 
         config.include('ptah')
         config.ptah_initialize(autoinclude=True)
@@ -78,7 +78,7 @@ class TestPtahInit(unittest.TestCase):
         sm = config.registry
         sm.registerHandler(
             initialized_handler,
-            (ptah.config.SettingsInitialized,))
+            (ptah.SettingsInitialized,))
 
         config.include('ptah')
 

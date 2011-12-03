@@ -1,4 +1,5 @@
 """ mail settings """
+import ptah
 import os.path
 from email import Encoders
 from email.MIMEText import MIMEText
@@ -6,8 +7,6 @@ from email.MIMEMultipart import MIMEMultipart
 from email.MIMENonMultipart import MIMENonMultipart
 from email.Utils import formatdate, formataddr
 from email.Header import make_header
-
-from ptah.settings import MAIL
 
 
 class MailGenerator(object):
@@ -151,6 +150,7 @@ class MailTemplate(object):
 
         self.context = context
         self.request = request
+        self.cfg = ptah.get_settings(ptah.CFG_ID_MAIL, request.registry)
 
         self._files = []
         self._headers = {}
@@ -186,9 +186,9 @@ class MailTemplate(object):
 
     def update(self):
         if not self.from_name:
-            self.from_name = MAIL.from_name
+            self.from_name = self.cfg.from_name
         if not self.from_address:
-            self.from_address = MAIL.from_address
+            self.from_address = self.cfg.from_address
 
     def render(self):
         kwargs = {'view': self,
@@ -204,7 +204,7 @@ class MailTemplate(object):
         message = self(**kw)
 
         if mailer is None:
-            mailer = MAIL.get('Mailer')
+            mailer = self.cfg.get('Mailer')
 
         if mailer is not None:
             mailer.send(message['from'], message['to'], message)

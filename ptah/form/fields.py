@@ -1,9 +1,10 @@
 """ Basic fields """
+import pytz
 import datetime
 import decimal
-import iso8601
 
 from ptah import view
+from ptah.form import iso8601
 from ptah.form import vocabulary
 from ptah.form.field import field, Field
 from ptah.form.interfaces import _, null, Invalid, ITerm
@@ -22,6 +23,11 @@ class InputField(Field, view.View):
     accesskey = None
     size = None
     maxlength = None
+
+    tmpl_input = view.template(
+        "ptah.form:templates/fields/text-input.pt")
+    tmpl_display = view.template(
+        "ptah.form:templates/fields/text-display.pt")
 
     def serialize(self, value):
         return value
@@ -181,10 +187,11 @@ class TextField(InputField):
     klass = 'text-widget'
     value = ''
 
-    tmpl_input = view.template(
-        "ptah.form:templates/fields/text-input.pt")
-    tmpl_display = view.template(
-        "ptah.form:templates/fields/text-display.pt")
+    def loads(self, s):
+        if not s.startswith('"'):
+            s = '"{0}"'.format(s)
+
+        return super(TextField, self).loads(s)
 
 
 class Number(object):
@@ -215,7 +222,7 @@ class Number(object):
 
 
 @field('int')
-class IntegerField(Number, TextField):
+class IntegerField(Number, InputField):
     __doc__ = _('Integer input widget')
 
     num = int
@@ -224,7 +231,7 @@ class IntegerField(Number, TextField):
 
 
 @field('float')
-class FloatField(Number, TextField):
+class FloatField(Number, InputField):
     __doc__ = _('Float input widget')
 
     num = float
@@ -232,7 +239,7 @@ class FloatField(Number, TextField):
 
 
 @field('decimal')
-class DecimalField(Number, TextField):
+class DecimalField(Number, InputField):
     __doc__ = _('Decimal input widget')
 
 
@@ -285,6 +292,8 @@ class LinesField(TextAreaField):
                 'sequence element.')
 
     klass = 'textlines-widget'
+
+    loads = Field.loads
 
     def serialize(self, value):
         if value is null or not value:
@@ -371,7 +380,7 @@ class DateField(TextField):
 
 class DateTimeField(TextField):
 
-    default_tzinfo = iso8601.iso8601.Utc()
+    default_tzinfo = iso8601.Utc()
 
     tmpl_display = view.template(
         "ptah.form:templates/fields/datetime-display.pt")
@@ -464,3 +473,38 @@ class MultiSelectField(ChoiceField):
 
     size = 5
     multiple = 'multiple'
+
+
+class TimezoneField(TextField):
+    """ timezone field """
+
+    _tzs = dict((str(tz).lower(), str(tz)) for tz in pytz.all_timezones)
+
+    def dumps(self, value):
+        return super(TimezoneField, self).dumps(self.serialize(value))
+
+    def loads(self, value):
+        value = super(TimezoneField, self).loads(value)
+        return self.deserialize(value)
+
+    def serialize(self, value):
+        if value is null:
+            return null
+
+        return str(value)
+
+    def deserialize(self, value):
+        if value is null or not value:
+            return null
+
+        try:
+            v = str(value)
+            if v.startswith('GMT'):
+                v = 'Etc/%s' % v
+            try:
+                return pytz.timezone(v)
+            except:
+                return pytz.timezone(self._tzs[v.lower()])
+        except:
+            raise Invalid(self,
+                _('"${val}" is not a timezone', mapping={'val': value}))

@@ -41,9 +41,6 @@ from ptah.view.renderers import set_checkpermission
 from ptah.view.renderers import ViewRenderer
 from ptah.view.renderers import TemplateRenderer
 
-# layer
-from ptah.view.customize import LayerWrapper
-
 # directives
 from ptah.view.directives import pview
 from ptah.view.directives import layout

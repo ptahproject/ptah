@@ -1,6 +1,7 @@
 import decimal
 import unittest
 from ptah import form
+from ptah.form import iso8601
 from ptah.testing import PtahTestCase
 from webob.multidict import MultiDict
 
@@ -422,13 +423,11 @@ class TestDateTime(unittest.TestCase):
         return datetime.date.today()
 
     def test_ctor_default_tzinfo_None(self):
-        import iso8601
         typ = self._makeOne()
-        self.assertEqual(typ.default_tzinfo.__class__, iso8601.iso8601.Utc)
+        self.assertEqual(typ.default_tzinfo.__class__, iso8601.Utc)
 
     def test_ctor_default_tzinfo_non_None(self):
-        import iso8601
-        tzinfo = iso8601.iso8601.FixedOffset(1, 0, 'myname')
+        tzinfo = iso8601.FixedOffset(1, 0, 'myname')
         typ = self._makeOne(default_tzinfo=tzinfo)
         self.assertEqual(typ.default_tzinfo, tzinfo)
 
@@ -466,10 +465,9 @@ class TestDateTime(unittest.TestCase):
         self.assertEqual(result, dt.isoformat())
 
     def test_serialize_with_tzware_datetime(self):
-        import iso8601
         typ = self._makeOne()
         dt = self._dt()
-        tzinfo = iso8601.iso8601.FixedOffset(1, 0, 'myname')
+        tzinfo = iso8601.FixedOffset(1, 0, 'myname')
         dt = dt.replace(tzinfo=tzinfo)
         result = typ.serialize(dt)
         expected = dt.isoformat()
@@ -477,13 +475,12 @@ class TestDateTime(unittest.TestCase):
 
     def test_deserialize_date(self):
         import datetime
-        import iso8601
         date = self._today()
         typ = self._makeOne()
         formatted = date.isoformat()
         result = typ.deserialize(formatted)
         expected = datetime.datetime.combine(result, datetime.time())
-        tzinfo = iso8601.iso8601.Utc()
+        tzinfo = iso8601.Utc()
         expected = expected.replace(tzinfo=tzinfo)
         self.assertEqual(result.isoformat(), expected.isoformat())
 
@@ -503,18 +500,16 @@ class TestDateTime(unittest.TestCase):
         self.assertEqual(result, form.null)
 
     def test_deserialize_success(self):
-        import iso8601
         typ = self._makeOne()
         dt = self._dt()
-        tzinfo = iso8601.iso8601.FixedOffset(1, 0, 'myname')
+        tzinfo = iso8601.FixedOffset(1, 0, 'myname')
         dt = dt.replace(tzinfo=tzinfo)
         iso = dt.isoformat()
         result = typ.deserialize(iso)
         self.assertEqual(result.isoformat(), iso)
 
     def test_deserialize_naive_with_default_tzinfo(self):
-        import iso8601
-        tzinfo = iso8601.iso8601.FixedOffset(1, 0, 'myname')
+        tzinfo = iso8601.FixedOffset(1, 0, 'myname')
         typ = self._makeOne(default_tzinfo=tzinfo)
         dt = self._dt()
         dt_with_tz = dt.replace(tzinfo=tzinfo)
@@ -644,7 +639,7 @@ class TestJSDateTimeField(PtahTestCase):
     def test_fields_jsdatetime_update(self):
         from datetime import datetime
 
-        request = DummyRequest()
+        request = self.request
         field = self._makeOne('test')
 
         f = field.bind('', form.null, {})
@@ -664,7 +659,7 @@ class TestJSDateTimeField(PtahTestCase):
     def test_fields_jsdatetime_extract(self):
         from datetime import datetime
 
-        request = DummyRequest()
+        request = self.request
         field = self._makeOne('test')
 
         f = field.bind('', form.null, {})

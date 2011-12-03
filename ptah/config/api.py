@@ -2,8 +2,8 @@ import sys
 import traceback
 import pkg_resources
 from io import BytesIO
+from collections import defaultdict, OrderedDict
 
-from collections import defaultdict
 from ptah.config import directives
 from pyramid.threadlocal import get_current_registry
 from zope.interface.interfaces import IObjectEvent
@@ -23,7 +23,7 @@ class StopException(Exception):
             self.isexc = False
 
     def __str__(self):
-        return '\n%s' % self.print_tb()
+        return ('\n{0}'.format(self.print_tb()))
 
     def print_tb(self):
         if self.isexc and self.exc_value:
@@ -43,6 +43,7 @@ class AppStarting(object):
 
     def __init__(self, config):
         self.config = config
+        self.registry = config.registry
 
 
 class Initialized(object):
@@ -93,7 +94,7 @@ def initialize(config, packages=None, excludes=(),
 
     config.action(None, registry.notify, (Initialized(config),))
 
-    if initsettings:
+    if 0: #initsettings:
         import settings
 
         config.action(
@@ -108,7 +109,7 @@ def get_cfg_storage(id, registry=None):
     try:
         storage = registry.__ptah_storage__
     except AttributeError:
-        storage = defaultdict(lambda: dict())
+        storage = defaultdict(lambda: OrderedDict())
         registry.__ptah_storage__ = storage
 
     return storage[id]
