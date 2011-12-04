@@ -1,4 +1,4 @@
-from zope import interface
+from zope.interface import implementer
 from pyramid.security import authenticated_userid
 from pyramid.threadlocal import get_current_request
 
@@ -41,7 +41,7 @@ def auth_checker(checker):
         config.Action(
             lambda config: config.get_cfg_storage(AUTH_CHECKER_ID)\
                 .update({id(checker): checker}),
-            discriminator=(AUTH_CHECKER_ID, checker))
+            discriminator=(AUTH_CHECKER_ID, hash(checker)))
         )
     return checker
 
@@ -91,8 +91,9 @@ def pyramid_auth_provider(config, name, provider):
         (config, name, provider))
 
 
+@implementer(IAuthInfo)
 class AuthInfo(object):
-    interface.implements(IAuthInfo)
+    """ Auth information """
 
     def __init__(self, principal, status=False, message=''):
         self.__uri__ = getattr(principal, '__uri__', None)
@@ -108,8 +109,9 @@ USER_KEY = '__ptah_userid__'
 EFFECTIVE_USER_KEY = '__ptah_effective__userid__'
 
 
+@implementer(IAuthentication)
 class Authentication(object):
-    interface.implements(IAuthentication)
+    """ Ptah authentication utility """
 
     def authenticate(self, credentials):
         providers = config.get_cfg_storage(AUTH_PROVIDER_ID)

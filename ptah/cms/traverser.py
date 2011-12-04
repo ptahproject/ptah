@@ -6,13 +6,13 @@ from zope import interface
 from pyramid.interfaces import ITraverser
 from pyramid.traversal import traversal_path, ResourceTreeTraverser
 
-from node import Session
-from content import BaseContent
-from interfaces import IApplicationRoot
+from ptah.cms.node import Session
+from ptah.cms.content import BaseContent
+from ptah.cms.interfaces import IApplicationRoot
 
 
+@interface.implementer(ITraverser)
 class ContentTraverser(object):
-    interface.implements(ITraverser)
     config.adapter(IApplicationRoot)
 
     _path_queries = {}

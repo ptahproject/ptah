@@ -1,12 +1,14 @@
 """ mail settings """
 import ptah
 import os.path
-from email import Encoders
-from email.MIMEText import MIMEText
-from email.MIMEMultipart import MIMEMultipart
-from email.MIMENonMultipart import MIMENonMultipart
-from email.Utils import formatdate, formataddr
-from email.Header import make_header
+import itertools
+from email import encoders
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from email.mime.nonmultipart import MIMENonMultipart
+from email.utils import formatdate, formataddr
+from email.header import make_header
+from pyramid.compat import bytes_
 
 
 class MailGenerator(object):
@@ -23,7 +25,7 @@ class MailGenerator(object):
         charset = str(self.context.charset)
 
         extra = list(self.context.get_headers())
-        for key, val, encode in self._headers.values() + extra:
+        for key, val, encode in itertools.chain(self._headers.values(), extra):
             if encode:
                 message[key] = make_header(((val, charset),))
             else:
@@ -56,11 +58,11 @@ class MailGenerator(object):
 
             msg.set_payload(data)
             if filename:
-                msg['Content-Id'] = '<%s@ptah>' % filename
-                msg['Content-Disposition'] = '%s; filename="%s"' % (
-                    disposition, filename)
+                msg['Content-Id'] = bytes_('<{0}@ptah>'.format(filename),'utf-8')
+                msg['Content-Disposition'] = bytes_('{0}; filename="{1}"'.format(
+                    disposition, filename), 'utf-8')
 
-            Encoders.encode_base64(msg)
+            encoders.encode_base64(msg)
 
             attachments.append(msg)
 
@@ -86,7 +88,8 @@ class MailGenerator(object):
             related.attach(message)
 
             for attach in attachments:
-                disposition = attach['Content-Disposition'].split(';')[0]
+                disposition = attach['Content-Disposition']\
+                              .decode('utf-8').split(';')[0]
                 if disposition == 'attachment':
                     root.attach(attach)
                 else:

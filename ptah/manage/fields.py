@@ -29,4 +29,4 @@ class FieldsView(view.View):
                          'doc': cls.__doc__,
                          'preview': previews.get(cls)})
 
-        self.fields = sorted(data)
+        self.fields = sorted(data, key = lambda item: item['name'])

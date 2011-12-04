@@ -1,8 +1,8 @@
 """ Base content class """
 import sqlalchemy as sqla
 from sqlalchemy.ext.hybrid import hybrid_property
-from zope import interface
 from pyramid.compat import text_type
+from zope.interface import implementer
 
 import ptah
 from ptah import config, form
@@ -185,5 +185,6 @@ class BaseContent(Node):
         return info
 
 
+@implementer(IContent)
 class Content(BaseContent):
-    interface.implements(IContent)
+    """ Content """

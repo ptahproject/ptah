@@ -271,10 +271,11 @@ class TestAddForm(PtahTestCase):
         Content.__type__.permission = ptah.cms.NO_PERMISSION_REQUIRED
         form.tinfo = Content.__type__
 
+        res = None
         try:
             form.update()
-        except Exception, res:
-            pass
+        except Exception as e:
+            res = e
 
         self.assertIsInstance(res, HTTPFound)
         self.assertEqual(res.headers['location'], '/test-content/')
@@ -310,10 +311,11 @@ class TestAddForm(PtahTestCase):
         Content.__type__.permission = ptah.cms.NO_PERMISSION_REQUIRED
         form.tinfo = Content.__type__
 
+        res = None
         try:
             form.update()
-        except Exception, res:
-            pass
+        except Exception as e:
+            res = e
 
         self.assertIsInstance(res, HTTPFound)
         self.assertEqual(res.headers['location'], '.')
@@ -376,10 +378,11 @@ class TestEditForm(PtahTestCase):
             POST = {'title': 'Test2', 'description': 'Desc2',
                     'form.buttons.save': 'Save'}))
 
+        res = None
         try:
             form.update()
-        except Exception, res:
-            pass
+        except Exception as e:
+            res = e
 
         self.assertEqual(res.headers['location'], '.')
         self.assertEqual(content.title, 'Test2')
@@ -409,9 +412,10 @@ class TestEditForm(PtahTestCase):
         form = EditForm(content, DummyRequest(
             POST = {'form.buttons.cancel': 'Cancel'}))
 
+        res = None
         try:
             form.update()
-        except Exception, res:
-            pass
+        except Exception as e:
+            res = e
 
         self.assertEqual(res.headers['location'], '.')

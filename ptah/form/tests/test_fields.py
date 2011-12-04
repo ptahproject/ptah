@@ -16,7 +16,7 @@ def invalid_exc(func, *arg, **kw):
     from ptah.form import Invalid
     try:
         func(*arg, **kw)
-    except Invalid, e:
+    except Invalid as e:
         return e
     else:
         raise AssertionError('Invalid not raised') # pragma: no cover
@@ -36,7 +36,7 @@ class TestInputField(PtahTestCase):
         request = DummyRequest()
 
         field = self._makeOne('test')
-        field = field.bind('', u'content', {})
+        field = field.bind('', 'content', {})
         field.update(request)
 
         self.assertEqual(field.klass, None)
@@ -56,11 +56,11 @@ class TestTextField(PtahTestCase):
         request = DummyRequest()
 
         field = self._makeOne('test')
-        field = field.bind('', u'content', {})
+        field = field.bind('', 'content', {})
         field.update(request)
 
-        self.assertEqual(field.serialize(u'value'), u'value')
-        self.assertEqual(field.deserialize(u'value'), u'value')
+        self.assertEqual(field.serialize('value'), 'value')
+        self.assertEqual(field.deserialize('value'), 'value')
 
         self.assertEqual(strip(field.render(request)),
                          '<input type="text" name="test" title="Test" value="content" id="test" class="text-widget" />')
@@ -71,7 +71,7 @@ class TestTextField(PtahTestCase):
 
 
         field = self._makeOne('test')
-        field = field.bind('', u'content', {'test': 'form'})
+        field = field.bind('', 'content', {'test': 'form'})
         field.update(request)
 
         self.assertEqual(strip(field.render(request)),
@@ -96,11 +96,11 @@ class TestIntegerField(PtahTestCase):
 
         self.assertIs(field.serialize(form.null), form.null)
         self.assertEqual(field.serialize(10), '10')
-        self.assertRaises(form.Invalid, field.serialize, u'value')
+        self.assertRaises(form.Invalid, field.serialize, 'value')
 
         self.assertIs(field.deserialize(''), form.null)
         self.assertEqual(field.deserialize('10'), 10)
-        self.assertRaises(form.Invalid, field.deserialize, u'value')
+        self.assertRaises(form.Invalid, field.deserialize, 'value')
 
         self.assertEqual(
             strip(field.render(request)),
@@ -121,11 +121,11 @@ class TestFloatField(PtahTestCase):
 
         self.assertIs(field.serialize(form.null), form.null)
         self.assertEqual(field.serialize(10.34), '10.34')
-        self.assertRaises(form.Invalid, field.serialize, u'value')
+        self.assertRaises(form.Invalid, field.serialize, 'value')
 
         self.assertIs(field.deserialize(''), form.null)
         self.assertEqual(field.deserialize('10.34'), 10.34)
-        self.assertRaises(form.Invalid, field.deserialize, u'value')
+        self.assertRaises(form.Invalid, field.deserialize, 'value')
 
         self.assertEqual(
             strip(field.render(request)),
@@ -146,11 +146,11 @@ class TestDeciamlField(PtahTestCase):
 
         self.assertIs(field.serialize(form.null), form.null)
         self.assertEqual(field.serialize(decimal.Decimal('10.34')), '10.34')
-        self.assertRaises(form.Invalid, field.serialize, u'value')
+        self.assertRaises(form.Invalid, field.serialize, 'value')
 
         self.assertIs(field.deserialize(''), form.null)
         self.assertEqual(field.deserialize('10.34'), decimal.Decimal('10.34'))
-        self.assertRaises(form.Invalid, field.deserialize, u'value')
+        self.assertRaises(form.Invalid, field.deserialize, 'value')
 
         self.assertEqual(
             strip(field.render(request)),
@@ -371,9 +371,9 @@ class TestChoiceField(PtahTestCase):
 
         self.assertEqual(field.items,
                          [{'checked': False,
-                           'description': u'',
+                           'description': '',
                            'id': 'test-novalue',
-                           'label': u'select a value ...',
+                           'label': 'select a value ...',
                            'name': 'test',
                            'value': '--NOVALUE--'},
                           {'checked': True,
@@ -607,7 +607,7 @@ class TestFileField(PtahTestCase):
         request = DummyRequest()
 
         field = self._makeOne('test')
-        field = field.bind('', u'content', {})
+        field = field.bind('', 'content', {})
         field.update(request)
 
         self.assertIs(field.extract(), form.null)
@@ -622,7 +622,7 @@ class TestFileField(PtahTestCase):
 
         fs = FileStorage(object(), 'test.jpg', 'image/jpeg', 1024)
 
-        field = field.bind('', u'content', {'test': fs})
+        field = field.bind('', 'content', {'test': fs})
         field.update(request)
 
         res = field.extract()
@@ -645,8 +645,8 @@ class TestJSDateTimeField(PtahTestCase):
         f = field.bind('', form.null, {})
         f.update(request)
 
-        self.assertEqual(f.date_part, u'')
-        self.assertEqual(f.time_part, u'')
+        self.assertEqual(f.date_part, '')
+        self.assertEqual(f.time_part, '')
 
         dt = datetime(2011, 1, 1, 10, 10)
 

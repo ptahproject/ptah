@@ -3,9 +3,8 @@ from pyramid.compat import string_types
 
 import ptah
 from ptah import config
-
-from permissions import View
-from interfaces import NotFound, Forbidden
+from ptah.cms.permissions import View
+from ptah.cms.interfaces import NotFound, Forbidden
 
 
 def wrap(content):

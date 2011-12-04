@@ -50,7 +50,7 @@ class TestRestApi(RestBase):
 
         srv = services['cms']
         self.assertEqual(srv.title, 'Ptah CMS API')
-        self.assertEqual(srv.actions.keys(),
+        self.assertEqual(list(srv.actions.keys()),
                          ['content', 'applications', 'apidoc', 'types'])
 
     def test_rest_applications(self):

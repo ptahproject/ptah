@@ -20,7 +20,7 @@ class TestSourceView(PtahTestCase):
             params = {'pkg': 'ptah.view.customize'})
 
         res = SourceView.__renderer__(None, request)
-        self.assertIn('Source: ptah/customize.py', res.body)
+        self.assertIn('Source: ptah/customize.py', res.text)
 
     def test_source_view_unknown(self):
         from ptah.manage.source import SourceView

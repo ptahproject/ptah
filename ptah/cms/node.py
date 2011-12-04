@@ -1,19 +1,24 @@
 """ Node implementation """
-import ptah
 import sqlahelper
 import sqlalchemy as sqla
-from zope import interface
 from collections import OrderedDict
 from pyramid.compat import text_type
+from zope.interface import implementer
 
+import ptah
 from ptah.cms import action
-from permissions import View
-from interfaces import NotFound, Forbidden
-from interfaces import INode, IApplicationPolicy
+from ptah.cms.permissions import View
+from ptah.cms.interfaces import NotFound, Forbidden
+from ptah.cms.interfaces import INode, IApplicationPolicy
 
 Base = sqlahelper.get_base()
 Session = sqlahelper.get_session()
 
+
+@implementer(INode,
+             ptah.IACLsAware,
+             ptah.IOwnersAware,
+             ptah.ILocalRolesAware)
 
 class Node(Base):
     """ Base class for persistent objects.
@@ -52,11 +57,6 @@ class Node(Base):
        resolvable by using :py:func:`ptah.resolve` function.
 
     """
-
-    interface.implements(INode,
-                         ptah.IACLsAware,
-                         ptah.IOwnersAware,
-                         ptah.ILocalRolesAware)
 
     __tablename__ = 'ptah_nodes'
 

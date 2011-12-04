@@ -3,6 +3,7 @@ import inspect
 from zope import interface
 from zope.interface import providedBy
 
+from pyramid.compat import text_type
 from pyramid.response import Response
 from pyramid.security import NO_PERMISSION_REQUIRED
 from pyramid.httpexceptions import WSGIHTTPException
@@ -45,7 +46,7 @@ class PyramidView(object):
             return resp
 
         response = request.response
-        if type(content) is unicode:
+        if type(content) is text_type:
             response.unicode_body = content
         else:
             response.body = content

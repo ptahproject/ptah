@@ -1,10 +1,10 @@
 import sys
 import unittest
-from io import BytesIO
 
 import ptah
 from ptah.scripts import settings
 from ptah.testing import PtahTestCase
+from pyramid.compat import NativeIO
 
 
 class TestCommand(PtahTestCase):
@@ -37,7 +37,7 @@ class TestCommand(PtahTestCase):
         sys.argv[1:] = ['-a']
 
         stdout = sys.stdout
-        out = BytesIO()
+        out = NativeIO()
         sys.stdout = out
 
         settings.main(False)
@@ -53,7 +53,7 @@ class TestCommand(PtahTestCase):
         sys.argv[1:] = ['-l', 'group1']
 
         stdout = sys.stdout
-        out = BytesIO()
+        out = NativeIO()
         sys.stdout = out
 
         settings.main(False)
@@ -69,7 +69,7 @@ class TestCommand(PtahTestCase):
         sys.argv[1:] = ['-p']
 
         stdout = sys.stdout
-        out = BytesIO()
+        out = NativeIO()
         sys.stdout = out
 
         settings.main(False)

@@ -108,4 +108,4 @@ class UriFactory(object):
 
     def __call__(self):
         """ Generate new uri using supplied schema """
-        return '%s:%s' % (self.schema, uuid.uuid4().get_hex())
+        return '%s:%s' % (self.schema, uuid.uuid4().hex)

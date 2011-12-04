@@ -5,7 +5,11 @@ from pyramid.testing import DummyRequest
 
 class TestIntrospectModule(PtahTestCase):
 
+    _init_ptah = False
+
     def test_introspect_module(self):
+        self.init_ptah()
+
         from ptah.manage.manage import PtahManageRoute
         from ptah.manage.introspect import IntrospectModule, Package
 
@@ -76,10 +80,10 @@ class TestIntrospectModule(PtahTestCase):
         res = RoutesView.__renderer__(mod, request)
 
         self.assertIn(
-            "Routes <small>registered pyramid routes</small>", res.body)
-        self.assertIn('/test/', res.body)
-        self.assertIn('/test/introspect', res.body)
-        self.assertIn('Route view', res.body)
+            "Routes <small>registered pyramid routes</small>", res.text)
+        self.assertIn('/test/', res.text)
+        self.assertIn('/test/introspect', res.text)
+        self.assertIn('Route view', res.text)
 
     def test_introspect_events(self):
         from ptah.manage import introspect
@@ -106,16 +110,16 @@ class TestIntrospectModule(PtahTestCase):
         mod = IntrospectModule(None, request)
         res = EventsView.__renderer__(mod, request)
 
-        self.assertIn("Events <small>event declarations</small>", res.body)
-        self.assertIn("Test event", res.body)
+        self.assertIn("Events <small>event declarations</small>", res.text)
+        self.assertIn("Test event", res.text)
 
         request = DummyRequest(
             params={'ev': 'ptah.manage.tests.test_introspect.TestEvent'})
         res = EventsView.__renderer__(mod, request)
 
-        self.assertIn('Event: Test event', res.body)
-        self.assertIn('eventHandler1', res.body)
-        self.assertIn('eventHandler2', res.body)
+        self.assertIn('Event: Test event', res.text)
+        self.assertIn('eventHandler1', res.text)
+        self.assertIn('eventHandler2', res.text)
 
 
 class TestSubscriberIntrospect(PtahTestCase):

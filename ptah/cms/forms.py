@@ -1,11 +1,11 @@
 """ content helper forms """
 import re
-from ptah import view, form
 from pyramid.decorator import reify
 from pyramid.httpexceptions import HTTPFound
 
-from security import wrap
-from interfaces import ContentNameSchema
+from ptah import view, form
+from ptah.cms.security import wrap
+from ptah.cms.interfaces import ContentNameSchema
 
 
 class AddForm(form.Form):

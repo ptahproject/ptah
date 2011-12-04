@@ -5,10 +5,9 @@ import logging
 import signal
 import traceback
 import pkg_resources
-from io import BytesIO
 from collections import defaultdict, OrderedDict
 from pkgutil import walk_packages
-from pyramid.compat import string_types
+from pyramid.compat import text_type, string_types, NativeIO
 from pyramid.threadlocal import get_current_registry
 from zope import interface
 from zope.interface.interfaces import IObjectEvent
@@ -43,7 +42,7 @@ class StopException(Exception):
 
     def print_tb(self):
         if self.isexc and self.exc_value:
-            out = BytesIO()
+            out = NativeIO()
             traceback.print_exception(
                 self.exc_type, self.exc_value, self.exc_traceback, file=out)
             return out.getvalue()
@@ -91,12 +90,12 @@ def initialize(config, packages=None, excludes=(),
 
     config.action(None, registry.notify, (Initialized(config),))
 
-    if 0: #initsettings:
-        import settings
+    if initsettings:
+        import ptah.settings
 
         config.action(
-            None, settings.initialize_settings,
-            (config.registry.settings, config))
+            None, ptah.settings.initialize_settings,
+            (config, config.registry.settings))
 
 
 def get_cfg_storage(id, registry=None):
@@ -564,9 +563,11 @@ def resolveConflicts(actions):
 
     # Check for conflicts
     conflicts = {}
-    for discriminator, dups in sorted(unique.items()):
+
+    for discriminator, dups in unique.items():
         # We need to sort the actions by the paths so that the shortest
         # path with a given prefix comes first:
+        dups.sort()
         basepath, order, action = dups[0]
 
         output.append((order, action))
@@ -579,7 +580,7 @@ def resolveConflicts(actions):
 
     # Now put the output back in the original order, and return it:
     r = []
-    for order, action in sorted(output):
+    for order, action in sorted(output, key=lambda x:x[0]):
         r.append(action)
 
     return r
@@ -600,9 +601,9 @@ class ConflictError(TypeError):
                 s = ' File "%s", line %d, in %s\n' \
                     '      %s\n' % (filename, line, function, source)
 
-                for line in unicode(s).rstrip().split(u'\n'):
-                    r.append(u"    " + line)
-                r.append(u'')
+                for line in text_type(s).rstrip().split('\n'):
+                    r.append("    " + line)
+                r.append('')
 
         return "\n".join(r)
 

@@ -1,5 +1,6 @@
 """ view tests """
 from zope import interface
+from pyramid.compat import text_type
 from pyramid.interfaces import IView, IRequest, IRouteRequest
 from pyramid.interfaces import IViewClassifier
 from pyramid.interfaces import IExceptionViewClassifier
@@ -34,6 +35,8 @@ class BaseView(PtahTestCase):
 
 class TestView(BaseView):
 
+    _init_ptah = False
+
     def test_view_register_errs(self):
         self.assertRaises(
             ValueError, view.register_view, 'test.html', None)
@@ -53,7 +56,7 @@ class TestView(BaseView):
         v = self._view('index.html', context, self.request)
         self.assertEqual(v.status, '200 OK')
         self.assertEqual(v.content_type, 'text/html')
-        self.assertEqual(v.body, '<html>view</html>')
+        self.assertEqual(v.text, '<html>view</html>')
 
     def test_view_register_declarative(self):
         global MyView
@@ -70,7 +73,7 @@ class TestView(BaseView):
         v = self._view('index.html', context, self.request)
         self.assertEqual(v.status, '200 OK')
         self.assertEqual(v.content_type, 'text/html')
-        self.assertEqual(v.body, '<html>view</html>')
+        self.assertEqual(v.text, '<html>view</html>')
 
     def test_view_register_view_err1(self):
         # default 'render' implementation
@@ -100,7 +103,7 @@ class TestView(BaseView):
 
         context = Context()
         res = view.render_view('index.html', context, self.request)
-        self.assertTrue('<html>test</html>' in res.body)
+        self.assertTrue('<html>test</html>' in res.text)
 
     def test_view_register_view_disable_layout1(self):
         class MyLayout(view.Layout):
@@ -117,7 +120,7 @@ class TestView(BaseView):
 
         context = Context()
         res = view.render_view('index.html', context, self.request)
-        self.assertEqual(res.body, 'test')
+        self.assertEqual(res.text, 'test')
 
         v = MyView(None, self.request)
         self.assertEqual(MyLayout(v, self.request).render(
@@ -135,14 +138,14 @@ class TestView(BaseView):
 
         res = view.render_view('index.html', Context(), self.request)
         self.assertEqual(res.status, '202 Accepted')
-        self.assertEqual(res.body, 'test')
+        self.assertEqual(res.text, 'test')
 
     def test_view_custom_return_response(self):
         class MyView(view.View):
             def render(self):
                 response = self.request.response
                 response.status = '202'
-                response.body = 'test response'
+                response.text = text_type('test response')
                 return response
 
         view.register_view('index.html', MyView, Context)
@@ -150,7 +153,7 @@ class TestView(BaseView):
 
         res = view.render_view('index.html', Context(), self.request)
         self.assertEqual(res.status, '202 Accepted')
-        self.assertEqual(res.body, 'test response')
+        self.assertEqual(res.text, 'test response')
 
     def test_view_httpresp_from_update(self):
         class MyView(view.View):
@@ -195,7 +198,7 @@ class TestView(BaseView):
         self.init_ptah()
 
         res = view.render_view('index.html', Context(), self.request)
-        self.assertEqual(res.body.strip(), '<div>My snippet</div>')
+        self.assertEqual(res.text.strip(), '<div>My snippet</div>')
 
     def test_view_with_decorator(self):
         def deco(func):
@@ -212,7 +215,7 @@ class TestView(BaseView):
         self.init_ptah()
 
         res = view.render_view('index.html', Context(), self.request)
-        self.assertEqual(res.body, 'decorator')
+        self.assertEqual(res.text, 'decorator')
 
     def test_view_register_view_class_requestonly(self):
         class MyView(object):
@@ -227,7 +230,7 @@ class TestView(BaseView):
 
         context = Context()
         v = self._view('index.html', context, self.request)
-        self.assertEqual(v.body, '<html>view: True</html>')
+        self.assertEqual(v.text, '<html>view: True</html>')
 
     def test_view_register_view_function(self):
         def render(context, request):
@@ -238,7 +241,7 @@ class TestView(BaseView):
 
         context = Context()
         v = self._view('index.html', context, self.request)
-        self.assertEqual(v.body, '<html>context: True</html>')
+        self.assertEqual(v.text, '<html>context: True</html>')
 
     def test_view_register_view_function_requestonly(self):
         def render(request):
@@ -249,7 +252,7 @@ class TestView(BaseView):
 
         context = Context()
         v = self._view('index.html', context, self.request)
-        self.assertEqual(v.body, '<html>request: True</html>')
+        self.assertEqual(v.text, '<html>request: True</html>')
 
     def test_view_register_view_function_with_template(self):
         def render(context, request):
@@ -261,7 +264,7 @@ class TestView(BaseView):
 
         context = Context()
         v = self._view('index.html', context, self.request)
-        self.assertEqual(v.body.strip(), '<div>My snippet</div>')
+        self.assertEqual(v.text.strip(), '<div>My snippet</div>')
 
     def test_view_register_view_function_requestonly_template(self):
         def render(request):
@@ -273,7 +276,7 @@ class TestView(BaseView):
 
         context = Context()
         v = self._view('index.html', context, self.request)
-        self.assertEqual(v.body.strip(), '<div>My snippet</div>')
+        self.assertEqual(v.text.strip(), '<div>My snippet</div>')
 
     def test_view_register_callable_permission(self):
         def render(request):
@@ -296,7 +299,7 @@ class TestView(BaseView):
 
         allowed = True
         v = self._view('index.html', context, self.request)
-        self.assertEqual(v.body, '<html>Secured view</html>')
+        self.assertEqual(v.text, '<html>Secured view</html>')
 
     def test_view_register_secured_view(self):
         from ptah.view.renderers import \
@@ -314,7 +317,7 @@ class TestView(BaseView):
 
         context = Context()
         v = self._view('index.html', context, self.request)
-        self.assertEqual(v.body, '<html>Secured view</html>')
+        self.assertEqual(v.text, '<html>Secured view</html>')
 
         class SimpleAuth(object):
             interface.implements(IAuthenticationPolicy)
@@ -341,7 +344,7 @@ class TestView(BaseView):
 
         Authz.allowed = True
         v = self._view('index.html', context, self.request)
-        self.assertEqual(v.body, '<html>Secured view</html>')
+        self.assertEqual(v.text, '<html>Secured view</html>')
 
     def test_view_function(self):
         @view.pview('index.html')
@@ -352,7 +355,7 @@ class TestView(BaseView):
 
         context = Context()
         v = self._view('index.html', context, self.request)
-        self.assertEqual(v.body, '<html>content</html>')
+        self.assertEqual(v.text, '<html>content</html>')
 
     def test_view_custom_class(self):
         global View
@@ -371,7 +374,7 @@ class TestView(BaseView):
 
         context = Context()
         v = self._view('index.html', context, self.request)
-        self.assertEqual(v.body, 'True')
+        self.assertEqual(v.body.decode('utf-8'), 'True')
 
     def test_view_for_exception(self):
         @view.pview(context=HTTPForbidden, layer='test')
@@ -391,7 +394,7 @@ class TestView(BaseView):
             IView, name='', default=None)
 
         v = view_callable(context, self.request)
-        self.assertEqual(v.body, '<html>Forbidden</html>')
+        self.assertEqual(v.body.decode('utf-8'), '<html>Forbidden</html>')
 
     def test_view_for_route(self):
         view.register_route('test-route', '/test/')
@@ -408,7 +411,7 @@ class TestView(BaseView):
         interface.directlyProvides(self.request, request_iface)
 
         v = self._view('', None, self.request)
-        self.assertEqual(v.body, '<html>Route view</html>')
+        self.assertEqual(v.body.decode('utf-8'), '<html>Route view</html>')
 
 
 class TestRouteRegistration(BaseView):

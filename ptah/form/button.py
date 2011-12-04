@@ -1,7 +1,7 @@
 """ Form buttons """
 import re
 import sys
-
+import binascii
 from ptah import view
 from collections import OrderedDict
 
@@ -37,7 +37,10 @@ class Button(object):
 
         if title is None:
             title = name.capitalize()
-        name = re.sub(r'\s', '_', name)
+
+        if isinstance(name, bytes):
+            name = name.decode('utf-8')
+        name = re.sub('\s', '_', name)
 
         self.name = name
         self.title = title
@@ -47,8 +50,8 @@ class Button(object):
         self.condition = condition
 
     def __repr__(self):
-        return '<%s %r : %r>' % (self.__class__.__name__, self.name,
-                                 self.title)
+        return '<{0} "{1}" : "{2}">'.format(
+            self.__class__.__name__, self.name, self.title)
 
     def __call__(self, context):
         if self.actionName is not None:
@@ -67,7 +70,7 @@ class Button(object):
         widget.params = params
         widget.context = context
         widget.request = request
-        widget.klass = '%s %s' % (widget.klass, css.get(widget.actype, ''))
+        widget.klass = '{0} {1}'.format(widget.klass, css.get(widget.actype,''))
         return widget
 
     def activated(self):
@@ -161,7 +164,7 @@ _identifier = re.compile('[A-Za-z][a-zA-Z0-9_]*$')
 def create_btn_id(name):
     if _identifier.match(name):
         return str(name).lower()
-    return name.encode('utf-8').encode('hex')
+    return binascii.hexlify(name.encode('utf-8'))
 
 
 def button(title, **kwargs):

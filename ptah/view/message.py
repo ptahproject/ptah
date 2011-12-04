@@ -1,7 +1,8 @@
 """ status message implementation """
 import cgi
-from zope import interface
+from zope.interface import implementer
 from pyramid.interfaces import IRequest
+from pyramid.compat import binary_type
 
 from ptah import config
 from ptah.view.tmpl import template as get_template
@@ -26,9 +27,9 @@ def render_messages(request):
     return ''
 
 
+@implementer(IStatusMessage)
 class MessageService(object):
     """ message service """
-    interface.implements(IStatusMessage)
 
     SESSIONKEY = 'msgservice'
 
@@ -66,8 +67,9 @@ class MessageService(object):
         return ()
 
 
+@implementer(IMessage)
 class Message(object):
-    interface.implements(IMessage)
+    """ Basic message """
 
     template = None
 

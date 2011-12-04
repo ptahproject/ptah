@@ -4,7 +4,7 @@ def invalid_exc(func, *arg, **kw):
     from ptah.form import Invalid
     try:
         func(*arg, **kw)
-    except Invalid, e:
+    except Invalid as e:
         return e
     else:
         raise AssertionError('Invalid not raised') # pragma: no cover

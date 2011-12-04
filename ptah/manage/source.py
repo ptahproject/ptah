@@ -1,10 +1,10 @@
 """ Source code view """
 import os.path
 import pkg_resources
-from ptah import view
 from pyramid.httpexceptions import HTTPFound
 
-from manage import PtahManageRoute
+from ptah import view
+from ptah.manage.manage import PtahManageRoute
 
 
 class SourceView(view.View):

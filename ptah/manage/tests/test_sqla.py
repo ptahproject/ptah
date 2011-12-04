@@ -2,6 +2,7 @@ import transaction
 import sqlalchemy as sqla
 from webob.multidict import MultiDict
 from pyramid.testing import DummyRequest
+from pyramid.compat import url_quote_plus
 from pyramid.httpexceptions import HTTPFound
 
 import ptah
@@ -76,7 +77,7 @@ class TestSqlaModule(PtahTestCase):
 
         res = TableView.__renderer__(table, request)
         self.assertEqual(res.status, '200 OK')
-        self.assertIn('form.buttons.add', res.body)
+        self.assertIn('form.buttons.add', res.text)
 
     def test_sqla_table_view_model(self):
         from ptah.manage.sqla import SQLAModule, TableView
@@ -88,7 +89,7 @@ class TestSqlaModule(PtahTestCase):
         mod = SQLAModule(None, request)
         table = mod['psqla-test_sqla_content']
 
-        res = TableView.__renderer__(table, request).body
+        res = TableView.__renderer__(table, request).text
         self.assertIn('Inherits from:', res)
         self.assertIn('ptah_node', res)
         self.assertIn('ptah_content', res)
@@ -109,17 +110,17 @@ class TestSqlaModule(PtahTestCase):
         mod = SQLAModule(None, request)
         table = mod['psqla-ptah_nodes']
 
-        res = TableView.__renderer__(table, request).body
-        self.assertIn(uri, res)
-        self.assertIn(type_uri, res)
+        res = TableView.__renderer__(table, request).text
+        self.assertIn(url_quote_plus(uri), res)
+        self.assertIn(url_quote_plus(type_uri), res)
 
         request = DummyRequest(params={'batch': 'unknown'})
-        res = TableView.__renderer__(table, request).body
-        self.assertIn(uri, res)
+        res = TableView.__renderer__(table, request).text
+        self.assertIn(url_quote_plus(uri), res)
 
         request = DummyRequest(params={'batch': '0'})
-        res = TableView.__renderer__(table, request).body
-        self.assertIn(uri, res)
+        res = TableView.__renderer__(table, request).text
+        self.assertIn(url_quote_plus(uri), res)
 
     def test_sqla_table_view_inheritance(self):
         from ptah.manage.sqla import SQLAModule, TableView
@@ -173,10 +174,11 @@ class TestSqlaModule(PtahTestCase):
             POST={'form.buttons.back': 'Back'})
 
         form = AddRecord(table, request)
+        res = None
         try:
             form.update()
-        except Exception, res:
-            pass
+        except Exception as e:
+            res = e
 
         self.assertIsInstance(res, HTTPFound)
         self.assertEqual(res.headers['location'], '.')
@@ -207,10 +209,11 @@ class TestSqlaModule(PtahTestCase):
 
         form = AddRecord(table, request)
         form.csrf = False
+        res = None
         try:
             form.update()
-        except Exception, res:
-            pass
+        except Exception as e:
+            res = e
 
         self.assertIn('Table record has been created.',
                       request.session['msgservice'][0])
@@ -281,10 +284,11 @@ class TestSqlaModule(PtahTestCase):
             POST={'form.buttons.cancel': 'Cancel'})
 
         form = EditRecord(rec, request)
+        res = None
         try:
             form.update()
-        except Exception, res:
-            pass
+        except Exception as e:
+            res = e
 
         self.assertIsInstance(res, HTTPFound)
         self.assertEqual(res.headers['location'], '..')
@@ -321,10 +325,11 @@ class TestSqlaModule(PtahTestCase):
 
         form = EditRecord(rec, request)
         form.csrf = False
+        res = None
         try:
             form.update()
-        except Exception, res:
-            pass
+        except Exception as e:
+            res = e
 
         self.assertIn('Table record has been modified.',
                       request.session['msgservice'][0])
@@ -355,10 +360,11 @@ class TestSqlaModule(PtahTestCase):
 
         form = EditRecord(rec, request)
         form.csrf = False
+        res = None
         try:
             form.update()
-        except Exception, res:
-            pass
+        except Exception as e:
+            res = e
 
         self.assertIn('Table record has been removed.',
                       request.session['msgservice'][0])
@@ -379,10 +385,11 @@ class TestSqlaModule(PtahTestCase):
             POST={'form.buttons.add': 'Add'})
 
         form = TableView(table, request)
+        res = None
         try:
             form.update()
-        except Exception, res:
-            pass
+        except Exception as e:
+            res = e
 
         self.assertIsInstance(res, HTTPFound)
         self.assertEqual(res.headers['location'], 'add.html')
@@ -401,7 +408,7 @@ class TestSqlaModule(PtahTestCase):
         table = mod['psqla-test_sqla_table']
 
         request = DummyRequest(
-            POST=MultiDict({'form.buttons.remove': 'Remove'}))
+            POST=MultiDict([('form.buttons.remove', 'Remove')]))
 
         form = TableView(table, request)
         form.csrf = False
@@ -411,8 +418,8 @@ class TestSqlaModule(PtahTestCase):
                       request.session['msgservice'][0])
 
         request = DummyRequest(
-            POST=MultiDict({'form.buttons.remove': 'Remove',
-                            'rowid': 'wrong'}))
+            POST=MultiDict([('form.buttons.remove', 'Remove'),
+                            ('rowid', 'wrong')]))
 
         form = TableView(table, request)
         form.csrf = False
@@ -422,8 +429,8 @@ class TestSqlaModule(PtahTestCase):
                       request.session['msgservice'][0])
 
         request = DummyRequest(
-            POST=MultiDict({'form.buttons.remove': 'Remove',
-                            'rowid': rec_id}))
+            POST=MultiDict([('form.buttons.remove', 'Remove'),
+                            ('rowid', rec_id)]))
 
         form = TableView(table, request)
         form.csrf = False

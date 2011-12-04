@@ -1,4 +1,3 @@
-import httplib
 import os
 import pkg_resources
 import shutil
@@ -6,6 +5,11 @@ import subprocess
 import tempfile
 import time
 import signal
+try: # pragma: no cover
+    import http as httplib
+except ImportError:
+    import httplib
+
 
 class TemplateTest(object):
 

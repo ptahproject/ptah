@@ -94,13 +94,13 @@ class SimpleVocabularyTests(unittest.TestCase):
     def test_nonunique_token_message(self):
         try:
             vocabulary.SimpleVocabulary.from_values(2, '2')
-        except ValueError, e:
+        except ValueError as e:
             self.assertEquals(str(e), "term tokens must be unique: '2'")
 
     def test_nonunique_token_messages(self):
         try:
             vocabulary.SimpleVocabulary.from_items(('one', 0), ('one', 1))
-        except ValueError, e:
+        except ValueError as e:
             self.assertEquals(str(e), "term values must be unique: 'one'")
 
     def test_overriding_create_term(self):

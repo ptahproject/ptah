@@ -15,7 +15,7 @@ class Content1(cms.Content):
 class Content2(cms.Node):
     __type__ = cms.Type('content2')
 
-    title = sqla.Column(sqla.Unicode, default=u'')
+    title = sqla.Column(sqla.Unicode, default='')
 
 
 class TestModelModule(PtahTestCase):
@@ -45,8 +45,8 @@ class TestModelModule(PtahTestCase):
 
         res = ModelModuleView.__renderer__(mod, request)
         self.assertEqual(res.status, '200 OK')
-        self.assertIn('content1', res.body)
-        self.assertIn('content2', res.body)
+        self.assertIn('content1', res.text)
+        self.assertIn('content2', res.text)
 
     def test_model_view_disabled(self):
         from ptah.manage.model import ModelModule, ModelModuleView
@@ -60,8 +60,8 @@ class TestModelModule(PtahTestCase):
 
         res = ModelModuleView.__renderer__(mod, request)
         self.assertEqual(res.status, '200 OK')
-        self.assertIn('content1', res.body)
-        self.assertNotIn('content2', res.body)
+        self.assertIn('content1', res.text)
+        self.assertNotIn('content2', res.text)
 
     def test_model_traverse(self):
         from ptah.manage.model import ModelModule, Model
@@ -89,7 +89,7 @@ class TestModel(PtahTestCase):
         from ptah.manage.model import ModelModule, Record
 
         content = Content1()
-        content.title = u'Content test'
+        content.title = 'Content test'
 
         ptah.cms.Session.add(content)
         ptah.cms.Session.flush()
@@ -116,7 +116,7 @@ class TestModel(PtahTestCase):
 
         form = ModelView(
             model, DummyRequest(
-                POST=MultiDict({'form.buttons.remove': 'Remove'})))
+                POST=MultiDict([('form.buttons.remove', 'Remove')])))
         form.csrf = False
         form.update()
 
@@ -127,7 +127,7 @@ class TestModel(PtahTestCase):
         from ptah.manage.model import ModelModule, ModelView
 
         content = Content1()
-        content.title = u'Content test'
+        content.title = 'Content test'
 
         ptah.cms.Session.add(content)
         ptah.cms.Session.flush()
@@ -140,13 +140,16 @@ class TestModel(PtahTestCase):
 
         form = ModelView(
             model, DummyRequest(
-                POST=MultiDict({'rowid':rowid,
-                                'form.buttons.remove': 'Remove'})))
+                POST=MultiDict(
+                    list({'rowid':rowid,
+                          'form.buttons.remove': 'Remove'}.items()))))
         form.csrf = False
+
+        res = None
         try:
             form.update()
-        except Exception, res:
-            pass
+        except Exception as e:
+            res = e
 
         self.assertIsInstance(res, HTTPFound)
 
@@ -160,7 +163,7 @@ class TestModel(PtahTestCase):
         from ptah.manage.model import ModelModule, ModelView
 
         content = Content1()
-        content.title = u'Content test'
+        content.title = 'Content test'
 
         ptah.cms.Session.add(content)
         ptah.cms.Session.flush()
@@ -172,15 +175,15 @@ class TestModel(PtahTestCase):
         model = mod['content1']
 
         res = ModelView.__renderer__(model, DummyRequest())
-        self.assertIn('value="%s"'%rowid, res.body)
+        self.assertIn('value="%s"'%rowid, res.text)
 
         res = ModelView.__renderer__(model, DummyRequest(
                 params={'batch': 0}))
-        self.assertIn('value="%s"'%rowid, res.body)
+        self.assertIn('value="%s"'%rowid, res.text)
 
         res = ModelView.__renderer__(model, DummyRequest(
                 params={'batch': 'unknown'}))
-        self.assertIn('value="%s"'%rowid, res.body)
+        self.assertIn('value="%s"'%rowid, res.text)
 
     def test_model_add(self):
         from ptah.manage.model import ModelModule, ModelView
@@ -189,13 +192,13 @@ class TestModel(PtahTestCase):
         model = mod['content1']
 
         form = ModelView(
-            model, DummyRequest(
-                POST=MultiDict({'form.buttons.add': 'Add'})))
+            model, DummyRequest(POST={'form.buttons.add': 'Add'}))
         form.csrf = False
+        res = None
         try:
             form.update()
-        except Exception, res:
-            pass
+        except Exception as e:
+            res = e
 
         self.assertIsInstance(res, HTTPFound)
         self.assertEqual(res.headers['location'], 'add.html')
@@ -212,8 +215,7 @@ class TestAddRecord(PtahTestCase):
         model = mod['content1']
 
         form = AddRecord(
-            model, DummyRequest(
-                POST=MultiDict({'form.buttons.add': 'Add'})))
+            model, DummyRequest(POST={'form.buttons.add': 'Add'}))
         form.csrf = False
         form.update()
 
@@ -227,13 +229,13 @@ class TestAddRecord(PtahTestCase):
         model = mod['content1']
 
         form = AddRecord(
-            model, DummyRequest(
-                POST=MultiDict({'form.buttons.back': 'Back'})))
+            model, DummyRequest(POST={'form.buttons.back': 'Back'}))
         form.csrf = False
+        res = None
         try:
             form.update()
-        except Exception, res:
-            pass
+        except Exception as e:
+            res = e
 
         self.assertIsInstance(res, HTTPFound)
         self.assertEqual(res.headers['location'], '.')
@@ -246,13 +248,14 @@ class TestAddRecord(PtahTestCase):
 
         form = AddRecord(
             model, DummyRequest(
-                POST=MultiDict({'title': u'Test content',
-                                'form.buttons.add': 'Add'})))
+                POST={'title': 'Test content',
+                      'form.buttons.add': 'Add'}))
         form.csrf = False
+        res = None
         try:
             form.update()
-        except Exception, res:
-            pass
+        except Exception as e:
+            res = e
 
         id = form.record.__id__
         transaction.commit()
@@ -263,7 +266,7 @@ class TestAddRecord(PtahTestCase):
 
         content = ptah.cms.Session.query(Content1) \
             .filter(Content1.__id__ == id).first()
-        self.assertEqual(content.title, u'Test content')
+        self.assertEqual(content.title, 'Test content')
 
     def test_model_add_node(self):
         from ptah.manage.model import ModelModule, AddRecord
@@ -273,13 +276,13 @@ class TestAddRecord(PtahTestCase):
 
         form = AddRecord(
             model, DummyRequest(
-                POST=MultiDict({'title': u'Test content',
-                                'form.buttons.add': 'Add'})))
+                POST={'title': 'Test content', 'form.buttons.add': 'Add'}))
         form.csrf = False
+        res = None
         try:
             form.update()
-        except Exception, res:
-            pass
+        except Exception as e:
+            res = e
 
         id = form.record.__id__
         transaction.commit()
@@ -290,7 +293,7 @@ class TestAddRecord(PtahTestCase):
 
         content = ptah.cms.Session.query(Content2) \
             .filter(Content2.__id__ == id).first()
-        self.assertEqual(content.title, u'Test content')
+        self.assertEqual(content.title, 'Test content')
 
 
 class TestEditRecord(PtahTestCase):
@@ -301,7 +304,7 @@ class TestEditRecord(PtahTestCase):
         from ptah.manage.model import ModelModule, EditRecord
 
         content = Content1()
-        content.title = u'Content test'
+        content.title = 'Content test'
 
         ptah.cms.Session.add(content)
         ptah.cms.Session.flush()
@@ -313,13 +316,13 @@ class TestEditRecord(PtahTestCase):
         model = mod['content1'][rowid]
 
         form = EditRecord(
-            model, DummyRequest(
-                POST=MultiDict({'form.buttons.back': 'Back'})))
+            model, DummyRequest(POST={'form.buttons.back': 'Back'}))
         form.csrf = False
+        res = None
         try:
             form.update()
-        except Exception, res:
-            pass
+        except Exception as e:
+            res = e
 
         self.assertIsInstance(res, HTTPFound)
         self.assertEqual(res.headers['location'], '../')
@@ -328,7 +331,7 @@ class TestEditRecord(PtahTestCase):
         from ptah.manage.model import ModelModule, EditRecord
 
         content = Content1()
-        content.title = u'Content test'
+        content.title = 'Content test'
 
         ptah.cms.Session.add(content)
         ptah.cms.Session.flush()
@@ -340,8 +343,7 @@ class TestEditRecord(PtahTestCase):
         model = mod['content1'][rowid]
 
         form = EditRecord(
-            model, DummyRequest(
-                POST=MultiDict({'form.buttons.modify': 'Modify'})))
+            model, DummyRequest(POST={'form.buttons.modify': 'Modify'}))
         form.csrf = False
         form.update()
 
@@ -352,7 +354,7 @@ class TestEditRecord(PtahTestCase):
         from ptah.manage.model import ModelModule, EditRecord
 
         content = Content1()
-        content.title = u'Content test'
+        content.title = 'Content test'
 
         ptah.cms.Session.add(content)
         ptah.cms.Session.flush()
@@ -365,8 +367,7 @@ class TestEditRecord(PtahTestCase):
 
         form = EditRecord(
             model, DummyRequest(
-                POST=MultiDict({'title': 'Content',
-                                'form.buttons.modify': 'Modify'})))
+                POST={'title': 'Content', 'form.buttons.modify': 'Modify'}))
         form.csrf = False
         form.update()
 
@@ -378,13 +379,13 @@ class TestEditRecord(PtahTestCase):
 
         content = ptah.cms.Session.query(Content1) \
             .filter(Content1.__id__ == rowid).first()
-        self.assertEqual(content.title, u'Content')
+        self.assertEqual(content.title, 'Content')
 
     def test_model_edit_node(self):
         from ptah.manage.model import ModelModule, EditRecord
 
         content = Content2()
-        content.title = u'Content test'
+        content.title = 'Content test'
 
         ptah.cms.Session.add(content)
         ptah.cms.Session.flush()
@@ -397,8 +398,7 @@ class TestEditRecord(PtahTestCase):
 
         form = EditRecord(
             model, DummyRequest(
-                POST=MultiDict({'title': 'Content',
-                                'form.buttons.modify': 'Modify'})))
+                POST={'title': 'Content', 'form.buttons.modify': 'Modify'}))
         form.csrf = False
         form.update()
 
@@ -408,7 +408,7 @@ class TestEditRecord(PtahTestCase):
 
         content = ptah.cms.Session.query(Content2) \
             .filter(Content2.__id__ == rowid).first()
-        self.assertEqual(content.title, u'Content')
+        self.assertEqual(content.title, 'Content')
 
 
 class TestTypeIntrospect(PtahTestCase):

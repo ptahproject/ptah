@@ -47,8 +47,8 @@ def register_route_impl(cfg, name, pattern, factory, predicates,
             bases = ()
 
         if derived_route is not None:
-            bases = (registry.getUtility(IRouteRequest, name=derived_route),)+\
-                    bases
+            bases = (registry.getUtility(IRouteRequest,
+                                         name=derived_route),) + bases
 
         request_iface = route_request_iface(name, bases)
         registry.registerUtility(request_iface, IRouteRequest, name=name)

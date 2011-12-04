@@ -21,8 +21,8 @@
 	  <ul class="nav secondary-nav" tal:condition="view.user">
 	    <li>
 	      <h5>
-		<a href="${request.application_url}/">
-		  ${unicode(view.user.name)}:
+		<a href="${request.application_url}/"
+		   tal:content="view.user.name">:
 		</a>
 	      </h5>
 	    </li>

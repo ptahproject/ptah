@@ -17,12 +17,13 @@ class TestShutdownHandlers(unittest.TestCase):
         shutdown = sys.modules['ptah.config']
         shutdown._shutdown = False
 
+        err = None
         try:
             shutdown.processShutdown(signal.SIGINT, None)
-        except BaseException, e:
-            pass
+        except BaseException as e:
+            err = e
 
-        self.assertTrue(isinstance(e, KeyboardInterrupt))
+        self.assertTrue(isinstance(err, KeyboardInterrupt))
         self.assertTrue(shutdownExecuted[0])
 
     def test_shutdown_exception_in_handler(self):
@@ -34,12 +35,14 @@ class TestShutdownHandlers(unittest.TestCase):
 
         from ptah.config import shutdown
         shutdown._shutdown = False
+
+        err = None
         try:
             shutdown.processShutdown(signal.SIGINT, None)
-        except BaseException, e:
-            pass
+        except BaseException as e:
+            err = e
 
-        self.assertFalse(isinstance(e, ValueError))
+        self.assertFalse(isinstance(err, ValueError))
 
     def test_shutdown_sigterm(self):
         shutdownExecuted = []

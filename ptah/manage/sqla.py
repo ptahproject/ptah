@@ -2,6 +2,7 @@
 import urllib
 import sqlahelper as psa
 from sqlalchemy.orm.mapper import _mapper_registry
+from pyramid.compat import url_quote_plus
 from pyramid.decorator import reify
 from pyramid.httpexceptions import HTTPFound
 
@@ -197,7 +198,7 @@ class TableView(form.Form):
         self.data = Session.query(table).offset(offset).limit(limit).all()
 
     def quote(self, val):
-        return urllib.quote_plus(val)
+        return url_quote_plus(val)
 
     def val(self, val):
         try:
@@ -206,7 +207,7 @@ class TableView(form.Form):
             elif not isinstance(val, unicode):
                 val = str(val)
         except: # pragma: no cover
-            val = u"Can't show"
+            val = "Can't show"
         return val[:100]
 
     @form.button('Add', actype=form.AC_PRIMARY)

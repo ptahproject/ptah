@@ -1,17 +1,16 @@
 """ rest api for cms """
-from zope import interface
-from zope.interface import providedBy
 from collections import OrderedDict
+from zope.interface import providedBy, implementer, Interface
+from pyramid.compat import bytes_
 
 import ptah
 from ptah import config
 from ptah.cms import wrap
 from ptah.cms.node import load
 from ptah.cms.container import Container
-
-from interfaces import NotFound, CmsException
-from interfaces import INode, IBlob, IContent, IContainer
-from permissions import View, ModifyContent, DeleteContent
+from ptah.cms.interfaces import NotFound, CmsException
+from ptah.cms.interfaces import INode, IBlob, IContent, IContainer
+from ptah.cms.permissions import View, ModifyContent, DeleteContent
 
 
 CMS = ptah.RestService('cms', 'Ptah CMS API')
@@ -121,16 +120,17 @@ def cmsContent(request, app='', uri=None, action='', *args):
     raise NotFound()
 
 
-class IRestAction(interface.Interface):
+class IRestAction(Interface):
     pass
 
 
-class IRestActionClassifier(interface.Interface):
+class IRestActionClassifier(Interface):
     pass
 
 
+@implementer(IRestAction)
 class Action(object):
-    interface.implements(IRestAction)
+    """ Rest action """
 
     def __init__(self, callable, name, permission):
         self.callable = callable
@@ -268,10 +268,10 @@ def blobData(content, request, *args):
     response = request.response
 
     info = content.info()
-    response.content_type = info['mimetype'].encode('utf-8')
+    response.content_type = info['mimetype']
     if info['filename']:
         response.headerlist = {
             'Content-Disposition':
-            'filename="%s"'%info['filename'].encode('utf-8')}
+            bytes_('filename="{0}"'.format(info['filename']), 'utf-8')}
     response.body = content.read()
     return response

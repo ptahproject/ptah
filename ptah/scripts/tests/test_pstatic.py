@@ -2,15 +2,15 @@
 import sys, os
 import unittest
 import tempfile, shutil
-from io import BytesIO
 from ptah import config, view
 from ptah.scripts import pstatic
+from pyramid.compat import NativeIO, bytes_
 
 
 class TestStaticCommand(unittest.TestCase):
 
     def setUp(self):
-        self.out = BytesIO()
+        self.out = NativeIO()
         self._stdout = sys.stdout
         sys.stdout = self.out
         self.dir = tempfile.mkdtemp()
@@ -18,22 +18,17 @@ class TestStaticCommand(unittest.TestCase):
     def tearDown(self):
         config.cleanup_system(self.__class__.__module__)
 
-        self.stdout = self._stdout
+        sys.stdout = self._stdout
         shutil.rmtree(self.dir)
 
     def test_commands_static_list(self):
         view.static('tests', 'ptah.view.tests:static')
 
-        _out = sys.stdout
-
         sys.argv[1:] = ['-l']
 
-        out = BytesIO()
-        sys.stdout = out
         pstatic.main()
-        sys.stdout = _out
 
-        val = out.getvalue()
+        val = self.out.getvalue()
         self.assertTrue('* tests' in val)
         self.assertTrue('by: ptah.view.tests' in val)
 
@@ -50,7 +45,7 @@ class TestStaticCommand(unittest.TestCase):
         f.close()
 
         sys.argv[1:] = ['-d %s'%file]
-        out = BytesIO()
+        out = NativeIO()
 
         sys.stdout = out
         pstatic.main()
@@ -84,7 +79,7 @@ class TestStaticCommand(unittest.TestCase):
         os.makedirs(os.path.join(self.dir, 'tests'))
         file = os.path.join(self.dir, 'tests', 'text.txt')
         f = open(file, 'wb')
-        f.write('test existing file')
+        f.write(bytes_('test existing file','utf-8'))
         f.close()
 
         sys.argv[1:] = ['-d %s'%self.dir]

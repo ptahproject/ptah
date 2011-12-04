@@ -67,27 +67,28 @@ class TestAdaptsDirective(BaseTesting):
     def test_adapts_err(self):
         global TestClass
 
+        @interface.implementer(IAdapter)
         class TestClass(object):
             config.adapter(IContext)
             config.adapter(IContext)
-            interface.implements(IAdapter)
 
+        err = None
         try:
             self._init_ptah()
-        except Exception, e:
-            pass
+        except Exception as e:
+            err = e
 
-        s = str(e)
-        self.assertTrue(isinstance(e, config.ConflictError))
+        s = str(err)
+        self.assertTrue(isinstance(err, config.ConflictError))
         self.assertTrue('ptah.config:adapter' in s)
         self.assertTrue('test_directives.py' in s)
 
     def test_adapts(self):
         global TestClass
 
+        @interface.implementer(IAdapter)
         class TestClass(object):
             config.adapter(IContext)
-            interface.implements(IAdapter)
 
             def __init__(self, context):
                 pass
@@ -107,9 +108,9 @@ class TestAdaptsDirective(BaseTesting):
     def test_adapts_named(self):
         global TestClass
 
+        @interface.implementer(IAdapter)
         class TestClass(object):
             config.adapter(IContext, name='test')
-            interface.implements(IAdapter)
 
         self._init_ptah()
 
@@ -122,9 +123,9 @@ class TestAdaptsDirective(BaseTesting):
     def test_adapts_multiple(self):
         global TestClass
 
+        @interface.implementer(IAdapter)
         class TestClass(object):
             config.adapter(IContext, IContext2)
-            interface.implements(IAdapter)
 
         self._init_ptah()
 
@@ -137,9 +138,9 @@ class TestAdaptsDirective(BaseTesting):
     def test_adapts_multiple_named(self):
         global TestClass
 
+        @interface.implementer(IAdapter)
         class TestClass(object):
             config.adapter(IContext, IContext2, name='test')
-            interface.implements(IAdapter)
 
         self._init_ptah()
 
@@ -152,9 +153,9 @@ class TestAdaptsDirective(BaseTesting):
     def test_adapts_reinitialize(self):
         global TestClass
 
+        @interface.implementer(IAdapter)
         class TestClass(object):
             config.adapter(IContext)
-            interface.implements(IAdapter)
 
         self._init_ptah()
 
@@ -163,6 +164,8 @@ class TestAdaptsDirective(BaseTesting):
 
         sm = self.registry
         sm.__init__('base')
+        sm.__ptah_storage__.clear()
+
         adapters = sm.adapters.lookupAll((IContext,), IAdapter)
         self.assertTrue(len(adapters) == 0)
 
@@ -236,14 +239,15 @@ class TestAdapterDirective(BaseTesting):
     def test_adapter_errs1(self):
         global testAdapter
 
+        err = None
         try:
             @config.adapter(IContext, name='test')
             def testAdapter(context):  # pragma: no cover
                 pass
-        except Exception, e:
-            pass
+        except Exception as e:
+            err = e
 
-        self.assertTrue(isinstance(e, TypeError))
+        self.assertTrue(isinstance(err, TypeError))
 
     def test_adapter_errs2(self):
         global testAdapter
@@ -272,6 +276,7 @@ class TestAdapterDirective(BaseTesting):
 
         sm = self.registry
         sm.__init__('base')
+        sm.__ptah_storage__.clear()
 
         self._init_ptah()
 
@@ -359,6 +364,7 @@ class TestSubscriberDirective(BaseTesting):
 
         sm = self.registry
         sm.__init__('base')
+        sm.__ptah_storage__.clear()
 
         self._init_ptah()
 

@@ -1,16 +1,17 @@
 """ blob storage implementation """
 import os
 import sqlalchemy as sqla
-from zope import interface
 from pyramid.compat import text_type
+from zope.interface import implementer
 
 import ptah
-from node import Node, Session
-from interfaces import IBlob, IBlobStorage
+from ptah.cms.node import Node, Session
+from ptah.cms.interfaces import IBlob, IBlobStorage
 
 
+@implementer(IBlob)
 class Blob(Node):
-    interface.implements(IBlob)
+    """ simple blob implementation """
 
     __tablename__ = 'ptah_blobs'
     __uri_factory__ = ptah.UriFactory('blob-sql')
@@ -46,8 +47,9 @@ class Blob(Node):
         return info
 
 
+@implementer(IBlobStorage)
 class BlobStorage(object):
-    interface.implements(IBlobStorage)
+    """ simple blob storage """
 
     _sql_get = ptah.QueryFreezer(
         lambda: Session.query(Blob)

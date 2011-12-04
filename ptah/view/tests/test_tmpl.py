@@ -26,7 +26,7 @@ class TestTmplCommand(unittest.TestCase):
         tmpl = view.template('ptah.view.tests:templates/test.txt')
         self.assertTrue('PageTextTemplateFile' in repr(tmpl))
 
-        self.assertEqual(tapi.registry['ptah.view.tests'].keys(),
+        self.assertEqual(list(tapi.registry['ptah.view.tests'].keys()),
                          ['test.pt', 'test.txt'])
 
     def test_tmpl_multiple_decl(self):
@@ -39,14 +39,13 @@ class TestTmplCommand(unittest.TestCase):
     def test_tmpl_multiple_disable_packages(self):
         view.template('ptah.view.tests:templates/test.pt', nolayer = True)
         view.template('ptah.view.tests:templates/test.pt', nolayer = True)
-        self.assertEqual(
-            tapi.registry.keys(), [])
+        self.assertEqual(list(tapi.registry.keys()), [])
 
     def test_tmpl_multiple_layer_name(self):
         view.template('ptah.view.tests:templates/test.pt', layer = 'test')
         view.template('ptah.view.tests:templates/test.pt')
 
-        self.assertEqual(tapi.registry.keys(), ['test', 'ptah.view.tests'])
+        self.assertEqual(list(tapi.registry.keys()),['test', 'ptah.view.tests'])
 
     def test_tmpl_multiple_extra_params(self):
         view.template('ptah.view.tests:templates/test.pt',

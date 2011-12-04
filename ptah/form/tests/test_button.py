@@ -12,7 +12,7 @@ class TestButton(unittest.TestCase):
         self.assertEqual(btn.name, 'test')
         self.assertEqual(btn.title, 'Test')
         self.assertEqual(btn.actype, form.AC_PRIMARY)
-        self.assertEqual(repr(btn), "<Button 'test' : 'Test'>")
+        self.assertEqual(repr(btn), '<Button "test" : "Test">')
 
     def test_bind(self):
         from ptah import form
@@ -96,15 +96,15 @@ class TestButtons(unittest.TestCase):
         self.assertFalse(bool(btns))
 
         btns = form.Buttons(btn1, btn2)
-        self.assertEqual(btns.keys(), [btn1.name, btn2.name])
-        self.assertEqual(btns.values(), [btn1, btn2])
+        self.assertEqual(list(btns.keys()), [btn1.name, btn2.name])
+        self.assertEqual(list(btns.values()), [btn1, btn2])
 
         btns = form.Buttons(btn1)
-        self.assertEqual(btns.keys(), [btn1.name])
+        self.assertEqual(list(btns.keys()), [btn1.name])
 
         btns = form.Buttons(btn2, btns)
-        self.assertEqual(btns.keys(), [btn2.name, btn1.name])
-        self.assertEqual(btns.values(), [btn2, btn1])
+        self.assertEqual(list(btns.keys()), [btn2.name, btn1.name])
+        self.assertEqual(list(btns.values()), [btn2, btn1])
 
     def test_add(self):
         from ptah import form
@@ -115,8 +115,8 @@ class TestButtons(unittest.TestCase):
         btns = form.Buttons(btn1)
 
         btns.add(btn2)
-        self.assertEqual(btns.keys(), [btn1.name, btn2.name])
-        self.assertEqual(btns.values(), [btn1, btn2])
+        self.assertEqual(list(btns.keys()), [btn1.name, btn2.name])
+        self.assertEqual(list(btns.values()), [btn1, btn2])
 
     def test_add_duplicate(self):
         from ptah import form
@@ -136,8 +136,8 @@ class TestButtons(unittest.TestCase):
         btn1 = btns.add_action('Test action')
 
         self.assertIsInstance(btn1, form.Button)
-        self.assertEqual(btns.keys(), [btn1.name])
-        self.assertEqual(btns.values(), [btn1])
+        self.assertEqual(list(btns.keys()), [btn1.name])
+        self.assertEqual(list(btns.values()), [btn1])
 
     def test_iadd(self):
         from ptah import form
@@ -149,8 +149,8 @@ class TestButtons(unittest.TestCase):
         btns2 = form.Buttons(btn2)
 
         btns = btns1 + btns2
-        self.assertEqual(btns.keys(), [btn1.name, btn2.name])
-        self.assertEqual(btns.values(), [btn1, btn2])
+        self.assertEqual(list(btns.keys()), [btn1.name, btn2.name])
+        self.assertEqual(list(btns.values()), [btn1, btn2])
 
 
 class TestButtonDecorator(unittest.TestCase):
@@ -165,7 +165,7 @@ class TestButtonDecorator(unittest.TestCase):
 
         self.assertEqual(len(MyForm.buttons), 1)
 
-        btn = MyForm.buttons.values()[0]
+        btn = list(MyForm.buttons.values())[0]
         self.assertEqual(btn.title, 'Test button')
         self.assertEqual(btn.actionName, 'handler')
 
@@ -182,16 +182,18 @@ class TestButtonDecorator(unittest.TestCase):
 
         self.assertEqual(len(MyForm.buttons), 2)
 
-        btn1 = MyForm.buttons.values()[0]
-        btn2 = MyForm.buttons.values()[1]
+        btn1 = list(MyForm.buttons.values())[0]
+        btn2 = list(MyForm.buttons.values())[1]
         self.assertEqual(btn1.actionName, 'handler1')
         self.assertEqual(btn2.actionName, 'handler2')
 
     def test_create_id(self):
+        import binascii
         from ptah.form.button import create_btn_id
 
         self.assertEqual(create_btn_id('Test'), 'test')
-        self.assertEqual(create_btn_id('Test title'), u'Test title'.encode('hex'))
+        self.assertEqual(create_btn_id('Test title'),
+                         binascii.hexlify('Test title'.encode('utf-8')))
 
 
 class TestActions(unittest.TestCase):
@@ -229,7 +231,7 @@ class TestActions(unittest.TestCase):
         actions = self._makeOne(tform, request)
         actions.update()
 
-        self.assertEqual(actions.keys(), [btn1.name])
+        self.assertEqual(list(actions.keys()), [btn1.name])
         self.assertEqual(actions[btn1.name].name, 'form.buttons.test1')
 
         actions.execute()

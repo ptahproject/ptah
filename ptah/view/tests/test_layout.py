@@ -1,6 +1,7 @@
 """ layout tests """
 import os, tempfile, shutil
 from zope import interface
+from pyramid.compat import bytes_
 from pyramid.interfaces import IRouteRequest
 
 from ptah import view
@@ -146,7 +147,7 @@ class TestLayout(PtahTestCase):
     def test_layout_simple_view_with_template(self):
         fn = os.path.join(self.dir, 'test.pt')
         tmpl = open(fn, 'wb')
-        tmpl.write('<html>${content}</html>')
+        tmpl.write(bytes_('<html>${content}</html>','utf-8'))
         tmpl.close()
 
         view.register_layout('test', template = view.template(fn))

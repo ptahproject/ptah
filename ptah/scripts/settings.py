@@ -1,11 +1,10 @@
 """ paste commands """
 import argparse
-import io
 import textwrap
 
 from collections import OrderedDict
 from pyramid.config import Configurator
-from pyramid.compat import configparser
+from pyramid.compat import configparser, NativeIO
 
 import ptah
 from ptah import config
@@ -72,9 +71,10 @@ class SettingsCommand(object):
 
             parser = configparser.ConfigParser(dict_type=OrderedDict)
             for key, val in sorted(data.items()):
-                parser.set(configparser.DEFAULTSECT, key, val)
+                parser.set(configparser.DEFAULTSECT,
+                           key, val.replace('%', '%%'))
 
-            fp = io.BytesIO()
+            fp = NativeIO()
             try:
                 parser.write(fp)
             finally:
@@ -98,10 +98,10 @@ class SettingsCommand(object):
             print ('')
             title = group.__title__ or name
 
-            print (grpTitleWrap.fill(title.encode('utf-8')))
+            print (grpTitleWrap.fill(title))
             if group.__description__:
                 print (grpDescriptionWrap.fill(
-                    group.__description__.encode('utf-8')))
+                    group.__description__))
 
             print ('')
             for node in group.__fields__.values():
@@ -109,7 +109,7 @@ class SettingsCommand(object):
                 print (nameWrap.fill(
                     ('%s.%s: %s (%s: %s)' % (
                         name, node.name, node.title,
-                        node.__class__.__name__, default)).encode('utf-8')))
+                        node.__class__.__name__, default))))
 
-                print (nameTitleWrap.fill(node.description.encode('utf-8')))
+                print (nameTitleWrap.fill(node.description))
                 print ('')

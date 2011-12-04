@@ -214,10 +214,6 @@ def ptah_initialize(config, packages=None, autoinclude=False):
         ptah.config.initialize(
             config, packages, excludes, autoinclude, initsettings=True)
 
-        config.action(
-            None, initialize_settings,
-            (config, config.registry.settings))
-
         config.commit()
 
         # create sql tables

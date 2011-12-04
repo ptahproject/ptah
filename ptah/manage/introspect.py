@@ -10,8 +10,7 @@ from zope.interface.interface import InterfaceClass
 import ptah
 from ptah import config, view, manage, form
 from ptah.manage import intr_renderer
-
-from manage import INTROSPECT_ID
+from ptah.manage.manage import INTROSPECT_ID
 
 
 @manage.module('introspect')

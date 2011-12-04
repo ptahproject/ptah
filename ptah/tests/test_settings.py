@@ -2,7 +2,7 @@ import os
 import shutil
 import tempfile
 import unittest
-
+from pyramid.compat import bytes_
 from zope.interface.interface import InterfaceClass
 from zope.interface.interfaces import IObjectEvent
 
@@ -19,10 +19,10 @@ class BaseTesting(PtahTestCase):
 
     _init_ptah = False
 
-    def init_ptah(self, *args, **kw):
+    def init_ptah(self, initsettings=False, *args, **kw):
         ptah.config.initialize(
             self.config, ('ptah', self.__class__.__module__),
-            initsettings=False)
+            initsettings=initsettings)
 
 
 class TestSettings(BaseTesting):
@@ -169,7 +169,7 @@ class TestSettings(BaseTesting):
             default = 'test1')
 
         ptah.register_settings('group4', field1, field2)
-        self.init_ptah()
+        self.init_ptah(initsettings=True)
 
         settings = get_settings_ob()
 
@@ -200,7 +200,7 @@ class TestSettings(BaseTesting):
             default = 10)
 
         ptah.register_settings('group', node1, node2)
-        self.init_ptah()
+        self.init_ptah(initsettings=True)
 
         return ptah.get_settings('group', self.registry)
 
@@ -242,7 +242,7 @@ class TestSettings(BaseTesting):
             default = ())
 
         ptah.register_settings('group', node)
-        self.init_ptah()
+        self.init_ptah(initsettings=True)
 
         self.assertRaises(
             ptah.config.StopException,
@@ -291,8 +291,6 @@ class TestSettingsInitialization(BaseTesting):
         sm.registerHandler(h1, (ptah.SettingsInitializing,))
         sm.registerHandler(h2, (ptah.SettingsInitialized,))
 
-        settings = get_settings_ob()
-
         ptah.initialize_settings(self.config, {})
 
         self.assertTrue(isinstance(events[0], ptah.SettingsInitializing))
@@ -307,19 +305,21 @@ class TestSettingsInitialization(BaseTesting):
         sm = self.config.registry
 
         events = []
-        err = TypeError()
+        err_tp = TypeError()
 
         def h1(ev):
-            raise err
+            raise err_tp
 
         sm.registerHandler(h1, (ptah.SettingsInitializing,))
+
+        err = None
         try:
             ptah.initialize_settings(self.config, {})
         except Exception as exc:
-            pass
+            err = exc
 
-        self.assertIsInstance(exc, ptah.config.StopException)
-        self.assertIs(exc.exc, err)
+        self.assertIsInstance(err, ptah.config.StopException)
+        self.assertIs(err.exc, err_tp)
 
     def test_settings_initialize_only_once(self):
         self.init_ptah()
@@ -383,7 +383,7 @@ class TestSettingsInitialization(BaseTesting):
     def test_settings_initialize_load_settings_include(self):
         path = os.path.join(self.dir, 'settings.cfg')
         f = open(path, 'wb')
-        f.write('[DEFAULT]\ngroup.node1 = value\n\n')
+        f.write(bytes_('[DEFAULT]\ngroup.node1 = value\n\n','ascii'))
         f.close()
 
         node1 = ptah.form.TextField(

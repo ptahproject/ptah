@@ -102,4 +102,4 @@ class Token(Base):
         self.typ = typ.id
         self.data = data
         self.valid = datetime.datetime.now() + typ.timeout
-        self.token = uuid.uuid4().get_hex()
+        self.token = uuid.uuid4().hex

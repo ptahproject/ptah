@@ -1,6 +1,6 @@
 """ base view class with access to various api's """
 import logging
-from zope import interface
+from zope.interface import implementer
 from ptah.formatter import format
 from ptah.view.resources import static_url
 from ptah.view.message import add_message, render_messages
@@ -10,8 +10,9 @@ from ptah.view.interfaces import ISnippet, IPtahView
 log = logging.getLogger('ptah.view')
 
 
+@implementer(IPtahView)
 class View(object):
-    interface.implements(IPtahView)
+    """ Base view """
 
     __name__ = ''
     __parent__ = None

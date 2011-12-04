@@ -3,6 +3,7 @@ import pytz
 import translationstring
 from datetime import datetime, timedelta
 from pyramid.i18n import get_localizer
+from pyramid.compat import text_type
 from pyramid.threadlocal import get_current_request
 
 import ptah
@@ -45,7 +46,7 @@ def datetimeFormatter(value, tp='medium', request=None):
     value = value.astimezone(tz)
 
     format = '%s %s' % (FORMAT['date_%s' % tp], FORMAT['time_%s' % tp])
-    return unicode(value.strftime(str(format)))
+    return text_type(value.strftime(str(format)))
 
 
 def timedeltaFormatter(value, type='short', request=None):
@@ -57,9 +58,9 @@ def timedeltaFormatter(value, type='short', request=None):
         request = get_current_request()
 
     if type == 'full':
-        hours = value.seconds / 3600
+        hours = value.seconds // 3600
         hs = hours * 3600
-        mins = (value.seconds - hs) / 60
+        mins = (value.seconds - hs) // 60
         ms = mins * 60
         secs = value.seconds - hs - ms
         frm = []

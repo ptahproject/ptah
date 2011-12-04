@@ -14,14 +14,13 @@ class StopExceptionTesting(unittest.TestCase):
     def test_api_stopexception_exc(self):
         from ptah import config
 
+        s_err = None
         try:
             raise ValueError('err')
         except Exception as exc:
-            pass
+            s_err = config.StopException(exc)
 
-        err = config.StopException(exc)
-
-        self.assertIn("raise ValueError('err')", err.print_tb())
+        self.assertIn("raise ValueError('err')", s_err.print_tb())
 
 
 class LoadpackageTesting(unittest.TestCase):

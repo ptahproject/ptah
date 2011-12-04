@@ -52,10 +52,10 @@ class TestAppsModule(PtahTestCase):
 
         res = ApplicationsModuleView.__renderer__(mod, request)
         self.assertEqual(res.status, '200 OK')
-        self.assertIn('/test1/', res.body)
-        self.assertIn('/test2/', res.body)
-        self.assertIn('App1', res.body)
-        self.assertIn('App2', res.body)
+        self.assertIn('/test1/', res.text)
+        self.assertIn('/test2/', res.text)
+        self.assertIn('App1', res.text)
+        self.assertIn('App2', res.text)
 
     def test_apps_traverse(self):
         from ptah.manage.apps import ApplicationsModule
@@ -134,10 +134,11 @@ class TestAppSharingForm(PtahTestCase):
                 POST={'form.buttons.search': 'Search',
                       'term': 'search term'}))
         form.csrf = False
+        res = None
         try:
             form.update()
-        except Exception, res:
-            pass
+        except Exception as e:
+            res = e
 
         self.assertIsInstance(res, HTTPFound)
         self.assertIn('apps-sharing-term', form.request.session)

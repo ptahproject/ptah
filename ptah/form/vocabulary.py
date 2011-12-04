@@ -13,12 +13,13 @@
 ##############################################################################
 """ vocabulary implementation from zope.schema """
 from zope import interface
+from zope.interface import implementer
 from ptah.form.interfaces import ITerm, IVocabulary
 
 
+@implementer(ITerm)
 class SimpleTerm(object):
     """Simple tokenized term used by SimpleVocabulary."""
-    interface.implements(ITerm)
 
     def __init__(self, value, token=None,
                  title=None, description=None):
@@ -34,9 +35,9 @@ class SimpleTerm(object):
         self.description = description
 
 
+@implementer(IVocabulary)
 class SimpleVocabulary(object):
     """Vocabulary that works from a sequence of terms."""
-    interface.implements(IVocabulary)
 
     def __init__(self, *terms):
         """Initialize the vocabulary given a list of terms.

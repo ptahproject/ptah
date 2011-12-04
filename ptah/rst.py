@@ -4,6 +4,7 @@ import threading
 import pkg_resources
 from docutils import io
 from docutils.core import Publisher
+from pyramid.compat import text_type
 
 from sphinx.application import Sphinx
 from sphinx.writers.html import HTMLWriter, HTMLTranslator
@@ -45,8 +46,8 @@ def get_sphinx():
 
 
 def rst_to_html(text):
-    if not isinstance(text, unicode):
-        text = unicode(text, 'utf-8')
+    if not isinstance(text, text_type):
+        text = text_type(text)
 
     sphinx, pub = get_sphinx()
 
@@ -60,7 +61,7 @@ def rst_to_html(text):
 
     doctree = pub.document
     sphinx.env.filter_messages(doctree)
-    for domain in sphinx.env.domains.itervalues():
+    for domain in sphinx.env.domains.values():
         domain.process_doc(sphinx.env, 'text', doctree)
 
     pub.writer.write(doctree, io.StringOutput(encoding='unicode'))

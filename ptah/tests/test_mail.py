@@ -1,5 +1,6 @@
 import ptah
 from ptah import view, mail
+from pyramid.compat import bytes_
 from pyramid.testing import DummyRequest
 
 from ptah.testing import PtahTestCase
@@ -39,7 +40,7 @@ class TestMailTemplate(PtahTestCase):
         self.assertEqual(
             tmpl['Content-Transfer-Encoding'], 'base64')
         self.assertEqual(
-            tmpl['Subject'], '=?utf-8?q?Test_subject?=')
+            tmpl['Subject'].encode(), '=?utf-8?q?Test_subject?=')
         self.assertEqual(
             tmpl['Message-ID'], 'message id')
         self.assertEqual(
@@ -81,7 +82,7 @@ class TestMailTemplate(PtahTestCase):
         tmpl.add_header('X-Mailer', 'ptah', True)
 
         msg = tmpl()
-        self.assertEqual(msg['X-Mailer'], '=?utf-8?q?ptah?=')
+        self.assertEqual(msg['X-Mailer'].encode(), '=?utf-8?q?ptah?=')
 
     def test_mailtmpl_headers_gen(self):
         cls = self._make_one()
@@ -91,37 +92,38 @@ class TestMailTemplate(PtahTestCase):
         self.assertEqual(msg['X-Mailer'], 'ptah')
 
         msg = tmpl(**{'X-Mailer': ('ptah', True)})
-        self.assertEqual(str(msg['X-Mailer']), '=?utf-8?q?ptah?=')
+        self.assertEqual(str(msg['X-Mailer'].encode()), '=?utf-8?q?ptah?=')
 
     def test_mailtmpl_attachment(self):
         cls = self._make_one()
         tmpl = cls(Content(), DummyRequest())
         self.assertEqual(tmpl.get_attachments(), [])
 
-        tmpl.add_attachment('File data', 'text/plain', 'file.txt')
+        tmpl.add_attachment(bytes_('File data','utf-8'),'text/plain','file.txt')
         self.assertEqual(
             tmpl.get_attachments(),
-            [('File data', 'text/plain', 'file.txt', 'attachment')])
+            [(bytes_('File data','utf-8'),'text/plain','file.txt','attachment')])
 
         msg = tmpl()
         payload = msg.get_payload()
 
         self.assertTrue(msg.is_multipart())
         self.assertEqual(
-            payload[0]['Content-Id'], '<file.txt@ptah>')
+            payload[0]['Content-Id'], bytes_('<file.txt@ptah>','utf-8'))
         self.assertEqual(
             payload[0]['Content-Disposition'],
-            'attachment; filename="file.txt"')
+            bytes_('attachment; filename="file.txt"','utf-8'))
 
     def test_mailtmpl_attachment_inline(self):
         cls = self._make_one()
         tmpl = cls(Content(), DummyRequest())
         self.assertEqual(tmpl.get_attachments(), [])
 
-        tmpl.add_attachment('File data', 'text/plain', 'file.txt', 'inline')
+        tmpl.add_attachment(bytes_('File data','utf-8'),
+                            'text/plain', 'file.txt', 'inline')
         self.assertEqual(
             tmpl.get_attachments(),
-            [('File data', 'text/plain', 'file.txt', 'inline')])
+            [(bytes_('File data','utf-8'), 'text/plain', 'file.txt', 'inline')])
 
         msg = tmpl()
         payload = msg.get_payload()[0]
@@ -129,7 +131,7 @@ class TestMailTemplate(PtahTestCase):
 
         self.assertEqual(
             payload['Content-Disposition'],
-            'inline; filename="file.txt"')
+            bytes_('inline; filename="file.txt"','utf-8'))
 
     def test_mailtmpl_alternative(self):
         cls = self._make_one()

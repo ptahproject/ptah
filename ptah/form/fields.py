@@ -364,6 +364,7 @@ class DateField(TextField):
     def deserialize(self, value):
         if not value:
             return null
+
         try:
             result = iso8601.parse_date(value)
             result = result.date()
@@ -386,7 +387,7 @@ class DateTimeField(TextField):
         "ptah.form:templates/fields/datetime-display.pt")
 
     def serialize(self, value):
-        if value is null or value is None:
+        if value is null or value is None or not value:
             return null
 
         if type(value) is datetime.date:  # cannot use isinstance; dt subs date

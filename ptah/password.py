@@ -1,10 +1,11 @@
 """ password tool """
 import translationstring
 from os import urandom
+from datetime import timedelta
 from codecs import getencoder
 from hashlib import sha1
 from base64 import urlsafe_b64encode, urlsafe_b64decode
-from datetime import timedelta
+from pyramid.compat import bytes_
 
 import ptah
 from ptah import config, form, token
@@ -73,13 +74,14 @@ class SSHAPasswordManager(object):
             salt = urandom(4)
         hash = sha1(self._encoder(password)[0])
         hash.update(salt)
-        return '{ssha}' + urlsafe_b64encode(hash.digest() + salt)
+        return bytes_('{ssha}','ascii') + urlsafe_b64encode(hash.digest()+salt)
 
     def check(self, encoded_password, password):
         # urlsafe_b64decode() cannot handle unicode input string. We
         # encode to ascii. This is safe as the encoded_password string
         # should not contain non-ascii characters anyway.
-        encoded_password = encoded_password.encode('ascii')
+        if not isinstance(encoded_password, bytes):
+            encoded_password = bytes_(encoded_password, 'ascii')
         byte_string = urlsafe_b64decode(encoded_password[6:])
         salt = byte_string[20:]
         return encoded_password == self.encode(password, salt)

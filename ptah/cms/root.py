@@ -1,11 +1,11 @@
 """ Aplication Root """
-import ptah
 import sqlalchemy as sqla
-from zope import interface
+from zope.interface import implementer
 
-from node import Node, Session, set_policy
-from container import Container
-from interfaces import IApplicationRoot, IApplicationPolicy
+import ptah
+from ptah.cms.node import Node, Session, set_policy
+from ptah.cms.container import Container
+from ptah.cms.interfaces import IApplicationRoot, IApplicationPolicy
 
 
 APPFACTORY_ID = 'ptah.cms:appfactory'
@@ -14,8 +14,9 @@ def get_app_factories():
     return ptah.config.get_cfg_storage(APPFACTORY_ID)
 
 
+@implementer(IApplicationRoot)
 class BaseApplicationRoot(object):
-    interface.implements(IApplicationRoot)
+    """ Base application root """
 
     __root_path__ = '/'
 
@@ -27,8 +28,9 @@ class ApplicationRoot(BaseApplicationRoot, Container):
     """ Persistent application root """
 
 
+@implementer(IApplicationPolicy)
 class ApplicationPolicy(object):
-    interface.implements(IApplicationPolicy)
+    """ Application policy """
 
     __name__ = ''
     __parent__ = None

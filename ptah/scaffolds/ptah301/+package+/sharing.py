@@ -14,10 +14,10 @@ class SharingForm(form.Form):
         form.FieldFactory(
             'text',
             'term',
-            title = u'Search term',
+            title = 'Search term',
             description = 'Searches users by login and email',
-            missing = u'',
-            default = u''))
+            missing = '',
+            default = ''))
 
     users = None
     bsize = 15

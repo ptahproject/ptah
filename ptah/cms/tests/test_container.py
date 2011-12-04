@@ -64,7 +64,7 @@ class TestContainer(PtahTestCase):
 
         container['content'] = content
         self.assertEqual(container.keys(), ['content'])
-        self.assertEqual(container.values(), [content])
+        self.assertEqual(list(container.values()), [content])
 
         del container['content']
         self.assertEqual(container.keys(), [])

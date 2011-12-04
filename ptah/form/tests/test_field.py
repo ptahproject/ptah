@@ -65,14 +65,14 @@ class TestFieldset(PtahTestCase):
 
         newfs = fieldset.select('test')
         self.assertNotIn('test1', newfs)
-        self.assertEqual(newfs.keys(), ['test'])
+        self.assertEqual(list(newfs.keys()), ['test'])
 
     def test_fieldset_omit(self):
         fieldset = form.Fieldset(field, field1)
 
         newfs = fieldset.omit('test')
         self.assertNotIn('test', newfs)
-        self.assertEqual(newfs.keys(), ['test1'])
+        self.assertEqual(list(newfs.keys()), ['test1'])
 
     def test_fieldset_add(self):
         fieldset = form.Fieldset(field)
@@ -80,7 +80,7 @@ class TestFieldset(PtahTestCase):
 
         self.assertIn('test', fieldset)
         self.assertIn('test1', fieldset)
-        self.assertEqual(fieldset.keys(), ['test', 'test1'])
+        self.assertEqual(list(fieldset.keys()), ['test', 'test1'])
 
     def test_fieldset_iadd(self):
         fieldset = form.Fieldset(field)
@@ -88,7 +88,7 @@ class TestFieldset(PtahTestCase):
 
         self.assertIn('test', fieldset)
         self.assertIn('test1', fieldset)
-        self.assertEqual(fieldset.keys(), ['test', 'test1'])
+        self.assertEqual(list(fieldset.keys()), ['test', 'test1'])
 
     def test_fieldset_add_err(self):
         fieldset = form.Fieldset(field)
@@ -167,7 +167,7 @@ class TestFieldset(PtahTestCase):
 
         data, errors = fieldset.extract()
         self.assertIs(errors[0].field, fieldset['test'])
-        self.assertEqual(errors[0].msg, u'Required')
+        self.assertEqual(errors[0].msg, 'Required')
 
     def test_fieldset_extract_missing_nested(self):
         field = self._makeOne('test')
@@ -178,8 +178,8 @@ class TestFieldset(PtahTestCase):
         data, errors = fieldset.extract()
         self.assertIs(errors[0].field, fieldset['fs']['test'])
         self.assertIs(errors[1].field, fieldset['test'])
-        self.assertEqual(errors[0].msg, u'Required')
-        self.assertEqual(errors[1].msg, u'Required')
+        self.assertEqual(errors[0].msg, 'Required')
+        self.assertEqual(errors[1].msg, 'Required')
 
     def test_fieldset_extract(self):
         field = self._makeOne('test')
@@ -241,7 +241,7 @@ class TestFieldsetErrors(PtahTestCase):
         self.assertEqual(repr(err1), "Invalid(<TextField 'test'>: <error1>)")
         self.assertEqual(str(form.null), '<widget.null>')
 
-        self.assertFalse(form.required)
+        self.assertFalse(bool(form.required))
         self.assertEqual(repr(form.required), '<widget.required>')
 
 

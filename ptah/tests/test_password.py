@@ -1,8 +1,10 @@
+# -*- coding: utf-8 -*-
 import unittest
 import ptah
 from ptah import form, config
 from ptah.testing import PtahTestCase
 from pyramid import testing
+from pyramid.compat import text_type, text_, bytes_
 
 
 class Principal(object):
@@ -68,12 +70,13 @@ class TestSHAPasswordManager(unittest.TestCase):
 
         manager = SSHAPasswordManager()
 
-        password = u"right \N{CYRILLIC CAPITAL LETTER A}"
-        encoded = manager.encode(password, salt="")
+        password = text_("right А", 'utf-8')
+        encoded = manager.encode(password, salt=bytes_("",'utf-8'))
 
-        self.assertEqual(encoded, '{ssha}BLTuxxVMXzouxtKVb7gLgNxzdAI=')
+        self.assertEqual(
+            encoded, bytes_('{ssha}BLTuxxVMXzouxtKVb7gLgNxzdAI=','ascii'))
         self.assertTrue(manager.check(encoded, password))
-        self.assertFalse(manager.check(encoded, password + u"wrong"))
+        self.assertFalse(manager.check(encoded, password + "wrong"))
 
         encoded = manager.encode(password)
         self.assertTrue(manager.check(encoded, password))
@@ -86,13 +89,13 @@ class TestPlainPasswordManager(unittest.TestCase):
 
         manager = PlainPasswordManager()
 
-        password = u"test pwd"
+        password = "test pwd"
         encoded = manager.encode(password, salt="")
 
         self.assertEqual(encoded, '{plain}test pwd')
         self.assertTrue(manager.check(encoded, password))
         self.assertTrue(manager.check(password, password))
-        self.assertFalse(manager.check(encoded, password + u"wrong"))
+        self.assertFalse(manager.check(encoded, password + "wrong"))
 
         encoded = manager.encode(password)
         self.assertTrue(manager.check(encoded, password))
@@ -114,6 +117,8 @@ class TestPasswordSettings(PtahTestCase):
 
 
 class TestPasswordChanger(PtahTestCase):
+
+    _init_ptah = False
 
     def test_password_changer_decl(self):
         import ptah
@@ -174,7 +179,11 @@ class TestPasswordChanger(PtahTestCase):
 
 class TestPasswordTool(PtahTestCase):
 
+    _init_ptah = False
+
     def test_password_encode(self):
+        self.init_ptah()
+
         cfg = ptah.get_settings(ptah.CFG_ID_PASSWORD, self.registry)
         cfg['manager'] = 'plain'
 
@@ -182,6 +191,8 @@ class TestPasswordTool(PtahTestCase):
         self.assertEqual(encoded, '{plain}12345')
 
     def test_password_check(self):
+        self.init_ptah()
+
         cfg = ptah.get_settings(ptah.CFG_ID_PASSWORD, self.registry)
         cfg['manager'] = 'ssha'
 
@@ -240,6 +251,8 @@ class TestPasswordTool(PtahTestCase):
         self.assertFalse(ptah.pwd_tool.change_password('unknown', '12345'))
 
     def test_password_validate(self):
+        self.init_ptah()
+
         cfg = ptah.get_settings(ptah.CFG_ID_PASSWORD, self.registry)
         cfg['min_length'] = 5
         self.assertEqual(ptah.pwd_tool.validate('1234'),

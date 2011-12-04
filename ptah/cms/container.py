@@ -1,6 +1,6 @@
 """ Base container class implementation """
 import sqlalchemy as sqla
-from zope import interface
+from zope.interface import implementer
 from pyramid.compat import string_types
 
 import ptah
@@ -232,7 +232,6 @@ class BaseContainer(BaseContent):
         return info
 
 
+@implementer(IContainer)
 class Container(BaseContainer):
     """ container for content, it just for inheritance """
-
-    interface.implements(IContainer)

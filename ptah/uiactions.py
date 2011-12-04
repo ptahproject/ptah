@@ -1,15 +1,16 @@
 """ ui actions """
 import ptah
 from ptah import config
-from zope import interface
+from zope.interface import implementer, providedBy, Interface
 
 
-class IAction(interface.Interface):
+class IAction(Interface):
     """ marker interface for actions """
 
 
+@implementer(IAction)
 class Action(object):
-    interface.implements(IAction)
+    """ UI Action implementation """
 
     id = ''
     title = ''
@@ -83,7 +84,7 @@ def list_uiactions(content, request, category=''):
 
     actions = []
     for name, action in request.registry.adapters.lookupAll(
-        (interface.providedBy(content),), IAction):
+        (providedBy(content),), IAction):
         if (action.category == category) and action.check(content, request):
             actions.append(
                 (action.sort_weight,

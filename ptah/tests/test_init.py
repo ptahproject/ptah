@@ -57,10 +57,11 @@ class TestPtahInit(unittest.TestCase):
 
         config.include('ptah')
 
+        err = None
         try:
             config.ptah_initialize()
-        except Exception, err:
-            pass
+        except Exception as e:
+            err = e
 
         self.assertIsInstance(err, ptah.config.StopException)
         self.assertIsInstance(err.exc, CustomException)
@@ -82,10 +83,11 @@ class TestPtahInit(unittest.TestCase):
 
         config.include('ptah')
 
+        err = None
         try:
             config.ptah_initialize(autoinclude=True)
-        except Exception, err:
-            pass
+        except Exception as e:
+            err = e
 
         self.assertIsInstance(err, ptah.config.StopException)
         self.assertIsInstance(err.exc, CustomException)

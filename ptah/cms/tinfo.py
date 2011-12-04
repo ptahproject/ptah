@@ -2,15 +2,15 @@
 import ptah, sys, logging
 import sqlalchemy as sqla
 from ptah import config
-from zope import interface
+from zope.interface import implementer
 from pyramid.compat import string_types
 
-from node import Session
-from content import Content
-from container import BaseContainer
-from security import build_class_actions
-from events import ContentCreatedEvent
-from interfaces import Forbidden, ContentSchema, ITypeInformation
+from ptah.cms.node import Session
+from ptah.cms.content import Content
+from ptah.cms.container import BaseContainer
+from ptah.cms.security import build_class_actions
+from ptah.cms.events import ContentCreatedEvent
+from ptah.cms.interfaces import Forbidden, ContentSchema, ITypeInformation
 
 log = logging.getLogger('ptah.cms')
 
@@ -47,8 +47,9 @@ def get_types():
     return config.get_cfg_storage(TYPES_DIR_ID)
 
 
+@implementer(ITypeInformation)
 class TypeInformation(object):
-    interface.implements(ITypeInformation)
+    """ Type information """
 
     fieldset = None
     description = ''

@@ -1,5 +1,5 @@
 """ layout implementation """
-from zope import interface
+from zope.interface import implementer, providedBy
 from pyramid.location import lineage
 from pyramid.interfaces import IRequest, IRouteRequest
 
@@ -10,7 +10,7 @@ from ptah.view.interfaces import ILayout
 
 def query_layout(context, request, name=''):
     """ query named layout for context """
-    #assert IRequest.providedBy(request), u"must pass in a request object"
+    #assert IRequest.providedBy(request), "must pass in a request object"
 
     try:
         iface = request.request_iface
@@ -21,7 +21,7 @@ def query_layout(context, request, name=''):
 
     for context in lineage(context):
         layout_factory = adapters.lookup(
-            (interface.providedBy(context), iface), ILayout, name=name)
+            (providedBy(context), iface), ILayout, name=name)
 
         if layout_factory is not None:
             return layout_factory(context, request)
@@ -71,8 +71,9 @@ class LayoutRenderer(object):
         return content
 
 
+@implementer(ILayout)
 class Layout(View):
-    interface.implements(ILayout)
+    """ Layout """
 
     name = ''
     template = None

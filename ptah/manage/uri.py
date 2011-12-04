@@ -5,8 +5,7 @@ from pyramid.httpexceptions import HTTPFound
 import ptah
 from ptah import form, view, config, manage
 from ptah.uri import RESOLVER_ID
-
-from manage import PtahManageRoute
+from ptah.manage.manage import PtahManageRoute
 
 
 class UriResolver(form.Form):

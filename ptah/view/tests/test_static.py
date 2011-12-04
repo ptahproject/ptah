@@ -102,7 +102,8 @@ class TestStaticView(PtahTestCase):
 
         response = inst(None, request)
         self.assertTrue(response.status == '200 OK')
-        self.assertTrue('/* CSS styles file 1 */' in response.body)
+        self.assertTrue('/* CSS styles file 1 */' in \
+                        response.body.decode('utf-8'))
 
     def test_resource_file_from_subdir(self):
         request = self.make_request(
@@ -111,7 +112,7 @@ class TestStaticView(PtahTestCase):
 
         response = inst(None, request)
         self.assertTrue(response.status == '200 OK')
-        self.assertTrue('test text 1' in response.body)
+        self.assertTrue('test text 1' in response.body.decode('utf-8'))
 
     def test_resource_file_with_cache(self):
         request = self.make_request(
@@ -136,7 +137,7 @@ class TestStaticView(PtahTestCase):
 
         response = inst(None, request)
         self.assertTrue(response.status == '200 OK')
-        self.assertTrue('text2 test 1' in response.body)
+        self.assertTrue('text2 test 1' in response.body.decode('utf-8'))
 
     def test_resource_layers_bypass_to_parent_subdir(self):
         # if not exist in upper layer tring to get from lower layer
@@ -146,4 +147,4 @@ class TestStaticView(PtahTestCase):
 
         response = inst(None, request)
         self.assertTrue(response.status == '200 OK')
-        self.assertTrue('test text 1' in response.body)
+        self.assertTrue('test text 1' in response.body.decode('utf-8'))

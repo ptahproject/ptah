@@ -1,6 +1,6 @@
 """ snippet implementation """
 import logging
-from zope import interface
+from zope.interface import implementer, Interface
 from pyramid.httpexceptions import HTTPNotFound
 
 from ptah import config
@@ -12,8 +12,9 @@ log = logging.getLogger('ptah.view')
 STYPE_ID = 'ptah.view:snippettype'
 
 
+@implementer(ISnippet)
 class Snippet(View):
-    interface.implements(ISnippet)
+    """ Snippet implementation """
 
     template = None
     _params = None
@@ -32,6 +33,7 @@ class Snippet(View):
 
 
 class SnippetType(object):
+    """ Snippet type """
 
     def __init__(self, name, context, title, description):
         self.name = name
@@ -87,7 +89,7 @@ def register_snippet_impl(cfg, klass, stype, context, template):
     if stype not in cfg.get_cfg_storage(STYPE_ID):
         log.warning("Can't find SnippetType %s", stype)
 
-    requires = [context, interface.Interface]
+    requires = [context, Interface]
 
     # Build a new class
     if klass is not None and issubclass(klass, Snippet):

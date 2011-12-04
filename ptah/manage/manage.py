@@ -105,8 +105,8 @@ def intr_renderer(id):
 def PtahAccessManager(id):
     """ default access manager """
     cfg = ptah.get_settings(ptah.CFG_ID_MANAGE)
-    managers = cfg['managers']
 
+    managers = cfg['managers']
     if '*' in managers:
         return True
 

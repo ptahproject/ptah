@@ -54,15 +54,12 @@ def pyramid_get_settings(config, grp):
     return config.get_cfg_storage(SETTINGS_GROUP_ID)[grp]
 
 
-@subscriber(config.Initialized)
-def init_settings(ev):
-    registry = ev.config.registry
-
-    settings = Settings()
-    registry.__ptah_storage__[SETTINGS_OB_ID] = settings
-
-
 def initialize_settings(pconfig, cfg, section=configparser.DEFAULTSECT):
+    registry = pconfig.registry
+    if not isinstance(registry.__ptah_storage__[SETTINGS_OB_ID], Settings):
+        settings = Settings()
+        registry.__ptah_storage__[SETTINGS_OB_ID] = settings
+
     settings = pconfig.registry.__ptah_storage__[SETTINGS_OB_ID]
     if settings.initialized:
         raise RuntimeError(

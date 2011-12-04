@@ -1,6 +1,8 @@
+# -*- coding: utf-8 -*-
 """ message tests """
 import os
 from zope import interface
+from pyramid.compat import text_
 from pyramid.interfaces import IRequest
 
 from ptah import view
@@ -25,7 +27,7 @@ class TestStatusMessages(PtahTestCase):
         service.add('Test')
         msgs = service.messages()
         self.assertTrue(len(msgs) == 1)
-        self.assertTrue(u'Test' in msgs[0])
+        self.assertTrue('Test' in msgs[0])
 
         # only one message
         service.add('Test')
@@ -35,7 +37,7 @@ class TestStatusMessages(PtahTestCase):
         # clear
         msgs = service.clear()
         self.assertTrue(len(msgs) == 1)
-        self.assertTrue(u'Test' in msgs[0])
+        self.assertTrue('Test' in msgs[0])
         self.assertEqual(service.messages(), ())
 
         self.assertEqual(service.clear(), ())
@@ -49,7 +51,7 @@ class TestStatusMessages(PtahTestCase):
         view.add_message(self.request, 'message')
 
         self.assertEqual(['\n'.join(service.clear()[0].split(os.linesep))],
-                         [u'<div class="alert-message info">\n  <a class="close" href="#">\xd7</a>\n  <p>message</p>\n</div>\n'])
+                         [text_('<div class="alert-message info">\n  <a class="close" href="#">×</a>\n  <p>message</p>\n</div>\n','utf-8')])
         self.assertEqual(service.clear(), ())
 
     def test_messages_service_no_session(self):
@@ -67,8 +69,8 @@ class TestStatusMessages(PtahTestCase):
         # add simple msg
         service.add('warning', 'warning')
         self.assertEqual(
-           ['\n'.join(service.clear()[0].split(os.linesep))],
-           [u'<div class="alert-message warning">\n  <a class="close" href="#">\xd7</a>\n  <p>warning</p>\n</div>\n'])
+            ['\n'.join(service.clear()[0].split(os.linesep))],
+            [text_('<div class="alert-message warning">\n  <a class="close" href="#">×</a>\n  <p>warning</p>\n</div>\n','utf-8')])
 
     def test_messages_error_msg(self):
         self.init_ptah()
@@ -83,12 +85,12 @@ class TestStatusMessages(PtahTestCase):
         service.add('error', 'error')
         self.assertEqual(
             ['\n'.join(service.clear()[0].split(os.linesep))],
-            [u'<div class="alert-message error">\n  <a class="close" href="#">\xd7</a>\n  <p>error</p>\n</div>\n'])
+            [text_('<div class="alert-message error">\n  <a class="close" href="#">×</a>\n  <p>error</p>\n</div>\n','utf-8')])
 
         service.add(ValueError('Error'), 'error')
         self.assertEqual(
             ['\n'.join(service.clear()[0].split(os.linesep))],
-            [u'<div class="alert-message error">\n  <a class="close" href="#">\xd7</a>\n  <p>ValueError: Error</p>\n</div>\n'])
+            [text_('<div class="alert-message error">\n  <a class="close" href="#">×</a>\n  <p>ValueError: Error</p>\n</div>\n','utf-8')])
 
     def test_messages_custom_msg(self):
         class CustomMessage(object):
@@ -110,7 +112,7 @@ class TestStatusMessages(PtahTestCase):
         service.add('message', 'custom')
         self.assertEqual(
             service.clear(),
-            [u'<div class="customMsg">message</div>'])
+            ['<div class="customMsg">message</div>'])
 
     def test_messages_render(self):
         self.init_ptah()
@@ -118,9 +120,9 @@ class TestStatusMessages(PtahTestCase):
         view.add_message(self.request, 'message')
         msg = view.render_messages(self.request)
         self.assertEqual(
-           '\n'.join(msg.split(os.linesep)),
-           u'<div class="alert-message info">\n  <a class="close" href="#">\xd7</a>\n  <p>message</p>\n</div>\n')
-        self.assertEqual(type(msg), unicode)
+            '\n'.join(msg.split(os.linesep)),
+            text_('<div class="alert-message info">\n  <a class="close" href="#">×</a>\n  <p>message</p>\n</div>\n','utf-8'))
+        #self.assertEqual(type(msg), unicode)
 
         msg = view.render_messages(self.request)
         self.assertEqual(msg, '')
@@ -136,8 +138,8 @@ class TestStatusMessages(PtahTestCase):
 
         self.assertEqual(
             ['\n'.join(service.messages()[0].split(os.linesep))],
-            [u'<div class="alert-message info">\n  <a class="close" href="#">\xd7</a>\n  <p>message</p>\n</div>\n'])
+            [text_('<div class="alert-message info">\n  <a class="close" href="#">×</a>\n  <p>message</p>\n</div>\n', 'utf-8')])
         self.assertEqual(
             '\n'.join(v.render_messages().split(os.linesep)),
-            u'<div class="alert-message info">\n  <a class="close" href="#">\xd7</a>\n  <p>message</p>\n</div>\n')
+            text_('<div class="alert-message info">\n  <a class="close" href="#">×</a>\n  <p>message</p>\n</div>\n', 'utf-8'))
         self.assertEqual(service.messages(), ())

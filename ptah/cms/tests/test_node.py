@@ -89,7 +89,7 @@ class TestNode(PtahTestCase):
 
         c = ptah.cms.Session.query(ptah.cms.Node).filter(
             ptah.cms.Node.__uri__ == __uri).one()
-        self.assertTrue(c.__local_roles__ == {u'userid': [u'role:1']})
+        self.assertTrue(c.__local_roles__ == {'userid': ['role:1']})
 
     def test_node_owners(self):
         import ptah
@@ -114,7 +114,7 @@ class TestNode(PtahTestCase):
 
         c = ptah.cms.Session.query(ptah.cms.Node).filter(
             ptah.cms.Node.__uri__ == __uri).one()
-        self.assertTrue(c.__owner__ == u'userid')
+        self.assertTrue(c.__owner__ == 'userid')
 
     def test_node_permissions(self):
         import ptah
@@ -139,4 +139,4 @@ class TestNode(PtahTestCase):
 
         c = ptah.cms.Session.query(ptah.cms.Node).filter(
             ptah.cms.Node.__uri__ == __uri).one()
-        self.assertTrue(c.__acls__ == [u'map1'])
+        self.assertTrue(c.__acls__ == ['map1'])

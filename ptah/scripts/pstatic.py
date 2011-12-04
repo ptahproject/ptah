@@ -65,7 +65,7 @@ class StaticCommand(object):
 
             items = registry.items()
             for name, (path, pkg) in sorted(items):
-                print ("* Coping from '{0}' {1}".format(pkg, path))
+                print ("* Coping from '{0}' {1}".format(pkg,path))
 
                 d = resources.buildTree(path)
 

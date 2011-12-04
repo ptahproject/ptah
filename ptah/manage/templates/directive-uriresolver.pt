@@ -3,7 +3,7 @@
     <tr tal:repeat="action actions">
       <td tal:define="s action.args[0];
 		      r action.args[1]">
-	<h4>${rst_to_html(r.__doc__ or u'')}
+	<h4>${rst_to_html(r.__doc__ or '')}
 	  <small>
 	    ${s}
 	  </small>
