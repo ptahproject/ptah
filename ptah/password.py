@@ -80,8 +80,7 @@ class SSHAPasswordManager(object):
         # urlsafe_b64decode() cannot handle unicode input string. We
         # encode to ascii. This is safe as the encoded_password string
         # should not contain non-ascii characters anyway.
-        if not isinstance(encoded_password, bytes):
-            encoded_password = bytes_(encoded_password, 'ascii')
+        encoded_password = bytes_(encoded_password, 'ascii')
         byte_string = urlsafe_b64decode(encoded_password[6:])
         salt = byte_string[20:]
         return encoded_password == self.encode(password, salt)
