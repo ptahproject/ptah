@@ -25,6 +25,27 @@ class BaseTesting(PtahTestCase):
             initsettings=initsettings)
 
 
+class TestSettingsResolver(BaseTesting):
+
+    def test_settings_uri_resolver(self):
+        node = ptah.form.TextField(
+            'node',
+            default = 'test')
+
+        ptah.register_settings(
+            'group', node,
+            title = 'Section title',
+            description = 'Section description',
+            )
+        self.init_ptah()
+
+        grp1 = ptah.get_settings('group', self.registry)
+        self.assertEqual(grp1.__uri__, 'settings:group')
+
+        grp2 = ptah.resolve('settings:group')
+        self.assertIs(grp1, grp2)
+
+
 class TestSettings(BaseTesting):
 
     def test_settings_no_default(self):
@@ -401,3 +422,124 @@ class TestSettingsInitialization(BaseTesting):
 
         self.assertEqual(group['node1'], 'value')
         self.assertEqual(group['node2'], 10)
+
+
+class TestDBSettings(PtahTestCase):
+
+    _init_ptah = False
+
+    def _make_grp(self):
+        node1 = ptah.form.TextField(
+            'node1',
+            default = 'test')
+
+        node2 = ptah.form.IntegerField(
+            'node2',
+            default = 50)
+
+        ptah.register_settings(
+            'group', node1, node2,
+            title = 'Section title',
+            description = 'Section description',
+            )
+        self.init_ptah()
+
+        return ptah.get_settings('group', self.registry)
+
+    def test_settings_updatedb(self):
+        grp = self._make_grp()
+        grp.updatedb(node1 = 'new text',
+                     node2 = 65)
+
+        self.assertEqual(grp['node1'], 'new text')
+        self.assertEqual(grp['node2'], 65)
+
+        from ptah.settings import Session, SettingRecord
+
+        res = {}
+        for rec in Session.query(SettingRecord):
+            res[rec.name] = rec.value
+
+        self.assertIn('group.node1', res)
+        self.assertIn('group.node2', res)
+        self.assertEqual(res['group.node1'], '"new text"')
+        self.assertEqual(res['group.node2'], '65')
+
+    def test_settings_updatedb_unknown(self):
+        grp = self._make_grp()
+        grp.updatedb(node1 = 'new text',
+                     node2 = 65,
+                     node3 = 500)
+
+        self.assertEqual(grp['node3'], 500)
+
+        from ptah.settings import Session, SettingRecord
+
+        res = {}
+        for rec in Session.query(SettingRecord):
+            res[rec.name] = rec.value
+
+        self.assertEqual(len(res), 2)
+        self.assertNotIn('group.node3', res)
+
+    def test_settings_updatedb_partial(self):
+        grp = self._make_grp()
+        grp.updatedb(node1 = 'new text')
+
+        self.assertEqual(grp['node1'], 'new text')
+        self.assertEqual(grp['node2'], 50)
+
+        from ptah.settings import Session, SettingRecord
+
+        res = {}
+        for rec in Session.query(SettingRecord):
+            res[rec.name] = rec.value
+
+        self.assertEqual(len(res), 1)
+        self.assertIn('group.node1', res)
+        self.assertEqual(res['group.node1'], '"new text"')
+
+    def test_settings_updatedb_set_default(self):
+        grp = self._make_grp()
+        grp.updatedb(node1 = 'new text', node2 = 65)
+        grp.updatedb(node1 = 'new text 2', node2 = 50)
+
+        from ptah.settings import Session, SettingRecord
+
+        res = {}
+        for rec in Session.query(SettingRecord):
+            res[rec.name] = rec.value
+
+        self.assertEqual(len(res), 1)
+        self.assertIn('group.node1', res)
+        self.assertEqual(res['group.node1'], '"new text 2"')
+
+    def test_settings_updatedb_event(self):
+        event_grp = []
+
+        @ptah.config.subscriber(ptah.SettingsGroupModified)
+        def handler(ev):
+            event_grp.append(ev.object)
+
+        grp = self._make_grp()
+        grp.updatedb(node1 = 'new text', node2 = 65)
+
+        self.assertIs(grp, event_grp[0])
+
+    def test_settings_updatedb_load_from_db(self):
+        grp = self._make_grp()
+        grp.updatedb(node1 = 'new text',
+                     node2 = 65)
+        grp.clear()
+
+        from ptah.settings import Session, SettingRecord
+
+        settings = self.registry.__ptah_storage__[SETTINGS_OB_ID]
+        settings.load({})
+
+        self.assertEqual(grp['node1'], 'test')
+        self.assertEqual(grp['node2'], 50)
+
+        settings.load_fromdb()
+        self.assertEqual(grp['node1'], 'new text')
+        self.assertEqual(grp['node2'], 65)

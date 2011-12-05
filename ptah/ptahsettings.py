@@ -7,10 +7,10 @@ _ = translationstring.TranslationStringFactory('ptah')
 
 
 ptah.register_settings(
-    ptah.CFG_ID_AUTH,
+    ptah.CFG_ID_PTAH,
 
     ptah.form.BoolField(
-        'policy',
+        'auth',
         title = _('Authentication policy'),
         description = _('Enable authentication policy.'),
         default = False),
@@ -28,9 +28,29 @@ ptah.register_settings(
         description = _('Enable/disable default authorization policy.'),
         default = True),
 
-    title = _('Pyramid authentication settings'),
-)
+    ptah.form.IntegerField(
+        'settings_dbpoll',
+        title = _('Settings db poll interval (seconds).'),
+        description = _('If you allow to change setting ttw. '
+                        '"0" means do not poll'),
+        default = 0),
 
+    ptah.form.BoolField(
+        'chameleon_reload',
+        default = False,
+        title = 'Auto reload',
+        description = 'Enable chameleon templates auto reload.'),
+
+    ptah.form.TextField(
+        'static_url',
+        default = 'static'),
+
+    ptah.form.IntegerField(
+        'static_cache_max_age',
+        default = 0),
+
+    title = _('Ptah settings'),
+)
 
 ptah.register_settings(
     ptah.CFG_ID_SESSION,
@@ -86,8 +106,6 @@ ptah.register_settings(
 
     title = _('Pyramid session'),
     description = _('Beaker session configuration settings'),
-    #validator = (config.RequiredWithDependency('key', 'type', default=''),
-    #             config.RequiredWithDependency('secret', 'type', default='')),
 )
 
 ptah.register_settings(
@@ -171,27 +189,6 @@ ptah.register_settings(
 
 
 ptah.register_settings(
-    ptah.CFG_ID_VIEW,
-
-    ptah.form.TextField(
-        'static_url',
-        default = 'static'),
-
-    ptah.form.IntegerField(
-        'cache_max_age',
-        default = 0),
-
-    ptah.form.BoolField(
-        'chameleon_reload',
-        default = False,
-        title = 'Auto reload',
-        description = 'Enable chameleon templates auto reload.'),
-
-    title = 'Ptah view configuration',
-)
-
-
-ptah.register_settings(
     ptah.CFG_ID_FORMAT,
 
     ptah.form.TimezoneField(
@@ -248,5 +245,15 @@ ptah.register_settings(
         title = _('Time'),
         description = _('Time full format')),
 
+    ttw = True,
     title = 'Site formats',
     )
+
+
+@ptah.config.subscriber(ptah.SettingsInitializing)
+def initialize(ev):
+    import chameleon.template
+
+    cfg = ptah.get_settings(ptah.CFG_ID_PTAH, ev.registry)
+    chameleon.template.AUTO_RELOAD=cfg['chameleon_reload']
+    chameleon.template.BaseTemplateFile.auto_reload=cfg['chameleon_reload']

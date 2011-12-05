@@ -40,7 +40,7 @@ def static(name, path, layer=''):
 
 
 def static_url(request, name, path='', **kw):
-    cfg = ptah.get_settings('view', request.registry)
+    cfg = ptah.get_settings(ptah.CFG_ID_PTAH, request.registry)
     url = cfg['static_url']
 
     if cfg.get('isurl', False):
@@ -72,7 +72,7 @@ def buildTree(path, not_allowed=re.compile('^[.~$#]')):
 
 @config.subscriber(config.AppStarting)
 def initialize(ev):
-    cfg = ptah.get_settings('view', ev.registry)
+    cfg = ptah.get_settings(ptah.CFG_ID_PTAH, ev.registry)
 
     url = cfg['static_url']
     if not urlparse.urlparse(url)[0]:
@@ -86,6 +86,7 @@ def initialize(ev):
             ev.config.add_view(
                 route_name =rname,
                 view = StaticView(abspath, prefix))
+        cfg['isurl'] = False
     else:
         cfg['isurl'] = True
 
@@ -107,7 +108,7 @@ class StaticView(object):
             self.path, os.path.join(*(path_info[self.lprefix:].split('/'))))
 
         if os.path.isfile(path):
-            cfg = ptah.get_settings('view', request.registry)
-            return _FileResponse(path, cfg['cache_max_age'])
+            cfg = ptah.get_settings(ptah.CFG_ID_PTAH, request.registry)
+            return _FileResponse(path, cfg['static_cache_max_age'])
 
         return HTTPNotFound(request.url)

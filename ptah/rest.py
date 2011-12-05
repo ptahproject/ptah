@@ -142,7 +142,7 @@ class Login(object):
 
     def get_token(self, request, userid):
         secret = ptah.get_settings(
-            ptah.CFG_ID_AUTH, request.registry)['secret']
+            ptah.CFG_ID_PTAH, request.registry)['secret']
         remote_addr = '0.0.0.0'
 
         ticket = AuthTicket(
@@ -170,7 +170,7 @@ class Api(object):
         token = request.environ.get('HTTP_X_AUTH_TOKEN')
         if token:
             secret = ptah.get_settings(
-                ptah.CFG_ID_AUTH, request.registry)['secret']
+                ptah.CFG_ID_PTAH, request.registry)['secret']
 
             try:
                 timestamp, userid, tokens, user_data = parse_ticket(

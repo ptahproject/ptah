@@ -45,7 +45,7 @@ class Package(object):
         self.request = request
 
     def actions(self):
-        actions = config.scan(self.pkg, set(), exclude)
+        actions = config.scan(self.pkg, set(), config.exclude)
 
         info = {}
 

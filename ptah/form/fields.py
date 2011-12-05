@@ -476,15 +476,21 @@ class MultiSelectField(ChoiceField):
     multiple = 'multiple'
 
 
-class TimezoneField(TextField):
+class TimezoneField(ChoiceField):
     """ timezone field """
 
     _tzs = dict((str(tz).lower(), str(tz)) for tz in pytz.all_timezones)
+    vocabulary = vocabulary.SimpleVocabulary.from_items(
+        *[(str(tz).lower(), str(tz).lower(), str(tz))
+          for tz in pytz.all_timezones])
 
     def dumps(self, value):
         return super(TimezoneField, self).dumps(self.serialize(value))
 
     def loads(self, value):
+        if not value.startswith('"'):
+            value = '"{0}"'.format(value)
+
         value = super(TimezoneField, self).loads(value)
         return self.deserialize(value)
 
@@ -492,20 +498,20 @@ class TimezoneField(TextField):
         if value is null:
             return null
 
-        return str(value)
+        return str(value).lower()
 
     def deserialize(self, value):
         if value is null or not value:
             return null
 
         try:
-            v = str(value)
-            if v.startswith('GMT'):
-                v = 'Etc/%s' % v
+            v = str(value).lower()
+            if v.startswith('gmt'):
+                v = 'etc/%s' % v
             try:
                 return pytz.timezone(v)
             except:
-                return pytz.timezone(self._tzs[v.lower()])
+                return pytz.timezone(self._tzs[v])
         except:
             raise Invalid(self,
                 _('"${val}" is not a timezone', mapping={'val': value}))

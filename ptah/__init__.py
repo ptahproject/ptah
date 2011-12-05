@@ -13,6 +13,7 @@ from ptah.settings import register_settings
 from ptah.settings import initialize_settings
 from ptah.settings import SettingsInitialized
 from ptah.settings import SettingsInitializing
+from ptah.settings import SettingsGroupModified
 
 # security
 from ptah.authentication import auth_service
@@ -54,10 +55,9 @@ from pyramid.security import ALL_PERMISSIONS
 from pyramid.security import NO_PERMISSION_REQUIRED
 
 # ptah settings ids
+CFG_ID_PTAH = 'ptah'
 CFG_ID_MAIL = 'mail'
-CFG_ID_AUTH = 'auth'
 CFG_ID_FORMAT = 'format'
-CFG_ID_VIEW = 'view'
 CFG_ID_SESSION = 'session'
 CFG_ID_SQLA = 'sqla'
 CFG_ID_PASSWORD = 'password'

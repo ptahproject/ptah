@@ -1,7 +1,7 @@
 """ simple token service """
 import datetime
 import uuid
-import sqlahelper as psa
+import sqlahelper as sqlh
 import sqlalchemy as sqla
 
 from ptah import config
@@ -82,8 +82,8 @@ class TokenService(object):
 
 service = TokenService()
 
-Base = psa.get_base()
-Session = psa.get_session()
+Base = sqlh.get_base()
+Session = sqlh.get_session()
 
 
 class Token(Base):

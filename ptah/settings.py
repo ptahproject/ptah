@@ -1,17 +1,23 @@
 """ settings """
 import logging
 import os.path
+import sqlahelper as sqlh
+import sqlalchemy as sqla
 from collections import OrderedDict
 
 from zope import interface
 from zope.interface.interface import InterfaceClass
 from pyramid.compat import configparser
 
-from ptah import form, config
+from ptah import uri, form, config
 from ptah.config import StopException
 from ptah.config import event, subscriber, DirectiveInfo, Action
 
-log = logging.getLogger('ptah.config')
+log = logging.getLogger('ptah')
+
+SETTINGS_ID = 'settings'
+SETTINGS_OB_ID = 'ptah:settings'
+SETTINGS_GROUP_ID = 'ptah:settings-group'
 
 
 class SettingsInitializing(object):
@@ -38,16 +44,26 @@ class SettingsInitialized(object):
         self.registry = registry
 
 
-_marker = object()
+class SettingsGroupModified(object):
+    """ ptah sends this event when settings group is modified. """
+    event('Settings group modified event')
 
-SETTINGS_ID = 'settings'
-SETTINGS_OB_ID = 'ptah:settings'
-SETTINGS_GROUP_ID = 'ptah:settings-group'
+    def __init__(self, group):
+        self.object = group
+
+
+_marker = object()
 
 
 def get_settings(grp, registry=None):
     """ get settings group by group id """
     return config.get_cfg_storage(SETTINGS_GROUP_ID, registry)[grp]
+
+
+@uri.resolver('settings')
+def settings_resolver(uri):
+    """ Ptah settings resolver """
+    return config.get_cfg_storage(SETTINGS_GROUP_ID)[uri[9:]]
 
 
 def pyramid_get_settings(config, grp):
@@ -113,7 +129,7 @@ def register_settings(name, *fields, **kw):
 
     ac = Action(
         lambda config, group: config.get_cfg_storage(SETTINGS_GROUP_ID)\
-            .update({group.__name__: group.clone()}),
+            .update({group.__name__: group.clone(config.registry)}),
         (group,),
         discriminator=(SETTINGS_GROUP_ID, name))
 
@@ -142,9 +158,13 @@ class Settings(object):
         if defaults is None:
             return
 
-        # load defaults
+        self.load(defaults, True)
+
+    def load(self, rawdata, setdefaults=False):
+        groups = config.get_cfg_storage(SETTINGS_GROUP_ID).items()
+
         try:
-            rawdata = dict((k.lower(), v) for k, v in defaults.items())
+            rawdata = dict((k.lower(), v) for k, v in rawdata.items())
         except Exception as e:
             raise StopException(e)
 
@@ -160,6 +180,9 @@ class Settings(object):
                     group.__fields__[k].default = v
 
             group.update(data)
+
+    def load_fromdb(self):
+        self.load(dict(Session.query(SettingRecord.name,SettingRecord.value)))
 
     def export(self, default=False):
         groups = config.get_cfg_storage(SETTINGS_GROUP_ID).items()
@@ -182,14 +205,18 @@ class Group(OrderedDict):
         super(Group, self).__init__()
 
         fields = form.Fieldset(*args, **kwargs)
+        self.__uri__ = 'settings:{0}'.format(fields.name)
         self.__name__ = fields.name
         self.__title__ = fields.title
         self.__description__ = fields.description
         self.__fields__ = fields
+        self.__ttw__ = kwargs.get('ttw', False)
+        self.__ttw_skip_fields__ = kwargs.get('ttw_skip_fields', False)
 
-    def clone(self):
+    def clone(self, registry):
         clone = self.__class__.__new__(self.__class__)
         clone.__dict__.update(self.__dict__)
+        clone.__registry__ = registry
         return clone
 
     def extract(self, rawdata):
@@ -247,3 +274,46 @@ class Group(OrderedDict):
         if res is _marker:
             raise KeyError(name)
         return res
+
+    def updatedb(self, **data):
+        self.update(data)
+
+        name = self.__name__
+        fields = self.__fields__
+
+        # remove old data
+        keys = tuple('{0}.{1}'.format(name, key) for key in data.keys())
+        if keys:
+            Session.query(SettingRecord)\
+                .filter(SettingRecord.name.in_(keys)).delete(False)
+
+        # insert new data
+        result = []
+        for fname in data.keys():
+            if fname not in fields:
+                continue
+
+            field = fields[fname]
+            value = self[fname]
+            if value == field.default:
+                continue
+
+            result.append(
+                {'name': '{0}.{1}'.format(name,fname),
+                 'value': field.dumps(value)})
+            Session.add(
+                SettingRecord(name='{0}.{1}'.format(name,fname),
+                              value=field.dumps(value)))
+        Session.flush()
+
+        self.__registry__.notify(SettingsGroupModified(self))
+
+
+Session = sqlh.get_session()
+
+class SettingRecord(sqlh.get_base()):
+
+    __tablename__ = 'ptah_settings'
+
+    name = sqla.Column(sqla.String, primary_key=True)
+    value = sqla.Column(sqla.String)

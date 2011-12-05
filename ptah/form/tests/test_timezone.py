@@ -10,7 +10,7 @@ class TestTimezoneField(PtahTestCase):
         typ = TimezoneField('test')
 
         self.assertTrue(typ.serialize(null) is null)
-        self.assertEqual(typ.serialize(pytz.UTC), 'UTC')
+        self.assertEqual(typ.serialize(pytz.UTC), 'utc')
 
     def test_timezone_schema_deserialize(self):
         from ptah.form import null, Invalid, TimezoneField
@@ -22,6 +22,8 @@ class TestTimezoneField(PtahTestCase):
 
         # special case for 'GMT+X' timezones
         self.assertEqual(repr(typ.deserialize('GMT+6')),
+                         "<StaticTzInfo 'Etc/GMT+6'>")
+        self.assertEqual(repr(typ.deserialize('gmt+6')),
                          "<StaticTzInfo 'Etc/GMT+6'>")
 
         # general timezones

@@ -38,7 +38,7 @@ class TestStaticManagement(PtahTestCase):
     def test_static_register_url(self):
         view.static('testsurl', 'ptah.view.tests:static/dir1')
 
-        self.registry.settings['view.static_url'] = 'http://ptah.org/static'
+        self.registry.settings['ptah.static_url'] = 'http://ptah.org/static'
         self.init_ptah()
 
         self.assertEquals(
@@ -122,7 +122,7 @@ class TestStaticView(PtahTestCase):
         response = inst(None, request)
         self.assertIn('max-age=0', response.headers['Cache-Control'])
 
-        STATIC = ptah.get_settings('view', self.registry)
+        STATIC = ptah.get_settings(ptah.CFG_ID_PTAH, self.registry)
         STATIC.cache_max_age = 360
 
         response = inst(None, request)

@@ -4,9 +4,14 @@
 
 <div class="row" tal:repeat="group data">
   <div class="span16 columns">
-    <h3>${group['title']}</h3>
+    <h3>${group['title']}
+      <small tal:condition="group['ttw']">
+	<a href="./${group['name']}/" class="btn">Modify</a>
+      </small>
+    </h3>
     <small>${group['description']}</small>
-
+    <a name="${group['name']}"></a>
+    
     <p>
       <table class="zebra-striped">
 	<tr tal:repeat="field group['schema']">
@@ -14,6 +19,7 @@
 	    <a name="${field['name']}"></a>
 	    ${field['name']}
 	  </td>
+	  <td>${field['type']}</td>
 	  <td>${field['value']}</td>
 	  <td>${field['title']}</td>
 	  <td>
