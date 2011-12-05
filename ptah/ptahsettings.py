@@ -10,6 +10,9 @@ from pyramid.interfaces import IAuthenticationPolicy, IAuthorizationPolicy
 from pyramid.authorization import ACLAuthorizationPolicy
 from pyramid.authentication import AuthTktAuthenticationPolicy
 
+from ptah.security import get_local_roles
+
+
 _ = translationstring.TranslationStringFactory('ptah')
 
 
