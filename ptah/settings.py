@@ -41,11 +41,8 @@ def pyramid_get_settings(config, grp):
 
 def initialize_settings(pconfig, cfg, section=configparser.DEFAULTSECT):
     registry = pconfig.registry
-    if not isinstance(registry.__ptah_storage__[SETTINGS_OB_ID], Settings):
-        settings = Settings()
-        registry.__ptah_storage__[SETTINGS_OB_ID] = settings
+    settings = config.get_cfg_storage(SETTINGS_OB_ID, pconfig.registry, Settings)
 
-    settings = pconfig.registry.__ptah_storage__[SETTINGS_OB_ID]
     if settings.initialized:
         raise RuntimeError(
             "initialize_settings has been called more than once.")

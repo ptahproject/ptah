@@ -97,7 +97,7 @@ def initialize(config, packages=None, excludes=(),
             (config, config.registry.settings))
 
 
-def get_cfg_storage(id, registry=None):
+def get_cfg_storage(id, registry=None, default_factory=OrderedDict):
     if registry is None:
         registry = get_current_registry()
 
@@ -107,6 +107,8 @@ def get_cfg_storage(id, registry=None):
         storage = defaultdict(lambda: OrderedDict())
         registry.__ptah_storage__ = storage
 
+    if id not in storage:
+        storage[id] = default_factory()
     return storage[id]
 
 
