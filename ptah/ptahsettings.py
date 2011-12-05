@@ -281,7 +281,7 @@ def initialized(ev):
         pass
     else:
         MAIL = ptah.get_settings(ptah.CFG_ID_MAIL, ev.registry)
-        smtp_mailer = SMTPMailer(
+        smtp_mailer = mailer.SMTPMailer(
             hostname = MAIL['host'],
             port = MAIL['port'],
             username = MAIL['username']or None,
@@ -290,7 +290,7 @@ def initialized(ev):
             force_tls = MAIL['force_tls'],
             debug_smtp = MAIL['debug'])
 
-        MAIL['Mailer'] = DirectMailDelivery(smtp_mailer)
+        MAIL['Mailer'] = delivery.DirectMailDelivery(smtp_mailer)
         MAIL['full_from_address'] = formataddr((MAIL['from_name'], MAIL['from_address']))
 
     # sqla
