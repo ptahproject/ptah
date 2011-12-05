@@ -250,7 +250,7 @@ ptah.register_settings(
     )
 
 
-@ptah.config.subscriber(ptah.SettingsInitializing)
+@ptah.config.subscriber(ptah.events.SettingsInitializing)
 def initialize(ev):
     import chameleon.template
 

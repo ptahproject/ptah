@@ -1,5 +1,61 @@
 from ptah import config
 
+# config events
+
+class AppStarting(object):
+    """ ptah sends this event when application is ready to start. """
+    config.event('Application starting event')
+
+    config = None
+
+    def __init__(self, config):
+        self.config = config
+        self.registry = config.registry
+
+
+class Initialized(object):
+    """ ptah sends this after ptah.config.initialize """
+    config.event('Ptah config initialized event')
+
+    def __init__(self, config):
+        self.config = config
+
+
+# settings related events
+
+class SettingsInitializing(object):
+    """ Settings initializing event """
+    config.event('Settings initializing event')
+
+    config = None
+    registry = None
+
+    def __init__(self, config, registry):
+        self.config = config
+        self.registry = registry
+
+
+class SettingsInitialized(object):
+    """ ptah sends this event when settings initialization is completed. """
+    config.event('Settings initialized event')
+
+    config = None
+    registry = None
+
+    def __init__(self, config, registry):
+        self.config = config
+        self.registry = registry
+
+
+class SettingsGroupModified(object):
+    """ ptah sends this event when settings group is modified. """
+    config.event('Settings group modified event')
+
+    def __init__(self, group):
+        self.object = group
+
+
+# principal events
 
 class PrincipalEvent(object):
     """ base class for all principal related events """

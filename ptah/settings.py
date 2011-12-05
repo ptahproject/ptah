@@ -9,47 +9,16 @@ from zope import interface
 from zope.interface.interface import InterfaceClass
 from pyramid.compat import configparser
 
+import ptah
 from ptah import uri, form, config
 from ptah.config import StopException
-from ptah.config import event, subscriber, DirectiveInfo, Action
+from ptah.config import subscriber, DirectiveInfo, Action
 
 log = logging.getLogger('ptah')
 
 SETTINGS_ID = 'settings'
 SETTINGS_OB_ID = 'ptah:settings'
 SETTINGS_GROUP_ID = 'ptah:settings-group'
-
-
-class SettingsInitializing(object):
-    """ Settings initializing event """
-    event('Settings initializing event')
-
-    config = None
-    registry = None
-
-    def __init__(self, config, registry):
-        self.config = config
-        self.registry = registry
-
-
-class SettingsInitialized(object):
-    """ ptah sends this event when settings initialization is completed. """
-    event('Settings initialized event')
-
-    config = None
-    registry = None
-
-    def __init__(self, config, registry):
-        self.config = config
-        self.registry = registry
-
-
-class SettingsGroupModified(object):
-    """ ptah sends this event when settings group is modified. """
-    event('Settings group modified event')
-
-    def __init__(self, group):
-        self.object = group
 
 
 _marker = object()
@@ -101,8 +70,8 @@ def initialize_settings(pconfig, cfg, section=configparser.DEFAULTSECT):
     pconfig.begin()
     try:
         settings.init(pconfig, cfg)
-        config.notify(SettingsInitializing(pconfig, pconfig.registry))
-        config.notify(SettingsInitialized(pconfig, pconfig.registry))
+        config.notify(ptah.events.SettingsInitializing(pconfig, pconfig.registry))
+        config.notify(ptah.events.SettingsInitialized(pconfig, pconfig.registry))
     except Exception as e:
         raise StopException(e)
     finally:
@@ -306,7 +275,7 @@ class Group(OrderedDict):
                               value=field.dumps(value)))
         Session.flush()
 
-        self.__registry__.notify(SettingsGroupModified(self))
+        self.__registry__.notify(ptah.events.SettingsGroupModified(self))
 
 
 Session = sqlh.get_session()

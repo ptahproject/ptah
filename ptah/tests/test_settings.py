@@ -309,13 +309,13 @@ class TestSettingsInitialization(BaseTesting):
         def h2(ev):
             events.append(ev)
 
-        sm.registerHandler(h1, (ptah.SettingsInitializing,))
-        sm.registerHandler(h2, (ptah.SettingsInitialized,))
+        sm.registerHandler(h1, (ptah.events.SettingsInitializing,))
+        sm.registerHandler(h2, (ptah.events.SettingsInitialized,))
 
         ptah.initialize_settings(self.config, {})
 
-        self.assertTrue(isinstance(events[0], ptah.SettingsInitializing))
-        self.assertTrue(isinstance(events[1], ptah.SettingsInitialized))
+        self.assertTrue(isinstance(events[0], ptah.events.SettingsInitializing))
+        self.assertTrue(isinstance(events[1], ptah.events.SettingsInitialized))
 
         self.assertTrue(events[0].config is self.config)
         self.assertTrue(events[1].config is self.config)
@@ -331,7 +331,7 @@ class TestSettingsInitialization(BaseTesting):
         def h1(ev):
             raise err_tp
 
-        sm.registerHandler(h1, (ptah.SettingsInitializing,))
+        sm.registerHandler(h1, (ptah.events.SettingsInitializing,))
 
         err = None
         try:
@@ -517,7 +517,7 @@ class TestDBSettings(PtahTestCase):
     def test_settings_updatedb_event(self):
         event_grp = []
 
-        @ptah.config.subscriber(ptah.SettingsGroupModified)
+        @ptah.config.subscriber(ptah.events.SettingsGroupModified)
         def handler(ev):
             event_grp.append(ev.object)
 

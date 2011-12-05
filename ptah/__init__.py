@@ -7,13 +7,13 @@ from ptah.uri import register_uri_resolver
 from ptah.uri import extract_uri_schema
 from ptah.uri import UriFactory
 
+# events
+from ptah import events
+
 # settings
 from ptah.settings import get_settings
 from ptah.settings import register_settings
 from ptah.settings import initialize_settings
-from ptah.settings import SettingsInitialized
-from ptah.settings import SettingsInitializing
-from ptah.settings import SettingsGroupModified
 
 # security
 from ptah.authentication import auth_service
@@ -150,7 +150,7 @@ def includeme(config):
 
 def make_wsgi_app(global_settings, **settings):
     """ Create wsgi application, this function initialize
-    `ptah` and sends :py:class:`AppInitialized` event.
+    `ptah` and sends :py:class:`ptah.events.AppInitialized` event.
     It is possible to use this function as entry point for paster based
     deployment::
 

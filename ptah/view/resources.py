@@ -70,7 +70,7 @@ def buildTree(path, not_allowed=re.compile('^[.~$#]')):
     return data
 
 
-@config.subscriber(config.AppStarting)
+@config.subscriber(ptah.events.AppStarting)
 def initialize(ev):
     cfg = ptah.get_settings(ptah.CFG_ID_PTAH, ev.registry)
 

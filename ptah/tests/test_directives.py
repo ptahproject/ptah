@@ -17,7 +17,7 @@ class BaseTesting(unittest.TestCase):
         if pconfig is None:
             pconfig = self.config
         ptah.config.initialize(
-            pconfig, ('ptah.config', self.__class__.__module__))
+            pconfig, ('ptah.config', 'ptah.events', self.__class__.__module__))
 
     def setUp(self):
         self.config = testing.setUp()

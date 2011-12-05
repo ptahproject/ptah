@@ -9,11 +9,10 @@ from collections import defaultdict, OrderedDict
 from pkgutil import walk_packages
 from pyramid.compat import text_type, string_types, NativeIO
 from pyramid.threadlocal import get_current_registry
-from zope import interface
+from zope.interface import implementedBy
 from zope.interface.interfaces import IObjectEvent
 
-__all__ = ('initialize', 'notify', 'get_cfg_storage',
-           'start', 'Initialized', 'AppStarting', 'StopException',
+__all__ = ('initialize', 'notify', 'get_cfg_storage', 'start', 'StopException',
            'list_packages', 'cleanup', 'cleanup_system',
            'event', 'adapter', 'subscriber',
            'Action', 'ClassAction', 'DirectiveInfo',
@@ -24,6 +23,8 @@ __all__ = ('initialize', 'notify', 'get_cfg_storage',
 log = logging.getLogger('ptah')
 
 mods = set()
+
+import ptah
 
 
 class StopException(Exception):
@@ -88,11 +89,9 @@ def initialize(config, packages=None, excludes=(),
     for action in actions:
         config.action(action.discriminator, runaction, (action, config))
 
-    config.action(None, registry.notify, (Initialized(config),))
+    config.action(None, registry.notify, (ptah.events.Initialized(config),))
 
     if initsettings:
-        import ptah.settings
-
         config.action(
             None, ptah.settings.initialize_settings,
             (config, config.registry.settings))
@@ -116,7 +115,7 @@ def get_cfg_storage_imp(config, id):
 
 
 def start(cfg):
-    cfg.registry.notify(AppStarting(cfg))
+    cfg.registry.notify(ptah.events.AppStarting(cfg))
 
 
 def exclude(modname, excludes=()):
@@ -318,7 +317,7 @@ def _adapts(cfg, factory, required, name):
 
 
 def _getProvides(factory):
-    p = list(interface.implementedBy(factory))
+    p = list(implementedBy(factory))
     if len(p) == 1:
         return p[0]
     else:
@@ -645,22 +644,3 @@ try:
 except ImportError:
     signal.signal(signal.SIGINT, processShutdown)
     signal.signal(signal.SIGTERM, processShutdown)
-
-
-class AppStarting(object):
-    """ ptah sends this event when application is ready to start. """
-    event('Application starting event')
-
-    config = None
-
-    def __init__(self, config):
-        self.config = config
-        self.registry = config.registry
-
-
-class Initialized(object):
-    """ ptah sends this after ptah.config.initialize """
-    event('Ptah config initialized event')
-
-    def __init__(self, config):
-        self.config = config

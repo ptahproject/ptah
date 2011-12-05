@@ -29,10 +29,10 @@ class TestPtahInit(unittest.TestCase):
         sm = config.registry
         sm.registerHandler(
             initialized_handler,
-            (ptah.config.Initialized,))
+            (ptah.events.Initialized,))
         sm.registerHandler(
             settings_initialized_handler,
-            (ptah.SettingsInitialized,))
+            (ptah.events.SettingsInitialized,))
 
         config.include('ptah')
         config.ptah_initialize(autoinclude=True)
@@ -53,7 +53,7 @@ class TestPtahInit(unittest.TestCase):
         sm = config.registry
         sm.registerHandler(
             initialized_handler,
-            (ptah.config.Initialized,))
+            (ptah.events.Initialized,))
 
         config.include('ptah')
 
@@ -79,7 +79,7 @@ class TestPtahInit(unittest.TestCase):
         sm = config.registry
         sm.registerHandler(
             initialized_handler,
-            (ptah.SettingsInitialized,))
+            (ptah.events.SettingsInitialized,))
 
         config.include('ptah')
 
