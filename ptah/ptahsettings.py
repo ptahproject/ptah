@@ -1,6 +1,8 @@
 """ ptah settings """
 import ptah
 import pytz
+import sqlahelper
+import sqlalchemy
 import translationstring
 
 _ = translationstring.TranslationStringFactory('ptah')
@@ -250,10 +252,29 @@ ptah.register_settings(
     )
 
 
-@ptah.config.subscriber(ptah.events.SettingsInitializing)
-def initialize(ev):
+@ptah.config.subscriber(ptah.events.SettingsInitialized)
+def initialized(ev):
+    # chameleon
     import chameleon.template
 
     cfg = ptah.get_settings(ptah.CFG_ID_PTAH, ev.registry)
     chameleon.template.AUTO_RELOAD=cfg['chameleon_reload']
     chameleon.template.BaseTemplateFile.auto_reload=cfg['chameleon_reload']
+
+    # sqla
+
+    SQLA = ptah.get_settings(ptah.CFG_ID_SQLA, ev.registry)
+    url = SQLA['url']
+    if url:
+        engine_args = {}
+        if SQLA['cache']:
+            cache = {}
+            engine_args['execution_options'] = \
+                {'compiled_cache': cache}
+            SQLA['sqlalchemy_cache'] = cache
+        try:
+            engine = sqlahelper.get_engine()
+        except:
+            engine = sqlalchemy.engine_from_config(
+                {'sqlalchemy.url': url}, 'sqlalchemy.', **engine_args)
+            sqlahelper.add_engine(engine)
