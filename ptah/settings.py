@@ -88,7 +88,8 @@ def register_settings(name, *fields, **kw):
     for field in fields:
         field.required = False
         if field.default is form.null:
-            raise StopException('field.default could not be "null"')
+            raise StopException(
+              'Default value is required for "{0}.{1}"'.format(name,field.name))
 
     group = Group(name=name, *fields, **kw)
     interface.directlyProvides(Group, category)
