@@ -1,9 +1,14 @@
 """ ptah settings """
+import uuid
 import ptah
 import pytz
 import sqlahelper
 import sqlalchemy
 import translationstring
+from email.utils import formataddr
+from pyramid.interfaces import IAuthenticationPolicy, IAuthorizationPolicy
+from pyramid.authorization import ACLAuthorizationPolicy
+from pyramid.authentication import AuthTktAuthenticationPolicy
 
 _ = translationstring.TranslationStringFactory('ptah')
 
@@ -254,15 +259,41 @@ ptah.register_settings(
 
 @ptah.config.subscriber(ptah.events.SettingsInitialized)
 def initialized(ev):
-    # chameleon
-    import chameleon.template
+    # auth
+    PTAH = ptah.get_settings(ptah.CFG_ID_PTAH, ev.registry)
+    if PTAH['auth']:
+        kwargs = {'wild_domain': False,
+                  'callback': get_local_roles}
 
-    cfg = ptah.get_settings(ptah.CFG_ID_PTAH, ev.registry)
-    chameleon.template.AUTO_RELOAD=cfg['chameleon_reload']
-    chameleon.template.BaseTemplateFile.auto_reload=cfg['chameleon_reload']
+        policy = AuthTktAuthenticationPolicy(
+            secret = PTAH['secret'], **kwargs)
+        ev.registry.registerUtility(policy, IAuthenticationPolicy)
+
+    if PTAH['authorization']:
+        ev.registry.registerUtility(
+            ACLAuthorizationPolicy(), IAuthorizationPolicy)
+
+    # mail
+    try:
+        from repoze.sendmail import mailer
+        from repoze.sendmail import delivery
+    except ImportError:
+        pass
+    else:
+        MAIL = ptah.get_settings(ptah.CFG_ID_MAIL, ev.registry)
+        smtp_mailer = SMTPMailer(
+            hostname = MAIL['host'],
+            port = MAIL['port'],
+            username = MAIL['username']or None,
+            password = MAIL['password'] or None,
+            no_tls = MAIL['no_tls'],
+            force_tls = MAIL['force_tls'],
+            debug_smtp = MAIL['debug'])
+
+        MAIL['Mailer'] = DirectMailDelivery(smtp_mailer)
+        MAIL['full_from_address'] = formataddr((MAIL['from_name'], MAIL['from_address']))
 
     # sqla
-
     SQLA = ptah.get_settings(ptah.CFG_ID_SQLA, ev.registry)
     url = SQLA['url']
     if url:
@@ -278,3 +309,10 @@ def initialized(ev):
             engine = sqlalchemy.engine_from_config(
                 {'sqlalchemy.url': url}, 'sqlalchemy.', **engine_args)
             sqlahelper.add_engine(engine)
+
+    # chameleon
+    import chameleon.template
+
+    cfg = ptah.get_settings(ptah.CFG_ID_PTAH, ev.registry)
+    chameleon.template.AUTO_RELOAD=cfg['chameleon_reload']
+    chameleon.template.BaseTemplateFile.auto_reload=cfg['chameleon_reload']
