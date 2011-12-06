@@ -12,7 +12,7 @@ from pyramid.threadlocal import get_current_registry
 from zope.interface import implementedBy
 from zope.interface.interfaces import IObjectEvent
 
-__all__ = ('initialize', 'notify', 'get_cfg_storage', 'start', 'StopException',
+__all__ = ('initialize', 'get_cfg_storage', 'StopException',
            'list_packages', 'cleanup', 'cleanup_system',
            'event', 'adapter', 'subscriber',
            'Action', 'ClassAction', 'DirectiveInfo',
@@ -116,10 +116,6 @@ def get_cfg_storage_imp(config, id):
     return get_cfg_storage(id, config.registry)
 
 
-def start(cfg):
-    cfg.registry.notify(ptah.events.AppStarting(cfg))
-
-
 def exclude(modname, excludes=()):
     for n in ('.test', '.ftest'):
         if n in modname:
@@ -187,11 +183,6 @@ def list_packages(include_packages=None, excludes=None):
                 seen.add(pkg)
 
     return packages
-
-
-def notify(*event):
-    """ Send event to event listeners """
-    get_current_registry().subscribers(event, None)
 
 
 def objectEventNotify(event):

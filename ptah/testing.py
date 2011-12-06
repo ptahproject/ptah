@@ -35,6 +35,8 @@ class PtahTestCase(unittest.TestCase):
         return request
 
     def init_ptah(self, *args, **kw):
+        self.registry.settings.update(self._settings)
+
         parts = self.__class__.__module__.split('.')
         packages = ['ptah']
         for l in range(len(parts)):
@@ -49,7 +51,7 @@ class PtahTestCase(unittest.TestCase):
             Base.metadata.create_all()
             transaction.commit()
 
-        config.start(self.config)
+        self.registry.notify(ptah.events.AppStarting(self.config))
 
     def init_pyramid(self):
         self.request = request = self.make_request()

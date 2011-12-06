@@ -7,6 +7,11 @@ from ptah.uri import register_uri_resolver
 from ptah.uri import extract_uri_schema
 from ptah.uri import UriFactory
 
+# config
+from ptah.config import initialize
+from ptah.config import adapter
+from ptah.config import subscriber
+
 # events
 from ptah import events
 
@@ -221,7 +226,7 @@ def ptah_initialize(config, packages=None, autoinclude=False):
         Base.metadata.create_all()
 
         # send AppStarting event
-        ptah.config.start(config)
+        config.registry.notify(ptah.events.AppStarting(config))
 
         # commit possible transaction
         transaction.commit()

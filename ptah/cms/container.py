@@ -2,6 +2,7 @@
 import sqlalchemy as sqla
 from zope.interface import implementer
 from pyramid.compat import string_types
+from pyramid.threadlocal import get_current_registry
 
 import ptah
 from ptah import config
@@ -165,7 +166,7 @@ class BaseContainer(BaseContent):
         if isinstance(item, BaseContainer):
             update_path(item)
 
-        config.notify(event)
+        get_current_registry().notify(event)
 
     def __delitem__(self, item, flush=True):
         """Delete a value from the container using the key."""
@@ -178,7 +179,7 @@ class BaseContainer(BaseContent):
                 for key in item.keys():
                     item.__delitem__(key, False)
 
-            config.notify(events.ContentDeletingEvent(item))
+            get_current_registry().notify(events.ContentDeletingEvent(item))
 
             name = item.__name__
             if self._v_keys:

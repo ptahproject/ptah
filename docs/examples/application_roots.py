@@ -41,7 +41,7 @@ if __name__ == '__main__':
                      __name__ = 'page3',
                      __parent__ = foo)
         cms.Session.add(page3)
-        config.notify(cms.events.ContentCreatedEvent(page3))
+        app.registry.notify(cms.events.ContentCreatedEvent(page3))
         import transaction; transaction.commit()
 
     print 'See foo Application, http://localhost:8080/foo/'

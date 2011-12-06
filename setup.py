@@ -6,16 +6,19 @@ version='0.2-dev'
 install_requires = ['setuptools',
                     'sphinx',
                     'pytz',
-                    'chameleon == 2.4.5',
+                    'chameleon',
                     'pyramid',
                     'pyramid_tm',
+                    'venusian', # we get it as part of pyramid
                     'zope.interface >= 3.8.0',
                     'WebOb >= 1.2b2',
                     'SQLAlchemy',
                     'SQLAHelper',
                     'Pygments',
                     ]
-tests_require = ['nose']
+tests_require = ['nose',
+                 'pyramid_beaker',
+                 'repoze.sendmail']
 
 
 def read(f):

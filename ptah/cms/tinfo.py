@@ -4,6 +4,7 @@ import sqlalchemy as sqla
 from ptah import config
 from zope.interface import implementer
 from pyramid.compat import string_types
+from pyramid.threadlocal import get_current_registry
 
 from ptah.cms.node import Session
 from ptah.cms.content import Content
@@ -72,7 +73,7 @@ class TypeInformation(object):
 
     def create(self, **data):
         content = self.cls(**data)
-        config.notify(ContentCreatedEvent(content))
+        get_current_registry().notify(ContentCreatedEvent(content))
         return content
 
     def is_allowed(self, container):

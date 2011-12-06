@@ -67,8 +67,8 @@ def initialize_settings(pconfig, cfg, section=configparser.DEFAULTSECT):
     pconfig.begin()
     try:
         settings.init(pconfig, cfg)
-        config.notify(ptah.events.SettingsInitializing(pconfig, pconfig.registry))
-        config.notify(ptah.events.SettingsInitialized(pconfig, pconfig.registry))
+        pconfig.registry.notify(ptah.events.SettingsInitializing(pconfig, pconfig.registry))
+        pconfig.registry.notify(ptah.events.SettingsInitialized(pconfig, pconfig.registry))
     except Exception as e:
         raise StopException(e)
     finally:

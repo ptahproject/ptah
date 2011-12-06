@@ -1,8 +1,9 @@
 """ Base content class """
 import sqlalchemy as sqla
 from sqlalchemy.ext.hybrid import hybrid_property
-from pyramid.compat import text_type
 from zope.interface import implementer
+from pyramid.compat import text_type
+from pyramid.threadlocal import get_current_registry
 
 import ptah
 from ptah import config, form
@@ -161,7 +162,7 @@ class BaseContent(Node):
                 if val is not form.null:
                     setattr(self, field.name, val)
 
-            config.notify(events.ContentModifiedEvent(self))
+            get_current_registry().notify(events.ContentModifiedEvent(self))
 
     def _extra_info(self, info):
         if self.__type__:

@@ -67,13 +67,13 @@ class TestContent(PtahTestCase):
 
         content = MyContent()
 
-        config.notify(ptah.cms.ContentCreatedEvent(content))
+        self.registry.notify(ptah.cms.ContentCreatedEvent(content))
 
         self.assertTrue(isinstance(content.created, datetime))
         self.assertTrue(isinstance(content.modified, datetime))
         time.sleep(0.1)
 
-        config.notify(ptah.cms.ContentModifiedEvent(content))
+        self.registry.notify(ptah.cms.ContentModifiedEvent(content))
         self.assertTrue(content.modified != content.created)
 
     def test_content_set_owner_on_create(self):
@@ -85,12 +85,12 @@ class TestContent(PtahTestCase):
 
         content = MyContent()
 
-        config.notify(ptah.cms.ContentCreatedEvent(content))
+        self.registry.notify(ptah.cms.ContentCreatedEvent(content))
 
         self.assertEqual(content.__owner__, None)
 
         ptah.auth_service.set_userid('user')
-        config.notify(ptah.cms.ContentCreatedEvent(content))
+        self.registry.notify(ptah.cms.ContentCreatedEvent(content))
 
         self.assertEqual(content.__owner__, 'user')
 
@@ -102,7 +102,7 @@ class TestContent(PtahTestCase):
             __uri_factory__ = ptah.UriFactory('mycontent')
 
         content = MyContent()
-        config.notify(ptah.cms.ContentCreatedEvent(content))
+        self.registry.notify(ptah.cms.ContentCreatedEvent(content))
 
         info = content.info()
         self.assertIn('__name__', info)
@@ -112,7 +112,7 @@ class TestContent(PtahTestCase):
             __type__ = ptah.cms.Type('mycontent', 'MyContent')
 
         content = MyContent()
-        config.notify(ptah.cms.ContentCreatedEvent(content))
+        self.registry.notify(ptah.cms.ContentCreatedEvent(content))
 
         info = content.info()
         self.assertIn('title', info)
@@ -125,7 +125,7 @@ class TestContent(PtahTestCase):
             __type__ = ptah.cms.Type('mycontent', 'MyContent')
 
         content = MyContent()
-        config.notify(ptah.cms.ContentCreatedEvent(content))
+        self.registry.notify(ptah.cms.ContentCreatedEvent(content))
 
         modified = content.modified
         time.sleep(0.1)

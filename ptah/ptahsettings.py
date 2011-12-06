@@ -6,9 +6,12 @@ import sqlahelper
 import sqlalchemy
 import translationstring
 from email.utils import formataddr
-from pyramid.interfaces import IAuthenticationPolicy, IAuthorizationPolicy
+from pyramid.compat import bytes_
 from pyramid.authorization import ACLAuthorizationPolicy
 from pyramid.authentication import AuthTktAuthenticationPolicy
+from pyramid.interfaces import IAuthorizationPolicy
+from pyramid.interfaces import IAuthenticationPolicy
+from pyramid.interfaces import ISessionFactory
 
 from ptah.security import get_local_roles
 
@@ -64,6 +67,11 @@ ptah.register_settings(
 
 ptah.register_settings(
     ptah.CFG_ID_SESSION,
+
+    ptah.form.BoolField(
+        'enabled',
+        title = _('Enable beaker session'),
+        default = False),
 
     ptah.form.TextField(
         'type',
@@ -280,7 +288,7 @@ def initialized(ev):
     try:
         from repoze.sendmail import mailer
         from repoze.sendmail import delivery
-    except ImportError:
+    except ImportError: # pragma: no cover
         pass
     else:
         MAIL = ptah.get_settings(ptah.CFG_ID_MAIL, ev.registry)
@@ -294,7 +302,8 @@ def initialized(ev):
             debug_smtp = MAIL['debug'])
 
         MAIL['Mailer'] = delivery.DirectMailDelivery(smtp_mailer)
-        MAIL['full_from_address'] = formataddr((MAIL['from_name'], MAIL['from_address']))
+        MAIL['full_from_address'] = formataddr(
+            (MAIL['from_name'], MAIL['from_address']))
 
     # sqla
     SQLA = ptah.get_settings(ptah.CFG_ID_SQLA, ev.registry)
@@ -308,10 +317,29 @@ def initialized(ev):
             SQLA['sqlalchemy_cache'] = cache
         try:
             engine = sqlahelper.get_engine()
-        except:
+        except: # pragma: no cover
             engine = sqlalchemy.engine_from_config(
                 {'sqlalchemy.url': url}, 'sqlalchemy.', **engine_args)
             sqlahelper.add_engine(engine)
+
+
+    # session
+    SESSION = ptah.get_settings(ptah.CFG_ID_SESSION, ev.registry)
+    if SESSION['enabled']:
+        settings = dict(('session.%s'%key, val) for key, val in
+                        SESSION.items() if val)
+        if 'session.secret' in settings:
+            settings['session.secret'] = bytes_(
+                settings['session.secret'], 'utf8')
+
+        try:
+            import pyramid_beaker
+        except ImportError: # pragma: no cover
+            pass
+        else:
+            session_factory = pyramid_beaker\
+                .session_factory_from_settings(settings)
+            ev.registry.registerUtility(session_factory, ISessionFactory)
 
     # chameleon
     import chameleon.template
