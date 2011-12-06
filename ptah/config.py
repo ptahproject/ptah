@@ -158,13 +158,13 @@ def load_package(name, seen, first=True):
 def list_packages(include_packages=None, excludes=None):
     """ scan current working_set and return all ptah packages """
     seen = set()
-    packages = []
+    packages = set()
 
     if include_packages is not None:
         for pkg in include_packages:
             if excludes and pkg in excludes:
                 continue
-            packages.extend(load_package(pkg, seen))
+            packages.update(load_package(pkg, seen))
     else:
         for dist in pkg_resources.working_set:
             pkg = dist.project_name
@@ -175,11 +175,11 @@ def list_packages(include_packages=None, excludes=None):
 
             distmap = pkg_resources.get_entry_map(dist, 'ptah')
             if 'package' in distmap:
-                packages.extend(load_package(pkg, seen))
+                packages.update(load_package(pkg, seen))
             else:
                 seen.add(pkg)
 
-    return packages
+    return list(packages)
 
 
 def objectEventNotify(event):
