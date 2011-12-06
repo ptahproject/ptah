@@ -47,7 +47,8 @@ class ApplicationFactory(object):
     type = None
 
     def __init__(self, cls, path='', name='', title='',
-                 policy = ApplicationPolicy, default_root = None, config=None):
+                 policy = ApplicationPolicy, default_root = None,
+                 parent_factory = None, config=None):
         self.id = '-'.join(part for part in path.split('/') if part)
         self.path = path if path.endswith('/') else '%s/'%path
         self.name = name
@@ -60,6 +61,7 @@ class ApplicationFactory(object):
         self.cls = cls
         self.type = cls.__type__
         self.policy = policy
+        self.parent_factory = parent_factory
 
         if config is not None:
             ptah.config.get_cfg_storage(
@@ -95,4 +97,8 @@ class ApplicationFactory(object):
         if request is not None:
             set_policy(policy)
             request.root = root
+
+        if self.parent_factory:
+            policy.__parent__ = self.parent_factory()
+
         return root

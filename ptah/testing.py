@@ -21,6 +21,7 @@ class PtahTestCase(unittest.TestCase):
     _init_auth = False
     _cleanup_mod = True
     _settings = {}
+    _packages = []
     _environ = {
         'wsgi.url_scheme':'http',
         'wsgi.version':(1,0),
@@ -38,11 +39,11 @@ class PtahTestCase(unittest.TestCase):
         self.registry.settings.update(self._settings)
 
         parts = self.__class__.__module__.split('.')
-        packages = ['ptah']
+        packages = ['ptah'] + self._packages
         for l in range(len(parts)):
             packages.append('.'.join(parts[:l+1]))
 
-        config.initialize(self.config, packages)
+        config.initialize(self.config, packages, autoinclude=True)
 
         if self._init_sqla:
             # create sql tables

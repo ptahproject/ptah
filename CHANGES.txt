@@ -7,8 +7,18 @@ CHANGES
 
 - require pyramid 1.3
 
+- All events moved to events.py
+
+- Settings subsystem refactored
+
 - Rename Pricnipal.uri to Principal.__uri__ and AuthInfo.uri to AuthInfo.__uri__
   to conform with other apis
+
+
+0.1.1 (2011-12-05)
+------------------
+
+- Fix rst renderer
 
 
 0.1 (2011-11-19)

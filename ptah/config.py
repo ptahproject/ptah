@@ -17,8 +17,7 @@ __all__ = ('initialize', 'get_cfg_storage', 'StopException',
            'list_packages', 'cleanup', 'cleanup_system',
            'event', 'adapter', 'subscriber',
            'Action', 'ClassAction', 'DirectiveInfo',
-           'ConflictError', 'LayerWrapper',
-           'shutdown', 'shutdown_handler')
+           'ConflictError', 'LayerWrapper', 'shutdown', 'shutdown_handler')
 
 
 log = logging.getLogger('ptah')

@@ -6,6 +6,7 @@ from pyramid.testing import DummyRequest
 class TestIntrospectModule(PtahTestCase):
 
     _init_ptah = False
+    _packages = ['ptah.view', 'ptah.cms']
 
     def test_introspect_module(self):
         self.init_ptah()

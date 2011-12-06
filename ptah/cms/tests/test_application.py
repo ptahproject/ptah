@@ -66,6 +66,19 @@ class TestApplicationFactoryRegistration(PtahTestCase):
         self.assertTrue(root2.__root_path__ == '/app2/')
         self.assertTrue(root1.__uri__ != root2.__uri__)
 
+    def test_app_factory_with_parent(self):
+        import ptah.cms
+
+        factory1 = ptah.cms.ApplicationFactory(
+            ApplicationRoot, '/app1', 'app1', 'Root App1')
+        factory2 = ptah.cms.ApplicationFactory(
+            ApplicationRoot, '/app2', 'app2', 'Root App2',
+            parent_factory = factory1)
+
+        root1 = factory1()
+        root2 = factory2()
+        self.assertTrue(root2.__parent__.__parent__.__uri__ == root1.__uri__)
+
     def test_app_factory_mutiple_same_name(self):
         import ptah.cms
 
