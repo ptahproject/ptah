@@ -28,7 +28,7 @@ from ptah.cms.root import ApplicationPolicy
 from ptah.cms.root import ApplicationFactory
 
 # blob storage
-from ptah.cms.blob import blobStorage
+from ptah.cms.blob import blob_storage
 from ptah.cms.interfaces import IBlob
 from ptah.cms.interfaces import IBlobStorage
 

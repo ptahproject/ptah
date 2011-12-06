@@ -14,6 +14,7 @@ class Blob(Node):
     """ simple blob implementation """
 
     __tablename__ = 'ptah_blobs'
+    __mapper_args__ = {'polymorphic_identity': 'cms-type:sqlblob'}
     __uri_factory__ = ptah.UriFactory('blob-sql')
 
     __id__ = sqla.Column('id', sqla.Integer,
@@ -93,6 +94,6 @@ class BlobStorage(object):
         pass
 
 
-blobStorage = BlobStorage()
+blob_storage = BlobStorage()
 
-ptah.register_uri_resolver('blob-sql', blobStorage.get)
+ptah.register_uri_resolver('blob-sql', blob_storage.get)
