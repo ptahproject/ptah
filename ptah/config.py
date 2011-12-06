@@ -92,6 +92,7 @@ def initialize(config, packages=None, excludes=(), autoinclude=False):
 
 
 def get_cfg_storage(id, registry=None, default_factory=OrderedDict):
+    """ Return current config storage """
     if registry is None:
         registry = get_current_registry()
 
@@ -122,6 +123,7 @@ def exclude(modname, excludes=()):
 
 
 def load_package(name, seen, first=True):
+    """ scand package dependencies and return list of all dependant packages """
     packages = []
 
     if name in seen:
@@ -154,6 +156,7 @@ def load_package(name, seen, first=True):
 
 
 def list_packages(include_packages=None, excludes=None):
+    """ scan current working_set and return all ptah packages """
     seen = set()
     packages = []
 
@@ -204,6 +207,7 @@ def cleanup_system(*modIds):
 
 
 class EventDescriptor(object):
+    """ Events descriptor class, it is been used by `event` decorator """
 
     #: Event name
     name = ''
@@ -448,6 +452,8 @@ class DirectiveInfo(object):
 
 
 def scan(package, seen, exclude_filter=None):
+    """ scan package for ptah actions """
+
     if isinstance(package, string_types):
         __import__(package)
         package = sys.modules[package]
@@ -555,11 +561,13 @@ _handler_term = signal.getsignal(signal.SIGTERM)
 
 
 def shutdown_handler(handler):
+    """ register shutdown handler """
     handlers.append(handler)
     return handler
 
 
 def shutdown():
+    """ Execute all registered shutdown handlers """
     for handler in handlers:
         try:
             handler()
@@ -569,6 +577,7 @@ def shutdown():
 
 
 def processShutdown(sig, frame):
+    """ os signal handler """
     shutdown()
 
     if sig == signal.SIGINT and callable(_handler_int):

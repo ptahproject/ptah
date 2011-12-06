@@ -20,18 +20,22 @@ PERMISSION_ID = 'ptah:permission'
 
 
 def get_acls():
+    """ return list of registered ACLS """
     return config.get_cfg_storage(ACL_ID)
 
 
 def get_roles():
+    """ return list of registered roles """
     return config.get_cfg_storage(ROLE_ID)
 
 
 def get_permissions():
+    """ return list of registered permissions """
     return config.get_cfg_storage(PERMISSION_ID)
 
 
 class PermissionInfo(str):
+    """ Permission information """
 
     title = ''
     description = ''
@@ -154,6 +158,7 @@ class ACL(list):
 
 
 class ACLsMerge(object):
+    """ Special class that merges different ACLs maps """
 
     def __init__(self, acls):
         self.acls = acls

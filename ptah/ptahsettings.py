@@ -293,7 +293,39 @@ ptah.register_settings(
     )
 
 
-@ptah.config.subscriber(ptah.events.SettingsInitialized)
+ptah.register_settings(
+    ptah.CFG_ID_PASSWORD,
+
+    form.TextField(
+        name = 'manager',
+        title = 'Password manager',
+        description = 'Available password managers '\
+            '("plain", "ssha", "bcrypt")',
+        default = 'plain'),
+
+    form.IntegerField(
+        'min_length',
+        title = 'Length',
+        description = 'Password minimium length.',
+        default = 5),
+
+    form.BoolField(
+        'letters_digits',
+        title = 'Letters and digits',
+        description = 'Use letters and digits in password.',
+        default = False),
+
+    form.BoolField(
+        'letters_mixed_case',
+        title = 'Letters mixed case',
+        description = 'Use letters in mixed case.',
+        default = False),
+
+    title = 'Password tool settings',
+    )
+
+
+@ptah.subscriber(ptah.events.SettingsInitialized)
 def initialized(ev):
     # auth
     PTAH = ptah.get_settings(ptah.CFG_ID_PTAH, ev.registry)

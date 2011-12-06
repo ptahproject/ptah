@@ -51,6 +51,7 @@ class Action(object):
 def uiaction(context, id, title, description='',
              action='', condition=None, permission=None,
              category='', sort_weight = 1.0, **kw):
+    """ decorator for uiaction registration """
 
     kwargs = {'id': id,
               'title': title,
@@ -80,6 +81,7 @@ def uiaction(context, id, title, description='',
 
 
 def list_uiactions(content, request, category=''):
+    """ list uiactions for specific content """
     url = request.resource_url(content)
 
     actions = []

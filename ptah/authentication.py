@@ -9,6 +9,7 @@ from ptah.interfaces import IAuthInfo, IAuthentication
 
 
 class _Superuser(object):
+    """ Default ptah superuser. check_permission always pass with superuser """
 
     def __init__(self):
         self.__uri__ = 'ptah-auth:superuser'
@@ -36,6 +37,13 @@ AUTH_SEARCHER_ID = 'ptah.auth:searcher'
 
 
 def auth_checker(checker):
+    """ register authentication checker::
+
+        @ptah.auth_checker
+        def my_checker(info):
+            ...
+
+    """
     info = config.DirectiveInfo()
     info.attach(
         config.Action(
@@ -47,6 +55,16 @@ def auth_checker(checker):
 
 
 def pyramid_auth_checker(config, checker):
+    """ pyramid configurator directive for authentication checker registration::
+
+        config = Configurator()
+        config.include('ptah')
+
+        def my_checker(info):
+           ...
+
+        config.ptah_auth_checker(my_checker)
+    """
     config.action(
         (AUTH_CHECKER_ID, checker),
         lambda config, checker: config.get_cfg_storage(AUTH_CHECKER_ID)\
@@ -55,6 +73,12 @@ def pyramid_auth_checker(config, checker):
 
 
 def auth_provider(name):
+    """ decorator for authentication provider registration::
+
+       @ptah.auth_provider('my-provider')
+       class AuthProvider(object):
+           ...
+    """
     info = config.DirectiveInfo()
 
     def wrapper(cls):
@@ -72,6 +96,13 @@ def auth_provider(name):
 
 
 def register_auth_provider(name, provider):
+    """ authentication provider registration::
+
+       class AuthProvider(object):
+           ...
+
+       ptah.register_auth_provider('my-provider', AuthProvider())
+    """
     info = config.DirectiveInfo()
 
     info.attach(
@@ -84,6 +115,15 @@ def register_auth_provider(name, provider):
 
 
 def pyramid_auth_provider(config, name, provider):
+    """ pyramid configurator directive for authentication provider registration::
+
+       class AuthProvider(object):
+           ...
+
+       config = Configurator()
+       config.include('ptah')
+       config.ptah_auth_provider('my-provider', AuthProvider())
+    """
     config.action(
         (AUTH_PROVIDER_ID, name),
         lambda config, n, p: \
@@ -93,7 +133,7 @@ def pyramid_auth_provider(config, name, provider):
 
 @implementer(IAuthInfo)
 class AuthInfo(object):
-    """ Auth information """
+    """ Authentication information """
 
     def __init__(self, principal, status=False, message=''):
         self.__uri__ = getattr(principal, '__uri__', None)
@@ -175,6 +215,7 @@ auth_service = Authentication()
 
 
 def search_principals(term):
+    """ Search principals by term, it uses principal_searcher functions """
     searchers = config.get_cfg_storage(AUTH_SEARCHER_ID)
     for name, searcher in searchers.items():
         for principal in searcher(term):
@@ -182,6 +223,7 @@ def search_principals(term):
 
 
 def register_principal_searcher(name, searcher):
+    """ register principal searcher """
     info = config.DirectiveInfo()
     info.attach(
         config.Action(
@@ -193,6 +235,7 @@ def register_principal_searcher(name, searcher):
 
 
 def pyramid_principal_searcher(config, name, searcher):
+    """ pyramid configurator directive for principal searcher registration """
     config.action(
         (AUTH_SEARCHER_ID, name),
         lambda config, name, searcher:
@@ -201,6 +244,15 @@ def pyramid_principal_searcher(config, name, searcher):
 
 
 def principal_searcher(name):
+    """ decorator for principal searcher registration::
+
+        @ptah.principal_searcher('test')
+        def searcher(term):
+           ...
+
+        searcher function recives text as term variable, and
+        should return iterator to principal objects.
+     """
     info = config.DirectiveInfo()
 
     def wrapper(searcher):

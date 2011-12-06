@@ -36,10 +36,18 @@ def settings_resolver(uri):
 
 
 def pyramid_get_settings(config, grp):
+    """ pyramid configurator directive for getting settings group::
+
+        config = Configurator()
+        config.include('ptah')
+
+        PTAH_CFG = config.get_settings(ptah.CFG_ID_PTAH)
+    """
     return config.get_cfg_storage(SETTINGS_GROUP_ID)[grp]
 
 
 def initialize_settings(pconfig, cfg, section=configparser.DEFAULTSECT):
+    """ initialize settings management system """
     registry = pconfig.registry
     settings = config.get_cfg_storage(SETTINGS_OB_ID, pconfig.registry, Settings)
 
@@ -76,6 +84,7 @@ def initialize_settings(pconfig, cfg, section=configparser.DEFAULTSECT):
 
 
 def register_settings(name, *fields, **kw):
+    """ register settings group """
     iname = name
     for ch in ('.', '-'):
         iname = iname.replace(ch, '_')
@@ -167,6 +176,7 @@ class Settings(object):
 
 
 class Group(OrderedDict):
+    """ Settings group """
 
     def __init__(self, *args, **kwargs):
         super(Group, self).__init__()

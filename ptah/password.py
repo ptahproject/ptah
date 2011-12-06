@@ -13,38 +13,6 @@ from ptah import config, form, token
 _ = translationstring.TranslationStringFactory('ptah')
 
 
-ptah.register_settings(
-    ptah.CFG_ID_PASSWORD,
-
-    form.TextField(
-        name = 'manager',
-        title = 'Password manager',
-        description = 'Available password managers '\
-            '("plain", "ssha", "bcrypt")',
-        default = 'plain'),
-
-    form.IntegerField(
-        'min_length',
-        title = 'Length',
-        description = 'Password minimium length.',
-        default = 5),
-
-    form.BoolField(
-        'letters_digits',
-        title = 'Letters and digits',
-        description = 'Use letters and digits in password.',
-        default = False),
-
-    form.BoolField(
-        'letters_mixed_case',
-        title = 'Letters mixed case',
-        description = 'Use letters in mixed case.',
-        default = False),
-
-    title = 'Password tool settings',
-    )
-
-
 PASSWORD_CHANGER_ID = 'ptah.password:changer'
 
 
@@ -174,6 +142,12 @@ pwd_tool = PasswordTool()
 
 
 def password_changer(schema):
+    """ decorator for password changer registration::
+
+        @ptah.password_change('myuser')
+        def change_password(user):
+            ...
+    """
     info = config.DirectiveInfo()
 
     def wrapper(changer):
@@ -192,6 +166,7 @@ def password_changer(schema):
 
 
 def pyramid_password_changer(config, schema, changer):
+    """ pyramid configurator utility for password changer registration """
     config.action(
         (PASSWORD_CHANGER_ID, schema),
         lambda config, schema, changer: \
@@ -200,12 +175,15 @@ def pyramid_password_changer(config, schema, changer):
 
 
 def passwordValidator(field, appstruct):
+    """ password schema validator that uses password tool for additional checks"""
     err = pwd_tool.validate(appstruct)
     if err is not None:
         raise form.Invalid(field, err)
 
 
 def passwordSchemaValidator(field, appstruct):
+    """ password schema validator that checks
+    equality of password and confirm_password"""
     if appstruct['password'] and appstruct['confirm_password']:
         if appstruct['password'] != appstruct['confirm_password']:
             raise form.Invalid(

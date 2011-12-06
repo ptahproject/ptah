@@ -84,6 +84,7 @@ def _register_uri_resolver(cfg, schema, resolver):
 
 
 def pyramid_uri_resolver(config, schema, resolver):
+    """ pyramid configurator directive 'ptah_uri_resolver' """
     config.action(
         (RESOLVER_ID, schema),
         lambda config, schema, resolver:
