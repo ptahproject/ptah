@@ -7,12 +7,13 @@ from zope.interface.interface import InterfaceClass
 from zope.interface.interfaces import IObjectEvent
 
 import ptah
+from ptah.settings import Settings
 from ptah.settings import SETTINGS_OB_ID
 from ptah.testing import PtahTestCase
 
 
 def get_settings_ob():
-    return ptah.config.get_cfg_storage(SETTINGS_OB_ID)
+    return ptah.config.get_cfg_storage(SETTINGS_OB_ID, default_factory=Settings)
 
 
 class BaseTesting(PtahTestCase):
@@ -21,8 +22,7 @@ class BaseTesting(PtahTestCase):
 
     def init_ptah(self, initsettings=False, *args, **kw):
         ptah.config.initialize(
-            self.config, ('ptah', self.__class__.__module__),
-            initsettings=initsettings)
+            self.config, ('ptah', self.__class__.__module__))
 
 
 class TestSettingsResolver(BaseTesting):

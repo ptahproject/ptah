@@ -44,6 +44,7 @@ class PtahTestCase(unittest.TestCase):
             packages.append('.'.join(parts[:l+1]))
 
         config.initialize(self.config, packages, autoinclude=True)
+        ptah.initialize_settings(self.config, self.registry.settings)
 
         if self._init_sqla:
             # create sql tables

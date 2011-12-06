@@ -170,6 +170,7 @@ def make_wsgi_app(global_settings, **settings):
 
     # configuration
     config = Configurator(settings=settings)
+    config.include('ptah')
 
     # initialization
     packages = settings.get('packages', None)
@@ -201,7 +202,6 @@ def ptah_initialize(config, packages=None, autoinclude=False):
     import transaction
     from pyramid.exceptions import  ConfigurationExecutionError
 
-    config.include('ptah')
     config.include('pyramid_tm')
     config.begin()
 
@@ -215,10 +215,11 @@ def ptah_initialize(config, packages=None, autoinclude=False):
                             for s in settings['ptah.excludes'].split())
 
         # load packages
-        ptah.config.initialize(
-            config, packages, excludes, autoinclude, initsettings=True)
-
+        ptah.config.initialize(config, packages, excludes, autoinclude)
         config.commit()
+
+        # initialize settings
+        ptah.settings.initialize_settings(config, settings)
 
         # create sql tables
         Base = sqlahelper.get_base()

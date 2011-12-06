@@ -51,8 +51,7 @@ class StopException(Exception):
             return self.exc
 
 
-def initialize(config, packages=None, excludes=(),
-               autoinclude=False, initsettings=True):
+def initialize(config, packages=None, excludes=(), autoinclude=False):
     """ Load ptah packages, scan and execute all configuration directives. """
     registry = config.registry
     registry.registerHandler(objectEventNotify, (IObjectEvent,))
@@ -90,11 +89,6 @@ def initialize(config, packages=None, excludes=(),
         config.action(action.discriminator, runaction, (action, config))
 
     config.action(None, registry.notify, (ptah.events.Initialized(config),))
-
-    if initsettings:
-        config.action(
-            None, ptah.settings.initialize_settings,
-            (config, config.registry.settings))
 
 
 def get_cfg_storage(id, registry=None, default_factory=OrderedDict):

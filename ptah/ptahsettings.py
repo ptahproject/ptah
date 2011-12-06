@@ -364,17 +364,15 @@ def initialized(ev):
         else:
             session_factory = pyramid_beaker\
                 .session_factory_from_settings(settings)
-            ev.registry.registerUtility(session_factory, ISessionFactory)
+            ev.config.set_session_factory(session_factory)
 
     # ptah manage
     if PTAH['manage']:
         ev.config.add_route(
-            PTAH['manage'], '/{0}/*traverse'.format(PTAH['manage']),
+            'ptah-manage', '/ptah-manage/*traverse',
             factory=ptah.manage.PtahManageRoute, use_global_views=True)
 
     # chameleon
     import chameleon.template
-
-    cfg = ptah.get_settings(ptah.CFG_ID_PTAH, ev.registry)
-    chameleon.template.AUTO_RELOAD=cfg['chameleon_reload']
-    chameleon.template.BaseTemplateFile.auto_reload=cfg['chameleon_reload']
+    chameleon.template.AUTO_RELOAD=PTAH['chameleon_reload']
+    chameleon.template.BaseTemplateFile.auto_reload=PTAH['chameleon_reload']

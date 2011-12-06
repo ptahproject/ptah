@@ -140,7 +140,7 @@ class EventsView(view.View):
             seen = set()
             actions = []
             for pkg in pkgs:
-                for action in config.scan(pkg, seen, exclude):
+                for action in config.scan(pkg, seen, config.exclude):
                     if action.discriminator[0] == 'ptah.config:subscriber':
                         required = action.args[2]
                         if len(required) == 2 and required[1] == evinst:
@@ -170,7 +170,7 @@ class RoutesView(view.View):
             seen = set()
             routes = {}
             for pkg in packages:
-                actions = config.scan(pkg, seen, exclude)
+                actions = config.scan(pkg, seen, config.exclude)
 
                 for action in actions:
                     d = action.discriminator[0]
