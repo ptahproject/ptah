@@ -1,3 +1,4 @@
+import os.path
 import logging
 import tempfile
 import threading
@@ -10,19 +11,19 @@ from sphinx.application import Sphinx
 from sphinx.writers.html import HTMLWriter, HTMLTranslator
 
 log = logging.getLogger('ptah.rst')
-
 local_data = threading.local()
 
-confdir = '%s/docs/' % pkg_resources.get_distribution('ptah').location
-outdir = tempfile.mkdtemp()
-srcdir = tempfile.mkdtemp()
-doctreedir = tempfile.mkdtemp()
+tempdir = tempfile.mkdtemp()
+tmp = open(os.path.join(tempdir, 'conf.py'), 'wb')
+tmp.write('# -*- coding: utf-8 -*-')
+tmp.close()
 
 
 def get_sphinx():
     sphinx = getattr(local_data, 'sphinx', None)
     if sphinx is None:
-        sphinx = Sphinx(srcdir, confdir, outdir, doctreedir, 'pickle')
+        sphinx = Sphinx(tempdir, tempdir, tempdir,
+                        tempdir, 'json', status=None, warning=None)
         sphinx.builder.translator_class = CustomHTMLTranslator
 
         sphinx.env.patch_lookup_functions()
