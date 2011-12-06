@@ -67,7 +67,7 @@ class VocabularyField(InputField):
             label = term.token
             desc = None
             if ITerm.providedBy(term):
-                label = term.title
+                label = term.title if term.title is not None else term.token
                 desc = term.description
             self.items.append(
                 {'id': id, 'name': self.name, 'value': term.token,
