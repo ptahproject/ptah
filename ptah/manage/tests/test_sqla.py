@@ -33,7 +33,7 @@ class TestSqlaModule(PtahTestCase):
 
         request = DummyRequest()
 
-        cfg = ptah.get_settings(ptah.CFG_ID_MANAGE, self.registry)
+        cfg = ptah.get_settings(ptah.CFG_ID_PTAH, self.registry)
         cfg['managers'] = ['*']
         mr = PtahManageRoute(request)
         mod = mr['sqla']

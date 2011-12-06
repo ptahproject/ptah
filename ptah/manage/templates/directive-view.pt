@@ -8,7 +8,7 @@
 	<h4 tal:content="info['view']"></h4>
 	<div>
 	  ${info['isclass'] and 'Class: ' or 'Function: '}
-	  <a href="${manage_url}/source.html?pkg=${factory.__module__}#sl-${action.info.codeinfo[1]}"
+	  <a href="${manage}/source.html?pkg=${factory.__module__}#sl-${action.info.codeinfo[1]}"
 	     tal:content="info['factoryInfo']"/><br/>
 
 	  <tal:block condition="context">

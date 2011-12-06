@@ -12,7 +12,7 @@ class TestRestInspectorModule(PtahTestCase):
         request = DummyRequest()
 
         ptah.auth_service.set_userid('test')
-        cfg = ptah.get_settings(ptah.CFG_ID_MANAGE, self.registry)
+        cfg = ptah.get_settings(ptah.CFG_ID_PTAH, self.registry)
         cfg['managers'] = ('*',)
         mr = PtahManageRoute(request)
         mod = mr['rest']
@@ -33,6 +33,4 @@ class TestRestInspectorModule(PtahTestCase):
         view.update()
 
         self.assertEqual(
-            view.appurl, request.application_url)
-        self.assertEqual(
-            view.url, '%s/__rest__/cms/' % request.application_url)
+            view.url, '{0}/__rest__/cms/'.format(request.application_url))

@@ -1,6 +1,7 @@
 """ base view class with access to various api's """
 import logging
 from zope.interface import implementer
+from pyramid.decorator import reify
 from ptah.formatter import format
 from ptah.view.resources import static_url
 from ptah.view.message import add_message, render_messages
@@ -24,6 +25,13 @@ class View(object):
         self.context = context
         self.request = request
         self.__parent__ = context
+
+    @reify
+    def application_url(self):
+        url = self.request.application_url
+        if url.endswith('/'):
+            url = url[:-1]
+        return url
 
     def update(self):
         return {}

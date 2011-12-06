@@ -1,6 +1,5 @@
 """ ptah settings """
 import uuid
-import ptah
 import pytz
 import sqlahelper
 import sqlalchemy
@@ -13,6 +12,8 @@ from pyramid.interfaces import IAuthorizationPolicy
 from pyramid.interfaces import IAuthenticationPolicy
 from pyramid.interfaces import ISessionFactory
 
+import ptah
+from ptah import manage
 from ptah.security import get_local_roles
 
 
@@ -61,6 +62,30 @@ ptah.register_settings(
     ptah.form.IntegerField(
         'static_cache_max_age',
         default = 0),
+
+    ptah.form.TextField(
+        'manage',
+        title = 'Ptah manage id',
+        default = 'ptah-manage'),
+
+    ptah.form.LinesField(
+        'managers',
+        title = 'Managers',
+        description = 'List of user logins with access rights to '\
+                            'ptah management ui.',
+        default = ()),
+
+    ptah.form.LinesField(
+        'disable_modules',
+        title = 'Hide Modules in Management UI',
+        description = 'List of modules names to hide in manage ui',
+        default = ()),
+
+    ptah.form.LinesField(
+        'disable_models',
+        title = 'Hide Models in Model Management UI',
+        description = 'List of models to hide in model manage ui',
+        default = ()),
 
     title = _('Ptah settings'),
 )
@@ -340,6 +365,12 @@ def initialized(ev):
             session_factory = pyramid_beaker\
                 .session_factory_from_settings(settings)
             ev.registry.registerUtility(session_factory, ISessionFactory)
+
+    # ptah manage
+    if PTAH['manage']:
+        ev.config.add_route(
+            PTAH['manage'], '/{0}/*traverse'.format(PTAH['manage']),
+            factory=ptah.manage.PtahManageRoute, use_global_views=True)
 
     # chameleon
     import chameleon.template

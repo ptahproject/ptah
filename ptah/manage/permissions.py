@@ -1,7 +1,7 @@
 """ security ptah module """
 import ptah
 from ptah import view, manage
-from ptah.manage import module, intr_renderer
+from ptah.manage import module, intr_renderer, get_manage_url
 
 
 @module('permissions')
@@ -22,9 +22,7 @@ class PermissionsView(view.View):
         template=view.template('ptah.manage:templates/permissions.pt'))
 
     def update(self):
-        cfg = ptah.get_settings(ptah.CFG_ID_MANAGE)
-
-        self.manage_url = cfg['manage_url']
+        self.manage = get_manage_url(self.request)
         self.permissions = sorted(ptah.get_permissions().values(),
                                   key = lambda p: p.title)
 
@@ -56,11 +54,10 @@ class RoleIntrospection(object):
         self.request = request
 
     def renderActions(self, *actions):
-        cfg = ptah.get_settings(ptah.CFG_ID_MANAGE)
         return self.actions(
             roles = ptah.get_roles(),
             actions = actions,
-            manage_url = cfg['manage_url'],
+            manage = get_manage_url(self.request),
             request = self.request)
 
 
@@ -76,9 +73,7 @@ class PermissionIntrospection(object):
         self.request = request
 
     def renderActions(self, *actions):
-        cfg = ptah.get_settings(ptah.CFG_ID_MANAGE)
-
         return self.actions(
             actions = actions,
-            manage_url = cfg['manage_url'],
+            manage = get_manage_url(self.request),
             request = self.request)

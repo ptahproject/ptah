@@ -29,7 +29,7 @@ class TestModelModule(PtahTestCase):
         request = DummyRequest()
 
         ptah.auth_service.set_userid('test')
-        cfg = ptah.get_settings(ptah.CFG_ID_MANAGE, self.registry)
+        cfg = ptah.get_settings(ptah.CFG_ID_PTAH, self.registry)
         cfg['managers'] = ('*',)
         mr = PtahManageRoute(request)
         mod = mr['models']
@@ -51,7 +51,7 @@ class TestModelModule(PtahTestCase):
     def test_model_view_disabled(self):
         from ptah.manage.model import ModelModule, ModelModuleView
 
-        cfg = ptah.get_settings(ptah.CFG_ID_MANAGE, self.registry)
+        cfg = ptah.get_settings(ptah.CFG_ID_PTAH, self.registry)
         cfg['disable_models'] = ['cms-type:content2']
 
         request = DummyRequest()

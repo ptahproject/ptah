@@ -9,6 +9,24 @@ class TestManageModule(PtahTestCase):
 
     _init_ptah = False
 
+    def test_get_manage_url(self):
+        from ptah.manage import get_manage_url
+        self.init_ptah()
+
+        self.request.application_url = 'http://example.com'
+        self.assertEqual(get_manage_url(self.request),
+                         'http://example.com/ptah-manage')
+
+        self.request.application_url = 'http://example.com/'
+        self.assertEqual(get_manage_url(self.request),
+                         'http://example.com/ptah-manage')
+
+        cfg = ptah.get_settings(ptah.CFG_ID_PTAH, self.registry)
+        cfg['manage'] = 'manage'
+
+        self.assertEqual(get_manage_url(self.request),
+                         'http://example.com/manage')
+
     def test_manage_module(self):
         from ptah.manage.manage import \
            module, MANAGE_ID, PtahModule, PtahManageRoute,\
@@ -43,7 +61,7 @@ class TestManageModule(PtahTestCase):
         self.assertIsInstance(mod, TestModule)
         self.assertTrue(mod.available())
         self.assertEqual(mod.__name__, 'test-module')
-        self.assertEqual(mod.url(), '/ptah-manage/test-module')
+        self.assertEqual(mod.url(), 'http://example.com/ptah-manage/test-module')
 
         self.assertRaises(KeyError, route.__getitem__, 'unknown')
 
@@ -51,7 +69,7 @@ class TestManageModule(PtahTestCase):
         from ptah.manage.manage import PtahAccessManager
         self.init_ptah()
 
-        cfg = ptah.get_settings(ptah.CFG_ID_MANAGE, self.registry)
+        cfg = ptah.get_settings(ptah.CFG_ID_PTAH, self.registry)
         cfg['managers'] = ['*']
 
         self.assertTrue(PtahAccessManager('test:user'))
@@ -75,7 +93,7 @@ class TestManageModule(PtahTestCase):
 
         self.init_ptah()
 
-        cfg = ptah.get_settings(ptah.CFG_ID_MANAGE, self.registry)
+        cfg = ptah.get_settings(ptah.CFG_ID_PTAH, self.registry)
         cfg['managers'] = ['admin@ptahproject.org']
         self.assertTrue(PtahAccessManager('test:user'))
 
@@ -180,7 +198,7 @@ class TestManageModule(PtahTestCase):
         set_access_manager(accessManager)
         ptah.auth_service.set_userid('test-user')
 
-        cfg = ptah.get_settings(ptah.CFG_ID_MANAGE, self.registry)
+        cfg = ptah.get_settings(ptah.CFG_ID_PTAH, self.registry)
         cfg['disable_modules'] = ('test-module',)
 
         request = DummyRequest()
@@ -210,7 +228,7 @@ class TestManageModule(PtahTestCase):
         set_access_manager(accessManager)
         ptah.auth_service.set_userid('test-user')
 
-        cfg = ptah.get_settings(ptah.CFG_ID_MANAGE, self.registry)
+        cfg = ptah.get_settings(ptah.CFG_ID_PTAH, self.registry)
         cfg['disable_modules'] = ('test-module',)
 
         request = DummyRequest()

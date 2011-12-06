@@ -3,7 +3,7 @@
     <tr tal:repeat="action actions">
       <td tal:define="ti action.args[0]">
 	<h4>
-	  <a href="${manage_url}/source.html?pkg=${action.info.context.__module__}#sl-${action.info.codeinfo[1]}">
+	  <a href="${manage}/source.html?pkg=${action.info.context.__module__}#sl-${action.info.codeinfo[1]}">
 	    ${ti.title}</a>
 	  <small>${ti.__uri__}</small>
 	</h4>

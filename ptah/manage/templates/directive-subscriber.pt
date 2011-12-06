@@ -6,7 +6,7 @@
 		      factory info['factory'];
 		      event info['event']">
 	<h4>
-	  <a href="${manage_url}/source.html?pkg=${factory.__module__}#sl-${action.info.codeinfo[1]}">
+	  <a href="${manage}/source.html?pkg=${factory.__module__}#sl-${action.info.codeinfo[1]}">
 	    ${info['factoryInfo']}
 	  </a>
 	</h4>

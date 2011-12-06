@@ -6,7 +6,7 @@
 		      factory action.args[2]">
 	<h4>
 	  ${name}: ${pattern}
-	  <a href="${manage_url}/source.html?pkg=${action.info.module.__name__}#sl-${action.info.codeinfo[1]}">
+	  <a href="${manage}/source.html?pkg=${action.info.module.__name__}#sl-${action.info.codeinfo[1]}">
 	     <tal:block content="factory"/></a>
 	</h4>
 	<p>${factory}</p>

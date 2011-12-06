@@ -8,7 +8,7 @@
 	    ${s}
 	  </small>
 	  <small>
-	    <a href="${manage_url}/source.html?pkg=${action.info.module.__name__}#sl-${action.info.codeinfo[1]}">
+	    <a href="${manage}/source.html?pkg=${action.info.module.__name__}#sl-${action.info.codeinfo[1]}">
 	      ${r.__name__}</a>
 	</small></h4>
       </td>

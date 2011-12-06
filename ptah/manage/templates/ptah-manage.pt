@@ -12,7 +12,7 @@
     <div class="topbar">
       <div class="fill">
 	<div class="container">
-	  <h3><a href="${view.manage_url}/">Ptah Manage</a></h3>
+	  <h3><a href="/${view.manage}/">Ptah Manage</a></h3>
 	  <tal:block
 	     condition="view.module"
 	     content="structure

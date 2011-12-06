@@ -9,7 +9,7 @@ from zope.interface.interface import InterfaceClass
 
 import ptah
 from ptah import config, view, manage, form
-from ptah.manage import intr_renderer
+from ptah.manage import intr_renderer, get_manage_url
 from ptah.manage.manage import INTROSPECT_ID
 
 
@@ -254,8 +254,7 @@ class EventDirective(object):
         return self.actions(
             actions = actions,
             events = config.get_cfg_storage(config.EVENT_ID),
-            manage_url = ptah.get_settings(
-                ptah.CFG_ID_MANAGE, self.request.registry)['manage_url'],
+            manage = get_manage_url(self.request),
             request = self.request)
 
 
@@ -296,8 +295,7 @@ class AdapterDirective(object):
         return self.actions(
             actions = actions,
             getInfo = self.getInfo,
-            manage_url = ptah.get_settings(
-                ptah.CFG_ID_MANAGE, self.request.registry)['manage_url'],
+            manage = get_manage_url(self.request),
             request = self.request)
 
 
@@ -317,8 +315,7 @@ class SnippetTypeDirective(object):
         return self.actions(
             actions = actions,
             stypes = stypes,
-            manage_url = ptah.get_settings(
-                ptah.CFG_ID_MANAGE, self.request.registry)['manage_url'],
+            manage = get_manage_url(self.request),
             request = self.request)
 
 
@@ -335,8 +332,7 @@ class RouteDirective(object):
     def renderActions(self, *actions):
         return self.actions(
             actions = actions,
-            manage_url = ptah.get_settings(
-                ptah.CFG_ID_MANAGE, self.request.registry)['manage_url'],
+            manage = get_manage_url(self.request),
             request = self.request)
 
 
@@ -371,8 +367,7 @@ class SubscriberDirective(object):
         return self.actions(
             getInfo = self.getInfo,
             actions = actions,
-            manage_url = ptah.get_settings(
-                ptah.CFG_ID_MANAGE, self.request.registry)['manage_url'],
+            manage = get_manage_url(self.request),
             request = self.request)
 
 
@@ -421,6 +416,5 @@ class ViewDirective(object):
         return self.actions(
             getInfo = self.getInfo,
             actions = actions,
-            manage_url = ptah.get_settings(
-                ptah.CFG_ID_MANAGE, self.request.registry)['manage_url'],
+            manage = get_manage_url(self.request),
             request = self.request)

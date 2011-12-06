@@ -1,9 +1,10 @@
 """ content types module """
-import ptah
-from ptah import cms, view, form, manage
-
 from pyramid.decorator import reify
 from pyramid.httpexceptions import HTTPFound
+
+import ptah
+from ptah import cms, view, form, manage
+from ptah.manage import get_manage_url
 
 
 @manage.module('models')
@@ -64,7 +65,7 @@ class ModelModuleView(view.View):
     rst_to_html = staticmethod(ptah.rst_to_html)
 
     def update(self):
-        cfg = ptah.get_settings(ptah.CFG_ID_MANAGE, self.request.registry)
+        cfg = ptah.get_settings(ptah.CFG_ID_PTAH, self.request.registry)
 
         types = []
         for ti in cms.get_types().values():
@@ -205,9 +206,7 @@ class EditRecord(form.Form):
         return self.context.tinfo.fieldset
 
     def update(self):
-        cfg = ptah.get_settings(ptah.CFG_ID_MANAGE, self.request.registry)
-
-        self.manage_url = cfg['manage_url']
+        self.manage = get_manage_url(self.request)
         super(EditRecord, self).update()
 
     def form_content(self):
@@ -254,11 +253,9 @@ class TypeIntrospection(object):
         self.request = request
 
     def renderActions(self, *actions):
-        cfg = ptah.get_settings(ptah.CFG_ID_MANAGE, self.request.registry)
-
         return self.actions(
             types = cms.get_types(),
             actions = actions,
             rst_to_html = ptah.rst_to_html,
-            manage_url = cfg['manage_url'],
+            manage = get_manage_url(self.request),
             request = self.request)

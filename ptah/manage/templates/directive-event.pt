@@ -4,7 +4,7 @@
       <td tal:define="ev events[action.info.context]">
 	<h4>${ev.title} 
 	  <small>
-	    <a href="${manage_url}/source.html?pkg=${action.info.context.__module__}#sl-${action.info.codeinfo[1]}">
+	    <a href="${manage}/source.html?pkg=${action.info.context.__module__}#sl-${action.info.codeinfo[1]}">
 	      ${ev.instance.__module__}.${ev.instance.__name__}</a>
 	  </small>
 	</h4>

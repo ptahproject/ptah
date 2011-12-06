@@ -2,6 +2,7 @@
 
 from ptah.manage.manage import module
 from ptah.manage.manage import intr_renderer
+from ptah.manage.manage import get_manage_url
 
 from ptah.manage.manage import PtahModule
 from ptah.manage.manage import PtahManageRoute

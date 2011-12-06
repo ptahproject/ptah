@@ -7,7 +7,7 @@
 	  <tal:block condition="info['name']">name='${info['name']}'</tal:block>
 	</h4>
 	<small>
-	  <a href="${manage_url}/source.html?pkg=${context.__module__}#sl-${action.info.codeinfo[1]}">
+	  <a href="${manage}/source.html?pkg=${context.__module__}#sl-${action.info.codeinfo[1]}">
 	    ${context.__module__}.${context.__name__}</a>
 	</small>
 	<div>

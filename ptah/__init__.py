@@ -66,7 +66,6 @@ CFG_ID_FORMAT = 'format'
 CFG_ID_SESSION = 'session'
 CFG_ID_SQLA = 'sqla'
 CFG_ID_PASSWORD = 'password'
-CFG_ID_MANAGE = 'manage'
 
 # password tool
 from ptah.password import pwd_tool

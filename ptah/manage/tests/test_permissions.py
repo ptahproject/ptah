@@ -12,7 +12,7 @@ class TestPermissionsModule(PtahTestCase):
         request = DummyRequest()
 
         ptah.auth_service.set_userid('test')
-        cfg = ptah.get_settings(ptah.CFG_ID_MANAGE, self.registry)
+        cfg = ptah.get_settings(ptah.CFG_ID_PTAH, self.registry)
         cfg['managers'] = ('*',)
         mr = PtahManageRoute(request)
         mod = mr['permissions']

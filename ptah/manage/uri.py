@@ -5,7 +5,7 @@ from pyramid.httpexceptions import HTTPFound
 import ptah
 from ptah import form, view, config, manage
 from ptah.uri import RESOLVER_ID
-from ptah.manage.manage import PtahManageRoute
+from ptah.manage.manage import PtahManageRoute, get_manage_url
 
 
 class UriResolver(form.Form):
@@ -94,6 +94,5 @@ class UriIntrospection(object):
         return self.tmpl(
             actions = actions,
             rst_to_html = ptah.rst_to_html,
-            manage_url = ptah.get_settings(
-                ptah.CFG_ID_MANAGE, self.request.registry)['manage_url'],
+            manage = get_manage_url(self.request),
             request = self.request)
