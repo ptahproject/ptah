@@ -11,6 +11,7 @@ from pyramid.compat import text_type, string_types, NativeIO
 from pyramid.threadlocal import get_current_registry
 from zope.interface import implementedBy
 from zope.interface.interfaces import IObjectEvent
+from venusian.advice import getFrameInfo
 
 __all__ = ('initialize', 'get_cfg_storage', 'StopException',
            'list_packages', 'cleanup', 'cleanup_system',
@@ -451,51 +452,6 @@ class DirectiveInfo(object):
             raise TypeError(
                 "Directive registered twice: %s" % (action.discriminator,))
         data[action.hash] = action
-
-
-def getFrameInfo(frame):
-    """code from venusian package
-    Return (kind,module,locals,globals) for a frame
-
-    'kind' is one of "exec", "module", "class", "function call", or "unknown".
-    """
-
-    f_locals = frame.f_locals
-    f_globals = frame.f_globals
-
-    sameNamespace = f_locals is f_globals
-    hasModule = '__module__' in f_locals
-    hasName = '__name__' in f_globals
-
-    sameName = hasModule and hasName
-    sameName = sameName and f_globals['__name__'] == f_locals['__module__']
-
-    module = hasName and sys.modules.get(f_globals['__name__']) or None
-
-    namespaceIsModule = module and module.__dict__ is f_globals
-
-    frameinfo = inspect.getframeinfo(frame)
-    try:
-        sourceline = frameinfo[3][0].strip()
-    except:  # pragma: no cover
-        sourceline = frameinfo[3]
-
-    codeinfo = frameinfo[0], frameinfo[1], frameinfo[2], sourceline
-
-    if not namespaceIsModule:  # pragma: no cover
-        # some kind of funky exec
-        kind = "exec"
-    elif sameNamespace and not hasModule:
-        kind = "module"
-    elif sameName and not sameNamespace:
-        kind = "class"
-    elif not sameNamespace:
-        kind = "function call"
-    else:  # pragma: no cover
-        # How can you have f_locals is f_globals, and have '__module__' set?
-        # This is probably module-level code, but with a '__module__' variable.
-        kind = "unknown"
-    return kind, module, f_locals, f_globals, codeinfo
 
 
 def scan(package, seen, exclude_filter=None):
