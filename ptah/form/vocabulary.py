@@ -30,6 +30,8 @@ class SimpleTerm(object):
         self.value = value
         if token is None:
             token = value
+        if title is None:
+            title = value
         self.token = str(token)
         self.title = title
         self.description = description

@@ -296,31 +296,34 @@ ptah.register_settings(
 ptah.register_settings(
     ptah.CFG_ID_PASSWORD,
 
-    form.TextField(
-        name = 'manager',
+    ptah.form.ChoiceField(
+        'manager',
         title = 'Password manager',
         description = 'Available password managers '\
             '("plain", "ssha", "bcrypt")',
+        vocabulary = ptah.form.SimpleVocabulary.from_values(
+            "plain", "ssha",),
         default = 'plain'),
 
-    form.IntegerField(
+    ptah.form.IntegerField(
         'min_length',
         title = 'Length',
         description = 'Password minimium length.',
         default = 5),
 
-    form.BoolField(
+    ptah.form.BoolField(
         'letters_digits',
         title = 'Letters and digits',
         description = 'Use letters and digits in password.',
         default = False),
 
-    form.BoolField(
+    ptah.form.BoolField(
         'letters_mixed_case',
         title = 'Letters mixed case',
         description = 'Use letters in mixed case.',
         default = False),
 
+    ttw = True,
     title = 'Password tool settings',
     )
 
