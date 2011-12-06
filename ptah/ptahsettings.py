@@ -13,7 +13,7 @@ from pyramid.interfaces import IAuthenticationPolicy
 from pyramid.interfaces import ISessionFactory
 
 import ptah
-from ptah import manage
+from ptah import manage, settings
 from ptah.security import get_local_roles
 
 
@@ -411,3 +411,11 @@ def initialized(ev):
     import chameleon.template
     chameleon.template.AUTO_RELOAD=PTAH['chameleon_reload']
     chameleon.template.BaseTemplateFile.auto_reload=PTAH['chameleon_reload']
+
+
+@ptah.subscriber(ptah.events.AppStarting)
+def starting(ev):
+    # load db settings
+    sob = ptah.config.get_cfg_storage(
+        settings.SETTINGS_OB_ID, default_factory=settings.Settings)
+    sob.load_fromdb()

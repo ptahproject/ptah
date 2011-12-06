@@ -11,6 +11,8 @@ CHANGES
 
 - Settings subsystem refactored
 
+- Added settings persistentce layer
+
 - Rename Pricnipal.uri to Principal.__uri__ and AuthInfo.uri to AuthInfo.__uri__
   to conform with other apis
 
