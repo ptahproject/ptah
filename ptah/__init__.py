@@ -11,6 +11,7 @@ from ptah.uri import UriFactory
 from ptah.config import initialize
 from ptah.config import adapter
 from ptah.config import subscriber
+from ptah.config import event
 
 # events
 from ptah import events

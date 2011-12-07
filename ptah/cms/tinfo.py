@@ -1,16 +1,16 @@
 """ type implementation """
-import ptah, sys, logging
+import sys, logging
 import sqlalchemy as sqla
-from ptah import config
 from zope.interface import implementer
 from pyramid.compat import string_types
 from pyramid.threadlocal import get_current_registry
 
+import ptah
+from ptah import config
 from ptah.cms.node import Session
 from ptah.cms.content import Content
 from ptah.cms.container import BaseContainer
 from ptah.cms.security import build_class_actions
-from ptah.cms.events import ContentCreatedEvent
 from ptah.cms.interfaces import Forbidden, ContentSchema, ITypeInformation
 
 log = logging.getLogger('ptah.cms')
@@ -73,7 +73,7 @@ class TypeInformation(object):
 
     def create(self, **data):
         content = self.cls(**data)
-        get_current_registry().notify(ContentCreatedEvent(content))
+        get_current_registry().notify(ptah.events.ContentCreatedEvent(content))
         return content
 
     def is_allowed(self, container):

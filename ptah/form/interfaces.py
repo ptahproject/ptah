@@ -25,11 +25,10 @@ class Invalid(Exception):
 class _null(object):
     """ Represents a null value in field-related operations. """
 
-    def __bool__(self): # pragma: no cover
+    def __nonzero__(self):
         return False
 
-    def __nonzero__(self): # pragma: no cover
-        return False
+    __bool__ = __nonzero__
 
     def __repr__(self):
         return '<widget.null>'
@@ -40,11 +39,10 @@ null = _null()
 class _required(object):
     """ Represents a required value in field-related operations. """
 
-    def __bool__(self): # pragma: no cover
+    def __nonzero__(self):
         return False
 
-    def __nonzero__(self): # pragma: no cover
-        return False
+    __bool__ = __nonzero__
 
     def __repr__(self):
         return '<widget.required>'

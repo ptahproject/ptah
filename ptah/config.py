@@ -234,23 +234,30 @@ EVENT_ID = 'ptah.config:event'
 
 def event(title='', category=''):
     """ Register event object, it is used for introspection only. """
-    info = DirectiveInfo(allowed_scope=('class',))
+    info = DirectiveInfo()
 
-    def descriminator(action):
-        return (EVENT_ID, action.info.context)
+    def wrapper(cls):
+        discr = (EVENT_ID, cls)
 
-    info.attach(
-        ClassAction(
-            _event, (title, category),
-            discriminator=descriminator)
-        )
+        #intr = cfg.introspectable(EVENT_ID,
+        #                          discr,
+        #                          '%s (pattern: %r)' % (name, pattern),
+        #                          'route')
 
+        def _event(cfg, klass, title, category):
+            storage = cfg.get_cfg_storage(EVENT_ID)
+            ev = EventDescriptor(klass, title, category)
+            storage[klass] = ev
+            storage[ev.name] = ev
 
-def _event(cfg, klass, title, category):
-    storage = cfg.get_cfg_storage(EVENT_ID)
-    ev = EventDescriptor(klass, title, category)
-    storage[klass] = ev
-    storage[ev.name] = ev
+        info.attach(
+            Action(
+                _event, (cls, title, category),
+                discriminator=discr)
+            )
+        return cls
+
+    return wrapper
 
 
 def adapter(*required, **kw):

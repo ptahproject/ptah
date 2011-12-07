@@ -56,14 +56,6 @@ from ptah import NOT_ALLOWED
 from pyramid.security import ALL_PERMISSIONS
 from pyramid.security import NO_PERMISSION_REQUIRED
 
-# events
-from ptah.cms.events import ContentEvent
-from ptah.cms.events import ContentCreatedEvent
-from ptah.cms.events import ContentAddedEvent
-from ptah.cms.events import ContentMovedEvent
-from ptah.cms.events import ContentModifiedEvent
-from ptah.cms.events import ContentDeletingEvent
-
 # cms rest
 from ptah.cms.rest import restaction
 

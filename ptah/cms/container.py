@@ -5,9 +5,6 @@ from pyramid.compat import string_types
 from pyramid.threadlocal import get_current_registry
 
 import ptah
-from ptah import config
-
-from ptah.cms import events
 from ptah.cms.node import Session, load_parents
 from ptah.cms.content import BaseContent
 from ptah.cms.security import action
@@ -133,9 +130,9 @@ class BaseContainer(BaseContent):
             raise KeyError(key)
 
         if item.__parent_uri__ is None:
-            event = events.ContentAddedEvent(item)
+            event = ptah.events.ContentAddedEvent(item)
         else:
-            event = events.ContentMovedEvent(item)
+            event = ptah.events.ContentMovedEvent(item)
 
         item.__name__ = key
         item.__parent__ = self
@@ -179,7 +176,8 @@ class BaseContainer(BaseContent):
                 for key in item.keys():
                     item.__delitem__(key, False)
 
-            get_current_registry().notify(events.ContentDeletingEvent(item))
+            get_current_registry().notify(
+                ptah.events.ContentDeletingEvent(item))
 
             name = item.__name__
             if self._v_keys:

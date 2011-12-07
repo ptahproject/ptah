@@ -93,8 +93,9 @@ class TestIntrospectModule(PtahTestCase):
 
         global TestEvent, eventHandler1, eventHandler2
 
+        @ptah.event('Test event')
         class TestEvent(object):
-            ptah.config.event('Test event')
+            pass
 
         @ptah.subscriber(TestEvent)
         def eventHandler1(ev):
@@ -117,7 +118,7 @@ class TestIntrospectModule(PtahTestCase):
             params={'ev': 'ptah.manage.tests.test_introspect.TestEvent'})
         res = EventsView.__renderer__(mod, request)
 
-        #self.assertIn('Event: Test event', res.text)
+        self.assertIn('Event: Test event', res.text)
         #self.assertIn('eventHandler1', res.text)
         #self.assertIn('eventHandler2', res.text)
 
@@ -128,11 +129,11 @@ class TestSubscriberIntrospect(PtahTestCase):
         from ptah import config
         from ptah.manage.introspect import SubscriberDirective
 
-        @ptah.config.subscriber(TestEvent)
+        @ptah.subscriber(TestEvent)
         def eventHandler1(ev):
             """ """
 
-        @ptah.config.subscriber(None, TestEvent)
+        @ptah.subscriber(None, TestEvent)
         def eventHandler2(context, ev):
             """ """
 

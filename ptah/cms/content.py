@@ -1,13 +1,12 @@
 """ Base content class """
 import sqlalchemy as sqla
 from sqlalchemy.ext.hybrid import hybrid_property
+from datetime import datetime
 from zope.interface import implementer
 from pyramid.compat import text_type
 from pyramid.threadlocal import get_current_registry
 
 import ptah
-from ptah import config, form
-from ptah.cms import events
 from ptah.cms.node import Node, Session
 from ptah.cms.interfaces import Error, IContent
 from ptah.cms.security import action
@@ -47,14 +46,14 @@ class BaseContent(Node):
     .. attribute:: created
 
        Content creation time which is set by
-       :py:func:`ptah.cms.events.createdHandler` during object creation.
+       :py:func:`ptah.cms.content.createdHandler` during object creation.
 
        :type: :py:class:`datetime.datetime`
 
     .. attribute:: modified
 
        Content modification time which is set by
-       :py:func:`ptah.cms.events.modifiedHandler` during object modification.
+       :py:func:`ptah.cms.content.modifiedHandler` during object modification.
 
        :type: :py:class:`datetime.datetime`
 
@@ -159,10 +158,11 @@ class BaseContent(Node):
 
             for field in tinfo.fieldset.fields():
                 val = data.get(field.name, field.default)
-                if val is not form.null:
+                if val is not ptah.form.null:
                     setattr(self, field.name, val)
 
-            get_current_registry().notify(events.ContentModifiedEvent(self))
+            get_current_registry().notify(
+                ptah.events.ContentModifiedEvent(self))
 
     def _extra_info(self, info):
         if self.__type__:
@@ -189,3 +189,22 @@ class BaseContent(Node):
 @implementer(IContent)
 class Content(BaseContent):
     """ Content """
+
+
+@ptah.subscriber(ptah.events.ContentCreatedEvent)
+def content_created_handler(ev):
+    """ Assigns created, modified, __owner__
+        attributes for newly created content """
+    now = datetime.utcnow()
+    ev.object.created = now
+    ev.object.modified = now
+
+    user = ptah.auth_service.get_userid()
+    if user:
+        ev.object.__owner__ = user
+
+
+@ptah.subscriber(ptah.events.ContentModifiedEvent)
+def content_modified_handler(ev):
+    """ Updates the modified attribute on content """
+    ev.object.modified = datetime.utcnow()
