@@ -4,6 +4,7 @@ import ptah, ptah.cms
 from ptah import config
 from ptah.testing import PtahTestCase
 from pyramid.testing import DummyRequest
+from pyramid.exceptions import ConfigurationConflictError
 
 
 class RestBase(PtahTestCase):
@@ -222,7 +223,7 @@ class TestCMSRestAction(RestBase):
         def update2(content, request, *args):
             """ doc string """
 
-        self.assertRaises(config.ConflictError, self.init_ptah)
+        self.assertRaises(ConfigurationConflictError, self.init_ptah)
 
     def test_rest_cms_node_info(self):
         from ptah.cms import rest

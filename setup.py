@@ -1,12 +1,12 @@
 import sys, os
 from setuptools import setup, find_packages
 
-version='0.2-dev'
+version='0.2dev'
 
 install_requires = ['setuptools',
+                    'chameleon >= 2.6.1',
                     'sphinx',
                     'pytz',
-                    'chameleon >= 3.6.1',
                     'pyramid >= 1.3dev',
                     'pyramid_tm',
                     'venusian', # we get it as part of pyramid
@@ -54,18 +54,18 @@ setup(name='ptah',
       include_package_data = True,
       zip_safe = False,
       entry_points = {
-        'ptah': ['package = ptah'],
-        'console_scripts': [
-            'static = ptah.scripts.pstatic:main',
-            'settings = ptah.scripts.settings:main',
+          'ptah': ['package = ptah'],
+          'console_scripts': [
+              'static = ptah.scripts.pstatic:main',
+              'settings = ptah.scripts.settings:main',
             ],
-        'paste.app_factory': [
-            'app = ptah:make_wsgi_app'],
-        'pyramid.scaffold': [
-            'ptah101 = ptah.scaffolds:Ptah101ProjectTemplate',
-            'ptah102 = ptah.scaffolds:Ptah102ProjectTemplate',
-            'ptah201 = ptah.scaffolds:Ptah201ProjectTemplate',
-            'ptah301 = ptah.scaffolds:Ptah301ProjectTemplate',
-            ],
-        },
+          'paste.app_factory': [
+              'app = ptah:make_wsgi_app'],
+          'pyramid.scaffold': [
+              'ptah101 = ptah.scaffolds:Ptah101ProjectTemplate',
+              'ptah102 = ptah.scaffolds:Ptah102ProjectTemplate',
+              'ptah201 = ptah.scaffolds:Ptah201ProjectTemplate',
+              'ptah301 = ptah.scaffolds:Ptah301ProjectTemplate',
+              ],
+          },
       )

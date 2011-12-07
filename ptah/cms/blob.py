@@ -14,7 +14,7 @@ class Blob(Node):
     """ simple blob implementation """
 
     __tablename__ = 'ptah_blobs'
-    __mapper_args__ = {'polymorphic_identity': 'cms-type:sqlblob'}
+    __mapper_args__ = {'polymorphic_identity': 'blob-sql'}
     __uri_factory__ = ptah.UriFactory('blob-sql')
 
     __id__ = sqla.Column('id', sqla.Integer,

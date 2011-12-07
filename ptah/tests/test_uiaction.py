@@ -1,6 +1,7 @@
 import ptah
 from ptah import config
 from ptah.testing import PtahTestCase
+from pyramid.exceptions import ConfigurationConflictError
 
 
 class TestUIAction(PtahTestCase):
@@ -25,7 +26,7 @@ class TestUIAction(PtahTestCase):
 
         ptah.uiaction(Content, 'action1', 'Action 1')
         ptah.uiaction(Content, 'action1', 'Action 1')
-        self.assertRaises(config.ConflictError, self.init_ptah)
+        self.assertRaises(ConfigurationConflictError, self.init_ptah)
 
     def test_uiaction_url(self):
 
@@ -166,7 +167,7 @@ class TestUIAction(PtahTestCase):
 
         ptah.uiaction(Content, 'action1', 'Action 10', category='test')
         ptah.uiaction(Content, 'action1', 'Action 11', category='test')
-        self.assertRaises(ptah.config.ConflictError, self.init_ptah)
+        self.assertRaises(ConfigurationConflictError, self.init_ptah)
 
     def test_uiaction_category_reg(self):
         class Content(object):

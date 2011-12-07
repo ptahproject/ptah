@@ -3,7 +3,9 @@ from ptah import config
 from pyramid.config.util import make_predicates
 from pyramid.request import route_request_iface
 from pyramid.urldispatch import RoutesMapper
-from pyramid.interfaces import IRequest, IRouteRequest, IRoutesMapper
+from pyramid.interfaces import IRequest
+from pyramid.interfaces import IRouteRequest
+from pyramid.interfaces import IRoutesMapper
 
 
 def register_route(name, pattern=None, factory=None, header=None,

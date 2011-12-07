@@ -3,6 +3,7 @@ import sqlalchemy as sqla
 from ptah import config, form
 from ptah.testing import PtahTestCase
 from pyramid.httpexceptions import HTTPForbidden
+from pyramid.exceptions import ConfigurationConflictError
 
 
 class TestTypeInfo(PtahTestCase):
@@ -162,7 +163,7 @@ class TestTypeInfo(PtahTestCase):
         class MyContent2(ptah.cms.Content):
             __type__ = ptah.cms.Type('mycontent2', 'MyContent')
 
-        self.assertRaises(config.ConflictError, self.init_ptah)
+        self.assertRaises(ConfigurationConflictError, self.init_ptah)
 
     def test_tinfo_create(self):
         import ptah.cms

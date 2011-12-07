@@ -1,8 +1,8 @@
 import transaction
 from datetime import timedelta
+from pyramid.exceptions import ConfigurationConflictError
 
 from ptah.testing import PtahTestCase
-from ptah.config import ConflictError
 
 
 class TestTokenType(PtahTestCase):
@@ -30,7 +30,7 @@ class TestTokenType(PtahTestCase):
         token.TokenType('unique-id', timedelta(minutes=20))
         token.TokenType('unique-id', timedelta(minutes=20))
 
-        self.assertRaises(ConflictError, self.init_ptah)
+        self.assertRaises(ConfigurationConflictError, self.init_ptah)
 
     def test_token_remove_expired(self):
         pass

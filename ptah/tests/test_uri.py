@@ -1,4 +1,5 @@
 from pyramid import testing
+from pyramid.exceptions import ConfigurationConflictError
 from ptah import config
 from ptah.testing import PtahTestCase
 
@@ -65,7 +66,7 @@ class TestUri(PtahTestCase):
         ptah.register_uri_resolver('test', None)
         ptah.register_uri_resolver('test', None)
 
-        self.assertRaises(config.ConflictError, self.init_ptah)
+        self.assertRaises(ConfigurationConflictError, self.init_ptah)
 
     def test_uri_registration_decorator_conflicts(self):
         import ptah
@@ -78,7 +79,7 @@ class TestUri(PtahTestCase):
         def resolver2(uri): # pragma: no cover
             return 'Resolved2'
 
-        self.assertRaises(config.ConflictError, self.init_ptah)
+        self.assertRaises(ConfigurationConflictError, self.init_ptah)
 
     def test_uri_extract_type(self):
         import ptah

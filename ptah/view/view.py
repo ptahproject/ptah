@@ -9,8 +9,10 @@ from pyramid.security import NO_PERMISSION_REQUIRED
 from pyramid.httpexceptions import WSGIHTTPException
 from pyramid.config.views import requestonly, isexception
 from pyramid.interfaces import IView
-from pyramid.interfaces import IRequest, IRouteRequest
-from pyramid.interfaces import IViewClassifier, IExceptionViewClassifier
+from pyramid.interfaces import IRequest
+from pyramid.interfaces import IRouteRequest
+from pyramid.interfaces import IViewClassifier
+from pyramid.interfaces import IExceptionViewClassifier
 
 from ptah import config
 from ptah.view.base import View

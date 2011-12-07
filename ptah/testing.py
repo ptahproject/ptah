@@ -44,6 +44,9 @@ class PtahTestCase(unittest.TestCase):
             packages.append('.'.join(parts[:l+1]))
 
         config.initialize(self.config, packages, autoinclude=True)
+        self.config.commit()
+        self.config.autocommit = True
+
         ptah.initialize_settings(self.config, self.registry.settings)
 
         if self._init_sqla:
@@ -57,7 +60,8 @@ class PtahTestCase(unittest.TestCase):
 
     def init_pyramid(self):
         self.request = request = self.make_request()
-        self.config = testing.setUp(request=request, settings=self._settings)
+        self.config = testing.setUp(
+            request=request, settings=self._settings, autocommit=False)
         self.config.include('ptah')
         self.config.get_routes_mapper()
         self.registry = self.config.registry

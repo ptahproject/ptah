@@ -1,6 +1,5 @@
 import sys
 import imp
-import inspect
 import logging
 import signal
 import traceback
@@ -13,18 +12,18 @@ from zope.interface import implementedBy
 from zope.interface.interfaces import IObjectEvent
 from venusian.advice import getFrameInfo
 
+import ptah
+
+ATTACH_ATTR = '__ptah_actions__'
+
 __all__ = ('initialize', 'get_cfg_storage', 'StopException',
            'list_packages', 'cleanup', 'cleanup_system',
-           'event', 'adapter', 'subscriber',
-           'Action', 'ClassAction', 'DirectiveInfo',
-           'ConflictError', 'LayerWrapper', 'shutdown', 'shutdown_handler')
-
+           'event', 'adapter', 'subscriber', 'shutdown', 'shutdown_handler',
+           'Action', 'ClassAction', 'DirectiveInfo', 'LayerWrapper')
 
 log = logging.getLogger('ptah')
 
 mods = set()
-
-import ptah
 
 
 class StopException(Exception):
@@ -71,22 +70,24 @@ def initialize(config, packages=None, excludes=(), autoinclude=False):
     elif packages is None:
         packages = ()
 
+    pkgs = []
+    [pkgs.append(p) for p in packages if p not in pkgs]
+
     # scan packages and load actions
     seen = set()
     actions = []
-
-    for pkg in packages:
+    for pkg in pkgs:
         actions.extend(scan(pkg, seen, exclude_filter))
 
-    # execute actions
-    actions = resolveConflicts(actions)
-
+    # add actions to configurator
     def runaction(action, cfg):
         cfg.__ptah_action__ = action
         action(cfg)
 
     for action in actions:
-        config.action(action.discriminator, runaction, (action, config))
+        config.info = action.info
+        config.action(action.discriminator, runaction, (action, config),
+                      order = action.order)
 
     config.action(None, registry.notify, (ptah.events.Initialized(config),))
 
@@ -107,7 +108,7 @@ def get_cfg_storage(id, registry=None, default_factory=OrderedDict):
     return storage[id]
 
 
-def get_cfg_storage_imp(config, id):
+def pyramid_get_cfg_storage(config, id):
     return get_cfg_storage(id, config.registry)
 
 
@@ -120,7 +121,6 @@ def exclude(modname, excludes=()):
         if modname == mod or modname.startswith(mod):
             return False
     return True
-
 
 def load_package(name, seen, first=True):
     """ scand package dependencies and return list of all dependant packages """
@@ -158,13 +158,13 @@ def load_package(name, seen, first=True):
 def list_packages(include_packages=None, excludes=None):
     """ scan current working_set and return all ptah packages """
     seen = set()
-    packages = set()
+    packages = []
 
     if include_packages is not None:
         for pkg in include_packages:
             if excludes and pkg in excludes:
                 continue
-            packages.update(load_package(pkg, seen))
+            packages.extend(load_package(pkg, seen))
     else:
         for dist in pkg_resources.working_set:
             pkg = dist.project_name
@@ -175,11 +175,11 @@ def list_packages(include_packages=None, excludes=None):
 
             distmap = pkg_resources.get_entry_map(dist, 'ptah')
             if 'package' in distmap:
-                packages.update(load_package(pkg, seen))
+                packages.extend(load_package(pkg, seen))
             else:
                 seen.add(pkg)
 
-    return list(packages)
+    return packages
 
 
 def objectEventNotify(event):
@@ -353,9 +353,6 @@ class LayerWrapper(object):
         self.callable(cfg, *args, **kw)
 
 
-ATTACH_ATTR = '__ptah_actions__'
-
-
 class Action(object):
 
     hash = None
@@ -450,10 +447,14 @@ class DirectiveInfo(object):
                 "Directive registered twice: %s" % (action.discriminator,))
         data[action.hash] = action
 
+    def __repr__(self):
+        filename, line, function, source = self.codeinfo
+        return ' File "%s", line %d, in %s\n' \
+               '      %s\n' % (filename, line, function, source)
+
 
 def scan(package, seen, exclude_filter=None):
     """ scan package for ptah actions """
-
     if isinstance(package, string_types):
         __import__(package)
         package = sys.modules[package]
@@ -494,67 +495,6 @@ def scan(package, seen, exclude_filter=None):
     return actions
 
 
-def resolveConflicts(actions):
-    # code from zope.configuration package
-
-    # organize actions by discriminators
-    unique = {}
-    output = []
-    for i in range(len(actions)):
-        action = actions[i]
-        discriminator = action.discriminator
-
-        order = action.order or i
-        a = unique.setdefault(discriminator, [])
-        a.append((action.info.codeinfo[0], order, action))
-
-    # Check for conflicts
-    conflicts = {}
-
-    for discriminator, dups in unique.items():
-        # We need to sort the actions by the paths so that the shortest
-        # path with a given prefix comes first:
-        dups.sort()
-        basepath, order, action = dups[0]
-
-        output.append((order, action))
-        if len(dups) > 1:
-            conflicts[discriminator] = [
-                action.info for _i1, _i2, action in dups]
-
-    if conflicts:
-        raise ConflictError(conflicts)
-
-    # Now put the output back in the original order, and return it:
-    r = []
-    for order, action in sorted(output, key=lambda x:x[0]):
-        r.append(action)
-
-    return r
-
-
-class ConflictError(TypeError):
-
-    def __init__(self, conflicts):
-        self._conflicts = conflicts
-
-    def __str__(self):
-        r = ["Conflicting configuration actions\n"]
-        items = self._conflicts.items()
-        for discriminator, infos in sorted(items):
-            r.append("  For: %s\n" % (discriminator, ))
-            for info in infos:
-                filename, line, function, source = info.codeinfo
-                s = ' File "%s", line %d, in %s\n' \
-                    '      %s\n' % (filename, line, function, source)
-
-                for line in text_type(s).rstrip().split('\n'):
-                    r.append("    " + line)
-                r.append('')
-
-        return "\n".join(r)
-
-
 handlers = []
 _handler_int = signal.getsignal(signal.SIGINT)
 _handler_term = signal.getsignal(signal.SIGTERM)
@@ -588,7 +528,6 @@ def processShutdown(sig, frame):
 
     if sig == signal.SIGTERM:
         raise sys.exit()
-
 
 try:
     import mod_wsgi

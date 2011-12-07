@@ -7,6 +7,7 @@ from pyramid.interfaces import IExceptionViewClassifier
 from pyramid.interfaces import IAuthorizationPolicy
 from pyramid.interfaces import IAuthenticationPolicy
 from pyramid.httpexceptions import HTTPForbidden, HTTPFound
+from pyramid.exceptions import ConfigurationConflictError
 
 from ptah import config, view
 from ptah.testing import PtahTestCase
@@ -439,7 +440,7 @@ class TestRouteRegistration(BaseView):
     def test_view_route_conflict(self):
         view.register_route('test-route', '/test/')
         view.register_route('test-route', '/test2/')
-        self.assertRaises(config.ConflictError, self.init_ptah)
+        self.assertRaises(ConfigurationConflictError, self.init_ptah)
 
     def test_view_route_derived(self):
         view.register_route('test-route1', '/test/')

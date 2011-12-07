@@ -3,6 +3,7 @@ from ptah import config
 from pyramid.security import Allow, Deny, ALL_PERMISSIONS, DENY_ALL
 from pyramid.security import NO_PERMISSION_REQUIRED
 from pyramid.httpexceptions import HTTPForbidden
+from pyramid.exceptions import ConfigurationConflictError
 
 from ptah.testing import PtahTestCase
 
@@ -28,7 +29,7 @@ class TestPermission(PtahTestCase):
         ptah.Permission('perm', 'Permission1')
         ptah.Permission('perm', 'Permission2')
 
-        self.assertRaises(config.ConflictError, self.init_ptah)
+        self.assertRaises(ConfigurationConflictError, self.init_ptah)
 
 
 class TestACL(PtahTestCase):
@@ -52,7 +53,7 @@ class TestACL(PtahTestCase):
         ptah.ACL('map', 'acl1')
         ptah.ACL('map', 'acl2')
 
-        self.assertRaises(config.ConflictError, self.init_ptah)
+        self.assertRaises(ConfigurationConflictError, self.init_ptah)
 
     def test_acl_allow(self):
         import ptah
@@ -291,7 +292,7 @@ class TestRole(PtahTestCase):
         ptah.Role('myrole', 'MyRole1')
         ptah.Role('myrole', 'MyRole2')
 
-        self.assertRaises(config.ConflictError, self.init_ptah)
+        self.assertRaises(ConfigurationConflictError, self.init_ptah)
 
     def test_role_roles(self):
         import ptah

@@ -1,5 +1,6 @@
 from ptah import form, config
 from ptah.testing import PtahTestCase
+from pyramid.exceptions import ConfigurationConflictError
 
 
 class TestFieldset(PtahTestCase):
@@ -30,12 +31,11 @@ class TestFieldset(PtahTestCase):
         class MyField(form.Field):
             pass
 
-
         @form.field('my-field')
         class MyField2(form.Field):
             pass
 
-        self.assertRaises(config.ConflictError, self.init_ptah)
+        self.assertRaises(ConfigurationConflictError, self.init_ptah)
 
     def test_decl_preview(self):
 

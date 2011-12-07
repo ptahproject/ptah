@@ -1,6 +1,7 @@
 import transaction
 from ptah import cms, config
 from ptah.testing import PtahTestCase
+from pyramid.exceptions import ConfigurationConflictError
 
 
 class TestApplicationFactoryRegistration(PtahTestCase):
@@ -87,7 +88,7 @@ class TestApplicationFactoryRegistration(PtahTestCase):
         factory2 = ptah.cms.ApplicationFactory(
             ApplicationRoot, '/', 'root2', 'Root App2')
 
-        self.assertRaises(config.ConflictError, self.init_ptah)
+        self.assertRaises(ConfigurationConflictError, self.init_ptah)
 
     def test_app_factory_mutiple_same_applications(self):
         import ptah.cms

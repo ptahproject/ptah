@@ -5,6 +5,7 @@ from ptah import form, config
 from ptah.testing import PtahTestCase
 from pyramid import testing
 from pyramid.compat import text_type, text_, bytes_
+from pyramid.exceptions import ConfigurationConflictError
 
 
 class Principal(object):
@@ -146,7 +147,7 @@ class TestPasswordChanger(PtahTestCase):
         def changer2(schema):
             """ """
 
-        self.assertRaises(config.ConflictError, self.init_ptah)
+        self.assertRaises(ConfigurationConflictError, self.init_ptah)
 
     def test_password_changer(self):
         import ptah

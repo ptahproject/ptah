@@ -23,6 +23,11 @@ class BaseTesting(PtahTestCase):
     def init_ptah(self, initsettings=False, *args, **kw):
         ptah.config.initialize(
             self.config, ('ptah', self.__class__.__module__))
+        self.config.commit()
+        self.config.autocommit = True
+
+        if initsettings:
+            ptah.initialize_settings(self.config, self.registry.settings)
 
 
 class TestSettingsResolver(BaseTesting):

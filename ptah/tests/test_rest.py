@@ -3,6 +3,7 @@ import json
 from ptah import config
 from pyramid.testing import DummyRequest
 from pyramid.httpexceptions import HTTPNotFound
+from pyramid.exceptions import ConfigurationConflictError
 
 from ptah.testing import PtahTestCase
 
@@ -29,7 +30,7 @@ class TestRestRegistrations(PtahTestCase):
         ptah.rest.RestService('test', 'Test service')
         ptah.rest.RestService('test', 'Test service2')
 
-        self.assertRaises(config.ConflictError, self.init_ptah)
+        self.assertRaises(ConfigurationConflictError, self.init_ptah)
 
     def test_rest_registerService_action(self):
         import ptah.rest
@@ -106,6 +107,7 @@ class TestRestView(PtahTestCase):
         self.assertIsNone(mapper.get_route('ptah-rest-login'))
 
         ptah.enable_rest_api(self.config)
+        self.init_ptah()
 
         marker = object()
 

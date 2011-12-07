@@ -1,8 +1,9 @@
 """ directives tests """
 import sys
 import unittest
-
 from pyramid import testing
+from pyramid.exceptions import ConfigurationConflictError
+
 from zope import interface
 from zope.interface.registry import Components
 from zope.interface.interfaces import IObjectEvent
@@ -18,9 +19,11 @@ class BaseTesting(unittest.TestCase):
             pconfig = self.config
         ptah.config.initialize(
             pconfig, ('ptah.config', 'ptah.events', self.__class__.__module__))
+        self.config.commit()
+        self.config.autocommit = True
 
     def setUp(self):
-        self.config = testing.setUp()
+        self.config = testing.setUp(autocommit=False)
         self.config.include('ptah')
         self.registry = self.config.registry
 
@@ -79,9 +82,9 @@ class TestAdaptsDirective(BaseTesting):
             err = e
 
         s = str(err)
-        self.assertTrue(isinstance(err, config.ConflictError))
+        self.assertTrue(isinstance(err, ConfigurationConflictError))
         self.assertTrue('ptah.config:adapter' in s)
-        self.assertTrue('test_directives.py' in s)
+        self.assertTrue('test_directives' in s)
 
     def test_adapts(self):
         global TestClass
@@ -258,7 +261,7 @@ class TestAdapterDirective(BaseTesting):
         def testAdapter(context):  # pragma: no cover
             pass
 
-        self.assertRaises(config.ConflictError, self._init_ptah)
+        self.assertRaises(ConfigurationConflictError, self._init_ptah)
 
     def test_adapter_reinitialize(self):
         global testAdapter
