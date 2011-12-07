@@ -5,7 +5,7 @@ import threading
 import pkg_resources
 from docutils import io
 from docutils.core import Publisher
-from pyramid.compat import text_type
+from pyramid.compat import text_type, bytes_
 
 from sphinx.application import Sphinx
 from sphinx.writers.html import HTMLWriter, HTMLTranslator
@@ -15,7 +15,7 @@ local_data = threading.local()
 
 tempdir = tempfile.mkdtemp()
 tmp = open(os.path.join(tempdir, 'conf.py'), 'wb')
-tmp.write('# -*- coding: utf-8 -*-')
+tmp.write(bytes_('# -*- coding: utf-8 -*-'))
 tmp.close()
 
 
