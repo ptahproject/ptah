@@ -1,19 +1,19 @@
 """ content traverser """
-import ptah
-from ptah import config
 from sqlalchemy import sql
 from zope import interface
 from pyramid.interfaces import ITraverser
 from pyramid.traversal import traversal_path, ResourceTreeTraverser
 
+import ptah
 from ptah.cms.node import Session
 from ptah.cms.content import BaseContent
 from ptah.cms.interfaces import IApplicationRoot
 
 
+@ptah.adapter(IApplicationRoot)
 @interface.implementer(ITraverser)
 class ContentTraverser(object):
-    config.adapter(IApplicationRoot)
+    """ Custom content traverser """
 
     _path_queries = {}
 

@@ -5,7 +5,8 @@ from pyramid.decorator import reify
 from pyramid.httpexceptions import HTTPForbidden
 from webob.multidict import MultiDict
 
-from ptah import view, config
+import ptah
+from ptah import view
 from ptah.form.field import Field, Fieldset
 from ptah.form.button import Buttons, Actions
 from ptah.form.interfaces import _, Invalid, FORM_INPUT, FORM_DISPLAY
@@ -19,8 +20,8 @@ def set_csrf_utility(util):
     CSRF = util
 
 
+@ptah.adapter(None, name='form-error')
 class FormErrorMessage(view.Message):
-    config.adapter(None, name='form-error')
 
     formErrorsMessage = _('Please fix indicated errors.')
 

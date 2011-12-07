@@ -4,7 +4,7 @@ from zope.interface import implementer
 from pyramid.interfaces import IRequest
 from pyramid.compat import binary_type
 
-from ptah import config
+import ptah
 from ptah.view.tmpl import template as get_template
 from ptah.view.interfaces import IMessage, IStatusMessage
 
@@ -80,26 +80,26 @@ class Message(object):
         return self.template(message = message, request = self.request)
 
 
+@ptah.adapter(IRequest, name='info')
 class InformationMessage(Message):
-    config.adapter(IRequest, name='info')
 
     template = get_template('ptah.view:templates/msg-info.pt')
 
 
+@ptah.adapter(IRequest, name='success')
 class SuccessMessage(Message):
-    config.adapter(IRequest, name='success')
 
     template = get_template('ptah.view:templates/msg-success.pt')
 
 
+@ptah.adapter(IRequest, name='warning')
 class WarningMessage(Message):
-    config.adapter(IRequest, name='warning')
 
     template = get_template('ptah.view:templates/msg-warning.pt')
 
 
+@ptah.adapter(IRequest, name='error')
 class ErrorMessage(Message):
-    config.adapter(IRequest, name='error')
 
     template = get_template('ptah.view:templates/msg-error.pt')
 

@@ -123,7 +123,7 @@ class EventsView(view.View):
     def update(self):
         ev = self.request.params.get('ev')
 
-        all_events = config.get_cfg_storage(config.EVENT_ID)
+        all_events = config.get_cfg_storage(config.ID_EVENT)
         self.event = event = all_events.get(ev)
 
         if event is None:
@@ -141,8 +141,8 @@ class EventsView(view.View):
             actions = []
             for pkg in pkgs:
                 for action in config.scan(pkg, seen, config.exclude):
-                    if action.discriminator[0] == 'ptah.config:subscriber':
-                        required = action.args[2]
+                    if action.discriminator[0] == config.ID_SUBSCRIBER:
+                        required = action.args[1]
                         if len(required) == 2 and required[1] == evinst:
                             actions.append(action)
                         elif required[0] == evinst:
@@ -253,7 +253,7 @@ class EventDirective(object):
     def renderActions(self, *actions):
         return self.actions(
             actions = actions,
-            events = config.get_cfg_storage(config.EVENT_ID),
+            events = config.get_cfg_storage(config.ID_EVENT),
             manage = get_manage_url(self.request),
             request = self.request)
 
@@ -347,19 +347,19 @@ class SubscriberDirective(object):
         self.request = request
 
     def getInfo(self, action):
-        factory, ifaces = action.args[1:]
+        factory, ifaces = action.args
         factoryInfo = '%s.%s'%(action.info.module.__name__, factory.__name__)
 
-        if len(action.args[2]) > 1:
-            obj = action.args[2][0]
-            klass = action.args[2][-1]
-            event = config.get_cfg_storage(config.EVENT_ID).get(
-                action.args[2][-1], None)
+        if len(action.args[1]) > 1:
+            obj = action.args[1][0]
+            klass = action.args[1][-1]
+            event = config.get_cfg_storage(config.ID_EVENT).get(
+                action.args[1][-1], None)
         else:
             obj = None
-            klass = action.args[2][0]
-            event = config.get_cfg_storage(config.EVENT_ID).get(
-                action.args[2][0], None)
+            klass = action.args[1][0]
+            event = config.get_cfg_storage(config.ID_EVENT).get(
+                action.args[1][0], None)
 
         return locals()
 

@@ -29,21 +29,6 @@ class BaseTesting(unittest.TestCase):
 
     def tearDown(self):
         config.cleanup_system(self.__class__.__module__)
-
-        global TestClass, testAdapter, testHandler
-        try:
-            del TestClass
-        except:
-            pass
-        try:
-            del testAdapter
-        except:
-            pass
-        try:
-            del testHandler
-        except:
-            pass
-
         testing.tearDown()
 
 
@@ -68,12 +53,11 @@ class Context(object):
 class TestAdaptsDirective(BaseTesting):
 
     def test_adapts_err(self):
-        global TestClass
-
+        @ptah.adapter(IContext)
+        @ptah.adapter(IContext)
         @interface.implementer(IAdapter)
         class TestClass(object):
-            config.adapter(IContext)
-            config.adapter(IContext)
+            """ """
 
         err = None
         try:
@@ -87,12 +71,9 @@ class TestAdaptsDirective(BaseTesting):
         self.assertTrue('test_directives' in s)
 
     def test_adapts(self):
-        global TestClass
-
+        @ptah.adapter(IContext)
         @interface.implementer(IAdapter)
         class TestClass(object):
-            config.adapter(IContext)
-
             def __init__(self, context):
                 pass
 
@@ -109,11 +90,10 @@ class TestAdaptsDirective(BaseTesting):
         self.assertTrue(isinstance(adapter, TestClass))
 
     def test_adapts_named(self):
-        global TestClass
-
+        @ptah.adapter(IContext, name='test')
         @interface.implementer(IAdapter)
         class TestClass(object):
-            config.adapter(IContext, name='test')
+            """ """
 
         self._init_ptah()
 
@@ -124,12 +104,10 @@ class TestAdaptsDirective(BaseTesting):
         self.assertTrue(adapters[0][1] is TestClass)
 
     def test_adapts_multiple(self):
-        global TestClass
-
+        @ptah.adapter(IContext, IContext2)
         @interface.implementer(IAdapter)
         class TestClass(object):
-            config.adapter(IContext, IContext2)
-
+            """ """
         self._init_ptah()
 
         sm = self.registry
@@ -139,12 +117,10 @@ class TestAdaptsDirective(BaseTesting):
         self.assertTrue(adapters[0][1] is TestClass)
 
     def test_adapts_multiple_named(self):
-        global TestClass
-
+        @ptah.adapter(IContext, IContext2, name='test')
         @interface.implementer(IAdapter)
         class TestClass(object):
-            config.adapter(IContext, IContext2, name='test')
-
+            """ """
         self._init_ptah()
 
         sm = self.registry
@@ -154,11 +130,10 @@ class TestAdaptsDirective(BaseTesting):
         self.assertTrue(adapters[0][1] is TestClass)
 
     def test_adapts_reinitialize(self):
-        global TestClass
-
+        @ptah.adapter(IContext)
         @interface.implementer(IAdapter)
         class TestClass(object):
-            config.adapter(IContext)
+            """ """
 
         self._init_ptah()
 
@@ -184,8 +159,6 @@ class TestAdaptsDirective(BaseTesting):
 class TestAdapterDirective(BaseTesting):
 
     def test_adapter(self):
-        global testAdapter
-
         @config.adapter(IContext)
         @config.adapter(IContext2)
         @interface.implementer(IAdapter)
@@ -206,8 +179,6 @@ class TestAdapterDirective(BaseTesting):
         self.assertTrue(adapters[0][1] is testAdapter)
 
     def test_adapter_named(self):
-        global testAdapter
-
         @config.adapter(IContext, name='test')
         @interface.implementer(IAdapter)
         def testAdapter(context):  # pragma: no cover
@@ -223,8 +194,6 @@ class TestAdapterDirective(BaseTesting):
         self.assertTrue(adapters[0][1] is testAdapter)
 
     def test_adapter_multple(self):
-        global testAdapter
-
         @config.adapter(IContext, IContext2, name='test')
         @interface.implementer(IAdapter)
         def testAdapter(context):  # pragma: no cover
@@ -240,8 +209,6 @@ class TestAdapterDirective(BaseTesting):
         self.assertTrue(adapters[0][1] is testAdapter)
 
     def test_adapter_errs1(self):
-        global testAdapter
-
         err = None
         try:
             @config.adapter(IContext, name='test')
@@ -253,8 +220,6 @@ class TestAdapterDirective(BaseTesting):
         self.assertTrue(isinstance(err, TypeError))
 
     def test_adapter_errs2(self):
-        global testAdapter
-
         @config.adapter(IContext)
         @config.adapter(IContext)
         @interface.implementer(IAdapter)
@@ -264,8 +229,6 @@ class TestAdapterDirective(BaseTesting):
         self.assertRaises(ConfigurationConflictError, self._init_ptah)
 
     def test_adapter_reinitialize(self):
-        global testAdapter
-
         @config.adapter(IContext)
         @config.adapter(IContext2)
         @interface.implementer(IAdapter)
@@ -297,8 +260,6 @@ class TestAdapterDirective(BaseTesting):
 class TestSubscriberDirective(BaseTesting):
 
     def test_subscriber(self):
-        global testSubscriber
-
         events = []
 
         @config.subscriber(IContext)
@@ -316,8 +277,6 @@ class TestSubscriberDirective(BaseTesting):
         self.assertTrue(len(events) == 1)
 
     def test_subscriber_multple(self):
-        global testSubscriber
-
         events = []
 
         @config.subscriber(IContext)
@@ -334,7 +293,6 @@ class TestSubscriberDirective(BaseTesting):
         self.assertTrue(len(events) == 2)
 
     def test_subscriber_object(self):
-        global testSubscriber
         from zope.interface.interfaces import IObjectEvent, ObjectEvent
 
         events = []
@@ -352,8 +310,6 @@ class TestSubscriberDirective(BaseTesting):
         self.assertTrue(len(events[0]) == 2)
 
     def test_subscriber_reinitialize(self):
-        global testSubscriber
-
         events = []
 
         @config.subscriber(IContext)

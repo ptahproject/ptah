@@ -10,8 +10,8 @@ from ptah.uri import UriFactory
 # config
 from ptah.config import initialize
 from ptah.config import adapter
-from ptah.config import subscriber
 from ptah.config import event
+from ptah.config import subscriber
 
 # events
 from ptah import events

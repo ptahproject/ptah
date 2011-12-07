@@ -7,6 +7,7 @@ import pkg_resources
 from collections import defaultdict, OrderedDict
 from pkgutil import walk_packages
 from pyramid.compat import text_type, string_types, NativeIO
+from pyramid.registry import Introspectable
 from pyramid.threadlocal import get_current_registry
 from zope.interface import implementedBy
 from zope.interface.interfaces import IObjectEvent
@@ -15,6 +16,9 @@ from venusian.advice import getFrameInfo
 import ptah
 
 ATTACH_ATTR = '__ptah_actions__'
+ID_EVENT = 'ptah.config:event'
+ID_ADAPTER = 'ptah.config:adapter'
+ID_SUBSCRIBER = 'ptah.config:subscriber'
 
 __all__ = ('initialize', 'get_cfg_storage', 'StopException',
            'list_packages', 'cleanup', 'cleanup_system',
@@ -87,6 +91,7 @@ def initialize(config, packages=None, excludes=(), autoinclude=False):
     for action in actions:
         config.info = action.info
         config.action(action.discriminator, runaction, (action, config),
+                      introspectables = action.introspectables,
                       order = action.order)
 
     config.action(None, registry.notify, (ptah.events.Initialized(config),))
@@ -121,6 +126,7 @@ def exclude(modname, excludes=()):
         if modname == mod or modname.startswith(mod):
             return False
     return True
+
 
 def load_package(name, seen, first=True):
     """ scand package dependencies and return list of all dependant packages """
@@ -229,89 +235,87 @@ class EventDescriptor(object):
         self.name = '%s.%s' % (inst.__module__, inst.__name__)
 
 
-EVENT_ID = 'ptah.config:event'
-
-
 def event(title='', category=''):
     """ Register event object, it is used for introspection only. """
     info = DirectiveInfo()
 
     def wrapper(cls):
-        discr = (EVENT_ID, cls)
+        discr = (ID_EVENT, cls)
 
-        #intr = cfg.introspectable(EVENT_ID,
-        #                          discr,
-        #                          '%s (pattern: %r)' % (name, pattern),
-        #                          'route')
+        intr = Introspectable(ID_EVENT, discr, title, ID_EVENT)
 
         def _event(cfg, klass, title, category):
-            storage = cfg.get_cfg_storage(EVENT_ID)
+            storage = cfg.get_cfg_storage(ID_EVENT)
             ev = EventDescriptor(klass, title, category)
             storage[klass] = ev
             storage[ev.name] = ev
 
+            intr['descr'] = ev
+
         info.attach(
             Action(
                 _event, (cls, title, category),
-                discriminator=discr)
+                discriminator=discr,
+                introspectables = (intr,))
             )
         return cls
 
     return wrapper
 
 
-def adapter(*required, **kw):
+def adapter(*args, **kw):
     """ Register adapter """
     info = DirectiveInfo()
 
-    required = tuple(required)
+    required = tuple(args)
     name = kw.get('name', '')
 
-    def descriminator(action):
-        return ('ptah.config:adapter',
-                required, _getProvides(action.info.context), name)
+    def wrapper(func):
+        discr = (ID_ADAPTER, required, _getProvides(func), name)
 
-    if info.scope in ('module', 'function call'):  # function decorator
-        def wrapper(func):
-            info.attach(
-                Action(
-                    _register,
-                    ('registerAdapter', func, required), {'name': name},
-                    discriminator=('ptah.config:adapter',
-                                   required, _getProvides(func), name))
-                )
-            return func
-        return wrapper
-    else:
+        intr = Introspectable(ID_ADAPTER, discr, 'Adapter', ID_ADAPTER)
+        intr['name'] = name
+        intr['required'] = required
+        intr['adapter'] = func
+
+        def _register(cfg, name, func, required):
+            cfg.registry.registerAdapter(func, required, name=name)
+
         info.attach(
-            ClassAction(
-                _adapts, (required, name),
-                discriminator=descriminator)
+            Action(
+                _register, (name, func, required),
+                discriminator = discr,
+                introspectables = (intr,))
             )
+        return func
+
+    return wrapper
 
 
-def subscriber(*required):
+def subscriber(*args):
     """ Register event subscriber. """
     info = DirectiveInfo(allowed_scope=('module', 'function call'))
 
     def wrapper(func):
+        required = tuple(args)
+        discr = (ID_SUBSCRIBER, func, required)
+
+        intr = Introspectable(ID_SUBSCRIBER, discr, 'Subscriber', ID_SUBSCRIBER)
+        intr['required'] = required
+        intr['handler'] = func
+
+        def _register(cfg, func, required):
+            cfg.registry.registerHandler(func, required)
+
         info.attach(
             Action(
-                _register, ('registerHandler', func, required),
-                discriminator=('ptah.config:subscriber',
-                                func, tuple(required)))
+                _register, (func, required),
+                discriminator=discr,
+                introspectables = (intr,))
             )
         return func
+
     return wrapper
-
-
-def _register(cfg, methodName, *args, **kw):
-    method = getattr(cfg.registry, methodName)
-    method(*args, **kw)
-
-
-def _adapts(cfg, factory, required, name):
-    cfg.registry.registerAdapter(factory, required, name=name)
 
 
 def _getProvides(factory):
@@ -365,12 +369,13 @@ class Action(object):
     hash = None
 
     def __init__(self, callable, args=(), kw={},
-                 discriminator=None, order=0, info=None):
+                 discriminator=None, order=0, introspectables=(), info=None):
         self.callable = callable
         self.args = args
         self.kw = kw
         self.order = order
         self.info = info
+        self.introspectables = introspectables
         self._discriminator = discriminator
 
     def __hash__(self):
