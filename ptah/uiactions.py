@@ -3,6 +3,8 @@ import ptah
 from ptah import config
 from zope.interface import implementer, providedBy, Interface
 
+ID_UIACTION = 'ptah:uiaction'
+
 
 class IAction(Interface):
     """ marker interface for actions """
@@ -68,15 +70,20 @@ def uiaction(context, id, title, description='',
         kwargs['action'] = action
 
     ac = Action(**kwargs)
-    info = config.DirectiveInfo()
 
+    discr = (ID_UIACTION, id, context, category)
+    intr = ptah.config.Introspectable(
+        ID_UIACTION, discr, title, ID_UIACTION)
+    intr.update(id = id, action = action)
+
+    info = config.DirectiveInfo()
     info.attach(
         config.Action(
             lambda cfg, id, category, context, ac: \
                 cfg.registry.registerAdapter(\
                    ac, (context,), IAction, '%s-%s'%(category, id)),
             (id, category, context, ac,),
-            discriminator = ('ptah-cms:ui-action', id, context, category))
+            discriminator = discr, introspectables = (intr,))
         )
 
 

@@ -12,7 +12,7 @@ import ptah
 from ptah import view, config
 
 
-REST_ID = 'ptah:rest-service'
+ID_REST = 'ptah:rest-service'
 
 
 def RestService(name, title, description=''):
@@ -22,13 +22,16 @@ def RestService(name, title, description=''):
     srv.actions['apidoc'] = Action(apidoc, 'apidoc', apidoc.title)
 
     def _register(cfg, srv):
-        cfg.get_cfg_storage(REST_ID)[name] = srv
+        cfg.get_cfg_storage(ID_REST)[name] = srv
+
+    discr = (ID_REST, name)
+    intr = config.Introspectable(ID_REST, discr, name, ID_REST)
+    intr['service'] = srv
 
     info = config.DirectiveInfo()
     info.attach(
         config.Action(
-            _register, (srv, ),
-            discriminator=(REST_ID, name))
+            _register, (srv,), discriminator=discr, introspectables=(intr,))
         )
 
     return srv
@@ -74,7 +77,7 @@ class ServiceAPIDoc(object):
         self.srvname = name
 
     def __call__(self, request):
-        srv = config.get_cfg_storage(REST_ID)[self.srvname]
+        srv = config.get_cfg_storage(ID_REST)[self.srvname]
         url = request.application_url
 
         info = OrderedDict(
@@ -199,7 +202,7 @@ class Api(object):
 
         # execute action for specific service
         try:
-            result = config.get_cfg_storage(REST_ID)[service](
+            result = config.get_cfg_storage(ID_REST)[service](
                 request, action, *arguments)
         except WSGIHTTPException as exc:
             request.response.status = exc.status

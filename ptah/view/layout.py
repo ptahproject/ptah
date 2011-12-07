@@ -7,10 +7,12 @@ from ptah import config
 from ptah.view.base import View
 from ptah.view.interfaces import ILayout
 
+LAYOUT_ID = 'ptah.view:layout'
+
 
 def query_layout(context, request, name=''):
     """ query named layout for context """
-    #assert IRequest.providedBy(request), "must pass in a request object"
+    assert IRequest.providedBy(request), "must pass in a request object"
 
     try:
         iface = request.request_iface
@@ -94,6 +96,27 @@ class Layout(View):
         return self.template(**kwargs)
 
 
+def layout(name='', context=None, parent='', route=None,template=None,layer=''):
+    info = config.DirectiveInfo(allowed_scope=('class',))
+
+    discr = (LAYOUT_ID, name, context, route, layer)
+
+    intr = config.Introspectable(LAYOUT_ID, discr, name, LAYOUT_ID)
+    intr['name'] = name
+    intr['context'] = context
+    intr['templates'] = template
+    intr['layer'] = layer
+    intr['route'] = route
+    intr['parent'] = parent
+
+    info.attach(
+        config.ClassAction(
+            config.LayerWrapper(register_layout_impl, discr),
+            (name, context, template, parent, route, intr),
+            discriminator=discr, introspectables=(intr,))
+        )
+
+
 def register_layout(
     name='', context=None, parent='',
     klass=Layout, template = None, route=None, layer=''):
@@ -101,19 +124,27 @@ def register_layout(
     if not klass or not issubclass(klass, Layout):
         raise ValueError("klass has to inherit from Layout class")
 
-    discriminator = ('ptah.view:layout', name, context, route, layer)
+    discr = (LAYOUT_ID, name, context, route, layer)
+
+    intr = config.Introspectable(LAYOUT_ID, discr, name, LAYOUT_ID)
+    intr['name'] = name
+    intr['context'] = context
+    intr['templates'] = template
+    intr['layer'] = layer
+    intr['route'] = route
+    intr['parent'] = parent
 
     info = config.DirectiveInfo()
     info.attach(
         config.Action(
-            config.LayerWrapper(register_layout_impl, discriminator),
-            (klass, name, context, template, parent, route),
-            discriminator = discriminator)
+            config.LayerWrapper(register_layout_impl, discr),
+            (klass, name, context, template, parent, route, intr),
+            discriminator=discr, introspectables=(intr,) )
         )
 
 
 def register_layout_impl(
-    cfg, klass, name, context, template, parent, route_name):
+    cfg, klass, name, context, template, parent, route_name, intr):
 
     if not parent:
         layout = None
@@ -143,6 +174,8 @@ def register_layout_impl(
     if route_name is not None:
         request_iface = cfg.registry.getUtility(
             IRouteRequest, name=route_name)
+
+    intr['class'] = layout_class
 
     cfg.registry.registerAdapter(
         layout_class, (context, request_iface), ILayout, name)

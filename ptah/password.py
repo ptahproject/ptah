@@ -13,8 +13,7 @@ from ptah import config, form, token
 _ = translationstring.TranslationStringFactory('ptah')
 
 
-PASSWORD_CHANGER_ID = 'ptah.password:changer'
-
+ID_PASSWORD_CHANGER = 'ptah.password:changer'
 
 TOKEN_TYPE = token.TokenType(
     '35c9b7df958f4e93ae9b275a7dc2219e', timedelta(minutes=10))
@@ -88,7 +87,7 @@ class PasswordTool(object):
     def can_change_password(self, principal):
         """ can principal password be changed """
         return ptah.extract_uri_schema(principal.__uri__) in \
-            config.get_cfg_storage(PASSWORD_CHANGER_ID)
+            config.get_cfg_storage(ID_PASSWORD_CHANGER)
 
     def get_principal(self, passcode):
         """ generate passcode for principal """
@@ -112,7 +111,7 @@ class PasswordTool(object):
         self.remove_passcode(passcode)
 
         if principal is not None:
-            changers = config.get_cfg_storage(PASSWORD_CHANGER_ID)
+            changers = config.get_cfg_storage(ID_PASSWORD_CHANGER)
 
             changer = changers.get(ptah.extract_uri_schema(principal.__uri__))
             if changer is not None:
@@ -151,15 +150,20 @@ def password_changer(schema):
     info = config.DirectiveInfo()
 
     def wrapper(changer):
+        discr = (ID_PASSWORD_CHANGER, schema)
+
+        intr = config.Introspectable(
+            ID_PASSWORD_CHANGER, discr, changer.__doc__, ID_PASSWORD_CHANGER)
+        intr.update(schema = schema, callable = changer)
+
         info.attach(
             config.Action(
                 lambda config, schema, changer: \
-                    config.get_cfg_storage(PASSWORD_CHANGER_ID).update(
+                    config.get_cfg_storage(ID_PASSWORD_CHANGER).update(
                             {schema: changer}),
                 (schema, changer),
-                discriminator=(PASSWORD_CHANGER_ID, schema))
+                discriminator=discr, introspectables = (intr,))
             )
-
         return changer
 
     return wrapper
@@ -167,11 +171,17 @@ def password_changer(schema):
 
 def pyramid_password_changer(config, schema, changer):
     """ pyramid configurator utility for password changer registration """
+    discr = (ID_PASSWORD_CHANGER, schema)
+
+    intr = ptah.config.Introspectable(
+        ID_PASSWORD_CHANGER, discr, changer.__doc__, ID_PASSWORD_CHANGER)
+    intr.update(schema = schema, callable = changer)
+
     config.action(
-        (PASSWORD_CHANGER_ID, schema),
+        discr,
         lambda config, schema, changer: \
-           config.get_cfg_storage(PASSWORD_CHANGER_ID).update({schema:changer}),
-        (config, schema, changer))
+            config.get_cfg_storage(ID_PASSWORD_CHANGER).update({schema:changer}),
+        (config, schema, changer), introspectables = (intr,))
 
 
 def passwordValidator(field, appstruct):

@@ -130,8 +130,8 @@ class TestPasswordChanger(PtahTestCase):
 
         self.init_ptah()
 
-        from ptah.password import PASSWORD_CHANGER_ID
-        changers = config.get_cfg_storage(PASSWORD_CHANGER_ID)
+        from ptah.password import ID_PASSWORD_CHANGER
+        changers = config.get_cfg_storage(ID_PASSWORD_CHANGER)
 
         self.assertIn('test-schema', changers)
         self.assertIs(changers['test-schema'], changer)

@@ -48,13 +48,13 @@ class TestUriIntrospect(PtahTestCase):
     _cleanup_mod = False
 
     def test_uri_introspect(self):
-        from ptah.manage.uri import RESOLVER_ID, UriIntrospection
+        from ptah.manage.uri import ID_RESOLVER, UriIntrospection
 
         data = ptah.config.scan(self.__class__.__module__, set())
 
         actions = []
         for action in data:
-            if action.discriminator[0] == RESOLVER_ID:
+            if action.discriminator[0] == ID_RESOLVER:
                 actions.append(action)
 
         ti = UriIntrospection(self.request)

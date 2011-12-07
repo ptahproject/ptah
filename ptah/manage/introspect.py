@@ -387,10 +387,10 @@ class ViewDirective(object):
 
         if inspect.isclass(factory):
             isclass = True
-            name,context,template,route,layout,permission = action.args
+            name,context,template,route,layout,permission,intr=action.args
         else:
             isclass = False
-            factory,name,context,template,route,layout,permission = action.args
+            factory,name,context,template,route,layout,permission,intr=action.args
 
         if route:
             if name:

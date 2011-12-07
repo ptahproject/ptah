@@ -45,7 +45,7 @@ class TestRestApi(RestBase):
         import ptah.rest
         self.init_ptah()
 
-        services = config.get_cfg_storage(ptah.rest.REST_ID)
+        services = config.get_cfg_storage(ptah.rest.ID_REST)
 
         self.assertIn('cms', services)
 

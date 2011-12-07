@@ -9,7 +9,7 @@ from pyramid.compat import configparser, NativeIO
 import ptah
 from ptah import config
 from ptah.settings import SETTINGS_OB_ID
-from ptah.settings import SETTINGS_GROUP_ID
+from ptah.settings import ID_SETTINGS_GROUP
 
 
 grpTitleWrap = textwrap.TextWrapper(
@@ -89,7 +89,7 @@ class SettingsCommand(object):
             section = self.options.section
 
         # print description
-        groups = sorted(config.get_cfg_storage(SETTINGS_GROUP_ID).items())
+        groups = sorted(config.get_cfg_storage(ID_SETTINGS_GROUP).items())
 
         for name, group in groups:
             if section and name != section:

@@ -29,14 +29,24 @@ def library(name,
                 raise ValueError("If resource is not defined "
                                  "path has to be absolute url")
 
-    info = config.DirectiveInfo()
+    discr = (LIBRARY_ID, name, tuple(path), resource)
+    intr = config.Introspectable(LIBRARY_ID, discr, name, LIBRARY_ID)
+    intr['name'] = name
+    intr['path'] = path
+    intr['resource'] = resource
+    intr['type'] = type
+    intr['require'] = require
+    intr['prefix'] = prefix
+    intr['postfix'] = postfix
+    intr['extra'] = extra
 
+    info = config.DirectiveInfo()
     info.attach(
         config.Action(
             library_impl,
             (name, path, resource, type,
              require, prefix, postfix, extra),
-            discriminator = (LIBRARY_ID, name, tuple(path), resource))
+            discriminator=discr, introspectables=(intr,))
         )
 
 

@@ -18,7 +18,7 @@ class TestRestRegistrations(PtahTestCase):
         srv = ptah.rest.RestService('test', 'Test service')
         self.init_ptah()
 
-        services = config.get_cfg_storage(ptah.rest.REST_ID)
+        services = config.get_cfg_storage(ptah.rest.ID_REST)
 
         self.assertEqual(srv.name, 'test')
         self.assertIn('test', services)
@@ -58,7 +58,7 @@ class TestRestRegistrations(PtahTestCase):
         ptah.rest.RestService('test', 'Test service')
         self.init_ptah()
 
-        srv = config.get_cfg_storage(ptah.rest.REST_ID)['test']
+        srv = config.get_cfg_storage(ptah.rest.ID_REST)['test']
 
         @srv.action('action', 'Action')
         def raction(request, *args):
@@ -191,10 +191,10 @@ class TestRestApi(PtahTestCase):
         self.assertIn("KeyError: 'test'", res['traceback'])
 
     def test_rest_arguments(self):
-        from ptah.rest import Api, REST_ID
+        from ptah.rest import Api, ID_REST
         self.init_ptah()
 
-        services = config.get_cfg_storage(REST_ID)
+        services = config.get_cfg_storage(ID_REST)
 
         data = []
         def service(request, action, *args):
@@ -213,10 +213,10 @@ class TestRestApi(PtahTestCase):
         self.assertEqual(data[1], ('test', '1', '2'))
 
     def test_rest_httpexception(self):
-        from ptah.rest import Api, REST_ID
+        from ptah.rest import Api, ID_REST
         self.init_ptah()
 
-        services = config.get_cfg_storage(REST_ID)
+        services = config.get_cfg_storage(ID_REST)
 
         def service(request, action, *args):
             raise HTTPNotFound()
@@ -232,10 +232,10 @@ class TestRestApi(PtahTestCase):
             res['message'], 'The resource could not be found.')
 
     def test_rest_response(self):
-        from ptah.rest import Api, REST_ID
+        from ptah.rest import Api, ID_REST
         self.init_ptah()
 
-        services = config.get_cfg_storage(REST_ID)
+        services = config.get_cfg_storage(ID_REST)
 
         def service(request, action, *args):
             return HTTPNotFound()
@@ -251,10 +251,10 @@ class TestRestApi(PtahTestCase):
 
     def test_rest_response_data(self):
         import datetime
-        from ptah.rest import Api, REST_ID
+        from ptah.rest import Api, ID_REST
         self.init_ptah()
 
-        services = config.get_cfg_storage(REST_ID)
+        services = config.get_cfg_storage(ID_REST)
 
         def service(request, action, *args):
             return {'dt': datetime.datetime.now()}

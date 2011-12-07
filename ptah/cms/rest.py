@@ -12,7 +12,7 @@ from ptah.cms.interfaces import NotFound, CmsException
 from ptah.cms.interfaces import INode, IBlob, IContent, IContainer
 from ptah.cms.permissions import View, ModifyContent, DeleteContent
 
-
+ID_CMS_REST = 'ptah-cms:rest-action'
 CMS = ptah.RestService('cms', 'Ptah CMS API')
 
 
@@ -143,17 +143,24 @@ class Action(object):
 def restaction(name, context, permission):
     info = config.DirectiveInfo()
 
-    def _register(cfg, callable, name, context, permission):
-        ac = Action(callable, name, permission)
-        cfg.registry.registerAdapter(
-            ac, (IRestActionClassifier, context), IRestAction, name)
-
     def wrapper(func):
+        discr = (ID_CMS_REST, name, context)
+        intr = config.Introspectable(ID_CMS_REST, discr, name, ID_CMS_REST)
+        intr['name'] = name
+        intr['context'] = context
+        intr['permission'] = permission
+        intr['callable'] = func
+
+        def _register(cfg, callable, name, context, permission):
+            ac = Action(callable, name, permission)
+            cfg.registry.registerAdapter(
+                ac, (IRestActionClassifier, context), IRestAction, name)
+
         info.attach(
             config.Action(
                 _register,
                 (func, name, context, permission),
-                discriminator = ('ptah-cms:rest-action', name, context))
+                discriminator=discr, introspectables=(intr,))
             )
         return func
 

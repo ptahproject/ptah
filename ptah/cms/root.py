@@ -63,6 +63,12 @@ class ApplicationFactory(object):
         self.policy = policy
         self.parent_factory = parent_factory
 
+        discr = (APPFACTORY_ID, path)
+        intr = ptah.config.Introspectable(
+            APPFACTORY_ID, discr, name, APPFACTORY_ID)
+        intr['id'] = self.id
+        intr['factory'] = self
+
         if config is not None:
             ptah.config.get_cfg_storage(
                 APPFACTORY_ID, registry=config.registry)[self.id] = self
@@ -72,7 +78,7 @@ class ApplicationFactory(object):
             ptah.config.Action(
                 lambda cfg: cfg.get_cfg_storage(APPFACTORY_ID)\
                     .update({self.id: self}),
-                discriminator=(APPFACTORY_ID, path))
+                discriminator=discr, introspectables=(intr,))
             )
 
         self._sql_get_root = ptah.QueryFreezer(

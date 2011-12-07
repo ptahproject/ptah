@@ -9,7 +9,7 @@ from ptah.sqla import QueryFreezer
 
 __all__ = ['TokenType', 'service']
 
-TOKEN_TYPE = 'ptah:token-type'
+ID_TOKEN_TYPE = 'ptah:token-type'
 
 
 class TokenType(object):
@@ -27,13 +27,18 @@ class TokenType(object):
         self.title = title
         self.description = description
 
+        discr = (ID_TOKEN_TYPE, id)
+        intr = config.Introspectable(ID_TOKEN_TYPE, discr, title,ID_TOKEN_TYPE)
+        intr.update(id = id, timeout = timeout, description = description)
+
         info = config.DirectiveInfo()
         info.attach(
             config.Action(
                 lambda config, id, tp: \
-                    config.get_cfg_storage(TOKEN_TYPE).update({id: tp}),
+                    config.get_cfg_storage(ID_TOKEN_TYPE).update({id: tp}),
                 (id, self),
-                discriminator=(TOKEN_TYPE, id))
+                discriminator=discr,
+                introspectables = (intr,))
             )
 
 

@@ -21,6 +21,10 @@ from ptah.view.renderers import \
      PermissionRenderer, ViewRenderer, TemplateRenderer
 
 
+unset = object()
+VIEW_ID = 'ptah.view:view'
+
+
 def render_view(name, context, request):
     adapters = request.registry.adapters
 
@@ -56,7 +60,43 @@ class PyramidView(object):
         return response
 
 
-unset = object()
+def pview(name='', context=None, route=None,
+          template=None, layout=unset,
+          permission='__no_permission_required__', layer=''):
+
+    info = config.DirectiveInfo(
+        allowed_scope=('class', 'module', 'function call'))
+
+    discr = (VIEW_ID, name, context, route, layer)
+    intr = config.Introspectable(VIEW_ID, discr, name, VIEW_ID)
+    intr['name'] = name
+    intr['context'] = context
+    intr['route'] = route
+    intr['templates'] = template
+    intr['layout'] = layer
+    intr['permission'] = layer
+    intr['layer'] = layer
+
+    if info.scope in ('module', 'function call'): # function decorator
+        def wrapper(factory):
+            info.attach(
+                config.Action(
+                    config.LayerWrapper(register_view_impl, discr),
+                    (factory, name, context, template, route,
+                     layout, permission, intr),
+                    discriminator=discr, introspectables=(intr,))
+                )
+            return factory
+        return wrapper
+    else:
+        # class decorator
+        info.attach(
+            config.ClassAction(
+                config.LayerWrapper(register_view_impl, discr),
+                (name, context, template, route, layout, permission, intr),
+                discriminator=discr, introspectables=(intr,))
+            )
+
 
 def register_view(
     name='', factory=View, context=None, template=None, route=None,
@@ -65,19 +105,27 @@ def register_view(
     if factory is None or not callable(factory):
         raise ValueError('view factory is required')
 
-    discriminator = ('ptah.view:view', name, context, route, layer)
+    discr = (VIEW_ID, name, context, route, layer)
+    intr = config.Introspectable(VIEW_ID, discr, name, VIEW_ID)
+    intr['name'] = name
+    intr['context'] = context
+    intr['route'] = route
+    intr['templates'] = template
+    intr['layout'] = layer
+    intr['permission'] = layer
+    intr['layer'] = layer
 
     info = config.DirectiveInfo()
     info.attach(
         config.Action(
-            config.LayerWrapper(register_view_impl, discriminator),
-            (factory, name, context, template, route, layout, permission),
-            discriminator = discriminator)
+            config.LayerWrapper(register_view_impl, discr),
+            (factory, name, context, template, route, layout, permission, intr),
+            discriminator=discr, introspectables=(intr,))
         )
 
 
 def register_view_impl(cfg, factory, name, context, template, route_name,
-                       layout, permission):
+                       layout, permission, intr):
     chain = []
 
     # permission
@@ -120,6 +168,8 @@ def register_view_impl(cfg, factory, name, context, template, route_name,
     pview = PyramidView(chain)
     factory.__renderer__ = pview
     pview.__config_action__ = cfg.__ptah_action__
+
+    intr['factory'] = pview
 
     sm.registerAdapter(
         pview,

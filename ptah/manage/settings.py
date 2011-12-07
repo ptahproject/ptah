@@ -1,7 +1,7 @@
 """ settings module """
 import ptah
 from ptah import view, manage, config
-from ptah.settings import SETTINGS_GROUP_ID
+from ptah.settings import ID_SETTINGS_GROUP
 from pyramid.httpexceptions import HTTPFound
 
 
@@ -35,7 +35,7 @@ class SettingsView(view.View):
     __intr_path__ = '/ptah-manage/settings/index.html'
 
     def update(self):
-        groups = config.get_cfg_storage(SETTINGS_GROUP_ID).items()
+        groups = config.get_cfg_storage(ID_SETTINGS_GROUP).items()
 
         data = []
         for name, group in sorted(groups):

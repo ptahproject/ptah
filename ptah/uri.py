@@ -1,8 +1,9 @@
 """ uri resolver """
 import uuid
+import ptah
 from ptah import config
 
-RESOLVER_ID = 'ptah:uri-resolver'
+ID_RESOLVER = 'ptah:resolver'
 
 
 def resolve(uri):
@@ -21,7 +22,7 @@ def resolve(uri):
         return None
 
     try:
-        return config.get_cfg_storage(RESOLVER_ID)[schema](uri)
+        return config.get_cfg_storage(ID_RESOLVER)[schema](uri)
     except KeyError:
         pass
 
@@ -46,10 +47,17 @@ def resolver(schema):
     info = config.DirectiveInfo()
 
     def wrapper(func):
+        discr = (ID_RESOLVER, schema)
+
+        intr = config.Introspectable(ID_RESOLVER,discr,func.__doc__,ID_RESOLVER)
+        intr['schema'] = schema
+        intr['callable'] = func
+
         info.attach(
             config.Action(
                 _register_uri_resolver, (schema, func),
-                discriminator=(RESOLVER_ID, schema))
+                discriminator=discr,
+                introspectables = (intr,))
             )
 
         return func
@@ -71,25 +79,37 @@ def register_uri_resolver(schema, resolver, depth=1):
          def __call__(self, uri):
              return content
     """
+    discr = (ID_RESOLVER, schema)
     info = config.DirectiveInfo(depth=depth)
+
+    intr = config.Introspectable(ID_RESOLVER,discr,resolver.__doc__,ID_RESOLVER)
+    intr['schema'] = schema
+    intr['callable'] = resolver
+
     info.attach(
         config.Action(
             _register_uri_resolver, (schema, resolver),
-            discriminator=(RESOLVER_ID, schema))
+            discriminator=discr, introspectables = (intr,))
         )
 
 
 def _register_uri_resolver(cfg, schema, resolver):
-    cfg.get_cfg_storage(RESOLVER_ID)[schema] = resolver
+    cfg.get_cfg_storage(ID_RESOLVER)[schema] = resolver
 
 
 def pyramid_uri_resolver(config, schema, resolver):
     """ pyramid configurator directive 'ptah_uri_resolver' """
+    discr = (ID_RESOLVER, schema)
+    intr = ptah.config.Introspectable(
+        ID_RESOLVER,discr,resolver.__doc__,ID_RESOLVER)
+    intr['schema'] = schema
+    intr['callable'] = resolver
+
     config.action(
-        (RESOLVER_ID, schema),
+        discr,
         lambda config, schema, resolver:
-            config.get_cfg_storage(RESOLVER_ID).update({schema:resolver}),
-        (config, schema, resolver))
+            config.get_cfg_storage(ID_RESOLVER).update({schema:resolver}),
+        (config, schema, resolver), introspectables = (intr,))
 
 
 class UriFactory(object):

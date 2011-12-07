@@ -27,14 +27,22 @@ def register_route(name, pattern=None, factory=None, header=None,
         traverse=traverse,
         custom=custom_predicates)
 
+    ROUTE_ID = 'ptah.view:route'
+    discr = (ROUTE_ID, name)
+
+    intr = config.Introspectable(ROUTE_ID, discr, name, ROUTE_ID)
+    intr['name'] = name
+    intr['pattern'] = pattern
+    intr['factory'] = factory
+
     info = config.DirectiveInfo()
     info.attach(
         config.Action(
             register_route_impl,
             (name, pattern, factory, predicates, pregenerator,
              use_global_views, derived_route),
-            discriminator = ('ptah.view:route', name),
-            ))
+            discriminator=discr, introspectables=(intr,))
+        )
 
 
 def register_route_impl(cfg, name, pattern, factory, predicates,

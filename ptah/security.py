@@ -14,24 +14,24 @@ from ptah.interfaces import IOwnersAware
 from ptah.interfaces import ILocalRolesAware
 
 
-ACL_ID = 'ptah:acl-map'
-ROLE_ID = 'ptah:role'
-PERMISSION_ID = 'ptah:permission'
+ID_ACL = 'ptah:aclmap'
+ID_ROLE = 'ptah:role'
+ID_PERMISSION = 'ptah:permission'
 
 
 def get_acls():
     """ return list of registered ACLS """
-    return config.get_cfg_storage(ACL_ID)
+    return config.get_cfg_storage(ID_ACL)
 
 
 def get_roles():
     """ return list of registered roles """
-    return config.get_cfg_storage(ROLE_ID)
+    return config.get_cfg_storage(ID_ROLE)
 
 
 def get_permissions():
     """ return list of registered permissions """
-    return config.get_cfg_storage(PERMISSION_ID)
+    return config.get_cfg_storage(ID_PERMISSION)
 
 
 class PermissionInfo(str):
@@ -49,12 +49,15 @@ def Permission(name, title, description=''):
     permission.title = title
     permission.description = description
 
+    discr = (ID_PERMISSION, name)
+    intr = config.Introspectable(ID_PERMISSION, discr, name, ID_PERMISSION)
+    intr['permission'] = permission
+
     info.attach(
         config.Action(
             lambda config, p: \
-                config.get_cfg_storage(PERMISSION_ID).update({str(p): p}),
-            (permission,),
-            discriminator=(PERMISSION_ID, name))
+                config.get_cfg_storage(ID_PERMISSION).update({str(p): p}),
+            (permission,), discriminator=discr, introspectables=(intr,))
         )
 
     return permission
@@ -82,13 +85,16 @@ class ACL(list):
         self.title = title
         self.description = description
 
+        discr = (ID_ACL, id)
+        intr = config.Introspectable(ID_ACL, discr, title, ID_ACL)
+        intr['acl'] = self
+
         info = config.DirectiveInfo()
         info.attach(
             config.Action(
                 lambda config, p: \
-                    config.get_cfg_storage(ACL_ID).update({id: p}),
-                (self,),
-                discriminator=('ptah:acl-map', id))
+                    config.get_cfg_storage(ID_ACL).update({id: p}),
+                (self,), discriminator=discr, introspectables=(intr,))
             )
         self.directiveInfo = info
 
@@ -164,7 +170,7 @@ class ACLsMerge(object):
         self.acls = acls
 
     def __iter__(self):
-        acls = config.get_cfg_storage(ACL_ID)
+        acls = config.get_cfg_storage(ID_ACL)
         for aname in self.acls:
             acl = acls.get(aname)
             if acl is not None:
@@ -214,13 +220,16 @@ class Role(object):
         self.denied = set()
 
         # conflict detection and introspection
+        discr = (ID_ROLE, name)
+        intr = config.Introspectable(ID_ROLE, discr, name, ID_ROLE)
+        intr['role'] = self
+
         info = config.DirectiveInfo()
         info.attach(
             config.Action(
                 lambda config, r: \
-                    config.get_cfg_storage(ROLE_ID).update({r.name: r}),
-                (self, ),
-                discriminator=(ROLE_ID, name))
+                    config.get_cfg_storage(ID_ROLE).update({r.name: r}),
+                (self, ), discriminator=discr, introspectables=(intr,))
             )
 
     def __str__(self):

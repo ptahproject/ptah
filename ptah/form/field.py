@@ -12,15 +12,18 @@ PREVIEW_ID = 'ptah.form:field-preview'
 
 def field(name, layer=''):
     info = config.DirectiveInfo()
-
-    discriminator = (FIELD_ID, name, layer)
+    discr = (FIELD_ID, name, layer)
 
     def wrapper(cls):
+        intr = config.Introspectable(FIELD_ID, discr, name, FIELD_ID)
+        intr['name'] = name
+        intr['layer'] = layer
+        intr['field'] = cls
+
         info.attach(
             config.Action(
-                config.LayerWrapper(register_field_impl, discriminator),
-                (cls, name, ),
-                discriminator=discriminator)
+                config.LayerWrapper(register_field_impl, discr),
+                (cls, name, ), discriminator=discr, introspectables=(intr,))
             )
         return cls
 
@@ -29,14 +32,17 @@ def field(name, layer=''):
 
 def register_field_factory(cls, name, layer=''):
     info = config.DirectiveInfo()
+    discr = (FIELD_ID, name, layer)
 
-    discriminator = (FIELD_ID, name, layer)
+    intr = config.Introspectable(FIELD_ID, discr, name, FIELD_ID)
+    intr['name'] = name
+    intr['layer'] = layer
+    intr['field'] = cls
 
     info.attach(
         config.Action(
-            config.LayerWrapper(register_field_impl, discriminator),
-            (cls, name),
-            discriminator=discriminator)
+            config.LayerWrapper(register_field_impl, discr),
+            (cls, name, ), discriminator=discr, introspectables=(intr,))
         )
 
 
@@ -44,12 +50,16 @@ def fieldpreview(cls):
     info = config.DirectiveInfo()
 
     def wrapper(func):
+        discr = (PREVIEW_ID, cls)
+        intr = config.Introspectable(PREVIEW_ID, discr, '', PREVIEW_ID)
+        intr['field'] = cls
+        intr['preview'] = func
+
         info.attach(
             config.Action(
                 lambda config, cls, func:
                     config.get_cfg_storage(PREVIEW_ID).update({cls: func}),
-                (cls, func),
-                discriminator=(PREVIEW_ID, cls))
+                (cls, func), discriminator=discr, introspectables=(intr,))
             )
         return func
 

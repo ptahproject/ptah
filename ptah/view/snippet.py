@@ -10,6 +10,7 @@ from ptah.view.interfaces import ISnippet
 log = logging.getLogger('ptah.view')
 
 STYPE_ID = 'ptah.view:snippettype'
+SNIPPET_ID = 'ptah.view:snippet'
 
 
 @implementer(ISnippet)
@@ -58,29 +59,61 @@ def render_snippet(stype, context, request):
 def snippettype(name, context=None, title='', description=''):
     stype = SnippetType(name, context, title, description)
 
+    discr = (STYPE_ID, name)
+    intr = config.Introspectable(SNIPPET_ID, discr, name, SNIPPET_ID)
+    intr['name'] = name
+    intr['context'] = context
+    intr['title'] = title
+    intr['description'] = description
+    intr['stype'] = stype
+
     info = config.DirectiveInfo()
     info.attach(
         config.Action(
             lambda config, name, stype: \
                 config.get_cfg_storage(STYPE_ID).update({name: stype}),
             (name, stype,),
-            discriminator = (STYPE_ID, name), order = -1))
+            discriminator=discr, introspectables=(intr,), order = -1))
+
+
+def snippet(name, context=None, template=None, layer=''):
+    info = config.DirectiveInfo(allowed_scope=('class',))
+
+    discr = (SNIPPET_ID, name, context, layer)
+
+    intr = config.Introspectable(SNIPPET_ID, discr, name, SNIPPET_ID)
+    intr['name'] = name
+    intr['context'] = context
+    intr['templates'] = template
+    intr['layer'] = layer
+
+    info.attach(
+        config.ClassAction(
+            config.LayerWrapper(register_snippet_impl, discr),
+            (name, context, template, intr),
+            discriminator=discr, introspectables=(intr,))
+        )
 
 
 def register_snippet(name, context=None, klass=None, template=None, layer=''):
     info = config.DirectiveInfo()
+    discr = (SNIPPET_ID, name, context, layer)
 
-    discriminator = ('ptah.view:snippet', name, context, layer)
+    intr = config.Introspectable(SNIPPET_ID, discr, name, SNIPPET_ID)
+    intr['name'] = name
+    intr['context'] = context
+    intr['templates'] = template
+    intr['layer'] = layer
 
     info.attach(
         config.Action(
-            config.LayerWrapper(register_snippet_impl, discriminator),
-            (klass, name, context, template),
-            discriminator = discriminator)
+            config.LayerWrapper(register_snippet_impl, discr),
+            (klass, name, context, template, intr),
+            discriminator=discr, introspectables=(intr,))
         )
 
 
-def register_snippet_impl(cfg, klass, stype, context, template):
+def register_snippet_impl(cfg, klass, stype, context, template, intr):
     cdict = {}
     if template is not None:
         cdict['template'] = template
@@ -104,6 +137,8 @@ def register_snippet_impl(cfg, klass, stype, context, template):
             bases = (klass, Snippet)
 
         snippet_class = type('Snippet %s'%klass, bases, cdict)
+
+    intr['class'] = snippet_class
 
     # register snippet
     cfg.registry.registerAdapter(

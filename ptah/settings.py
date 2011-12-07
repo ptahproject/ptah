@@ -12,13 +12,12 @@ from pyramid.compat import configparser
 import ptah
 from ptah import uri, form, config
 from ptah.config import StopException
-from ptah.config import subscriber, DirectiveInfo, Action
 
 log = logging.getLogger('ptah')
 
 SETTINGS_ID = 'settings'
 SETTINGS_OB_ID = 'ptah:settings'
-SETTINGS_GROUP_ID = 'ptah:settings-group'
+ID_SETTINGS_GROUP = 'ptah:settings-group'
 
 
 _marker = object()
@@ -26,13 +25,13 @@ _marker = object()
 
 def get_settings(grp, registry=None):
     """ get settings group by group id """
-    return config.get_cfg_storage(SETTINGS_GROUP_ID, registry)[grp]
+    return config.get_cfg_storage(ID_SETTINGS_GROUP, registry)[grp]
 
 
 @uri.resolver('settings')
 def settings_resolver(uri):
     """ Ptah settings resolver """
-    return config.get_cfg_storage(SETTINGS_GROUP_ID)[uri[9:]]
+    return config.get_cfg_storage(ID_SETTINGS_GROUP)[uri[9:]]
 
 
 def pyramid_get_settings(config, grp):
@@ -43,7 +42,7 @@ def pyramid_get_settings(config, grp):
 
         PTAH_CFG = config.get_settings(ptah.CFG_ID_PTAH)
     """
-    return config.get_cfg_storage(SETTINGS_GROUP_ID)[grp]
+    return config.get_cfg_storage(ID_SETTINGS_GROUP)[grp]
 
 
 def initialize_settings(pconfig, cfg, section=configparser.DEFAULTSECT):
@@ -105,13 +104,17 @@ def register_settings(name, *fields, **kw):
     group = Group(name=name, *fields, **kw)
     interface.directlyProvides(Group, category)
 
-    ac = Action(
-        lambda config, group: config.get_cfg_storage(SETTINGS_GROUP_ID)\
-            .update({group.__name__: group.clone(config.registry)}),
-        (group,),
-        discriminator=(SETTINGS_GROUP_ID, name))
+    discr = (ID_SETTINGS_GROUP, name)
+    intr = config.Introspectable(
+        ID_SETTINGS_GROUP, discr, name, ID_SETTINGS_GROUP)
+    intr['name'] = name
 
-    info = DirectiveInfo()
+    ac = config.Action(
+        lambda config, group: config.get_cfg_storage(ID_SETTINGS_GROUP)\
+            .update({group.__name__: group.clone(config.registry)}),
+        (group,), discriminator=discr, introspectables=(intr,))
+
+    info = config.DirectiveInfo()
     info.attach(ac)
 
     return group
@@ -123,7 +126,7 @@ class Settings(object):
     initialized = False
 
     def init(self, config, defaults=None):
-        groups = config.get_cfg_storage(SETTINGS_GROUP_ID).items()
+        groups = config.get_cfg_storage(ID_SETTINGS_GROUP).items()
 
         for name, group in groups:
             data = {}
@@ -139,7 +142,7 @@ class Settings(object):
         self.load(defaults, True)
 
     def load(self, rawdata, setdefaults=False):
-        groups = config.get_cfg_storage(SETTINGS_GROUP_ID).items()
+        groups = config.get_cfg_storage(ID_SETTINGS_GROUP).items()
 
         try:
             rawdata = dict((k.lower(), v) for k, v in rawdata.items())
@@ -163,7 +166,7 @@ class Settings(object):
         self.load(dict(Session.query(SettingRecord.name,SettingRecord.value)))
 
     def export(self, default=False):
-        groups = config.get_cfg_storage(SETTINGS_GROUP_ID).items()
+        groups = config.get_cfg_storage(ID_SETTINGS_GROUP).items()
 
         result = {}
         for name, group in groups:

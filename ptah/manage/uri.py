@@ -4,7 +4,7 @@ from pyramid.httpexceptions import HTTPFound
 
 import ptah
 from ptah import form, view, config, manage
-from ptah.uri import RESOLVER_ID
+from ptah.uri import ID_RESOLVER
 from ptah.manage.manage import PtahManageRoute, get_manage_url
 
 
@@ -40,7 +40,7 @@ class UriResolver(form.Form):
         if uri is None:
             uri = [self.request.GET.get('uri','')]
 
-        resolvers = config.get_cfg_storage(RESOLVER_ID)
+        resolvers = config.get_cfg_storage(ID_RESOLVER)
 
         self.data = data = []
         for u in uri:

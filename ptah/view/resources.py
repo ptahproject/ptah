@@ -27,16 +27,21 @@ def static(name, path, layer=''):
     if not os.path.isdir(abspath):
         raise ValueError("path is not directory")
 
-    discriminator = (STATIC_ID, name, layer)
+    discr = (STATIC_ID, name, layer)
+
+    intr = config.Introspectable(STATIC_ID, discr, name, STATIC_ID)
+    intr['name'] = name
+    intr['path'] = path
+    intr['layer'] = layer
 
     info = config.DirectiveInfo()
     info.attach(
         config.Action(
             config.LayerWrapper(lambda cfg, a1,a2,a3: \
                          cfg.get_cfg_storage(STATIC_ID)\
-                             .update({a1: (a2, a3)}), discriminator),
+                             .update({a1: (a2, a3)}), discr),
             (name, abspath, pkg),
-            discriminator = discriminator))
+            discriminator=discr, introspectables=(intr,)))
 
 
 def static_url(request, name, path='', **kw):

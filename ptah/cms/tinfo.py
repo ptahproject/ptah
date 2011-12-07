@@ -152,12 +152,17 @@ def Type(name, title=None, fieldset=None, **kw):
 
         ptah.register_uri_resolver('cms-%s'%name, resolve_content, depth = 2)
 
+    # config actino and introspection info
+    discr = (TYPES_DIR_ID, name)
+    intr = config.Introspectable(TYPES_DIR_ID, discr, name, TYPES_DIR_ID)
+    intr['name'] = name
+    intr['type'] = typeinfo
+
     info.attach(
         config.ClassAction(
             register_type_impl, (typeinfo, name, fieldset), kw,
-            discriminator = (TYPES_DIR_ID, name))
+            discriminator=discr, introspectables=(intr,))
         )
-
     return typeinfo
 
 

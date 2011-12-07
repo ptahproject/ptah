@@ -43,36 +43,46 @@ def get_manage_url(request):
     return '{0}/{1}'.format(url, cfg['manage'])
 
 
-def module(id):
+def module(name):
     info = config.DirectiveInfo()
 
     def wrapper(cls):
-        def _complete(cfg, cls, id):
-            cls.name = id
-            cfg.get_cfg_storage(MANAGE_ID)[id] = cls
+        discr = (MANAGE_ID, name)
+        intr = config.Introspectable(MANAGE_ID, discr, name, MANAGE_ID)
+        intr['name'] = name
+        intr['factory'] = cls
+
+        def _complete(cfg, cls, name):
+            cls.name = name
+            cfg.get_cfg_storage(MANAGE_ID)[name] = cls
 
         info.attach(
             config.Action(
-                _complete, (cls, id,),
-                discriminator = (MANAGE_ID, id))
+                _complete, (cls, name),
+                discriminator=discr, introspectables=(intr,))
             )
         return cls
 
     return wrapper
 
 
-def intr_renderer(id):
+def intr_renderer(name):
     info = config.DirectiveInfo()
 
     def wrapper(cls):
-        def _complete(cfg, cls, id):
-            cls.name = id
-            cfg.get_cfg_storage(INTROSPECT_ID)[id] = cls
+        discr = (INTROSPECT_ID, name)
+        intr = config.Introspectable(INTROSPECT_ID, discr, name, INTROSPECT_ID)
+        intr['name'] = name
+        intr['factory'] = cls
+
+        def _complete(cfg, cls, name):
+            cls.name = name
+            cfg.get_cfg_storage(INTROSPECT_ID)[name] = cls
 
         info.attach(
             config.Action(
-                _complete, (cls, id,),
-                discriminator = (INTROSPECT_ID, id))
+                _complete, (cls, name),
+                discriminator=discr, introspectables=(intr,))
             )
         return cls
 
