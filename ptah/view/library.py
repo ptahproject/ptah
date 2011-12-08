@@ -10,7 +10,23 @@ LIBRARY_ID = 'ptah.view:library'
 def library(name,
             path='', resource='', type='',
             require='', prefix='', postfix='', extra=None):
+    """
+    Registers a library with one or more assets.  Used to logically group
+    JS and CSS collections.  Provides ability to declarare dependency/requirements
+    between library collections.
 
+    :param name: Library collection name
+    :param path: A relative file path or tuple of relative paths for the library. 
+                 If not relative to a view.static resource name must be absolute url.
+    :param resource: A view.static registration name
+    :param type:  A string, either `css` or `js`
+    :param require: A library name to be considered dependency (Optional)
+    :param prefix: A string which will be generated before the library HTML
+    :param postfix: A string which will be generated after the library HTML
+                    An example of prefix/postfix is <!-- JS/CSS --> 
+    :param extra: Additional attributes for computed library tag 
+                  An example of extra is {'type':'text/pythonscript'}
+    """
     if not path:
         raise ValueError("path is required")
 
@@ -67,6 +83,14 @@ def library_impl(cfg, name, path, resource, type,
 
 
 def include(request, name):
+    """
+    Given a library name; the library will be attached to the request.
+    See render_includes function to compute the HTML from attached libraries.
+    
+    :param request: Pyramid request
+    :param name: Name of library to include
+    """
+    abspath, 
     libs = getattr(request, '__includes', None)
     if libs is None:
         libs = []
@@ -76,6 +100,11 @@ def include(request, name):
 
 
 def render_includes(request):
+    """
+    Renders HTML for all included libraries for this request.
+
+    :param request: Pyramid request
+    """
     _libraries = config.get_cfg_storage(LIBRARY_ID)
 
     seen = set()

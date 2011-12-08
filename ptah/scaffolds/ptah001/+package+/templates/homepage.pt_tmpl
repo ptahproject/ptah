@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>{{package}}, made with Ptah!</title>
+    ${structure: view.rendered_includes}
+    <link type="text/css" rel="stylesheet" href="${'%s/app.css' % static_url}" />
+    <link rel="shortcut icon" href="${'%s/ico/favicon.ico' % static_url}">
+  </head>
+
+  <body>
+    <div class="topbar">
+      <div class="topbar-inner">
+        <div class="container-fluid">
+          <a class="brand" href="#">Project {{package}}</a>
+          <ul class="nav">
+            <li class="active"><a href="#">Home</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="container-fluid app-body">
+      <div class="sidebar">
+        <div class="well">
+          <h5>Links</h5>
+          <ul>
+            <li><a href="http://www.pylonsproject.org/">Pyramid</a></li>
+            <li><a href="http://www.sqlalchemy.org/">SQLAlchemy</a></li>
+            <li><a href="http://www.sqlalchemy.org/">Chameleon</a></li>
+          </ul>
+        </div>
+      <div>
+      <div class="content">
+        <div class="hero-unit">
+          <h1>Welcome to {{package}}!</h1>
+          <p>The {{package}} application uses Ptah, a modern web publishing framework.
+          </p>
+          <!-- uncomment this when you add ptah-manage
+          <p>
+            <a class="btn primary large" href="/ptah-manage/">Goto Ptah Manage UI &raquo;</a>
+          </p>
+          -->
+        </div>
+
+        <footer>
+          <p>&copy; Ptah Project 2011</p>
+        </footer>
+      </div>
+    </div>
+
+  </body>
+</html>
