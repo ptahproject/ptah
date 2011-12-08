@@ -1,0 +1,12 @@
+<tal:block tal:define="r intr['callable'];
+		       s intr['schema'];">
+  <h4>
+    ${s}
+    <small>
+      <a href="${view.manage_url}/source.html?pkg=${intr['codeinfo'].module}#sl-${intr['codeinfo'].lineno}">
+	${r.__name__}</a>
+    </small>
+  </h4>
+    
+  <p>${view.rst_to_html(r.__doc__ or '')}</p>
+</tal:block>

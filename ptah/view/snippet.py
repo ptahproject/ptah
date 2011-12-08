@@ -57,17 +57,19 @@ def render_snippet(stype, context, request):
 
 
 def snippettype(name, context=None, title='', description=''):
+    info = config.DirectiveInfo()
     stype = SnippetType(name, context, title, description)
 
     discr = (STYPE_ID, name)
-    intr = config.Introspectable(SNIPPET_ID, discr, name, SNIPPET_ID)
+    intr = config.Introspectable(STYPE_ID, discr, name, STYPE_ID)
     intr['name'] = name
     intr['context'] = context
     intr['title'] = title
     intr['description'] = description
     intr['stype'] = stype
+    intr['module'] = info.module.__name__
+    intr['codeinfo'] = info.codeinfo
 
-    info = config.DirectiveInfo()
     info.attach(
         config.Action(
             lambda config, name, stype: \
@@ -86,6 +88,8 @@ def snippet(name, context=None, template=None, layer=''):
     intr['context'] = context
     intr['templates'] = template
     intr['layer'] = layer
+    intr['module'] = info.module.__name__
+    intr['codeinfo'] = info.codeinfo
 
     info.attach(
         config.ClassAction(
@@ -104,6 +108,8 @@ def register_snippet(name, context=None, klass=None, template=None, layer=''):
     intr['context'] = context
     intr['templates'] = template
     intr['layer'] = layer
+    intr['module'] = info.module.__name__
+    intr['codeinfo'] = info.codeinfo
 
     info.attach(
         config.Action(

@@ -1,5 +1,6 @@
 """ introspect module """
 import inspect, sys
+import urllib
 from pyramid.compat import string_types
 from pyramid.interfaces import IRoutesMapper, IRouteRequest
 from pyramid.interfaces import IViewClassifier, IExceptionViewClassifier
@@ -28,9 +29,13 @@ class IntrospectModule(manage.PtahModule):
         return self.packages
 
     def __getitem__(self, key):
+        key = urllib.unquote(key)
         packages = self.list_packages()
         if key in packages:
             return Package(key, self, self.request)
+
+        if key in self.request.registry.introspector.categories():
+            return Introspector(key, self, self.request)
 
         raise KeyError(key)
 
@@ -58,6 +63,30 @@ class Package(object):
         return info
 
 
+class Introspector(object):
+
+    def __init__(self, name, mod, request):
+        self.__name__ = name
+        self.__parent__ = mod
+
+        self.name = name
+        self.request = request
+
+        intros = config.get_cfg_storage(INTROSPECT_ID)
+        self.renderer = intros[name](request)
+
+        self.intrs = sorted((item['introspectable'] for item in
+                             self.request.registry
+                             .introspector.get_category(name)),
+                            key = lambda item: item.title)
+
+        self.manage_url = '{0}/introspect'.format(get_manage_url(self.request))
+        self.renderers = sorted(
+            (item['introspectable']['factory'] for item in
+             self.request.registry.introspector.get_category(INTROSPECT_ID)),
+            key = lambda item: item.title)
+
+
 class MainView(view.View):
     view.pview(
         context = IntrospectModule,
@@ -68,11 +97,11 @@ class MainView(view.View):
 
     def update(self):
         self.packages = self.context.list_packages()
-
-
-view.register_snippet(
-    'ptah-module-actions', IntrospectModule,
-    template = view.template('ptah.manage:templates/introspect-actions.pt'))
+        self.manage_url = '{0}/introspect'.format(get_manage_url(self.request))
+        self.renderers = sorted(
+            (item['introspectable']['factory'] for item in
+             self.request.registry.introspector.get_category(INTROSPECT_ID)),
+            key = lambda item: item.title)
 
 
 class PackageView(view.View):
@@ -101,6 +130,13 @@ class PackageView(view.View):
                 itypes.append((cls.title, cls(self.request)))
 
         self.itypes = [it for _t, it in sorted(itypes)]
+
+
+class IntrospectorView(view.View):
+    view.pview(
+        context = Introspector,
+        template = view.template('ptah.manage:templates/introspect-intr.pt'))
+
 
 
 def lineno(ob):
@@ -238,183 +274,3 @@ class RoutesView(view.View):
                                         (context,name,classifier,req,factory))
 
             self.views = sorted(views)
-
-
-@intr_renderer('ptah.config:event')
-class EventDirective(object):
-    """ zca event declarations """
-
-    title = 'Events'
-    actions = view.template('ptah.manage:templates/directive-event.pt')
-
-    def __init__(self, request):
-        self.request = request
-
-    def renderActions(self, *actions):
-        return self.actions(
-            actions = actions,
-            events = config.get_cfg_storage(config.ID_EVENT),
-            manage = get_manage_url(self.request),
-            request = self.request)
-
-
-@intr_renderer('ptah.config:adapter')
-class AdapterDirective(object):
-    """ zc adapter registrations """
-
-    title = 'zc adapters'
-    actions = view.template('ptah.manage:templates/directive-adapter.pt')
-
-    def __init__(self, request):
-        self.request = request
-
-    def getInfo(self, action):
-        context = action.info.context
-
-        if inspect.isclass(context):
-            isclass = True
-            requires, name = action.args[:2]
-        else:
-            context = action.args[1]
-            requires = action.args[2]
-            name = action.kw['name']
-
-        provided = list(interface.implementedBy(context))
-        if len(provided):
-            iface = provided[0]
-        else: # pragma: no cover
-            iface = 'unknown'
-
-        return {'iface': iface,
-                'context': context,
-                'provided': provided,
-                'name': name,
-                'requires': requires}
-
-    def renderActions(self, *actions):
-        return self.actions(
-            actions = actions,
-            getInfo = self.getInfo,
-            manage = get_manage_url(self.request),
-            request = self.request)
-
-
-@intr_renderer('ptah.view:snippettype')
-class SnippetTypeDirective(object):
-    """ ptah snippet types """
-
-    title = 'Snippet Types'
-    actions = view.template('ptah.manage:templates/directive-stype.pt')
-
-    def __init__(self, request):
-        self.request = request
-
-    def renderActions(self, *actions):
-        STYPE_ID = sys.modules['ptah.view.snippet'].STYPE_ID
-        stypes = config.get_cfg_storage(STYPE_ID)
-        return self.actions(
-            actions = actions,
-            stypes = stypes,
-            manage = get_manage_url(self.request),
-            request = self.request)
-
-
-@intr_renderer('ptah.view:route')
-class RouteDirective(object):
-    """ pyramid routes """
-
-    title = 'Routes'
-    actions = view.template('ptah.manage:templates/directive-route.pt')
-
-    def __init__(self, request):
-        self.request = request
-
-    def renderActions(self, *actions):
-        return self.actions(
-            actions = actions,
-            manage = get_manage_url(self.request),
-            request = self.request)
-
-
-@intr_renderer('ptah.config:subscriber')
-class SubscriberDirective(object):
-    """ zca event subscribers """
-
-    title = 'Event subscribers'
-    actions = view.template('ptah.manage:templates/directive-subscriber.pt')
-
-    def __init__(self, request):
-        self.request = request
-
-    def getInfo(self, action):
-        factory, ifaces = action.args
-        factoryInfo = '%s.%s'%(action.info.module.__name__, factory.__name__)
-
-        if len(action.args[1]) > 1:
-            obj = action.args[1][0]
-            klass = action.args[1][-1]
-            event = config.get_cfg_storage(config.ID_EVENT).get(
-                action.args[1][-1], None)
-        else:
-            obj = None
-            klass = action.args[1][0]
-            event = config.get_cfg_storage(config.ID_EVENT).get(
-                action.args[1][0], None)
-
-        return locals()
-
-    def renderActions(self, *actions):
-        return self.actions(
-            getInfo = self.getInfo,
-            actions = actions,
-            manage = get_manage_url(self.request),
-            request = self.request)
-
-
-@intr_renderer('ptah.view:view')
-class ViewDirective(object):
-    """ pyramid views """
-
-    title = 'Views'
-    actions = view.template('ptah.manage:templates/directive-view.pt')
-
-    def __init__(self, request):
-        self.request = request
-
-    def getInfo(self, action):
-        info = action.info
-        factory = action.info.context
-
-        if inspect.isclass(factory):
-            isclass = True
-            name,context,template,route,layout,permission,intr=action.args
-        else:
-            isclass = False
-            factory,name,context,template,route,layout,permission,intr=action.args
-
-        if route:
-            if name:
-                view = 'view: "%s" route: "%s"'%((name or '<default>'), route)
-            else:
-                view = 'route: "%s"'%route
-        else:
-            view = 'view: %s'%(name or '<default>')
-
-        if isclass:
-            factoryInfo = '%s.%s'%(factory.__module__, factory.__name__)
-        else:
-            factoryInfo = '%s.%s'%(info.module.__name__, factory.__name__)
-
-        if template:
-            template = template.spec
-        else:
-            template = ''
-
-        return locals()
-
-    def renderActions(self, *actions):
-        return self.actions(
-            getInfo = self.getInfo,
-            actions = actions,
-            manage = get_manage_url(self.request),
-            request = self.request)

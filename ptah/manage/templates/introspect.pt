@@ -13,16 +13,11 @@
   </div>
 
   <div class="span4">
-    <h3>Types</h3>
+    <h3>Categories</h3>
     <ul>
-      <li>
-	<a href="events.html">Events</a>
-      </li>
-      <li>
-	<a href="routes.html">Routes</a>
-      </li>
-      <li>
-	<a href="../uri.html">Resolve uri</a>
+      <li tal:repeat="renderer view.renderers">
+	<a href="${view.manage_url}/${renderer.name}/">${renderer.title}</a>
+	<p>${renderer.__doc__}</p>
       </li>
     </ul>
   </div>

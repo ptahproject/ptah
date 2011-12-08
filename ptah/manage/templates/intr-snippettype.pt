@@ -1,0 +1,6 @@
+<h4>
+  <a href="${view.manage_url}/source.html?pkg=${intr['codeinfo'].module}#sl-${intr['codeinfo'].lineno}">
+    ${intr['title'] or intr['name']}</a>
+  <small>for</small> <tal:block content="intr['context'] or 'Anything'" />
+</h4>
+<p tal:condition="intr['description']">${intr['description']}</p>

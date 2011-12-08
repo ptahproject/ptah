@@ -1,0 +1,27 @@
+<div class="row">
+  <div class="span11">
+    <div class="page-header">
+      <h2>${context.renderer.title} 
+	<small>${context.renderer.__doc__}</small></h2>
+    </div>
+
+    <table class="zebra-striped">
+      <tbody>
+	<tr tal:repeat="intr context.intrs">
+	  <td>
+	    ${context.renderer(intr)}
+	  </td>
+	</tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="span5">
+    <h3>Categories</h3>
+    <ul>
+      <li tal:repeat="renderer context.renderers">
+	<a href="${context.manage_url}/${renderer.name}/">${renderer.title}</a>
+	<p>${renderer.__doc__}</p>
+      </li>
+    </ul>
+  </div>
+</div>

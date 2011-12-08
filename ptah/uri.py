@@ -52,12 +52,12 @@ def resolver(schema):
         intr = config.Introspectable(ID_RESOLVER,discr,func.__doc__,ID_RESOLVER)
         intr['schema'] = schema
         intr['callable'] = func
+        intr['codeinfo'] = info.codeinfo
 
         info.attach(
             config.Action(
                 _register_uri_resolver, (schema, func),
-                discriminator=discr,
-                introspectables = (intr,))
+                discriminator=discr, introspectables=(intr,))
             )
 
         return func
@@ -85,11 +85,12 @@ def register_uri_resolver(schema, resolver, depth=1):
     intr = config.Introspectable(ID_RESOLVER,discr,resolver.__doc__,ID_RESOLVER)
     intr['schema'] = schema
     intr['callable'] = resolver
+    intr['codeinfo'] = info.codeinfo
 
     info.attach(
         config.Action(
             _register_uri_resolver, (schema, resolver),
-            discriminator=discr, introspectables = (intr,))
+            discriminator=discr, introspectables=(intr,))
         )
 
 
@@ -99,17 +100,19 @@ def _register_uri_resolver(cfg, schema, resolver):
 
 def pyramid_uri_resolver(config, schema, resolver):
     """ pyramid configurator directive 'ptah_uri_resolver' """
+    info = ptah.config.DirectiveInfo()
     discr = (ID_RESOLVER, schema)
     intr = ptah.config.Introspectable(
         ID_RESOLVER,discr,resolver.__doc__,ID_RESOLVER)
     intr['schema'] = schema
     intr['callable'] = resolver
+    intr['codeinfo'] = info.codeinfo
 
     config.action(
         discr,
         lambda config, schema, resolver:
             config.get_cfg_storage(ID_RESOLVER).update({schema:resolver}),
-        (config, schema, resolver), introspectables = (intr,))
+        (config, schema, resolver), introspectables=(intr,))
 
 
 class UriFactory(object):

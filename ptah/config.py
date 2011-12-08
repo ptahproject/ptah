@@ -4,7 +4,7 @@ import logging
 import signal
 import traceback
 import pkg_resources
-from collections import defaultdict, OrderedDict
+from collections import defaultdict, namedtuple, OrderedDict
 from pkgutil import walk_packages
 from pyramid.compat import text_type, string_types, NativeIO
 from pyramid.registry import Introspectable
@@ -194,7 +194,6 @@ def objectEventNotify(event):
 
 _cleanups = set()
 
-
 def cleanup(handler):
     _cleanups.add(handler)
     return handler
@@ -251,6 +250,7 @@ def event(title='', category=''):
             storage[ev.name] = ev
 
             intr['descr'] = ev
+            intr['codeinfo'] = info.codeinfo
 
         info.attach(
             Action(
@@ -277,6 +277,7 @@ def adapter(*args, **kw):
         intr['name'] = name
         intr['required'] = required
         intr['adapter'] = func
+        intr['codeinfo'] = info.codeinfo
 
         def _register(cfg, name, func, required):
             cfg.registry.registerAdapter(func, required, name=name)
@@ -303,6 +304,7 @@ def subscriber(*args):
         intr = Introspectable(ID_SUBSCRIBER, discr, 'Subscriber', ID_SUBSCRIBER)
         intr['required'] = required
         intr['handler'] = func
+        intr['codeinfo'] = info.codeinfo
 
         def _register(cfg, func, required):
             cfg.registry.registerHandler(func, required)
@@ -310,8 +312,7 @@ def subscriber(*args):
         info.attach(
             Action(
                 _register, (func, required),
-                discriminator=discr,
-                introspectables = (intr,))
+                discriminator=discr, introspectables=(intr,))
             )
         return func
 
@@ -403,6 +404,9 @@ class ClassAction(Action):
             raise
 
 
+CodeInfo = namedtuple('Codeinfo', 'filename lineno function source module')
+
+
 class DirectiveInfo(object):
 
     def __init__(self, depth=1, moduleLevel=False, allowed_scope=None):
@@ -421,7 +425,8 @@ class DirectiveInfo(object):
         self.locals = f_locals
         self.scope = scope
         self.module = module
-        self.codeinfo = codeinfo
+        self.codeinfo = CodeInfo(
+            codeinfo[0], codeinfo[1], codeinfo[2], codeinfo[3], module.__name__)
 
         mods.add(self.module.__name__)
 
@@ -454,7 +459,7 @@ class DirectiveInfo(object):
         data[action.hash] = action
 
     def __repr__(self):
-        filename, line, function, source = self.codeinfo
+        filename, line, function, source, module = self.codeinfo
         return ' File "%s", line %d, in %s\n' \
                '      %s\n' % (filename, line, function, source)
 

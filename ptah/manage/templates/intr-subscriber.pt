@@ -1,0 +1,27 @@
+<tal:block tal:define="info view.getInfo(intr)">
+  <h4>
+    <a href="${view.manage_url}/source.html?pkg=${intr['codeinfo'].module}#sl-${intr['codeinfo'].lineno}">
+      ${info['factoryInfo']}
+    </a>
+  </h4>
+  <p tal:condition="intr['handler'].__doc__">
+    ${intr['handler'].__doc__}
+  </p>
+  <div tal:on-error="nothing">
+    listen to:
+    <div>
+      <tal:block condition="obj">
+	<tal:block tal:content="obj" />
+      </tal:block>
+      
+      <a tal:condition="event" href="../events.html?ev=${event.name}">
+	${event.title}</a>
+      <tal:block tal:condition="not event" tal:content="info['klass']"/>
+    </div>
+    
+    <tal:block condition="factory.__doc__">
+      <br />
+      <em tal:content="factory.__doc__" />
+    </tal:block>
+  </div>
+</tal:block>

@@ -77,22 +77,3 @@ class UriResolver(form.Form):
                             info['clsline'] = inspect.getsourcelines(cls)[-1]
 
                 data.append(info)
-
-
-@manage.intr_renderer('ptah:uri-resolver')
-class UriIntrospection(object):
-    """ uri introspection view """
-
-    title = 'Uri resolver'
-
-    tmpl = view.template('ptah.manage:templates/directive-uriresolver.pt')
-
-    def __init__(self, request):
-        self.request = request
-
-    def renderActions(self, *actions):
-        return self.tmpl(
-            actions = actions,
-            rst_to_html = ptah.rst_to_html,
-            manage = get_manage_url(self.request),
-            request = self.request)
