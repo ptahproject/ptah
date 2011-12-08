@@ -16,5 +16,5 @@ class RestModuleView(view.View):
         template = view.template('ptah.manage:templates/rest.pt'))
 
     def update(self):
-        self.url = self.request.get(
+        self.url = self.request.params.get(
             'url', '{0}/__rest__/cms/'.format(self.application_url))

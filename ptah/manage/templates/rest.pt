@@ -1,6 +1,9 @@
 <script type="text/javascript">
     function hrefify(text) {
         var first_index = text.indexOf('"http://');
+        if (first_index === -1) {
+            first_index = text.indexOf('"https://');
+        }
         var href = text.slice(first_index + 1, text.length - 1);
         var tag = '"<a href="' + href + '">' + href + '</a>"';
         var ret_val = '"__link__": ' + tag;
@@ -8,33 +11,44 @@
     }
          
     function linkify(text) {
-        var re = /\"__link__\":\s*\"http:\/\/.*\"/g//;
+        var re = /\"__link__\":\s*\"(http|https):\/\/.*\"/g//;
         re = RegExp(re);
         text = text.replace(re, hrefify);
         return text;
     }
 
+    function query() {
+        var value = $("input").val();
+        $.get(value, function(data) {
+            data = linkify(data)
+            $("#result").html(data);
+        });
+    }
+
     $(function() {
-        $("#query").bind("click", function() {
-            var value = $("input").val();
-            $.get(value, function(data) {
-                data = linkify(data)
-                $("#result").html(data);
-            });
-        }); 
+        $("#query").bind("click", query); 
         $("#result a").live("click", function() {
-            var value = $(this).attr('href');
-            $("input").val(value);
-            $.get(value, function(data) {
-                data = linkify(data)
-                $("#result").html(data);
-            });
+            /*
+             |  var value = $(this).attr('href');
+             |  $("input").val(value);
+             |  $.get(value, function(data) {
+             |      data = linkify(data)
+             |      $("#result").html(data);
+             |  });
+             |  return false;
+             */
+
+            var location = window.location.toString();
+            location = location.split('?url=')[0];
+            location += '?url=' + $(this).attr('href');
+            window.location = location;
             return false;
         }); 
+        query();
     });
 
 </script>
-        
+
 <div class="page-header">
     <h1>${view.context.title}<h1>
 </div>
