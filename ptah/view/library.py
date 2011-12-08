@@ -16,15 +16,15 @@ def library(name,
     between library collections.
 
     :param name: Library collection name
-    :param path: A relative file path or tuple of relative paths for the library. 
+    :param path: A relative file path or tuple of relative paths for the library.
                  If not relative to a view.static resource name must be absolute url.
     :param resource: A view.static registration name
     :param type:  A string, either `css` or `js`
     :param require: A library name to be considered dependency (Optional)
     :param prefix: A string which will be generated before the library HTML
     :param postfix: A string which will be generated after the library HTML
-                    An example of prefix/postfix is <!-- JS/CSS --> 
-    :param extra: Additional attributes for computed library tag 
+                    An example of prefix/postfix is <!-- JS/CSS -->
+    :param extra: Additional attributes for computed library tag
                   An example of extra is {'type':'text/pythonscript'}
     """
     if not path:
@@ -86,7 +86,7 @@ def include(request, name):
     """
     Given a library name; the library will be attached to the request.
     See render_includes function to compute the HTML from attached libraries.
-    
+
     :param request: Pyramid request
     :param name: Name of library to include
     """
