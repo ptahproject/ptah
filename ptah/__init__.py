@@ -73,7 +73,7 @@ from ptah.password import pwd_tool
 from ptah.password import password_changer
 
 # formatter
-from ptah.formatter import format
+from ptah.formatter import format, formatter
 
 # rest api
 from ptah.rest import RestService

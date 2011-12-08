@@ -280,3 +280,11 @@ class ContentTypeRenderer(Renderer):
 
     title = 'Content Types'
     template = view.template('ptah.manage:templates/intr-contenttype.pt')
+
+
+@manage.intr_renderer('ptah:formatter')
+class formatterRenderer(Renderer):
+    """ List of formatters """
+
+    title = 'Formatters'
+    template = view.template('ptah.manage:templates/intr-formatter.pt')
