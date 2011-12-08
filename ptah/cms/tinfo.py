@@ -15,7 +15,8 @@ from ptah.cms.interfaces import Forbidden, ContentSchema, ITypeInformation
 
 log = logging.getLogger('ptah.cms')
 
-TYPES_DIR_ID = 'ptah-cms:type'
+TYPES_DIR_ID = 'ptah.cms:type'
+
 
 @ptah.resolver('cms-type')
 def typeInfoResolver(uri):
@@ -157,6 +158,7 @@ def Type(name, title=None, fieldset=None, **kw):
     intr = config.Introspectable(TYPES_DIR_ID, discr, name, TYPES_DIR_ID)
     intr['name'] = name
     intr['type'] = typeinfo
+    intr['codeinfo'] = info.codeinfo
 
     info.attach(
         config.ClassAction(
@@ -203,8 +205,8 @@ def register_type_impl(
 
     # sql query for content resolver
     cls.__uri_sql_get__ = ptah.QueryFreezer(
-        lambda: Session.query(cls)
-        .filter(cls.__uri__ == sqla.sql.bindparam('uri')))
+        lambda: Session.query(cls) \
+            .filter(cls.__uri__ == sqla.sql.bindparam('uri')))
 
     # build cms actions
     build_class_actions(cls)

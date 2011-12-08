@@ -87,11 +87,12 @@ class ACL(list):
         self.title = title
         self.description = description
 
+        info = config.DirectiveInfo()
         discr = (ID_ACL, id)
         intr = config.Introspectable(ID_ACL, discr, title, ID_ACL)
         intr['acl'] = self
+        intr['codeinfo'] = info.codeinfo
 
-        info = config.DirectiveInfo()
         info.attach(
             config.Action(
                 lambda config, p: \

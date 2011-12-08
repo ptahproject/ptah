@@ -1,0 +1,19 @@
+<h4>${intr['group'].__title__}
+  <small>
+    <a href="${view.manage_url}/source.html?pkg=${intr['codeinfo'].module}#sl-${intr['codeinfo'].lineno}">
+      ${intr['group'].__name__}</a>
+</small></h4>
+<p tal:condition="intr['group'].__description__">
+  ${intr['group'].__description__}
+</p>
+
+<p>
+  <table class="zebra-striped">
+    <tr tal:repeat="field intr['group'].__fields__.fields()">
+      <td>${field.name}</td>
+      <td>${field.__class__.__name__}</td>
+      <td>${field.dumps(field.default)}</td>
+      <td>${field.title}</td>
+    </tr>
+  </table>
+</p>

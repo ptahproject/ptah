@@ -45,9 +45,13 @@ def auth_checker(checker):
             ...
 
     """
+    info = config.DirectiveInfo()
     discr = (AUTH_CHECKER_ID, hash(checker))
-    intr = config.Introspectable(AUTH_CHECKER_ID, discr, '', AUTH_CHECKER_ID)
+    intr = config.Introspectable(
+        AUTH_CHECKER_ID, discr, checker.__name__, AUTH_CHECKER_ID)
+    intr['name'] = '{0}.{1}'.format(info.codeinfo.module, checker.__name__)
     intr['callable'] = checker
+    intr['codeinfo'] = info.codeinfo
 
     info = config.DirectiveInfo()
     info.attach(
@@ -94,8 +98,10 @@ def auth_provider(name):
         discr = (AUTH_PROVIDER_ID, name)
         intr = config.Introspectable(
             AUTH_PROVIDER_ID, discr, name, AUTH_PROVIDER_ID)
-        intr['name'] = name
+        intr['id'] = name
+        intr['name'] = '{0}.{1}'.format(info.codeinfo.module, cls.__name__)
         intr['provider'] = cls
+        intr['codeinfo'] = info.codeinfo
 
         info.attach(
             config.Action(
@@ -116,13 +122,16 @@ def register_auth_provider(name, provider):
 
        ptah.register_auth_provider('my-provider', AuthProvider())
     """
+    info = config.DirectiveInfo()
     discr = (AUTH_PROVIDER_ID, name)
     intr = config.Introspectable(
         AUTH_PROVIDER_ID, discr, name, AUTH_PROVIDER_ID)
-    intr['name'] = name
+    intr['id'] = name
+    intr['name'] = '{0}.{1}'.format(
+        info.codeinfo.module, provider.__class__.__name__)
     intr['provider'] = provider
+    intr['codeinfo'] = info.codeinfo
 
-    info = config.DirectiveInfo()
     info.attach(
         config.Action(
             lambda config, n, p: config.get_cfg_storage(AUTH_PROVIDER_ID)\
@@ -132,7 +141,8 @@ def register_auth_provider(name, provider):
 
 
 def pyramid_auth_provider(config, name, provider):
-    """ pyramid configurator directive for authentication provider registration::
+    """ pyramid configurator directive for
+    authentication provider registration::
 
        class AuthProvider(object):
            ...
@@ -141,11 +151,21 @@ def pyramid_auth_provider(config, name, provider):
        config.include('ptah')
        config.ptah_auth_provider('my-provider', AuthProvider())
     """
+    info = ptah.config.DirectiveInfo()
+    discr = (AUTH_PROVIDER_ID, name)
+    intr = ptah.config.Introspectable(
+        AUTH_PROVIDER_ID, discr, name, AUTH_PROVIDER_ID)
+    intr['id'] = name
+    intr['name'] = '{0}.{1}'.format(
+        info.codeinfo.module, provider.__class__.__name__)
+    intr['provider'] = provider
+    intr['codeinfo'] = info.codeinfo
+
     config.action(
-        (AUTH_PROVIDER_ID, name),
+        discr,
         lambda config, n, p: \
             config.get_cfg_storage(AUTH_PROVIDER_ID).update({n: p}),
-        (config, name, provider))
+        (config, name, provider), introspectables=(intr,))
 
 
 @implementer(IAuthInfo)

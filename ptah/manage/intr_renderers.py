@@ -6,6 +6,7 @@ import ptah
 from ptah import config, view, manage, form
 from ptah.manage import intr_renderer, get_manage_url
 from ptah.manage.manage import INTROSPECT_ID
+from ptah.form.field import PREVIEW_ID
 
 
 class Renderer(object):
@@ -27,7 +28,7 @@ class Renderer(object):
 
 @intr_renderer(ptah.config.ID_EVENT)
 class EventRenderer(Renderer):
-    """ zca event declarations """
+    """ List of event declarations """
 
     title = 'Events'
     template = view.template('ptah.manage:templates/intr-event.pt')
@@ -35,7 +36,7 @@ class EventRenderer(Renderer):
 
 @intr_renderer('ptah.config:adapter')
 class AdapterDirective(object):
-    """ zc adapter registrations """
+    """ List of adapter registrations """
 
     title = 'zc adapters'
     actions = view.template('ptah.manage:templates/directive-adapter.pt')
@@ -98,7 +99,7 @@ class RouteDirective(Renderer):
 
 @intr_renderer('ptah.config:subscriber')
 class SubscriberRenderer(Renderer):
-    """ zca event subscribers """
+    """ List of event subscribers """
 
     title = 'Event subscribers'
     template = view.template('ptah.manage:templates/intr-subscriber.pt')
@@ -124,7 +125,7 @@ class SubscriberRenderer(Renderer):
 
 @intr_renderer('ptah.view:view')
 class ViewDirective(object):
-    """ pyramid views """
+    """ Pyramid views """
 
     title = 'Views'
     actions = view.template('ptah.manage:templates/directive-view.pt')
@@ -141,7 +142,8 @@ class ViewDirective(object):
             name,context,template,route,layout,permission,intr=action.args
         else:
             isclass = False
-            factory,name,context,template,route,layout,permission,intr=action.args
+            factory,name,context,template,route,layout,\
+                permission,intr=action.args
 
         if route:
             if name:
@@ -193,3 +195,88 @@ class UriRenderer(Renderer):
 
     title = 'Uri resolver'
     template = view.template('ptah.manage:templates/intr-uriresolver.pt')
+
+
+@intr_renderer('ptah.manage:module')
+class ManageModuleRenderer(Renderer):
+    """ List of registered ptah manage modules """
+
+    title = 'Ptah manage modules'
+    template = view.template('ptah.manage:templates/intr-managemodule.pt')
+
+
+@intr_renderer('ptah.manage:irenderer')
+class IntrospectorRenderer(Renderer):
+    """ List of registered introspector renderers """
+
+    title = 'Ptah introspector renderers'
+    template = view.template('ptah.manage:templates/intr-renderer.pt')
+
+
+@intr_renderer('ptah:aclmap')
+class ACLMapRenderer(Renderer):
+    """ ACL map registration """
+
+    title = 'ACL Maps'
+    template = view.template('ptah.manage:templates/intr-aclmap.pt')
+
+
+@intr_renderer('ptah:authchecker')
+class AuthCheckerRenderer(Renderer):
+    """ List of registered authentication checkers """
+
+    title = 'Authentication checkers'
+    template = view.template('ptah.manage:templates/intr-authchecker.pt')
+
+
+@intr_renderer('ptah:authprovider')
+class AuthProviderRenderer(Renderer):
+    """ List of registered authentication providers """
+
+    title = 'Authentication providers'
+    template = view.template('ptah.manage:templates/intr-authprovider.pt')
+
+
+@intr_renderer('ptah:settings-group')
+class SettingsGroupRenderer(Renderer):
+    """ List of registered settings groups """
+
+    title = 'Settings'
+    template = view.template('ptah.manage:templates/intr-settings.pt')
+
+
+@intr_renderer('ptah.form:field')
+class FieldRenderer(Renderer):
+    """ List of registered fields """
+
+    title = 'Fields'
+    template = view.template('ptah.manage:templates/intr-field.pt')
+
+    def __init__(self, request):
+        super(FieldRenderer, self).__init__(request)
+
+        self.previews = config.get_cfg_storage(PREVIEW_ID)
+
+
+@intr_renderer('ptah:uiaction')
+class uiActionRenderer(Renderer):
+    """ List of registered ui actions """
+
+    title = 'UI Actions'
+    template = view.template('ptah.manage:templates/intr-uiaction.pt')
+
+
+@intr_renderer('ptah:token-type')
+class TokenTypeRenderer(Renderer):
+    """ List of registered token types """
+
+    title = 'Token types'
+    template = view.template('ptah.manage:templates/intr-tokentype.pt')
+
+
+@manage.intr_renderer('ptah.cms:type')
+class ContentTypeRenderer(Renderer):
+    """ Ptah content types """
+
+    title = 'Content Types'
+    template = view.template('ptah.manage:templates/intr-contenttype.pt')

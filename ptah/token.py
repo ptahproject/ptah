@@ -27,18 +27,17 @@ class TokenType(object):
         self.title = title
         self.description = description
 
-        discr = (ID_TOKEN_TYPE, id)
-        intr = config.Introspectable(ID_TOKEN_TYPE, discr, title,ID_TOKEN_TYPE)
-        intr.update(id = id, timeout = timeout, description = description)
-
         info = config.DirectiveInfo()
+        discr = (ID_TOKEN_TYPE, id)
+        intr = config.Introspectable(ID_TOKEN_TYPE, discr, title, ID_TOKEN_TYPE)
+        intr['ttype'] = self
+        intr['codeinfo'] = info.codeinfo
+
         info.attach(
             config.Action(
                 lambda config, id, tp: \
                     config.get_cfg_storage(ID_TOKEN_TYPE).update({id: tp}),
-                (id, self),
-                discriminator=discr,
-                introspectables = (intr,))
+                (id, self), discriminator=discr, introspectables=(intr,))
             )
 
 

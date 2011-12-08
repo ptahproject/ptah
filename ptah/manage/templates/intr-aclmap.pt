@@ -1,0 +1,6 @@
+<h4>${intr['acl'].title}
+  <small>
+    <a href="${view.manage_url}/source.html?pkg=${intr['codeinfo'].module}#sl-${intr['codeinfo'].lineno}">
+      ${intr['acl'].id}</a>
+</small></h4>
+<p tal:condition="intr['acl'].description">${intr['acl'].description}</p>

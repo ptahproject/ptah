@@ -411,7 +411,7 @@ class TestEditRecord(PtahTestCase):
         self.assertEqual(content.title, 'Content')
 
 
-class TestTypeIntrospect(PtahTestCase):
+class _TestTypeIntrospect(PtahTestCase):
 
     _cleanup_mod = False
 

@@ -6,7 +6,7 @@ from ptah.authentication import auth_service
 
 CONFIG_ID = 'ptah.manage:config'
 MANAGE_ID = 'ptah.manage:module'
-INTROSPECT_ID = 'ptah.manage:introspection'
+INTROSPECT_ID = 'ptah.manage:irenderer'
 
 
 class PtahModule(object):
@@ -48,9 +48,10 @@ def module(name):
 
     def wrapper(cls):
         discr = (MANAGE_ID, name)
-        intr = config.Introspectable(MANAGE_ID, discr, name, MANAGE_ID)
+        intr = config.Introspectable(MANAGE_ID, discr, cls.title, MANAGE_ID)
         intr['name'] = name
         intr['factory'] = cls
+        intr['codeinfo'] = info.codeinfo
 
         def _complete(cfg, cls, name):
             cls.name = name
@@ -71,9 +72,11 @@ def intr_renderer(name):
 
     def wrapper(cls):
         discr = (INTROSPECT_ID, name)
-        intr = config.Introspectable(INTROSPECT_ID, discr, name, INTROSPECT_ID)
+        intr = config.Introspectable(
+            INTROSPECT_ID, discr, cls.title, INTROSPECT_ID)
         intr['name'] = name
         intr['factory'] = cls
+        intr['codeinfo'] = info.codeinfo
 
         def _complete(cfg, cls, name):
             cls.name = name

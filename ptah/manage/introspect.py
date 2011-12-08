@@ -138,7 +138,6 @@ class IntrospectorView(view.View):
         template = view.template('ptah.manage:templates/introspect-intr.pt'))
 
 
-
 def lineno(ob):
     if ob is not None:
         return inspect.getsourcelines(ob)[-1]

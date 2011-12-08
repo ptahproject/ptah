@@ -183,7 +183,6 @@ class BaseMultiChoiceField(VocabularyField):
 class TextField(InputField):
     __doc__ = _('HTML Text input widget')
 
-
     klass = 'text-widget'
     value = ''
 
@@ -241,7 +240,6 @@ class FloatField(Number, InputField):
 @field('decimal')
 class DecimalField(Number, InputField):
     __doc__ = _('Decimal input widget')
-
 
     klass = 'decimal-widget'
 

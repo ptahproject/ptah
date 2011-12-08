@@ -19,6 +19,7 @@ def field(name, layer=''):
         intr['name'] = name
         intr['layer'] = layer
         intr['field'] = cls
+        intr['codeinfo'] = info.codeinfo
 
         info.attach(
             config.Action(

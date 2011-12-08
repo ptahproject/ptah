@@ -71,12 +71,13 @@ def uiaction(context, id, title, description='',
 
     ac = Action(**kwargs)
 
+    info = config.DirectiveInfo()
     discr = (ID_UIACTION, id, context, category)
     intr = ptah.config.Introspectable(
         ID_UIACTION, discr, title, ID_UIACTION)
-    intr.update(id = id, action = action)
+    intr['action'] = ac
+    intr['codeinfo'] = info.codeinfo
 
-    info = config.DirectiveInfo()
     info.attach(
         config.Action(
             lambda cfg, id, category, context, ac: \

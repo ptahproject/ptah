@@ -149,10 +149,12 @@ class TestSettings(BaseTesting):
             'node',
             default = 'test')
 
-        group = ptah.register_settings(
+        ptah.register_settings(
             'group2', node, validator=validator)
 
         self.init_ptah()
+
+        group = ptah.get_settings('group2', self.registry)
 
         data, err = group.extract({'group2.node': 'value'})
 
@@ -420,10 +422,12 @@ class TestSettingsInitialization(BaseTesting):
             'node2',
             default = 10)
 
-        group = ptah.register_settings('group', node1, node2)
+        ptah.register_settings('group', node1, node2)
         self.init_ptah()
 
         ptah.initialize_settings(self.config, {'include': path})
+
+        group = ptah.get_settings('group', self.request.registry)
 
         self.assertEqual(group['node1'], 'value')
         self.assertEqual(group['node2'], 10)

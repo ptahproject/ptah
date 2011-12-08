@@ -48,7 +48,7 @@ def pyramid_get_settings(config, grp):
 def initialize_settings(pconfig, cfg, section=configparser.DEFAULTSECT):
     """ initialize settings management system """
     registry = pconfig.registry
-    settings = config.get_cfg_storage(SETTINGS_OB_ID, pconfig.registry, Settings)
+    settings = config.get_cfg_storage(SETTINGS_OB_ID,pconfig.registry,Settings)
 
     if settings.initialized:
         raise RuntimeError(
@@ -104,20 +104,20 @@ def register_settings(name, *fields, **kw):
     group = Group(name=name, *fields, **kw)
     interface.directlyProvides(Group, category)
 
+    info = config.DirectiveInfo()
     discr = (ID_SETTINGS_GROUP, name)
     intr = config.Introspectable(
-        ID_SETTINGS_GROUP, discr, name, ID_SETTINGS_GROUP)
+        ID_SETTINGS_GROUP, discr, group.__title__, ID_SETTINGS_GROUP)
     intr['name'] = name
+    intr['group'] = group
+    intr['codeinfo'] = info.codeinfo
 
-    ac = config.Action(
-        lambda config, group: config.get_cfg_storage(ID_SETTINGS_GROUP)\
-            .update({group.__name__: group.clone(config.registry)}),
-        (group,), discriminator=discr, introspectables=(intr,))
-
-    info = config.DirectiveInfo()
-    info.attach(ac)
-
-    return group
+    info.attach(
+        config.Action(
+            lambda config, group: config.get_cfg_storage(ID_SETTINGS_GROUP)\
+                .update({group.__name__: group.clone(config.registry)}),
+            (group,), discriminator=discr, introspectables=(intr,))
+        )
 
 
 class Settings(object):

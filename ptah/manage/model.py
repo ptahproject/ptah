@@ -239,23 +239,3 @@ class EditRecord(form.Form):
     @form.button('Back')
     def back_handler(self):
         raise HTTPFound(location='../')
-
-
-@manage.intr_renderer('ptah-cms:type')
-class TypeIntrospection(object):
-    """ Ptah content types """
-
-    name = 'ptah-cms:type'
-    title = 'Content Types'
-    actions = view.template('ptah.manage:templates/directive-type.pt')
-
-    def __init__(self, request):
-        self.request = request
-
-    def renderActions(self, *actions):
-        return self.actions(
-            types = cms.get_types(),
-            actions = actions,
-            rst_to_html = ptah.rst_to_html,
-            manage = get_manage_url(self.request),
-            request = self.request)
