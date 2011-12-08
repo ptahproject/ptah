@@ -30,7 +30,7 @@
             <li><a href="http://www.sqlalchemy.org/">Chameleon</a></li>
           </ul>
         </div>
-      <div>
+      </div>
       <div class="content">
         <div class="hero-unit">
           <h1>Welcome to {{package}}!</h1>
