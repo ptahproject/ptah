@@ -1,4 +1,4 @@
-# ptah.view public API
+# ptah.view API !!! PRIVATE API !!! basically it is mimic core pyramid api
 
 # static resources
 from ptah.view.resources import static
@@ -8,9 +8,6 @@ from ptah.view.resources import static_url
 from ptah.view.library import library
 from ptah.view.library import include
 from ptah.view.library import render_includes
-
-
-# !!! PRIVATE API !!!
 
 # path/template
 from ptah.view.tmpl import path, template

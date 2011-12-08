@@ -115,7 +115,7 @@ from ptah.cms import Session
 # form api
 from ptah import form
 
-# view api
+# private! view api
 from ptah import view
 
 
