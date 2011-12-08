@@ -1,19 +1,9 @@
 <div class="page-header">
-  <h2>Introspect</h2>
+  <h2>Introspection categories</h2>
 </div>
 
 <div class="row">
-  <div class="span4">
-    <h3>Packages</h3>
-    <ul>
-      <li tal:repeat="pkg view.packages">
-	<a href="${pkg}/">${pkg}</a>
-      </li>
-    </ul>
-  </div>
-
-  <div class="span4">
-    <h3>Categories</h3>
+  <div class="span16">
     <ul>
       <li tal:repeat="renderer view.renderers">
 	<a href="${view.manage_url}/${renderer.name}/">${renderer.title}</a>
