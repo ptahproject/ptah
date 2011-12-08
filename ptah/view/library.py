@@ -90,7 +90,6 @@ def include(request, name):
     :param request: Pyramid request
     :param name: Name of library to include
     """
-    abspath, 
     libs = getattr(request, '__includes', None)
     if libs is None:
         libs = []
