@@ -3,9 +3,9 @@ import cgi
 from zope.interface import implementer
 from pyramid.interfaces import IRequest
 from pyramid.compat import binary_type
+from pyramid.renderers import render
 
 import ptah
-from ptah.view.tmpl import template as get_template
 from ptah.view.interfaces import IMessage, IStatusMessage
 
 
@@ -47,7 +47,7 @@ class MessageService(object):
 
         messages = self.session.get(self.SESSIONKEY, [])
 
-        text = message.render(text)
+        text = message(text)
         if text not in self.messages():
             messages.append(text)
         self.session[self.SESSIONKEY] = messages
@@ -76,38 +76,38 @@ class Message(object):
     def __init__(self, request):
         self.request = request
 
-    def render(self, message):
-        return self.template(message = message, request = self.request)
+    def __call__(self, message):
+        return render(self.template, {'message': message}, self.request)
 
 
 @ptah.adapter(IRequest, name='info')
 class InformationMessage(Message):
 
-    template = get_template('ptah.view:templates/msg-info.pt')
+    template = 'ptah.view:templates/msg-info.pt'
 
 
 @ptah.adapter(IRequest, name='success')
 class SuccessMessage(Message):
 
-    template = get_template('ptah.view:templates/msg-success.pt')
+    template = 'ptah.view:templates/msg-success.pt'
 
 
 @ptah.adapter(IRequest, name='warning')
 class WarningMessage(Message):
 
-    template = get_template('ptah.view:templates/msg-warning.pt')
+    template = 'ptah.view:templates/msg-warning.pt'
 
 
 @ptah.adapter(IRequest, name='error')
 class ErrorMessage(Message):
 
-    template = get_template('ptah.view:templates/msg-error.pt')
+    template = 'ptah.view:templates/msg-error.pt'
 
-    def render(self, e):
+    def __call__(self, e):
         if isinstance(e, Exception):
-            message = '%s: %s'%(e.__class__.__name__,
-                                cgi.escape(str(e), True))
+            message = '%s: %s'%(
+                e.__class__.__name__, cgi.escape(str(e), True))
         else:
             message = e
 
-        return super(ErrorMessage, self).render(message)
+        return super(ErrorMessage, self).__call__(message)

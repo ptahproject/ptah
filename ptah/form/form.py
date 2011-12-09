@@ -2,15 +2,17 @@
 from collections import OrderedDict
 from pyramid import security
 from pyramid.decorator import reify
+from pyramid.renderers import render
+from pyramid.interfaces import IResponse
 from pyramid.httpexceptions import HTTPForbidden
+from pyramid.config.views import DefaultViewMapper
 from webob.multidict import MultiDict
 
 import ptah
 from ptah import view
 from ptah.form.field import Field, Fieldset
 from ptah.form.button import Buttons, Actions
-from ptah.form.interfaces import _, Invalid, FORM_INPUT, FORM_DISPLAY
-from ptah.form.interfaces import IForm
+from ptah.form.interfaces import _, Invalid, FORM_INPUT, FORM_DISPLAY, IForm
 
 CSRF = None
 
@@ -25,16 +27,15 @@ class FormErrorMessage(view.Message):
 
     formErrorsMessage = _('Please fix indicated errors.')
 
-    template = view.template('ptah.form:templates/form-error.pt')
+    template = 'ptah.form:templates/form-error.pt'
 
-    def render(self, message):
+    def __call__(self, message):
         errors = [err for err in message
                   if isinstance(err, Invalid) and err.field is None]
 
-        return self.template(
-            errors=errors,
-            message=self.formErrorsMessage,
-            request=self.request)
+        return render(self.template,
+                      {'errors': errors,
+                       'message': self.formErrorsMessage}, self.request)
 
 
 class FormWidgets(OrderedDict):
@@ -93,10 +94,18 @@ class FormWidgets(OrderedDict):
         return data, errors
 
 
-class Form(view.View):
-    """A form
+class FormViewMapper(DefaultViewMapper):
 
-    """
+    def map_class_native(self, view):
+        def _class_view(context, request):
+            inst = view(context, request)
+            request.__view__ = inst
+            return inst.render_to_request()
+        return _class_view
+
+
+class Form(view.View):
+    """ A form """
 
     fields = Fieldset()
     buttons = None
@@ -132,6 +141,10 @@ class Form(view.View):
     csrfname = 'csrf-token'
 
     params = MultiDict({})
+
+    template = None
+
+    __view_mapper__ = FormViewMapper
 
     def __init__(self, context, request):
         super(Form, self).__init__(context, request)
@@ -209,15 +222,22 @@ class Form(view.View):
 
         return self.actions.execute()
 
-    def render(self):
+    def render_to_request(self):
+        result = self.update()
+
+        response = self.request.registry.queryAdapterOrSelf(result, IResponse)
+        if response is not None:
+            return response
+
+        response = self.request.response
+        response.unicode_body = self()
+        return response
+
+    def __call__(self):
         if self.template is None:
             return self.snippet(FORM_VIEW, self)
 
-        kwargs = {'view': self,
-                  'context': self.context,
-                  'request': self.request}
-
-        return self.template(**kwargs)
+        return render(self.template, value, self.request)
 
 
 class DisplayForm(Form):

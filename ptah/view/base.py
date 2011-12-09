@@ -19,7 +19,6 @@ class View(object):
     __parent__ = None
 
     format = format
-    template = None
 
     def __init__(self, context, request):
         self.context = context
@@ -36,18 +35,16 @@ class View(object):
     def update(self):
         return {}
 
-    def render(self):
+    def __call__(self):
         params = self.update()
 
-        if self.template is not None:
-            kwargs = {'view': self,
-                      'context': self.context,
-                      'request': self.request}
-            if type(params) is dict:
-                kwargs.update(params)
-            return self.template(**kwargs)
+        kwargs = {'view': self,
+                  'context': self.context,
+                  'request': self.request}
+        if type(params) is dict:
+            kwargs.update(params)
 
-        return ''
+        return kwargs
 
     def include(self, name):
         include(self.request, name)

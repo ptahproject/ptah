@@ -147,8 +147,6 @@ class PtahManageRoute(object):
         raise KeyError(key)
 
 
-view.snippettype('ptah-module-actions', PtahModule)
-
 view.register_snippet(
     'ptah-module-actions', PtahModule,
     template = view.template('ptah.manage:templates/moduleactions.pt'))
@@ -162,14 +160,14 @@ view.register_layout(
     template=view.template("ptah.manage:templates/ptah-layout.pt"))
 
 
+@view.layout('ptah-manage', PtahManageRoute,
+             template=view.template("ptah.manage:templates/ptah-manage.pt"))
 class LayoutManage(view.Layout):
-    view.layout('ptah-manage', PtahManageRoute,
-                template=view.template("ptah.manage:templates/ptah-manage.pt"))
+    """ Base layout for ptah manage """
 
     def update(self):
-        self.cfg = ptah.get_settings(ptah.CFG_ID_PTAH)
-        self.manage = self.cfg['manage']
         self.user = ptah.resolve(self.context.userid)
+        self.manage_url = get_manage_url(self.request)
 
         mod = self.request.context
         while not isinstance(mod, PtahModule):
@@ -180,11 +178,16 @@ class LayoutManage(view.Layout):
         self.module = mod
 
 
+from ptah.view.layout import layout_wrapper
+from pyramid.view import view_config
+
+
+@view_config(
+    context = PtahManageRoute,
+    wrapper = layout_wrapper(),
+    renderer = 'ptah.manage:templates/manage.pt')
 class ManageView(view.View):
     """List ptah modules"""
-    view.pview(
-        context = PtahManageRoute,
-        template = view.template('ptah.manage:templates/manage.pt'))
 
     __intr_path__ = '/ptah-manage/'
 

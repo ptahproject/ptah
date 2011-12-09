@@ -3,13 +3,14 @@ import traceback
 from datetime import datetime
 from json import dumps
 from collections import OrderedDict
+from pyramid.view import view_config
 from pyramid.compat import NativeIO
 from pyramid.response import Response
 from pyramid.authentication import parse_ticket, AuthTicket, BadTicket
 from pyramid.httpexceptions import WSGIHTTPException, HTTPNotFound
 
 import ptah
-from ptah import view, config
+from ptah import config
 
 
 ID_REST = 'ptah:rest-service'
@@ -119,13 +120,14 @@ def dthandler(obj):
     return obj.isoformat() if isinstance(obj, datetime) else None
 
 
+@view_config(context=RestLoginRoute)
 class Login(object):
-    view.pview(context=RestLoginRoute)
+    """ Rest login view """
 
     def __init__(self, request):
         self.request = request
 
-    def render(self):
+    def __call__(self):
         request = self.request
 
         login = request.POST.get('login', '')
@@ -160,13 +162,14 @@ class Login(object):
         return ticket.cookie_value()
 
 
+@view_config(context=RestApiRoute)
 class Api(object):
-    view.pview(context=RestApiRoute)
+    """ Rest API interface """
 
     def __init__(self, request):
         self.request = request
 
-    def render(self):
+    def __call__(self):
         request = self.request
 
         # authentication by token

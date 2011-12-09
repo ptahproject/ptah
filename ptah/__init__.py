@@ -115,6 +115,9 @@ from ptah.cms import Session
 # form api
 from ptah import form
 
+# view api
+from ptah.view.layout import layout_wrapper
+
 # private! view api
 from ptah import view
 
@@ -221,6 +224,9 @@ def ptah_initialize(config, packages=None, autoinclude=False):
 
         # initialize settings
         ptah.settings.initialize_settings(config, settings)
+
+        # load venusian
+        config.scan('ptah')
 
         # create sql tables
         Base = sqlahelper.get_base()

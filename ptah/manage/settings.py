@@ -2,6 +2,7 @@
 import ptah
 from ptah import view, manage, config
 from ptah.settings import ID_SETTINGS_GROUP
+from pyramid.view import view_config
 from pyramid.httpexceptions import HTTPFound
 
 
@@ -26,10 +27,11 @@ class SettingsWrapper(object):
         self.group = grp
 
 
+@view_config(
+    context=SettingsModule, wrapper = ptah.layout_wrapper(),
+    renderer='ptah.manage:templates/settings.pt')
 class SettingsView(view.View):
-    view.pview(
-        context = SettingsModule,
-        template = view.template('ptah.manage:templates/settings.pt'))
+    """ Settings manage module view """
 
     __doc__ = "Settings module page."
     __intr_path__ = '/ptah-manage/settings/index.html'
@@ -62,8 +64,9 @@ class SettingsView(view.View):
         return {'data': sorted(data, key=lambda item: item['title'])}
 
 
+@view_config(context=SettingsWrapper, wrapper=ptah.layout_wrapper())
 class EditForm(ptah.form.Form):
-    view.pview(context = SettingsWrapper)
+    """ Settings group edit form """
 
     @property
     def fields(self):

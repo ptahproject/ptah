@@ -48,17 +48,18 @@ class ApplicationsModuleView(view.View):
         self.factories = [f for _t, f in sorted(factories)]
 
 
+@view.layout('ptah-manage', manage.PtahManageRoute, route=MANAGE_APP_ROUTE)
 class AppLayout(manage.LayoutManage):
-    view.layout('ptah-manage', manage.PtahManageRoute,
-                route=MANAGE_APP_ROUTE,
-                template=view.template("ptah.manage:templates/ptah-manage.pt"))
+    """ Application module layout """
+
+    template = view.template("ptah.manage:templates/ptah-manage.pt")
 
 
+@view.layout('', cms.Node, parent="ptah-manage", route=MANAGE_APP_ROUTE)
 class AppContentLayout(view.Layout):
-    view.layout('', cms.Node,
-                parent="ptah-manage",
-                route=MANAGE_APP_ROUTE,
-                template=view.template("templates/apps-layout.pt"))
+    """ Application module content layout """
+
+    template = view.template("templates/apps-layout.pt")
 
     def update(self):
         self.actions = ptah.list_uiactions(

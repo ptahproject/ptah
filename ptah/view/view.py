@@ -134,7 +134,7 @@ def register_view_impl(cfg, factory, name, context, template, route_name,
 
     # view
     if template is None:
-        render = ViewRenderer(viewMapper(factory, 'render'))
+        render = ViewRenderer(viewMapper(factory, '__call__'))
     else:
         render = TemplateRenderer(viewMapper(factory, 'update'), template)
     factory.__view_renderer__ = render
