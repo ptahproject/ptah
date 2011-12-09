@@ -1,5 +1,6 @@
 """ introspect module """
 import urllib
+from pyramid.view import view_config
 from pyramid.compat import string_types
 
 import ptah
@@ -46,13 +47,11 @@ class Introspector(object):
             key = lambda item: item.title)
 
 
+@view_config(
+    context=IntrospectModule, wrapper=ptah.wrap_layout(),
+    renderer='ptah.manage:templates/introspect.pt')
 class MainView(view.View):
-    view.pview(
-        context = IntrospectModule,
-        template = view.template('ptah.manage:templates/introspect.pt'))
-
     __doc__ = 'Introspection module view.'
-    __intr_path__ = '/ptah-manage/introspect/index.html'
 
     def update(self):
         self.manage_url = '{0}/introspect'.format(get_manage_url(self.request))
@@ -62,7 +61,8 @@ class MainView(view.View):
             key = lambda item: item.title)
 
 
+@view_config(
+    context=Introspector, wrapper=ptah.wrap_layout(),
+    renderer='ptah.manage:templates/introspect-intr.pt')
 class IntrospectorView(view.View):
-    view.pview(
-        context = Introspector,
-        template = view.template('ptah.manage:templates/introspect-intr.pt'))
+    pass

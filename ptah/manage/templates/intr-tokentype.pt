@@ -3,4 +3,4 @@
     <a href="${view.manage_url}/source.html?pkg=${intr['codeinfo'].module}#sl-${intr['codeinfo'].lineno}">
       ${intr['ttype'].id}</a>
 </small></h4>
-<p tal:condition="intr['ttype'].description">${intr['ttype'].description}</p>
+<p tal:condition="intr['ttype'].description">${structure: intr['ttype'].description}</p>

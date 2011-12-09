@@ -1,3 +1,4 @@
+from pyramid.view import view_config
 from pyramid.httpexceptions import HTTPForbidden
 
 import ptah
@@ -153,15 +154,15 @@ view.register_snippet(
 
 view.register_layout(
     '', PtahManageRoute, parent='ptah-manage',
-    template=view.template("ptah.manage:templates/ptah-layout.pt"))
+    renderer="ptah.manage:templates/ptah-layout.pt")
 
 view.register_layout(
     'ptah-page', PtahManageRoute, parent='ptah-manage',
-    template=view.template("ptah.manage:templates/ptah-layout.pt"))
+    renderer="ptah.manage:templates/ptah-layout.pt")
 
 
 @view.layout('ptah-manage', PtahManageRoute,
-             template=view.template("ptah.manage:templates/ptah-manage.pt"))
+             renderer="ptah.manage:templates/ptah-manage.pt")
 class LayoutManage(view.Layout):
     """ Base layout for ptah manage """
 
@@ -178,18 +179,12 @@ class LayoutManage(view.Layout):
         self.module = mod
 
 
-from ptah.view.layout import layout_wrapper
-from pyramid.view import view_config
-
-
 @view_config(
-    context = PtahManageRoute,
-    wrapper = layout_wrapper(),
+    context=PtahManageRoute, wrapper = ptah.wrap_layout(),
     renderer = 'ptah.manage:templates/manage.pt')
+
 class ManageView(view.View):
     """List ptah modules"""
-
-    __intr_path__ = '/ptah-manage/'
 
     rst_to_html = staticmethod(ptah.rst_to_html)
 

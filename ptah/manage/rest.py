@@ -1,8 +1,10 @@
-from ptah import manage, view
+import ptah
+from ptah import view
+from pyramid.view import view_config
 
 
-@manage.module('rest')
-class RestModule(manage.PtahModule):
+@ptah.manage.module('rest')
+class RestModule(ptah.manage.PtahModule):
     """
     REST Introspector
     """
@@ -10,10 +12,12 @@ class RestModule(manage.PtahModule):
     title = 'REST Introspector'
 
 
+@view_config(
+    context=RestModule,
+    wrapper=ptah.wrap_layout(),
+    renderer='ptah.manage:templates/rest.pt')
+
 class RestModuleView(view.View):
-    view.pview(
-        context = RestModule,
-        template = view.template('ptah.manage:templates/rest.pt'))
 
     def update(self):
         self.url = self.request.params.get(

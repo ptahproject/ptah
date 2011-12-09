@@ -1,4 +1,5 @@
 """ content types module """
+from pyramid.view import view_config
 from pyramid.decorator import reify
 from pyramid.httpexceptions import HTTPFound
 
@@ -58,9 +59,11 @@ class Record(object):
             .filter(tinfo.cls.__id__ == pid).one()
 
 
+@view_config(
+    context=ModelModule, wrapper=ptah.wrap_layout(),
+    renderer='ptah.manage:templates/models.pt')
+
 class ModelModuleView(view.View):
-    view.pview(context = ModelModule,
-               template = view.template('ptah.manage:templates/models.pt'))
 
     rst_to_html = staticmethod(ptah.rst_to_html)
 
@@ -76,9 +79,11 @@ class ModelModuleView(view.View):
         self.types = [f for _t, f in sorted(types)]
 
 
+@view_config(
+    context=Model, wrapper=ptah.wrap_layout(),
+    renderer='ptah.manage:templates/model.pt')
+
 class ModelView(form.Form):
-    view.pview(context = Model,
-               template = view.template('ptah.manage:templates/model.pt'))
 
     csrf = True
     page = ptah.Pagination(15)
@@ -147,11 +152,12 @@ class ModelView(form.Form):
         raise HTTPFound(location = self.request.url)
 
 
-class AddRecord(form.Form):
-    view.pview('add.html',
-               context = Model,
-               template = view.template('ptah.manage:templates/model-add.pt'))
+@view_config(
+    'add.html',
+    context=Model, wrapper=ptah.wrap_layout(),
+    renderer='ptah.manage:templates/model-add.pt')
 
+class AddRecord(form.Form):
     __doc__ = "Add model record."
 
     csrf = True
@@ -189,10 +195,11 @@ class AddRecord(form.Form):
         raise HTTPFound(location='.')
 
 
-class EditRecord(form.Form):
-    view.pview(context = Record,
-               template = view.template('ptah.manage:templates/model-edit.pt'))
+@view_config(
+    context=Record, wrapper=ptah.wrap_layout(),
+    renderer='ptah.manage:templates/model-edit.pt')
 
+class EditRecord(form.Form):
     __doc__ = "Edit model record."
 
     csrf = True

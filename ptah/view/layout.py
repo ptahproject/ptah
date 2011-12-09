@@ -1,9 +1,13 @@
 """ layout implementation """
+import random, string
 from zope.interface import implementer, providedBy, Interface
-from pyramid.compat import text_type
+
+from pyramid import renderers
+from pyramid.compat import text_type, string_types
 from pyramid.location import lineage
 from pyramid.interfaces import IView, IRequest, IRouteRequest
 from pyramid.interfaces import IViewClassifier
+from pyramid.interfaces import IRendererFactory
 
 from ptah import config
 from ptah.view.base import View
@@ -60,21 +64,6 @@ def query_layout_chain(context, request, layoutname=''):
     return chain
 
 
-class LayoutRenderer(object):
-
-    def __init__(self, layout):
-        self.layout = layout
-
-    def __call__(self, context, request, content):
-        chain = query_layout_chain(context, request, self.layout)
-
-        for layout in chain:
-            layout.update()
-            content = layout.render(content)
-
-        return content
-
-
 @implementer(ILayout)
 class Layout(View):
     """ Layout """
@@ -82,41 +71,27 @@ class Layout(View):
     name = ''
     template = None
 
-    @property
-    def __name__(self):
-        return self.name
-
-    def render(self, content, **kwargs):
-        if self.template is None:
-            return content
-
-        kwargs.update({'view': self,
-                       'content': content,
-                       'context': self.context,
-                       'request': self.request})
-
-        return self.template(**kwargs)
-
 
 def layout(name='', context=None, parent='',
-           template = None, route=None, layer=''):
+           renderer=None, route_name=None, layer=''):
     info = config.DirectiveInfo()
 
     def wrapper(cls):
-        discr = (LAYOUT_ID, name, context, route, layer)
+        discr = (LAYOUT_ID, name, context, route_name, layer)
 
         intr = config.Introspectable(LAYOUT_ID, discr, name, LAYOUT_ID)
         intr['name'] = name
         intr['context'] = context
         intr['layer'] = layer
-        intr['route'] = route
+        intr['renderer'] = renderer
+        intr['route_name'] = route_name
         intr['parent'] = parent
         intr['codeinfo'] = info.codeinfo
 
         info.attach(
             config.Action(
-                config.LayerWrapper(register_layout_impl, discr),
-                (cls, name, context, template, parent, route, intr),
+                register_layout_impl,
+                (cls, name, context, renderer, parent, route_name, intr),
                 discriminator=discr, introspectables=(intr,))
             )
         return cls
@@ -126,31 +101,42 @@ def layout(name='', context=None, parent='',
 
 def register_layout(
     name='', context=None, parent='',
-    cls = Layout, template = None, route=None, layer=''):
+    cls=Layout, renderer=None, route_name=None, layer=''):
 
     if not cls or not issubclass(cls, Layout):
         raise ValueError("klass has to inherit from Layout class")
 
-    discr = (LAYOUT_ID, name, context, route, layer)
+    discr = (LAYOUT_ID, name, context, route_name, layer)
 
     intr = config.Introspectable(LAYOUT_ID, discr, name, LAYOUT_ID)
     intr['name'] = name
     intr['context'] = context
     intr['layer'] = layer
-    intr['route'] = route
+    intr['renderer'] = renderer
+    intr['route_name'] = route_name
     intr['parent'] = parent
 
     info = config.DirectiveInfo()
     info.attach(
         config.Action(
             config.LayerWrapper(register_layout_impl, discr),
-            (cls, name, context, template, parent, route, intr),
-            discriminator=discr, introspectables=(intr,) )
+            (cls, name, context, renderer, parent, route_name, intr),
+            discriminator=discr, introspectables=(intr,))
         )
 
 
+from pyramid.config.views import ViewDeriver, DefaultViewMapper
+
+class LayoutViewDeriver(ViewDeriver):
+
+    def __call__(self, view):
+        return self.attr_wrapped_view(
+            self.rendered_view(
+                self.mapped_view(view)))
+
+
 def register_layout_impl(
-    cfg, klass, name, context, template, parent, route_name, intr):
+    cfg, klass, name, context, renderer, parent, route_name, intr):
 
     if not parent:
         layout = None
@@ -164,8 +150,12 @@ def register_layout_impl(
              'layout': layout,
              '__config_action__': cfg.__ptah_action__}
 
-    if template is not None:
-        cdict['template'] = template
+    if isinstance(renderer, string_types):
+        renderer = renderers.RendererHelper(name=renderer,registry=cfg.registry)
+    elif renderer is None:
+        # use default renderer if one exists (reg'd in phase 1)
+        if cfg.registry.queryUtility(IRendererFactory) is not None:
+            renderer = renderers.RendererHelper(name=None,registry=cfg.registry)
 
     if issubclass(klass, Layout) or klass is Layout:
         bases = (klass,)
@@ -173,6 +163,7 @@ def register_layout_impl(
         bases = (klass, Layout)
 
     layout_class = type(str('Layout<%s>'%name), bases, cdict)
+    layout_class.__renderer__ = renderer
 
     # register layout
     request_iface = IRequest
@@ -186,12 +177,10 @@ def register_layout_impl(
         layout_class, (context, request_iface), ILayout, name)
 
 
-import random, string
-
 LAYOUT_WRAPPER_ID = 'ptah.view:layout-wrapper'
 
 
-class LayoutWrapperRenderer(object):
+class LayoutRenderer(object):
 
     def __init__(self, layout):
         self.layout = layout
@@ -202,35 +191,39 @@ class LayoutWrapperRenderer(object):
         content = request.wrapped_body
 
         for layout in chain:
-            layout.update()
-            content = layout.render(content)
+            value = layout.update()
+            if value is None:
+                value = {}
 
-        response = request.response
-        if type(content) is text_type:
-            response.unicode_body = content
-        else:
-            response.body = content
+            system = {'view': layout,
+                      'renderer_info': layout.__renderer__,
+                      'context': context,
+                      'request': request,
+                      'wrapped_content': content}
 
-        return response
+            content = layout.__renderer__.render(value, system, request)
+
+        request.response.unicode_body = content
+        return request.response
 
 
-def layout_wrapper(layout='', route=''):
+def wrap_layout(layout='', route=''):
     info = config.DirectiveInfo()
 
     name = 'layout-{0}'.format(
         ''.join(random.choice(string.ascii_lowercase) for x in range(20)))
 
     discr = (LAYOUT_WRAPPER_ID, name)
-    wrapper = LayoutWrapperRenderer(layout)
+    wrapper = LayoutRenderer(layout)
 
     info.attach(
         config.Action(
-            layout_wrapper_impl, (name, wrapper, route), discriminator=discr)
+            wrap_layout_impl, (name, wrapper, route), discriminator=discr)
         )
     return name
 
 
-def layout_wrapper_impl(config, name, wrapper, route_name):
+def wrap_layout_impl(config, name, wrapper, route_name):
     registry = config.registry
 
     request_iface = IRequest

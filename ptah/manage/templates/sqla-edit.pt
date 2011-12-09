@@ -13,4 +13,4 @@
   </div>
 </div>
 
-${view.snippet('form-view', view)}
+${structure: view.snippet('form-view', view)}

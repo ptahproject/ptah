@@ -2,15 +2,16 @@ import inspect
 import json
 from collections import OrderedDict
 from ptah import view
-from ptah.view.view import PyramidView
+#from ptah.view.view import PyramidView
 
 from zope.interface import providedBy
+from pyramid.view import view_config
 from pyramid.interfaces import IView, IViewClassifier
 from pyramid.httpexceptions import HTTPNotFound
 
 
+@view_config('layout-preview.html')
 class LayoutPreview(view.View):
-    view.pview('layout-preview.html', layout=None)
 
     view = None
     layout = None

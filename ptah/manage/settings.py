@@ -28,13 +28,11 @@ class SettingsWrapper(object):
 
 
 @view_config(
-    context=SettingsModule, wrapper = ptah.layout_wrapper(),
+    context=SettingsModule, wrapper = ptah.wrap_layout(),
     renderer='ptah.manage:templates/settings.pt')
+
 class SettingsView(view.View):
     """ Settings manage module view """
-
-    __doc__ = "Settings module page."
-    __intr_path__ = '/ptah-manage/settings/index.html'
 
     def update(self):
         groups = config.get_cfg_storage(ID_SETTINGS_GROUP).items()
@@ -64,7 +62,7 @@ class SettingsView(view.View):
         return {'data': sorted(data, key=lambda item: item['title'])}
 
 
-@view_config(context=SettingsWrapper, wrapper=ptah.layout_wrapper())
+@view_config(context=SettingsWrapper, wrapper=ptah.wrap_layout())
 class EditForm(ptah.form.Form):
     """ Settings group edit form """
 

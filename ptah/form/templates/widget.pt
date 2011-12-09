@@ -1,8 +1,8 @@
-<div class="${'clearfix error' if error else 'clearfix'}"
+<div class="${structure: 'clearfix error' if error else 'clearfix'}"
      tal:define="error context.error">
   <label tal:attributes="for context.id;
 			 title context.description">
-    ${context.title}
+    ${structure: context.title}
     <tal:block condition="context.required">*</tal:block>
   </label>
   <div class="input">

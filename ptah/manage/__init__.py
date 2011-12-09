@@ -12,3 +12,10 @@ from ptah.manage.manage import set_access_manager
 
 from ptah.manage.apps import MANAGE_APP_ROUTE
 from ptah.manage.apps import MANAGE_APP_CATEGORY
+
+
+# pyramid include
+def includeme(config):
+    config.add_route(
+        MANAGE_APP_ROUTE, '!~~~~~~~~~~~~~',
+        use_global_views=False)

@@ -1,14 +1,13 @@
 """ app management module """
 import ptah
 from ptah import view, form, cms
+from pyramid.view import view_config
 from pyramid.httpexceptions import HTTPFound
 from pyramid.interfaces import IRequest, IRouteRequest
 
 from ptah.manage import manage
 
 MANAGE_APP_ROUTE = MANAGE_APP_CATEGORY = 'ptah-manage-app'
-
-view.register_route(MANAGE_APP_ROUTE, '!~~~~~~~~~~~~~', use_global_views=False)
 
 
 @manage.module('apps')
@@ -35,10 +34,12 @@ class ApplicationsModule(manage.PtahModule):
         return bool(cms.get_app_factories())
 
 
+@view_config(
+    context=ApplicationsModule, wrapper=ptah.wrap_layout(),
+    renderer='ptah.manage:templates/apps.pt')
+
 class ApplicationsModuleView(view.View):
-    view.pview(
-        context=ApplicationsModule,
-        template=view.template('ptah.manage:templates/apps.pt'))
+    """ Applications module default view """
 
     def update(self):
         factories = []
@@ -48,29 +49,35 @@ class ApplicationsModuleView(view.View):
         self.factories = [f for _t, f in sorted(factories)]
 
 
-@view.layout('ptah-manage', manage.PtahManageRoute, route=MANAGE_APP_ROUTE)
+@view.layout(
+    'ptah-manage', manage.PtahManageRoute,
+    route_name=MANAGE_APP_ROUTE,
+    renderer="ptah.manage:templates/ptah-manage.pt")
+
 class AppLayout(manage.LayoutManage):
     """ Application module layout """
 
-    template = view.template("ptah.manage:templates/ptah-manage.pt")
 
+@view.layout(
+    '', cms.Node, parent="ptah-manage",
+    route_name=MANAGE_APP_ROUTE,
+    renderer="templates/apps-layout.pt")
 
-@view.layout('', cms.Node, parent="ptah-manage", route=MANAGE_APP_ROUTE)
 class AppContentLayout(view.Layout):
     """ Application module content layout """
-
-    template = view.template("templates/apps-layout.pt")
 
     def update(self):
         self.actions = ptah.list_uiactions(
             self.context, self.request, MANAGE_APP_CATEGORY)
 
 
+@view_config(
+    context=cms.Content,
+    wrapper=ptah.wrap_layout(),
+    route_name=MANAGE_APP_ROUTE,
+    renderer="templates/apps-contentview.pt")
+
 class ViewForm(form.DisplayForm):
-    view.pview(
-        context=cms.Content,
-        route=MANAGE_APP_ROUTE,
-        template=view.template("templates/apps-contentview.pt"))
 
     @property
     def fields(self):
@@ -84,12 +91,14 @@ class ViewForm(form.DisplayForm):
         return data
 
 
+@view_config(
+    'sharing.html',
+    context=cms.IContent,
+    route_name=MANAGE_APP_ROUTE, wrapper=ptah.wrap_layout(),
+    renderer='ptah.manage:templates/apps-sharing.pt')
+
 class SharingForm(form.Form):
-    view.pview(
-        'sharing.html',
-        context = cms.IContent,
-        route = MANAGE_APP_ROUTE,
-        template = view.template('ptah.manage:templates/apps-sharing.pt'))
+    """ Sharing form """
 
     csrf = True
     fields = form.Fieldset(

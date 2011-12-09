@@ -32,7 +32,7 @@
 
     <div style="margin-top: 60px;">
       <div class="container">
-	<tal:block tal:content="structure content" />
+          ${structure: wrapped_content}
       </div>
     </div>
   </body>

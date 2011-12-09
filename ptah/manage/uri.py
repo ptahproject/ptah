@@ -1,5 +1,6 @@
 """ uri resolve """
 import inspect
+from pyramid.view import view_config
 from pyramid.httpexceptions import HTTPFound
 
 import ptah
@@ -8,9 +9,12 @@ from ptah.uri import ID_RESOLVER
 from ptah.manage.manage import PtahManageRoute, get_manage_url
 
 
+@view_config(
+    'uri.html', context=PtahManageRoute, wrapper=ptah.wrap_layout(),
+    renderer='ptah.manage:templates/uri.pt')
+
 class UriResolver(form.Form):
-    view.pview('uri.html', context = PtahManageRoute,
-               template = view.template('ptah.manage:templates/uri.pt'))
+    """ Uri resolver form """
 
     fields = form.Fieldset(
         form.LinesField(

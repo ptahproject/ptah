@@ -16,6 +16,10 @@ from ptah.config import subscriber
 # events
 from ptah import events
 
+# view api
+from ptah.view.base import View
+from ptah.view.layout import wrap_layout
+
 # settings
 from ptah.settings import get_settings
 from ptah.settings import register_settings
@@ -114,10 +118,6 @@ from ptah.cms import Session
 
 # form api
 from ptah import form
-
-# view api
-from ptah.view.layout import layout_wrapper
-
 # private! view api
 from ptah import view
 
@@ -154,6 +154,8 @@ def includeme(config):
     from ptah import password
     config.add_directive(
         'ptah_password_changer', password.pyramid_password_changer)
+
+    config.include('ptah.manage')
 
 
 def make_wsgi_app(global_settings, **settings):

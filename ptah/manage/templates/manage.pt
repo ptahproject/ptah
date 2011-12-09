@@ -8,7 +8,7 @@
       <tr tal:repeat="mod view.modules">
 	<td>
 	  <h4><a href="${mod.url()}/">${mod.title}</a></h4>
-	  <p>${view.rst_to_html(mod.__doc__)}</p>
+	  <p>${structure: view.rst_to_html(mod.__doc__)}</p>
 	</td>
       </tr>
     </table>

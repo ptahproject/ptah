@@ -2,9 +2,10 @@
   <h1>Modify ${context.tinfo.title}</h1>
 </div>
 
-<div class="span10">
-  ${view.snippet('form-view', view)}
-</div>
+<div class="row">
+  <div class="span10">
+    ${structure: view.snippet('form-view', view)}
+  </div>
 
 <div class="span4" tal:define="url '%s/uri.html'%view.manage">
   <table class="zebra-striped">
@@ -38,4 +39,5 @@
       </tr>
     </tbody>
   </table>
+</div>
 </div>

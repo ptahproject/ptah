@@ -2,6 +2,7 @@
 import urllib
 import sqlahelper as psa
 from sqlalchemy.orm.mapper import _mapper_registry
+from pyramid.view import view_config
 from pyramid.compat import url_quote_plus
 from pyramid.decorator import reify
 from pyramid.httpexceptions import HTTPFound
@@ -78,13 +79,12 @@ class Record(object):
             self.pcolumn == pid).one()
 
 
-class MainView(view.View):
-    view.pview(
-        context = SQLAModule,
-        template = view.template('ptah.manage:templates/sqla-index.pt'))
+@view_config(
+    context=SQLAModule, wrapper=ptah.wrap_layout(),
+    renderer='ptah.manage:templates/sqla-index.pt')
 
+class MainView(view.View):
     __doc__ = "sqlalchemy tables listing page."
-    __intr_path__ = '/ptah-manage/sqla/index.html'
 
     def printTable(self, table):
         columns = []
@@ -142,13 +142,12 @@ def get_inheritance(table):
     return inherits
 
 
-class TableView(form.Form):
-    view.pview(
-        context = Table,
-        template = view.template('ptah.manage:templates/sqla-table.pt'))
+@view_config(
+    context=Table, wrapper=ptah.wrap_layout(),
+    renderer='ptah.manage:templates/sqla-table.pt')
 
+class TableView(form.Form):
     __doc__ = "List table records."
-    __intr_path__ = '/ptah-manage/sqla/${table}/index.html'
 
     csrf = True
     page = ptah.Pagination(15)
@@ -233,12 +232,12 @@ class TableView(form.Form):
         self.message('Select records have been removed.')
 
 
-class EditRecord(form.Form):
-    view.pview(context = Record,
-               template = view.template('ptah.manage:templates/sqla-edit.pt'))
+@view_config(
+    context=Record, wrapper=ptah.wrap_layout(),
+    renderer='ptah.manage:templates/sqla-edit.pt')
 
+class EditRecord(form.Form):
     __doc__ = "Edit table record."
-    __intr_path__ = '/ptah-manage/sqla/${table}/${record}/index.html'
 
     csrf = True
 
@@ -296,11 +295,11 @@ class EditRecord(form.Form):
         raise HTTPFound(location='..')
 
 
+
+@view_config('add.html', context=Table, wrapper=ptah.wrap_layout())
+
 class AddRecord(form.Form):
     """ Add new table record. """
-    view.pview('add.html', Table)
-
-    __intr_path__ = '/ptah-manage/sqla/${table}/add.html'
 
     csrf = True
 

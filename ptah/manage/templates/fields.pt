@@ -8,12 +8,12 @@
     <tr tal:repeat="field view.fields">
       <td>
 	<h4>${field['name']}</h4>
-	<p>${field['doc']}</p>
+	<p>${structure:field['doc']}</p>
       </td>
       <td>
 	<form tal:condition="field['preview'] is not None">
 	  <fieldset>
-	    ${field['preview'](request)}
+	    ${structure:field['preview'](request)}
 	  </fieldset>
 	</form>
       </td>

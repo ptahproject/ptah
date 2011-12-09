@@ -1,19 +1,20 @@
 """ Source code view """
 import os.path
 import pkg_resources
+from pyramid.view import view_config
 from pyramid.httpexceptions import HTTPFound
 
+import ptah
 from ptah import view
 from ptah.manage.manage import PtahManageRoute
 
 
-class SourceView(view.View):
-    view.pview(
-        'source.html', PtahManageRoute,
-        template = view.template('ptah.manage:templates/source.pt'))
+@view_config(
+    'source.html', context=PtahManageRoute, wrapper=ptah.wrap_layout(),
+    renderer='ptah.manage:templates/source.pt')
 
+class SourceView(view.View):
     __doc__ = 'Source introspection page.'
-    __intr_path__ = '/ptah-manage/source.html'
 
     source = None
     format = None

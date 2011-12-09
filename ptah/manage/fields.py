@@ -1,4 +1,6 @@
 """ ptah.form fields """
+import ptah
+from pyramid.view import view_config
 from ptah import view, config, manage
 from ptah.form.field import FIELD_ID, PREVIEW_ID
 
@@ -13,10 +15,12 @@ class FieldsModule(manage.PtahModule):
     title = 'Field types'
 
 
+@view_config(
+    context=FieldsModule, wrapper=ptah.wrap_layout(),
+    renderer='ptah.manage:templates/fields.pt')
+
 class FieldsView(view.View):
-    view.pview(
-        context = FieldsModule,
-        template = view.template('ptah.manage:templates/fields.pt'))
+    """ Fields manage module view """
 
     def update(self):
         data = []

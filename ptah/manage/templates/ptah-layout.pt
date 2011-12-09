@@ -1,3 +1,2 @@
-${view.render_messages()}
-
-<tal:block content="structure content" />
+${structure: view.render_messages()}
+${structure: wrapped_content}

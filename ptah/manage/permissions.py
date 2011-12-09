@@ -1,4 +1,5 @@
 """ security ptah module """
+from pyramid.view import view_config
 import ptah
 from ptah import view, manage
 from ptah.manage import module, intr_renderer, get_manage_url
@@ -15,11 +16,11 @@ view.register_snippet(
     'ptah-module-actions', PermissionsModule,
     template = view.template('ptah.manage:templates/permissions-actions.pt'))
 
-
+@view_config(
+    context=PermissionsModule, wrapper=ptah.wrap_layout(),
+    renderer='ptah.manage:templates/permissions.pt')
 class PermissionsView(view.View):
-    view.pview(
-        context=PermissionsModule,
-        template=view.template('ptah.manage:templates/permissions.pt'))
+    """ Permissions module default view """
 
     def update(self):
         self.manage = get_manage_url(self.request)
@@ -32,11 +33,14 @@ class PermissionsView(view.View):
         self.acls.insert(0, ptah.DEFAULT_ACL)
 
 
+@view_config(
+    'roles.html',
+    context=PermissionsModule,
+    wrapper=ptah.wrap_layout(),
+    renderer='ptah.manage:templates/roles.pt')
+
 class RolesView(view.View):
-    view.pview(
-        'roles.html', PermissionsModule,
-        template=view.template('ptah.manage:templates/roles.pt'))
+    """ Roles view for permissions manage module """
 
     def update(self):
-        self.roles = sorted(ptah.get_roles().values(),
-                            key = lambda r: r.title)
+        self.roles = sorted(ptah.get_roles().values(), key = lambda r: r.title)

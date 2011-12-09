@@ -1,12 +1,12 @@
 """Form implementation"""
 from collections import OrderedDict
+from webob.multidict import MultiDict
 from pyramid import security
 from pyramid.decorator import reify
-from pyramid.renderers import render
+from pyramid.renderers import render, NullRendererHelper
 from pyramid.interfaces import IResponse
 from pyramid.httpexceptions import HTTPForbidden
 from pyramid.config.views import DefaultViewMapper
-from webob.multidict import MultiDict
 
 import ptah
 from ptah import view
@@ -96,11 +96,18 @@ class FormWidgets(OrderedDict):
 
 class FormViewMapper(DefaultViewMapper):
 
-    def map_class_native(self, view):
+    def __init__(self, **kw):
+        super(FormViewMapper, self).__init__(**kw)
+
+        renderer = kw.get('renderer')
+        if not (renderer is None or isinstance(renderer, NullRendererHelper)):
+            self.map_class_native = self.map_class_native_update
+
+    def map_class_native_update(self, view):
         def _class_view(context, request):
             inst = view(context, request)
             request.__view__ = inst
-            return inst.render_to_request()
+            return inst.render_update()
         return _class_view
 
 
@@ -222,7 +229,20 @@ class Form(view.View):
 
         return self.actions.execute()
 
-    def render_to_request(self):
+    def render(self):
+        if self.template is None:
+            return self.snippet(FORM_VIEW, self)
+
+        return render(self.template, value, self.request)
+
+    def render_update(self):
+        result = self.update()
+        if result is None:
+            result = {}
+
+        return result
+
+    def __call__(self):
         result = self.update()
 
         response = self.request.registry.queryAdapterOrSelf(result, IResponse)
@@ -230,14 +250,8 @@ class Form(view.View):
             return response
 
         response = self.request.response
-        response.unicode_body = self()
+        response.unicode_body = self.render()
         return response
-
-    def __call__(self):
-        if self.template is None:
-            return self.snippet(FORM_VIEW, self)
-
-        return render(self.template, value, self.request)
 
 
 class DisplayForm(Form):

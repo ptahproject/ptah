@@ -222,7 +222,10 @@ class Api(object):
         if isinstance(result, Response):
             return result
 
-        return '%s\n\n' % dumps(result, indent=True, default=dthandler)
+        request.response.body = '%s\n\n' % dumps(
+            result, indent=True, default=dthandler)
+
+        return request.response
 
 
 def enable_rest_api(config):

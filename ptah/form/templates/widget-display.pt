@@ -1,7 +1,7 @@
 <div class="clearfix">
   <label tal:attributes="for context.id;
 			 title context.description">
-    ${context.title}
+    ${structure: context.title}
     <tal:block condition="context.required">*</tal:block>
   </label>
 

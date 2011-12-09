@@ -9,7 +9,7 @@
 	<a href="./${group['name']}/" class="btn">Modify</a>
       </small>
     </h3>
-    <small>${group['description']}</small>
+    <small>${structure: group['description']}</small>
     <a name="${group['name']}"></a>
     
     <p>

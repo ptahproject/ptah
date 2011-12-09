@@ -22,9 +22,6 @@ from ptah.view.snippet import snippettype
 from ptah.view.snippet import render_snippet
 from ptah.view.snippet import register_snippet
 
-# route
-from ptah.view.route import register_route
-
 # layout
 from ptah.view.layout import layout
 from ptah.view.layout import Layout
@@ -32,14 +29,6 @@ from ptah.view.layout import LayoutRenderer
 from ptah.view.layout import query_layout
 from ptah.view.layout import query_layout_chain
 from ptah.view.layout import register_layout
-
-# view
-from ptah.view.view import pview
-from ptah.view.view import render_view
-from ptah.view.view import register_view
-from ptah.view.renderers import set_checkpermission
-from ptah.view.renderers import ViewRenderer
-from ptah.view.renderers import TemplateRenderer
 
 # status message
 from ptah.view.message import Message
