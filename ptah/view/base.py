@@ -2,6 +2,7 @@
 import logging
 from zope.interface import implementer
 from pyramid.decorator import reify
+from pyramid.renderers import render
 from ptah.formatter import format
 from ptah.view.resources import static_url
 from ptah.view.message import add_message, render_messages
@@ -19,6 +20,7 @@ class View(object):
     __parent__ = None
 
     format = format
+    template = None
 
     def __init__(self, context, request):
         self.context = context
@@ -43,6 +45,9 @@ class View(object):
                   'request': self.request}
         if type(params) is dict:
             kwargs.update(params)
+
+        if self.template:
+            return render(self.template, kwargs, self.request)
 
         return kwargs
 

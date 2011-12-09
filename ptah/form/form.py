@@ -274,20 +274,20 @@ view.snippettype(FORM_DISPLAY_WIDGET, Field, 'Form display widget')
 
 view.register_snippet(
     'form-view', Form,
-    template=view.template('ptah.form:templates/form.pt'))
+    template='ptah.form:templates/form.pt')
 
 view.register_snippet(
     'form-view', DisplayForm,
-    template=view.template('ptah.form:templates/form-display.pt'))
+    template='ptah.form:templates/form-display.pt')
 
 view.register_snippet(
     'form-actions', Form,
-    template=view.template('ptah.form:templates/form-actions.pt'))
+    template='ptah.form:templates/form-actions.pt')
 
 view.register_snippet(
     'form-widget', Field,
-    template=view.template('ptah.form:templates/widget.pt'))
+    template='ptah.form:templates/widget.pt')
 
 view.register_snippet(
     'form-display-widget', Field,
-    template=view.template('ptah.form:templates/widget-display.pt'))
+    template='ptah.form:templates/widget-display.pt')

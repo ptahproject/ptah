@@ -12,10 +12,6 @@ class PermissionsModule(manage.PtahModule):
     title = 'Permissions'
 
 
-view.register_snippet(
-    'ptah-module-actions', PermissionsModule,
-    template = view.template('ptah.manage:templates/permissions-actions.pt'))
-
 @view_config(
     context=PermissionsModule, wrapper=ptah.wrap_layout(),
     renderer='ptah.manage:templates/permissions.pt')

@@ -1,5 +1,6 @@
 import json
 from collections import OrderedDict
+from pyramid import renderers
 
 from ptah import config
 from ptah.form.validator import All
@@ -332,15 +333,19 @@ class Field(object):
 
     def render(self, request):
         if self.mode == FORM_DISPLAY:
-            return self.tmpl_display(
-                view=self,
-                context=self,
-                request=request)
+            return renderers.render(
+                self.tmpl_display,
+                {'view': self,
+                 'context': self,
+                 'request': request},
+                self.request)
         else:
-            return self.tmpl_input(
-                view=self,
-                context=self,
-                request=request)
+            return renderers.render(
+                self.tmpl_input,
+                {'view': self,
+                 'context': self,
+                 'request': request},
+                self.request)
 
     def __repr__(self):
         return '<%s %r>' % (self.__class__.__name__, self.name)

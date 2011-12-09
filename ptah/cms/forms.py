@@ -120,7 +120,7 @@ class AddForm(form.Form):
 
 view.register_snippet(
     'form-actions', AddForm,
-    template = view.template('ptah.cms:form-actions.pt'))
+    template='ptah.cms:form-actions.pt')
 
 
 class EditForm(form.Form):

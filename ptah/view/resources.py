@@ -7,8 +7,8 @@ from pyramid.httpexceptions import HTTPNotFound
 
 import ptah
 from ptah import config
-from ptah.view import tmpl
 
+import tmpl
 
 STATIC_ID = 'ptah.view:static'
 

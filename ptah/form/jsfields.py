@@ -18,8 +18,7 @@ class TinymceField(TextAreaField):
     height = '300px'
     theme = "advanced"
 
-    tmpl_input = view.template(
-        "ptah.form:templates/fields/tinymce_input.pt")
+    tmpl_input = "ptah.form:templates/fields/tinymce_input.pt"
 
 
 @field('date')
@@ -29,8 +28,7 @@ class JSDateField(TextField):
     klass = 'date-widget'
     value = ''
 
-    tmpl_input = view.template(
-        "ptah.form:templates/fields/jsdate-input.pt")
+    tmpl_input = "ptah.form:templates/fields/jsdate-input.pt"
 
     def serialize(self, value):
         if value is null or value is None:
@@ -67,8 +65,7 @@ class JSDateTimeField(DateTimeField):
     date_part = null
     tzinfo = None
 
-    tmpl_input = view.template(
-        "ptah.form:templates/fields/jsdatetime-input.pt")
+    tmpl_input = "ptah.form:templates/fields/jsdatetime-input.pt"
 
     def update(self, request):
         self.date_name = '%s.date' % self.name

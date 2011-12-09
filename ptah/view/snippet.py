@@ -18,19 +18,6 @@ class Snippet(View):
     """ Snippet implementation """
 
     template = None
-    _params = None
-
-    def render(self):
-        kwargs = self._params or {}
-        kwargs.update({'view': self,
-                       'context': self.context,
-                       'request': self.request})
-
-        return self.template(**kwargs)
-
-    def __call__(self, *args, **kw):
-        self._params = self.update()
-        return self.render()
 
 
 class SnippetType(object):

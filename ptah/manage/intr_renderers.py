@@ -31,7 +31,7 @@ class EventRenderer(Renderer):
     """ List of event declarations """
 
     title = 'Events'
-    template = view.template('ptah.manage:templates/intr-event.pt')
+    template = 'ptah.manage:templates/intr-event.pt'
 
 
 @intr_renderer('ptah.config:adapter')
@@ -39,7 +39,7 @@ class AdapterDirective(object):
     """ List of adapter registrations """
 
     title = 'zc adapters'
-    actions = view.template('ptah.manage:templates/directive-adapter.pt')
+    actions = 'ptah.manage:templates/directive-adapter.pt'
 
     def __init__(self, request):
         self.request = request
@@ -80,7 +80,7 @@ class SnippetTypeDirective(Renderer):
     """ Ptah snippet types """
 
     title = 'Snippet Types'
-    template = view.template('ptah.manage:templates/intr-snippettype.pt')
+    template = 'ptah.manage:templates/intr-snippettype.pt'
 
 
 @intr_renderer('ptah.view:route')
@@ -88,7 +88,7 @@ class RouteDirective(Renderer):
     """ pyramid routes """
 
     title = 'Routes'
-    actions = view.template('ptah.manage:templates/directive-route.pt')
+    actions = 'ptah.manage:templates/directive-route.pt'
 
     def renderActions(self, *actions):
         return self.actions(
@@ -102,7 +102,7 @@ class SubscriberRenderer(Renderer):
     """ List of event subscribers """
 
     title = 'Event subscribers'
-    template = view.template('ptah.manage:templates/intr-subscriber.pt')
+    template = 'ptah.manage:templates/intr-subscriber.pt'
 
     def getInfo(self, intr):
         handler = intr['handler']
@@ -128,7 +128,7 @@ class ViewDirective(object):
     """ Pyramid views """
 
     title = 'Views'
-    actions = view.template('ptah.manage:templates/directive-view.pt')
+    actions = 'ptah.manage:templates/directive-view.pt'
 
     def __init__(self, request):
         self.request = request
@@ -178,7 +178,7 @@ class PermissionRenderer(Renderer):
     """ Permission registrations """
 
     title = 'Permission'
-    template = view.template('ptah.manage:templates/intr-permission.pt')
+    template = 'ptah.manage:templates/intr-permission.pt'
 
 
 @intr_renderer('ptah:role')
@@ -186,7 +186,7 @@ class RoleIntrospection(Renderer):
     """ Role registrations """
 
     title = 'Role'
-    template = view.template('ptah.manage:templates/intr-role.pt')
+    template = 'ptah.manage:templates/intr-role.pt'
 
 
 @intr_renderer('ptah:resolver')
@@ -194,7 +194,7 @@ class UriRenderer(Renderer):
     """ Uri resolvers """
 
     title = 'Uri resolver'
-    template = view.template('ptah.manage:templates/intr-uriresolver.pt')
+    template = 'ptah.manage:templates/intr-uriresolver.pt'
 
 
 @intr_renderer('ptah.manage:module')
@@ -202,7 +202,7 @@ class ManageModuleRenderer(Renderer):
     """ List of registered ptah manage modules """
 
     title = 'Ptah manage modules'
-    template = view.template('ptah.manage:templates/intr-managemodule.pt')
+    template = 'ptah.manage:templates/intr-managemodule.pt'
 
 
 @intr_renderer('ptah.manage:irenderer')
@@ -210,7 +210,7 @@ class IntrospectorRenderer(Renderer):
     """ List of registered introspector renderers """
 
     title = 'Ptah introspector renderers'
-    template = view.template('ptah.manage:templates/intr-renderer.pt')
+    template = 'ptah.manage:templates/intr-renderer.pt'
 
 
 @intr_renderer('ptah:aclmap')
@@ -218,7 +218,7 @@ class ACLMapRenderer(Renderer):
     """ ACL map registration """
 
     title = 'ACL Maps'
-    template = view.template('ptah.manage:templates/intr-aclmap.pt')
+    template = 'ptah.manage:templates/intr-aclmap.pt'
 
 
 @intr_renderer('ptah:authchecker')
@@ -226,7 +226,7 @@ class AuthCheckerRenderer(Renderer):
     """ List of registered authentication checkers """
 
     title = 'Authentication checkers'
-    template = view.template('ptah.manage:templates/intr-authchecker.pt')
+    template = 'ptah.manage:templates/intr-authchecker.pt'
 
 
 @intr_renderer('ptah:authprovider')
@@ -234,7 +234,7 @@ class AuthProviderRenderer(Renderer):
     """ List of registered authentication providers """
 
     title = 'Authentication providers'
-    template = view.template('ptah.manage:templates/intr-authprovider.pt')
+    template = 'ptah.manage:templates/intr-authprovider.pt'
 
 
 @intr_renderer('ptah:settings-group')
@@ -242,7 +242,7 @@ class SettingsGroupRenderer(Renderer):
     """ List of registered settings groups """
 
     title = 'Settings'
-    template = view.template('ptah.manage:templates/intr-settings.pt')
+    template = 'ptah.manage:templates/intr-settings.pt'
 
 
 @intr_renderer('ptah.form:field')
@@ -250,7 +250,7 @@ class FieldRenderer(Renderer):
     """ List of registered fields """
 
     title = 'Fields'
-    template = view.template('ptah.manage:templates/intr-field.pt')
+    template = 'ptah.manage:templates/intr-field.pt'
 
     def __init__(self, request):
         super(FieldRenderer, self).__init__(request)
@@ -263,7 +263,7 @@ class uiActionRenderer(Renderer):
     """ List of registered ui actions """
 
     title = 'UI Actions'
-    template = view.template('ptah.manage:templates/intr-uiaction.pt')
+    template = 'ptah.manage:templates/intr-uiaction.pt'
 
 
 @intr_renderer('ptah:token-type')
@@ -271,7 +271,7 @@ class TokenTypeRenderer(Renderer):
     """ List of registered token types """
 
     title = 'Token types'
-    template = view.template('ptah.manage:templates/intr-tokentype.pt')
+    template = 'ptah.manage:templates/intr-tokentype.pt'
 
 
 @manage.intr_renderer('ptah.cms:type')
@@ -279,7 +279,7 @@ class ContentTypeRenderer(Renderer):
     """ Ptah content types """
 
     title = 'Content Types'
-    template = view.template('ptah.manage:templates/intr-contenttype.pt')
+    template = 'ptah.manage:templates/intr-contenttype.pt'
 
 
 @manage.intr_renderer('ptah:formatter')
@@ -287,4 +287,4 @@ class formatterRenderer(Renderer):
     """ List of formatters """
 
     title = 'Formatters'
-    template = view.template('ptah.manage:templates/intr-formatter.pt')
+    template = 'ptah.manage:templates/intr-formatter.pt'

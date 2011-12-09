@@ -9,9 +9,6 @@ from ptah.view.library import library
 from ptah.view.library import include
 from ptah.view.library import render_includes
 
-# path/template
-from ptah.view.tmpl import path, template
-
 # base view
 from ptah.view.base import View
 

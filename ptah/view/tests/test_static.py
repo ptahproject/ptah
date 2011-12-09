@@ -6,8 +6,8 @@ from ptah.testing import PtahTestCase
 from ptah.view.base import View
 from ptah.view.resources import StaticView
 
-abspath1, pkg1 = view.path('ptah.view.tests:static/dir1')
-abspath2, pkg2 = view.path('ptah.view.tests:static/dir2')
+#abspath1, pkg1 = view.path('ptah.view.tests:static/dir1')
+#abspath2, pkg2 = view.path('ptah.view.tests:static/dir2')
 
 
 class TestStaticManagement(PtahTestCase):

@@ -148,10 +148,6 @@ class PtahManageRoute(object):
         raise KeyError(key)
 
 
-view.register_snippet(
-    'ptah-module-actions', PtahModule,
-    template = view.template('ptah.manage:templates/moduleactions.pt'))
-
 view.register_layout(
     '', PtahManageRoute, parent='ptah-manage',
     renderer="ptah.manage:templates/ptah-layout.pt")
