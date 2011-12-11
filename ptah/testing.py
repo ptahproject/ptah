@@ -21,7 +21,7 @@ class PtahTestCase(unittest.TestCase):
     _init_auth = False
 
     _settings = {}
-    _packages = []
+    _packages = ()
     _environ = {
         'wsgi.url_scheme':'http',
         'wsgi.version':(1,0),
@@ -38,17 +38,11 @@ class PtahTestCase(unittest.TestCase):
     def init_ptah(self, *args, **kw):
         self.registry.settings.update(self._settings)
 
-        parts = self.__class__.__module__.split('.')
-        packages = ['ptah'] + self._packages
-        for l in range(len(parts)):
-            packages.append('.'.join(parts[:l+1]))
-
-        config.initialize(self.config, packages)
         self.config.scan('ptah')
         self.config.commit()
         self.config.autocommit = True
 
-        ptah.initialize_settings(self.config, self.registry.settings)
+        ptah.init_settings(self.config, self.registry.settings)
 
         if self._init_sqla:
             # create sql tables
@@ -56,8 +50,6 @@ class PtahTestCase(unittest.TestCase):
             Base.metadata.drop_all()
             Base.metadata.create_all()
             transaction.commit()
-
-        self.registry.notify(ptah.events.AppStarting(self.config))
 
     def init_pyramid(self):
         self.request = request = self.make_request()
@@ -68,15 +60,15 @@ class PtahTestCase(unittest.TestCase):
         self.registry = self.config.registry
         self.request.registry = self.registry
 
-        if self._init_auth:
-            policy = AuthTktAuthenticationPolicy(
-                'secret', callback= ptah.get_local_roles)
+        #if self._init_auth:
+        #    policy = AuthTktAuthenticationPolicy(
+        #        'secret', callback= ptah.get_local_roles)
 
-            self.registry.registerUtility(
-                policy, IAuthenticationPolicy)
+        #    self.registry.registerUtility(
+        #        policy, IAuthenticationPolicy)
 
-            self.registry.registerUtility(
-                ACLAuthorizationPolicy(), IAuthorizationPolicy)
+        #    self.registry.registerUtility(
+        #        ACLAuthorizationPolicy(), IAuthorizationPolicy)
 
     def setUp(self):
         if self._init_sqla:

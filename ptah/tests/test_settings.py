@@ -21,14 +21,13 @@ class BaseTesting(PtahTestCase):
     _init_ptah = False
 
     def init_ptah(self, initsettings=False, *args, **kw):
-        ptah.config.initialize(
-            self.config, ('ptah', self.__class__.__module__))
-        self.config.scan('ptah')
+        self.config.include('ptah')
+        self.config.scan(self.__class__.__module__)
         self.config.commit()
         self.config.autocommit = True
 
         if initsettings:
-            ptah.initialize_settings(self.config, self.registry.settings)
+            ptah.init_settings(self.config, self.registry.settings)
 
 
 class TestSettingsResolver(BaseTesting):
@@ -319,7 +318,7 @@ class TestSettingsInitialization(BaseTesting):
         sm.registerHandler(h1, (ptah.events.SettingsInitializing,))
         sm.registerHandler(h2, (ptah.events.SettingsInitialized,))
 
-        ptah.initialize_settings(self.config, {})
+        ptah.init_settings(self.config, {})
 
         self.assertTrue(isinstance(events[0], ptah.events.SettingsInitializing))
         self.assertTrue(isinstance(events[1], ptah.events.SettingsInitialized))
@@ -342,7 +341,7 @@ class TestSettingsInitialization(BaseTesting):
 
         err = None
         try:
-            ptah.initialize_settings(self.config, {})
+            ptah.init_settings(self.config, {})
         except Exception as exc:
             err = exc
 
@@ -351,11 +350,11 @@ class TestSettingsInitialization(BaseTesting):
 
     def test_settings_initialize_only_once(self):
         self.init_ptah()
-        ptah.initialize_settings(self.config, {})
+        ptah.init_settings(self.config, {})
 
         self.assertRaises(
             RuntimeError,
-            ptah.initialize_settings, self.config, {})
+            ptah.init_settings, self.config, {})
 
     def test_settings_initialize_load_defaults(self):
         node1 = ptah.form.TextField(
@@ -369,7 +368,7 @@ class TestSettingsInitialization(BaseTesting):
         ptah.register_settings('group', node1, node2)
         self.init_ptah()
 
-        ptah.initialize_settings(self.config, None)
+        ptah.init_settings(self.config, None)
 
         group = ptah.get_settings('group', self.request.registry)
         self.assertEqual(group['node1'], 'default1')
@@ -384,7 +383,7 @@ class TestSettingsInitialization(BaseTesting):
         ptah.register_settings('group', node1)
         self.init_ptah()
 
-        ptah.initialize_settings(self.config, {'group.node': 'Test'})
+        ptah.init_settings(self.config, {'group.node': 'Test'})
 
         group = ptah.get_settings('group', self.request.registry)
         self.assertEqual(group['node'], 'test')
@@ -401,8 +400,7 @@ class TestSettingsInitialization(BaseTesting):
         ptah.register_settings('group', node1, node2)
         self.init_ptah()
 
-        ptah.initialize_settings(
-            self.config, {'group.node1': 'setting from ini'})
+        ptah.init_settings(self.config, {'group.node1': 'setting from ini'})
 
         group = ptah.get_settings('group', self.request.registry)
         self.assertEqual(group['node1'], 'setting from ini')
@@ -425,7 +423,7 @@ class TestSettingsInitialization(BaseTesting):
         ptah.register_settings('group', node1, node2)
         self.init_ptah()
 
-        ptah.initialize_settings(self.config, {'include': path})
+        ptah.init_settings(self.config, {'include': path})
 
         group = ptah.get_settings('group', self.request.registry)
 

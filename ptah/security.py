@@ -2,8 +2,9 @@ from ptah import config, view
 from collections import OrderedDict
 from pyramid.compat import string_types
 from pyramid.location import lineage
-from pyramid.security import ACLDenied, Allow, Deny
+from pyramid.security import ACLDenied, ACLAllowed, Allow, Deny
 from pyramid.security import ALL_PERMISSIONS, NO_PERMISSION_REQUIRED
+from pyramid.authorization import ACLAuthorizationPolicy
 from pyramid.interfaces import IAuthorizationPolicy
 from pyramid.threadlocal import get_current_registry
 from pyramid.httpexceptions import HTTPForbidden
@@ -335,3 +336,22 @@ def check_permission(permission, context, request=None, throw=False):
 
         return False
     return True
+
+
+class PtahAuthorizationPolicy(ACLAuthorizationPolicy):
+
+    def permits(self, context, principals, permission):
+        if not permission or permission == NO_PERMISSION_REQUIRED:
+            return True
+        if permission == NOT_ALLOWED:
+            return ACLDenied(
+                '<NOT ALLOWED permission>',
+                None, permission, principals, context)
+
+        if SUPERUSER_URI in principals or \
+           auth_service.get_effective_userid() == SUPERUSER_URI:
+            return ACLAllowed(
+                'Superuser', None, permission, principals, context)
+
+        return super(PtahAuthorizationPolicy, self).permits(
+            context, principals, permission)

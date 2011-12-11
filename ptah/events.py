@@ -1,24 +1,6 @@
 from ptah import config
 from zope.interface.interfaces import ObjectEvent
 
-# config events
-
-@config.event('Application starting event')
-class AppStarting(object):
-    """ ptah sends this event when application is ready to start. """
-
-    def __init__(self, config):
-        self.config = config
-        self.registry = config.registry
-
-
-@config.event('Ptah config initialized event')
-class Initialized(object):
-    """ ptah sends this after ptah.config.initialize """
-
-    def __init__(self, config):
-        self.config = config
-
 
 # settings related events
 

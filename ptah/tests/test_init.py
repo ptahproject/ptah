@@ -20,51 +20,18 @@ class TestPtahInit(unittest.TestCase):
 
         data = [False, False]
 
-        def initialized_handler(ev):
-            data[0] = True
-
         def settings_initialized_handler(ev):
             data[1] = True
 
         sm = config.registry
         sm.registerHandler(
-            initialized_handler,
-            (ptah.events.Initialized,))
-        sm.registerHandler(
             settings_initialized_handler,
             (ptah.events.SettingsInitialized,))
 
         config.include('ptah')
-        config.ptah_initialize(autoinclude=True)
+        config.ptah_initialize()
 
-        self.assertTrue(data[0])
         self.assertTrue(data[1])
-
-    def test_init_ptah_init_exception(self):
-        config = Configurator(
-            settings = {'sqla.url': 'sqlite://'})
-
-        class CustomException(Exception):
-            pass
-
-        def initialized_handler(ev):
-            raise CustomException()
-
-        sm = config.registry
-        sm.registerHandler(
-            initialized_handler,
-            (ptah.events.Initialized,))
-
-        config.include('ptah')
-
-        err = None
-        try:
-            config.ptah_initialize()
-        except Exception as e:
-            err = e
-
-        self.assertIsInstance(err, ptah.config.StopException)
-        self.assertIsInstance(err.exc, CustomException)
 
     def test_init_ptah_init_settings_exception(self):
         config = Configurator(
@@ -85,7 +52,7 @@ class TestPtahInit(unittest.TestCase):
 
         err = None
         try:
-            config.ptah_initialize(autoinclude=True)
+            config.ptah_initialize()
         except Exception as e:
             err = e
 

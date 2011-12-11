@@ -11,22 +11,6 @@ class TestSecurityInit(PtahTestCase):
 
     _init_ptah = False
 
-    def test_ptahinit_nopolicy(self):
-        self._settings = {'ptah.auth': 'false'}
-        self.init_ptah()
-
-        auth = self.registry.queryUtility(IAuthenticationPolicy)
-        self.assertIsNone(auth)
-
-    def test_ptahinit_authtkt(self):
-        self._settings = {'ptah.auth': 'true',
-                          'ptah.secret': 'test-secret'}
-        self.init_ptah()
-
-        auth = self.registry.queryUtility(IAuthenticationPolicy)
-        self.assertIsInstance(auth, AuthTktAuthenticationPolicy)
-        self.assertEqual(auth.cookie.secret, 'test-secret')
-
     def test_ptahinit_mail(self):
         self._settings = {'mail.host': 'smtp.ptahproject.org',
                           'mail.from_name': 'Ptah admin',

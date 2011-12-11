@@ -1,10 +1,10 @@
 from zope import interface
-from ptah import config
 from pyramid.security import Allow, Deny, ALL_PERMISSIONS, DENY_ALL
 from pyramid.security import NO_PERMISSION_REQUIRED
 from pyramid.httpexceptions import HTTPForbidden
 from pyramid.exceptions import ConfigurationConflictError
 
+import ptah
 from ptah.testing import PtahTestCase
 
 
@@ -613,3 +613,63 @@ class TestCheckPermission(PtahTestCase):
 
         ptah.auth_service.set_effective_userid('test-user')
         self.assertTrue(ptah.check_permission('View', content, throw=False))
+
+
+class TestAauthorization(PtahTestCase):
+
+    _init_auth = True
+
+    def _make_one(self):
+        from ptah.security import PtahAuthorizationPolicy
+        return PtahAuthorizationPolicy()
+
+    def test_authz_allow_no_permissions(self):
+        authz = self._make_one()
+        content = Content(acl=[DENY_ALL])
+
+        self.assertFalse(
+            authz.permits(content, (ptah.Everyone.id,), 'View'))
+        self.assertTrue(
+            authz.permits(content, (ptah.Everyone.id,), NO_PERMISSION_REQUIRED))
+
+    def test_authz_deny_not_allowed(self):
+        authz = self._make_one()
+        content = Content(acl=[(Allow, ptah.Everyone.id, ALL_PERMISSIONS)])
+
+        self.assertTrue(authz.permits(
+            content, (ptah.Everyone.id,), 'View'))
+        self.assertFalse(authz.permits(
+            content, (ptah.Everyone.id,), ptah.NOT_ALLOWED))
+
+    def test_authz_effective_user(self):
+        authz = self._make_one()
+        content = Content(acl=[(Allow, 'test-user2', 'View')])
+
+        ptah.auth_service.set_effective_userid('test-user2')
+        self.assertFalse(
+            authz.permits(content, ('test-user',), 'View'))
+
+    def test_authz_superuser(self):
+        authz = self._make_one()
+        content = Content(acl=[(Allow, 'test-user2', 'View')])
+        self.assertTrue(authz.permits(content, (ptah.SUPERUSER_URI,), 'View'))
+
+    def test_authz_superuser_allow(self):
+        authz = self._make_one()
+        content = Content(
+            acl=[(Deny, ptah.SUPERUSER_URI, ptah.ALL_PERMISSIONS)])
+
+        self.assertTrue(
+            authz.permits(content, (ptah.SUPERUSER_URI,), 'View'))
+
+    def test_authz_effective_superuser(self):
+        authz = self._make_one()
+        content = Content(
+            acl=[(Deny, ptah.SUPERUSER_URI, ptah.ALL_PERMISSIONS)])
+
+        ptah.auth_service.set_effective_userid(ptah.SUPERUSER_URI)
+
+        self.assertTrue(
+            authz.permits(content, ('test-user',), 'View'))
+        self.assertFalse(
+            authz.permits(content, ('test-user',), ptah.NOT_ALLOWED))

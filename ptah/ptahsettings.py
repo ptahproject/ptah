@@ -5,8 +5,9 @@ import sqlahelper
 import sqlalchemy
 import translationstring
 from email.utils import formataddr
+
 from pyramid.compat import bytes_
-from pyramid.authorization import ACLAuthorizationPolicy
+from pyramid.events import ApplicationCreated
 from pyramid.authentication import AuthTktAuthenticationPolicy
 from pyramid.interfaces import IAuthorizationPolicy
 from pyramid.interfaces import IAuthenticationPolicy
@@ -14,7 +15,7 @@ from pyramid.interfaces import ISessionFactory
 
 import ptah
 from ptah import manage, settings
-from ptah.security import get_local_roles
+from ptah.security import get_local_roles, PtahAuthorizationPolicy
 
 
 _ = translationstring.TranslationStringFactory('ptah')
@@ -31,16 +32,10 @@ ptah.register_settings(
 
     ptah.form.TextField(
         'secret',
-        title = _('Policy secret'),
+        title = _('Authentication policy secret'),
         description = _('The secret (a string) used for auth_tkt '
                         'cookie signing'),
         default = ''),
-
-    ptah.form.BoolField(
-        'authorization',
-        title = _('Authorization policy'),
-        description = _('Enable/disable default authorization policy.'),
-        default = True),
 
     ptah.form.IntegerField(
         'settings_dbpoll',
@@ -316,19 +311,7 @@ ptah.register_settings(
 
 @ptah.subscriber(ptah.events.SettingsInitialized)
 def initialized(ev):
-    # auth
     PTAH = ptah.get_settings(ptah.CFG_ID_PTAH, ev.registry)
-    if PTAH['auth']:
-        kwargs = {'wild_domain': False,
-                  'callback': get_local_roles}
-
-        policy = AuthTktAuthenticationPolicy(
-            secret = PTAH['secret'], **kwargs)
-        ev.registry.registerUtility(policy, IAuthenticationPolicy)
-
-    if PTAH['authorization']:
-        ev.registry.registerUtility(
-            ACLAuthorizationPolicy(), IAuthorizationPolicy)
 
     # mail
     try:
@@ -394,7 +377,7 @@ def initialized(ev):
             factory=ptah.manage.PtahManageRoute, use_global_views=True)
 
 
-@ptah.subscriber(ptah.events.AppStarting)
+@ptah.subscriber(ApplicationCreated)
 def starting(ev):
     # load db settings
     s_ob = ptah.config.get_cfg_storage(

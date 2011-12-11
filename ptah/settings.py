@@ -45,7 +45,7 @@ def pyramid_get_settings(config, grp):
     return config.get_cfg_storage(ID_SETTINGS_GROUP)[grp]
 
 
-def initialize_settings(pconfig, cfg, section=configparser.DEFAULTSECT):
+def init_settings(pconfig, cfg, section=configparser.DEFAULTSECT):
     """ initialize settings management system """
     registry = pconfig.registry
     settings = config.get_cfg_storage(SETTINGS_OB_ID,pconfig.registry,Settings)

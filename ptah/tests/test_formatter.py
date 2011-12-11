@@ -1,25 +1,56 @@
 """ formatter tests """
 import pytz
 from datetime import datetime, timedelta
+from pyramid.exceptions import ConfigurationConflictError
 
 import ptah
 from ptah.testing import PtahTestCase
 
 
-class TestFormatter(PtahTestCase):
+class TestFormatterReg(PtahTestCase):
 
-    def _test_formatter_registration(self):
+    _init_ptah = False
+
+    def test_formatter_registration(self):
+        @ptah.formatter('simple')
         def simple(v):
             return 'simple-%s'%v
 
-        format['simple'] = simple
+        self.init_ptah()
 
-        self.assertEqual(format.simple('test'), 'simple-test')
-        self.assertRaises(ValueError, format.__setitem__, 'simple', simple)
+        self.assertEqual(ptah.format.simple('test'), 'simple-test')
+        self.assertIs(ptah.format.simple, simple)
 
-        del format['simple']
-        self.assertEqual(getattr(format, 'simple', None), None)
-        self.assertFalse('simple' in format)
+    def test_formatter_registration_duplicate(self):
+        @ptah.formatter('simple')
+        def simple1(v):
+            """ """
+
+        @ptah.formatter('simple')
+        def simple2(v):
+            """ """
+
+        self.assertRaises(ConfigurationConflictError, self.init_ptah)
+
+    def test_formatter_introspector(self):
+        @ptah.formatter('simple')
+        def simple(v):
+            """ doc """
+
+        from ptah.formatter import ID_FORMATTER
+        discr = (ID_FORMATTER, 'simple')
+
+        self.init_ptah()
+
+        intr = self.config.introspector.get(ID_FORMATTER, discr)
+
+        self.assertIsNotNone(intr)
+        self.assertEqual(intr['name'], 'simple')
+        self.assertEqual(intr['description'], ' doc ')
+        self.assertEqual(intr['callable'], simple)
+
+
+class TestFormatter(PtahTestCase):
 
     def test_datetime_formatter(self):
         format = ptah.format

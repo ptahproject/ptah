@@ -54,7 +54,6 @@ setup(name='ptah',
       include_package_data = True,
       zip_safe = False,
       entry_points = {
-          'ptah': ['package = ptah'],
           'console_scripts': [
               'static = ptah.scripts.pstatic:main',
               'settings = ptah.scripts.settings:main',
@@ -66,7 +65,6 @@ setup(name='ptah',
               'ptah101 = ptah.scaffolds:Ptah101ProjectTemplate',
               'ptah102 = ptah.scaffolds:Ptah102ProjectTemplate',
               'ptah201 = ptah.scaffolds:Ptah201ProjectTemplate',
-              'ptah301 = ptah.scaffolds:Ptah301ProjectTemplate',
               ],
           },
       )

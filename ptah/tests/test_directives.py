@@ -14,11 +14,9 @@ from ptah import config
 
 class BaseTesting(unittest.TestCase):
 
-    def _init_ptah(self, settings={}, pconfig=None, *args, **kw):
-        if pconfig is None:
-            pconfig = self.config
-        ptah.config.initialize(pconfig, ('ptah',))
-        self.config.scan('ptah.tests.test_directives')
+    def _init_ptah(self, *args, **kw):
+        self.config.include('ptah')
+        self.config.scan(self.__class__.__module__)
         self.config.commit()
         self.config.autocommit = True
 
@@ -306,37 +304,8 @@ class TestSubscriberDirective(BaseTesting):
         self.assertTrue(len(events) == 1)
         self.assertTrue(len(events[0]) == 2)
 
-    def test_subscriber_reinitialize(self):
-        events = []
-
-        @config.subscriber(IContext)
-        def testSubscriber(*args):
-            events.append(args)
-
-        self._init_ptah()
-
-        # reinstall
-        sm = self.registry
-        sm.__init__('base')
-
-        self._init_ptah()
-
-        sm = self.registry
-        sm.subscribers((Context(IContext),), None)
-        self.assertTrue(len(events) == 1)
-
 
 class TestExtraDirective(BaseTesting):
-
-    def test_api_loadpackage(self):
-        from ptah import config
-
-        seen = set()
-        packages = config.load_package('ptah.config', seen)
-        self.assertEqual(packages, ['ptah.config'])
-
-        packages = config.load_package('ptah.config', seen)
-        self.assertEqual(packages, [])
 
     def test_action(self):
         info = config.DirectiveInfo()

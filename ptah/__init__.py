@@ -9,7 +9,6 @@ from ptah.uri import UriFactory
 
 # config
 from ptah import config
-from ptah.config import initialize
 from ptah.config import adapter
 from ptah.config import event
 from ptah.config import subscriber
@@ -40,7 +39,7 @@ from ptah.library import render_includes
 # settings
 from ptah.settings import get_settings
 from ptah.settings import register_settings
-from ptah.settings import initialize_settings
+from ptah.settings import init_settings
 
 # security
 from ptah.authentication import auth_service
@@ -137,48 +136,65 @@ from ptah.cms import Session
 from ptah import form
 
 
-# pyramid include
-def includeme(config):
-    config.add_directive('ptah_initialize', ptah_initialize)
+def includeme(cfg):
+    # auth
+    from ptah.security import PtahAuthorizationPolicy
+    from pyramid.authentication import AuthTktAuthenticationPolicy
+
+    kwargs = {'wild_domain': False,
+              'callback': get_local_roles,
+              'secret': cfg.registry.settings.get('ptah.secret','')}
+
+    cfg.set_authorization_policy(PtahAuthorizationPolicy())
+    cfg.set_authentication_policy(AuthTktAuthenticationPolicy(**kwargs))
+    
+    # include extra packages
+    cfg.include('pyramid_tm')
+    cfg.include('ptah.manage')
+
+    # directive
+    cfg.add_directive('ptah_initialize', ptah_initialize)
+
+    # object events handler
+    cfg.registry.registerHandler(
+        config.ObjectEventNotify(cfg.registry), (config.IObjectEvent,))
 
     # ptah.config directives
     from ptah.config import pyramid_get_cfg_storage
-    config.add_directive(
+    cfg.add_directive(
         'get_cfg_storage', pyramid_get_cfg_storage)
 
     # ptah.config.settings directives
     from ptah.settings import pyramid_get_settings
-    config.add_directive(
+    cfg.add_directive(
         'ptah_get_settings', pyramid_get_settings)
 
     # ptah.authentication directives
     from ptah import authentication
-    config.add_directive(
+    cfg.add_directive(
         'ptah_auth_checker', authentication.pyramid_auth_checker)
-    config.add_directive(
+    cfg.add_directive(
         'ptah_auth_provider', authentication.pyramid_auth_provider)
-    config.add_directive(
+    cfg.add_directive(
         'ptah_principal_searcher', authentication.pyramid_principal_searcher)
 
     # ptah.uri directives
     from ptah import uri
-    config.add_directive(
+    cfg.add_directive(
         'ptah_uri_resolver', uri.pyramid_uri_resolver)
 
     # ptah.password directives
     from ptah import password
-    config.add_directive(
+    cfg.add_directive(
         'ptah_password_changer', password.pyramid_password_changer)
 
     # ptah static assets
-    config.add_static_view('jquery', 'ptah:static/jquery')
-    config.add_static_view('bootstrap', 'ptah:static/bootstrap')
-    config.add_static_view('tiny_mce', 'ptah:static/tiny_mce')
+    cfg.add_static_view('jquery', 'ptah:static/jquery')
+    cfg.add_static_view('bootstrap', 'ptah:static/bootstrap')
+    cfg.add_static_view('tiny_mce', 'ptah:static/tiny_mce')
 
-    # include ptah.manage
-    config.include('ptah.manage')
-
-    config.scan('ptah')
+    # scan ptah
+    cfg.scan('ptah')
 
 
 def make_wsgi_app(global_settings, **settings):
@@ -192,77 +208,55 @@ def make_wsgi_app(global_settings, **settings):
 
     """
     import sys
-    import ptah
+    import sqlahelper
     from pyramid.config import Configurator
 
-    auth_service.set_userid(SUPERUSER_URI)
-
     # configuration
-    config = Configurator(settings=settings)
+    cfg = Configurator(settings=settings)
+    cfg.include('ptah')
 
     # initialization
-    packages = settings.get('packages', None)
-    autoinclude = settings.get('autoinclude', True)
     try:
-        ptah_initialize(config, packages, autoinclude)
+        ptah_initialize(cfg)
     except Exception as e:
-        if isinstance(e, ptah.config.StopException):
+        if isinstance(e, config.StopException):
             print (e.print_tb())
 
         sys.exit(0)
         return
 
-    config.commit()
+    cfg.commit()
+
+    # create sql tables
+    Base = sqlahelper.get_base()
+    Base.metadata.create_all()
 
     # create wsgi app
-    return config.make_wsgi_app()
+    return cfg.make_wsgi_app()
 
 
 # initialize ptah
-def ptah_initialize(config, packages=None, autoinclude=False):
-    """ Initialize ptah packages.
-    Load all ptah packages and intialize ptah settings system.
-
-    This function automatically called by :py:func:`make_wsgi_app` function.
-    """
-    import ptah
-    import sqlahelper
-    import transaction
+def ptah_initialize(cfg):
+    """ Initialize ptah package."""
     from pyramid.exceptions import  ConfigurationExecutionError
 
-    config.include('ptah')
-    config.include('pyramid_tm')
-    config.begin()
-
+    cfg.begin()
     try:
-        settings = config.registry.settings
-
-        # load packages
-        ptah.config.initialize(config, packages, autoinclude=autoinclude)
-        config.commit()
+        auth_service.set_userid(SUPERUSER_URI)
 
         # initialize settings
-        ptah.settings.initialize_settings(config, settings)
+        init_settings(cfg, cfg.registry.settings)
 
-        # create sql tables
-        Base = sqlahelper.get_base()
-        Base.metadata.create_all()
-
-        # send AppStarting event
-        config.registry.notify(ptah.events.AppStarting(config))
-
-        # commit possible transaction
-        transaction.commit()
     except Exception as e:
         if isinstance(e, ConfigurationExecutionError):
             e = e.evalue
 
-        if not isinstance(e, ptah.config.StopException):
-            ptah.config.shutdown()
-            e = ptah.config.StopException(e)
+        if not isinstance(e, config.StopException):
+            config.shutdown()
+            e = config.StopException(e)
             raise e
 
-        ptah.config.shutdown()
+        config.shutdown()
         raise e
     finally:
-        config.end()
+        cfg.end()

@@ -25,11 +25,6 @@ class StopExceptionTesting(unittest.TestCase):
 
 class LoadpackageTesting(unittest.TestCase):
 
-    def test_loadpackages(self):
-        from ptah import config
-
-        self.assertIn('ptah', config.list_packages())
-
     def test_stop_exc(self):
         from ptah import config
 

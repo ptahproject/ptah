@@ -1,11 +1,8 @@
 import sys
-import imp
 import logging
 import signal
 import traceback
-import pkg_resources
 from collections import defaultdict, namedtuple, OrderedDict
-from pkgutil import walk_packages
 from pyramid.compat import text_type, string_types, NativeIO
 from pyramid.registry import Introspectable
 from pyramid.threadlocal import get_current_registry
@@ -15,21 +12,16 @@ from zope.interface.interfaces import IObjectEvent
 import venusian
 from venusian.advice import getFrameInfo
 
-import ptah
-
 ATTACH_ATTR = '__ptah_actions__'
 ID_EVENT = 'ptah.config:event'
 ID_ADAPTER = 'ptah.config:adapter'
 ID_SUBSCRIBER = 'ptah.config:subscriber'
 
 __all__ = ('initialize', 'get_cfg_storage', 'StopException',
-           'list_packages', 'cleanup', 'cleanup_system',
            'event', 'adapter', 'subscriber', 'shutdown', 'shutdown_handler',
            'Action', 'ClassAction', 'DirectiveInfo', 'LayerWrapper')
 
 log = logging.getLogger('ptah')
-
-mods = set()
 
 
 class StopException(Exception):
@@ -65,25 +57,6 @@ class ObjectEventNotify(object):
         self.registry.subscribers((event.object, event), None)
 
 
-def initialize(config, packages=None, excludes=(), autoinclude=False):
-    """ Load ptah packages, scan and execute all configuration directives. """
-    config.registry.registerHandler(
-        ObjectEventNotify(config.registry), (IObjectEvent,))
-
-    # list all packages
-    if autoinclude:
-        packages = list_packages(packages)
-    elif packages is None:
-        packages = ()
-
-    pkgs = []
-    [pkgs.append(p) for p in packages if p not in pkgs]
-
-    config.action(
-        None, config.registry.notify,
-        (ptah.events.Initialized(config),))
-
-
 def get_cfg_storage(id, registry=None, default_factory=OrderedDict):
     """ Return current config storage """
     if registry is None:
@@ -102,61 +75,6 @@ def get_cfg_storage(id, registry=None, default_factory=OrderedDict):
 
 def pyramid_get_cfg_storage(config, id):
     return get_cfg_storage(id, config.registry)
-
-
-def load_package(name, seen, first=True):
-    """ scand package dependencies and return list of all dependant packages """
-    packages = []
-
-    if name in seen:
-        return packages
-
-    seen.add(name)
-    try:
-        dist = pkg_resources.get_distribution(name)
-        for req in dist.requires():
-            pkg = req.project_name
-            if pkg in seen:
-                continue
-            packages.extend(load_package(pkg, seen, False))
-
-        distmap = pkg_resources.get_entry_map(dist, 'ptah')
-        ep = distmap.get('package')
-        if ep is not None:
-            if dist.has_metadata('top_level.txt'):
-                packages.extend(
-                    [p.strip() for p in
-                     dist.get_metadata('top_level.txt').split()])
-    except pkg_resources.DistributionNotFound:
-        pass
-
-    if first and name not in packages and '-' not in name:
-        packages.append(name)
-
-    return packages
-
-
-def list_packages(include_packages=None):
-    """ scan current working_set and return all ptah packages """
-    seen = set()
-    packages = []
-
-    if include_packages is not None:
-        for pkg in include_packages:
-            packages.extend(load_package(pkg, seen))
-    else:
-        for dist in pkg_resources.working_set:
-            pkg = dist.project_name
-            if pkg in seen:
-                continue
-
-            distmap = pkg_resources.get_entry_map(dist, 'ptah')
-            if 'package' in distmap:
-                packages.extend(load_package(pkg, seen))
-            else:
-                seen.add(pkg)
-
-    return packages
 
 
 class EventDescriptor(object):
@@ -379,8 +297,6 @@ class DirectiveInfo(object):
         self.module = module
         self.codeinfo = CodeInfo(
             codeinfo[0], codeinfo[1], codeinfo[2], codeinfo[3], module.__name__)
-
-        mods.add(self.module.__name__)
 
         if depth > 1:
             _, mod, _, _, ci = getFrameInfo(sys._getframe(2))

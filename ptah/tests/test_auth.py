@@ -14,7 +14,7 @@ class Principal(object):
 class TestAuthentication(PtahTestCase):
 
     _init_ptah = False
-    _init_auth = True
+    #_init_auth = True
 
     def test_auth_provider(self):
         import ptah
