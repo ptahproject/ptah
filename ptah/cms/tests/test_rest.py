@@ -39,8 +39,6 @@ class RestBase(PtahTestCase):
 
 class TestRestApi(RestBase):
 
-    _cleanup_mod = True
-
     def test_rest_srv(self):
         import ptah.rest
         self.init_ptah()
@@ -178,21 +176,22 @@ class TestRestApi(RestBase):
         self.assertEqual(info['__uri__'], root.__uri__)
 
 
-class Content(ptah.cms.Content):
-
-    __type__ = ptah.cms.Type('content', 'Test Content')
-    __uri_factory__ = ptah.UriFactory('cms-content')
-
-
-class Container(ptah.cms.Container):
-
-    __type__ = ptah.cms.Type('container', 'Test Container')
-    __uri_factory__ = ptah.UriFactory('cms-container')
-
-
 class TestCMSRestAction(RestBase):
 
-    _cleanup_mod = True
+    def setUp(self):
+        global Content, Container
+        class Content(ptah.cms.Content):
+            __type__ = ptah.cms.Type('content', 'Test Content')
+            __uri_factory__ = ptah.UriFactory('cms-content')
+
+        class Container(ptah.cms.Container):
+            __type__ = ptah.cms.Type('container', 'Test Container')
+            __uri_factory__ = ptah.UriFactory('cms-container')
+
+        self.Content = Content
+        self.Container = Container
+
+        super(TestCMSRestAction, self).setUp()
 
     def test_rest_cms_action(self):
         from ptah.cms.rest import IRestAction, IRestActionClassifier

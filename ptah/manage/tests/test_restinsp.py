@@ -1,6 +1,7 @@
 import ptah
 from ptah.testing import PtahTestCase
 from pyramid.testing import DummyRequest
+from pyramid.view import render_view_to_response
 
 
 class TestRestInspectorModule(PtahTestCase):
@@ -26,7 +27,7 @@ class TestRestInspectorModule(PtahTestCase):
 
         mod = RestModule(None, request)
 
-        res = RestModuleView.__renderer__(mod, request)
+        res = render_view_to_response(mod, request, '', False)
         self.assertEqual(res.status, '200 OK')
 
         view = RestModuleView(mod, request)

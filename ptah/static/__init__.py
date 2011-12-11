@@ -1,55 +1,46 @@
-""" static assets """
-from ptah import view
-
-view.static('jquery', 'ptah:static/jquery')
-view.static('bootstrap', 'ptah:static/bootstrap')
-view.static('tiny_mce', 'ptah:static/tiny_mce')
+""" assets libraries """
+import ptah
 
 # jQuery library
-view.library(
+ptah.library(
     'jquery',
-    path="jquery-1.7.min.js",
-    resource="jquery",
+    path='ptah:static/jquery/jquery-1.7.min.js',
     type="js")
 
-view.library(
+ptah.library(
     'jquery-ui',
-    path="jquery-ui-1.8.16.min.js",
+    path='ptah:static/jquery/jquery-ui-1.8.16.min.js',
     type="js",
-    resource="jquery",
     require="jquery")
 
-view.library(
+ptah.library(
     'jquery-ui',
-    path="jquery-ui.css",
-    resource="jquery",
+    'ptah:static/jquery/jquery-ui.css',
     type='css')
 
 # Bootstrap css
-view.library(
+ptah.library(
     'bootstrap',
-    path="bootstrap-1.4.0.min.css",
-    resource="bootstrap",
+    path='ptah:static/bootstrap/bootstrap-1.4.0.min.css',
     type="css")
 
-view.library(
+ptah.library(
     'bootstrap-js',
-    path=('js/bootstrap-alerts.js',
-          'js/bootstrap-buttons.js',
-          'js/bootstrap-dropdown.js',
-          'js/bootstrap-modal.js',
-          'js/bootstrap-popover.js',
-          'js/bootstrap-scrollspy.js',
-          'js/bootstrap-tabs.js',
-          'js/bootstrap-twipsy.js'),
-    resource="bootstrap",
+    path=('ptah:static/bootstrap/js/bootstrap-alerts.js',
+          'ptah:static/bootstrap/js/bootstrap-buttons.js',
+          'ptah:static/bootstrap/js/bootstrap-dropdown.js',
+          'ptah:static/bootstrap/js/bootstrap-modal.js',
+          'ptah:static/bootstrap/js/bootstrap-popover.js',
+          'ptah:static/bootstrap/js/bootstrap-scrollspy.js',
+          'ptah:static/bootstrap/js/bootstrap-tabs.js',
+          'ptah:static/bootstrap/js/bootstrap-twipsy.js'),
     type="js",
     require="jquery")
 
 # TinyMCE
-view.library(
+ptah.library(
     "tiny_mce",
-    resource="tiny_mce",
-    path=('tiny_mce.js', 'jquery.tinymce.js'),
+    path=('ptah:static/tiny_mce/tiny_mce.js',
+          'ptah:static/tiny_mce/jquery.tinymce.js'),
     type="js",
     require='jquery')

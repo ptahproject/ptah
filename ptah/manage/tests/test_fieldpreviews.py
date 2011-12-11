@@ -4,6 +4,7 @@ from ptah.form.field import PREVIEW_ID
 from ptah.manage import fieldpreviews
 from ptah.testing import PtahTestCase
 from pyramid.testing import DummyRequest
+from pyramid.view import render_view_to_response
 
 
 class TestFieldPreviews(PtahTestCase):
@@ -131,7 +132,7 @@ class TestFieldsModule(PtahTestCase):
 
         mod = FieldsModule(None, request)
 
-        res = FieldsView.__renderer__(mod, request)
+        res = render_view_to_response(mod, request, '', False)
         self.assertEqual(res.status, '200 OK')
 
         from ptah.form.field import FIELD_ID

@@ -38,11 +38,6 @@ class TestUriView(PtahTestCase):
                          'ptah.authentication.superuser_resolver')
 
 
-@ptah.resolver('uri-intro-test')
-def resolver(uri): # pragma: no cover
-    return 'Resolved'
-
-
 class TestUriIntrospect(PtahTestCase):
 
     _cleanup_mod = False
@@ -50,6 +45,11 @@ class TestUriIntrospect(PtahTestCase):
     def _test_uri_introspect(self):
         from ptah.manage.uri import ID_RESOLVER
         from ptah.manage.intr_renderers import UriRenderer
+
+        def resolver(uri): # pragma: no cover
+            return 'Resolved'
+
+        self.config.ptah_uri_resolver('uri-intro-test', resolver)
 
         data = ptah.config.scan(self.__class__.__module__, set())
 

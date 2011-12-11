@@ -11,6 +11,8 @@ from pyramid.registry import Introspectable
 from pyramid.threadlocal import get_current_registry
 from zope.interface import implementedBy
 from zope.interface.interfaces import IObjectEvent
+
+import venusian
 from venusian.advice import getFrameInfo
 
 import ptah
@@ -54,47 +56,32 @@ class StopException(Exception):
             return self.exc
 
 
+class ObjectEventNotify(object):
+
+    def __init__(self, registry):
+        self.registry = registry
+
+    def __call__(self, event):
+        self.registry.subscribers((event.object, event), None)
+
+
 def initialize(config, packages=None, excludes=(), autoinclude=False):
     """ Load ptah packages, scan and execute all configuration directives. """
-    registry = config.registry
-    registry.registerHandler(objectEventNotify, (IObjectEvent,))
-
-    def exclude_filter(modname):
-        if modname in packages:
-            return True
-        return exclude(modname, excludes)
+    config.registry.registerHandler(
+        ObjectEventNotify(config.registry), (IObjectEvent,))
 
     # list all packages
     if autoinclude:
-        if packages is None:
-            packages = list_packages(excludes=excludes)
-            packages.extend([mod for mod in mods if exclude_filter(mod)])
-        else:
-            packages = list_packages(packages, excludes=excludes)
+        packages = list_packages(packages)
     elif packages is None:
         packages = ()
 
     pkgs = []
     [pkgs.append(p) for p in packages if p not in pkgs]
 
-    # scan packages and load actions
-    seen = set()
-    actions = []
-    for pkg in pkgs:
-        actions.extend(scan(pkg, seen, exclude_filter))
-
-    # add actions to configurator
-    def runaction(action, cfg):
-        cfg.__ptah_action__ = action
-        action(cfg)
-
-    for action in actions:
-        config.info = action.info
-        config.action(action.discriminator, runaction, (action, config),
-                      introspectables = action.introspectables,
-                      order = action.order)
-
-    config.action(None, registry.notify, (ptah.events.Initialized(config),))
+    config.action(
+        None, config.registry.notify,
+        (ptah.events.Initialized(config),))
 
 
 def get_cfg_storage(id, registry=None, default_factory=OrderedDict):
@@ -117,17 +104,6 @@ def pyramid_get_cfg_storage(config, id):
     return get_cfg_storage(id, config.registry)
 
 
-def exclude(modname, excludes=()):
-    for n in ('.test', '.ftest'):
-        if n in modname:
-            return False
-
-    for mod in excludes:
-        if modname == mod or modname.startswith(mod):
-            return False
-    return True
-
-
 def load_package(name, seen, first=True):
     """ scand package dependencies and return list of all dependant packages """
     packages = []
@@ -136,7 +112,6 @@ def load_package(name, seen, first=True):
         return packages
 
     seen.add(name)
-
     try:
         dist = pkg_resources.get_distribution(name)
         for req in dist.requires():
@@ -161,22 +136,18 @@ def load_package(name, seen, first=True):
     return packages
 
 
-def list_packages(include_packages=None, excludes=None):
+def list_packages(include_packages=None):
     """ scan current working_set and return all ptah packages """
     seen = set()
     packages = []
 
     if include_packages is not None:
         for pkg in include_packages:
-            if excludes and pkg in excludes:
-                continue
             packages.extend(load_package(pkg, seen))
     else:
         for dist in pkg_resources.working_set:
             pkg = dist.project_name
             if pkg in seen:
-                continue
-            if excludes and pkg in excludes:
                 continue
 
             distmap = pkg_resources.get_entry_map(dist, 'ptah')
@@ -186,29 +157,6 @@ def list_packages(include_packages=None, excludes=None):
                 seen.add(pkg)
 
     return packages
-
-
-def objectEventNotify(event):
-    get_current_registry().subscribers((event.object, event), None)
-
-
-_cleanups = set()
-
-def cleanup(handler):
-    _cleanups.add(handler)
-    return handler
-
-
-def cleanup_system(*modIds):
-    mods.clear()
-
-    for h in _cleanups:
-        h()
-
-    for modId in modIds:
-        mod = sys.modules[modId]
-        if hasattr(mod, ATTACH_ATTR):
-            delattr(mod, ATTACH_ATTR)
 
 
 class EventDescriptor(object):
@@ -255,8 +203,7 @@ def event(title='', category=''):
         info.attach(
             Action(
                 _event, (cls, title, category),
-                discriminator=discr,
-                introspectables = (intr,))
+                discriminator=discr, introspectables = (intr,))
             )
         return cls
 
@@ -285,8 +232,7 @@ def adapter(*args, **kw):
         info.attach(
             Action(
                 _register, (name, func, required),
-                discriminator = discr,
-                introspectables = (intr,))
+                discriminator = discr, introspectables = (intr,))
             )
         return func
 
@@ -383,7 +329,9 @@ class Action(object):
         return hash(self.hash)
 
     def __repr__(self):
-        return '<%s "%s">'%(self.__class__.__name__, self.discriminator[0])
+        return '<%s "%s">'%(
+            self.__class__.__name__,
+            self.discriminator[0] if self.discriminator else None)
 
     def __call__(self, cfg):
         if self.callable:
@@ -405,6 +353,10 @@ class ClassAction(Action):
 
 
 CodeInfo = namedtuple('Codeinfo', 'filename lineno function source module')
+
+
+class AttachData(OrderedDict):
+    """ container for Attach infos """
 
 
 class DirectiveInfo(object):
@@ -443,6 +395,10 @@ class DirectiveInfo(object):
         else:
             return getattr(self.module, self.name, None)
 
+    def _runaction(self, action, cfg):
+        cfg.__ptah_action__ = action
+        action(cfg)
+
     def attach(self, action):
         action.info = self
         if action.hash is None:
@@ -450,7 +406,7 @@ class DirectiveInfo(object):
 
         data = getattr(self.module, ATTACH_ATTR, None)
         if data is None:
-            data = OrderedDict()
+            data = AttachData()
             setattr(self.module, ATTACH_ATTR, data)
 
         if action.hash in data:
@@ -458,52 +414,21 @@ class DirectiveInfo(object):
                 "Directive registered twice: %s" % (action.discriminator,))
         data[action.hash] = action
 
+        def callback(context, name, ob):
+            config = context.config.with_package(self.module)
+
+            config.info = action.info
+            config.action(
+                action.discriminator, self._runaction, (action, config),
+                introspectables=action.introspectables,
+                order=action.order)
+
+        venusian.attach(data, callback, category='ptah')
+
     def __repr__(self):
         filename, line, function, source, module = self.codeinfo
         return ' File "%s", line %d, in %s\n' \
                '      %s\n' % (filename, line, function, source)
-
-
-def scan(package, seen, exclude_filter=None):
-    """ scan package for ptah actions """
-    if isinstance(package, string_types):
-        __import__(package)
-        package = sys.modules[package]
-
-    actions = []
-
-    pkgname = package.__name__
-    if pkgname in seen:
-        return actions
-
-    seen.add(pkgname)
-
-    if hasattr(package, ATTACH_ATTR):
-        actions.extend(getattr(package, ATTACH_ATTR).values())
-
-    if hasattr(package, '__path__'):  # package, not module
-        results = walk_packages(package.__path__, package.__name__ + '.')
-
-        for importer, modname, ispkg in results:
-            if modname in seen:  # pragma: no cover
-                continue
-
-            seen.add(modname)
-
-            if exclude_filter is not None and modname != pkgname:
-                if not exclude_filter(modname):
-                    continue
-
-            loader = importer.find_module(modname)
-            if loader is not None:
-                module_type = loader.etc[2]
-                if module_type in (imp.PY_SOURCE, imp.PKG_DIRECTORY):
-                    __import__(modname)
-                    module = sys.modules[modname]
-                    if hasattr(module, ATTACH_ATTR):
-                        actions.extend(getattr(module, ATTACH_ATTR).values())
-
-    return actions
 
 
 handlers = []

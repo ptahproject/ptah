@@ -78,7 +78,7 @@ class ServiceAPIDoc(object):
         self.srvname = name
 
     def __call__(self, request):
-        srv = config.get_cfg_storage(ID_REST)[self.srvname]
+        srv = ptah.get_cfg_storage(ID_REST)[self.srvname]
         url = request.application_url
 
         info = OrderedDict(
@@ -129,6 +129,7 @@ class Login(object):
 
     def __call__(self):
         request = self.request
+        response = request.response
 
         login = request.POST.get('login', '')
         password = request.POST.get('password', '')
@@ -139,11 +140,13 @@ class Login(object):
             token = self.get_token(request, info.__uri__)
             result = {'message': '', 'auth-token': token[:-1]}
         else:
-            request.response.status = 403
+            response.status = 403
             result = {'message': info.message or 'authentication failed'}
 
-        request.response.headerslist = {'Content-Type': 'application/json'}
-        return '%s\n\n' % dumps(result, indent=True, default=dthandler)
+        response.headerslist = {'Content-Type': 'application/json'}
+        response.body = '{0}\n\n'.format(
+            dumps(result, indent=True, default=dthandler))
+        return response
 
     def get_token(self, request, userid):
         secret = ptah.get_settings(
@@ -163,69 +166,62 @@ class Login(object):
 
 
 @view_config(context=RestApiRoute)
-class Api(object):
+def Api(request):
     """ Rest API interface """
+    response = request.response
 
-    def __init__(self, request):
-        self.request = request
+    # authentication by token
+    token = request.environ.get('HTTP_X_AUTH_TOKEN')
+    if token:
+        secret = ptah.get_settings(ptah.CFG_ID_PTAH, request.registry)['secret']
 
-    def __call__(self):
-        request = self.request
-
-        # authentication by token
-        token = request.environ.get('HTTP_X_AUTH_TOKEN')
-        if token:
-            secret = ptah.get_settings(
-                ptah.CFG_ID_PTAH, request.registry)['secret']
-
-            try:
-                timestamp, userid, tokens, user_data = parse_ticket(
-                    secret, '%s!' % token, '0.0.0.0')
-            except BadTicket:
-                userid = None
-
-            if userid:
-                ptah.auth_service.set_userid(userid)
-
-        # search service and action
-        service = request.matchdict['service']
-        subpath = request.matchdict['subpath']
-        if subpath:
-            action = subpath[0]
-            arguments = subpath[1:]
-            if ':' in action:
-                action, arg = action.split(':', 1)
-                arguments = (arg,) + arguments
-        else:
-            action = 'apidoc'
-            arguments = ()
-
-        request.environ['SCRIPT_NAME'] = '/__rest__/%s' % service
-        request.response.headerslist = {'Content-Type': 'application/json'}
-
-        # execute action for specific service
         try:
-            result = config.get_cfg_storage(ID_REST)[service](
-                request, action, *arguments)
-        except WSGIHTTPException as exc:
-            request.response.status = exc.status
-            result = {'message': str(exc)}
-        except Exception as exc:
-            request.response.status = 500
+            timestamp, userid, tokens, user_data = parse_ticket(
+                secret, '%s!' % token, '0.0.0.0')
+        except BadTicket:
+            userid = None
 
-            out = NativeIO()
-            traceback.print_exc(file=out)
+        if userid:
+            ptah.auth_service.set_userid(userid)
 
-            result = {'message': str(exc),
-                      'traceback': out.getvalue()}
+    # search service and action
+    service = request.matchdict['service']
+    subpath = request.matchdict['subpath']
+    if subpath:
+        action = subpath[0]
+        arguments = subpath[1:]
+        if ':' in action:
+            action, arg = action.split(':', 1)
+            arguments = (arg,) + arguments
+    else:
+        action = 'apidoc'
+        arguments = ()
 
-        if isinstance(result, Response):
-            return result
+    request.environ['SCRIPT_NAME'] = '/__rest__/%s' % service
+    response.headerslist = {'Content-Type': 'application/json'}
 
-        request.response.body = '%s\n\n' % dumps(
-            result, indent=True, default=dthandler)
+    # execute action for specific service
+    try:
+        result = config.get_cfg_storage(ID_REST)[service](
+            request, action, *arguments)
+    except WSGIHTTPException as exc:
+        response.status = exc.status
+        result = {'message': str(exc)}
+    except Exception as exc:
+        response.status = 500
 
-        return request.response
+        out = NativeIO()
+        traceback.print_exc(file=out)
+
+        result = {'message': str(exc),
+                  'traceback': out.getvalue()}
+
+    if isinstance(result, Response):
+        return result
+
+    response.body = '{0}\n\n'.format(
+        dumps(result, indent=True, default=dthandler))
+    return response
 
 
 def enable_rest_api(config):

@@ -151,7 +151,7 @@ def Type(name, title=None, fieldset=None, **kw):
 
         resolve_content.__doc__ = 'CMS Content resolver for %s type'%title
 
-        ptah.register_uri_resolver('cms-%s'%name, resolve_content, depth = 2)
+        ptah.register_uri_resolver('cms-%s'%name, resolve_content, depth=2)
 
     # config actino and introspection info
     discr = (TYPES_DIR_ID, name)

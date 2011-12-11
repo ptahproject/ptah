@@ -4,16 +4,10 @@ from webob.multidict import MultiDict
 from pyramid.testing import DummyRequest
 from pyramid.compat import url_quote_plus
 from pyramid.httpexceptions import HTTPFound
+from pyramid.view import render_view_to_response
 
 import ptah
 from ptah.testing import PtahTestCase
-
-
-class TestSqlaModuleContent(ptah.cms.Content):
-
-    __tablename__ = 'test_sqla_content'
-    __type__ = ptah.cms.Type('Test')
-    name = sqla.Column(sqla.Unicode())
 
 
 class TestSqlaModuleTable(ptah.cms.Base):
@@ -24,8 +18,16 @@ class TestSqlaModuleTable(ptah.cms.Base):
     name = sqla.Column(sqla.Unicode())
 
 
-
 class TestSqlaModule(PtahTestCase):
+
+    def setUp(self):
+        global TestSqlaModuleContent
+        class TestSqlaModuleContent(ptah.cms.Content):
+            __tablename__ = 'test_sqla_content'
+            __table_args__ = {'extend_existing': True}
+            __type__ = ptah.cms.Type('Test')
+            name = sqla.Column(sqla.Unicode())
+        super(TestSqlaModule, self).setUp()
 
     def test_sqla_module(self):
         from ptah.manage.manage import PtahManageRoute
@@ -64,7 +66,7 @@ class TestSqlaModule(PtahTestCase):
 
         mod = SQLAModule(None, request)
 
-        res = MainView.__renderer__(mod, request)
+        res = render_view_to_response(mod, request, '', False)
         self.assertEqual(res.status, '200 OK')
 
     def test_sqla_table_view(self):
@@ -75,7 +77,7 @@ class TestSqlaModule(PtahTestCase):
         mod = SQLAModule(None, request)
         table = mod['psqla-ptah_tokens']
 
-        res = TableView.__renderer__(table, request)
+        res = render_view_to_response(table, request, '', False)
         self.assertEqual(res.status, '200 OK')
         self.assertIn('form.buttons.add', res.text)
 
@@ -89,7 +91,7 @@ class TestSqlaModule(PtahTestCase):
         mod = SQLAModule(None, request)
         table = mod['psqla-test_sqla_content']
 
-        res = TableView.__renderer__(table, request).text
+        res = render_view_to_response(table, request, '', False).text
         self.assertIn('Inherits from:', res)
         self.assertIn('ptah_node', res)
         self.assertIn('ptah_content', res)
@@ -110,16 +112,16 @@ class TestSqlaModule(PtahTestCase):
         mod = SQLAModule(None, request)
         table = mod['psqla-ptah_nodes']
 
-        res = TableView.__renderer__(table, request).text
+        res = render_view_to_response(table, request, '', False).text
         self.assertIn(url_quote_plus(uri), res)
         self.assertIn(url_quote_plus(type_uri), res)
 
         request = DummyRequest(params={'batch': 'unknown'})
-        res = TableView.__renderer__(table, request).text
+        res = render_view_to_response(table, request, '', False).text
         self.assertIn(url_quote_plus(uri), res)
 
         request = DummyRequest(params={'batch': '0'})
-        res = TableView.__renderer__(table, request).text
+        res = render_view_to_response(table, request, '', False).text
         self.assertIn(url_quote_plus(uri), res)
 
     def test_sqla_table_view_inheritance(self):
@@ -130,27 +132,24 @@ class TestSqlaModule(PtahTestCase):
         mod = SQLAModule(None, request)
         table = mod['psqla-ptah_tokens']
 
-        res = TableView.__renderer__(table, request)
+        res = render_view_to_response(table, request, '', False)
         self.assertEqual(res.status, '200 OK')
 
     def test_sqla_table_traverse(self):
         from ptah.manage.sqla import SQLAModule, Record
+        from ptah.settings import Session, SettingRecord
 
-        from ptah import token
-        from ptah.util import CSRFService
+        inst = SettingRecord(name='test', value='12345')
+        Session.add(inst)
+        Session.flush()
 
-        tid = token.service.generate(CSRFService.TOKEN_TYPE, 'test')
-        inst = token.service._sql_get.first(token=tid)
+        mod = SQLAModule(None, DummyRequest())
+        table = mod['psqla-ptah_settings']
 
-        request = DummyRequest()
-
-        mod = SQLAModule(None, request)
-        table = mod['psqla-ptah_tokens']
-
-        rec = table[str(inst.id)]
+        rec = table[str(inst.name)]
 
         self.assertIsInstance(rec, Record)
-        self.assertEqual(rec.pname, 'id')
+        self.assertEqual(rec.pname, 'name')
         self.assertIsNotNone(rec.pcolumn)
         self.assertIsNotNone(rec.data)
 
@@ -174,11 +173,7 @@ class TestSqlaModule(PtahTestCase):
             POST={'form.buttons.back': 'Back'})
 
         form = AddRecord(table, request)
-        res = None
-        try:
-            form.update()
-        except Exception as e:
-            res = e
+        res = form.update()
 
         self.assertIsInstance(res, HTTPFound)
         self.assertEqual(res.headers['location'], '.')
@@ -192,7 +187,6 @@ class TestSqlaModule(PtahTestCase):
         table = mod['psqla-test_sqla_table']
 
         request = DummyRequest(
-            session = {},
             POST={'form.buttons.create': 'Create'})
 
         form = AddRecord(table, request)
@@ -200,23 +194,18 @@ class TestSqlaModule(PtahTestCase):
         form.update()
 
         self.assertIn('Please fix indicated errors',
-                      request.session['msgservice'][0])
+                      ptah.view.render_messages(request))
 
         request = DummyRequest(
-            session = {},
             POST={'form.buttons.create': 'Create',
                   'name': 'Test'})
 
         form = AddRecord(table, request)
         form.csrf = False
-        res = None
-        try:
-            form.update()
-        except Exception as e:
-            res = e
+        res = form.update()
 
         self.assertIn('Table record has been created.',
-                      request.session['msgservice'][0])
+                      ptah.view.render_messages(request))
         self.assertIsInstance(res, HTTPFound)
 
         rec = ptah.cms.Session.query(TestSqlaModuleTable).first()
@@ -231,7 +220,6 @@ class TestSqlaModule(PtahTestCase):
         table = mod['psqla-test_sqla_table']
 
         request = DummyRequest(
-            session = {},
             POST={'form.buttons.createmulti': 'Create'})
 
         form = AddRecord(table, request)
@@ -239,10 +227,9 @@ class TestSqlaModule(PtahTestCase):
         form.update()
 
         self.assertIn('Please fix indicated errors',
-                      request.session['msgservice'][0])
+                      ptah.view.render_messages(request))
 
         request = DummyRequest(
-            session = {},
             POST={'form.buttons.createmulti': 'Create',
                   'name': 'Test multi'})
 
@@ -251,7 +238,7 @@ class TestSqlaModule(PtahTestCase):
         form.update()
 
         self.assertIn('Table record has been created.',
-                      request.session['msgservice'][0])
+                      ptah.view.render_messages(request))
 
         rec = ptah.cms.Session.query(TestSqlaModuleTable).first()
         self.assertEqual(rec.name, 'Test multi')
@@ -284,11 +271,7 @@ class TestSqlaModule(PtahTestCase):
             POST={'form.buttons.cancel': 'Cancel'})
 
         form = EditRecord(rec, request)
-        res = None
-        try:
-            form.update()
-        except Exception as e:
-            res = e
+        res = form.update()
 
         self.assertIsInstance(res, HTTPFound)
         self.assertEqual(res.headers['location'], '..')
@@ -316,23 +299,18 @@ class TestSqlaModule(PtahTestCase):
         form.update()
 
         self.assertIn('Please fix indicated errors',
-                      request.session['msgservice'][0])
+                      ptah.view.render_messages(request))
 
         request = DummyRequest(
-            session = {},
             POST={'form.buttons.modify': 'Modify',
                   'name': 'Record modified'})
 
         form = EditRecord(rec, request)
         form.csrf = False
-        res = None
-        try:
-            form.update()
-        except Exception as e:
-            res = e
+        res = form.update()
 
         self.assertIn('Table record has been modified.',
-                      request.session['msgservice'][0])
+                      ptah.view.render_messages(request))
         self.assertIsInstance(res, HTTPFound)
         self.assertEqual(res.headers['location'], '..')
 
@@ -360,14 +338,10 @@ class TestSqlaModule(PtahTestCase):
 
         form = EditRecord(rec, request)
         form.csrf = False
-        res = None
-        try:
-            form.update()
-        except Exception as e:
-            res = e
+        res = form.update()
 
         self.assertIn('Table record has been removed.',
-                      request.session['msgservice'][0])
+                      ptah.view.render_messages(request))
         self.assertIsInstance(res, HTTPFound)
         self.assertEqual(res.headers['location'], '..')
 
@@ -385,11 +359,7 @@ class TestSqlaModule(PtahTestCase):
             POST={'form.buttons.add': 'Add'})
 
         form = TableView(table, request)
-        res = None
-        try:
-            form.update()
-        except Exception as e:
-            res = e
+        res = form.update()
 
         self.assertIsInstance(res, HTTPFound)
         self.assertEqual(res.headers['location'], 'add.html')
@@ -415,7 +385,7 @@ class TestSqlaModule(PtahTestCase):
         form.update()
 
         self.assertIn('lease select records for removing.',
-                      request.session['msgservice'][0])
+                      ptah.view.render_messages(request))
 
         request = DummyRequest(
             POST=MultiDict([('form.buttons.remove', 'Remove'),
@@ -426,7 +396,7 @@ class TestSqlaModule(PtahTestCase):
         form.update()
 
         self.assertIn('lease select records for removing.',
-                      request.session['msgservice'][0])
+                      ptah.view.render_messages(request))
 
         request = DummyRequest(
             POST=MultiDict([('form.buttons.remove', 'Remove'),
@@ -437,7 +407,7 @@ class TestSqlaModule(PtahTestCase):
         form.update()
 
         self.assertIn('Select records have been removed.',
-                      request.session['msgservice'][0])
+                      ptah.view.render_messages(request))
 
         rec = ptah.cms.Session.query(TestSqlaModuleTable).filter(
             TestSqlaModuleTable.id == rec_id).first()

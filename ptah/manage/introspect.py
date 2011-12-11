@@ -4,13 +4,12 @@ from pyramid.view import view_config
 from pyramid.compat import string_types
 
 import ptah
-from ptah import config, view, manage
 from ptah.manage import intr_renderer, get_manage_url
 from ptah.manage.manage import INTROSPECT_ID
 
 
-@manage.module('introspect')
-class IntrospectModule(manage.PtahModule):
+@ptah.manage.module('introspect')
+class IntrospectModule(ptah.manage.PtahModule):
     __doc__ = 'Insight into all configuration and registrations.'
 
     title = 'Introspect'
@@ -32,7 +31,7 @@ class Introspector(object):
         self.name = name
         self.request = request
 
-        intros = config.get_cfg_storage(INTROSPECT_ID)
+        intros = ptah.get_cfg_storage(INTROSPECT_ID)
         self.renderer = intros[name](request)
 
         self.intrs = sorted((item['introspectable'] for item in
@@ -50,7 +49,7 @@ class Introspector(object):
 @view_config(
     context=IntrospectModule, wrapper=ptah.wrap_layout(),
     renderer='ptah.manage:templates/introspect.pt')
-class MainView(view.View):
+class MainView(ptah.View):
     __doc__ = 'Introspection module view.'
 
     def update(self):
@@ -64,5 +63,5 @@ class MainView(view.View):
 @view_config(
     context=Introspector, wrapper=ptah.wrap_layout(),
     renderer='ptah.manage:templates/introspect-intr.pt')
-class IntrospectorView(view.View):
+class IntrospectorView(ptah.View):
     pass

@@ -7,7 +7,7 @@ import ptah
 from ptah.testing import PtahTestCase
 
 
-class TestLayoutPreview(PtahTestCase):
+class _TestLayoutPreview(PtahTestCase):
 
     _init_ptah = False
 

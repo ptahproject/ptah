@@ -1,6 +1,7 @@
 import ptah
 from ptah.testing import PtahTestCase
 from pyramid.testing import DummyRequest
+from pyramid.view import render_view_to_response
 
 
 class TestPermissionsModule(PtahTestCase):
@@ -26,7 +27,7 @@ class TestPermissionsModule(PtahTestCase):
 
         mod = PermissionsModule(None, request)
 
-        res = PermissionsView.__renderer__(mod, request)
+        res = render_view_to_response(mod, request, '', False)
         self.assertEqual(res.status, '200 OK')
 
     def test_perms_roles(self):
@@ -36,5 +37,6 @@ class TestPermissionsModule(PtahTestCase):
 
         mod = PermissionsModule(None, request)
 
-        res = RolesView.__renderer__(mod, request)
+        res = render_view_to_response(mod, request, 'roles.html', False)
         self.assertEqual(res.status, '200 OK')
+        self.assertIn('<h2>Roles</h2>', res.text)

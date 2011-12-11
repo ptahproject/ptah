@@ -1,8 +1,0 @@
-<div class="page-header">
-  <h1>${context.title or context.__name__}</h1>
-</div>
-<p>${context.description}</p>
-
-<div class="content">
-  ${context.text}
-</div>

@@ -4,12 +4,12 @@ from pyramid.decorator import reify
 from pyramid.httpexceptions import HTTPFound
 
 import ptah
-from ptah import cms, view, form, manage
+from ptah import cms, form
 from ptah.manage import get_manage_url
 
 
-@manage.module('models')
-class ModelModule(manage.PtahModule):
+@ptah.manage.module('models')
+class ModelModule(ptah.manage.PtahModule):
     __doc__ = 'A listing of all registered models.'
 
     title = 'Models'
@@ -63,7 +63,7 @@ class Record(object):
     context=ModelModule, wrapper=ptah.wrap_layout(),
     renderer='ptah.manage:templates/models.pt')
 
-class ModelModuleView(view.View):
+class ModelModuleView(ptah.View):
 
     rst_to_html = staticmethod(ptah.rst_to_html)
 
@@ -94,7 +94,7 @@ class ModelView(form.Form):
 
         self.fields = tinfo.fieldset
 
-        super(ModelView, self).update()
+        result = super(ModelView, self).update()
 
         request = self.request
         try:
@@ -117,6 +117,8 @@ class ModelView(form.Form):
         self.data = cms.Session.query(cls)\
             .order_by(cls.__id__).offset(offset).limit(limit).all()
 
+        return result
+
     def get_record_info(self, item):
         res = {}
         for field in self.widgets.fields():
@@ -127,7 +129,7 @@ class ModelView(form.Form):
 
     @form.button('Add', actype=form.AC_PRIMARY)
     def add(self):
-        raise HTTPFound(location='add.html')
+        return HTTPFound(location='add.html')
 
     @form.button('Remove', actype=form.AC_DANGER)
     def remove(self):
@@ -149,7 +151,7 @@ class ModelView(form.Form):
             cms.Session.delete(rec)
 
         self.message('Select records have been removed.')
-        raise HTTPFound(location = self.request.url)
+        return HTTPFound(location = self.request.url)
 
 
 @view_config(
@@ -188,11 +190,11 @@ class AddRecord(form.Form):
         cms.Session.flush()
 
         self.message('New record has been created.', 'success')
-        raise HTTPFound(location='./%s/'%record.__id__)
+        return HTTPFound(location='./%s/'%record.__id__)
 
     @form.button('Back')
     def back_handler(self):
-        raise HTTPFound(location='.')
+        return HTTPFound(location='.')
 
 
 @view_config(
@@ -214,7 +216,7 @@ class EditRecord(form.Form):
 
     def update(self):
         self.manage = get_manage_url(self.request)
-        super(EditRecord, self).update()
+        return super(EditRecord, self).update()
 
     def form_content(self):
         data = {}
@@ -245,4 +247,4 @@ class EditRecord(form.Form):
 
     @form.button('Back')
     def back_handler(self):
-        raise HTTPFound(location='../')
+        return HTTPFound(location='../')

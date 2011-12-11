@@ -1,12 +1,11 @@
 """ security ptah module """
-from pyramid.view import view_config
 import ptah
-from ptah import view, manage
-from ptah.manage import module, intr_renderer, get_manage_url
+from ptah.manage import intr_renderer, get_manage_url
+from pyramid.view import view_config
 
 
-@module('permissions')
-class PermissionsModule(manage.PtahModule):
+@ptah.manage.module('permissions')
+class PermissionsModule(ptah.manage.PtahModule):
     __doc__ = 'A listing of all permission sets and their definitions'
 
     title = 'Permissions'
@@ -15,7 +14,7 @@ class PermissionsModule(manage.PtahModule):
 @view_config(
     context=PermissionsModule, wrapper=ptah.wrap_layout(),
     renderer='ptah.manage:templates/permissions.pt')
-class PermissionsView(view.View):
+class PermissionsView(ptah.View):
     """ Permissions module default view """
 
     def update(self):
@@ -35,7 +34,7 @@ class PermissionsView(view.View):
     wrapper=ptah.wrap_layout(),
     renderer='ptah.manage:templates/roles.pt')
 
-class RolesView(view.View):
+class RolesView(ptah.View):
     """ Roles view for permissions manage module """
 
     def update(self):

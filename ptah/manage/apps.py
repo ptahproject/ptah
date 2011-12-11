@@ -38,7 +38,7 @@ class ApplicationsModule(manage.PtahModule):
     context=ApplicationsModule, wrapper=ptah.wrap_layout(),
     renderer='ptah.manage:templates/apps.pt')
 
-class ApplicationsModuleView(view.View):
+class ApplicationsModuleView(ptah.View):
     """ Applications module default view """
 
     def update(self):
@@ -49,7 +49,7 @@ class ApplicationsModuleView(view.View):
         self.factories = [f for _t, f in sorted(factories)]
 
 
-@view.layout(
+@ptah.layout(
     'ptah-manage', manage.PtahManageRoute,
     route_name=MANAGE_APP_ROUTE,
     renderer="ptah.manage:templates/ptah-manage.pt")
@@ -58,12 +58,12 @@ class AppLayout(manage.LayoutManage):
     """ Application module layout """
 
 
-@view.layout(
+@ptah.layout(
     '', cms.Node, parent="ptah-manage",
     route_name=MANAGE_APP_ROUTE,
     renderer="templates/apps-layout.pt")
 
-class AppContentLayout(view.Layout):
+class AppContentLayout(ptah.View):
     """ Application module content layout """
 
     def update(self):
@@ -122,7 +122,7 @@ class SharingForm(form.Form):
         return ptah.resolve(id)
 
     def update(self):
-        super(SharingForm, self).update()
+        res = super(SharingForm, self).update()
 
         request = self.request
         context = self.context
@@ -153,6 +153,8 @@ class SharingForm(form.Form):
 
             context.__local_roles__ = local_roles
 
+        return res
+
     @form.button('Search', actype=form.AC_PRIMARY)
     def search(self):
         data, error = self.extract()
@@ -162,7 +164,7 @@ class SharingForm(form.Form):
             return
 
         self.request.session['apps-sharing-term'] = data['term']
-        raise HTTPFound(location = self.request.url)
+        return HTTPFound(location = self.request.url)
 
 
 ptah.uiaction(

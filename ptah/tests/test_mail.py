@@ -16,7 +16,7 @@ class TestMailTemplate(PtahTestCase):
         from ptah.mail import MailTemplate
 
         class MyMailTemplate(MailTemplate):
-            #template = view.template('test_mail_tmpl.pt')
+            template = 'ptah:tests/test_mail_tmpl.pt'
             subject = 'Test subject'
             charset = 'utf-8'
             content_type = 'text/html'

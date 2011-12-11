@@ -13,7 +13,7 @@ from ptah.manage.manage import PtahManageRoute
     'source.html', context=PtahManageRoute, wrapper=ptah.wrap_layout(),
     renderer='ptah.manage:templates/source.pt')
 
-class SourceView(view.View):
+class SourceView(ptah.View):
     __doc__ = 'Source introspection page.'
 
     source = None
@@ -22,7 +22,7 @@ class SourceView(view.View):
     def update(self):
         name = self.request.params.get('pkg')
         if name is None:
-            raise HTTPFound(location='.')
+            return HTTPFound(location='.')
 
         dist = None
         pkg_name = name
@@ -44,7 +44,7 @@ class SourceView(view.View):
         try:
             abspath = pkg_resources.resource_filename(pkg_name, path)
         except:
-            raise HTTPFound(location='.')
+            return HTTPFound(location='.')
 
         if os.path.isfile(abspath):
             self.file = abspath

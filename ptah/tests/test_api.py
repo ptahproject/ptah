@@ -25,22 +25,10 @@ class StopExceptionTesting(unittest.TestCase):
 
 class LoadpackageTesting(unittest.TestCase):
 
-    def test_exclude_test(self):
-        from ptah import config
-
-        self.assertFalse(config.exclude('blah.test'))
-        self.assertFalse(config.exclude('blah.ftest'))
-        self.assertFalse(config.exclude('blah.subpkg', ('blah.',)))
-        self.assertTrue(config.exclude('blah.subpkg'))
-
     def test_loadpackages(self):
         from ptah import config
 
-        self.assertEqual(
-            config.list_packages(('ptah',), excludes=('ptah',)), [])
-
         self.assertIn('ptah', config.list_packages())
-        self.assertEqual(config.list_packages(excludes=('ptah',)), [])
 
     def test_stop_exc(self):
         from ptah import config

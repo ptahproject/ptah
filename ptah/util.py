@@ -1,9 +1,7 @@
+import ptah
 import threading
 from datetime import timedelta
-from ptah import config, form
 from pyramid.interfaces import INewRequest
-
-from ptah import token
 
 
 class ThreadLocalManager(threading.local):
@@ -23,30 +21,9 @@ class ThreadLocalManager(threading.local):
 tldata = ThreadLocalManager()
 
 
-@config.subscriber(INewRequest)
+@ptah.subscriber(INewRequest)
 def resetThreadLocalData(ev):
     tldata.clear()
-
-
-class CSRFService(object):
-    """ csrf service for ptah.form """
-
-    TOKEN_TYPE = token.TokenType(
-        '1c49d2aacf844557a7aff3dbf09c0740', timedelta(minutes=30))
-
-    def generate(self, data):
-        t = token.service.get_bydata(self.TOKEN_TYPE, data)
-        if t is not None:
-            return t
-        return token.service.generate(self.TOKEN_TYPE, data)
-
-    def get(self, t):
-        return token.service.get(t)
-
-    def remove(self, t):
-        return token.service.remove(t)
-
-form.set_csrf_utility(CSRFService())
 
 
 class Pagination(object):
@@ -97,8 +74,3 @@ class Pagination(object):
         nextLink = None if current >= size else current + 1
 
         return pages, prevLink, nextLink
-
-
-@config.cleanup
-def cleanup():
-    tldata.clear()

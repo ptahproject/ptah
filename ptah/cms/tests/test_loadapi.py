@@ -5,22 +5,23 @@ import ptah
 from ptah.testing import PtahTestCase
 
 
-class Content(ptah.cms.Content):
-
-    __type__ = ptah.cms.Type('content', 'Test Content')
-    __uri_factory__ = ptah.UriFactory('cms-content')
-
-
-class Container(ptah.cms.Container):
-
-    __type__ = ptah.cms.Type('container', 'Test Container')
-    __uri_factory__ = ptah.UriFactory('cms-container')
-
-
 class TestLoadApi(PtahTestCase):
     """ fixme: redesign tests to use custom resolver """
 
-    _cleanup_mod = False
+    def setUp(self):
+        global Content, Container
+        class Content(ptah.cms.Content):
+            __type__ = ptah.cms.Type('content', 'Test Content')
+            __uri_factory__ = ptah.UriFactory('cms-content')
+
+        class Container(ptah.cms.Container):
+            __type__ = ptah.cms.Type('container', 'Test Container')
+            __uri_factory__ = ptah.UriFactory('cms-container')
+
+        self.Content = Content
+        self.Container = Container
+
+        super(TestLoadApi, self).setUp()
 
     def test_loadapi_load(self):
         content = Content(title='Content')

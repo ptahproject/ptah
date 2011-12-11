@@ -1,5 +1,4 @@
 import ptah
-from ptah import view
 from pyramid.view import view_config
 
 
@@ -17,7 +16,7 @@ class RestModule(ptah.manage.PtahModule):
     wrapper=ptah.wrap_layout(),
     renderer='ptah.manage:templates/rest.pt')
 
-class RestModuleView(view.View):
+class RestModuleView(ptah.View):
 
     def update(self):
         self.url = self.request.params.get(

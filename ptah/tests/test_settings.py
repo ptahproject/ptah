@@ -23,6 +23,7 @@ class BaseTesting(PtahTestCase):
     def init_ptah(self, initsettings=False, *args, **kw):
         ptah.config.initialize(
             self.config, ('ptah', self.__class__.__module__))
+        self.config.scan('ptah')
         self.config.commit()
         self.config.autocommit = True
 
@@ -295,7 +296,6 @@ class TestSettings(BaseTesting):
 class TestSettingsInitialization(BaseTesting):
 
     def setUp(self):
-        ptah.config.cleanup_system()
         BaseTesting.setUp(self)
         self.dir = tempfile.mkdtemp()
 

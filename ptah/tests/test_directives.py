@@ -17,8 +17,8 @@ class BaseTesting(unittest.TestCase):
     def _init_ptah(self, settings={}, pconfig=None, *args, **kw):
         if pconfig is None:
             pconfig = self.config
-        ptah.config.initialize(
-            pconfig, ('ptah.config', 'ptah.events', self.__class__.__module__))
+        ptah.config.initialize(pconfig, ('ptah',))
+        self.config.scan('ptah.tests.test_directives')
         self.config.commit()
         self.config.autocommit = True
 
@@ -28,7 +28,10 @@ class BaseTesting(unittest.TestCase):
         self.registry = self.config.registry
 
     def tearDown(self):
-        config.cleanup_system(self.__class__.__module__)
+        mod = sys.modules[self.__class__.__module__]
+        if hasattr(mod, config.ATTACH_ATTR):
+            delattr(mod, config.ATTACH_ATTR)
+
         testing.tearDown()
 
 
@@ -138,11 +141,8 @@ class TestAdaptsDirective(BaseTesting):
         self._init_ptah()
 
         # reinstall
-        config.cleanup_system()
-
         sm = self.registry
         sm.__init__('base')
-        sm.__ptah_storage__.clear()
 
         adapters = sm.adapters.lookupAll((IContext,), IAdapter)
         self.assertTrue(len(adapters) == 0)
@@ -238,11 +238,8 @@ class TestAdapterDirective(BaseTesting):
         self._init_ptah()
 
         # reinstall
-        config.cleanup_system()
-
         sm = self.registry
         sm.__init__('base')
-        sm.__ptah_storage__.clear()
 
         self._init_ptah()
 
@@ -319,11 +316,8 @@ class TestSubscriberDirective(BaseTesting):
         self._init_ptah()
 
         # reinstall
-        config.cleanup_system()
-
         sm = self.registry
         sm.__init__('base')
-        sm.__ptah_storage__.clear()
 
         self._init_ptah()
 
@@ -333,23 +327,6 @@ class TestSubscriberDirective(BaseTesting):
 
 
 class TestExtraDirective(BaseTesting):
-
-    def test_scan_unknown(self):
-        self.assertRaises(ImportError,  config.scan, 'unknown', [])
-
-    def test_directive_info_limit_scope(self):
-        self.assertRaises(
-            TypeError,
-            config.DirectiveInfo, 2, allowed_scope=('class',))
-
-    def test_directive_info_context(self):
-        info = config.DirectiveInfo(0)
-        info.scope = 'module'
-
-        self.assertEqual(info.module,
-                         sys.modules[self.__class__.__module__])
-        self.assertEqual(info.context,
-                         sys.modules[self.__class__.__module__])
 
     def test_api_loadpackage(self):
         from ptah import config

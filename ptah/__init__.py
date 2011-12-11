@@ -8,17 +8,34 @@ from ptah.uri import extract_uri_schema
 from ptah.uri import UriFactory
 
 # config
+from ptah import config
 from ptah.config import initialize
 from ptah.config import adapter
 from ptah.config import event
 from ptah.config import subscriber
+from ptah.config import get_cfg_storage
 
 # events
 from ptah import events
 
 # view api
-from ptah.view.base import View
-from ptah.view.layout import wrap_layout
+from ptah.view import View
+from ptah.view import add_message
+from ptah.view import render_messages
+
+from ptah.view import snippet
+from ptah.view import register_snippet
+from ptah.view import render_snippet
+
+# layouts
+from ptah.layout import layout
+from ptah.layout import register_layout
+from ptah.layout import wrap_layout
+
+# resource library
+from ptah.library import library
+from ptah.library import include
+from ptah.library import render_includes
 
 # settings
 from ptah.settings import get_settings
@@ -118,8 +135,6 @@ from ptah.cms import Session
 
 # form api
 from ptah import form
-# private! view api
-from ptah import view
 
 
 # pyramid include
@@ -155,7 +170,15 @@ def includeme(config):
     config.add_directive(
         'ptah_password_changer', password.pyramid_password_changer)
 
+    # ptah static assets
+    config.add_static_view('jquery', 'ptah:static/jquery')
+    config.add_static_view('bootstrap', 'ptah:static/bootstrap')
+    config.add_static_view('tiny_mce', 'ptah:static/tiny_mce')
+
+    # include ptah.manage
     config.include('ptah.manage')
+
+    config.scan('ptah')
 
 
 def make_wsgi_app(global_settings, **settings):
@@ -176,7 +199,6 @@ def make_wsgi_app(global_settings, **settings):
 
     # configuration
     config = Configurator(settings=settings)
-    config.include('ptah')
 
     # initialization
     packages = settings.get('packages', None)
@@ -208,27 +230,19 @@ def ptah_initialize(config, packages=None, autoinclude=False):
     import transaction
     from pyramid.exceptions import  ConfigurationExecutionError
 
+    config.include('ptah')
     config.include('pyramid_tm')
     config.begin()
 
     try:
         settings = config.registry.settings
 
-        # exclude
-        excludes = []
-        if 'ptah.excludes' in settings:
-            excludes.extend(s.strip()
-                            for s in settings['ptah.excludes'].split())
-
         # load packages
-        ptah.config.initialize(config, packages, excludes, autoinclude)
+        ptah.config.initialize(config, packages, autoinclude=autoinclude)
         config.commit()
 
         # initialize settings
         ptah.settings.initialize_settings(config, settings)
-
-        # load venusian
-        config.scan('ptah')
 
         # create sql tables
         Base = sqlahelper.get_base()

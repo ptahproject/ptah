@@ -335,8 +335,3 @@ def check_permission(permission, context, request=None, throw=False):
 
         return False
     return True
-
-
-@config.cleanup
-def cleanup():
-    DEFAULT_ACL[:] = []

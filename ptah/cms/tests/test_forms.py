@@ -4,22 +4,22 @@ from pyramid.testing import DummyRequest
 from pyramid.httpexceptions import HTTPFound, HTTPForbidden
 
 
-class Content(ptah.cms.Content):
-
-    __type__ = ptah.cms.Type('content', 'Test Content',
-                             description = 'Test Content description')
-    __uri_factory__ = ptah.UriFactory('cms-content')
-
-
-class Container(ptah.cms.Container):
-
-    __type__ = ptah.cms.Type('container', 'Test Container')
-    __uri_factory__ = ptah.UriFactory('cms-container')
-
-
 class TestAddForm(PtahTestCase):
 
-    _cleanup_mod = False
+    def setUp(self):
+        global Content, Container
+        class Content(ptah.cms.Content):
+            __type__ = ptah.cms.Type('content', 'Test Content')
+            __uri_factory__ = ptah.UriFactory('cms-content')
+
+        class Container(ptah.cms.Container):
+            __type__ = ptah.cms.Type('container', 'Test Container')
+            __uri_factory__ = ptah.UriFactory('cms-container')
+
+        self.Content = Content
+        self.Container = Container
+
+        super(TestAddForm, self).setUp()
 
     def test_addform_ctor(self):
         from ptah.cms.forms import AddForm
@@ -271,16 +271,12 @@ class TestAddForm(PtahTestCase):
         Content.__type__.permission = ptah.cms.NO_PERMISSION_REQUIRED
         form.tinfo = Content.__type__
 
-        res = None
-        try:
-            form.update()
-        except Exception as e:
-            res = e
+        res = form.update()
 
         self.assertIsInstance(res, HTTPFound)
         self.assertEqual(res.headers['location'], '/test-content/')
         self.assertIn('New content has been created.',
-                      request.session['msgservice'][0])
+                      ptah.view.render_messages(request))
 
     def test_addform_add_errors(self):
         from ptah.cms.forms import AddForm
@@ -296,7 +292,7 @@ class TestAddForm(PtahTestCase):
         form.update()
 
         self.assertIn('Please fix indicated errors.',
-                      request.session['msgservice'][0])
+                      ptah.view.render_messages(request))
 
     def test_addform_cancel(self):
         from ptah.cms.forms import AddForm
@@ -311,17 +307,28 @@ class TestAddForm(PtahTestCase):
         Content.__type__.permission = ptah.cms.NO_PERMISSION_REQUIRED
         form.tinfo = Content.__type__
 
-        res = None
-        try:
-            form.update()
-        except Exception as e:
-            res = e
+        res = form.update()
 
         self.assertIsInstance(res, HTTPFound)
         self.assertEqual(res.headers['location'], '.')
 
 
 class TestEditForm(PtahTestCase):
+
+    def setUp(self):
+        global Content, Container
+        class Content(ptah.cms.Content):
+            __type__ = ptah.cms.Type('content', 'Test Content')
+            __uri_factory__ = ptah.UriFactory('cms-content')
+
+        class Container(ptah.cms.Container):
+            __type__ = ptah.cms.Type('container', 'Test Container')
+            __uri_factory__ = ptah.UriFactory('cms-container')
+
+        self.Content = Content
+        self.Container = Container
+
+        super(TestEditForm, self).setUp()
 
     def test_editform_basics(self):
         from ptah.cms.forms import EditForm
@@ -378,17 +385,13 @@ class TestEditForm(PtahTestCase):
             POST = {'title': 'Test2', 'description': 'Desc2',
                     'form.buttons.save': 'Save'}))
 
-        res = None
-        try:
-            form.update()
-        except Exception as e:
-            res = e
+        res = form.update()
 
         self.assertEqual(res.headers['location'], '.')
         self.assertEqual(content.title, 'Test2')
         self.assertEqual(content.description, 'Desc2')
         self.assertIn('Changes have been saved.',
-                      form.request.session['msgservice'][0])
+                      ptah.view.render_messages(form.request))
 
     def test_editform_save_errors(self):
         from ptah.cms.forms import EditForm
@@ -400,8 +403,9 @@ class TestEditForm(PtahTestCase):
             POST = {'form.buttons.save': 'Save'}))
 
         form.update()
+
         self.assertIn('Please fix indicated errors.',
-                      form.request.session['msgservice'][0])
+                      ptah.view.render_messages(form.request))
 
     def test_editform_cancel(self):
         from ptah.cms.forms import EditForm
@@ -412,10 +416,5 @@ class TestEditForm(PtahTestCase):
         form = EditForm(content, DummyRequest(
             POST = {'form.buttons.cancel': 'Cancel'}))
 
-        res = None
-        try:
-            form.update()
-        except Exception as e:
-            res = e
-
+        res = form.update()
         self.assertEqual(res.headers['location'], '.')

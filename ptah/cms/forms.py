@@ -3,7 +3,8 @@ import re
 from pyramid.decorator import reify
 from pyramid.httpexceptions import HTTPFound
 
-from ptah import view, form
+import ptah
+from ptah import form
 from ptah.cms.security import wrap
 from ptah.cms.interfaces import ContentNameSchema
 
@@ -55,7 +56,7 @@ class AddForm(form.Form):
         self.name_suffix = getattr(self.tinfo, 'name_suffix', '')
 
         self.tinfo.check_context(self.container)
-        super(AddForm, self).update()
+        return super(AddForm, self).update()
 
     def update_widgets(self):
         super(AddForm, self).update_widgets()
@@ -108,19 +109,18 @@ class AddForm(form.Form):
         content = self.create(**data)
 
         self.message('New content has been created.')
-        raise HTTPFound(location=self.get_next_url(content))
+        return HTTPFound(location=self.get_next_url(content))
 
     @form.button('Cancel')
     def cancel_handler(self):
-        raise HTTPFound(location='.')
+        return HTTPFound(location='.')
 
     def get_next_url(self, content):
         return self.request.resource_url(content)
 
 
-view.register_snippet(
-    'form-actions', AddForm,
-    template='ptah.cms:form-actions.pt')
+ptah.register_snippet(
+    'form-actions', AddForm, renderer='ptah.cms:form-actions.pt')
 
 
 class EditForm(form.Form):
@@ -143,7 +143,7 @@ class EditForm(form.Form):
     def update(self):
         self.tinfo = self.context.__type__
 
-        super(EditForm, self).update()
+        return super(EditForm, self).update()
 
     def apply_changes(self, **data):
         wrap(self.context).update(**data)
@@ -159,11 +159,11 @@ class EditForm(form.Form):
         self.apply_changes(**data)
 
         self.message("Changes have been saved.")
-        raise HTTPFound(location=self.get_next_url())
+        return HTTPFound(location=self.get_next_url())
 
     @form.button('Cancel')
     def cancel_handler(self):
-        raise HTTPFound(location=self.get_next_url())
+        return HTTPFound(location=self.get_next_url())
 
     def get_next_url(self):
         return '.'

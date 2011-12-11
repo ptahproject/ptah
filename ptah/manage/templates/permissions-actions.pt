@@ -1,4 +1,0 @@
-<ul tal:define="url context.url()">
-  <li><a href="${url}/roles.html">Roles</a></li>
-  <li><a href="${url}/">Permissions</a></li>
-</ul>

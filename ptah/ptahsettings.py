@@ -49,20 +49,6 @@ ptah.register_settings(
                         '"0" means do not poll'),
         default = 0),
 
-    ptah.form.BoolField(
-        'chameleon_reload',
-        default = False,
-        title = 'Auto reload',
-        description = 'Enable chameleon templates auto reload.'),
-
-    ptah.form.TextField(
-        'static_url',
-        default = 'static'),
-
-    ptah.form.IntegerField(
-        'static_cache_max_age',
-        default = 0),
-
     ptah.form.TextField(
         'manage',
         title = 'Ptah manage id',
@@ -407,15 +393,10 @@ def initialized(ev):
             'ptah-manage', '/ptah-manage/*traverse',
             factory=ptah.manage.PtahManageRoute, use_global_views=True)
 
-    # chameleon
-    import chameleon.template
-    chameleon.template.AUTO_RELOAD=PTAH['chameleon_reload']
-    chameleon.template.BaseTemplateFile.auto_reload=PTAH['chameleon_reload']
-
 
 @ptah.subscriber(ptah.events.AppStarting)
 def starting(ev):
     # load db settings
-    sob = ptah.config.get_cfg_storage(
+    s_ob = ptah.config.get_cfg_storage(
         settings.SETTINGS_OB_ID, default_factory=settings.Settings)
-    sob.load_fromdb()
+    s_ob.load_fromdb()

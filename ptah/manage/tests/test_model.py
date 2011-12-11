@@ -6,21 +6,34 @@ from ptah.testing import PtahTestCase
 from webob.multidict import MultiDict
 from pyramid.testing import DummyRequest
 from pyramid.httpexceptions import HTTPFound
+from pyramid.view import render_view_to_response
 
 
-class Content1(cms.Content):
-    __type__ = cms.Type('content1')
+class Base(PtahTestCase):
+
+    def setUp(self):
+        global Content1, Content2
+        class Content1(cms.Content):
+            __type__ = cms.Type('content1')
+
+        class Content2(cms.Node):
+            __tablename__ = 'test_model_base'
+            __table_args__ = {'extend_existing': True}
+            __id__ = sqla.Column(
+                'id', sqla.Integer,
+                sqla.ForeignKey('ptah_nodes.id'), primary_key=True)
+
+            __type__ = cms.Type('content2')
+
+            title = sqla.Column(sqla.Unicode, default='')
+
+        self.Content1 = Content1
+        self.Content2 = Content2
+
+        super(Base, self).setUp()
 
 
-class Content2(cms.Node):
-    __type__ = cms.Type('content2')
-
-    title = sqla.Column(sqla.Unicode, default='')
-
-
-class TestModelModule(PtahTestCase):
-
-    _cleanup_mod = False
+class TestModelModule(Base):
 
     def test_model_module(self):
         from ptah.manage.model import ModelModule
@@ -43,7 +56,7 @@ class TestModelModule(PtahTestCase):
 
         mod = ModelModule(None, request)
 
-        res = ModelModuleView.__renderer__(mod, request)
+        res = render_view_to_response(mod, request, '', False)
         self.assertEqual(res.status, '200 OK')
         self.assertIn('content1', res.text)
         self.assertIn('content2', res.text)
@@ -58,7 +71,7 @@ class TestModelModule(PtahTestCase):
 
         mod = ModelModule(None, request)
 
-        res = ModelModuleView.__renderer__(mod, request)
+        res = render_view_to_response(mod, request, '', False)
         self.assertEqual(res.status, '200 OK')
         self.assertIn('content1', res.text)
         self.assertNotIn('content2', res.text)
@@ -81,9 +94,7 @@ class TestModelModule(PtahTestCase):
         self.assertRaises(KeyError, mod.__getitem__, 'unknown')
 
 
-class TestModel(PtahTestCase):
-
-    _cleanup_mod = False
+class TestModel(Base):
 
     def test_model_traverse(self):
         from ptah.manage.model import ModelModule, Record
@@ -121,7 +132,7 @@ class TestModel(PtahTestCase):
         form.update()
 
         self.assertIn("Please select records for removing.",
-                      form.request.session['msgservice'][0])
+                      ptah.view.render_messages(form.request))
 
     def test_model_remove(self):
         from ptah.manage.model import ModelModule, ModelView
@@ -144,12 +155,7 @@ class TestModel(PtahTestCase):
                     list({'rowid':rowid,
                           'form.buttons.remove': 'Remove'}.items()))))
         form.csrf = False
-
-        res = None
-        try:
-            form.update()
-        except Exception as e:
-            res = e
+        res = form.update()
 
         self.assertIsInstance(res, HTTPFound)
 
@@ -174,15 +180,15 @@ class TestModel(PtahTestCase):
         mod = ModelModule(None, DummyRequest())
         model = mod['content1']
 
-        res = ModelView.__renderer__(model, DummyRequest())
+        res = render_view_to_response(model, DummyRequest(), '', False)
         self.assertIn('value="%s"'%rowid, res.text)
 
-        res = ModelView.__renderer__(model, DummyRequest(
-                params={'batch': 0}))
+        res = render_view_to_response(
+            model, DummyRequest(params={'batch': 0}), '', False)
         self.assertIn('value="%s"'%rowid, res.text)
 
-        res = ModelView.__renderer__(model, DummyRequest(
-                params={'batch': 'unknown'}))
+        res = render_view_to_response(
+            model, DummyRequest(params={'batch': 'unknown'}), '', False)
         self.assertIn('value="%s"'%rowid, res.text)
 
     def test_model_add(self):
@@ -194,19 +200,13 @@ class TestModel(PtahTestCase):
         form = ModelView(
             model, DummyRequest(POST={'form.buttons.add': 'Add'}))
         form.csrf = False
-        res = None
-        try:
-            form.update()
-        except Exception as e:
-            res = e
+        res = form.update()
 
         self.assertIsInstance(res, HTTPFound)
         self.assertEqual(res.headers['location'], 'add.html')
 
 
-class TestAddRecord(PtahTestCase):
-
-    _cleanup_mod = False
+class TestAddRecord(Base):
 
     def test_model_add_errors(self):
         from ptah.manage.model import ModelModule, AddRecord
@@ -220,7 +220,7 @@ class TestAddRecord(PtahTestCase):
         form.update()
 
         self.assertIn("Please fix indicated errors.",
-                      form.request.session['msgservice'][0])
+                      ptah.view.render_messages(form.request))
 
     def test_model_add_back(self):
         from ptah.manage.model import ModelModule, AddRecord
@@ -231,11 +231,7 @@ class TestAddRecord(PtahTestCase):
         form = AddRecord(
             model, DummyRequest(POST={'form.buttons.back': 'Back'}))
         form.csrf = False
-        res = None
-        try:
-            form.update()
-        except Exception as e:
-            res = e
+        res = form.update()
 
         self.assertIsInstance(res, HTTPFound)
         self.assertEqual(res.headers['location'], '.')
@@ -251,21 +247,17 @@ class TestAddRecord(PtahTestCase):
                 POST={'title': 'Test content',
                       'form.buttons.add': 'Add'}))
         form.csrf = False
-        res = None
-        try:
-            form.update()
-        except Exception as e:
-            res = e
+        res = form.update()
 
         id = form.record.__id__
         transaction.commit()
 
         self.assertIsInstance(res, HTTPFound)
         self.assertEqual(res.headers['location'], './%s/'%id)
-        self.assertEqual(len(ptah.cms.Session.query(Content1).all()), 1)
+        self.assertEqual(len(ptah.cms.Session.query(self.Content1).all()), 1)
 
-        content = ptah.cms.Session.query(Content1) \
-            .filter(Content1.__id__ == id).first()
+        content = ptah.cms.Session.query(self.Content1) \
+            .filter(self.Content1.__id__ == id).first()
         self.assertEqual(content.title, 'Test content')
 
     def test_model_add_node(self):
@@ -278,27 +270,21 @@ class TestAddRecord(PtahTestCase):
             model, DummyRequest(
                 POST={'title': 'Test content', 'form.buttons.add': 'Add'}))
         form.csrf = False
-        res = None
-        try:
-            form.update()
-        except Exception as e:
-            res = e
+        res = form.update()
 
         id = form.record.__id__
         transaction.commit()
 
         self.assertIsInstance(res, HTTPFound)
         self.assertEqual(res.headers['location'], './%s/'%id)
-        self.assertEqual(len(ptah.cms.Session.query(Content2).all()), 1)
+        self.assertEqual(len(ptah.cms.Session.query(self.Content2).all()), 1)
 
-        content = ptah.cms.Session.query(Content2) \
-            .filter(Content2.__id__ == id).first()
+        content = ptah.cms.Session.query(self.Content2) \
+            .filter(self.Content2.__id__ == id).first()
         self.assertEqual(content.title, 'Test content')
 
 
-class TestEditRecord(PtahTestCase):
-
-    _cleanup_mod = False
+class TestEditRecord(Base):
 
     def test_model_edit_back(self):
         from ptah.manage.model import ModelModule, EditRecord
@@ -318,11 +304,7 @@ class TestEditRecord(PtahTestCase):
         form = EditRecord(
             model, DummyRequest(POST={'form.buttons.back': 'Back'}))
         form.csrf = False
-        res = None
-        try:
-            form.update()
-        except Exception as e:
-            res = e
+        res = form.update()
 
         self.assertIsInstance(res, HTTPFound)
         self.assertEqual(res.headers['location'], '../')
@@ -348,7 +330,7 @@ class TestEditRecord(PtahTestCase):
         form.update()
 
         self.assertIn("Please fix indicated errors.",
-                      form.request.session['msgservice'][0])
+                      ptah.view.render_messages(form.request))
 
     def test_model_edit(self):
         from ptah.manage.model import ModelModule, EditRecord
@@ -374,7 +356,7 @@ class TestEditRecord(PtahTestCase):
         self.assertEqual(form.label, 'Record id: %s'%rowid)
 
         self.assertIn("Model record has been modified.",
-                      form.request.session['msgservice'][0])
+                      ptah.view.render_messages(form.request))
         transaction.commit()
 
         content = ptah.cms.Session.query(Content1) \
@@ -403,7 +385,7 @@ class TestEditRecord(PtahTestCase):
         form.update()
 
         self.assertIn("Model record has been modified.",
-                      form.request.session['msgservice'][0])
+                      ptah.view.render_messages(form.request))
         transaction.commit()
 
         content = ptah.cms.Session.query(Content2) \
@@ -412,8 +394,6 @@ class TestEditRecord(PtahTestCase):
 
 
 class _TestTypeIntrospect(PtahTestCase):
-
-    _cleanup_mod = False
 
     def test_type_introspect(self):
         from ptah.manage.model import TypeIntrospection

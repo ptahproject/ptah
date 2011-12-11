@@ -1,22 +1,24 @@
 import ptah
-from ptah import cms, config
+from ptah import cms, config, view
 from ptah.testing import PtahTestCase
 from pyramid.testing import DummyRequest
 from pyramid.interfaces import IRequest
 from pyramid.httpexceptions import HTTPFound
-
-
-class TestApp1(cms.ApplicationRoot):
-    __type__ = cms.Type('app1')
-
-
-class TestApp2(cms.ApplicationRoot):
-    __type__ = cms.Type('app2')
+from pyramid.view import render_view_to_response
 
 
 class TestAppsModule(PtahTestCase):
 
     _init_ptah = False
+
+    def setUp(self):
+        global TestApp1, TestApp2
+        class TestApp1(cms.ApplicationRoot):
+            __type__ = cms.Type('app1')
+        class TestApp2(cms.ApplicationRoot):
+            __type__ = cms.Type('app2')
+
+        super(TestAppsModule, self).setUp()
 
     def test_apps_module(self):
         from ptah.manage.manage import PtahManageRoute
@@ -50,7 +52,8 @@ class TestAppsModule(PtahTestCase):
 
         mod = ApplicationsModule(None, request)
 
-        res = ApplicationsModuleView.__renderer__(mod, request)
+        res = render_view_to_response(mod, request, '', False)
+
         self.assertEqual(res.status, '200 OK')
         self.assertIn('/test1/', res.text)
         self.assertIn('/test2/', res.text)
@@ -86,6 +89,15 @@ class TestAppsModule(PtahTestCase):
 class TestAppSharingForm(PtahTestCase):
 
     _init_ptah = False
+
+    def setUp(self):
+        global TestApp1, TestApp2
+        class TestApp1(cms.ApplicationRoot):
+            __type__ = cms.Type('app1')
+        class TestApp2(cms.ApplicationRoot):
+            __type__ = cms.Type('app2')
+
+        super(TestAppSharingForm, self).setUp()
 
     def _make_app(self, request=None):
         from ptah.manage.manage import PtahManageRoute
@@ -134,11 +146,7 @@ class TestAppSharingForm(PtahTestCase):
                 POST={'form.buttons.search': 'Search',
                       'term': 'search term'}))
         form.csrf = False
-        res = None
-        try:
-            form.update()
-        except Exception as e:
-            res = e
+        res = form.update()
 
         self.assertIsInstance(res, HTTPFound)
         self.assertIn('apps-sharing-term', form.request.session)
@@ -156,7 +164,7 @@ class TestAppSharingForm(PtahTestCase):
         form.update()
 
         self.assertIn('Please specify search term',
-                      form.request.session['msgservice'][0])
+                      view.render_messages(form.request))
 
     def test_sharingform_update(self):
         from ptah.manage.apps import SharingForm

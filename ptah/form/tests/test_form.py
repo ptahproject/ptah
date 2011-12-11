@@ -1,5 +1,8 @@
 import unittest
-from pyramid.httpexceptions import HTTPForbidden
+from ptah.testing import PtahTestCase
+from pyramid.view import view_config, render_view_to_response
+from pyramid.testing import DummyRequest
+from pyramid.httpexceptions import HTTPFound, HTTPForbidden
 
 
 class TestFormWidgets(unittest.TestCase):
@@ -17,27 +20,31 @@ class TestFormWidgets(unittest.TestCase):
         self.assertEqual(inst.request, request)
 
 
-class TestFormErrors(unittest.TestCase):
+class TestFormErrors(PtahTestCase):
 
     def test_form_errors(self):
+        import ptah
         from ptah.form import Invalid, TextField
-        from ptah.form.form import FormErrorMessage
+        from ptah.form.form import formErrorMessage
         request = DummyRequest()
-
-        form_errors = FormErrorMessage(request)
 
         err1 = Invalid(None, 'Error1')
         err2 = Invalid(None, 'Error2')
-
         err2.field = TextField('text')
 
-        res = form_errors.render([err1, err2])
-        self.assertIn('Error1', res)
-        self.assertNotIn('Error2', res)
+        msg = ptah.view.Message([err1, err2], request)
+
+        errs = formErrorMessage(msg, request)['errors']
+        self.assertIn(err1, errs)
+        self.assertNotIn(err2, errs)
+
+        ptah.view.add_message(request, [err1, err2], 'form-error')
+
+        res = ptah.view.render_messages(request)
         self.assertIn('Please fix indicated errors.', res)
 
 
-class TestForm(unittest.TestCase):
+class TestForm(PtahTestCase):
 
     def test_basics(self):
         from ptah.form.form import Form
@@ -80,7 +87,6 @@ class TestForm(unittest.TestCase):
 
     def test_csrf_token(self):
         from ptah.form import form
-        form.set_csrf_utility(None)
 
         class MyForm(form.Form):
             pass
@@ -88,20 +94,8 @@ class TestForm(unittest.TestCase):
         request = DummyRequest()
         form_ob = MyForm(None, request)
 
-        self.assertIsNone(form.CSRF)
-        self.assertIsNone(form_ob.token)
-
-        retData = False
-        class CsrfService(object):
-            def generate(self, data):
-                return 'csrf-token:%s'%data
-            def get(self, token):
-                if retData:
-                    return token.split(':', 1)[-1]
-
-        form.set_csrf_utility(CsrfService())
-
         token = form_ob.token
+        self.assertEqual(token, request.session.get_csrf_token())
         self.assertIsNotNone(token)
         self.assertIsNone(form_ob.validate_csrf_token())
 
@@ -112,34 +106,7 @@ class TestForm(unittest.TestCase):
         self.assertRaises(HTTPForbidden, form_ob.validate, {}, [])
 
         request.POST = {form_ob.csrfname: token}
-        self.assertRaises(HTTPForbidden, form_ob.validate_csrf_token)
-
-        retData = True
         self.assertIsNone(form_ob.validate_csrf_token())
-
-    def test_csrf_tokenData(self):
-        from ptah.form import form
-
-        class MyForm(form.Form):
-            pass
-
-        request = DummyRequest()
-        form_ob = MyForm(None, request)
-
-        self.assertEqual(form_ob.tokenData,
-                         'ptah.form.tests.test_form.MyForm:None')
-
-        def authId(request):
-            return 'userId'
-
-        orig_func = form.security.authenticated_userid
-        form.security.authenticated_userid = authId
-
-        form_ob = MyForm(None, request)
-        self.assertEqual(form_ob.tokenData,
-                         'ptah.form.tests.test_form.MyForm:userId')
-
-        form.security.authenticated_userid = orig_func
 
     def test_form_params(self):
         from ptah.form.form import Form, DisplayForm
@@ -242,20 +209,49 @@ class TestForm(unittest.TestCase):
         form_ob.fields = form.Fieldset(form.TextField('test'))
         form_ob.update()
 
-        form_ob.render()
+        self.assertIn('<form action="http://example.com"', form_ob.render())
 
-        def template(**data):
-            return 'Form rendered'
+    def test_form_render_view_config_renderer(self):
+        from ptah import form
+        request = DummyRequest()
 
-        form_ob.template = template
-        self.assertEqual(form_ob.render(), 'Form rendered')
+        class CustomForm(form.Form):
+            fields = form.Fieldset(form.TextField('test'))
 
+        self.config.add_view(
+            name='test', view=CustomForm,
+            renderer='ptah.form:tests/test-form.pt')
 
-class DummyRequest(object):
-    def __init__(self):
-        self.params = {}
-        self.cookies = {}
-        self.POST = {}
+        resp = render_view_to_response(None, request, 'test', False).body
+
+        self.assertIn('<h1>Custom form</h1>', resp)
+        self.assertIn('<form action="http://example.com"', resp)
+
+    def test_form_render_view_config(self):
+        from ptah import form
+        request = DummyRequest()
+
+        class CustomForm(form.Form):
+            fields = form.Fieldset(form.TextField('test'))
+
+        self.config.add_view(name='test', view=CustomForm)
+
+        resp = render_view_to_response(None, request, 'test', False).body
+        self.assertIn('<form action="http://example.com"', resp)
+
+    def test_form_render_view_config_return(self):
+        from ptah import form
+        request = DummyRequest(POST={'form.buttons.test': 'test'})
+
+        class CustomForm(form.Form):
+            fields = form.Fieldset(form.TextField('test'))
+
+            @form.button('test')
+            def handler(self):
+                return HTTPFound(location='.')
+
+        res = CustomForm(object(), request)()
+        self.assertIsInstance(res, HTTPFound)
 
 
 class DummyForm(object):

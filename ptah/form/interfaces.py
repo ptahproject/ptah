@@ -281,19 +281,3 @@ class IInputForm(interface.Interface):
     csrf = interface.Attribute('Enable csrf protection')
     csrfname = interface.Attribute('csrf field name')
     token = interface.Attribute('csrf token')
-
-
-# --- CSRF ---
-
-class ICSRFService(interface.Interface):
-    """ Form csrf protection """
-
-    def generate(data):
-        """ Generate csrf token. """
-
-    def get(token):
-        """ Get data for csrf token. This is form specific,
-        but usually it is form id."""
-
-    def remove(token):
-        """ Remove token."""

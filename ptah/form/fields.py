@@ -3,14 +3,14 @@ import pytz
 import datetime
 import decimal
 
-from ptah import view
+import ptah
 from ptah.form import iso8601
 from ptah.form import vocabulary
 from ptah.form.field import field, Field
 from ptah.form.interfaces import _, null, Invalid, ITerm
 
 
-class InputField(Field, view.View):
+class InputField(Field, ptah.View):
 
     title = None
     lang = None
@@ -24,8 +24,8 @@ class InputField(Field, view.View):
     size = None
     maxlength = None
 
-    tmpl_input = "ptah.form:templates/fields/text-input.pt"
-    tmpl_display = "ptah.form:templates/fields/text-display.pt"
+    tmpl_input = 'ptah.form:templates/fields/text-input.pt'
+    tmpl_display = 'ptah.form:templates/fields/text-display.pt'
 
     def serialize(self, value):
         return value
@@ -75,7 +75,7 @@ class VocabularyField(InputField):
 class BaseChoiceField(VocabularyField):
     """ choice field """
 
-    tmpl_display = "ptah.form:templates/fields/basechoice-display.pt"
+    tmpl_display = 'ptah.form:templates/fields/basechoice-display.pt'
 
     def serialize(self, value):
         if value is null:
@@ -121,7 +121,7 @@ class BaseChoiceField(VocabularyField):
 class BaseMultiChoiceField(VocabularyField):
     """ multi choice field """
 
-    tmpl_display = "ptah.form:templates/fields/basemultichoice-display.pt"
+    tmpl_display = 'ptah.form:templates/fields/basemultichoice-display.pt'
 
     def serialize(self, value):
         if value is null:
@@ -253,7 +253,7 @@ class TextAreaField(TextField):
     rows = 5
     cols = 40
 
-    tmpl_input = "ptah.form:templates/fields/textarea-input.pt"
+    tmpl_input = 'ptah.form:templates/fields/textarea-input.pt'
 
 
 @field('file')
@@ -262,7 +262,7 @@ class FileField(TextField):
 
     klass = 'input-file'
 
-    tmpl_input = "ptah.form:templates/fields/file-input.pt"
+    tmpl_input = 'ptah.form:templates/fields/file-input.pt'
 
     def extract(self, default=null):
         value = self.params.get(self.name, default)
@@ -318,8 +318,8 @@ class PasswordField(TextField):
 
     klass = 'password-widget'
 
-    tmpl_input = "ptah.form:templates/fields/password-input.pt"
-    tmpl_display = "ptah.form:templates/fields/password-display.pt"
+    tmpl_input = 'ptah.form:templates/fields/password-input.pt'
+    tmpl_display = 'ptah.form:templates/fields/password-display.pt'
 
 
 @field('multichoice')
@@ -327,13 +327,13 @@ class MultiChoiceField(BaseMultiChoiceField):
     __doc__ = _('HTML Checkboxs input based widget.')
 
     klass = 'multichoice-widget'
-    tmpl_input = "ptah.form:templates/fields/multichoice-input.pt"
+    tmpl_input = 'ptah.form:templates/fields/multichoice-input.pt'
 
 
 class DateField(TextField):
     __doc__ = _('Simple date input field.')
 
-    tmpl_display = "ptah.form:templates/fields/date-display.pt"
+    tmpl_display = 'ptah.form:templates/fields/date-display.pt'
 
     def serialize(self, value):
         if value is null:
@@ -371,7 +371,7 @@ class DateTimeField(TextField):
 
     default_tzinfo = iso8601.Utc()
 
-    tmpl_display = "ptah.form:templates/fields/datetime-display.pt"
+    tmpl_display = 'ptah.form:templates/fields/datetime-display.pt'
 
     def serialize(self, value):
         if value is null or value is None or not value:
@@ -413,7 +413,7 @@ class RadioField(BaseChoiceField):
     __doc__ = _('HTML Radio input widget.')
 
     klass = 'radio-widget'
-    tmpl_input = "ptah.form:templates/fields/radio-input.pt"
+    tmpl_input = 'ptah.form:templates/fields/radio-input.pt'
 
 
 @field('bool')
@@ -424,7 +424,7 @@ class BoolField(BaseChoiceField):
         (True, 'true',  _('yes')),
         (False, 'false',  _('no')))
 
-    tmpl_input = "ptah.form:templates/fields/bool-input.pt"
+    tmpl_input = 'ptah.form:templates/fields/bool-input.pt'
 
 
 @field('choice')
@@ -436,7 +436,7 @@ class ChoiceField(BaseChoiceField):
     multiple = None
     promptMessage = _('select a value ...')
 
-    tmpl_input = "ptah.form:templates/fields/select-input.pt"
+    tmpl_input = 'ptah.form:templates/fields/select-input.pt'
 
     def update_items(self):
         super(ChoiceField, self).update_items()

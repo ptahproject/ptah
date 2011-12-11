@@ -6,12 +6,14 @@ from ptah import config
 from ptah.testing import PtahTestCase
 
 
-class ApplicationRoot(ptah.cms.ApplicationRoot):
-
-    __type__ = ptah.cms.Type('traverserapp')
-
-
 class TestTraverser(PtahTestCase):
+
+    def setUp(self):
+        global ApplicationRoot
+        class ApplicationRoot(ptah.cms.ApplicationRoot):
+            __type__ = ptah.cms.Type('traverserapp')
+
+        super(TestTraverser, self).setUp()
 
     def _create_content(self):
         import ptah.cms

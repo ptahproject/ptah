@@ -1,4 +1,4 @@
 <div class="alert-message warning">
   <a class="close" href="#">×</a>
-  <p>${structure: message}</p>
+  <p>${structure: context.message}</p>
 </div>

@@ -8,6 +8,8 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.nonmultipart import MIMENonMultipart
 from email.utils import formatdate, formataddr
 from email.header import make_header
+
+from pyramid import renderers
 from pyramid.compat import bytes_
 
 
@@ -58,12 +60,11 @@ class MailGenerator(object):
 
             msg.set_payload(data)
             if filename:
-                msg['Content-Id'] = bytes_('<{0}@ptah>'.format(filename),'utf-8')
-                msg['Content-Disposition'] = bytes_('{0}; filename="{1}"'.format(
+                msg['Content-Id']=bytes_('<{0}@ptah>'.format(filename),'utf-8')
+                msg['Content-Disposition']=bytes_('{0}; filename="{1}"'.format(
                     disposition, filename), 'utf-8')
 
             encoders.encode_base64(msg)
-
             attachments.append(msg)
 
         return attachments
@@ -198,7 +199,7 @@ class MailTemplate(object):
                   'context': self.context,
                   'request': self.request}
 
-        return self.template(**kwargs)
+        return renderers.render(self.template, kwargs, self.request)
 
     def send(self, email=None, mailer=None, **kw):
         if email:

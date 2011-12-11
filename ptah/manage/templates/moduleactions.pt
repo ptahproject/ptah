@@ -1,3 +1,0 @@
-<ul>
-  <li><a href="${context.url()}/">${context.title}</a></li>
-</ul>

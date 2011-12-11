@@ -2,8 +2,7 @@ from pyramid.view import view_config
 from pyramid.httpexceptions import HTTPForbidden
 
 import ptah
-from ptah import view, config, form
-from ptah.authentication import auth_service
+from ptah import config
 
 CONFIG_ID = 'ptah.manage:config'
 MANAGE_ID = 'ptah.manage:module'
@@ -98,7 +97,7 @@ def PtahAccessManager(id):
     cfg = ptah.get_settings(ptah.CFG_ID_PTAH)
 
     managers = cfg['managers']
-    if '*' in managers:
+    if '*' in managers or id == ptah.SUPERUSER_URI:
         return True
 
     principal = ptah.resolve(id)
@@ -128,7 +127,7 @@ class PtahManageRoute(object):
     def __init__(self, request):
         self.request = request
 
-        userid = auth_service.get_userid()
+        userid = ptah.auth_service.get_userid()
         if not check_access(userid):
             raise HTTPForbidden()
 
@@ -136,7 +135,7 @@ class PtahManageRoute(object):
         self.cfg = ptah.get_settings(ptah.CFG_ID_PTAH)
         self.manage = self.cfg['manage']
 
-        auth_service.set_effective_userid(ptah.SUPERUSER_URI)
+        ptah.auth_service.set_effective_userid(ptah.SUPERUSER_URI)
 
     def __getitem__(self, key):
         if key not in self.cfg['disable_modules']:
@@ -148,18 +147,18 @@ class PtahManageRoute(object):
         raise KeyError(key)
 
 
-view.register_layout(
+ptah.register_layout(
     '', PtahManageRoute, parent='ptah-manage',
     renderer="ptah.manage:templates/ptah-layout.pt")
 
-view.register_layout(
+ptah.register_layout(
     'ptah-page', PtahManageRoute, parent='ptah-manage',
     renderer="ptah.manage:templates/ptah-layout.pt")
 
 
-@view.layout('ptah-manage', PtahManageRoute,
+@ptah.layout('ptah-manage', PtahManageRoute,
              renderer="ptah.manage:templates/ptah-manage.pt")
-class LayoutManage(view.Layout):
+class LayoutManage(ptah.View):
     """ Base layout for ptah manage """
 
     def update(self):
@@ -179,7 +178,7 @@ class LayoutManage(view.Layout):
     context=PtahManageRoute, wrapper = ptah.wrap_layout(),
     renderer = 'ptah.manage:templates/manage.pt')
 
-class ManageView(view.View):
+class ManageView(ptah.View):
     """List ptah modules"""
 
     rst_to_html = staticmethod(ptah.rst_to_html)

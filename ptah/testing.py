@@ -19,7 +19,7 @@ class PtahTestCase(unittest.TestCase):
     _init_ptah = True
     _init_sqla = True
     _init_auth = False
-    _cleanup_mod = True
+
     _settings = {}
     _packages = []
     _environ = {
@@ -43,7 +43,8 @@ class PtahTestCase(unittest.TestCase):
         for l in range(len(parts)):
             packages.append('.'.join(parts[:l+1]))
 
-        config.initialize(self.config, packages, autoinclude=True)
+        config.initialize(self.config, packages)
+        self.config.scan('ptah')
         self.config.commit()
         self.config.autocommit = True
 
@@ -92,10 +93,17 @@ class PtahTestCase(unittest.TestCase):
             self.init_ptah()
 
     def tearDown(self):
-        if self._cleanup_mod:
-            config.cleanup_system(self.__class__.__module__)
-        else:
-            config.cleanup_system()
+        import ptah.util
+        ptah.util.tldata.clear()
+
+        import ptah.security
+        ptah.security.DEFAULT_ACL[:] = []
+
+        from ptah.config import ATTACH_ATTR
+
+        mod = sys.modules[self.__class__.__module__]
+        if hasattr(mod, ATTACH_ATTR):
+            delattr(mod, ATTACH_ATTR)
 
         testing.tearDown()
         transaction.abort()

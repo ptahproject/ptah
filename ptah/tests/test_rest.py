@@ -125,7 +125,7 @@ class TestRestView(PtahTestCase):
         request = DummyRequest()
         login = Login(request)
 
-        self.assertIn('authentication failed', login.render())
+        self.assertIn('authentication failed', login().body)
         self.assertEqual(request.response.status, '403 Forbidden')
 
     def test_rest_login_success(self):
@@ -138,7 +138,7 @@ class TestRestView(PtahTestCase):
         request = DummyRequest(params = {'login': 'admin', 'password': '12345'})
 
         login = Login(request)
-        info = json.loads(login.render())
+        info = json.loads(login().body)
 
         self.assertIn('auth-token', info)
         self.assertEqual(request.response.status, '200 OK')
@@ -155,13 +155,12 @@ class TestRestView(PtahTestCase):
             params = {'login': 'admin', 'password': '12345'})
 
         login = Login(request)
-        info = json.loads(login.render())
+        info = json.loads(login().body)
 
         request = DummyRequest(environ = {'HTTP_X_AUTH_TOKEN': 'unknown'})
         request.matchdict = {'service': 'cms', 'subpath': ()}
 
-        api = Api(request)
-        api.render()
+        result = Api(request)
         self.assertEqual(ptah.auth_service.get_userid(), None)
 
         token = info['auth-token']
@@ -169,8 +168,7 @@ class TestRestView(PtahTestCase):
         request = DummyRequest(environ = {'HTTP_X_AUTH_TOKEN': token})
         request.matchdict = {'service': 'cms', 'subpath': ()}
 
-        api = Api(request)
-        api.render()
+        result = Api(request)
         self.assertEqual(ptah.auth_service.get_userid(), 'testprincipal:1')
 
 
@@ -185,8 +183,7 @@ class TestRestApi(PtahTestCase):
         request = DummyRequest()
         request.matchdict = {'service': 'test', 'subpath': ()}
 
-        api = Api(request)
-        res = json.loads(api.render())
+        res = json.loads(Api(request).body)
         self.assertEqual(res['message'], "'test'")
         self.assertIn("KeyError: 'test'", res['traceback'])
 
@@ -207,7 +204,6 @@ class TestRestApi(PtahTestCase):
                              'subpath': ('action:test','1','2')}
 
         api = Api(request)
-        api.render()
 
         self.assertEqual(data[0], "action")
         self.assertEqual(data[1], ('test', '1', '2'))
@@ -226,8 +222,8 @@ class TestRestApi(PtahTestCase):
         request = DummyRequest()
         request.matchdict = {'service': 'test',
                              'subpath': ('action:test','1','2')}
-        api = Api(request)
-        res = json.loads(api.render())
+
+        res = json.loads(Api(request).body)
         self.assertEqual(
             res['message'], 'The resource could not be found.')
 
@@ -245,8 +241,7 @@ class TestRestApi(PtahTestCase):
         request = DummyRequest(registry=self.config.registry)
         request.matchdict = {'service': 'test',
                              'subpath': ('action:test','1','2')}
-        api = Api(request)
-        res = api.render()
+        res = Api(request)
         self.assertIsInstance(res, HTTPNotFound)
 
     def test_rest_response_data(self):
@@ -264,6 +259,6 @@ class TestRestApi(PtahTestCase):
         request = DummyRequest()
         request.matchdict = {'service': 'test',
                              'subpath': ('action:test','1','2')}
-        api = Api(request)
-        res = json.loads(api.render())
+
+        res = json.loads(Api(request).body)
         self.assertIn('dt', res)

@@ -9,33 +9,20 @@ from pyramid.httpexceptions import HTTPForbidden
 from pyramid.config.views import DefaultViewMapper
 
 import ptah
-from ptah import view
+from ptah.view import Message
 from ptah.form.field import Field, Fieldset
 from ptah.form.button import Buttons, Actions
 from ptah.form.interfaces import _, Invalid, FORM_INPUT, FORM_DISPLAY, IForm
 
-CSRF = None
 
+@ptah.snippet('form-error', Message,
+              renderer='ptah.form:templates/form-error.pt')
+def formErrorMessage(context, request):
+    """ form error renderer """
+    errors = [err for err in context.message
+              if isinstance(err, Invalid) and err.field is None]
 
-def set_csrf_utility(util):
-    global CSRF
-    CSRF = util
-
-
-@ptah.adapter(None, name='form-error')
-class FormErrorMessage(view.Message):
-
-    formErrorsMessage = _('Please fix indicated errors.')
-
-    template = 'ptah.form:templates/form-error.pt'
-
-    def __call__(self, message):
-        errors = [err for err in message
-                  if isinstance(err, Invalid) and err.field is None]
-
-        return render(self.template,
-                      {'errors': errors,
-                       'message': self.formErrorsMessage}, self.request)
+    return {'errors': errors}
 
 
 class FormWidgets(OrderedDict):
@@ -111,7 +98,7 @@ class FormViewMapper(DefaultViewMapper):
         return _class_view
 
 
-class Form(view.View):
+class Form(ptah.View):
     """ A form """
 
     fields = Fieldset()
@@ -148,8 +135,6 @@ class Form(view.View):
     csrfname = 'csrf-token'
 
     params = MultiDict({})
-
-    template = None
 
     __view_mapper__ = FormViewMapper
 
@@ -195,13 +180,7 @@ class Form(view.View):
 
     @property
     def token(self):
-        if CSRF is not None:
-            return CSRF.generate(self.tokenData)
-
-    @reify
-    def tokenData(self):
-        return '%s.%s:%s' % (self.__module__, self.__class__.__name__,
-                           security.authenticated_userid(self.request))
+        return self.request.session.get_csrf_token()
 
     def validate(self, data, errors):
         self.validate_csrf_token()
@@ -211,9 +190,8 @@ class Form(view.View):
         if self.csrf:
             token = self.form_params().get(self.csrfname, None)
             if token is not None:
-                if CSRF is not None:
-                    if CSRF.get(token) == self.tokenData:
-                        return
+                if self.token == token:
+                    return
 
             raise HTTPForbidden("Form authenticator is not found.")
 
@@ -230,10 +208,7 @@ class Form(view.View):
         return self.actions.execute()
 
     def render(self):
-        if self.template is None:
-            return self.snippet(FORM_VIEW, self)
-
-        return render(self.template, value, self.request)
+        return self.snippet(FORM_VIEW, self)
 
     def render_update(self):
         result = self.update()
@@ -250,7 +225,11 @@ class Form(view.View):
             return response
 
         response = self.request.response
-        response.unicode_body = self.render()
+        body = self.render()
+        if isinstance(body, str):
+            response.body = body # pragma: no cover
+        else:
+            response.text = body
         return response
 
 
@@ -267,27 +246,22 @@ FORM_ACTIONS = 'form-actions'
 FORM_WIDGET = 'form-widget'
 FORM_DISPLAY_WIDGET = 'form-display-widget'
 
-view.snippettype(FORM_VIEW, IForm, 'Form view')
-view.snippettype(FORM_ACTIONS, IForm, 'Form actions')
-view.snippettype(FORM_WIDGET, Field, 'Form widget')
-view.snippettype(FORM_DISPLAY_WIDGET, Field, 'Form display widget')
+ptah.register_snippet(
+    FORM_VIEW, Form,
+    renderer='ptah.form:templates/form.pt')
 
-view.register_snippet(
-    'form-view', Form,
-    template='ptah.form:templates/form.pt')
+ptah.register_snippet(
+    FORM_VIEW, DisplayForm,
+    renderer='ptah.form:templates/form-display.pt')
 
-view.register_snippet(
-    'form-view', DisplayForm,
-    template='ptah.form:templates/form-display.pt')
+ptah.register_snippet(
+    FORM_ACTIONS, Form,
+    renderer='ptah.form:templates/form-actions.pt')
 
-view.register_snippet(
-    'form-actions', Form,
-    template='ptah.form:templates/form-actions.pt')
+ptah.register_snippet(
+    FORM_WIDGET, Field,
+    renderer='ptah.form:templates/widget.pt')
 
-view.register_snippet(
-    'form-widget', Field,
-    template='ptah.form:templates/widget.pt')
-
-view.register_snippet(
-    'form-display-widget', Field,
-    template='ptah.form:templates/widget-display.pt')
+ptah.register_snippet(
+    FORM_DISPLAY_WIDGET, Field,
+    renderer='ptah.form:templates/widget-display.pt')

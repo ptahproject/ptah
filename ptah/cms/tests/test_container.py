@@ -4,25 +4,27 @@ import ptah
 from ptah.testing import PtahTestCase
 
 
-class Content(ptah.cms.Content):
-
-    __type__ = ptah.cms.Type('content', 'Test Content')
-    __uri_factory__ = ptah.UriFactory('cms-content')
-
-
-class Container(ptah.cms.Container):
-
-    __type__ = ptah.cms.Type('container', 'Test Container')
-    __uri_factory__ = ptah.UriFactory('cms-container')
-
-
 class TestContainer(PtahTestCase):
 
-    _cleanup_mod = False
+    def setUp(self):
+        global Content, Container
+        class Content(ptah.cms.Content):
+            __type__ = ptah.cms.Type('content', 'Test Content')
+            __uri_factory__ = ptah.UriFactory('cms-content')
+
+        class Container(ptah.cms.Container):
+            __type__ = ptah.cms.Type('container', 'Test Container')
+            __uri_factory__ = ptah.UriFactory('cms-container')
+
+        self.Content = Content
+        self.Container = Container
+
+        super(TestContainer, self).setUp()
 
     def test_container_basics(self):
-        container = Container(__name__ = 'container', __path__ = '/container/')
-        content = Content(title='Content')
+        container = self.Container(
+            __name__ = 'container', __path__ = '/container/')
+        content = self.Content(title='Content')
 
         ptah.cms.Session.add(container)
         ptah.cms.Session.add(content)
@@ -59,8 +61,9 @@ class TestContainer(PtahTestCase):
             KeyError, container.__setitem__, 'content', content)
 
     def test_container_keys_values_del(self):
-        container = Container(__name__ = 'container', __path__ = '/container/')
-        content = Content(title='Content')
+        container = self.Container(
+            __name__ = 'container', __path__ = '/container/')
+        content = self.Content(title='Content')
 
         container['content'] = content
         self.assertEqual(container.keys(), ['content'])
@@ -71,8 +74,9 @@ class TestContainer(PtahTestCase):
         self.assertEqual(container.values(), [])
 
     def test_container_keys_with_local(self):
-        container = Container(__name__ = 'container', __path__ = '/container/')
-        content = Content(title='Content')
+        container = self.Container(__name__ = 'container',
+                                   __path__ = '/container/')
+        content = self.Content(title='Content')
         container['content'] = content
 
         ptah.cms.Session.add(container)
@@ -99,8 +103,9 @@ class TestContainer(PtahTestCase):
                          [c2.__uri__])
 
     def test_container_simple_move(self):
-        container = Container(__name__ = 'container', __path__ = '/container/')
-        content = Content(title='Content')
+        container = self.Container(__name__ = 'container',
+                                   __path__ = '/container/')
+        content = self.Content(title='Content')
 
         ptah.cms.Session.add(container)
         ptah.cms.Session.add(content)
@@ -128,9 +133,10 @@ class TestContainer(PtahTestCase):
         self.assertEqual(container['moved'].__uri__, content_uri)
 
     def test_container_getitem(self):
-        container = Container(__name__ = 'container', __path__ = '/container/')
-        content1 = Content(title='Content1')
-        content2 = Content(title='Content2')
+        container = self.Container(__name__ = 'container',
+                                   __path__ = '/container/')
+        content1 = self.Content(title='Content1')
+        content2 = self.Content(title='Content2')
 
         container['content1'] = content1
         container['content2'] = content2
@@ -160,9 +166,10 @@ class TestContainer(PtahTestCase):
         self.assertEqual(container.get('content2').__uri__, c2_u)
 
     def test_container_items(self):
-        container = Container(__name__ = 'container', __path__ = '/container/')
-        content1 = Content(title='Content1')
-        content2 = Content(title='Content2')
+        container = self.Container(__name__ = 'container',
+                                   __path__ = '/container/')
+        content1 = self.Content(title='Content1')
+        content2 = self.Content(title='Content2')
 
         container['content1'] = content1
         container['content2'] = content2
@@ -171,9 +178,10 @@ class TestContainer(PtahTestCase):
                          [('content1', content1), ('content2', content2)])
 
     def test_container_simple_move_to_subtree(self):
-        container = Container(__name__ = 'container', __path__ = '/container/')
-        folder = Container(title='Folder')
-        content = Content(title='Content')
+        container = self.Container(__name__ = 'container',
+                                   __path__ = '/container/')
+        folder = self.Container(title='Folder')
+        content = self.Content(title='Content')
 
         ptah.cms.Session.add(container)
         ptah.cms.Session.add(folder)
@@ -208,9 +216,10 @@ class TestContainer(PtahTestCase):
         self.assertEqual(folder.keys(), ['new-content'])
 
     def test_container_insert_subtree(self):
-        container = Container(__name__ = 'container', __path__ = '/container/')
-        folder = Container(title='Folder')
-        content = Content(title='Content')
+        container = self.Container(__name__ = 'container',
+                                   __path__ = '/container/')
+        folder = self.Container(title='Folder')
+        content = self.Content(title='Content')
 
         ptah.cms.Session.add(container)
         ptah.cms.Session.add(folder)
@@ -235,10 +244,11 @@ class TestContainer(PtahTestCase):
         transaction.commit()
 
     def test_container_simple_rename_subtree(self):
-        container = Container(__name__ = 'container', __path__ = '/container/')
-        folder1 = Container(title='Folder1')
-        folder2 = Container(title='Folder2')
-        content = Content(title='Content')
+        container = self.Container(__name__ = 'container',
+                                   __path__ = '/container/')
+        folder1 = self.Container(title='Folder1')
+        folder2 = self.Container(title='Folder2')
+        content = self.Content(title='Content')
 
         ptah.cms.Session.add(container)
         ptah.cms.Session.add(folder1)
@@ -273,8 +283,9 @@ class TestContainer(PtahTestCase):
                          '/container/new-folder/folder2/content/')
 
     def test_container_move_self_recursevly(self):
-        container = Container(__name__ = 'container', __path__ = '/container/')
-        folder = Container(title='Folder')
+        container = self.Container(__name__ = 'container',
+                                   __path__ = '/container/')
+        folder = self.Container(title='Folder')
 
         ptah.cms.Session.add(container)
         ptah.cms.Session.add(folder)
@@ -293,8 +304,9 @@ class TestContainer(PtahTestCase):
             TypeError, folder.__setitem__, 'subfolder', container)
 
     def test_container_delete(self):
-        container = Container(__name__ = 'container', __path__ = '/container/')
-        content = Content(title='Content')
+        container = self.Container(__name__ = 'container',
+                                   __path__ = '/container/')
+        content = self.Content(title='Content')
 
         ptah.cms.Session.add(container)
         ptah.cms.Session.add(content)
@@ -321,9 +333,9 @@ class TestContainer(PtahTestCase):
         self.assertRaises(KeyError, container.__delitem__, Content())
 
     def test_container_delete_recursive(self):
-        container = Container(__name__ = 'container', __path__ = '/container/')
-        folder = Container(title='Folder')
-        content = Content(title='Content')
+        container = self.Container(__name__='container', __path__='/container/')
+        folder = self.Container(title='Folder')
+        content = self.Content(title='Content')
 
         ptah.cms.Session.add(container)
         ptah.cms.Session.add(folder)
@@ -346,8 +358,8 @@ class TestContainer(PtahTestCase):
         self.assertTrue(ptah.resolve(folder_uri) is None)
 
     def test_container_setitem_parent_not_node(self):
-        container = Container(__name__ = 'container', __path__ = '/container/')
-        content = Content(title='Content')
+        container = self.Container(__name__='container', __path__='/container/')
+        content = self.Content(title='Content')
 
         container.__parent__ = object()
 
@@ -357,12 +369,12 @@ class TestContainer(PtahTestCase):
         self.assertIs(container['content'], content)
 
     def test_container_create(self):
-        container = Container(__name__ = 'container', __path__ = '/container/')
+        container = self.Container(__name__='container', __path__='/container/')
 
         self.assertRaises(
             ptah.cms.NotFound, container.create, 'unknown', 'test')
 
-        tinfo = Content.__type__
+        tinfo = self.Content.__type__
         tname = tinfo.__uri__
 
         self.assertRaises(
@@ -377,7 +389,7 @@ class TestContainer(PtahTestCase):
             ptah.cms.Error, container.create, tname, ' test')
 
         content = container.create(tname, 'test', title = 'Test title')
-        self.assertIsInstance(content, Content)
+        self.assertIsInstance(content, self.Content)
         self.assertIsNotNone(content.created)
         self.assertIsNotNone(content.modified)
         self.assertEqual(content.title, 'Test title')
@@ -390,7 +402,7 @@ class TestContainer(PtahTestCase):
         tinfo.permission = ptah.NOT_ALLOWED
 
     def test_container_info(self):
-        container = Container(__name__ = 'container', __path__ = '/container/')
+        container = self.Container(__name__='container', __path__='/container/')
 
         info = container.info()
         self.assertEqual(info['__name__'], 'container')

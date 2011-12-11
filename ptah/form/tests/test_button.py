@@ -1,7 +1,8 @@
 import unittest
+from ptah.testing import PtahTestCase
 
 
-class TestButton(unittest.TestCase):
+class TestButton(PtahTestCase):
 
     def test_ctor(self):
         from ptah import form

@@ -1,13 +1,12 @@
 """ settings module """
 import ptah
-from ptah import view, manage, config
 from ptah.settings import ID_SETTINGS_GROUP
 from pyramid.view import view_config
 from pyramid.httpexceptions import HTTPFound
 
 
-@manage.module('settings')
-class SettingsModule(manage.PtahModule):
+@ptah.manage.module('settings')
+class SettingsModule(ptah.manage.PtahModule):
     __doc__ = 'The current settings which include defaults not used by .ini'
 
     title = 'Settings'
@@ -31,11 +30,11 @@ class SettingsWrapper(object):
     context=SettingsModule, wrapper = ptah.wrap_layout(),
     renderer='ptah.manage:templates/settings.pt')
 
-class SettingsView(view.View):
+class SettingsView(ptah.View):
     """ Settings manage module view """
 
     def update(self):
-        groups = config.get_cfg_storage(ID_SETTINGS_GROUP).items()
+        groups = ptah.get_cfg_storage(ID_SETTINGS_GROUP).items()
 
         data = []
         for name, group in sorted(groups):
@@ -82,7 +81,7 @@ class EditForm(ptah.form.Form):
 
         self.message("Settings have been modified.")
         self.context.group.updatedb(**data)
-        raise HTTPFound('../#{0}'.format(self.context.group.__name__))
+        return HTTPFound('../#{0}'.format(self.context.group.__name__))
 
     @ptah.form.button('Reset defaults', actype=ptah.form.AC_INFO)
     def reset_handler(self):
@@ -90,4 +89,4 @@ class EditForm(ptah.form.Form):
 
     @ptah.form.button('Back')
     def back_handler(self):
-        raise HTTPFound('..')
+        return HTTPFound('..')

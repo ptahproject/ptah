@@ -4,7 +4,7 @@ from pyramid.view import view_config
 from pyramid.httpexceptions import HTTPFound
 
 import ptah
-from ptah import form, view, config, manage
+from ptah import form, config, manage
 from ptah.uri import ID_RESOLVER
 from ptah.manage.manage import PtahManageRoute, get_manage_url
 
@@ -38,7 +38,7 @@ class UriResolver(form.Form):
             self.uri = data['uri']
 
     def update(self):
-        super(UriResolver, self).update()
+        res = super(UriResolver, self).update()
 
         uri = self.uri
         if uri is None:
@@ -81,3 +81,5 @@ class UriResolver(form.Form):
                             info['clsline'] = inspect.getsourcelines(cls)[-1]
 
                 data.append(info)
+
+        return res
