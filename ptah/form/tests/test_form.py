@@ -1,5 +1,6 @@
 import unittest
 from ptah.testing import PtahTestCase
+from pyramid.compat import text_
 from pyramid.view import view_config, render_view_to_response
 from pyramid.testing import DummyRequest
 from pyramid.httpexceptions import HTTPFound, HTTPForbidden
@@ -224,8 +225,8 @@ class TestForm(PtahTestCase):
 
         resp = render_view_to_response(None, request, 'test', False).body
 
-        self.assertIn('<h1>Custom form</h1>', resp)
-        self.assertIn('<form action="http://example.com"', resp)
+        self.assertIn(b'<h1>Custom form</h1>', resp)
+        self.assertIn(b'<form action="http://example.com"', resp)
 
     def test_form_render_view_config(self):
         from ptah import form
@@ -237,7 +238,7 @@ class TestForm(PtahTestCase):
         self.config.add_view(name='test', view=CustomForm)
 
         resp = render_view_to_response(None, request, 'test', False).body
-        self.assertIn('<form action="http://example.com"', resp)
+        self.assertIn('<form action="http://example.com"', text_(resp))
 
     def test_form_render_view_config_return(self):
         from ptah import form

@@ -17,7 +17,6 @@ import ptah
 from ptah import manage, settings
 from ptah.security import get_local_roles, PtahAuthorizationPolicy
 
-
 _ = translationstring.TranslationStringFactory('ptah')
 
 
@@ -69,67 +68,6 @@ ptah.register_settings(
         default = ()),
 
     title = _('Ptah settings'),
-)
-
-ptah.register_settings(
-    ptah.CFG_ID_SESSION,
-
-    ptah.form.BoolField(
-        'enabled',
-        title = _('Enable beaker session'),
-        default = False),
-
-    ptah.form.TextField(
-        'type',
-        title = _('The name of the back-end'),
-        description = _('Available back-ends supplied with Beaker: file, dbm, '
-                        'memory, ext:memcached, ext:database, ext:google'),
-        default = ''),
-
-    ptah.form.TextField(
-        'data_dir',
-        title = _('Data directory'),
-        description = _('Used with any back-end that stores its data in '
-                        'physical files, such as the dbm or file-based '
-                        'back-ends. This path should be an absolute path '
-                        'to the directory that stores the files.'),
-        default = ''),
-
-    ptah.form.TextField(
-        'lock_dir',
-        title = _('Lock directory'),
-        description = _('Used with every back-end, to coordinate locking. '
-                        'With caching, this lock file is used to ensure that '
-                        "multiple processes/threads aren't attempting to "
-                        're-create the same value at the same '
-                        'time (The Dog-Pile Effect)'),
-        default = ''),
-
-    ptah.form.TextField(
-        'url',
-        title = _('URL'),
-        description = _('URL is specific to use of either ext:memcached or '
-                        'ext:database. When using one of those types, '
-                        'this option is required.'),
-        default = ''),
-
-    ptah.form.TextField(
-        'key',
-        title = _('Key'),
-        default = '',
-        description = _('Name of the cookie key used to save the '
-                        'session under.')),
-
-    ptah.form.TextField(
-        'secret',
-        title = _('Secret'),
-        default = '',
-        description = _('Used with the HMAC to ensure session integrity. '
-                        'This value should ideally be a randomly '
-                        'generated string.')),
-
-    title = _('Pyramid session'),
-    description = _('Beaker session configuration settings'),
 )
 
 ptah.register_settings(
@@ -350,25 +288,6 @@ def initialized(ev):
             engine = sqlalchemy.engine_from_config(
                 {'sqlalchemy.url': url}, 'sqlalchemy.', **engine_args)
             sqlahelper.add_engine(engine)
-
-
-    # session
-    SESSION = ptah.get_settings(ptah.CFG_ID_SESSION, ev.registry)
-    if SESSION['enabled']:
-        settings = dict(('session.%s'%key, val) for key, val in
-                        SESSION.items() if val)
-        if 'session.secret' in settings:
-            settings['session.secret'] = bytes_(
-                settings['session.secret'], 'utf8')
-
-        try:
-            import pyramid_beaker
-        except ImportError: # pragma: no cover
-            pass
-        else:
-            session_factory = pyramid_beaker\
-                .session_factory_from_settings(settings)
-            ev.config.set_session_factory(session_factory)
 
     # ptah manage
     if PTAH['manage']:

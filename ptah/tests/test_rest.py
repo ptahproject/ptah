@@ -125,7 +125,7 @@ class TestRestView(PtahTestCase):
         request = DummyRequest()
         login = Login(request)
 
-        self.assertIn('authentication failed', login().body)
+        self.assertIn('authentication failed', login().text)
         self.assertEqual(request.response.status, '403 Forbidden')
 
     def test_rest_login_success(self):
@@ -138,7 +138,7 @@ class TestRestView(PtahTestCase):
         request = DummyRequest(params = {'login': 'admin', 'password': '12345'})
 
         login = Login(request)
-        info = json.loads(login().body)
+        info = json.loads(login().text)
 
         self.assertIn('auth-token', info)
         self.assertEqual(request.response.status, '200 OK')
@@ -155,7 +155,7 @@ class TestRestView(PtahTestCase):
             params = {'login': 'admin', 'password': '12345'})
 
         login = Login(request)
-        info = json.loads(login().body)
+        info = json.loads(login().text)
 
         request = DummyRequest(environ = {'HTTP_X_AUTH_TOKEN': 'unknown'})
         request.matchdict = {'service': 'cms', 'subpath': ()}
@@ -183,7 +183,7 @@ class TestRestApi(PtahTestCase):
         request = DummyRequest()
         request.matchdict = {'service': 'test', 'subpath': ()}
 
-        res = json.loads(Api(request).body)
+        res = json.loads(Api(request).text)
         self.assertEqual(res['message'], "'test'")
         self.assertIn("KeyError: 'test'", res['traceback'])
 
@@ -223,7 +223,7 @@ class TestRestApi(PtahTestCase):
         request.matchdict = {'service': 'test',
                              'subpath': ('action:test','1','2')}
 
-        res = json.loads(Api(request).body)
+        res = json.loads(Api(request).text)
         self.assertEqual(
             res['message'], 'The resource could not be found.')
 
@@ -260,5 +260,5 @@ class TestRestApi(PtahTestCase):
         request.matchdict = {'service': 'test',
                              'subpath': ('action:test','1','2')}
 
-        res = json.loads(Api(request).body)
+        res = json.loads(Api(request).text)
         self.assertIn('dt', res)

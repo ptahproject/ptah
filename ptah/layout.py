@@ -2,7 +2,7 @@
 from collections import namedtuple
 from zope.interface import providedBy, Interface
 
-from pyramid.compat import string_types
+from pyramid.compat import text_, string_types
 from pyramid.config.views import DefaultViewMapper
 from pyramid.httpexceptions import HTTPException
 from pyramid.location import lineage
@@ -159,7 +159,7 @@ class LayoutRenderer(object):
         if isinstance(request.wrapped_response, HTTPException):
             return request.wrapped_response
 
-        content = request.wrapped_body
+        content = text_(request.wrapped_body, 'utf-8')
 
         for layout, layoutcontext in chain:
             value = layout.view(layoutcontext, request)
@@ -174,7 +174,7 @@ class LayoutRenderer(object):
 
             content = layout.renderer.render(value, system, request)
 
-        if isinstance(content, str):
+        if isinstance(content, bytes):
             request.response.body = content
         else:
             request.response.text = content

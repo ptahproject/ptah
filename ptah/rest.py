@@ -4,7 +4,7 @@ from datetime import datetime
 from json import dumps
 from collections import OrderedDict
 from pyramid.view import view_config
-from pyramid.compat import NativeIO
+from pyramid.compat import NativeIO, text_
 from pyramid.response import Response
 from pyramid.authentication import parse_ticket, AuthTicket, BadTicket
 from pyramid.httpexceptions import WSGIHTTPException, HTTPNotFound
@@ -144,8 +144,8 @@ class Login(object):
             result = {'message': info.message or 'authentication failed'}
 
         response.headerslist = {'Content-Type': 'application/json'}
-        response.body = '{0}\n\n'.format(
-            dumps(result, indent=True, default=dthandler))
+        response.text = text_(
+            dumps(result, indent=True, default=dthandler), 'utf-8')
         return response
 
     def get_token(self, request, userid):
@@ -219,8 +219,8 @@ def Api(request):
     if isinstance(result, Response):
         return result
 
-    response.body = '{0}\n\n'.format(
-        dumps(result, indent=True, default=dthandler))
+    response.text = text_(
+        dumps(result, indent=True, default=dthandler), 'utf-8')
     return response
 
 

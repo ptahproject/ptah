@@ -19,7 +19,6 @@ install_requires = ['setuptools',
                     'transaction >= 1.2.0',
                     ]
 tests_require = ['nose',
-                 'pyramid_beaker',
                  'repoze.sendmail']
 
 

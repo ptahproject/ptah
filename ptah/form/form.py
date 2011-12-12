@@ -226,7 +226,7 @@ class Form(ptah.View):
 
         response = self.request.response
         body = self.render()
-        if isinstance(body, str):
+        if isinstance(body, bytes):
             response.body = body # pragma: no cover
         else:
             response.text = body

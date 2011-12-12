@@ -147,7 +147,7 @@ def includeme(cfg):
 
     cfg.set_authorization_policy(PtahAuthorizationPolicy())
     cfg.set_authentication_policy(AuthTktAuthenticationPolicy(**kwargs))
-    
+
     # include extra packages
     cfg.include('pyramid_tm')
     cfg.include('ptah.manage')

@@ -18,7 +18,6 @@ class PtahTestCase(unittest.TestCase):
 
     _init_ptah = True
     _init_sqla = True
-    _init_auth = False
 
     _settings = {}
     _packages = ()
@@ -59,16 +58,6 @@ class PtahTestCase(unittest.TestCase):
         self.config.get_routes_mapper()
         self.registry = self.config.registry
         self.request.registry = self.registry
-
-        #if self._init_auth:
-        #    policy = AuthTktAuthenticationPolicy(
-        #        'secret', callback= ptah.get_local_roles)
-
-        #    self.registry.registerUtility(
-        #        policy, IAuthenticationPolicy)
-
-        #    self.registry.registerUtility(
-        #        ACLAuthorizationPolicy(), IAuthorizationPolicy)
 
     def setUp(self):
         if self._init_sqla:
