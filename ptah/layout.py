@@ -174,10 +174,7 @@ class LayoutRenderer(object):
 
             content = layout.renderer.render(value, system, request)
 
-        if isinstance(content, bytes):
-            request.response.body = content
-        else:
-            request.response.text = content
+        request.response.text = content
         return request.response
 
 
