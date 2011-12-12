@@ -1,8 +1,9 @@
 <h4>
   <small>
-    <a href="${view.manage_url}/source.html?pkg=${intr['codeinfo'].module}#sl-${intr['codeinfo'].lineno}">
-      ${intr['name']}
+    <a href="${manage_url}/source.html?pkg=${context['codeinfo'].module}#sl-${context['codeinfo'].lineno}">
+      ${context['name']}
     </a>
   </small>
 </h4>
-<p tal:condition="intr['description']">${intr['description']}</p>
+<p tal:condition="context['description']">
+  ${structure: view.rst_to_html(context['description'])}</p>

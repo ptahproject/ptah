@@ -6,7 +6,6 @@ from ptah import config
 
 CONFIG_ID = 'ptah.manage:config'
 MANAGE_ID = 'ptah.manage:module'
-INTROSPECT_ID = 'ptah.manage:irenderer'
 
 
 class PtahModule(object):
@@ -56,31 +55,6 @@ def module(name):
         def _complete(cfg, cls, name):
             cls.name = name
             cfg.get_cfg_storage(MANAGE_ID)[name] = cls
-
-        info.attach(
-            config.Action(
-                _complete, (cls, name),
-                discriminator=discr, introspectables=(intr,))
-            )
-        return cls
-
-    return wrapper
-
-
-def intr_renderer(name):
-    info = config.DirectiveInfo()
-
-    def wrapper(cls):
-        discr = (INTROSPECT_ID, name)
-        intr = config.Introspectable(
-            INTROSPECT_ID, discr, cls.title, INTROSPECT_ID)
-        intr['name'] = name
-        intr['factory'] = cls
-        intr['codeinfo'] = info.codeinfo
-
-        def _complete(cfg, cls, name):
-            cls.name = name
-            cfg.get_cfg_storage(INTROSPECT_ID)[name] = cls
 
         info.attach(
             config.Action(

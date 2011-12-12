@@ -1,5 +1,5 @@
 <h4>
-  <a href="${view.manage_url}/source.html?pkg=${intr['codeinfo'].module}#sl-${intr['codeinfo'].lineno}">
-    ${intr['name']}</a>
+  <a href="${manage_url}/source.html?pkg=${context['codeinfo'].module}#sl-${context['codeinfo'].lineno}">
+    ${context['name']}</a>
 </h4>
-<p tal:condition="intr['callable'].__doc__">${intr['callable'].__doc__}</p>
+<p tal:condition="context['callable'].__doc__">${context['callable'].__doc__}</p>

@@ -4,6 +4,21 @@ from ptah.testing import PtahTestCase
 
 class TestTimezoneField(PtahTestCase):
 
+    def test_timezone_loads(self):
+        from ptah.form import null, TimezoneField
+
+        typ = TimezoneField('test')
+
+        tz = typ.loads('"asia/almaty"')
+        self.assertEqual(tz, pytz.timezone('Asia/Almaty'))
+
+        tz = typ.loads('asia/almaty')
+        self.assertEqual(tz, pytz.timezone('Asia/Almaty'))
+
+        tz = typ.loads('Asia/Almaty')
+        self.assertEqual(tz, pytz.timezone('Asia/Almaty'))
+
+
     def test_timezone_schema_serialize(self):
         from ptah.form import null, TimezoneField
 

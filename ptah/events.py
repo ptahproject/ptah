@@ -2,9 +2,56 @@ from ptah import config
 from zope.interface.interfaces import ObjectEvent
 
 
+class event(object):
+    """ Register event object, it is used for introspection only. """
+
+    ID_EVENT = 'ptah.config:event'
+
+    #: Event name
+    name = ''
+
+    #: Event title
+    title = ''
+
+    #: Event category
+    category = ''
+
+    #: Event class or interface
+    factory = None
+
+    def __init__(self, title='', category=''):
+        self.title = title
+        self.category = category
+
+        self.info = config.DirectiveInfo()
+
+    def __call__(self, cls):
+        self.factory = cls
+        self.description = cls.__doc__
+        self.name = '{0}.{1}'.format(cls.__module__, cls.__name__)
+
+        discr = (self.ID_EVENT, self.name)
+        intr = config.Introspectable(
+            self.ID_EVENT, discr, self.description, self.title)
+        intr['ev'] = self
+        intr['name'] = self.name
+        intr['codeinfo'] = self.info.codeinfo
+
+        def _event(cfg, desc, intr):
+            storage = cfg.get_cfg_storage(self.ID_EVENT)
+            storage[desc.name] = desc
+            storage[desc.factory] = desc
+
+        self.info.attach(
+            config.Action(_event, (self, intr),
+                          discriminator=discr, introspectables=(intr,))
+            )
+        return cls
+
+
 # settings related events
 
-@config.event('Settings initializing event')
+@event('Settings initializing event')
 class SettingsInitializing(object):
     """ Settings initializing event """
 
@@ -16,7 +63,7 @@ class SettingsInitializing(object):
         self.registry = registry
 
 
-@config.event('Settings initialized event')
+@event('Settings initialized event')
 class SettingsInitialized(object):
     """ ptah sends this event when settings initialization is completed. """
 
@@ -28,7 +75,7 @@ class SettingsInitialized(object):
         self.registry = registry
 
 
-@config.event('Settings group modified event')
+@event('Settings group modified event')
 class SettingsGroupModified(object):
     """ ptah sends this event when settings group is modified. """
 
@@ -47,12 +94,12 @@ class PrincipalEvent(object):
         self.principal = principal
 
 
-@config.event('Logged in event')
+@event('Logged in event')
 class LoggedInEvent(PrincipalEvent):
     """ User logged in to system."""
 
 
-@config.event('Login failed event')
+@event('Login failed event')
 class LoginFailedEvent(PrincipalEvent):
     """ User login failed."""
 
@@ -63,32 +110,32 @@ class LoginFailedEvent(PrincipalEvent):
         self.message = message
 
 
-@config.event('Logged out event')
+@event('Logged out event')
 class LoggedOutEvent(PrincipalEvent):
     """ User logged out."""
 
 
-@config.event('Reset password initiated event')
+@event('Reset password initiated event')
 class ResetPasswordInitiatedEvent(PrincipalEvent):
     """ User has initiated password changeing."""
 
 
-@config.event('User password has been changed')
+@event('User password has been changed')
 class PrincipalPasswordChangedEvent(PrincipalEvent):
     """ User password has been changed. """
 
 
-@config.event('Account validation event')
+@event('Account validation event')
 class PrincipalValidatedEvent(PrincipalEvent):
     """ Principal account has been validated."""
 
 
-@config.event('Principal added event')
+@event('Principal added event')
 class PrincipalAddedEvent(PrincipalEvent):
     """ Principal added event """
 
 
-@config.event('Principal registered event')
+@event('Principal registered event')
 class PrincipalRegisteredEvent(PrincipalEvent):
     """ Principal registered event """
 
@@ -101,30 +148,30 @@ class ContentEvent(ObjectEvent):
     object = None
 
 
-@config.event('Content created event')
+@event('Content created event')
 class ContentCreatedEvent(ContentEvent):
     """ Event thrown by
         :py:class:`ptah.cms.TypeInformation` """
 
 
-@config.event('Content added event')
+@event('Content added event')
 class ContentAddedEvent(ContentEvent):
     """ Unused event.  To be removed """
 
 
-@config.event('Content moved event')
+@event('Content moved event')
 class ContentMovedEvent(ContentEvent):
     """ :py:class:`ptah.cms.Container` will
         notify when content has moved."""
 
 
-@config.event('Content modified event')
+@event('Content modified event')
 class ContentModifiedEvent(ContentEvent):
     """ :py:class:`ptah.cms.Content` will
         notify when update() method invoked. """
 
 
-@config.event('Content deleting event')
+@event('Content deleting event')
 class ContentDeletingEvent(ContentEvent):
     """ :py:class:`ptah.cms.Container` will
         notify when content deleted """

@@ -10,12 +10,12 @@ from ptah.uri import UriFactory
 # config
 from ptah import config
 from ptah.config import adapter
-from ptah.config import event
 from ptah.config import subscriber
 from ptah.config import get_cfg_storage
 
 # events
 from ptah import events
+from ptah.events import event
 
 # view api
 from ptah.view import View
@@ -135,6 +135,9 @@ from ptah.cms import Session
 # form api
 from ptah import form
 
+# simple test case
+from ptah.testing import PtahTestCase
+
 
 def includeme(cfg):
     # auth
@@ -247,16 +250,8 @@ def ptah_initialize(cfg):
         # initialize settings
         init_settings(cfg, cfg.registry.settings)
 
-    except Exception as e:
-        if isinstance(e, ConfigurationExecutionError):
-            e = e.evalue
-
-        if not isinstance(e, config.StopException):
-            config.shutdown()
-            e = config.StopException(e)
-            raise e
-
+    except config.StopException:
         config.shutdown()
-        raise e
+        raise
     finally:
         cfg.end()

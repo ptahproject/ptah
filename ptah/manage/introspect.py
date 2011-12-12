@@ -1,11 +1,13 @@
 """ introspect module """
 import urllib
+from zope.interface import Interface
 from pyramid.view import view_config
 from pyramid.compat import string_types
+from pyramid.interfaces import IIntrospectable
 
 import ptah
-from ptah.manage import intr_renderer, get_manage_url
-from ptah.manage.manage import INTROSPECT_ID
+from ptah.view import ISnippet
+from ptah.manage import get_manage_url
 
 
 @ptah.manage.module('introspect')
@@ -31,20 +33,6 @@ class Introspector(object):
         self.name = name
         self.request = request
 
-        intros = ptah.get_cfg_storage(INTROSPECT_ID)
-        self.renderer = intros[name](request)
-
-        self.intrs = sorted((item['introspectable'] for item in
-                             self.request.registry
-                             .introspector.get_category(name)),
-                            key = lambda item: item.title)
-
-        self.manage_url = '{0}/introspect'.format(get_manage_url(self.request))
-        self.renderers = sorted(
-            (item['introspectable']['factory'] for item in
-             self.request.registry.introspector.get_category(INTROSPECT_ID)),
-            key = lambda item: item.title)
-
 
 @view_config(
     context=IntrospectModule, wrapper=ptah.wrap_layout(),
@@ -54,14 +42,33 @@ class MainView(ptah.View):
 
     def update(self):
         self.manage_url = '{0}/introspect'.format(get_manage_url(self.request))
+
         self.renderers = sorted(
-            (item['introspectable']['factory'] for item in
-             self.request.registry.introspector.get_category(INTROSPECT_ID)),
-            key = lambda item: item.title)
+            (self.request.registry.adapters.lookupAll(
+                (IIntrospectable, Interface), ISnippet)),
+            key = lambda item: item[1].view.title)
 
 
 @view_config(
     context=Introspector, wrapper=ptah.wrap_layout(),
     renderer='ptah.manage:templates/introspect-intr.pt')
 class IntrospectorView(ptah.View):
-    pass
+
+    def update(self):
+        name = self.context.name
+        registry = self.request.registry
+
+        self.renderer = registry.adapters.lookup(
+            (IIntrospectable, Interface), ISnippet, name=name)
+
+        self.intrs = sorted(
+            (item['introspectable'] for item in
+             registry.introspector.get_category(name)),
+            key = lambda item: item.title)
+
+        self.manage_url = '{0}/introspect'.format(get_manage_url(self.request))
+
+        self.renderers = sorted(
+            (registry.adapters.lookupAll(
+                (IIntrospectable, Interface), ISnippet)),
+            key = lambda item: item[1].view.title)

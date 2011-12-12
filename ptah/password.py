@@ -16,7 +16,8 @@ _ = translationstring.TranslationStringFactory('ptah')
 ID_PASSWORD_CHANGER = 'ptah.password:changer'
 
 TOKEN_TYPE = token.TokenType(
-    '35c9b7df958f4e93ae9b275a7dc2219e', timedelta(minutes=10))
+    '35c9b7df958f4e93ae9b275a7dc2219e', timedelta(minutes=10),
+    'Reset password tokens')
 
 
 class PlainPasswordManager(object):

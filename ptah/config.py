@@ -13,7 +13,6 @@ import venusian
 from venusian.advice import getFrameInfo
 
 ATTACH_ATTR = '__ptah_actions__'
-ID_EVENT = 'ptah.config:event'
 ID_ADAPTER = 'ptah.config:adapter'
 ID_SUBSCRIBER = 'ptah.config:subscriber'
 
@@ -75,57 +74,6 @@ def get_cfg_storage(id, registry=None, default_factory=OrderedDict):
 
 def pyramid_get_cfg_storage(config, id):
     return get_cfg_storage(id, config.registry)
-
-
-class EventDescriptor(object):
-    """ Events descriptor class, it is been used by `event` decorator """
-
-    #: Event name
-    name = ''
-
-    #: Event title
-    title = ''
-
-    #: Event category
-    category = ''
-
-    #: Event class or interface
-    instance = None
-
-    def __init__(self, inst, title, category):
-        self.instance = inst
-        self.title = title
-        self.category = category
-        self.description = inst.__doc__
-        self.name = '%s.%s' % (inst.__module__, inst.__name__)
-
-
-def event(title='', category=''):
-    """ Register event object, it is used for introspection only. """
-    info = DirectiveInfo()
-
-    def wrapper(cls):
-        discr = (ID_EVENT, cls)
-
-        intr = Introspectable(ID_EVENT, discr, title, ID_EVENT)
-
-        def _event(cfg, klass, title, category):
-            storage = cfg.get_cfg_storage(ID_EVENT)
-            ev = EventDescriptor(klass, title, category)
-            storage[klass] = ev
-            storage[ev.name] = ev
-
-            intr['descr'] = ev
-            intr['codeinfo'] = info.codeinfo
-
-        info.attach(
-            Action(
-                _event, (cls, title, category),
-                discriminator=discr, introspectables = (intr,))
-            )
-        return cls
-
-    return wrapper
 
 
 def adapter(*args, **kw):
@@ -283,7 +231,7 @@ class DirectiveInfo(object):
         scope, module, f_locals, f_globals, codeinfo = \
             getFrameInfo(sys._getframe(depth + 1))
 
-        if allowed_scope and scope not in allowed_scope:
+        if allowed_scope and scope not in allowed_scope: # pragma: no cover
             raise TypeError("This directive is not allowed "
                             "to run in this scope: %s" % scope)
 
@@ -306,7 +254,7 @@ class DirectiveInfo(object):
 
     @property
     def context(self):
-        if self.scope == 'module':
+        if self.scope == 'module': # pragma: no cover
             return self.module
         else:
             return getattr(self.module, self.name, None)

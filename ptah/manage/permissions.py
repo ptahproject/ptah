@@ -1,6 +1,6 @@
 """ security ptah module """
 import ptah
-from ptah.manage import intr_renderer, get_manage_url
+from ptah.manage import get_manage_url
 from pyramid.view import view_config
 
 

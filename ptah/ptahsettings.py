@@ -1,5 +1,4 @@
 """ ptah settings """
-import uuid
 import pytz
 import sqlahelper
 import sqlalchemy
@@ -8,14 +7,9 @@ from email.utils import formataddr
 
 from pyramid.compat import bytes_
 from pyramid.events import ApplicationCreated
-from pyramid.authentication import AuthTktAuthenticationPolicy
-from pyramid.interfaces import IAuthorizationPolicy
-from pyramid.interfaces import IAuthenticationPolicy
-from pyramid.interfaces import ISessionFactory
 
 import ptah
 from ptah import manage, settings
-from ptah.security import get_local_roles, PtahAuthorizationPolicy
 
 _ = translationstring.TranslationStringFactory('ptah')
 

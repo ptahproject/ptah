@@ -136,6 +136,32 @@ def register_snippet(name, context=None, view=None, renderer=None, layer=''):
         )
 
 
+class SnippetRenderer(object):
+
+    def __init__(self, view, context, renderer):
+        self.view = view
+        self.context = context
+        self.renderer = renderer
+
+        mapper = getattr(view, '__view_mapper__', DefaultViewMapper)
+        self.mapped_view = mapper()(view)
+
+    def __call__(self, context, request):
+        value = self.mapped_view(context, request)
+        if self.renderer is None:
+            return value
+
+        if value is None:
+            value = {}
+
+        system = {'view': getattr(request, '__view__', None),
+                  'renderer_info': self.renderer,
+                  'context': context,
+                  'request': request}
+
+        return self.renderer.render(value, system, request)
+
+
 def register_snippet_impl(cfg, view, stype, context, renderer):
     if isinstance(renderer, string_types):
         renderer = RendererHelper(name=renderer, registry=cfg.registry)
@@ -143,32 +169,13 @@ def register_snippet_impl(cfg, view, stype, context, renderer):
     if view is None:
         view = ptah.View
 
-    mapper = getattr(view, '__view_mapper__', DefaultViewMapper)
-    mapped_view = mapper()(view)
-
-    def render(context, request):
-        value = mapped_view(context, request)
-        if renderer is None:
-            return value
-
-        if value is None:
-            value = {}
-
-        system = {'view': getattr(request, '__view__', None),
-                  'renderer_info': renderer,
-                  'context': context,
-                  'request': request}
-
-        return renderer.render(value, system, request)
-
     # register snippet
     if context is None:
         context = Interface
 
-    requires = [context, Interface]
-
     cfg.registry.registerAdapter(
-        render, requires, ISnippet, name = stype)
+        SnippetRenderer(view, context, renderer),
+        [context, Interface], ISnippet, name=stype)
 
 
 def add_message(request, msg, type='info'):

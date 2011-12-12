@@ -1,6 +1,10 @@
-<h4>${intr['role'].title}
+<h4>${context['role'].title}
   <small>
-    <a href="${view.manage_url}/source.html?pkg=${intr['codeinfo'].module}#sl-${intr['codeinfo'].lineno}">
-      ${intr['role'].id}</a>
-</small></h4>
-<p tal:condition="intr['role'].description">${intr['role'].description}</p>
+    <a href="${manage_url}/source.html?pkg=${context['codeinfo'].module}#sl-${context['codeinfo'].lineno}">
+      ${context['role'].id}
+    </a>
+  </small>
+</h4>
+<p tal:condition="context['role'].description">
+  ${context['role'].description}
+</p>

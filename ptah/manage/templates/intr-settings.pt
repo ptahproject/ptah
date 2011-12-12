@@ -1,15 +1,17 @@
-<h4>${intr['group'].__title__}
+<h4>${context['group'].__title__}
   <small>
-    <a href="${view.manage_url}/source.html?pkg=${intr['codeinfo'].module}#sl-${intr['codeinfo'].lineno}">
-      ${intr['group'].__name__}</a>
-</small></h4>
-<p tal:condition="intr['group'].__description__">
-  ${intr['group'].__description__}
+    <a href="${manage_url}/source.html?pkg=${context['codeinfo'].module}#sl-${context['codeinfo'].lineno}">
+      ${context['group'].__name__}
+    </a>
+  </small>
+</h4>
+<p tal:condition="context['group'].__description__">
+  ${context['group'].__description__}
 </p>
 
 <p>
   <table class="zebra-striped">
-    <tr tal:repeat="field intr['group'].__fields__.fields()">
+    <tr tal:repeat="field context['group'].__fields__.fields()">
       <td>${field.name}</td>
       <td>${field.__class__.__name__}</td>
       <td>${field.dumps(field.default)}</td>

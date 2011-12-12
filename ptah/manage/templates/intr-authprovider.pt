@@ -1,6 +1,6 @@
-<h4>${intr['name']}
+<h4>${context['name']}
   <small>
-    <a href="${view.manage_url}/source.html?pkg=${intr['codeinfo'].module}#sl-${intr['codeinfo'].lineno}">
-      ${intr['id']}</a>
+    <a href="${manage_url}/source.html?pkg=${context['codeinfo'].module}#sl-${context['codeinfo'].lineno}">
+      ${context['id']}</a>
 </small></h4>
-<p tal:condition="intr['provider'].__doc__">${intr['provider'].__doc__}</p>
+<p tal:condition="context['provider'].__doc__">${context['provider'].__doc__}</p>

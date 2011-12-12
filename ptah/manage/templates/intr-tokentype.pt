@@ -1,6 +1,9 @@
-<h4>${intr['ttype'].title}
+<h4>${context['ttype'].title}
   <small>
-    <a href="${view.manage_url}/source.html?pkg=${intr['codeinfo'].module}#sl-${intr['codeinfo'].lineno}">
-      ${intr['ttype'].id}</a>
-</small></h4>
-<p tal:condition="intr['ttype'].description">${structure: intr['ttype'].description}</p>
+    <a href="${manage_url}/source.html?pkg=${context['codeinfo'].module}#sl-${context['codeinfo'].lineno}">
+      ${context['ttype'].id}</a>
+  </small>
+</h4>
+<p tal:condition="context['ttype'].description">
+  ${structure: context['ttype'].description}
+</p>

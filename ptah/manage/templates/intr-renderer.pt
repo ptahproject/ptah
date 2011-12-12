@@ -1,6 +1,0 @@
-<h4>${intr['factory'].title}
-  <small>
-    <a href="${view.manage_url}/source.html?pkg=${intr['codeinfo'].module}#sl-${intr['codeinfo'].lineno}">
-      ${intr['name']}</a>
-</small></h4>
-<p tal:condition="intr['factory'].__doc__">${intr['factory'].__doc__}</p>

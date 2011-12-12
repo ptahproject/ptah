@@ -2,48 +2,39 @@
 import sys
 import inspect
 from pyramid.renderers import render
+from pyramid.interfaces import IIntrospectable
 
 import ptah
-from ptah import config, view, manage, form
-from ptah.manage import intr_renderer, get_manage_url
-from ptah.manage.manage import INTROSPECT_ID
+from ptah import config, manage, form
+from ptah.manage import get_manage_url
 from ptah.form.field import PREVIEW_ID
 
 
-class Renderer(object):
+class Renderer(ptah.View):
 
     title = ''
-    template = None
     rst_to_html = staticmethod(ptah.rst_to_html)
 
-    def __init__(self, request):
-        self.request = request
-        self.manage_url = get_manage_url(request)
-
-    def __call__(self, intr):
-        return render(self.template,
-                      {'intr': intr,
-                       'view': self,
-                       'request': self.request}, self.request)
+    def __call__(self):
+        return {'manage_url': get_manage_url(self.request)}
 
 
-@intr_renderer(ptah.config.ID_EVENT)
+@ptah.snippet(
+    ptah.event.ID_EVENT, IIntrospectable,
+    renderer='ptah.manage:templates/intr-event.pt')
 class EventRenderer(Renderer):
     """ List of event declarations """
 
     title = 'Events'
-    template = 'ptah.manage:templates/intr-event.pt'
 
 
-@intr_renderer('ptah.config:adapter')
+@ptah.snippet(
+    'ptah.config:adapter', IIntrospectable,
+    renderer='ptah.manage:templates/intr-adapter.pt')
 class AdapterDirective(object):
     """ List of adapter registrations """
 
     title = 'zc adapters'
-    actions = 'ptah.manage:templates/directive-adapter.pt'
-
-    def __init__(self, request):
-        self.request = request
 
     def getInfo(self, action):
         context = action.info.context
@@ -76,14 +67,16 @@ class AdapterDirective(object):
             request = self.request)
 
 
-@intr_renderer('ptah.config:subscriber')
+@ptah.snippet(
+    'ptah.config:subscriber', IIntrospectable,
+    renderer='ptah.manage:templates/intr-subscriber.pt')
 class SubscriberRenderer(Renderer):
     """ List of event subscribers """
 
     title = 'Event subscribers'
-    template = 'ptah.manage:templates/intr-subscriber.pt'
 
-    def getInfo(self, intr):
+    def getInfo(self):
+        intr = self.context
         handler = intr['handler']
         required = intr['required']
         factoryInfo = '%s.%s'%(intr['codeinfo'].module, handler.__name__)
@@ -102,118 +95,122 @@ class SubscriberRenderer(Renderer):
         return locals()
 
 
-@intr_renderer('ptah:permission')
+@ptah.snippet(
+    'ptah:permission', IIntrospectable,
+    renderer='ptah.manage:templates/intr-permission.pt')
 class PermissionRenderer(Renderer):
     """ Permission registrations """
 
     title = 'Permission'
-    template = 'ptah.manage:templates/intr-permission.pt'
 
 
-@intr_renderer('ptah:role')
+@ptah.snippet(
+    'ptah:role', IIntrospectable,
+    renderer='ptah.manage:templates/intr-role.pt')
 class RoleIntrospection(Renderer):
     """ Role registrations """
 
     title = 'Role'
-    template = 'ptah.manage:templates/intr-role.pt'
 
 
-@intr_renderer('ptah:resolver')
+@ptah.snippet(
+    'ptah:resolver', IIntrospectable,
+    renderer='ptah.manage:templates/intr-uriresolver.pt')
 class UriRenderer(Renderer):
     """ Uri resolvers """
 
     title = 'Uri resolver'
-    template = 'ptah.manage:templates/intr-uriresolver.pt'
 
 
-@intr_renderer('ptah.manage:module')
+@ptah.snippet(
+    'ptah.manage:module', IIntrospectable,
+    renderer='ptah.manage:templates/intr-managemodule.pt')
 class ManageModuleRenderer(Renderer):
     """ List of registered ptah manage modules """
 
     title = 'Ptah manage modules'
-    template = 'ptah.manage:templates/intr-managemodule.pt'
 
 
-@intr_renderer('ptah.manage:irenderer')
-class IntrospectorRenderer(Renderer):
-    """ List of registered introspector renderers """
-
-    title = 'Ptah introspector renderers'
-    template = 'ptah.manage:templates/intr-renderer.pt'
-
-
-@intr_renderer('ptah:aclmap')
+@ptah.snippet(
+    'ptah:aclmap', IIntrospectable,
+    renderer='ptah.manage:templates/intr-aclmap.pt')
 class ACLMapRenderer(Renderer):
     """ ACL map registration """
 
     title = 'ACL Maps'
-    template = 'ptah.manage:templates/intr-aclmap.pt'
 
 
-@intr_renderer('ptah:authchecker')
+@ptah.snippet(
+    'ptah:authchecker', IIntrospectable,
+    renderer='ptah.manage:templates/intr-authchecker.pt')
 class AuthCheckerRenderer(Renderer):
     """ List of registered authentication checkers """
 
     title = 'Authentication checkers'
-    template = 'ptah.manage:templates/intr-authchecker.pt'
 
 
-@intr_renderer('ptah:authprovider')
+@ptah.snippet(
+    'ptah:authprovider', IIntrospectable,
+    renderer='ptah.manage:templates/intr-authprovider.pt')
 class AuthProviderRenderer(Renderer):
     """ List of registered authentication providers """
 
     title = 'Authentication providers'
-    template = 'ptah.manage:templates/intr-authprovider.pt'
 
 
-@intr_renderer('ptah:settings-group')
+@ptah.snippet(
+    'ptah:settings-group', IIntrospectable,
+    renderer='ptah.manage:templates/intr-settings.pt')
 class SettingsGroupRenderer(Renderer):
     """ List of registered settings groups """
 
     title = 'Settings'
-    template = 'ptah.manage:templates/intr-settings.pt'
 
 
-@intr_renderer('ptah.form:field')
+@ptah.snippet(
+    'ptah.form:field', IIntrospectable,
+    renderer='ptah.manage:templates/intr-field.pt')
 class FieldRenderer(Renderer):
     """ List of registered fields """
 
     title = 'Fields'
-    template = 'ptah.manage:templates/intr-field.pt'
 
-    def __init__(self, request):
-        super(FieldRenderer, self).__init__(request)
-
-        self.previews = config.get_cfg_storage(PREVIEW_ID)
+    def __call__(self):
+        return {'manage_url': get_manage_url(self.request),
+                'previews': config.get_cfg_storage(PREVIEW_ID)}
 
 
-@intr_renderer('ptah:uiaction')
+@ptah.snippet(
+    'ptah:uiaction', IIntrospectable,
+    renderer='ptah.manage:templates/intr-uiaction.pt')
 class uiActionRenderer(Renderer):
     """ List of registered ui actions """
 
     title = 'UI Actions'
-    template = 'ptah.manage:templates/intr-uiaction.pt'
 
 
-@intr_renderer('ptah:token-type')
+@ptah.snippet(
+    'ptah:token-type', IIntrospectable,
+    renderer='ptah.manage:templates/intr-tokentype.pt')
 class TokenTypeRenderer(Renderer):
     """ List of registered token types """
 
     title = 'Token types'
-    template = 'ptah.manage:templates/intr-tokentype.pt'
 
 
-@manage.intr_renderer('ptah.cms:type')
+@ptah.snippet(
+    'ptah.cms:type', IIntrospectable,
+    renderer='ptah.manage:templates/intr-contenttype.pt')
 class ContentTypeRenderer(Renderer):
     """ Ptah content types """
 
     title = 'Content Types'
-    template = 'ptah.manage:templates/intr-contenttype.pt'
 
 
-@manage.intr_renderer('ptah:formatter')
+@ptah.snippet(
+    'ptah:formatter', IIntrospectable,
+    renderer='ptah.manage:templates/intr-formatter.pt')
 class formatterRenderer(Renderer):
     """ List of formatters """
 
     title = 'Formatters'
-    template = 'ptah.manage:templates/intr-formatter.pt'

@@ -6,8 +6,10 @@
   <div class="span16">
     <ul>
       <li tal:repeat="renderer view.renderers">
-	<a href="${view.manage_url}/${renderer.name}/">${renderer.title}</a>
-	<p>${renderer.__doc__}</p>
+	<a href="${view.manage_url}/${renderer[0]}/">
+	  ${renderer[1].view.title}
+	</a>
+	<p>${renderer[1].view.__doc__}</p>
       </li>
     </ul>
   </div>

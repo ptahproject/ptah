@@ -262,23 +262,3 @@ class TestManageModule(PtahTestCase):
         layout.update()
 
         self.assertIs(layout.module, mod)
-
-
-class TestInstrospection(PtahTestCase):
-
-    _init_ptah = False
-
-    def test_manage_module(self):
-        from ptah.manage.manage import INTROSPECT_ID, intr_renderer
-
-        @intr_renderer('test-module')
-        class TestModule(object):
-            """ module description """
-
-            title = 'Test module'
-
-        self.init_ptah()
-
-        INTROSPECTIONS = config.get_cfg_storage(INTROSPECT_ID)
-        self.assertIn('test-module', INTROSPECTIONS)
-        self.assertIs(INTROSPECTIONS['test-module'], TestModule)

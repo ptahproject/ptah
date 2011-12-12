@@ -1,15 +1,15 @@
 <div class="row">
   <div class="span11">
     <div class="page-header">
-      <h2>${context.renderer.title} 
-	<small>${context.renderer.__doc__}</small></h2>
+      <h2>${view.renderer.view.title} 
+	<small>${view.renderer.view.__doc__}</small></h2>
     </div>
 
     <table class="zebra-striped">
       <tbody>
-	<tr tal:repeat="intr context.intrs">
+	<tr tal:repeat="intr view.intrs">
 	  <td>
-	    ${structure: context.renderer(intr)}
+	    ${structure: view.renderer(intr, request)}
 	  </td>
 	</tr>
       </tbody>
@@ -18,9 +18,11 @@
   <div class="span5">
     <h3>Categories</h3>
     <ul>
-      <li tal:repeat="renderer context.renderers">
-	<a href="${context.manage_url}/${renderer.name}/">${renderer.title}</a>
-	<p>${renderer.__doc__}</p>
+      <li tal:repeat="renderer view.renderers">
+	<a href="${view.manage_url}/${renderer[0]}/">
+	  ${renderer[1].view.title}
+	</a>
+	<p>${renderer[1].view.__doc__}</p>
       </li>
     </ul>
   </div>
