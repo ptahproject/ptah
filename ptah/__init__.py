@@ -212,11 +212,12 @@ def make_wsgi_app(global_settings, **settings):
     """
     import sys
     import sqlahelper
+    import transaction
     from pyramid.config import Configurator
 
     # configuration
     cfg = Configurator(settings=settings)
-    cfg.include('ptah')
+    cfg.commit()
 
     # initialization
     try:
@@ -233,6 +234,7 @@ def make_wsgi_app(global_settings, **settings):
     # create sql tables
     Base = sqlahelper.get_base()
     Base.metadata.create_all()
+    transaction.commit()
 
     # create wsgi app
     return cfg.make_wsgi_app()
