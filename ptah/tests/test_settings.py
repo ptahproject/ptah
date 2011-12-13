@@ -98,6 +98,27 @@ class TestSettings(BaseTesting):
         group = ptah.get_settings('group1', self.registry)
         self.assertEqual(group.get('node'), 'test')
 
+    def test_settings_group_extract(self):
+        node1 = ptah.form.TextField(
+            'node1', default = 'test1')
+
+        node2 = ptah.form.TextField(
+            'node2', default = 'test2')
+
+        ptah.register_settings('group', node1, node2)
+        self.init_ptah()
+
+        group = ptah.get_settings('group', self.registry)
+
+        data, errors = group.extract({'group.node1': 'test-extract'})
+
+        self.assertEqual(data['node1'], 'test-extract')
+        self.assertEqual(data['node2'], 'test2')
+
+        group['node2'] = 'value'
+        data, errors = group.extract({'group.node1': 'test-extract'})
+        self.assertEqual(data['node2'], 'value')
+
     def test_settings_get_settings_pyramid(self):
         node = ptah.form.TextField(
             'node',

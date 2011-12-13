@@ -19,7 +19,6 @@ SETTINGS_ID = 'settings'
 SETTINGS_OB_ID = 'ptah:settings'
 ID_SETTINGS_GROUP = 'ptah:settings-group'
 
-
 _marker = object()
 
 

@@ -51,7 +51,32 @@ format = FormatImpl()
 
 @formatter('datetime')
 def datetime_formatter(value, tp='medium', request=None):
-    """ datetime format """
+    """DateTime formatter
+
+    Short::
+
+      >> dt = datetime(2011, 2, 6, 10, 35, 45, 80, pytz.UTC)
+
+      >> ptah.format.datetime(dt, 'short')
+      '02/06/11 04:35 AM'
+
+
+    Medium::
+
+      >> ptah.format.datetime(dt, 'medium')
+      'Feb 06, 2011 04:35 AM'
+
+    Long::
+
+      >> ptah.format.datetime(dt, 'long')
+      'February 06, 2011 04:35 AM -0600'
+
+    Full::
+
+      >> ptah.format.datetime(dt, 'full')
+      'Sunday, February 06, 2011 04:35:45 AM CST'
+
+    """
     if not isinstance(value, datetime):
         return value
 
@@ -71,7 +96,26 @@ def datetime_formatter(value, tp='medium', request=None):
 
 @formatter('timedelta')
 def timedelta_formatter(value, type='short', request=None):
-    """ timedelta formatter """
+    """Timedelta formatter
+
+    Full format::
+
+      >> td = timedelta(hours=10, minutes=5, seconds=45)
+      >> ptah.format.timedelta(td, 'full')
+      '10 hour(s) 5 min(s) 45 sec(s)'
+
+    Seconds::
+
+      >> ptah.format.timedelta(td, 'seconds')
+      '36345.0000'
+
+
+    Default::
+
+      >> ptah.format.timedelta(td)
+      '10:05:45'
+
+    """
     if not isinstance(value, timedelta):
         return value
 
@@ -117,7 +161,28 @@ _size_types = {
 
 @formatter('size')
 def size_formatter(value, type='k', request=None):
-    """ size formatter """
+    """Size formatter
+
+    bytes::
+
+        >> v = 1024
+        >> ptah.format.size(v, 'b')
+        '1024 B'
+
+    kylobytes::
+
+        >> ptah.format.size(v, 'k')
+        '1.00 Kb'
+
+    megabytes::
+
+        >> ptah.format.size(1024*768, 'm')
+        '0.75 Mb'
+
+        >> ptah.format.size(1024*768*768, 'm')
+        '576.00 Mb'
+
+    """
     if not isinstance(value, (int, float)):
         return value
 

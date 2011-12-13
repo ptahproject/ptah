@@ -54,16 +54,12 @@ setup(name='ptah',
       zip_safe = False,
       entry_points = {
           'console_scripts': [
-              'static = ptah.scripts.pstatic:main',
               'settings = ptah.scripts.settings:main',
             ],
-          'paste.app_factory': [
-              'app = ptah:make_wsgi_app'],
           'pyramid.scaffold': [
               'ptah001 = ptah.scaffolds:Ptah001ProjectTemplate',
               'ptah101 = ptah.scaffolds:Ptah101ProjectTemplate',
               'ptah102 = ptah.scaffolds:Ptah102ProjectTemplate',
-              'ptah201 = ptah.scaffolds:Ptah201ProjectTemplate',
               ],
           },
       )

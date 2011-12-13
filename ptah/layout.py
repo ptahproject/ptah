@@ -77,61 +77,46 @@ def query_layout_chain(context, request, layoutname=''):
     return chain
 
 
-def layout(name='', context=None, parent=None,
-           renderer=None, route_name=None, use_global_views=False, layer=''):
-    info = config.DirectiveInfo()
+class layout(object):
+    """ layout declaration directive """
 
-    def wrapper(view):
-        discr = (LAYOUT_ID, name, context, route_name, layer)
+    def __init__(self, name='', context=None, parent=None,
+                 renderer=None, route_name=None, use_global_views=False,
+                 layer='', __depth=1):
+        self.info = config.DirectiveInfo(__depth)
+        self.discr = (LAYOUT_ID, name, context, route_name, layer)
 
-        intr = config.Introspectable(LAYOUT_ID, discr, name, LAYOUT_ID)
+        self.intr = intr = config.Introspectable(
+            LAYOUT_ID, self.discr, name, LAYOUT_ID)
+
         intr['name'] = name
-        intr['view'] = view
         intr['context'] = context
         intr['layer'] = layer
         intr['renderer'] = renderer
         intr['route_name'] = route_name
         intr['parent'] = parent
         intr['use_global_views'] = use_global_views
-        intr['codeinfo'] = info.codeinfo
+        intr['codeinfo'] = self.info.codeinfo
 
-        info.attach(
+    def __call__(self, view):
+        intr = self.intr
+        intr['view'] = view
+
+        self.info.attach(
             config.Action(
-                config.LayerWrapper(register_layout_impl, discr),
-                (view, name, context, renderer,
-                 parent, route_name, use_global_views),
-                discriminator=discr, introspectables=(intr,))
+                config.LayerWrapper(register_layout_impl, self.discr),
+                (view, intr['name'], intr['context'], intr['renderer'],
+                 intr['parent'], intr['route_name'], intr['use_global_views']),
+                discriminator=self.discr, introspectables=(intr,))
             )
         return view
 
-    return wrapper
 
-
-def register_layout(
-    name='', context=None, parent='',
-    view=View, renderer=None, route_name=None,
-    use_global_views=False, layer=''):
-
-    discr = (LAYOUT_ID, name, context, route_name, layer)
-
-    intr = config.Introspectable(LAYOUT_ID, discr, name, LAYOUT_ID)
-    intr['name'] = name
-    intr['view'] = view
-    intr['context'] = context
-    intr['layer'] = layer
-    intr['renderer'] = renderer
-    intr['route_name'] = route_name
-    intr['parent'] = parent
-    intr['use_global_views'] = use_global_views
-
-    info = config.DirectiveInfo()
-    info.attach(
-        config.Action(
-            config.LayerWrapper(register_layout_impl, discr),
-            (view, name, context, renderer, parent,
-             route_name, use_global_views),
-            discriminator=discr, introspectables=(intr,))
-        )
+def register_layout(name='', context=None, parent='',
+                    view=View, renderer=None, route_name=None,
+                    use_global_views=False, layer=''):
+    layout(name, context, parent,
+           renderer, route_name, use_global_views, layer, 2)(view)
 
 
 def register_layout_impl(cfg, view, name, context,
