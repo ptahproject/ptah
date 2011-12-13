@@ -60,7 +60,7 @@ def query_layout_chain(context, request, layoutname=''):
     chain.append((layout, layoutcontext))
     contexts = {layoutname: layoutcontext}
 
-    while layout is not None:
+    while layout is not None and layout.layout is not None:
         if layout.layout in contexts:
             l_context = contexts[layout.layout].__parent__
         else:
@@ -77,8 +77,8 @@ def query_layout_chain(context, request, layoutname=''):
     return chain
 
 
-def layout(name='', context=None, parent='',
-           renderer=None, route_name=None, layer=''):
+def layout(name='', context=None, parent=None,
+           renderer=None, route_name=None, use_global_views=False, layer=''):
     info = config.DirectiveInfo()
 
     def wrapper(view):
@@ -92,12 +92,14 @@ def layout(name='', context=None, parent='',
         intr['renderer'] = renderer
         intr['route_name'] = route_name
         intr['parent'] = parent
+        intr['use_global_views'] = use_global_views
         intr['codeinfo'] = info.codeinfo
 
         info.attach(
             config.Action(
                 config.LayerWrapper(register_layout_impl, discr),
-                (view, name, context, renderer, parent, route_name),
+                (view, name, context, renderer,
+                 parent, route_name, use_global_views),
                 discriminator=discr, introspectables=(intr,))
             )
         return view
@@ -107,7 +109,8 @@ def layout(name='', context=None, parent='',
 
 def register_layout(
     name='', context=None, parent='',
-    view=View, renderer=None, route_name=None, layer=''):
+    view=View, renderer=None, route_name=None,
+    use_global_views=False, layer=''):
 
     discr = (LAYOUT_ID, name, context, route_name, layer)
 
@@ -119,17 +122,20 @@ def register_layout(
     intr['renderer'] = renderer
     intr['route_name'] = route_name
     intr['parent'] = parent
+    intr['use_global_views'] = use_global_views
 
     info = config.DirectiveInfo()
     info.attach(
         config.Action(
             config.LayerWrapper(register_layout_impl, discr),
-            (view, name, context, renderer, parent, route_name),
+            (view, name, context, renderer, parent,
+             route_name, use_global_views),
             discriminator=discr, introspectables=(intr,))
         )
 
 
-def register_layout_impl(cfg, view, name, context, renderer,layout,route_name):
+def register_layout_impl(cfg, view, name, context,
+                         renderer, layout, route_name, use_global_views):
     if not layout:
         layout = None
     elif layout == '.':
@@ -141,6 +147,12 @@ def register_layout_impl(cfg, view, name, context, renderer,layout,route_name):
     request_iface = IRequest
     if route_name is not None:
         request_iface = cfg.registry.getUtility(IRouteRequest, name=route_name)
+
+    if use_global_views:
+        request_iface = Interface
+
+    if context is None:
+        context = Interface
 
     mapper = getattr(view, '__view_mapper__', DefaultViewMapper)
     mapped_view = mapper()(view)

@@ -84,7 +84,6 @@ from pyramid.security import NO_PERMISSION_REQUIRED
 CFG_ID_PTAH = 'ptah'
 CFG_ID_MAIL = 'mail'
 CFG_ID_FORMAT = 'format'
-CFG_ID_SESSION = 'session'
 CFG_ID_SQLA = 'sqla'
 CFG_ID_PASSWORD = 'password'
 

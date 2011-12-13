@@ -212,7 +212,7 @@ class Group(OrderedDict):
             value = rawdata.get('{0}.{1}'.format(name, field.name), _marker)
 
             if value is _marker:
-                value = field.default
+                value = self.get(field.name)
             else:
                 try:
                     value = field.loads(value)

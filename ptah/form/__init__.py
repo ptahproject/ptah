@@ -34,6 +34,9 @@ from ptah.form.validator import Range
 from ptah.form.validator import Length
 from ptah.form.validator import OneOf
 
+# helper class
+from ptah.form.fields import InputField
+
 # fields
 from ptah.form.fields import TextField
 from ptah.form.fields import IntegerField
