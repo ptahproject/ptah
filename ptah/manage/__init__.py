@@ -8,6 +8,7 @@ from ptah.manage.manage import PtahManageRoute
 
 from ptah.manage.manage import check_access
 from ptah.manage.manage import set_access_manager
+from ptah.manage.manage import PtahAccessManager
 
 from ptah.manage.apps import MANAGE_APP_ROUTE
 from ptah.manage.apps import MANAGE_APP_CATEGORY

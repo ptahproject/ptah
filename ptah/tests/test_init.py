@@ -58,29 +58,3 @@ class TestPtahInit(unittest.TestCase):
 
         self.assertIsInstance(err, ptah.config.StopException)
         self.assertIsInstance(err.exc, CustomException)
-
-    def test_init_wsgi_app(self):
-        app = ptah.make_wsgi_app({'sqla.url': 'sqlite://', 'ptah.excludes': ''})
-        self.assertIsInstance(app, Router)
-
-    def test_init_wsgi_app_exception(self):
-        orig_exit = sys.exit
-        orig_ptah_init = ptah.ptah_initialize
-
-        data = [False]
-        def exit(status):
-            data[0] = True
-
-        def ptah_initialize(config, packages=None, autoinclude=False):
-            raise ptah.config.StopException('')
-
-        sys.exit = exit
-        ptah.ptah_initialize = ptah_initialize
-
-        app = ptah.make_wsgi_app({})
-
-        sys.exit = orig_exit
-        ptah.ptah_initialize = orig_ptah_init
-
-        self.assertIsNone(app)
-        self.assertTrue(data[0])

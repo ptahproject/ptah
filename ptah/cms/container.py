@@ -6,7 +6,7 @@ from pyramid.threadlocal import get_current_registry
 
 import ptah
 from ptah.cms.node import Session, load_parents
-from ptah.cms.content import BaseContent
+from ptah.cms.content import Content, BaseContent
 from ptah.cms.security import action
 from ptah.cms.permissions import DeleteContent
 from ptah.cms.interfaces import IContent, IContainer, NotFound, Error
@@ -232,5 +232,5 @@ class BaseContainer(BaseContent):
 
 
 @implementer(IContainer)
-class Container(BaseContainer):
+class Container(BaseContainer, Content):
     """ container for content, it just for inheritance """

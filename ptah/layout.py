@@ -1,4 +1,5 @@
 """ layout implementation """
+import logging
 from collections import namedtuple
 from zope.interface import providedBy, Interface
 
@@ -14,6 +15,8 @@ from pyramid.interfaces import IViewClassifier
 
 from ptah import config
 from ptah.view import View
+
+log = logging.getLogger('ptah')
 
 LAYOUT_ID = 'ptah.view:layout'
 LAYOUT_WRAPPER_ID = 'ptah.view:layout-wrapper'
@@ -155,6 +158,9 @@ class LayoutRenderer(object):
 
     def __call__(self, context, request):
         chain = query_layout_chain(context, request, self.layout)
+        if not chain:
+            log.warning("Can't find layout '%s' for context '%s'",
+                        self.layout, context)
 
         if isinstance(request.wrapped_response, HTTPException):
             return request.wrapped_response

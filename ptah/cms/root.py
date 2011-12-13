@@ -55,7 +55,7 @@ class ApplicationFactory(object):
         self.title = title
 
         self.default_root = default_root
-        if not path and default_root is None:
+        if (self.path == '/') and default_root is None:
             self.default_root = True
 
         self.cls = cls

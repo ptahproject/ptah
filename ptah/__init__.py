@@ -191,53 +191,16 @@ def includeme(cfg):
     cfg.add_directive(
         'ptah_password_changer', password.pyramid_password_changer)
 
+    # ptah rest api directive
+    from ptah import rest
+    cfg.add_directive(
+        'ptah_rest_api', rest.enable_rest_api)
+
     # ptah static assets
-    cfg.add_static_view('jquery', 'ptah:static/jquery')
-    cfg.add_static_view('bootstrap', 'ptah:static/bootstrap')
-    cfg.add_static_view('tiny_mce', 'ptah:static/tiny_mce')
+    cfg.add_static_view('_ptah/static', 'ptah:static/')
 
     # scan ptah
     cfg.scan('ptah')
-
-
-def make_wsgi_app(global_settings, **settings):
-    """ Create wsgi application, this function initialize
-    `ptah` and sends :py:class:`ptah.events.AppInitialized` event.
-    It is possible to use this function as entry point for paster based
-    deployment::
-
-      [app:myapp]
-      use = egg:ptah#app
-
-    """
-    import sys
-    import sqlahelper
-    import transaction
-    from pyramid.config import Configurator
-
-    # configuration
-    cfg = Configurator(settings=settings)
-    cfg.commit()
-
-    # initialization
-    try:
-        ptah_initialize(cfg)
-    except Exception as e:
-        if isinstance(e, config.StopException):
-            print (e.print_tb())
-
-        sys.exit(0)
-        return
-
-    cfg.commit()
-
-    # create sql tables
-    Base = sqlahelper.get_base()
-    Base.metadata.create_all()
-    transaction.commit()
-
-    # create wsgi app
-    return cfg.make_wsgi_app()
 
 
 # initialize ptah

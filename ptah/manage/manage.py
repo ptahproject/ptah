@@ -1,4 +1,6 @@
 from pyramid.view import view_config
+from pyramid.interfaces import IRootFactory
+from pyramid.traversal import DefaultRootFactory
 from pyramid.httpexceptions import HTTPForbidden
 
 import ptah
@@ -66,30 +68,46 @@ def module(name):
     return wrapper
 
 
-def PtahAccessManager(id):
-    """ default access manager """
-    cfg = ptah.get_settings(ptah.CFG_ID_PTAH)
+class PtahAccessManager(object):
+    """ Allow access to ptah manage for users with specific role and id """
 
-    managers = cfg['managers']
-    if '*' in managers or id == ptah.SUPERUSER_URI:
-        return True
+    def __init__(self):
+        self.cfg = ptah.get_settings(ptah.CFG_ID_PTAH)
 
-    principal = ptah.resolve(id)
+    def __call__(self, userid, request):
+        managers = self.cfg['managers']
 
-    if principal is not None and principal.login in managers:
-        return True
+        if userid == ptah.SUPERUSER_URI or '*' in managers:
+            return True
 
+        role = self.cfg['manager_role']
+        if role:
+            root = getattr(request, 'root', None)
+            if root is None:
+                root_factory = request.registry.queryUtility(
+                    IRootFactory, default=DefaultRootFactory)
+                root = root_factory(request)
+
+            if role in ptah.get_local_roles(userid, request, root):
+                return True
+
+        principal = ptah.resolve(userid)
+
+        if principal is not None and principal.login in managers:
+            return True
+
+        return False
+
+
+def check_access(userid, request):
+    manager = ptah.get_settings(ptah.CFG_ID_PTAH).get('access_manager')
+    if manager is not None:
+        return manager(userid, request)
     return False
 
 
-def check_access(userid):
-    cfg = ptah.get_settings(ptah.CFG_ID_PTAH)
-    return cfg.get('access_manager', PtahAccessManager)(userid)
-
-
-def set_access_manager(func):
-    cfg = ptah.get_settings(ptah.CFG_ID_PTAH)
-    cfg['access_manager'] = func
+def set_access_manager(manager):
+    ptah.get_settings(ptah.CFG_ID_PTAH)['access_manager'] = manager
 
 
 class PtahManageRoute(object):
@@ -102,7 +120,7 @@ class PtahManageRoute(object):
         self.request = request
 
         userid = ptah.auth_service.get_userid()
-        if not check_access(userid):
+        if not check_access(userid, request):
             raise HTTPForbidden()
 
         self.userid = userid
@@ -113,7 +131,7 @@ class PtahManageRoute(object):
 
     def __getitem__(self, key):
         if key not in self.cfg['disable_modules']:
-            mod = config.get_cfg_storage(MANAGE_ID).get(key)
+            mod = ptah.get_cfg_storage(MANAGE_ID).get(key)
 
             if mod is not None:
                 return mod(self, self.request)
@@ -129,9 +147,10 @@ ptah.register_layout(
     'ptah-page', PtahManageRoute, parent='ptah-manage',
     renderer="ptah.manage:templates/ptah-layout.pt")
 
+@ptah.layout(
+    'ptah-manage', PtahManageRoute,
+    renderer="ptah.manage:templates/ptah-manage.pt")
 
-@ptah.layout('ptah-manage', PtahManageRoute,
-             renderer="ptah.manage:templates/ptah-manage.pt")
 class LayoutManage(ptah.View):
     """ Base layout for ptah manage """
 
@@ -163,7 +182,7 @@ class ManageView(ptah.View):
         self.cfg = ptah.get_settings(ptah.CFG_ID_PTAH, request.registry)
 
         mods = []
-        for name, mod in config.get_cfg_storage(MANAGE_ID).items():
+        for name, mod in ptah.get_cfg_storage(MANAGE_ID).items():
             if name in self.cfg['disable_modules']:
                 continue
             mod = mod(context, request)

@@ -40,7 +40,7 @@ class TestManageModule(PtahTestCase):
 
         self.init_ptah()
 
-        set_access_manager(PtahAccessManager)
+        set_access_manager(PtahAccessManager())
 
         MODULES = config.get_cfg_storage(MANAGE_ID)
         self.assertIn('test-module', MODULES)
@@ -51,7 +51,7 @@ class TestManageModule(PtahTestCase):
 
         self.assertRaises(HTTPForbidden, PtahManageRoute, self.request)
 
-        def accessManager(id):
+        def accessManager(id, request):
             return True
 
         set_access_manager(accessManager)
@@ -72,11 +72,11 @@ class TestManageModule(PtahTestCase):
         cfg = ptah.get_settings(ptah.CFG_ID_PTAH, self.registry)
         cfg['managers'] = ['*']
 
-        self.assertTrue(PtahAccessManager('test:user'))
+        self.assertTrue(PtahAccessManager()('test:user', self.request))
 
         cfg['managers'] = ['admin@ptahproject.org']
 
-        self.assertFalse(PtahAccessManager('test:user'))
+        self.assertFalse(PtahAccessManager()('test:user', self.request))
 
     def test_manage_access_manager2(self):
         from ptah.manage.manage import PtahAccessManager
@@ -95,7 +95,7 @@ class TestManageModule(PtahTestCase):
 
         cfg = ptah.get_settings(ptah.CFG_ID_PTAH, self.registry)
         cfg['managers'] = ['admin@ptahproject.org']
-        self.assertTrue(PtahAccessManager('test:user'))
+        self.assertTrue(PtahAccessManager()('test:user', self.request))
 
     def test_manage_view(self):
         from ptah.manage.manage import \
@@ -108,7 +108,7 @@ class TestManageModule(PtahTestCase):
 
             title = 'Test module'
 
-        def accessManager(id):
+        def accessManager(id, request):
             return True
 
         self.init_ptah()
@@ -137,7 +137,7 @@ class TestManageModule(PtahTestCase):
             def available(self):
                 return False
 
-        def accessManager(id):
+        def accessManager(id, request):
             return True
 
         self.init_ptah()
@@ -167,7 +167,7 @@ class TestManageModule(PtahTestCase):
 
             title = 'Test module'
 
-        def accessManager(id):
+        def accessManager(id, request):
             return True
 
         self.init_ptah()
@@ -190,7 +190,7 @@ class TestManageModule(PtahTestCase):
 
             title = 'Test module'
 
-        def accessManager(id):
+        def accessManager(id, request):
             return True
 
         self.init_ptah()
@@ -220,7 +220,7 @@ class TestManageModule(PtahTestCase):
 
             title = 'Test module'
 
-        def accessManager(id):
+        def accessManager(id, request):
             return True
 
         self.init_ptah()

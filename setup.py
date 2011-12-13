@@ -7,7 +7,7 @@ install_requires = ['setuptools',
                     'chameleon >= 2.6.1',
                     'sphinx',
                     'pytz',
-                    'pyramid >= 1.3dev',
+                    'pyramid >= 1.3a1',
                     'pyramid_tm',
                     'venusian', # we get it as part of pyramid
                     'zope.interface >= 3.8.0',

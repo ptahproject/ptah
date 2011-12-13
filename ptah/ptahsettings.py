@@ -44,10 +44,16 @@ ptah.register_settings(
 
     ptah.form.LinesField(
         'managers',
-        title = 'Managers',
+        title = 'Manage login',
         description = 'List of user logins with access rights to '\
                             'ptah management ui.',
         default = ()),
+
+    ptah.form.TextField(
+        'manager_role',
+        title = 'Manager role',
+        description = 'Specific role with access rights to ptah management ui.',
+        default = ''),
 
     ptah.form.LinesField(
         'disable_modules',
@@ -288,6 +294,8 @@ def initialized(ev):
         ev.config.add_route(
             'ptah-manage', '/ptah-manage/*traverse',
             factory=ptah.manage.PtahManageRoute, use_global_views=True)
+        ptah.manage.set_access_manager(
+            ptah.manage.PtahAccessManager())
 
 
 @ptah.subscriber(ApplicationCreated)
