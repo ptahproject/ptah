@@ -19,17 +19,6 @@ class Ptah101ProjectTemplate(PtahTemplate):
     _template_dir = 'ptah101'
     summary = 'Ptah101 - demonstrates form, limited mgmt ui'
 
-
 class Ptah102ProjectTemplate(PtahTemplate):
     _template_dir = 'ptah102'
     summary = 'Ptah102 - demonstrates form, models, limited mgmt ui'
-
-
-class Ptah201ProjectTemplate(PtahTemplate):
-    _template_dir = 'ptah201'
-    summary = 'Ptah201 - demonstrates form, models, limited mgmt ui and auth'
-
-
-class Ptah301ProjectTemplate(PtahTemplate):
-    _template_dir = 'ptah301'
-    summary = 'Ptah301 - demonstrates traversal, localroles, full mgmt ui'
