@@ -78,25 +78,29 @@ def query_layout_chain(context, request, layoutname=''):
 
 
 class layout(object):
-    """ layout declaration directive """
+    """ layout registration directive """
 
-    def __init__(self, name='', context=None, parent=None,
-                 renderer=None, route_name=None, use_global_views=False,
-                 layer='', __depth=1):
+    def __init__(self, name='', context=None, parent=None, renderer=None,
+                 route_name=None, use_global_views=False, __depth=1):
         self.info = config.DirectiveInfo(__depth)
-        self.discr = (LAYOUT_ID, name, context, route_name, layer)
+        self.discr = (LAYOUT_ID, name, context, route_name)
 
         self.intr = intr = config.Introspectable(
             LAYOUT_ID, self.discr, name, LAYOUT_ID)
 
         intr['name'] = name
         intr['context'] = context
-        intr['layer'] = layer
         intr['renderer'] = renderer
         intr['route_name'] = route_name
         intr['parent'] = parent
         intr['use_global_views'] = use_global_views
         intr['codeinfo'] = self.info.codeinfo
+
+    @classmethod
+    def register(cls, name='', context=None, parent='', view=View,
+                 renderer=None, route_name=None, use_global_views=False):
+        layout(name, context, parent,
+               renderer, route_name, use_global_views, 2)(view)
 
     def __call__(self, view):
         intr = self.intr
@@ -104,19 +108,12 @@ class layout(object):
 
         self.info.attach(
             config.Action(
-                config.LayerWrapper(register_layout_impl, self.discr),
+                register_layout_impl,
                 (view, intr['name'], intr['context'], intr['renderer'],
                  intr['parent'], intr['route_name'], intr['use_global_views']),
                 discriminator=self.discr, introspectables=(intr,))
             )
         return view
-
-
-def register_layout(name='', context=None, parent='',
-                    view=View, renderer=None, route_name=None,
-                    use_global_views=False, layer=''):
-    layout(name, context, parent,
-           renderer, route_name, use_global_views, layer, 2)(view)
 
 
 def register_layout_impl(cfg, view, name, context,

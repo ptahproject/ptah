@@ -96,4 +96,4 @@ class BlobStorage(object):
 
 blob_storage = BlobStorage()
 
-ptah.register_uri_resolver('blob-sql', blob_storage.get)
+ptah.resolver.register('blob-sql', blob_storage.get)

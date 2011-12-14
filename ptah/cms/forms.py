@@ -119,7 +119,7 @@ class AddForm(form.Form):
         return self.request.resource_url(content)
 
 
-ptah.register_snippet(
+ptah.snippet.register(
     'form-actions', AddForm, renderer='ptah.cms:form-actions.pt')
 
 

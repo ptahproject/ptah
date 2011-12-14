@@ -1,17 +1,16 @@
 # ptah api
 
-# uri
-from ptah.uri import resolve
-from ptah.uri import resolver
-from ptah.uri import register_uri_resolver
-from ptah.uri import extract_uri_schema
-from ptah.uri import UriFactory
-
 # config
 from ptah import config
 from ptah.config import adapter
 from ptah.config import subscriber
 from ptah.config import get_cfg_storage
+
+# uri
+from ptah.uri import resolve
+from ptah.uri import resolver
+from ptah.uri import extract_uri_schema
+from ptah.uri import UriFactory
 
 # events
 from ptah import events
@@ -23,12 +22,10 @@ from ptah.view import add_message
 from ptah.view import render_messages
 
 from ptah.view import snippet
-from ptah.view import register_snippet
 from ptah.view import render_snippet
 
 # layouts
 from ptah.layout import layout
-from ptah.layout import register_layout
 from ptah.layout import wrap_layout
 
 # resource library
@@ -38,8 +35,8 @@ from ptah.library import render_includes
 
 # settings
 from ptah.settings import get_settings
-from ptah.settings import register_settings
 from ptah.settings import init_settings
+from ptah.settings import register_settings
 
 # security
 from ptah.authentication import auth_service
@@ -47,11 +44,9 @@ from ptah.authentication import SUPERUSER_URI
 
 from ptah.authentication import auth_checker
 from ptah.authentication import auth_provider
-from ptah.authentication import register_auth_provider
 
 from ptah.authentication import search_principals
 from ptah.authentication import principal_searcher
-from ptah.authentication import register_principal_searcher
 
 # acl
 from ptah.security import ACL
@@ -95,7 +90,6 @@ from ptah.formatter import format, formatter
 
 # rest api
 from ptah.rest import RestService
-from ptah.rest import enable_rest_api
 
 # events
 from ptah import events

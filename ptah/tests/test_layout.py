@@ -22,7 +22,7 @@ class TestLayout(PtahTestCase):
 
     def test_layout_register_simple(self):
         from ptah.layout import query_layout
-        ptah.register_layout('test')
+        ptah.layout.register('test')
         self.init_ptah()
 
         layout, context = query_layout(object(), self.request, 'test')
@@ -35,7 +35,7 @@ class TestLayout(PtahTestCase):
         class MyLayout(ptah.View):
             pass
 
-        ptah.register_layout('test', view=MyLayout)
+        ptah.layout.register('test', view=MyLayout)
         self.init_ptah()
 
         layout, context = query_layout(object(), self.request, 'test')
@@ -68,9 +68,9 @@ class TestLayout(PtahTestCase):
 
     def test_layout_simple_chain_multi_level(self):
         from ptah.layout import query_layout, LayoutRenderer
-        ptah.register_layout('test', parent='.',
+        ptah.layout.register('test', parent='.',
                              renderer='ptah:tests/test-layout.pt')
-        ptah.register_layout('', context=Root, parent=None,
+        ptah.layout.register('', context=Root, parent=None,
                              renderer='ptah:tests/test-layout-html.pt')
         self.init_ptah()
 
@@ -86,9 +86,9 @@ class TestLayout(PtahTestCase):
 
     def test_layout_chain_same_layer_id_on_different_levels(self):
         from ptah.layout import LayoutRenderer
-        ptah.register_layout('', context=Context, parent='.',
+        ptah.layout.register('', context=Context, parent='.',
                              renderer='ptah:tests/test-layout.pt')
-        ptah.register_layout('', context=Root, parent=None,
+        ptah.layout.register('', context=Root, parent=None,
                              renderer='ptah:tests/test-layout-html.pt')
         self.init_ptah()
 
@@ -104,7 +104,7 @@ class TestLayout(PtahTestCase):
         self.assertEqual('<html><div>View: test</div>\n</html>\n', text_(res))
 
     def test_layout_chain_parent_notfound(self):
-        ptah.register_layout('', context=Context, parent='page',
+        ptah.layout.register('', context=Context, parent='page',
                              renderer='ptah:tests/test-layout.pt')
         self.init_ptah()
 
@@ -123,7 +123,7 @@ class TestLayout(PtahTestCase):
         from ptah.layout import query_layout, LayoutRenderer
 
         self.config.add_route('test-route', '/test/', use_global_views=False)
-        ptah.register_layout('test', route_name='test-route')
+        ptah.layout.register('test', route_name='test-route')
         self.init_ptah()
 
         layout, context = query_layout(Context(), self.request, 'test')
@@ -151,9 +151,9 @@ class TestLayout(PtahTestCase):
         class Context3(object):
             """ """
 
-        ptah.register_layout('l1', view=Layout1, context=Context1)
-        ptah.register_layout('l1', view=Layout2, context=Context2, parent='l1')
-        ptah.register_layout('l3', view=Layout3, context=Context3, parent='l1')
+        ptah.layout.register('l1', view=Layout1, context=Context1)
+        ptah.layout.register('l1', view=Layout2, context=Context2, parent='l1')
+        ptah.layout.register('l3', view=Layout3, context=Context3, parent='l1')
         self.init_ptah()
 
         root = Root()

@@ -75,7 +75,8 @@ def pyramid_auth_checker(config, checker):
         config.ptah_auth_checker(my_checker)
     """
     discr = (AUTH_CHECKER_ID, hash(checker))
-    intr = ptah.config.Introspectable(AUTH_CHECKER_ID, discr, '', AUTH_CHECKER_ID)
+    intr = ptah.config.Introspectable(
+        AUTH_CHECKER_ID, discr, '', AUTH_CHECKER_ID)
     intr['callable'] = checker
 
     config.action(
@@ -85,59 +86,46 @@ def pyramid_auth_checker(config, checker):
         (config, checker), introspectables=(intr,))
 
 
-def auth_provider(name):
+class auth_provider(object):
     """ decorator for authentication provider registration::
 
        @ptah.auth_provider('my-provider')
        class AuthProvider(object):
            ...
     """
-    info = config.DirectiveInfo()
+    def __init__(self, name, __depth=1):
+        self.info = config.DirectiveInfo(__depth)
 
-    def wrapper(cls):
-        discr = (AUTH_PROVIDER_ID, name)
-        intr = config.Introspectable(
-            AUTH_PROVIDER_ID, discr, name, AUTH_PROVIDER_ID)
-        intr['id'] = name
-        intr['name'] = '{0}.{1}'.format(info.codeinfo.module, cls.__name__)
-        intr['provider'] = cls
-        intr['codeinfo'] = info.codeinfo
+        self.discr = (AUTH_PROVIDER_ID, name)
+        self.intr = config.Introspectable(
+            AUTH_PROVIDER_ID, self.discr, name, AUTH_PROVIDER_ID)
+        self.intr['id'] = name
+        self.intr['codeinfo'] = self.info.codeinfo
 
-        info.attach(
+    def __call__(self, cls):
+        self.intr['provider'] = cls
+        self.intr['name'] = '{0}.{1}'.format(
+            self.info.codeinfo.module, cls.__name__)
+
+        self.info.attach(
             config.Action(
                 lambda config, n, p: config.get_cfg_storage(AUTH_PROVIDER_ID)\
                     .update({n: cls()}),
-                (name, cls), discriminator=discr, introspectables=(intr,))
+                (self.intr['name'], cls),
+                discriminator=self.discr, introspectables=(self.intr,))
             )
         return cls
 
-    return wrapper
+    @classmethod
+    def register(cls, name, provider):
+        """ authentication provider registration::
 
+        class AuthProvider(object):
+            ...
 
-def register_auth_provider(name, provider):
-    """ authentication provider registration::
-
-       class AuthProvider(object):
-           ...
-
-       ptah.register_auth_provider('my-provider', AuthProvider())
-    """
-    info = config.DirectiveInfo()
-    discr = (AUTH_PROVIDER_ID, name)
-    intr = config.Introspectable(
-        AUTH_PROVIDER_ID, discr, name, AUTH_PROVIDER_ID)
-    intr['id'] = name
-    intr['name'] = '{0}.{1}'.format(
-        info.codeinfo.module, provider.__class__.__name__)
-    intr['provider'] = provider
-    intr['codeinfo'] = info.codeinfo
-
-    info.attach(
-        config.Action(
-            lambda config, n, p: config.get_cfg_storage(AUTH_PROVIDER_ID)\
-                .update({n: p}),
-            (name, provider), discriminator=discr, introspectables=(intr,))
-        )
+        ptah.register_auth_provider('my-provider', AuthProvider())
+        """
+        cls(name, 2)(provider)
 
 
 def pyramid_auth_provider(config, name, provider):
@@ -157,7 +145,7 @@ def pyramid_auth_provider(config, name, provider):
         AUTH_PROVIDER_ID, discr, name, AUTH_PROVIDER_ID)
     intr['id'] = name
     intr['name'] = '{0}.{1}'.format(
-        info.codeinfo.module, provider.__class__.__name__)
+        info.codeinfo.module, provider.__name__)
     intr['provider'] = provider
     intr['codeinfo'] = info.codeinfo
 
@@ -165,7 +153,7 @@ def pyramid_auth_provider(config, name, provider):
         discr,
         lambda config, n, p: \
             config.get_cfg_storage(AUTH_PROVIDER_ID).update({n: p}),
-        (config, name, provider), introspectables=(intr,))
+        (config, name, provider()), introspectables=(intr,))
 
 
 @implementer(IAuthInfo)
@@ -259,20 +247,42 @@ def search_principals(term):
             yield principal
 
 
-def register_principal_searcher(name, searcher):
-    """ register principal searcher """
-    discr = (AUTH_SEARCHER_ID, name)
-    intr = config.Introspectable(AUTH_SEARCHER_ID, discr, name, AUTH_SEARCHER_ID)
-    intr['name'] = name
-    intr['callable'] = searcher
+class principal_searcher(object):
+    """ decorator for principal searcher registration::
 
-    info = config.DirectiveInfo()
-    info.attach(
-        config.Action(
-            lambda config, name, searcher:
-               config.get_cfg_storage(AUTH_SEARCHER_ID).update({name:searcher}),
-            (name, searcher), discriminator=discr, introspectables=(intr,))
-        )
+    @ptah.principal_searcher('test')
+    def searcher(term):
+        ...
+
+    searcher function recives text as term variable, and
+    should return iterator to principal objects.
+    """
+    def __init__(self, name, __depth=1):
+        self.info = config.DirectiveInfo(__depth)
+
+        self.discr = (AUTH_SEARCHER_ID, name)
+        self.intr = config.Introspectable(
+            AUTH_SEARCHER_ID, self.discr, name, AUTH_SEARCHER_ID)
+        self.intr['name'] = name
+
+    def __call__(self, searcher):
+        self.intr['callable'] = searcher
+
+        self.info.attach(
+            config.Action(
+                lambda config, name, searcher:
+                    config.get_cfg_storage(AUTH_SEARCHER_ID)\
+                        .update({name: searcher}),
+                (self.intr['name'], searcher),
+                discriminator=self.discr, introspectables=(self.intr,))
+            )
+
+        return searcher
+
+    @classmethod
+    def register(cls, name, searcher):
+        """ register principal searcher """
+        cls(name, 2)(searcher)
 
 
 def pyramid_principal_searcher(config, name, searcher):
@@ -288,35 +298,3 @@ def pyramid_principal_searcher(config, name, searcher):
         lambda config, name, searcher:
             config.get_cfg_storage(AUTH_SEARCHER_ID).update({name:searcher}),
         (config, name, searcher), introspectables=(intr,))
-
-
-def principal_searcher(name):
-    """ decorator for principal searcher registration::
-
-        @ptah.principal_searcher('test')
-        def searcher(term):
-           ...
-
-        searcher function recives text as term variable, and
-        should return iterator to principal objects.
-     """
-    info = config.DirectiveInfo()
-
-    def wrapper(searcher):
-        discr = (AUTH_SEARCHER_ID, name)
-        intr = config.Introspectable(
-            AUTH_SEARCHER_ID, discr, name, AUTH_SEARCHER_ID)
-        intr['name'] = name
-        intr['callable'] = searcher
-
-        info.attach(
-            config.Action(
-                lambda config, name, searcher:
-                    config.get_cfg_storage(AUTH_SEARCHER_ID)\
-                        .update({name: searcher}),
-                (name, searcher), discriminator=discr, introspectables=(intr,))
-            )
-
-        return searcher
-
-    return wrapper

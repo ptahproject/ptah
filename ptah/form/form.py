@@ -90,11 +90,13 @@ class FormViewMapper(DefaultViewMapper):
         if not (renderer is None or isinstance(renderer, NullRendererHelper)):
             self.map_class_native = self.map_class_native_update
 
-    def map_class_native_update(self, view):
-        def _class_view(context, request):
-            inst = view(context, request)
+    def map_class_native_update(self, form_view):
+        def _class_view(context, request, _view=form_view):
+            inst = _view(context, request)
+            request.__original_view__ = inst
+            res = inst.render_update()
             request.__view__ = inst
-            return inst.render_update()
+            return res
         return _class_view
 
 
@@ -246,22 +248,22 @@ FORM_ACTIONS = 'form-actions'
 FORM_WIDGET = 'form-widget'
 FORM_DISPLAY_WIDGET = 'form-display-widget'
 
-ptah.register_snippet(
+ptah.snippet.register(
     FORM_VIEW, Form,
     renderer='ptah.form:templates/form.pt')
 
-ptah.register_snippet(
+ptah.snippet.register(
     FORM_VIEW, DisplayForm,
     renderer='ptah.form:templates/form-display.pt')
 
-ptah.register_snippet(
+ptah.snippet.register(
     FORM_ACTIONS, Form,
     renderer='ptah.form:templates/form-actions.pt')
 
-ptah.register_snippet(
+ptah.snippet.register(
     FORM_WIDGET, Field,
     renderer='ptah.form:templates/widget.pt')
 
-ptah.register_snippet(
+ptah.snippet.register(
     FORM_DISPLAY_WIDGET, Field,
     renderer='ptah.form:templates/widget-display.pt')

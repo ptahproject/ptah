@@ -14,7 +14,6 @@ class Principal(object):
 class TestAuthentication(PtahTestCase):
 
     _init_ptah = False
-    #_init_auth = True
 
     def test_auth_provider(self):
         import ptah
@@ -30,7 +29,7 @@ class TestAuthentication(PtahTestCase):
                 if creds['login'] == 'user':
                     return Principal('1', 'user', 'user')
 
-        ptah.register_auth_provider('test-provider', Provider())
+        ptah.auth_provider.register('test-provider', Provider)
         self.init_ptah()
 
         info = ptah.auth_service.authenticate(
@@ -70,7 +69,7 @@ class TestAuthentication(PtahTestCase):
 
         self.assertTrue(getattr(config, 'ptah_auth_provider'))
 
-        config.ptah_auth_provider('test-provider', Provider())
+        config.ptah_auth_provider('test-provider', Provider)
         config.commit()
 
         info = ptah.auth_service.authenticate(
@@ -101,7 +100,7 @@ class TestAuthentication(PtahTestCase):
                 if creds['login'] == 'user':
                     return Principal('1', 'user', 'user')
 
-        ptah.register_auth_provider('test-provider', Provider())
+        ptah.auth_provider.register('test-provider', Provider)
 
         @ptah.auth_checker
         def checker(info):
@@ -146,7 +145,7 @@ class TestAuthentication(PtahTestCase):
             return False
 
         config.ptah_auth_checker(checker)
-        config.ptah_auth_provider('test-provider', Provider())
+        config.ptah_auth_provider('test-provider', Provider)
 
         info = ptah.auth_service.authenticate(
             {'login': 'user', 'password': '12345'})
@@ -205,7 +204,7 @@ class TestAuthentication(PtahTestCase):
             if uri == 'test:1':
                 return principal
 
-        ptah.register_uri_resolver('test', resolver)
+        ptah.resolver.register('test', resolver)
         self.init_ptah()
 
         self.assertEqual(ptah.auth_service.get_current_principal(), None)
@@ -222,7 +221,7 @@ class TestAuthentication(PtahTestCase):
                 if login == 'user':
                     return principal
 
-        ptah.register_auth_provider('test-provider', Provider())
+        ptah.auth_provider.register('test-provider', Provider)
         self.init_ptah()
 
         self.assertEqual(
@@ -244,7 +243,7 @@ class TestPrincipalSearcher(PtahTestCase):
             if term == 'user':
                 yield principal
 
-        ptah.register_principal_searcher('test-provider', search)
+        ptah.principal_searcher.register('test-provider', search)
         self.init_ptah()
 
         self.assertEqual(list(ptah.search_principals('user')), [principal])

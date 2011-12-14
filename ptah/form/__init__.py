@@ -15,7 +15,6 @@ from ptah.form.field import field
 from ptah.form.field import fieldpreview
 from ptah.form.field import get_field_factory
 from ptah.form.field import get_field_preview
-from ptah.form.field import register_field_factory
 
 # vocabulary
 from ptah.form.vocabulary import SimpleTerm

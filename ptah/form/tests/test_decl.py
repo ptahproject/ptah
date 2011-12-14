@@ -20,7 +20,7 @@ class TestFieldset(PtahTestCase):
         class MyField(form.Field):
             """ """
 
-        form.register_field_factory(MyField, 'my-field')
+        form.field.register('my-field', MyField)
 
         self.init_ptah()
         self.assertIs(form.get_field_factory('my-field'), MyField)

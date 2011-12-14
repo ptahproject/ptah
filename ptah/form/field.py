@@ -12,41 +12,34 @@ FIELD_ID = 'ptah.form:field'
 PREVIEW_ID = 'ptah.form:field-preview'
 
 
-def field(name, layer=''):
-    info = config.DirectiveInfo()
-    discr = (FIELD_ID, name, layer)
+class field(object):
+    """ Field registration directive """
 
-    def wrapper(cls):
-        intr = config.Introspectable(FIELD_ID, discr, name, FIELD_ID)
+    def __init__(self, name, __depth=1):
+        self.info = config.DirectiveInfo(__depth)
+        self.discr = (FIELD_ID, name)
+
+        intr = config.Introspectable(FIELD_ID, self.discr, name, FIELD_ID)
         intr['name'] = name
-        intr['layer'] = layer
-        intr['field'] = cls
-        intr['codeinfo'] = info.codeinfo
+        intr['codeinfo'] = self.info.codeinfo
+        self.intr = intr
 
-        info.attach(
+    @classmethod
+    def register(cls, name, factory):
+        cls(name, 2)(factory)
+
+    def __call__(self, cls):
+        cls.__field__ = self.intr['name']
+
+        self.intr['field'] = cls
+        self.info.attach(
             config.Action(
-                config.LayerWrapper(register_field_impl, discr),
-                (cls, name, ), discriminator=discr, introspectables=(intr,))
+                lambda cfg, cls, name:
+                    cfg.get_cfg_storage(FIELD_ID).update({name: cls}),
+                (cls, self.intr['name']),
+                discriminator=self.discr, introspectables=(self.intr,))
             )
         return cls
-
-    return wrapper
-
-
-def register_field_factory(cls, name, layer=''):
-    info = config.DirectiveInfo()
-    discr = (FIELD_ID, name, layer)
-
-    intr = config.Introspectable(FIELD_ID, discr, name, FIELD_ID)
-    intr['name'] = name
-    intr['layer'] = layer
-    intr['field'] = cls
-
-    info.attach(
-        config.Action(
-            config.LayerWrapper(register_field_impl, discr),
-            (cls, name, ), discriminator=discr, introspectables=(intr,))
-        )
 
 
 def fieldpreview(cls):
@@ -67,11 +60,6 @@ def fieldpreview(cls):
         return func
 
     return wrapper
-
-
-def register_field_impl(cfg, cls, name):
-    cls.__field__ = name
-    cfg.get_cfg_storage(FIELD_ID)[name] = cls
 
 
 def get_field_factory(name):

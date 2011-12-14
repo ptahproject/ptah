@@ -18,7 +18,7 @@ class TestSnippet(PtahTestCase):
         def TestSnippet(request):
             return 'test snippet'
 
-        view.register_snippet('test', Context, TestSnippet)
+        view.snippet.register('test', Context, TestSnippet)
         self.init_ptah()
 
         res = self.registry.adapters.lookup(
@@ -31,7 +31,7 @@ class TestSnippet(PtahTestCase):
         def TestSnippet(request):
             return 'test snippet'
 
-        view.register_snippet('test', Context, TestSnippet)
+        view.snippet.register('test', Context, TestSnippet)
         self.init_ptah()
 
         res = view.render_snippet('test', Context(), self.request)
@@ -69,7 +69,7 @@ class TestSnippet(PtahTestCase):
         self.assertEqual(res.strip(), '<div>My snippet</div>')
 
     def test_snippet_register_without_class(self):
-        view.register_snippet(
+        view.snippet.register(
             'test', Context, renderer='ptah:tests/test.pt')
         self.init_ptah()
 

@@ -18,7 +18,7 @@ ID_SUBSCRIBER = 'ptah.config:subscriber'
 
 __all__ = ('initialize', 'get_cfg_storage', 'StopException',
            'event', 'adapter', 'subscriber', 'shutdown', 'shutdown_handler',
-           'Action', 'ClassAction', 'DirectiveInfo', 'LayerWrapper')
+           'Action', 'ClassAction', 'DirectiveInfo')
 
 log = logging.getLogger('ptah')
 
@@ -139,42 +139,6 @@ def _getProvides(factory):
         raise TypeError(
             "The adapter factory doesn't implement a single interface "
             "and no provided interface was specified.")
-
-
-class _ViewLayersManager(object):
-
-    def __init__(self):
-        self.layers = {}
-
-    def register(self, layer, discriminator):
-        data = self.layers.setdefault(discriminator, [])
-        if not layer:
-            data.insert(0, layer)
-        else:
-            data.append(layer)
-
-    def enabled(self, layer, discriminator):
-        data = self.layers.get(discriminator)
-        if data:
-            return data[-1] == layer
-        return False
-
-_layersManager = _ViewLayersManager()
-
-
-class LayerWrapper(object):
-
-    def __init__(self, callable, discriminator):
-        self.callable = callable
-        self.layer = discriminator[-1]
-        self.discriminator = discriminator[:-1]
-        _layersManager.register(self.layer, self.discriminator)
-
-    def __call__(self, cfg, *args, **kw):
-        if not _layersManager.enabled(self.layer, self.discriminator):
-            return # pragma: no cover
-
-        self.callable(cfg, *args, **kw)
 
 
 class Action(object):

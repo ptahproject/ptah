@@ -139,11 +139,11 @@ class PtahManageRoute(object):
         raise KeyError(key)
 
 
-ptah.register_layout(
+ptah.layout.register(
     '', PtahManageRoute, parent='ptah-manage',
     renderer="ptah.manage:templates/ptah-layout.pt")
 
-ptah.register_layout(
+ptah.layout.register(
     'ptah-page', PtahManageRoute, parent='ptah-manage',
     renderer="ptah.manage:templates/ptah-layout.pt")
 

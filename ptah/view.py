@@ -54,7 +54,7 @@ class View(object):
         return render_includes(self.request)
 
     def message(self, msg, type='info'):
-        return ptah.view.add_message(self.request, msg, type)
+        ptah.view.add_message(self.request, msg, type)
 
     def render_messages(self):
         return ptah.view.render_messages(self.request)
@@ -90,50 +90,55 @@ def render_snippet(name, context, request):
         raise
 
 
-def snippet(name, context=None, renderer=None, layer=''):
-    info = config.DirectiveInfo()
+class snippet(object):
 
-    def wrapper(view):
-        discr = (SNIPPET_ID, name, context, layer)
+    def __init__(self, name, context=None, renderer=None, __depth=1):
+        self.info = config.DirectiveInfo(__depth)
+
+        self.discr = discr = (SNIPPET_ID, name, context)
 
         intr = config.Introspectable(SNIPPET_ID, discr, name, SNIPPET_ID)
         intr['name'] = name
         intr['context'] = context
         intr['renderer'] = renderer
-        intr['layer'] = layer
-        intr['module'] = info.module.__name__
-        intr['codeinfo'] = info.codeinfo
+        intr['module'] = self.info.module.__name__
+        intr['codeinfo'] = self.info.codeinfo
+        self.intr = intr
 
-        info.attach(
+    @classmethod
+    def register(cls, name, context=None, view=None, renderer=None):
+        return snippet(name, context, renderer, 2)(view)
+
+    def _register(self, cfg):
+        intr = self.intr
+
+        renderer = intr['renderer']
+        if isinstance(renderer, string_types):
+            renderer = RendererHelper(name=renderer, registry=cfg.registry)
+
+        view = intr['view']
+        if view is None:
+            view = ptah.View
+
+        # register snippet
+        context = intr['context']
+        if context is None:
+            context = Interface
+
+        cfg.registry.registerAdapter(
+            SnippetRenderer(view, context, renderer),
+            [context, Interface], ISnippet, name=intr['name'])
+
+    def __call__(self, view):
+        intr = self.intr
+        intr['view'] = view
+
+        self.info.attach(
             config.Action(
-                config.LayerWrapper(register_snippet_impl, discr),
-                (view, name, context, renderer),
-                discriminator=discr, introspectables=(intr,))
+                self._register,
+                discriminator=self.discr, introspectables=(intr,))
             )
         return view
-
-    return wrapper
-
-
-def register_snippet(name, context=None, view=None, renderer=None, layer=''):
-    info = config.DirectiveInfo()
-    discr = (SNIPPET_ID, name, context, layer)
-
-    intr = config.Introspectable(SNIPPET_ID, discr, name, SNIPPET_ID)
-    intr['name'] = name
-    intr['view'] = view
-    intr['context'] = context
-    intr['renderer'] = renderer
-    intr['layer'] = layer
-    intr['module'] = info.module.__name__
-    intr['codeinfo'] = info.codeinfo
-
-    info.attach(
-        config.Action(
-            config.LayerWrapper(register_snippet_impl, discr),
-            (view, name, context, renderer),
-            discriminator=discr, introspectables=(intr,))
-        )
 
 
 class SnippetRenderer(object):
@@ -162,22 +167,6 @@ class SnippetRenderer(object):
         return self.renderer.render(value, system, request)
 
 
-def register_snippet_impl(cfg, view, stype, context, renderer):
-    if isinstance(renderer, string_types):
-        renderer = RendererHelper(name=renderer, registry=cfg.registry)
-
-    if view is None:
-        view = ptah.View
-
-    # register snippet
-    if context is None:
-        context = Interface
-
-    cfg.registry.registerAdapter(
-        SnippetRenderer(view, context, renderer),
-        [context, Interface], ISnippet, name=stype)
-
-
 def add_message(request, msg, type='info'):
     message = Message(msg, request)
     try:
@@ -201,13 +190,13 @@ class Message(object):
         self.request = request
 
 
-register_snippet(
+snippet.register(
     'info', Message, renderer='ptah.view:templates/msg-info.pt')
 
-register_snippet(
+snippet.register(
     'success', Message, renderer='ptah.view:templates/msg-success.pt')
 
-register_snippet(
+snippet.register(
     'warning', Message, renderer='ptah.view:templates/msg-warning.pt')
 
 

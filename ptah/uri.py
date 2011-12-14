@@ -2,6 +2,7 @@
 import uuid
 import ptah
 from ptah import config
+from ptah.util import tldata
 
 ID_RESOLVER = 'ptah:resolver'
 
@@ -41,61 +42,47 @@ def extract_uri_schema(uri):
     return None
 
 
-def resolver(schema):
+class resolver(object):
     """ Register resolver for given schema
+
+        :param schema: uri schema
+        :param resolver: Callable object that accept one parameter.
+
+        Resolver interface::
+
+        class Resolver(object):
+
+            def __call__(self, uri):
+                return content
     """
-    info = config.DirectiveInfo()
 
-    def wrapper(func):
-        discr = (ID_RESOLVER, schema)
+    def __init__(self, schema, __depth=1):
+        self.info = config.DirectiveInfo(__depth)
+        self.discr = (ID_RESOLVER, schema)
 
-        intr = config.Introspectable(ID_RESOLVER,discr,func.__doc__,ID_RESOLVER)
-        intr['schema'] = schema
-        intr['callable'] = func
-        intr['codeinfo'] = info.codeinfo
+        self.intr = config.Introspectable(
+            ID_RESOLVER, self.discr, schema, ID_RESOLVER)
+        self.intr['schema'] = schema
+        self.intr['codeinfo'] = self.info.codeinfo
 
-        info.attach(
+    def __call__(self, resolver):
+        self.intr.title = resolver.__doc__
+        self.intr['callable'] = resolver
+
+        self.info.attach(
             config.Action(
-                _register_uri_resolver, (schema, func),
-                discriminator=discr, introspectables=(intr,))
+                lambda cfg, schema, resolver:
+                    cfg.get_cfg_storage(ID_RESOLVER)\
+                        .update({schema: resolver}),
+                (self.intr['schema'], resolver),
+                discriminator=self.discr, introspectables=(self.intr,))
             )
 
-        return func
+        return resolver
 
-    return wrapper
-
-
-def register_uri_resolver(schema, resolver, depth=1):
-    """ Register resolver for given schema
-
-    :param schema: uri schema
-    :type schema: string
-    :param resolver: Callable object that accept one parameter.
-
-    Resolver interface::
-
-      class Resolver(object):
-
-         def __call__(self, uri):
-             return content
-    """
-    discr = (ID_RESOLVER, schema)
-    info = config.DirectiveInfo(depth=depth)
-
-    intr = config.Introspectable(ID_RESOLVER,discr,resolver.__doc__,ID_RESOLVER)
-    intr['schema'] = schema
-    intr['callable'] = resolver
-    intr['codeinfo'] = info.codeinfo
-
-    info.attach(
-        config.Action(
-            _register_uri_resolver, (schema, resolver),
-            discriminator=discr, introspectables=(intr,))
-        )
-
-
-def _register_uri_resolver(cfg, schema, resolver):
-    cfg.get_cfg_storage(ID_RESOLVER)[schema] = resolver
+    @classmethod
+    def register(cls, schema, resolver):
+        cls(schema, 2)(resolver)
 
 
 def pyramid_uri_resolver(config, schema, resolver):
@@ -133,3 +120,33 @@ class UriFactory(object):
     def __call__(self):
         """ Generate new uri using supplied schema """
         return '%s:%s' % (self.schema, uuid.uuid4().hex)
+
+
+class Cache(object):
+
+    def __init__(self):
+        self.handlers = {}
+        self.default = DefaultHandlerFactory
+
+    def register_handler(self, schema, handler):
+        self.handlers[schema] = handler
+
+    def install(self):
+        pass
+
+    def uninstall(self):
+        pass
+
+
+class DefaultHandlerFactory(object):
+
+    def __init__(self, schema, resolver):
+        self.schema = schema
+        self.resolver = resolver
+
+    def __call__(self, uri):
+        ob = tldata.get(uri)
+        if ob is None:
+            ob = self.resolver(uri)
+            tldata.set(uri, ob)
+        return ob
