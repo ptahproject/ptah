@@ -18,8 +18,7 @@ install_requires = ['setuptools',
                     'zope.sqlalchemy >= 0.7.0',
                     'transaction >= 1.2.0',
                     ]
-tests_require = ['nose',
-                 'repoze.sendmail']
+tests_require = ['nose']
 
 
 def read(f):

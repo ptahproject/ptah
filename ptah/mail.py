@@ -154,7 +154,7 @@ class MailTemplate(object):
 
         self.context = context
         self.request = request
-        self.cfg = ptah.get_settings(ptah.CFG_ID_MAIL, request.registry)
+        self.cfg = ptah.get_settings(ptah.CFG_ID_PTAH, request.registry)
 
         self._files = []
         self._headers = {}
@@ -190,9 +190,9 @@ class MailTemplate(object):
 
     def update(self):
         if not self.from_name:
-            self.from_name = self.cfg['from_name']
+            self.from_name = self.cfg['email_from_name']
         if not self.from_address:
-            self.from_address = self.cfg['from_address']
+            self.from_address = self.cfg['email_from_address']
 
     def render(self):
         kwargs = {'view': self,

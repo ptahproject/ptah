@@ -1,5 +1,6 @@
 """ ptah settings """
 import pytz
+import logging
 import sqlahelper
 import sqlalchemy
 import translationstring
@@ -12,6 +13,8 @@ import ptah
 from ptah import manage, settings
 
 _ = translationstring.TranslationStringFactory('ptah')
+
+log = logging.getLogger('ptah')
 
 
 ptah.register_settings(
@@ -67,6 +70,16 @@ ptah.register_settings(
         description = 'List of models to hide in model manage ui',
         default = ()),
 
+    ptah.form.TextField(
+        'email_from_name',
+        default = 'Site administrator'),
+
+    ptah.form.TextField(
+        'email_from_address',
+        validator = ptah.form.Email(),
+        required = False,
+        default = 'admin@localhost'),
+
     title = _('Ptah settings'),
 )
 
@@ -88,66 +101,6 @@ ptah.register_settings(
     title = 'SQLAlchemy settings',
     description = 'Configuration settings for a SQLAlchemy database engine.'
     )
-
-
-ptah.register_settings(
-    ptah.CFG_ID_MAIL,
-
-    ptah.form.TextField(
-        'host',
-        title = 'Host',
-        description = 'SMTP Server host name.',
-        default = 'localhost'),
-
-    ptah.form.IntegerField(
-        'port',
-        title = 'Port',
-        description = 'SMTP Server port number.',
-        default = 25),
-
-    ptah.form.TextField(
-        'username',
-        title = 'Username',
-        description = 'SMTP Auth username.',
-        default = ''),
-
-    ptah.form.TextField(
-        'password',
-        title = 'Password',
-        description = 'SMTP Auth password.',
-        default = ''),
-
-    ptah.form.BoolField(
-        'no_tls',
-        title = 'No tls',
-        description = 'Disable TLS.',
-        default = False),
-
-    ptah.form.BoolField(
-        'force_tls',
-        title = 'Force TLS',
-        description = 'Force use TLS.',
-        default = False),
-
-    ptah.form.BoolField(
-        'debug',
-        title = 'Debug',
-        description = 'Debug smtp.',
-        default = False),
-
-    ptah.form.TextField(
-        'from_name',
-        default = 'Site administrator'),
-
-    ptah.form.TextField(
-        'from_address',
-        validator = ptah.form.Email(),
-        required = False,
-        default = 'administrator@localhost.org'),
-
-    title = 'Mail settings',
-    description = 'Configuration settings for application mail.',
-)
 
 
 ptah.register_settings(
@@ -247,30 +200,25 @@ ptah.register_settings(
     )
 
 
-@ptah.subscriber(ptah.events.SettingsInitialized)
+def set_mailer(config, mailer):
+    PTAH = ptah.get_settings(ptah.CFG_ID_PTAH, config.registry)
+    PTAH['Mailer'] = mailer
+
+
+class DummyMailer(object):
+
+    def send(self, from_, to_, message):
+        log.warning("Mailer is not configured.")
+
+
+@ptah.subscriber(ptah.events.SettingsInitializing)
 def initialized(ev):
     PTAH = ptah.get_settings(ptah.CFG_ID_PTAH, ev.registry)
 
     # mail
-    try:
-        from repoze.sendmail import mailer
-        from repoze.sendmail import delivery
-    except ImportError: # pragma: no cover
-        pass
-    else:
-        MAIL = ptah.get_settings(ptah.CFG_ID_MAIL, ev.registry)
-        smtp_mailer = mailer.SMTPMailer(
-            hostname = MAIL['host'],
-            port = MAIL['port'],
-            username = MAIL['username']or None,
-            password = MAIL['password'] or None,
-            no_tls = MAIL['no_tls'],
-            force_tls = MAIL['force_tls'],
-            debug_smtp = MAIL['debug'])
-
-        MAIL['Mailer'] = delivery.DirectMailDelivery(smtp_mailer)
-        MAIL['full_from_address'] = formataddr(
-            (MAIL['from_name'], MAIL['from_address']))
+    PTAH['Mailer'] = DummyMailer()
+    PTAH['full_email_address'] = formataddr(
+        (PTAH['email_from_name'], PTAH['email_from_address']))
 
     # sqla
     SQLA = ptah.get_settings(ptah.CFG_ID_SQLA, ev.registry)

@@ -14,11 +14,3 @@ class PtahTemplate(Template):
 class Ptah001ProjectTemplate(PtahTemplate):
     _template_dir = 'ptah001'
     summary = 'Ptah001 - blank Ptah scaffold'
-
-class Ptah101ProjectTemplate(PtahTemplate):
-    _template_dir = 'ptah101'
-    summary = 'Ptah101 - demonstrates form, limited mgmt ui'
-
-class Ptah102ProjectTemplate(PtahTemplate):
-    _template_dir = 'ptah102'
-    summary = 'Ptah102 - demonstrates form, models, limited mgmt ui'

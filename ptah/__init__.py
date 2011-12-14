@@ -82,7 +82,6 @@ from pyramid.security import NO_PERMISSION_REQUIRED
 
 # ptah settings ids
 CFG_ID_PTAH = 'ptah'
-CFG_ID_MAIL = 'mail'
 CFG_ID_FORMAT = 'format'
 CFG_ID_SQLA = 'sqla'
 CFG_ID_PASSWORD = 'password'
@@ -194,6 +193,11 @@ def includeme(cfg):
     from ptah import rest
     cfg.add_directive(
         'ptah_rest_api', rest.enable_rest_api)
+
+    # ptah mailer directive
+    from ptah import ptahsettings
+    cfg.add_directive(
+        'ptah_mailer', ptahsettings.set_mailer)
 
     # ptah static assets
     cfg.add_static_view('_ptah/static', 'ptah:static/')

@@ -26,7 +26,7 @@
 	    <a href="source.html?pkg=${rec['clsmod']}#sl-${rec['clsline']}">
 	      ${rec['cls']}
 	    <br />
-	    ${rec['clsdoc']}
+	    ${structure: rec['clsdoc']}
 	  </tal:block>
 	</tal:block>
 	<tal:block condition="rec['resolver'] is None">
