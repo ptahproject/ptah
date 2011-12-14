@@ -1,8 +1,7 @@
 hacking
 =======
 
-here are some example workflows you can use to hack on ptah and your own 
-component.  git, curl, python2.7 and newer than 1.6.4 version of virtualenv.
+Some developers use `virtualenv` and others use `buildout`.
 
 virtualenv
 ==========
@@ -19,14 +18,10 @@ Issue these commands::
  ~/workspace/src $ git clone git@github.com:ptahproject/ptah.git
  ~/workspace/src $ cd ptah
  ~/workspace/src/ptah $ ../../bin/python2.7 setup.py develop
- ~/workspace/src/ptah $ cd ..
- ~/workspace/src $ ../bin/paster create -t ptahdemo mypackage
- ~/workspace/src $ cd mypackage
- ~/workspace/src/mypackage $ ../../bin/python setup.py develop
+ ~/workspace/src/ptah $ ../../bin/python2.7 setup.py test
 
-You are done, now start paster::
-
- $ ~/workspace/bin/paster serve ~/workspace/src/mypackage/development.ini --reload
+Then you can clone the examples repository and run those to see an application
+built using Ptah.
 
 buildout
 ========
@@ -47,20 +42,3 @@ edit devel.cfg and change [sources] section::
 if you delete src/ptah and clone ptah and re-run buildout; you will
 be ready to hack
 
-Developing a component in buildout
-----------------------------------
-
-After running buildout::
-
-  ~ $ cd src
-  ~ $ bin/paster create -t ptahdemo $yourcomponent
-
-edit devel.cfg [sources] section and add
-yourcomponent = fs yourcomponent
-
-re-run bin/buildout -c devel.cfg
-
-bin/paster serve ptah.ini --reload
-
-and you will ptah running with your component.
-you can move yourcomponent = git git@github.com:/yourcomponent/yourcomponent.git later
