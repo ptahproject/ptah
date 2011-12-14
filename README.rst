@@ -1,127 +1,64 @@
 Ptah
 ====
 
-Ptah is a fast, fun, open source high-level Python web development environment. Ptah is built on top of the Pyramid web framework.  Ptah's goal is to make developing interactive web sites and applications fun.
+Ptah is a fast, fun, open source high-level Python web development environment. Ptah is built on top of the Pyramid web framework.  Ptah's goal is to make developing interactive web sites and applications fun.  Ptah aims to fill a void in the Pyramid eco-system, a "full stack" environment which is well integrated and provides opinions (forms, management ui, models, etc).
 
 Ptah is loosely affiliated with the Pyramid, Django, Drupal and Zope/Plone communities.
 
 Requirements
 ------------
 
-You will need **git**, **python 2.7** and a new version of **virtualenv**.
+- Python 2.7+ or Python 3.2+, we use collections.OrderedDict
 
-Install
--------
-Before we start lets review what the structure will look like after you complete the instructions::
+- virtualenv
 
-  venv/
-    Include/
-    Lib/
-      site-packages/
-    bin/
-      python
-      pip
-      paster
-    ptah/
-      setup.py
-      ptah/
-      docs/
-    myapp/
-      setup.py
-      development.ini
-      myapp/
+Note for Windows Users
+----------------------
 
-On Windows you will have a venv/Scripts directory not a venv/bin directory.
+On Windows virtualenv/bin will be virtualenv/Scripts besides this difference everything else below is the same.
 
-Lets do the needful::
-
-  $ curl -k -O https://raw.github.com/pypa/virtualenv/master/virtualenv.py
-  $ python2.7 virtualenv.py --no-site-packages venv
-  $ cd venv
-  venv$ git clone git://github.com/ptahproject/ptah.git
-  venv$ cd ptah
-  venv/ptah$ ../bin/python setup.py develop
-
-If you like tests, run the tests::
-
-  venv/ptah$ ../bin/python setup.py test
-
-Ptah 101, the Basics
---------------------
-
-The first scaffolding, ptah101, provides an example of the ptah manage facility, as well, how the form machinery works.
-
-Use paster to create a ptah101 application::
-
-  venv/ptah$ cd ..
-  venv$ bin/paster create -t ptah101 myapp101
-
-Start application via Paster::
-
-  venv$ cd myapp101
-  venv/myapp101$ ../bin/paster serve settings.ini --reload
-
-Ptah 102, Models
+Grab the release
 ----------------
 
-The second scaffold, ptah102, provides an example of using a sqlalchemy model and enables more features of the management ui.
+If you do not want to faff about with source, cloning repos, etc.  Just grab the latest released version of ptah.
 
-Use paster to create a ptah102 application::
+  $ /path/to/virtualenv/bin/pip install ptah
 
-  venv$ bin/paster create -t ptah102 myapp102
+Ptah from source
+----------------
 
-Start application via Paster::
+If you want the latest and greatest you need to grab code from source.  
 
-  venv$ cd myapp102
-  venv/myapp102$ ../bin/paster serve settings.ini --reload
+clone `ptah` from github and then install it::
 
-Ptah 201, Security
-------------------
+  $ /path/to/virtualenv/bin/python setup.py develop
 
-The third scaffold adds security and demonstrates creating your own user system and protecting a resource with security (ptah-manage).
+then run the tests::
 
-Use paster to create a ptah201 application::
+  $ /path/to/virtualenv/bin/python setup.py test
+  
+Examples
+--------
 
-  venv$ bin/paster create -t ptah201 myapp201
+There are several example applications ready for you to install and see Ptah in action.  You can find them in the `examples` repository at github.
 
-Start application via Paster::
-
-  venv$ cd myapp201
-  venv/myapp201$ ../bin/paster serve settings.ini --reload
-
-Ptah 301, a CMS
----------------
-
-This is a fairly sophisticated example which is nearly a mini-CMS. It demonstrates nearly all the features of Ptah but is probably overwhelming for newbies.
-
-Use paster to create a mini-cms application::
-
-  venv$ bin/paster create -t ptah301 myapp301
-  venv$ cd myapp301
-
-Start application via Paster::
-
-  venv/myapp301$ ../bin/paster serve development.ini --reload
-
-Login by opening your web browser to http://localhost:6543/ with credentials, login **admin** and password **12345**
+https://github.com/ptahproject/examples
 
 Support and Documentation
 -------------------------
 
-Use github until website is online.
-
-Documentation can be found in ptah/docs directory.
-
 Ptahproject google groups/mailing list, `Ptahproject Google Groups <http://groups.google.com/group/ptahproject/>`_
 
 On irc, use the freenode network and find us on channels, #ptahproject and #pyramid.
+
+Documentation can be found in `docs` directory.  You can also see it rendered at `ptahproject.readthedocs.org  <http://ptahproject.readthedocs.org/en/latest/index.html>`_
 
 Report bugs at `Ptahproject @ Github <https://github.com/ptahproject/ptah/issues>`_
 
 Known Issues
 ------------
 
-On some versions of Ubuntu you may get Python exiting stating it has "Aborted." There is a bug in ctypes importing endian module.
+On some versions of Ubuntu you may get Python exiting stating it has "Aborted." There is a bug in ctypes on that particular Ubuntu platform.
 
 License
 -------

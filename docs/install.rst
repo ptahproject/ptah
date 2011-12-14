@@ -99,5 +99,3 @@ are more than welcome.  Please do us the following favors:
   * We strongly suggest using the experimental top-level namespace that
     Plone uses. It conotes that your package is released but not something
     you recommend people using.
-
-We are currently looking for UI gurus.
