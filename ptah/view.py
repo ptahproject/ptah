@@ -91,6 +91,22 @@ def render_snippet(name, context, request):
 
 
 class snippet(object):
+    """Register snippet::
+
+    :param name: Snippet name
+    :param context: Snippet context
+    :param renderer: Pyramid renderer
+
+    Example::
+
+    >> import ptah
+    >> @ptah.snippet('test', Context, renderer='...:test.pt')
+    >> def snippet(request):
+    >>     ...
+
+    >> ptah.render_snippet('test', Context(), request)
+
+    """
 
     def __init__(self, name, context=None, renderer=None, __depth=1):
         self.info = config.DirectiveInfo(__depth)
@@ -107,7 +123,24 @@ class snippet(object):
 
     @classmethod
     def register(cls, name, context=None, view=None, renderer=None):
+        """ Register snippet::
+
+        >> def snippet(request):
+        >>     ...
+        >> ptah.snippet.register('test', Context, view=snippet):
+        >>     ...
+        """
         return snippet(name, context, renderer, 2)(view)
+
+    @classmethod
+    def pyramid(cls, cfg, name, context=None, view=None, renderer=None):
+        """ Pyramid `ptah_snippet` directive::
+
+        >> config = Configurator()
+        >> config.include('ptah')
+        >> config.ptah_snippet('test', view=snippet)
+        """
+        return snippet(name, context, renderer, 2)(view, cfg)
 
     def _register(self, cfg):
         intr = self.intr
@@ -129,15 +162,15 @@ class snippet(object):
             SnippetRenderer(view, context, renderer),
             [context, Interface], ISnippet, name=intr['name'])
 
-    def __call__(self, view):
+    def __call__(self, view, cfg=None):
         intr = self.intr
         intr['view'] = view
 
         self.info.attach(
             config.Action(
                 self._register,
-                discriminator=self.discr, introspectables=(intr,))
-            )
+                discriminator=self.discr, introspectables=(intr,)),
+            cfg)
         return view
 
 
@@ -168,9 +201,22 @@ class SnippetRenderer(object):
 
 
 def add_message(request, msg, type='info'):
+    """ Add status message
+
+    Predefined message types
+
+    * info
+
+    * success
+
+    * warning
+
+    * error
+
+    """
     message = Message(msg, request)
     try:
-        msg = request.registry.queryMultiAdapter(
+        msg = request.registry.getMultiAdapter(
             (message, request), ISnippet, type)
     except Exception as e:
         log = logging.getLogger('ptah.view')
@@ -179,6 +225,7 @@ def add_message(request, msg, type='info'):
 
 
 def render_messages(request):
+    """ Render previously added messages """
     return ''.join(request.session.pop_flash('status'))
 
 

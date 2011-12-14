@@ -193,6 +193,9 @@ def includeme(cfg):
     # layout directive
     cfg.add_directive('ptah_layout', layout.pyramid)
 
+    # snippet directive
+    cfg.add_directive('ptah_snippet', snippet.pyramid)
+
     # ptah static assets
     cfg.add_static_view('_ptah/static', 'ptah:static/')
 

@@ -136,6 +136,23 @@ Layout
   .. autofunction:: wrap_layout
 
 
+Snippet
+~~~~~~~
+
+  .. autoclass:: snippet
+     :members: register, pyramid
+
+  .. autofunction:: render_snippet
+
+
+Status messages
+~~~~~~~~~~~~~~~
+
+  .. autofunction:: add_message
+
+  .. autofunction:: render_messages
+
+
 UI Actions
 ~~~~~~~~~~
 

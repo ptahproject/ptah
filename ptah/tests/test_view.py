@@ -2,12 +2,58 @@
 """ snippet tests """
 from pyramid.compat import text_
 from zope.interface import providedBy
+
+import ptah
 from ptah import config, view
 from ptah.testing import PtahTestCase
 
 
 class Context(object):
     pass
+
+
+class TestView(PtahTestCase):
+
+    _init_ptah = False
+
+    def test_snippet_app_root(self):
+        view = ptah.View(Context(), self.request)
+        self.assertEqual(view.application_url, 'http://example.com')
+
+        view = ptah.View(Context(), self.request)
+        self.request.application_url = 'http://example.com/'
+        self.assertEqual(view.application_url, 'http://example.com')
+
+    def test_snippet_View(self):
+        def TestSnippet(request):
+            return 'test snippet'
+
+        ptah.snippet.register('test', Context, TestSnippet)
+        self.init_ptah()
+
+        view = ptah.View(Context(), self.request)
+        self.assertEqual(view.snippet('test'), 'test snippet')
+
+    def test_snippet_View_with_error(self):
+        def TestSnippet(request):
+            raise 'Error'
+
+        ptah.snippet.register('test', Context, TestSnippet)
+        self.init_ptah()
+
+        view = ptah.View(Context(), self.request)
+        self.assertEqual(view.snippet('test'), '')
+
+    def test_messages_View(self):
+        from ptah import view
+        self.init_ptah()
+
+        v = view.View(None, self.request)
+        v.message('message')
+
+        self.assertEqual(
+            v.render_messages(),
+            text_('<div class="alert-message info">\n  <a class="close" href="#">×</a>\n  <p>message</p>\n</div>\n', 'utf-8'))
 
 
 class TestSnippet(PtahTestCase):
@@ -55,11 +101,27 @@ class TestSnippet(PtahTestCase):
 
         self.assertEqual(res, 'test')
 
+    def test_snippet_register_pyramid(self):
+        from pyramid.config import Configurator
+
+        class TestSnippet(view.View):
+            def __call__(self):
+                return 'test'
+
+        config = Configurator(autocommit=True)
+        config.include('ptah')
+        config.ptah_snippet('pt', view=TestSnippet)
+
+        res = config.registry.getMultiAdapter(
+            (Context(), self.request), view.ISnippet, 'pt')
+        self.assertEqual(res, 'test')
+
     def test_snippet_register_with_renderer(self):
 
         @view.snippet('test', renderer='ptah:tests/test.pt')
         class TestSnippet(view.View):
-            pass
+            def __call__(self):
+                return None
 
         self.init_ptah()
 
@@ -141,18 +203,15 @@ class TestStatusMessages(PtahTestCase):
         self.assertEqual(
             view.render_messages(self.request),
             text_('<div class="alert-message info">\n  <a class="close" href="#">×</a>\n  <p>message</p>\n</div>\n','utf-8'))
-        #self.assertEqual(type(msg), unicode)
 
         msg = view.render_messages(self.request)
         self.assertEqual(msg, '')
 
-    def test_messages_View(self):
+    def test_messages_unknown_type(self):
         from ptah import view
         self.init_ptah()
 
-        v = view.View(None, self.request)
-        v.message('message')
-
+        view.add_message(self.request, 'message', 'unknown')
         self.assertEqual(
-            v.render_messages(),
-            text_('<div class="alert-message info">\n  <a class="close" href="#">×</a>\n  <p>message</p>\n</div>\n', 'utf-8'))
+            view.render_messages(self.request),
+            text_('message','utf-8'))
