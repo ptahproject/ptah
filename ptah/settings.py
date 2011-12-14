@@ -96,6 +96,7 @@ def register_settings(name, *fields, **kw):
 
     for field in fields:
         field.required = False
+        field.missing = field.default
         if field.default is form.null:
             raise StopException(
               'Default value is required for "{0}.{1}"'.format(name,field.name))
