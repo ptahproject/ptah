@@ -29,7 +29,7 @@ class ILayout(Interface):
     """ marker interface """
 
 
-def query_layout(context, request, name=''):
+def query_layout(root, context, request, name=''):
     """ query named layout for context """
     assert IRequest.providedBy(request), "must pass in a request object"
 
@@ -38,11 +38,13 @@ def query_layout(context, request, name=''):
     except AttributeError:
         iface = IRequest
 
+    root = providedBy(root)
+
     adapters = request.registry.adapters
 
     for context in lineage(context):
         layout_factory = adapters.lookup(
-            (providedBy(context), iface), ILayout, name=name)
+            (root, iface, providedBy(context)), ILayout, name=name)
 
         if layout_factory is not None:
             return layout_factory, context
@@ -50,10 +52,10 @@ def query_layout(context, request, name=''):
     return None, None
 
 
-def query_layout_chain(context, request, layoutname=''):
+def query_layout_chain(root, context, request, layoutname=''):
     chain = []
 
-    layout, layoutcontext = query_layout(context, request, layoutname)
+    layout, layoutcontext = query_layout(root, context, request, layoutname)
     if layout is None:
         return chain
 
@@ -66,7 +68,8 @@ def query_layout_chain(context, request, layoutname=''):
         else:
             l_context = layoutcontext
 
-        layout, layoutcontext = query_layout(l_context, request, layout.layout)
+        layout, layoutcontext = query_layout(
+            root, l_context, request, layout.layout)
         if layout is not None:
             chain.append((layout, layoutcontext))
             contexts[layout.name] = layoutcontext
@@ -78,10 +81,47 @@ def query_layout_chain(context, request, layoutname=''):
 
 
 class layout(object):
-    """ layout registration directive """
+    """
+    Registers a layout.
 
-    def __init__(self, name='', context=None, parent=None, renderer=None,
-                 route_name=None, use_global_views=False, __depth=1):
+    :param name: Layout name
+    :param context: Specific context for this layout.
+    :param root:  Root object
+    :param parent: A parent layout. None means no parent layout.
+    :param renderer: A pyramid renderer
+    :param route_name: A pyramid route_name. Apply layout only for
+    specific route
+    :param use_global_views: Apply layout to all routes. even is route
+    doesnt use use_global_views.
+
+
+    Simple example with one default layout and 'page' layout::
+
+    >> import ptah
+
+    >> @ptah.layout('page', parent='page', renderer='ptah:template/page.pt')
+    >> class PageLayout(ptah.View):
+    >>    ...
+
+    >> @ptah.layout('', parent='page', renderer='ptah:template/template.pt')
+    >> class DefaultLayout(object):
+    >>    ...
+
+    To use layout with pyramid view use wrapper=ptah.wrap_layout()
+
+    For example::
+
+    >> config.add_view('index.html', wrapper=ptah.wrap_layout(),
+    ..    renderer = '...')
+
+    in this example '' layout is beeing used. You can specify specific layout
+    name like ptah.wrap_layout('page')
+
+    """
+
+    def __init__(self, name='', context=None, root=None, parent=None,
+                 renderer=None, route_name=None, use_global_views=False,
+                 __depth=1):
         self.info = config.DirectiveInfo(__depth)
         self.discr = (LAYOUT_ID, name, context, route_name)
 
@@ -90,6 +130,7 @@ class layout(object):
 
         intr['name'] = name
         intr['context'] = context
+        intr['root'] = root
         intr['renderer'] = renderer
         intr['route_name'] = route_name
         intr['parent'] = parent
@@ -97,9 +138,10 @@ class layout(object):
         intr['codeinfo'] = self.info.codeinfo
 
     @classmethod
-    def register(cls, name='', context=None, parent='', view=View,
-                 renderer=None, route_name=None, use_global_views=False):
-        layout(name, context, parent,
+    def register(cls, name='', context=None, root=None, parent='',
+                 renderer=None, route_name=None, use_global_views=False,
+                 view=View):
+        layout(name, context, root, parent,
                renderer, route_name, use_global_views, 2)(view)
 
     def __call__(self, view):
@@ -108,41 +150,46 @@ class layout(object):
 
         self.info.attach(
             config.Action(
-                register_layout_impl,
-                (view, intr['name'], intr['context'], intr['renderer'],
-                 intr['parent'], intr['route_name'], intr['use_global_views']),
+                self._register,
                 discriminator=self.discr, introspectables=(intr,))
             )
         return view
 
+    def _register(self, cfg):
+        intr = self.intr
 
-def register_layout_impl(cfg, view, name, context,
-                         renderer, layout, route_name, use_global_views):
-    if not layout:
-        layout = None
-    elif layout == '.':
-        layout = ''
+        view, name, context, root, \
+              renderer, layout, route_name, use_global_views = \
+              (intr['view'], intr['name'], intr['context'], intr['root'],
+               intr['renderer'], intr['parent'], intr['route_name'],
+               intr['use_global_views'])
 
-    if isinstance(renderer, string_types):
-        renderer = RendererHelper(name=renderer, registry=cfg.registry)
+        if not layout:
+            layout = None
+        elif layout == '.':
+            layout = ''
 
-    request_iface = IRequest
-    if route_name is not None:
-        request_iface = cfg.registry.getUtility(IRouteRequest, name=route_name)
+        if isinstance(renderer, string_types):
+            renderer = RendererHelper(name=renderer, registry=cfg.registry)
 
-    if use_global_views:
-        request_iface = Interface
+        request_iface = IRequest
+        if route_name is not None:
+            request_iface = cfg.registry.getUtility(
+                IRouteRequest, name=route_name)
 
-    if context is None:
-        context = Interface
+        if use_global_views:
+            request_iface = Interface
 
-    mapper = getattr(view, '__view_mapper__', DefaultViewMapper)
-    mapped_view = mapper()(view)
+        if context is None:
+            context = Interface
 
-    info = LayoutInfo(
-        name, layout, mapped_view, view, renderer, cfg.__ptah_action__)
-    cfg.registry.registerAdapter(
-        info, (context, request_iface), ILayout, name)
+        mapper = getattr(view, '__view_mapper__', DefaultViewMapper)
+        mapped_view = mapper()(view)
+
+        info = LayoutInfo(
+            name, layout, mapped_view, view, renderer, cfg.__ptah_action__)
+        cfg.registry.registerAdapter(
+            info, (root, request_iface, context), ILayout, name)
 
 
 class LayoutRenderer(object):
@@ -151,7 +198,7 @@ class LayoutRenderer(object):
         self.layout = layout
 
     def __call__(self, context, request):
-        chain = query_layout_chain(context, request, self.layout)
+        chain = query_layout_chain(request.root, context, request, self.layout)
         if not chain:
             log.warning("Can't find layout '%s' for context '%s'",
                         self.layout, context)

@@ -125,7 +125,7 @@ class PtahManageRoute(object):
 
         self.userid = userid
         self.cfg = ptah.get_settings(ptah.CFG_ID_PTAH)
-        self.manage = self.cfg['manage']
+        self.__name__ = self.cfg['manage']
 
         ptah.auth_service.set_effective_userid(ptah.SUPERUSER_URI)
 
@@ -140,15 +140,15 @@ class PtahManageRoute(object):
 
 
 ptah.layout.register(
-    '', PtahManageRoute, parent='ptah-manage',
+    '', PtahManageRoute, root=PtahManageRoute, parent='ptah-manage',
     renderer="ptah.manage:templates/ptah-layout.pt")
 
 ptah.layout.register(
-    'ptah-page', PtahManageRoute, parent='ptah-manage',
+    'ptah-page', PtahManageRoute, root=PtahManageRoute, parent='ptah-manage',
     renderer="ptah.manage:templates/ptah-layout.pt")
 
 @ptah.layout(
-    'ptah-manage', PtahManageRoute,
+    'ptah-manage', PtahManageRoute, root=PtahManageRoute,
     renderer="ptah.manage:templates/ptah-manage.pt")
 
 class LayoutManage(ptah.View):

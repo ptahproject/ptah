@@ -25,7 +25,7 @@ class TestLayout(PtahTestCase):
         ptah.layout.register('test')
         self.init_ptah()
 
-        layout, context = query_layout(object(), self.request, 'test')
+        layout, context = query_layout(object(), object(), self.request, 'test')
 
         self.assertEqual(layout.name, 'test')
         self.assertIs(layout.original, ptah.View)
@@ -38,7 +38,7 @@ class TestLayout(PtahTestCase):
         ptah.layout.register('test', view=MyLayout)
         self.init_ptah()
 
-        layout, context = query_layout(object(), self.request, 'test')
+        layout, context = query_layout(object(), object(), self.request, 'test')
         self.assertIs(layout.original, MyLayout)
 
     def test_layout_simple_declarative(self):
@@ -63,7 +63,7 @@ class TestLayout(PtahTestCase):
         from ptah.layout import query_layout
 
         v = ptah.View(Context(Context()), self.request)
-        layout, context = query_layout(v.context, self.request, 'test')
+        layout, context = query_layout(object(), v.context, self.request,'test')
         self.assertTrue(layout is None)
 
     def test_layout_simple_chain_multi_level(self):
@@ -126,15 +126,47 @@ class TestLayout(PtahTestCase):
         ptah.layout.register('test', route_name='test-route')
         self.init_ptah()
 
-        layout, context = query_layout(Context(), self.request, 'test')
+        layout, context = query_layout(None, Context(), self.request, 'test')
         self.assertIsNone(layout)
 
         request_iface = self.registry.getUtility(
             IRouteRequest, name='test-route')
         self.request.request_iface = request_iface
 
-        layout = query_layout(Context(), self.request, 'test')
+        layout = query_layout(None, Context(), self.request, 'test')
         self.assertIsNotNone(layout)
+
+    def test_layout_for_route_global_views(self):
+        from ptah.layout import query_layout
+
+        self.config.add_route('test-route', '/test/', use_global_views=False)
+        ptah.layout.register('test', use_global_views=True)
+        self.init_ptah()
+
+        request_iface = self.registry.getUtility(
+            IRouteRequest, name='test-route')
+        self.request.request_iface = request_iface
+
+        layout, context = query_layout(object(), object(), self.request, 'test')
+        self.assertIsNotNone(layout)
+
+    def test_layout_root(self):
+        from ptah.layout import query_layout
+
+        class Root1(object):
+            pass
+
+        class Root2(object):
+            pass
+
+        ptah.layout.register('test', root=Root1)
+        self.init_ptah()
+
+        layout, context = query_layout(Root1(), object(), self.request, 'test')
+        self.assertIsNotNone(layout)
+
+        layout, context = query_layout(Root2(), object(), self.request, 'test')
+        self.assertIsNone(layout)
 
     def test_layout_chain_multi_level(self):
         class Layout1(ptah.View):
@@ -166,18 +198,18 @@ class TestLayout(PtahTestCase):
         context3.__parent__ = context2
 
         from ptah.layout import query_layout_chain
-        chain = query_layout_chain(context1, self.request, 'l1')
+        chain = query_layout_chain(root, context1, self.request, 'l1')
 
         self.assertEqual(len(chain), 1)
         self.assertIs(chain[0][0].original, Layout1)
 
-        chain = query_layout_chain(context2, self.request, 'l1')
+        chain = query_layout_chain(root, context2, self.request, 'l1')
 
         self.assertEqual(len(chain), 2)
         self.assertIs(chain[0][0].original, Layout2)
         self.assertIs(chain[1][0].original, Layout1)
 
-        chain = query_layout_chain(context3, self.request, 'l3')
+        chain = query_layout_chain(root, context3, self.request, 'l3')
 
         self.assertEqual(len(chain), 3)
         self.assertIs(chain[0][0].original, Layout3)

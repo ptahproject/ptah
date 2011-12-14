@@ -91,9 +91,6 @@ from ptah.formatter import format, formatter
 # rest api
 from ptah.rest import RestService
 
-# events
-from ptah import events
-
 # mail templates
 from ptah import mail
 
