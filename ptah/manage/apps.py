@@ -61,7 +61,7 @@ class AppLayout(manage.LayoutManage):
 @ptah.layout(
     '', cms.Node, parent="ptah-manage",
     route_name=MANAGE_APP_ROUTE,
-    renderer="templates/apps-layout.pt")
+    renderer="ptah.manage:templates/apps-layout.pt")
 
 class AppContentLayout(ptah.View):
     """ Application module content layout """
@@ -75,7 +75,7 @@ class AppContentLayout(ptah.View):
     context=cms.Content,
     wrapper=ptah.wrap_layout(),
     route_name=MANAGE_APP_ROUTE,
-    renderer="templates/apps-contentview.pt")
+    renderer="ptah.manage:templates/apps-contentview.pt")
 
 class ViewForm(form.DisplayForm):
 
@@ -166,6 +166,13 @@ class SharingForm(form.Form):
         self.request.session['apps-sharing-term'] = data['term']
         return HTTPFound(location = self.request.url)
 
+
+ptah.uiaction(
+    ptah.ILocalRolesAware, **{'id': 'view',
+                              'title': 'View',
+                              'action': '',
+                              'category': MANAGE_APP_CATEGORY,
+                              'sort_weight': 1.0})
 
 ptah.uiaction(
     ptah.ILocalRolesAware, **{'id': 'sharing',

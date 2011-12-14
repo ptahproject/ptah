@@ -2,7 +2,7 @@
   <h1>Application: ${request.app_factory.title}</h1>
 </div>
 
-${view.render_messages()}
+${structure: view.render_messages()}
 
 <div class="row">
   <div class="span3 columns">
@@ -14,6 +14,6 @@ ${view.render_messages()}
   </div>
 
   <div class="span13 columns">
-    ${content}
+    ${structure: wrapped_content}
   </div>
 </div>
