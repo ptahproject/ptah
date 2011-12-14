@@ -192,7 +192,7 @@ class Group(OrderedDict):
         self.__description__ = fields.description
         self.__fields__ = fields
         self.__ttw__ = kwargs.get('ttw', False)
-        self.__ttw_skip_fields__ = kwargs.get('ttw_skip_fields', False)
+        self.__ttw_skip_fields__ = kwargs.get('ttw_skip_fields', ())
 
     def clone(self, registry):
         clone = self.__class__.__new__(self.__class__)
