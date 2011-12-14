@@ -172,7 +172,9 @@ def load_parents(node):
 KEY = '__ptahcms_policy__'
 
 def get_policy():
+    """ Get current policy """
     return ptah.tldata.get(KEY)
 
 def set_policy(policy):
+    """ Set current policy """
     return ptah.tldata.set(KEY, policy)

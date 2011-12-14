@@ -37,7 +37,7 @@ AUTH_PROVIDER_ID = 'ptah:authprovider'
 AUTH_SEARCHER_ID = 'ptah:authsearcher'
 
 
-def auth_checker(checker):
+def auth_checker(checker, __cfg=None, __depth=1):
     """
     Register authentication checker::
 
@@ -46,7 +46,7 @@ def auth_checker(checker):
       >>     ...
 
     """
-    info = config.DirectiveInfo()
+    info = config.DirectiveInfo(__depth)
     discr = (AUTH_CHECKER_ID, hash(checker))
     intr = config.Introspectable(
         AUTH_CHECKER_ID, discr, checker.__name__, AUTH_CHECKER_ID)
@@ -54,17 +54,16 @@ def auth_checker(checker):
     intr['callable'] = checker
     intr['codeinfo'] = info.codeinfo
 
-    info = config.DirectiveInfo()
     info.attach(
         config.Action(
             lambda config, checker: config.get_cfg_storage(AUTH_CHECKER_ID)\
                 .update({id(checker): checker}),
-            (checker,), discriminator=discr, introspectables=(intr,))
-        )
+            (checker,), discriminator=discr, introspectables=(intr,)),
+        __cfg)
     return checker
 
 
-def pyramid_auth_checker(config, checker):
+def pyramid_auth_checker(cfg, checker):
     """ pyramid configurator directive for authentication
     checker registration::
 
@@ -76,16 +75,7 @@ def pyramid_auth_checker(config, checker):
       >>
       >>  config.ptah_auth_checker(my_checker)
     """
-    discr = (AUTH_CHECKER_ID, hash(checker))
-    intr = ptah.config.Introspectable(
-        AUTH_CHECKER_ID, discr, '', AUTH_CHECKER_ID)
-    intr['callable'] = checker
-
-    config.action(
-        discr,
-        lambda config, checker: config.get_cfg_storage(AUTH_CHECKER_ID)\
-            .update({id(checker): checker}),
-        (config, checker), introspectables=(intr,))
+    auth_checker(checker, cfg, 2)
 
 
 class auth_provider(object):
@@ -105,7 +95,7 @@ class auth_provider(object):
         self.intr['id'] = name
         self.intr['codeinfo'] = self.info.codeinfo
 
-    def __call__(self, cls):
+    def __call__(self, cls, __cfg=None):
         self.intr['provider'] = cls
         self.intr['name'] = '{0}.{1}'.format(
             self.info.codeinfo.module, cls.__name__)
@@ -115,8 +105,8 @@ class auth_provider(object):
                 lambda config, n, p: config.get_cfg_storage(AUTH_PROVIDER_ID)\
                     .update({n: cls()}),
                 (self.intr['name'], cls),
-                discriminator=self.discr, introspectables=(self.intr,))
-            )
+                discriminator=self.discr, introspectables=(self.intr,)),
+            __cfg)
         return cls
 
     @classmethod
@@ -131,33 +121,19 @@ class auth_provider(object):
         """
         cls(name, 2)(provider)
 
+    @classmethod
+    def pyramid(cls, cfg, name, provider):
+        """ pyramid configurator directive for
+        authentication provider registration::
 
-def pyramid_auth_provider(config, name, provider):
-    """ pyramid configurator directive for
-    authentication provider registration::
-
-      >> class AuthProvider(object):
-      >>   ...
-      >>
-      >> config = Configurator()
-      >> config.include('ptah')
-      >> config.ptah_auth_provider('my-provider', AuthProvider)
-    """
-    info = ptah.config.DirectiveInfo()
-    discr = (AUTH_PROVIDER_ID, name)
-    intr = ptah.config.Introspectable(
-        AUTH_PROVIDER_ID, discr, name, AUTH_PROVIDER_ID)
-    intr['id'] = name
-    intr['name'] = '{0}.{1}'.format(
-        info.codeinfo.module, provider.__name__)
-    intr['provider'] = provider
-    intr['codeinfo'] = info.codeinfo
-
-    config.action(
-        discr,
-        lambda config, n, p: \
-            config.get_cfg_storage(AUTH_PROVIDER_ID).update({n: p}),
-        (config, name, provider()), introspectables=(intr,))
+        >> class AuthProvider(object):
+        >>   ...
+        >>
+        >> config = Configurator()
+        >> config.include('ptah')
+        >> config.ptah_auth_provider('my-provider', AuthProvider)
+        """
+        cls(name, 3)(provider, cfg)
 
 
 @implementer(IAuthInfo)
@@ -269,7 +245,7 @@ class principal_searcher(object):
             AUTH_SEARCHER_ID, self.discr, name, AUTH_SEARCHER_ID)
         self.intr['name'] = name
 
-    def __call__(self, searcher):
+    def __call__(self, searcher, cfg=None):
         self.intr['callable'] = searcher
 
         self.info.attach(
@@ -278,8 +254,8 @@ class principal_searcher(object):
                     config.get_cfg_storage(AUTH_SEARCHER_ID)\
                         .update({name: searcher}),
                 (self.intr['name'], searcher),
-                discriminator=self.discr, introspectables=(self.intr,))
-            )
+                discriminator=self.discr, introspectables=(self.intr,)),
+            cfg)
 
         return searcher
 
@@ -295,17 +271,8 @@ class principal_searcher(object):
         """
         cls(name, 2)(searcher)
 
-
-def pyramid_principal_searcher(config, name, searcher):
-    """ pyramid configurator directive for principal searcher registration """
-    discr = (AUTH_SEARCHER_ID, name)
-    intr = ptah.config.Introspectable(
-        AUTH_SEARCHER_ID, discr, name, AUTH_SEARCHER_ID)
-    intr['name'] = name
-    intr['callable'] = searcher
-
-    config.action(
-        (AUTH_SEARCHER_ID, name),
-        lambda config, name, searcher:
-            config.get_cfg_storage(AUTH_SEARCHER_ID).update({name:searcher}),
-        (config, name, searcher), introspectables=(intr,))
+    @classmethod
+    def pyramid(cls, cfg, name, searcher):
+        """ pyramid configurator directive for
+        principal searcher registration """
+        cls(name, 2)(searcher, cfg)

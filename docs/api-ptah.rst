@@ -3,13 +3,16 @@ Ptah Public API
 
 .. automodule:: ptah
 
+.. autofunction:: ptah_initialize
+
+
 URI
 ~~~
 
   .. autofunction:: resolve
 
   .. autoclass:: resolver
-     :members: register
+     :members: register, pyramid
 
   .. autofunction:: extract_uri_schema
 
@@ -91,9 +94,7 @@ Security
   .. autofunction:: auth_checker
 
   .. autoclass:: auth_provider
-     :members: register
-
-  .. autofunction:: ptah.authentication.pyramid_auth_provider
+     :members: register, pyramid
 
   .. autofunction:: search_principals
 
@@ -106,7 +107,18 @@ Password utils
 
   .. py:data:: pwd_tool
 
-  .. autofunction:: password_changer
+  .. autoclass:: password_changer
+     :members: pyramid
+
+
+Settings
+~~~~~~~~
+
+  .. autofunction:: get_settings
+
+  .. autofunction:: init_settings
+
+  .. autofunction:: register_settings
 
 
 Utilities
@@ -164,10 +176,42 @@ UI Actions
 Events
 ~~~~~~
 
-  .. automodule:: ptah.events
+Settings events
+
+  .. autofunction:: ptah.events.SettingsInitializing
+
+  .. autofunction:: ptah.events.SettingsInitialized
+
+  .. autofunction:: ptah.events.SettingsGroupModified
 
 
-misc
-~~~~
+Content events
 
-  .. autofunction:: ptah_initialize
+  .. autofunction:: ptah.events.ContentCreatedEvent
+
+  .. autofunction:: ptah.events.ContentAddedEvent
+
+  .. autofunction:: ptah.events.ContentMovedEvent
+
+  .. autofunction:: ptah.events.ContentModifiedEvent
+
+  .. autofunction:: ptah.events.ContentDeletingEvent
+
+
+Principal events
+
+  .. autofunction:: ptah.events.LoggedInEvent
+
+  .. autofunction:: ptah.events.LoginFailedEvent
+
+  .. autofunction:: ptah.events.LoggedOutEvent
+
+  .. autofunction:: ptah.events.ResetPasswordInitiatedEvent
+
+  .. autofunction:: ptah.events.PrincipalPasswordChangedEvent
+
+  .. autofunction:: ptah.events.PrincipalValidatedEvent
+
+  .. autofunction:: ptah.events.PrincipalAddedEvent
+
+  .. autofunction:: ptah.events.PrincipalRegisteredEvent

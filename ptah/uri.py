@@ -76,7 +76,7 @@ class resolver(object):
         self.intr['schema'] = schema
         self.intr['codeinfo'] = self.info.codeinfo
 
-    def __call__(self, resolver):
+    def __call__(self, resolver, cfg=None):
         self.intr.title = resolver.__doc__
         self.intr['callable'] = resolver
 
@@ -86,8 +86,8 @@ class resolver(object):
                     cfg.get_cfg_storage(ID_RESOLVER)\
                         .update({schema: resolver}),
                 (self.intr['schema'], resolver),
-                discriminator=self.discr, introspectables=(self.intr,))
-            )
+                discriminator=self.discr, introspectables=(self.intr,)),
+            cfg)
 
         return resolver
 
@@ -114,22 +114,18 @@ class resolver(object):
         """
         cls(schema, 2)(resolver)
 
+    @classmethod
+    def pyramid(cls, cfg, schema, resolver):
+        """ pyramid configurator directive 'ptah_uri_resolver'::
 
-def pyramid_uri_resolver(config, schema, resolver):
-    """ pyramid configurator directive 'ptah_uri_resolver' """
-    info = ptah.config.DirectiveInfo()
-    discr = (ID_RESOLVER, schema)
-    intr = ptah.config.Introspectable(
-        ID_RESOLVER,discr,resolver.__doc__,ID_RESOLVER)
-    intr['schema'] = schema
-    intr['callable'] = resolver
-    intr['codeinfo'] = info.codeinfo
-
-    config.action(
-        discr,
-        lambda config, schema, resolver:
-            config.get_cfg_storage(ID_RESOLVER).update({schema:resolver}),
-        (config, schema, resolver), introspectables=(intr,))
+        >> config = Configurator()
+        >> config.include('ptah')
+        >>
+        >> def my_resolver(uri):
+        >>     ....
+        >> config.ptah_uri_resolver('custom-schema', my_resolver)
+        """
+        cls(schema, 2)(resolver, cfg)
 
 
 class UriFactory(object):
@@ -143,7 +139,6 @@ class UriFactory(object):
        'cms-content:f73f3266fa15438e94cca3621a3f2dbc'
 
     """
-
     def __init__(self, schema):
         self.schema = schema
 

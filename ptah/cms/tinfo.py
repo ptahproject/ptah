@@ -31,7 +31,8 @@ def typeInfoResolver(uri):
 
 
 def get_type(uri):
-    """
+    """ Get registered type.
+
     :param uri: string identifier for TypeInformation, e.g. `cms-type:sqlblob`
 
     :Returns:
@@ -42,7 +43,8 @@ def get_type(uri):
 
 
 def get_types():
-    """
+    """ Get all registered types.
+
     :Returns:
       - mapping of all registered identifier and TypeInformation
     """

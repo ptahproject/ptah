@@ -11,6 +11,7 @@ from ptah.cms.interfaces import IApplicationRoot, IApplicationPolicy
 APPFACTORY_ID = 'ptah.cms:appfactory'
 
 def get_app_factories():
+    """ Get all registered application factories """
     return ptah.config.get_cfg_storage(APPFACTORY_ID)
 
 
@@ -43,6 +44,7 @@ class ApplicationPolicy(object):
 
 
 class ApplicationFactory(object):
+    """ Application factory """
 
     type = None
 

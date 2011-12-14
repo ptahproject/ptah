@@ -166,29 +166,24 @@ def includeme(cfg):
     cfg.add_directive(
         'ptah_auth_checker', authentication.pyramid_auth_checker)
     cfg.add_directive(
-        'ptah_auth_provider', authentication.pyramid_auth_provider)
+        'ptah_auth_provider', authentication.auth_provider.pyramid)
     cfg.add_directive(
-        'ptah_principal_searcher', authentication.pyramid_principal_searcher)
+        'ptah_principal_searcher', authentication.principal_searcher.pyramid)
 
     # ptah.uri directives
-    from ptah import uri
-    cfg.add_directive(
-        'ptah_uri_resolver', uri.pyramid_uri_resolver)
+    cfg.add_directive('ptah_uri_resolver', resolver.pyramid)
 
     # ptah.password directives
     from ptah import password
-    cfg.add_directive(
-        'ptah_password_changer', password.pyramid_password_changer)
+    cfg.add_directive('ptah_password_changer', password_changer.pyramid)
 
     # ptah rest api directive
     from ptah import rest
-    cfg.add_directive(
-        'ptah_rest_api', rest.enable_rest_api)
+    cfg.add_directive('ptah_rest_api', rest.enable_rest_api)
 
     # ptah mailer directive
     from ptah import ptahsettings
-    cfg.add_directive(
-        'ptah_mailer', ptahsettings.set_mailer)
+    cfg.add_directive('ptah_mailer', ptahsettings.set_mailer)
 
     # layout directive
     cfg.add_directive('ptah_layout', layout.pyramid)

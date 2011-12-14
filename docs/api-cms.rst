@@ -90,15 +90,15 @@ Permissions
 Events
 ~~~~~~
 
-  .. autoclass:: ContentEvent
+  .. autoclass:: ptah.events.ContentEvent
 
-  .. autoclass:: ContentCreatedEvent
+  .. autoclass:: ptah.events.ContentCreatedEvent
 
-  .. autoclass:: ContentAddedEvent
+  .. autoclass:: ptah.events.ContentAddedEvent
 
-  .. autoclass:: ContentMovedEvent
+  .. autoclass:: ptah.events.ContentMovedEvent
 
-  .. autoclass:: ContentModifiedEvent
+  .. autoclass:: ptah.events.ContentModifiedEvent
 
-  .. autoclass:: ContentDeletingEvent
+  .. autoclass:: ptah.events.ContentDeletingEvent
 

@@ -141,52 +141,49 @@ class PasswordTool(object):
 pwd_tool = PasswordTool()
 
 
-def password_changer(schema):
+class password_changer(object):
     """ decorator for password changer registration::
 
     >> @ptah.password_change('myuser')
     >> def change_password(user):
     >>   ...
     """
-    info = config.DirectiveInfo()
+    def __init__(self, schema, __depth=1):
+        self.info = config.DirectiveInfo(__depth)
+        self.discr = (ID_PASSWORD_CHANGER, schema)
 
-    def wrapper(changer):
-        discr = (ID_PASSWORD_CHANGER, schema)
+        self.intr = config.Introspectable(
+            ID_PASSWORD_CHANGER, self.discr, schema, ID_PASSWORD_CHANGER)
+        self.intr['schema'] = schema
 
-        intr = config.Introspectable(
-            ID_PASSWORD_CHANGER, discr, changer.__doc__, ID_PASSWORD_CHANGER)
-        intr.update(schema = schema, callable = changer)
+    def __call__(self, changer, cfg=None):
+        self.intr.title = changer.__doc__
+        self.intr['callable'] = changer
 
-        info.attach(
+        self.info.attach(
             config.Action(
                 lambda config, schema, changer: \
                     config.get_cfg_storage(ID_PASSWORD_CHANGER).update(
                             {schema: changer}),
-                (schema, changer),
-                discriminator=discr, introspectables = (intr,))
-            )
+                (self.intr['schema'], changer),
+                discriminator=self.discr, introspectables=(self.intr,)),
+            cfg)
         return changer
 
-    return wrapper
+    @classmethod
+    def pyramid(cls, cfg, schema, changer):
+        """ pyramid password changer registration directive::
 
-
-def pyramid_password_changer(config, schema, changer):
-    """ pyramid configurator utility for password changer registration """
-    discr = (ID_PASSWORD_CHANGER, schema)
-
-    intr = ptah.config.Introspectable(
-        ID_PASSWORD_CHANGER, discr, changer.__doc__, ID_PASSWORD_CHANGER)
-    intr.update(schema = schema, callable = changer)
-
-    config.action(
-        discr,
-        lambda config, schema, changer: \
-            config.get_cfg_storage(ID_PASSWORD_CHANGER).update({schema:changer}),
-        (config, schema, changer), introspectables = (intr,))
+        >> config = Configurator()
+        >> config.include('ptah')
+        >> config.ptah_password_changer('custom-schema', custom_changer)
+        """
+        cls(schema,2)(changer, cfg)
 
 
 def passwordValidator(field, appstruct):
-    """ password schema validator that uses password tool for additional checks"""
+    """ password schema validator
+    that uses password tool for additional checks"""
     err = pwd_tool.validate(appstruct)
     if err is not None:
         raise form.Invalid(field, err)
