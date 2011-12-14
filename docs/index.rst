@@ -5,7 +5,6 @@ Ptah Framework
    :maxdepth: 2
 
    overview.rst
-   install.rst
    unique.rst
    startup.rst
    tutorial.rst
