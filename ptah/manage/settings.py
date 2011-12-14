@@ -1,6 +1,7 @@
 """ settings module """
 import ptah
 from ptah.settings import ID_SETTINGS_GROUP
+from pyramid.decorator import reify
 from pyramid.view import view_config
 from pyramid.httpexceptions import HTTPFound
 
@@ -65,9 +66,18 @@ class SettingsView(ptah.View):
 class EditForm(ptah.form.Form):
     """ Settings group edit form """
 
-    @property
+    @reify
+    def label(self):
+        return self.context.group.__title__
+
+    @reify
+    def description(self):
+        return self.context.group.__description__
+
+    @reify
     def fields(self):
-        return self.context.group.__fields__
+        grp = self.context.group
+        return grp.__fields__.omit(*grp.__ttw_skip_fields__)
 
     def form_content(self):
         return self.context.group
