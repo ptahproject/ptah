@@ -15,7 +15,6 @@ Ptah Framework
    rest.rst
    authentication.rst
    faq.rst
-   scripts.rst
    api.rst
 
 Indices and tables
