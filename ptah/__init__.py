@@ -190,6 +190,9 @@ def includeme(cfg):
     cfg.add_directive(
         'ptah_mailer', ptahsettings.set_mailer)
 
+    # layout directive
+    cfg.add_directive('ptah_layout', layout.pyramid)
+
     # ptah static assets
     cfg.add_static_view('_ptah/static', 'ptah:static/')
 

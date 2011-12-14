@@ -7,4 +7,3 @@ Ptah API
    api-ptah.rst
    api-cms.rst
    api-form.rst
-   api-config.rst

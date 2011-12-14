@@ -38,11 +38,12 @@ AUTH_SEARCHER_ID = 'ptah:authsearcher'
 
 
 def auth_checker(checker):
-    """ register authentication checker::
+    """
+    Register authentication checker::
 
-        @ptah.auth_checker
-        def my_checker(info):
-            ...
+      >> @ptah.auth_checker
+      >> def my_checker(info):
+      >>     ...
 
     """
     info = config.DirectiveInfo()
@@ -64,15 +65,16 @@ def auth_checker(checker):
 
 
 def pyramid_auth_checker(config, checker):
-    """ pyramid configurator directive for authentication checker registration::
+    """ pyramid configurator directive for authentication
+    checker registration::
 
-        config = Configurator()
-        config.include('ptah')
-
-        def my_checker(info):
-           ...
-
-        config.ptah_auth_checker(my_checker)
+      >> config = Configurator()
+      >> config.include('ptah')
+      >>
+      >> def my_checker(info):
+      >>     ...
+      >>
+      >>  config.ptah_auth_checker(my_checker)
     """
     discr = (AUTH_CHECKER_ID, hash(checker))
     intr = ptah.config.Introspectable(
@@ -89,9 +91,10 @@ def pyramid_auth_checker(config, checker):
 class auth_provider(object):
     """ decorator for authentication provider registration::
 
-       @ptah.auth_provider('my-provider')
-       class AuthProvider(object):
-           ...
+      >> @ptah.auth_provider('my-provider')
+      >> class AuthProvider(object):
+      >>      ...
+
     """
     def __init__(self, name, __depth=1):
         self.info = config.DirectiveInfo(__depth)
@@ -120,10 +123,11 @@ class auth_provider(object):
     def register(cls, name, provider):
         """ authentication provider registration::
 
-        class AuthProvider(object):
-            ...
+          >> class AuthProvider(object):
+          >>    ...
+          >>
+          >> ptah.auth_provider.register('my-provider', AuthProvider())
 
-        ptah.register_auth_provider('my-provider', AuthProvider())
         """
         cls(name, 2)(provider)
 
@@ -132,12 +136,12 @@ def pyramid_auth_provider(config, name, provider):
     """ pyramid configurator directive for
     authentication provider registration::
 
-       class AuthProvider(object):
-           ...
-
-       config = Configurator()
-       config.include('ptah')
-       config.ptah_auth_provider('my-provider', AuthProvider())
+      >> class AuthProvider(object):
+      >>   ...
+      >>
+      >> config = Configurator()
+      >> config.include('ptah')
+      >> config.ptah_auth_provider('my-provider', AuthProvider)
     """
     info = ptah.config.DirectiveInfo()
     discr = (AUTH_PROVIDER_ID, name)
@@ -250,9 +254,9 @@ def search_principals(term):
 class principal_searcher(object):
     """ decorator for principal searcher registration::
 
-    @ptah.principal_searcher('test')
-    def searcher(term):
-        ...
+      >> @ptah.principal_searcher('test')
+      >> def searcher(term):
+      >>     ...
 
     searcher function recives text as term variable, and
     should return iterator to principal objects.
@@ -281,7 +285,14 @@ class principal_searcher(object):
 
     @classmethod
     def register(cls, name, searcher):
-        """ register principal searcher """
+        """ register principal searcher::
+
+        >> def searcher(term):
+        >>     ...
+        >>
+        >> ptah.principal_searcher.register('test', searcher)
+
+        """
         cls(name, 2)(searcher)
 
 

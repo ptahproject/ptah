@@ -8,9 +8,8 @@ URI
 
   .. autofunction:: resolve
 
-  .. autofunction:: resolver
-
-  .. autofunction:: register_uri_resolver(schema, resolver, title='', description='')
+  .. autoclass:: resolver
+     :members: register
 
   .. autofunction:: extract_uri_schema
 
@@ -81,20 +80,25 @@ Security
   .. py:data:: auth_service
 
   .. py:data:: SUPERUSER_URI
+    
+    System user uri. Permission check always passes for user user. 
+    It is possible to use it as effective user::
+
+      >> ptah.auth_service.set_effective_user(ptah.SUPERUSER_URI)
+      
+    This allow to pass security checks for any user.
 
   .. autofunction:: auth_checker
 
-  .. autofunction:: auth_checker
+  .. autoclass:: auth_provider
+     :members: register
 
-  .. autofunction:: register_auth_provider
+  .. autofunction:: ptah.authentication.pyramid_auth_provider
 
   .. autofunction:: search_principals
 
-  .. autofunction:: principal_searcher
-
-  .. autofunction:: principal_searcher
-
-  .. autofunction:: register_principal_searcher
+  .. autoclass:: principal_searcher
+     :members: register
 
 
 Password utils
@@ -103,8 +107,6 @@ Password utils
   .. py:data:: pwd_tool
 
   .. autofunction:: password_changer
-
-  .. py:data:: PWD_CONFIG
 
 
 Utilities
@@ -125,6 +127,15 @@ Utilities
   .. autofunction:: rst_to_html
 
 
+Layout
+~~~~~~
+
+  .. autoclass:: layout
+     :members: register, pyramid
+
+  .. autofunction:: wrap_layout
+
+
 UI Actions
 ~~~~~~~~~~
 
@@ -133,9 +144,13 @@ UI Actions
   .. autofunction:: list_uiactions
 
 
+Events
+~~~~~~
+
+  .. automodule:: ptah.events
+
+
 misc
 ~~~~
-
-  .. autofunction:: make_wsgi_app
 
   .. autofunction:: ptah_initialize

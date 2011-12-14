@@ -19,8 +19,6 @@ Form
 
   .. autoclass:: FormWidgets
 
-  .. autofunction:: set_csrf_utility
-
 
 Field
 ~~~~~
@@ -33,15 +31,13 @@ Field
 
   .. autoclass:: FieldsetErrors
 
-  .. autofunction:: field
+  .. autoclass:: field
 
   .. autofunction:: fieldpreview
 
   .. autofunction:: get_field_factory
 
   .. autofunction:: get_field_preview
-
-  .. autofunction:: register_field_factory
 
 
 Vocabulary

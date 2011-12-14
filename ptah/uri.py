@@ -43,17 +43,28 @@ def extract_uri_schema(uri):
 
 
 class resolver(object):
-    """ Register resolver for given schema
+    """ Register resolver for given schema. `resolver` is decorator style
+    registration.
 
         :param schema: uri schema
-        :param resolver: Callable object that accept one parameter.
 
         Resolver interface::
 
-        class Resolver(object):
+          class Resolver(object):
 
-            def __call__(self, uri):
-                return content
+              def __call__(self, uri):
+                  return content
+
+        Example::
+
+            >> import ptah
+
+            >> @ptah.resolver('custom-schema')
+            >> def my_resolver(uri):
+            ..   ....
+
+            # now its possible to resolver 'custom-schema:xxx' uri's
+            >> ptah.resolve('custom-schema:xxx')
     """
 
     def __init__(self, schema, __depth=1):
@@ -82,6 +93,25 @@ class resolver(object):
 
     @classmethod
     def register(cls, schema, resolver):
+        """ Register resolver for given schema
+
+        :param schema: uri schema
+        :param resolver: Callable object that accept one parameter.
+
+        Example::
+
+            >> import ptah
+
+            >> def my_resolver(uri):
+            ..   ....
+
+            >> ptah.resolver.register('custom-schema', my_resolver)
+
+
+            # now its possible to resolver 'custom-schema:xxx' uri's
+            >> ptah.resolve('custom-schema:xxx')
+
+        """
         cls(schema, 2)(resolver)
 
 

@@ -227,7 +227,7 @@ class DirectiveInfo(object):
         cfg.__ptah_action__ = action
         action(cfg)
 
-    def attach(self, action):
+    def attach(self, action, cfg=None):
         action.info = self
         if action.hash is None:
             action.hash = self.hash
@@ -252,6 +252,12 @@ class DirectiveInfo(object):
                 order=action.order)
 
         venusian.attach(data, callback, category='ptah')
+
+        if cfg is not None:
+            cfg.action(
+                action.discriminator,
+                self._runaction, (action, cfg),
+                introspectables=action.introspectables, order=action.order)
 
     def __repr__(self):
         filename, line, function, source, module = self.codeinfo

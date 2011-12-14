@@ -2,6 +2,7 @@
 import os, tempfile, shutil
 from zope import interface
 from pyramid.compat import bytes_, text_
+from pyramid.interfaces import IRequest
 from pyramid.interfaces import IRouteRequest
 
 import ptah
@@ -58,6 +59,25 @@ class TestLayout(PtahTestCase):
 
         res = renderer(Context(), self.request).text
         self.assertEqual(res.strip(), '<html>View: test</html>')
+
+    def test_layout_pyramid_declarative(self):
+        from ptah.layout import ILayout
+        from pyramid.config import Configurator
+
+        config = Configurator(autocommit=True)
+        config.include('ptah')
+        self.init_ptah()
+
+        class Layout(ptah.View):
+            def __call__(self):
+                """ """
+
+        config.ptah_layout('test', view=Layout)
+
+        layout_factory = config.registry.adapters.lookup(
+            (interface.providedBy(None),
+             IRequest, interface.providedBy(None)), ILayout, name='test')
+        self.assertIs(layout_factory.original, Layout)
 
     def test_layout_simple_notfound(self):
         from ptah.layout import query_layout

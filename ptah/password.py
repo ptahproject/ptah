@@ -144,9 +144,9 @@ pwd_tool = PasswordTool()
 def password_changer(schema):
     """ decorator for password changer registration::
 
-        @ptah.password_change('myuser')
-        def change_password(user):
-            ...
+    >> @ptah.password_change('myuser')
+    >> def change_password(user):
+    >>   ...
     """
     info = config.DirectiveInfo()
 

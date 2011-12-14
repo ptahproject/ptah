@@ -81,8 +81,7 @@ def query_layout_chain(root, context, request, layoutname=''):
 
 
 class layout(object):
-    """
-    Registers a layout.
+    """Registers a layout.
 
     :param name: Layout name
     :param context: Specific context for this layout.
@@ -90,29 +89,29 @@ class layout(object):
     :param parent: A parent layout. None means no parent layout.
     :param renderer: A pyramid renderer
     :param route_name: A pyramid route_name. Apply layout only for
-    specific route
+        specific route
     :param use_global_views: Apply layout to all routes. even is route
-    doesnt use use_global_views.
+        doesnt use use_global_views.
 
 
     Simple example with one default layout and 'page' layout::
 
-    >> import ptah
+      >> import ptah
 
-    >> @ptah.layout('page', parent='page', renderer='ptah:template/page.pt')
-    >> class PageLayout(ptah.View):
-    >>    ...
+      >> @ptah.layout('page', parent='page', renderer='ptah:template/page.pt')
+      >> class PageLayout(ptah.View):
+      >>    ...
 
-    >> @ptah.layout('', parent='page', renderer='ptah:template/template.pt')
-    >> class DefaultLayout(object):
-    >>    ...
+      >> @ptah.layout('', parent='page', renderer='ptah:template/template.pt')
+      >> class DefaultLayout(object):
+      >>    ...
 
-    To use layout with pyramid view use wrapper=ptah.wrap_layout()
+    To use layout with pyramid view use `wrapper=ptah.wrap_layout()`
 
     For example::
 
-    >> config.add_view('index.html', wrapper=ptah.wrap_layout(),
-    ..    renderer = '...')
+      >> config.add_view('index.html', wrapper=ptah.wrap_layout(),
+      ..    renderer = '...')
 
     in this example '' layout is beeing used. You can specify specific layout
     name like ptah.wrap_layout('page')
@@ -141,18 +140,37 @@ class layout(object):
     def register(cls, name='', context=None, root=None, parent='',
                  renderer=None, route_name=None, use_global_views=False,
                  view=View):
+        """ Imperative layout registration::
+
+        >> ptah.layout.register('page', renderer='...', view=MyLayout)
+
+        """
         layout(name, context, root, parent,
                renderer, route_name, use_global_views, 2)(view)
 
-    def __call__(self, view):
+    @classmethod
+    def pyramid(cls, cfg, name='', context=None, root=None, parent='',
+                renderer=None, route_name=None,
+                use_global_views=False, view=View):
+        """ Pyramid `ptah_layout` directive::
+
+        >> config = Configurator()
+        >> config.include('ptah')
+        >> config.ptah_layout('page', renderer='..')
+
+        """
+        l = layout(name, context, root, parent,
+               renderer, route_name, use_global_views, 2)(view, cfg)
+
+    def __call__(self, view, cfg=None):
         intr = self.intr
         intr['view'] = view
 
         self.info.attach(
             config.Action(
                 self._register,
-                discriminator=self.discr, introspectables=(intr,))
-            )
+                discriminator=self.discr, introspectables=(intr,)),
+            cfg)
         return view
 
     def _register(self, cfg):
@@ -226,6 +244,13 @@ class LayoutRenderer(object):
 
 
 def wrap_layout(layout=''):
+    """ Generate view name for pyramid view declaration::
+
+    >> config = Configurator()
+    >> config.ptah_layout('page')
+    >> config.add_view('index.html', wrapper=ptah.wrap_layout())
+
+    """
     name = '#layout-{0}'.format(layout)
 
     info = config.DirectiveInfo()
