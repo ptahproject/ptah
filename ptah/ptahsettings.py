@@ -238,17 +238,19 @@ def initialized(ev):
             sqlahelper.add_engine(engine)
 
 
-def pyramid_manage(cfg, name='', access_manager=None,
-                   managers=(), manager_role='', disable_modules=()):
+def pyramid_manage(cfg, name=None, access_manager=None,
+                   managers=None, manager_role=None, disable_modules=None):
     """ pyramid `ptah_manage` directive """
     PTAH = cfg.ptah_get_settings(ptah.CFG_ID_PTAH)
 
-    PTAH['managers'] = managers
-    PTAH['manager_role'] = manager_role
-    PTAH['disable_modules'] = disable_modules
-
-    if name:
+    if name is not None:
         PTAH['manage'] = name
+    if managers is not None:
+        PTAH['managers'] = managers
+    if manager_role is not None:
+        PTAH['manager_role'] = manager_role
+    if disable_modules is not None:
+        PTAH['disable_modules'] = disable_modules
 
     name = PTAH['manage']
     cfg.add_route('ptah-manage', '/{0}/*traverse'.format(name),
