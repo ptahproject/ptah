@@ -3,15 +3,10 @@ Ptah Framework
 
 .. toctree::
    :maxdepth: 2
-
+   
    overview.rst
-   unique.rst
-   startup.rst
-   tutorial.rst
-   examples.rst
-   content.rst
+   rdbms.rst
    forms.rst
-   rest.rst
    authentication.rst
    faq.rst
    api.rst
