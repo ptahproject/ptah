@@ -1,4 +1,4 @@
-Ptah API
+ptah API
 --------
 
 .. automodule:: ptah
