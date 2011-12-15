@@ -68,6 +68,8 @@
 	</ul>
       </div>
 
+      <input type="hidden" name="${view.csrfname}" value="${view.token}" />
+
       <tal:block
 	 condition="view.show_actions"
 	 content="structure view.snippet('form-actions', view)" />

@@ -221,10 +221,7 @@ class TableView(ptah.form.Form):
 
         ids = []
         for id in self.request.POST.getall('rowid'):
-            try:
-                ids.append(int(id))
-            except:
-                pass
+            ids.append(id)
 
         if not ids:
             self.message('Please select records for removing.', 'warning')

@@ -18,6 +18,6 @@
   <tal:block content="structure view.snippet('form-actions')" />
 
   <input type="hidden" tal:condition="context.csrf" 
-	 name="${structure: context.csrfname}" value="${structure: context.token}" />
+	 name="${context.csrfname}" value="${context.token}" />
   <input type="hidden" name="__form_identity__" value="${context.id}" />
 </form>
