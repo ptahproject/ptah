@@ -3,7 +3,9 @@ Ptah
 
 Ptah is a fast, fun, open source high-level Python web development environment. Ptah is built on top of the Pyramid web framework.  Ptah's goal is to make developing interactive web sites and applications fun.  Ptah aims to fill a void in the Pyramid eco-system, a "full stack" environment which is well integrated and provides opinions (forms, management ui, models, etc).
 
-Ptah is loosely affiliated with the Pyramid, Django, Drupal and Zope/Plone communities.
+Ptah is loosely affiliated with the Pyramid, Django, Drupal and Zope/Plone communities.  
+
+Most documentation requires Ptah 0.2 or greater.
 
 Requirements
 ------------
@@ -20,7 +22,7 @@ On Windows virtualenv/bin will be virtualenv/Scripts besides this difference eve
 Grab the release
 ----------------
 
-If you do not want to faff about with source, cloning repos, etc.  Just grab the latest released version of ptah.
+If you do not want to faff about with source, cloning repos, etc.  Just grab the latest released version of ptah. 
 
   $ /path/to/virtualenv/bin/pip install ptah
 
@@ -36,6 +38,18 @@ clone `ptah` from github and then install it::
 then run the tests::
 
   $ /path/to/virtualenv/bin/python setup.py test
+
+An empty project
+----------------
+
+Let's generate a empty project using the `ptah_starter` scaffolding. You can start from there::
+
+  /path/to/virtualenv $ bin/pcreate -t ptah_starter myapp
+  /path/to/virtualenv $ cd myapp
+  /path/to/virtualenv/myapp $ ../bin/python setup.py
+  /path/to/virtaulenv/myapp $ ../bin/pserve settings.ini --reload
+
+Open your browser to http://localhost:6543/ if you want examples that do more such as demonstrating editing models and authentication.  Check out the examples.
   
 Examples
 --------
