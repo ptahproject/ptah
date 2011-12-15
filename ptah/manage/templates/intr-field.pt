@@ -1,12 +1,12 @@
 <h4>
-  <a href="${view.manage_url}/source.html?pkg=${intr['codeinfo'].module}#sl-${intr['codeinfo'].lineno}">
-    ${intr['name']}</a>
+  <a href="${manage_url}/source.html?pkg=${context['codeinfo'].module}#sl-${context['codeinfo'].lineno}">
+    ${context['name']}</a>
 </h4>
-<p tal:condition="intr['field'].__doc__">${intr['field'].__doc__}</p>
+<p tal:condition="context['field'].__doc__">${context['field'].__doc__}</p>
   
-<form tal:condition="intr['field'] in view.previews">
+<form tal:condition="context['field'] in previews">
   <hr />
   <fieldset>
-    ${view.previews[intr['field']](request)}
+    ${structure: previews[context['field']](request)}
   </fieldset>
 </form>
