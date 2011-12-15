@@ -13,7 +13,9 @@ PREVIEW_ID = 'ptah.form:field-preview'
 
 
 class field(object):
-    """ Field registration directive """
+    """ Field registration directive
+
+    """
 
     def __init__(self, name, __depth=1):
         self.info = config.DirectiveInfo(__depth)
@@ -71,6 +73,7 @@ def get_field_preview(cls):
 
 
 class Fieldset(OrderedDict):
+    """ """
 
     def __init__(self, *args, **kwargs):
         super(Fieldset, self).__init__()
@@ -219,25 +222,38 @@ class FieldsetErrors(list):
 
 
 class Field(object):
-    """Widget base class."""
+    """Field base class."""
 
     __field__ = ''
 
+    #: field name
     name = ''
-    title = ''
-    description = ''
-    required = False
 
+    #: field title
+    title = ''
+    #: field description
+    description = ''
+    #: field required
+    required = False
+    #: field validation error
     error = None
+
     params = {}
+    #: field mode
     mode = None
+    #: current field value
     value = null
+    #: generated field value suitable for html form
     form_value = None
 
+    #: field html id
     id = None
+    #: field css class
     klass = None
 
+    #: template path for input widget
     tmpl_input = None
+    #: template path for display widget
     tmpl_display = None
 
     def __init__(self, name, **kw):
@@ -254,6 +270,7 @@ class Field(object):
         self.required = self.missing is required
 
     def bind(self, prefix, value, params):
+        """ Bind field to value and request params """
         clone = self.__class__.__new__(self.__class__)
         clone.__dict__.update(self.__dict__)
         clone.value = value
@@ -263,6 +280,7 @@ class Field(object):
         return clone
 
     def update(self, request):
+        """ Update field, prepare field for rendering """
         self.request = request
 
         if self.mode is None:
@@ -293,21 +311,26 @@ class Field(object):
             self.form_value = value if value is not null else None
 
     def serialize(self, value):
+        """ Return value representation siutable for html widget """
         raise NotImplementedError()
 
     def deserialize(self, value):
+        """ convert form value to field value """
         raise NotImplementedError()
 
     def dumps(self, value):
+        """ return json value representation """
         return json.dumps(value)
 
     def loads(self, s):
+        """ load field value from json """
         try:
             return json.loads(s)
         except Exception as e:
             raise Invalid(self, 'Error in JSON format: {0}'.format(s))
 
     def validate(self, value):
+        """ validate value """
         if value is required:
             raise Invalid(self, _('Required'))
 
@@ -315,12 +338,14 @@ class Field(object):
             self.validator(self, value)
 
     def extract(self, default=null):
+        """ extract value from params """
         value = self.params.get(self.name, default)
         if value is default or not value:
             return default
         return value
 
     def render(self, request):
+        """ render field """
         if self.mode == FORM_DISPLAY:
             tmpl = self.tmpl_display
         else:
@@ -340,6 +365,18 @@ class Field(object):
 
 
 class FieldFactory(Field):
+    """ Create field by name
+
+    Field should be registered with `field` directive::
+
+    >> @form.field('customfield')
+    >> class CustomField(form.Field):
+    >>     ...
+
+    Now `customfield` can be used for generating field::
+
+    >> field = form.FieldFactory('customfield', 'fieldname', ...)
+    """
 
     __field__ = ''
 

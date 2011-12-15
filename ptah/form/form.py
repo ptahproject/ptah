@@ -26,6 +26,7 @@ def formErrorMessage(context, request):
 
 
 class FormWidgets(OrderedDict):
+    """ Form widget manager"""
 
     mode = FORM_INPUT
     prefix = 'widgets.'
@@ -103,7 +104,10 @@ class FormViewMapper(DefaultViewMapper):
 class Form(ptah.View):
     """ A form """
 
+    #: form fields :py:class:`ptah.form.Fieldset`
     fields = Fieldset()
+
+    #: form buttons :py:class:`ptah.form.Buttons`
     buttons = None
 
     #: Form label
@@ -128,12 +132,16 @@ class Form(ptah.View):
     #: py:data::`ptah.form.FORM_DISPLAY`
     mode = FORM_INPUT
 
+    #: HTML Form method (`post`, `get`)
     method = 'post'
     enctype = 'multipart/form-data'
     accept = None
     acceptCharset = None
 
+    #: enable/disable form csrf protection
     csrf = False
+
+    #: csrf field name
     csrfname = 'csrf-token'
 
     params = MultiDict({})
@@ -148,20 +156,25 @@ class Form(ptah.View):
 
     @reify
     def action(self):
+        """ form action, by default `request.url` """
         return self.request.url
 
     @reify
     def name(self):
+        """ form action """
         return self.prefix.strip('.')
 
     @reify
     def id(self):
+        """ form id """
         return self.name.replace('.', '-')
 
     def form_content(self):
+        """ get form content """
         return self.content
 
     def form_params(self):
+        """ get request params """
         if self.method == 'post':
             return self.request.POST
         elif self.method == 'get':
@@ -172,23 +185,27 @@ class Form(ptah.View):
             return self.params
 
     def update_widgets(self):
+        """ prepare form widgets """
         self.widgets = FormWidgets(self.fields, self, self.request)
         self.widgets.mode = self.mode
         self.widgets.update()
 
     def update_actions(self):
+        """ prepare form actions """
         self.actions = Actions(self, self.request)
         self.actions.update()
 
     @property
     def token(self):
+        """ csrf token """
         return self.request.session.get_csrf_token()
 
     def validate(self, data, errors):
+        """ additional form validation """
         self.validate_csrf_token()
 
     def validate_csrf_token(self):
-        # check csrf token
+        """ csrf token validation """
         if self.csrf:
             token = self.form_params().get(self.csrfname, None)
             if token is not None:
@@ -198,9 +215,11 @@ class Form(ptah.View):
             raise HTTPForbidden("Form authenticator is not found.")
 
     def extract(self):
+        """ extract form values """
         return self.widgets.extract()
 
     def update(self, **data):
+        """ update form """
         if not self.content and data:
             self.content = data
 
@@ -210,6 +229,7 @@ class Form(ptah.View):
         return self.actions.execute()
 
     def render(self):
+        """ render form """
         return self.snippet(FORM_VIEW, self)
 
     def render_update(self):
@@ -220,6 +240,7 @@ class Form(ptah.View):
         return result
 
     def __call__(self):
+        """ update form and render for to response """
         result = self.update()
 
         response = self.request.registry.queryAdapterOrSelf(result, IResponse)
@@ -236,6 +257,7 @@ class Form(ptah.View):
 
 
 class DisplayForm(Form):
+    """ Special form that just display content """
 
     mode = FORM_DISPLAY
 

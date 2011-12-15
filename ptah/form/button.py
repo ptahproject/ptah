@@ -172,6 +172,17 @@ def create_btn_id(name):
 
 
 def button(title, **kwargs):
+    """ decorator for button definition::
+
+    >> class CustomForm(form.Form):
+    >>
+    >>    field = form.Fieldset()
+    >>
+    >>    @form.button('Cancel')
+    >>    def handle_cancel(self):
+    >>        ...
+    """
+
     # install buttons manager
     f_locals = sys._getframe(1).f_locals
 

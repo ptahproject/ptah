@@ -22,13 +22,6 @@ class IPrincipal(interface.Interface):
     login = interface.Attribute('Principal login')
 
 
-class IPasswordChanger(interface.Interface):
-    """ principal password changer """
-
-    def __call__(principal, password):
-        """ change password """
-
-
 class IAuthInfo(interface.Interface):
     """ auth info """
 

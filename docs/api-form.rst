@@ -24,10 +24,12 @@ Field
 ~~~~~
 
   .. autoclass:: Field
+     :members:
 
   .. autoclass:: FieldFactory
 
   .. autoclass:: Fieldset
+     :members:
 
   .. autoclass:: FieldsetErrors
 
@@ -44,8 +46,10 @@ Vocabulary
 ~~~~~~~~~~
 
   .. autoclass:: SimpleTerm
+     :members:
 
   .. autoclass:: SimpleVocabulary
+     :members:
 
 
 Validators
