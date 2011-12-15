@@ -13,8 +13,8 @@ The `Manage Interface` is configured through Ptah Settings.  You will do this in
   import ptah
   ptah_settings = config.ptah_get_settings(ptah.CFG_ID_PTAH)
   
-Enable/Disable
---------------
+Enable
+------
 
 Inside of Ptah Settings you can set the `managers` value to which userid's you want to allow access of the Manage Interface.  * means everyone.  By default it is empty and no one is allowed access.  Granting everyone::
 
@@ -24,6 +24,12 @@ Granting a few people::
 
   ptah_settings['managers'] = ['bob@dobbs.com', 'runyaga@gmail.com']
   
+Disable
+-------
+
+In your .ini file you can disable the Ptah manage interface by adding::
+
+  ptah.manage = ""
 
 Out-of-the-box Modules
 ======================
