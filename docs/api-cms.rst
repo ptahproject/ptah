@@ -1,4 +1,4 @@
-Ptah CMS API
+ptah.cms API
 ------------
 
 .. automodule:: ptah.cms

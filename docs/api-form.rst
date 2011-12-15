@@ -1,4 +1,4 @@
-Ptah form  API
+ptah.form  API
 --------------
 
 .. automodule:: ptah.form

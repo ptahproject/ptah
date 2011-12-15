@@ -1,5 +1,5 @@
-Ptah Public API
----------------
+Ptah API
+--------
 
 .. automodule:: ptah
 
