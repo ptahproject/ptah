@@ -6,6 +6,7 @@ Ptah Framework
    
    overview.rst
    rdbms.rst
+   manageui.rst
    forms.rst
    authentication.rst
    faq.rst
