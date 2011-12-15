@@ -1,5 +1,5 @@
-Ptah in Memphis Forms
-=====================
+Ptah Forms
+==========
 
 There are several aspect to Forms when working with Ptah that you should understand.  ptah.form provides the fields library and form infrastucture.  The only public usage of Form is in ptah.form and ptah.cmsapp.  Ptah App provides two forms, AddForm and EditForm found at ptah.cmsapp/forms.py which can assume you are working with content and provides form actions such as Submit and Cancel.
 
