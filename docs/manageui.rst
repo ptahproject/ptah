@@ -5,8 +5,8 @@ Manage Interface
 The Ptah Management UI is a dashboard into your application.  The Manage
 Interface is simple, extensible, and has quite a few features out of the box.
 
-Configuration
-=============
+Configuring
+===========
 
 The `Manage Interface` is configured through Ptah Settings.  You will do this inside of your WSGI entry point where you return make_wsgi_app(). `config` is the Pyramid configurator.::
 
@@ -25,8 +25,8 @@ Granting a few people::
   ptah_settings['managers'] = ['bob@dobbs.com', 'runyaga@gmail.com']
   
 
-Modules
-=======
+Out-of-the-box Modules
+======================
 
 The listing of modules you see when you open up http://localhost:6543/ptah-manage interface are all modules which your account has permission to view.  Below are the out-of-the-box modules and a description.
 
