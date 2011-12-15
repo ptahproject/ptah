@@ -127,6 +127,11 @@ class TestAppSharingForm(PtahTestCase):
 
         self.init_ptah()
 
+        def trusted(*args):
+            return True
+
+        ptah.manage.set_access_manager(trusted, self.registry)
+
         if request is None:
             request = DummyRequest()
 

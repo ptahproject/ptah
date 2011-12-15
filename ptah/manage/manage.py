@@ -71,8 +71,8 @@ def module(name):
 class PtahAccessManager(object):
     """ Allow access to ptah manage for users with specific role and id """
 
-    def __init__(self):
-        self.cfg = ptah.get_settings(ptah.CFG_ID_PTAH)
+    def __init__(self, registry=None):
+        self.cfg = ptah.get_settings(ptah.CFG_ID_PTAH, registry)
 
     def __call__(self, userid, request):
         managers = self.cfg['managers']
@@ -106,8 +106,8 @@ def check_access(userid, request):
     return False
 
 
-def set_access_manager(manager):
-    ptah.get_settings(ptah.CFG_ID_PTAH)['access_manager'] = manager
+def set_access_manager(manager, registry=None):
+    ptah.get_settings(ptah.CFG_ID_PTAH, registry)['access_manager'] = manager
 
 
 class PtahManageRoute(object):

@@ -289,6 +289,7 @@ class Group(OrderedDict):
         Session.flush()
 
         self.__registry__.notify(ptah.events.SettingsGroupModified(self))
+        self.__registry__.notify(ptah.events.UriInvalidateEvent(self.__uri__))
 
 
 Session = sqlh.get_session()

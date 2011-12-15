@@ -237,13 +237,27 @@ def initialized(ev):
                 {'sqlalchemy.url': url}, 'sqlalchemy.', **engine_args)
             sqlahelper.add_engine(engine)
 
-    # ptah manage
-    if PTAH['manage']:
-        ev.config.add_route(
-            'ptah-manage', '/ptah-manage/*traverse',
-            factory=ptah.manage.PtahManageRoute, use_global_views=True)
-        ptah.manage.set_access_manager(
-            ptah.manage.PtahAccessManager())
+
+def pyramid_manage(cfg, name='', access_manager=None,
+                   managers=(), manager_role='', disable_modules=()):
+    """ pyramid `ptah_manage` directive """
+    PTAH = cfg.ptah_get_settings(ptah.CFG_ID_PTAH)
+
+    PTAH['managers'] = managers
+    PTAH['manager_role'] = manager_role
+    PTAH['disable_modules'] = disable_modules
+
+    if name:
+        PTAH['manage'] = name
+
+    name = PTAH['manage']
+    cfg.add_route('ptah-manage', '/{0}/*traverse'.format(name),
+                  factory=ptah.manage.PtahManageRoute, use_global_views=True)
+
+    if access_manager is None:
+        access_manager = ptah.manage.PtahAccessManager(cfg.registry)
+
+    ptah.manage.set_access_manager(access_manager, cfg.registry)
 
 
 @ptah.subscriber(ApplicationCreated)

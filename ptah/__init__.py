@@ -181,6 +181,10 @@ def includeme(cfg):
     from ptah import rest
     cfg.add_directive('ptah_rest_api', rest.enable_rest_api)
 
+    # ptah manage ui directive
+    from ptah import ptahsettings
+    cfg.add_directive('ptah_manage', ptahsettings.pyramid_manage)
+
     # ptah mailer directive
     from ptah import ptahsettings
     cfg.add_directive('ptah_mailer', ptahsettings.set_mailer)

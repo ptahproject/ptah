@@ -2,6 +2,7 @@ import ptah
 from ptah import config
 from ptah.testing import PtahTestCase
 from pyramid.testing import DummyRequest
+from pyramid.interfaces import IRouteRequest
 from pyramid.httpexceptions import HTTPForbidden
 
 
@@ -61,7 +62,7 @@ class TestManageModule(PtahTestCase):
         self.assertIsInstance(mod, TestModule)
         self.assertTrue(mod.available())
         self.assertEqual(mod.__name__, 'test-module')
-        self.assertEqual(mod.url(), 'http://example.com/ptah-manage/test-module')
+        self.assertEqual(mod.url(),'http://example.com/ptah-manage/test-module')
 
         self.assertRaises(KeyError, route.__getitem__, 'unknown')
 
@@ -96,6 +97,44 @@ class TestManageModule(PtahTestCase):
         cfg = ptah.get_settings(ptah.CFG_ID_PTAH, self.registry)
         cfg['managers'] = ['admin@ptahproject.org']
         self.assertTrue(PtahAccessManager()('test:user', self.request))
+
+    def test_manage_pyramid_directive(self):
+        from pyramid.config import Configurator
+
+        config = Configurator(autocommit=True)
+        config.include('ptah')
+
+        def access_manager():
+            """ """
+
+        config.ptah_manage('test-manage',
+                           access_manager=access_manager,
+                           managers = ('manager',),
+                           manager_role = 'Manager',
+                           disable_modules = ('models',))
+
+        cfg = config.ptah_get_settings(ptah.CFG_ID_PTAH)
+
+        self.assertEqual(cfg['manage'], 'test-manage')
+        self.assertEqual(cfg['managers'], ('manager',))
+        self.assertEqual(cfg['manager_role'], 'Manager')
+        self.assertEqual(cfg['disable_modules'], ('models',))
+        self.assertIs(cfg['access_manager'], access_manager)
+
+        iface = config.registry.getUtility(IRouteRequest, 'ptah-manage')
+        self.assertIsNotNone(iface)
+
+    def test_manage_pyramid_directive_default(self):
+        from pyramid.config import Configurator
+        from ptah.manage.manage import PtahAccessManager
+
+        config = Configurator(autocommit=True)
+        config.include('ptah')
+
+        config.ptah_manage('test-manage')
+
+        cfg = config.ptah_get_settings(ptah.CFG_ID_PTAH)
+        self.assertIsInstance(cfg['access_manager'], PtahAccessManager)
 
     def test_manage_view(self):
         from ptah.manage.manage import \

@@ -208,3 +208,10 @@ def content_created_handler(ev):
 def content_modified_handler(ev):
     """ Updates the modified attribute on content """
     ev.object.modified = datetime.utcnow()
+
+
+@ptah.subscriber(ptah.events.ContentEvent)
+def content_event_handler(ev):
+    """ Resend uri invalidate event """
+    get_current_registry().notify(
+        ptah.events.UriInvalidateEvent(ev.object.__uri__))

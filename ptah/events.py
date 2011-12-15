@@ -83,6 +83,16 @@ class SettingsGroupModified(object):
         self.object = group
 
 
+# uri events
+
+@event('Uri invalidate event')
+class UriInvalidateEvent(object):
+    """ Uri object has been changed. """
+
+    def __init__(self, uri):
+        self.uri = uri
+
+
 # principal events
 
 class PrincipalEvent(object):

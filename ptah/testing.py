@@ -21,6 +21,7 @@ class PtahTestCase(unittest.TestCase):
 
     _settings = {}
     _packages = ()
+    _trusted_manage = True
     _environ = {
         'wsgi.url_scheme':'http',
         'wsgi.version':(1,0),
@@ -49,6 +50,11 @@ class PtahTestCase(unittest.TestCase):
             Base.metadata.drop_all()
             Base.metadata.create_all()
             transaction.commit()
+
+        if self._trusted_manage:
+            def trusted(*args):
+                return True
+            ptah.manage.set_access_manager(trusted)
 
     def init_pyramid(self):
         self.request = request = self.make_request()
