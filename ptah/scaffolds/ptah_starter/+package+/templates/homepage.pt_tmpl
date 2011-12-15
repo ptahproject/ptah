@@ -4,8 +4,11 @@
     <meta charset="utf-8">
     <title>{{package}}, made with Ptah!</title>
     ${structure: view.rendered_includes}
-    <link type="text/css" rel="stylesheet" href="${'%s/app.css' % static_url}" />
-    <link rel="shortcut icon" href="${'%s/ico/favicon.ico' % static_url}">
+    <link type="text/css" rel="stylesheet" 
+          href="${request.static_url('{{package}}:static/app.css')}" />
+    <link rel="shortcut icon"
+          href="${request.static_url('{{package}}:static/ico/favicon.ico')}" />
+
   </head>
 
   <body>
@@ -36,11 +39,9 @@
           <h1>Welcome to {{package}}!</h1>
           <p>The {{package}} application uses Ptah, a modern web publishing framework.
           </p>
-          <!-- uncomment this when you add ptah-manage
           <p>
             <a class="btn primary large" href="/ptah-manage/">Goto Ptah Manage UI &raquo;</a>
           </p>
-          -->
         </div>
 
         <footer>

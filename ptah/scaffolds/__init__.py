@@ -11,6 +11,6 @@ class PtahTemplate(Template):
         return super(PtahTemplate, self).post(command, output_dir, vars)
 
 
-class Ptah001ProjectTemplate(PtahTemplate):
-    _template_dir = 'ptah001'
-    summary = 'Ptah001 - blank Ptah scaffold'
+class PtahStarterProjectTemplate(PtahTemplate):
+    _template_dir = 'ptah_starter'
+    summary = 'Ptah Starter - blank Ptah scaffold'

@@ -6,26 +6,26 @@ from pyramid.session import UnencryptedCookieSessionFactoryConfig
 auth_policy = AuthTktAuthenticationPolicy('secret')
 session_factory = UnencryptedCookieSessionFactoryConfig('secret')
 
+
 def main(global_config, **settings):
     """ Function which returns a configured Pyramid/Ptah WSIG Application """
-    
+
     # Info: This is how Pyramid is configured.    
     config = Configurator(settings=settings,
                           session_factory = session_factory,
                           authentication_policy = auth_policy)
-                          
-    # Info: This includes packages which have Pyramid configuration          
+
+    # Info: This includes packages which have Pyramid configuration
     config.include('ptah')
-    config.include('pyramid_tm')
+    config.commit()
 
     # Info: create SQL engine from our settings file; add engine to application
     import sqlahelper, sqlalchemy
     engine = sqlalchemy.engine_from_config(settings, 'sqlalchemy.')
     sqlahelper.add_engine(engine)
-    
+
     # Refer: Ptah: _Initialization_
-    config.ptah_initialize(('{{package}}', 'ptah'))
-    config.commit()
+    config.ptah_initialize()
 
     # Refer: SQLAlchemy _Declarative_
     Base = sqlahelper.get_base()
@@ -34,7 +34,16 @@ def main(global_config, **settings):
     # Refer: Pyramid's _URL Dispatch_
     config.add_route('home', '/')
 
+    # static assets
+    config.add_static_view('_{{package}}', '{{package}}:static')
+
     # Refer: Pyramid's _Configuration Decorations and Code Scanning_
     config.scan()
+
+    # enable ptah rest
+    config.ptah_rest_api()
+
+    # enable ptah management
+    config.ptah_manage(managers=('*',))
 
     return config.make_wsgi_app()

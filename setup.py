@@ -56,9 +56,7 @@ setup(name='ptah',
               'settings = ptah.scripts.settings:main',
             ],
           'pyramid.scaffold': [
-              'ptah001 = ptah.scaffolds:Ptah001ProjectTemplate',
-              'ptah101 = ptah.scaffolds:Ptah101ProjectTemplate',
-              'ptah102 = ptah.scaffolds:Ptah102ProjectTemplate',
+              'ptah_starter = ptah.scaffolds:PtahStarterProjectTemplate',
               ],
           },
       )
