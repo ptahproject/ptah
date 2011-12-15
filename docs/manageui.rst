@@ -3,31 +3,40 @@ Manage Interface
 ================
 
 The Ptah Management UI is a dashboard into your application.  The Manage
-Interface is simple, extensible, and has quite a few features out of the box.
+Interface is simple, extensible, and has quite a few features out of the box.  
+
+By default the Manage Interface is disabled.
+
+managers sequence are login attributes from the ``ptah.auth_service``::
+
+    >> from ptah import auth_service
+    >> print auth_service.get_current_principal().login
+    >> runyaga@gmail.com
 
 Configuring
 ===========
 
 The `Manage Interface` is configured through Ptah Settings.  You will do this inside of your WSGI entry point where you return make_wsgi_app(). `config` is the Pyramid configurator.::
 
-  import ptah
-  ptah_settings = config.ptah_get_settings(ptah.CFG_ID_PTAH)
-  
+    config.ptah_manage(
+        managers = ['*'],
+        disable_modules = ['rest', 'introspect', 'apps', 'permissions', 'settings'])
+
 Enable
 ------
 
-Inside of Ptah Settings you can set the `managers` value to which userid's you want to allow access of the Manage Interface.  * means everyone.  By default it is empty and no one is allowed access.  Granting everyone::
+Inside of Ptah Settings you can set the `managers` argument the  userid's you want to allow access.  * means everyone.  By default it is empty and no one is allowed access.  Granting everyone::
 
-  ptah_settings['managers'] = ['*']
+  managers = ['*']
   
 Granting a few people::
 
-  ptah_settings['managers'] = ['bob@dobbs.com', 'runyaga@gmail.com']
-  
+  managers = ['bob@dobbs.com', 'runyaga@gmail.com']
+
 Disable
 -------
 
-In your .ini file you can disable the Ptah manage interface by adding::
+By default the Manage Interface is disabled.  If Manage Interface is enabled but you want to prevent users from able to access it add the following to your .ini file::
 
   ptah.manage = ""
 
