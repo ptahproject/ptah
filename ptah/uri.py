@@ -2,7 +2,6 @@
 import uuid
 import ptah
 from ptah import config
-from ptah.util import tldata
 
 ID_RESOLVER = 'ptah:resolver'
 
@@ -145,33 +144,3 @@ class UriFactory(object):
     def __call__(self):
         """ Generate new uri using supplied schema """
         return '%s:%s' % (self.schema, uuid.uuid4().hex)
-
-
-class Cache(object):
-
-    def __init__(self):
-        self.handlers = {}
-        self.default = DefaultHandlerFactory
-
-    def register_handler(self, schema, handler):
-        self.handlers[schema] = handler
-
-    def install(self):
-        pass
-
-    def uninstall(self):
-        pass
-
-
-class DefaultHandlerFactory(object):
-
-    def __init__(self, schema, resolver):
-        self.schema = schema
-        self.resolver = resolver
-
-    def __call__(self, uri):
-        ob = tldata.get(uri)
-        if ob is None:
-            ob = self.resolver(uri)
-            tldata.set(uri, ob)
-        return ob

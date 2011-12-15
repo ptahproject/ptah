@@ -144,7 +144,7 @@ class PrincipalRegisteredEvent(PrincipalEvent):
 
 class ContentEvent(ObjectEvent):
     """ Base content event """
-    
+
     object = None
 
 
@@ -156,7 +156,7 @@ class ContentCreatedEvent(ContentEvent):
 
 @event('Content added event')
 class ContentAddedEvent(ContentEvent):
-    """ :py:class:`ptah.cms.Container` will send event when content has been 
+    """ :py:class:`ptah.cms.Container` will send event when content has been
         created through containers __setitem__ method.
     """
 
