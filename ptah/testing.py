@@ -71,7 +71,7 @@ class PtahTestCase(unittest.TestCase):
         ptah.QueryFreezer._testing = True
         self.init_pyramid()
 
-        if self._init_ptah: # pragma: no cover
+        if self._init_ptah:
             self.init_ptah()
 
     def tearDown(self):
