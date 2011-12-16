@@ -40,7 +40,6 @@ from ptah.library import render_includes
 
 # settings
 from ptah.settings import get_settings
-from ptah.settings import init_settings
 from ptah.settings import register_settings
 
 # security
@@ -147,8 +146,13 @@ def includeme(cfg):
     cfg.include('pyramid_tm')
     cfg.include('ptah.manage')
 
-    # directive
-    cfg.add_directive('ptah_initialize', ptah_initialize)
+    # initialize settings
+    from ptah.settings import init_settings
+    cfg.add_directive('ptah_initialize_settings', init_settings)
+
+    # initialize sql
+    from ptah import ptahsettings
+    cfg.add_directive('ptah_initialize_sql', ptahsettings.initialize_sql)
 
     # object events handler
     cfg.registry.registerHandler(
@@ -185,15 +189,10 @@ def includeme(cfg):
     cfg.add_directive('ptah_rest_api', rest.enable_rest_api)
 
     # ptah manage ui directive
-    from ptah import ptahsettings
     cfg.add_directive('ptah_manage', ptahsettings.pyramid_manage)
 
     # ptah mailer directive
-    from ptah import ptahsettings
     cfg.add_directive('ptah_mailer', ptahsettings.set_mailer)
-
-    # initialize sql
-    cfg.add_directive('ptah_initialize_sql', ptahsettings.initialize_sql)
 
     # layout directive
     cfg.add_directive('ptah_layout', layout.pyramid)
@@ -206,26 +205,3 @@ def includeme(cfg):
 
     # scan ptah
     cfg.scan('ptah')
-
-
-# initialize ptah
-def ptah_initialize(cfg, sqla=True):
-    """ Initialize ptah package."""
-    from pyramid.exceptions import  ConfigurationExecutionError
-
-    cfg.begin()
-    try:
-        auth_service.set_userid(SUPERUSER_URI)
-
-        # initialize settings
-        init_settings(cfg, cfg.registry.settings)
-
-        # initialize sqlalchemy
-        if sqla:
-            cfg.ptah_initialize_sql()
-
-    except config.StopException:
-        config.shutdown()
-        raise
-    finally:
-        cfg.end()

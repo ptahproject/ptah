@@ -25,7 +25,8 @@ class TestPtahInit(unittest.TestCase):
         config.include('ptah')
         config.commit()
 
-        self.assertTrue(hasattr(config, 'ptah_initialize'))
+        self.assertTrue(hasattr(config, 'ptah_initialize_settings'))
+        self.assertTrue(hasattr(config, 'ptah_initialize_sql'))
 
         from pyramid.interfaces import \
              IAuthenticationPolicy, IAuthorizationPolicy
@@ -36,8 +37,8 @@ class TestPtahInit(unittest.TestCase):
             config.registry.queryUtility(IAuthorizationPolicy))
 
     def test_init_ptah_init(self):
-        config = Configurator(
-            settings = {'sqlalchemy.url': 'sqlite://'})
+        config = Configurator()
+            #settings = {'sqlalchemy.url': 'sqlite://'})
 
         data = [False, False]
 
@@ -52,7 +53,7 @@ class TestPtahInit(unittest.TestCase):
         config.include('ptah')
         config.commit()
 
-        config.ptah_initialize()
+        config.ptah_initialize_settings()
 
         self.assertTrue(data[1])
 
@@ -76,7 +77,7 @@ class TestPtahInit(unittest.TestCase):
 
         err = None
         try:
-            config.ptah_initialize()
+            config.ptah_initialize_settings()
         except Exception as e:
             err = e
 

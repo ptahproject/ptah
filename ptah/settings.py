@@ -43,7 +43,7 @@ def pyramid_get_settings(config, grp):
     return config.get_cfg_storage(ID_SETTINGS_GROUP)[grp]
 
 
-def init_settings(pconfig, cfg, section=configparser.DEFAULTSECT):
+def init_settings(pconfig, cfg=None, section=configparser.DEFAULTSECT):
     """ initialize settings management system """
     registry = pconfig.registry
     settings = config.get_cfg_storage(SETTINGS_OB_ID,pconfig.registry,Settings)
@@ -56,18 +56,23 @@ def init_settings(pconfig, cfg, section=configparser.DEFAULTSECT):
 
     settings.initialized = True
 
-    if cfg:
-        here = cfg.get('here', './')
+    if cfg is None:
+        cfg = pconfig.registry.settings
 
-        include = cfg.get('include', '')
-        for f in include.split('\n'):
-            f = f.strip()
-            if f and os.path.exists(f):
-                parser = configparser.SafeConfigParser()
-                parser.read(f)
-                if section == configparser.DEFAULTSECT or \
-                       parser.has_section(section):
-                    cfg.update(parser.items(section, vars={'here': here}))
+    try:
+        here = cfg.get('here', './')
+    except:
+        print (cfg,)
+        raise
+    include = cfg.get('include', '')
+    for f in include.split('\n'):
+        f = f.strip()
+        if f and os.path.exists(f):
+            parser = configparser.SafeConfigParser()
+            parser.read(f)
+            if section == configparser.DEFAULTSECT or \
+                    parser.has_section(section):
+                cfg.update(parser.items(section, vars={'here': here}))
 
     pconfig.begin()
     try:
