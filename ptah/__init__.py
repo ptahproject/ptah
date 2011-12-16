@@ -82,7 +82,6 @@ from pyramid.security import NO_PERMISSION_REQUIRED
 # ptah settings ids
 CFG_ID_PTAH = 'ptah'
 CFG_ID_FORMAT = 'format'
-CFG_ID_PASSWORD = 'password'
 
 # password tool
 from ptah.password import pwd_tool

@@ -79,6 +79,33 @@ ptah.register_settings(
         required = False,
         default = 'admin@localhost'),
 
+    ptah.form.ChoiceField(
+        'pwd_manager',
+        title = 'Password manager',
+        description = 'Available password managers '\
+            '("plain", "ssha", "bcrypt")',
+        vocabulary = ptah.form.SimpleVocabulary.from_values(
+            "plain", "ssha",),
+        default = 'plain'),
+
+    ptah.form.IntegerField(
+        'pwd_min_length',
+        title = 'Length',
+        description = 'Password minimium length.',
+        default = 5),
+
+    ptah.form.BoolField(
+        'pwd_letters_digits',
+        title = 'Letters and digits',
+        description = 'Use letters and digits in password.',
+        default = False),
+
+    ptah.form.BoolField(
+        'pwd_letters_mixed_case',
+        title = 'Letters mixed case',
+        description = 'Use letters in mixed case.',
+        default = False),
+
     title = _('Ptah settings'),
 )
 
@@ -142,41 +169,6 @@ ptah.register_settings(
 
     ttw = True,
     title = 'Site formats',
-    )
-
-
-ptah.register_settings(
-    ptah.CFG_ID_PASSWORD,
-
-    ptah.form.ChoiceField(
-        'manager',
-        title = 'Password manager',
-        description = 'Available password managers '\
-            '("plain", "ssha", "bcrypt")',
-        vocabulary = ptah.form.SimpleVocabulary.from_values(
-            "plain", "ssha",),
-        default = 'plain'),
-
-    ptah.form.IntegerField(
-        'min_length',
-        title = 'Length',
-        description = 'Password minimium length.',
-        default = 5),
-
-    ptah.form.BoolField(
-        'letters_digits',
-        title = 'Letters and digits',
-        description = 'Use letters and digits in password.',
-        default = False),
-
-    ptah.form.BoolField(
-        'letters_mixed_case',
-        title = 'Letters mixed case',
-        description = 'Use letters in mixed case.',
-        default = False),
-
-    ttw = True,
-    title = 'Password tool settings',
     )
 
 

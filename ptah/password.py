@@ -63,9 +63,9 @@ class PasswordTool(object):
 
     @property
     def manager(self):
-        PWD_CONFIG = ptah.get_settings(ptah.CFG_ID_PASSWORD)
+        PWD_CONFIG = ptah.get_settings(ptah.CFG_ID_PTAH)
         try:
-            return self.pm['{%s}' % PWD_CONFIG['manager']]
+            return self.pm['{%s}' % PWD_CONFIG['pwd_manager']]
         except KeyError:
             return self.pm['{plain}']
 
@@ -123,17 +123,17 @@ class PasswordTool(object):
 
     def validate(self, password):
         """ Validate password """
-        PWD_CONFIG = ptah.get_settings(ptah.CFG_ID_PASSWORD)
+        PWD_CONFIG = ptah.get_settings(ptah.CFG_ID_PTAH)
 
-        if len(password) < PWD_CONFIG['min_length']:
+        if len(password) < PWD_CONFIG['pwd_min_length']:
             #return _('Password should be at least ${count} characters.',
             #         mapping={'count': self.min_length})
             return 'Password should be at least %s characters.' % \
-                PWD_CONFIG['min_length']
-        elif PWD_CONFIG['letters_digits'] and \
+                PWD_CONFIG['pwd_min_length']
+        elif PWD_CONFIG['pwd_letters_digits'] and \
                 (password.isalpha() or password.isdigit()):
             return _('Password should contain both letters and digits.')
-        elif PWD_CONFIG['letters_mixed_case'] and \
+        elif PWD_CONFIG['pwd_letters_mixed_case'] and \
                 (password.isupper() or password.islower()):
             return _('Password should contain letters in mixed case.')
 
