@@ -96,6 +96,7 @@ class Provider(object):
 class TestRestView(PtahTestCase):
 
     _init_ptah = False
+    _init_sqla = False
     _settings = {'auth.secret': 'test'}
 
     def test_rest_enable_api(self):

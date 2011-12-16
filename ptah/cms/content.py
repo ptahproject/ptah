@@ -7,7 +7,7 @@ from pyramid.compat import text_type
 from pyramid.threadlocal import get_current_registry
 
 import ptah
-from ptah.cms.node import Node, Session
+from ptah.cms.node import Node
 from ptah.cms.interfaces import Error, IContent
 from ptah.cms.security import action
 from ptah.cms.permissions import DeleteContent, ModifyContent
@@ -110,16 +110,16 @@ class BaseContent(Node):
 
     # sql queries
     _sql_get = ptah.QueryFreezer(
-        lambda: Session.query(BaseContent)
+        lambda: ptah.get_session().query(BaseContent)
         .filter(BaseContent.__uri__ == sqla.sql.bindparam('uri')))
 
     _sql_get_in_parent = ptah.QueryFreezer(
-        lambda: Session.query(BaseContent)
+        lambda: ptah.get_session().query(BaseContent)
             .filter(BaseContent.__name_id__ == sqla.sql.bindparam('key'))
             .filter(BaseContent.__parent_uri__ == sqla.sql.bindparam('parent')))
 
     _sql_parent = ptah.QueryFreezer(
-        lambda: Session.query(BaseContent)
+        lambda: ptah.get_session().query(BaseContent)
             .filter(BaseContent.__uri__ == sqla.sql.bindparam('parent')))
 
     def __init__(self, **kw):

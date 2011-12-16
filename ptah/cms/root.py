@@ -3,7 +3,7 @@ import sqlalchemy as sqla
 from zope.interface import implementer
 
 import ptah
-from ptah.cms.node import Node, Session, set_policy
+from ptah.cms.node import Node, set_policy
 from ptah.cms.container import Container
 from ptah.cms.interfaces import IApplicationRoot, IApplicationPolicy
 
@@ -84,7 +84,7 @@ class ApplicationFactory(object):
             )
 
         self._sql_get_root = ptah.QueryFreezer(
-            lambda: Session.query(cls)\
+            lambda: ptah.get_session().query(cls)\
                 .filter(sqla.sql.and_(
                     cls.__name_id__ == sqla.sql.bindparam('name'),
                     cls.__type_id__ == sqla.sql.bindparam('type'))))
@@ -95,6 +95,7 @@ class ApplicationFactory(object):
             root = self.type.create(title=self.title)
             root.__name_id__ = self.name
             root.__path__ = '/%s/'%root.__uri__
+            Session = ptah.get_session()
             Session.add(root)
             Session.flush()
 

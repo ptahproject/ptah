@@ -27,7 +27,7 @@ class TestLoadApi(PtahTestCase):
         content = Content(title='Content')
         uri = content.__uri__
 
-        ptah.cms.Session.add(content)
+        ptah.get_session().add(content)
         transaction.commit()
 
         content = ptah.cms.load(uri)
@@ -42,8 +42,9 @@ class TestLoadApi(PtahTestCase):
 
         c_uri = content.__uri__
         co_uri = container.__uri__
-        ptah.cms.Session.add(container)
-        ptah.cms.Session.add(content)
+        Session = ptah.get_session()
+        Session.add(container)
+        Session.add(content)
         transaction.commit()
 
         container = ptah.resolve(co_uri)
@@ -69,7 +70,8 @@ class TestLoadApi(PtahTestCase):
 
         c = Content(title='Content')
         uri = c.__uri__
-        ptah.cms.Session.add(c)
+        Session = ptah.get_session()
+        Session.add(c)
         transaction.commit()
 
         self.assertRaises(HTTPForbidden, ptah.cms.load, uri, 'View')

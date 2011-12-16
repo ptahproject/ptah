@@ -1,22 +1,21 @@
-import sys, os
+import os
 from setuptools import setup, find_packages
 
 version='0.2dev'
 
 install_requires = ['setuptools',
                     'chameleon >= 2.6.1',
-                    'sphinx',
-                    'pytz',
                     'pyramid >= 1.3a1',
                     'pyramid_tm',
-                    'venusian', # we get it as part of pyramid
                     'zope.interface >= 3.8.0',
-                    'WebOb >= 1.2b2',
-                    'SQLAlchemy',
-                    'SQLAHelper',
-                    'Pygments',
                     'zope.sqlalchemy >= 0.7.0',
                     'transaction >= 1.2.0',
+                    'venusian', # we get it as part of pyramid
+                    'WebOb >= 1.2b2',
+                    'SQLAlchemy',
+                    'Pygments',
+                    'pytz',
+                    'sphinx',
                     ]
 tests_require = ['nose']
 

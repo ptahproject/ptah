@@ -55,7 +55,7 @@ class Record(object):
         self.cls = tinfo.cls
         self.request = request
 
-        self.record = cms.Session.query(tinfo.cls)\
+        self.record = ptah.get_session().query(tinfo.cls)\
             .filter(tinfo.cls.__id__ == pid).one()
 
 
@@ -108,13 +108,15 @@ class ModelView(form.Form):
             if not current:
                 current = 1
 
-        self.size = cms.Session.query(cls).count()
+        Session = ptah.get_session()
+
+        self.size = Session.query(cls).count()
         self.current = current
 
         self.pages, self.prev, self.next = self.page(self.size, self.current)
 
         offset, limit = self.page.offset(current)
-        self.data = cms.Session.query(cls)\
+        self.data = Session.query(cls)\
             .order_by(cls.__id__).offset(offset).limit(limit).all()
 
         return result
@@ -146,9 +148,10 @@ class ModelView(form.Form):
             self.message('Please select records for removing.', 'warning')
             return
 
-        for rec in cms.Session.query(self.context.tinfo.cls).filter(
+        Session = ptah.get_session()
+        for rec in Session.query(self.context.tinfo.cls).filter(
             self.context.tinfo.cls.__id__.in_(ids)).all():
-            cms.Session.delete(rec)
+            Session.delete(rec)
 
         self.message('Select records have been removed.')
         return HTTPFound(location = self.request.url)
@@ -186,8 +189,9 @@ class AddRecord(form.Form):
                 if val is not form.null:
                     setattr(record, field.name, val)
 
-        cms.Session.add(record)
-        cms.Session.flush()
+        Session = ptah.get_session()
+        Session.add(record)
+        Session.flush()
 
         self.message('New record has been created.', 'success')
         return HTTPFound(location='./%s/'%record.__id__)

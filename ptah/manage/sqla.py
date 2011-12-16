@@ -1,6 +1,5 @@
 """ sqla module """
 import urllib
-import sqlahelper as psa
 from sqlalchemy.orm.mapper import _mapper_registry
 from pyramid.view import view_config
 from pyramid.compat import url_quote_plus
@@ -10,8 +9,7 @@ from pyramid.httpexceptions import HTTPFound
 import ptah
 from ptah import form
 
-Session = psa.get_session()
-metadata = psa.get_base().metadata
+Session = ptah.get_session()
 
 
 @ptah.manage.module('sqla')
@@ -36,7 +34,7 @@ class SQLAModule(ptah.manage.PtahModule):
         cls.metadata[id] = [md, title or id.capitalize()]
 
 addMetadata = SQLAModule.addMetadata
-addMetadata(metadata, 'psqla', 'Pyramid sqla')
+addMetadata(ptah.get_base().metadata, 'psqla', 'Pyramid sqla')
 
 
 class Table(object):

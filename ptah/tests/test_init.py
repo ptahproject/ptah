@@ -6,17 +6,38 @@ from pyramid.config import Configurator
 import ptah
 
 
+class TestInitializeSql(unittest.TestCase):
+
+    def test_ptahinit_sqla(self):
+        config = Configurator(
+            settings = {'sqlalchemy.url': 'sqlite://'})
+        config.include('ptah')
+        config.commit()
+
+        config.ptah_initialize_sql()
+        self.assertIsNotNone(ptah.get_base().metadata.bind)
+
+
 class TestPtahInit(unittest.TestCase):
 
     def test_init_includeme(self):
         config = Configurator()
         config.include('ptah')
+        config.commit()
 
         self.assertTrue(hasattr(config, 'ptah_initialize'))
 
+        from pyramid.interfaces import \
+             IAuthenticationPolicy, IAuthorizationPolicy
+
+        self.assertIsNotNone(
+            config.registry.queryUtility(IAuthenticationPolicy))
+        self.assertIsNotNone(
+            config.registry.queryUtility(IAuthorizationPolicy))
+
     def test_init_ptah_init(self):
         config = Configurator(
-            settings = {'sqla.url': 'sqlite://', 'ptah.excludes': ''})
+            settings = {'sqlalchemy.url': 'sqlite://'})
 
         data = [False, False]
 
@@ -29,13 +50,15 @@ class TestPtahInit(unittest.TestCase):
             (ptah.events.SettingsInitialized,))
 
         config.include('ptah')
+        config.commit()
+
         config.ptah_initialize()
 
         self.assertTrue(data[1])
 
     def test_init_ptah_init_settings_exception(self):
         config = Configurator(
-            settings = {'sqla.url': 'sqlite://'})
+            settings = {'sqlalchemy.url': 'sqlite://'})
 
         class CustomException(Exception):
             pass
@@ -49,6 +72,7 @@ class TestPtahInit(unittest.TestCase):
             (ptah.events.SettingsInitialized,))
 
         config.include('ptah')
+        config.commit()
 
         err = None
         try:

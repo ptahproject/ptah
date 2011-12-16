@@ -18,10 +18,10 @@ class TestNode(PtahTestCase):
 
         content = MyContent()
         _uri = content.__uri__
-        ptah.cms.Session.add(content)
+        ptah.get_session().add(content)
         transaction.commit()
 
-        c = ptah.cms.Session.query(ptah.cms.Node).filter(
+        c = ptah.get_session().query(ptah.cms.Node).filter(
             ptah.cms.Node.__uri__ == _uri).one()
 
         self.assertTrue(isinstance(c, ptah.cms.Node))
@@ -35,10 +35,10 @@ class TestNode(PtahTestCase):
 
         content = MyContent()
         _uri = content.__uri__
-        ptah.cms.Session.add(content)
+        ptah.get_session().add(content)
         transaction.commit()
 
-        c = ptah.cms.Session.query(ptah.cms.Node).filter(
+        c = ptah.get_session().query(ptah.cms.Node).filter(
             ptah.cms.Node.__uri__ == _uri).one()
 
         self.assertTrue(isinstance(c, MyContent))
@@ -56,11 +56,11 @@ class TestNode(PtahTestCase):
         content = MyContent(__parent__ = parent)
         __uri = content.__uri__
 
-        ptah.cms.Session.add(parent)
-        ptah.cms.Session.add(content)
+        ptah.get_session().add(parent)
+        ptah.get_session().add(content)
         transaction.commit()
 
-        c = ptah.cms.Session.query(ptah.cms.Node).filter(
+        c = ptah.get_session().query(ptah.cms.Node).filter(
             ptah.cms.Node.__uri__ == __uri).one()
 
         self.assertTrue(c.__parent_uri__ == parent_uri)
@@ -78,16 +78,16 @@ class TestNode(PtahTestCase):
 
         self.assertTrue(ptah.ILocalRolesAware.providedBy(content))
 
-        ptah.cms.Session.add(content)
+        ptah.get_session().add(content)
         transaction.commit()
 
-        c = ptah.cms.Session.query(ptah.cms.Node).filter(
+        c = ptah.get_session().query(ptah.cms.Node).filter(
             ptah.cms.Node.__uri__ == __uri).one()
 
         c.__local_roles__['userid'] = ('role:1',)
         transaction.commit()
 
-        c = ptah.cms.Session.query(ptah.cms.Node).filter(
+        c = ptah.get_session().query(ptah.cms.Node).filter(
             ptah.cms.Node.__uri__ == __uri).one()
         self.assertTrue(c.__local_roles__ == {'userid': ['role:1']})
 
@@ -103,16 +103,16 @@ class TestNode(PtahTestCase):
 
         self.assertTrue(ptah.IOwnersAware.providedBy(content))
 
-        ptah.cms.Session.add(content)
+        ptah.get_session().add(content)
         transaction.commit()
 
-        c = ptah.cms.Session.query(ptah.cms.Node).filter(
+        c = ptah.get_session().query(ptah.cms.Node).filter(
             ptah.cms.Node.__uri__ == __uri).one()
 
         c.__owner__ = 'userid'
         transaction.commit()
 
-        c = ptah.cms.Session.query(ptah.cms.Node).filter(
+        c = ptah.get_session().query(ptah.cms.Node).filter(
             ptah.cms.Node.__uri__ == __uri).one()
         self.assertTrue(c.__owner__ == 'userid')
 
@@ -128,15 +128,15 @@ class TestNode(PtahTestCase):
 
         self.assertTrue(ptah.IACLsAware.providedBy(content))
 
-        ptah.cms.Session.add(content)
+        ptah.get_session().add(content)
         transaction.commit()
 
-        c = ptah.cms.Session.query(ptah.cms.Node).filter(
+        c = ptah.get_session().query(ptah.cms.Node).filter(
             ptah.cms.Node.__uri__ == __uri).one()
 
         c.__acls__.append('map1')
         transaction.commit()
 
-        c = ptah.cms.Session.query(ptah.cms.Node).filter(
+        c = ptah.get_session().query(ptah.cms.Node).filter(
             ptah.cms.Node.__uri__ == __uri).one()
         self.assertTrue(c.__acls__ == ['map1'])

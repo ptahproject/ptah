@@ -43,9 +43,6 @@ from ptah.cms.interfaces import IContainer
 from ptah.cms.interfaces import IApplicationRoot
 from ptah.cms.interfaces import IApplicationPolicy
 
-# sqlalchemy
-from ptah.cms.node import Base, Session
-
 # permissions
 from ptah.cms.permissions import View
 from ptah.cms.permissions import AddContent

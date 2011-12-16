@@ -26,9 +26,10 @@ class TestContainer(PtahTestCase):
             __name__ = 'container', __path__ = '/container/')
         content = self.Content(title='Content')
 
-        ptah.cms.Session.add(container)
-        ptah.cms.Session.add(content)
-        ptah.cms.Session.flush()
+        Session = ptah.get_session()
+        Session.add(container)
+        Session.add(content)
+        Session.flush()
 
         self.assertEqual(content.__path__, '')
 
@@ -79,9 +80,10 @@ class TestContainer(PtahTestCase):
         content = self.Content(title='Content')
         container['content'] = content
 
-        ptah.cms.Session.add(container)
-        ptah.cms.Session.add(content)
-        ptah.cms.Session.flush()
+        Session = ptah.get_session()
+        Session.add(container)
+        Session.add(content)
+        Session.flush()
 
         content_uri = content.__uri__
         container_uri = container.__uri__
@@ -107,9 +109,10 @@ class TestContainer(PtahTestCase):
                                    __path__ = '/container/')
         content = self.Content(title='Content')
 
-        ptah.cms.Session.add(container)
-        ptah.cms.Session.add(content)
-        ptah.cms.Session.flush()
+        Session = ptah.get_session()
+        Session.add(container)
+        Session.add(content)
+        Session.flush()
 
         container['content'] = content
 
@@ -146,10 +149,11 @@ class TestContainer(PtahTestCase):
         self.assertEqual(container.get('content1').__uri__, content1.__uri__)
         self.assertEqual(container.get('content2').__uri__, content2.__uri__)
 
-        ptah.cms.Session.add(container)
-        ptah.cms.Session.add(content1)
-        ptah.cms.Session.add(content2)
-        ptah.cms.Session.flush()
+        Session = ptah.get_session()
+        Session.add(container)
+        Session.add(content1)
+        Session.add(content2)
+        Session.flush()
 
         c_u = container.__uri__
         c1_u = content1.__uri__
@@ -183,10 +187,11 @@ class TestContainer(PtahTestCase):
         folder = self.Container(title='Folder')
         content = self.Content(title='Content')
 
-        ptah.cms.Session.add(container)
-        ptah.cms.Session.add(folder)
-        ptah.cms.Session.add(content)
-        ptah.cms.Session.flush()
+        Session = ptah.get_session()
+        Session.add(container)
+        Session.add(folder)
+        Session.add(content)
+        Session.flush()
 
         container['content'] = content
         container['folder'] = folder
@@ -221,9 +226,10 @@ class TestContainer(PtahTestCase):
         folder = self.Container(title='Folder')
         content = self.Content(title='Content')
 
-        ptah.cms.Session.add(container)
-        ptah.cms.Session.add(folder)
-        ptah.cms.Session.add(content)
+        Session = ptah.get_session()
+        Session.add(container)
+        Session.add(folder)
+        Session.add(content)
 
         folder['content'] = content
         container['folder'] = folder
@@ -250,11 +256,12 @@ class TestContainer(PtahTestCase):
         folder2 = self.Container(title='Folder2')
         content = self.Content(title='Content')
 
-        ptah.cms.Session.add(container)
-        ptah.cms.Session.add(folder1)
-        ptah.cms.Session.add(folder2)
-        ptah.cms.Session.add(content)
-        ptah.cms.Session.flush()
+        Session = ptah.get_session()
+        Session.add(container)
+        Session.add(folder1)
+        Session.add(folder2)
+        Session.add(content)
+        Session.flush()
 
         container['folder1'] = folder1
         folder1['folder2'] = folder2
@@ -287,9 +294,10 @@ class TestContainer(PtahTestCase):
                                    __path__ = '/container/')
         folder = self.Container(title='Folder')
 
-        ptah.cms.Session.add(container)
-        ptah.cms.Session.add(folder)
-        ptah.cms.Session.flush()
+        Session = ptah.get_session()
+        Session.add(container)
+        Session.add(folder)
+        Session.flush()
 
         container['folder'] = folder
 
@@ -308,9 +316,10 @@ class TestContainer(PtahTestCase):
                                    __path__ = '/container/')
         content = self.Content(title='Content')
 
-        ptah.cms.Session.add(container)
-        ptah.cms.Session.add(content)
-        ptah.cms.Session.flush()
+        Session = ptah.get_session()
+        Session.add(container)
+        Session.add(content)
+        Session.flush()
 
         container['content'] = content
 
@@ -337,10 +346,11 @@ class TestContainer(PtahTestCase):
         folder = self.Container(title='Folder')
         content = self.Content(title='Content')
 
-        ptah.cms.Session.add(container)
-        ptah.cms.Session.add(folder)
-        ptah.cms.Session.add(content)
-        ptah.cms.Session.flush()
+        Session = ptah.get_session()
+        Session.add(container)
+        Session.add(folder)
+        Session.add(content)
+        Session.flush()
 
         container['folder'] = folder
         folder['content'] = content

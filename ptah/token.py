@@ -1,11 +1,11 @@
 """ simple token service """
-import datetime
 import uuid
-import sqlahelper as sqlh
+import datetime
 import sqlalchemy as sqla
 
+import ptah
 from ptah import config
-from ptah.sqla import QueryFreezer
+from ptah.sqlautils import QueryFreezer
 
 __all__ = ['TokenType', 'service']
 
@@ -45,11 +45,11 @@ class TokenService(object):
     """ Token management service """
 
     _sql_get = QueryFreezer(
-        lambda: Session.query(Token).filter(
+        lambda: ptah.get_session().query(Token).filter(
             Token.token == sqla.sql.bindparam('token')))
 
     _sql_get_by_data = QueryFreezer(
-        lambda: Session.query(Token).filter(
+        lambda: ptah.get_session().query(Token).filter(
             sqla.sql.and_(Token.data == sqla.sql.bindparam('data'),
                           Token.typ == sqla.sql.bindparam('typ'))))
 
@@ -61,6 +61,8 @@ class TokenService(object):
         ``data`` token type specific data, it must be python string. """
 
         t = Token(typ, data)
+
+        Session = ptah.get_session()
         Session.add(t)
         Session.flush()
         return t.token
@@ -79,18 +81,14 @@ class TokenService(object):
 
     def remove(self, token):
         """ Remove token """
-        Session.query(Token).filter(
+        ptah.get_session().query(Token).filter(
             sqla.sql.or_(Token.token == token,
                          Token.valid > datetime.datetime.now())).delete()
 
 
 service = TokenService()
 
-Base = sqlh.get_base()
-Session = sqlh.get_session()
-
-
-class Token(Base):
+class Token(ptah.get_base()):
 
     __tablename__ = 'ptah_tokens'
 
@@ -98,7 +96,7 @@ class Token(Base):
     token = sqla.Column(sqla.Unicode(48))
     valid = sqla.Column(sqla.DateTime)
     data = sqla.Column(sqla.Unicode)
-    typ = sqla.Column(sqla.Unicode(48))
+    typ = sqla.Column('type', sqla.Unicode(48))
 
     def __init__(self, typ, data):
         super(Token, self).__init__()

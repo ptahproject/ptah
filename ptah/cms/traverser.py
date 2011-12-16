@@ -5,7 +5,6 @@ from pyramid.interfaces import ITraverser
 from pyramid.traversal import traversal_path, ResourceTreeTraverser
 
 import ptah
-from ptah.cms.node import Session
 from ptah.cms.content import BaseContent
 from ptah.cms.interfaces import IApplicationRoot
 
@@ -48,7 +47,7 @@ class ContentTraverser(object):
                 bindparams = [sql.bindparam(str(p)) for p in range(idx)]
 
                 queries[idx] = ptah.QueryFreezer(
-                    lambda: Session.query(BaseContent)\
+                    lambda: ptah.get_session().query(BaseContent)\
                         .filter(BaseContent.__path__.in_(bindparams))
                         .order_by(sql.desc(BaseContent.__path__)))
 

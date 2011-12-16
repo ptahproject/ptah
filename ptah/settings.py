@@ -1,7 +1,6 @@
 """ settings """
 import logging
 import os.path
-import sqlahelper as sqlh
 import sqlalchemy as sqla
 from collections import OrderedDict
 
@@ -163,7 +162,7 @@ class Settings(object):
             group.update(data)
 
     def load_fromdb(self):
-        self.load(dict(Session.query(SettingRecord.name,SettingRecord.value)))
+        self.load(dict(ptah.get_session().query(SettingRecord.name,SettingRecord.value)))
 
     def export(self, default=False):
         groups = config.get_cfg_storage(ID_SETTINGS_GROUP).items()
@@ -263,6 +262,8 @@ class Group(OrderedDict):
         name = self.__name__
         fields = self.__fields__
 
+        Session = ptah.get_session()
+
         # remove old data
         keys = tuple('{0}.{1}'.format(name, key) for key in data.keys())
         if keys:
@@ -292,9 +293,7 @@ class Group(OrderedDict):
         self.__registry__.notify(ptah.events.UriInvalidateEvent(self.__uri__))
 
 
-Session = sqlh.get_session()
-
-class SettingRecord(sqlh.get_base()):
+class SettingRecord(ptah.get_base()):
 
     __tablename__ = 'ptah_settings'
 

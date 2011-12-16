@@ -1,7 +1,6 @@
 """ ptah settings """
 import pytz
 import logging
-import sqlahelper
 import sqlalchemy
 import translationstring
 from email.utils import formataddr
@@ -82,25 +81,6 @@ ptah.register_settings(
 
     title = _('Ptah settings'),
 )
-
-ptah.register_settings(
-    ptah.CFG_ID_SQLA,
-
-    ptah.form.TextField(
-        'url',
-        default = '',
-        title = 'Engine URL',
-        description = 'SQLAlchemy database engine URL'),
-
-    ptah.form.BoolField(
-        'cache',
-        default = True,
-        title = 'Cache',
-        description = 'Eanble SQLAlchemy statement caching'),
-
-    title = 'SQLAlchemy settings',
-    description = 'Configuration settings for a SQLAlchemy database engine.'
-    )
 
 
 ptah.register_settings(
@@ -220,23 +200,6 @@ def initialized(ev):
     PTAH['full_email_address'] = formataddr(
         (PTAH['email_from_name'], PTAH['email_from_address']))
 
-    # sqla
-    SQLA = ptah.get_settings(ptah.CFG_ID_SQLA, ev.registry)
-    url = SQLA['url']
-    if url:
-        engine_args = {}
-        if SQLA['cache']:
-            cache = {}
-            engine_args['execution_options'] = \
-                {'compiled_cache': cache}
-            SQLA['sqlalchemy_cache'] = cache
-        try:
-            engine = sqlahelper.get_engine()
-        except: # pragma: no cover
-            engine = sqlalchemy.engine_from_config(
-                {'sqlalchemy.url': url}, 'sqlalchemy.', **engine_args)
-            sqlahelper.add_engine(engine)
-
 
 def pyramid_manage(cfg, name=None, access_manager=None,
                    managers=None, manager_role=None, disable_modules=None):
@@ -260,6 +223,18 @@ def pyramid_manage(cfg, name=None, access_manager=None,
         access_manager = ptah.manage.PtahAccessManager(cfg.registry)
 
     ptah.manage.set_access_manager(access_manager, cfg.registry)
+
+
+def initialize_sql(cfg, prefix='sqlalchemy.'):
+    PTAH = cfg.ptah_get_settings(ptah.CFG_ID_PTAH)
+    PTAH['sqlalchemy_cache'] = {}
+
+    engine = sqlalchemy.engine_from_config(
+        cfg.registry.settings, prefix,
+        execution_options = {'compiled_cache': PTAH['sqlalchemy_cache']})
+
+    ptah.get_session().configure(bind=engine)
+    ptah.get_base().metadata.bind = engine
 
 
 @ptah.subscriber(ApplicationCreated)

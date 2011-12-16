@@ -7,7 +7,6 @@ from pyramid.threadlocal import get_current_registry
 
 import ptah
 from ptah import config
-from ptah.cms.node import Session
 from ptah.cms.content import Content
 from ptah.cms.container import BaseContainer
 from ptah.cms.security import build_class_actions
@@ -207,7 +206,7 @@ def register_type_impl(
 
     # sql query for content resolver
     cls.__uri_sql_get__ = ptah.QueryFreezer(
-        lambda: Session.query(cls) \
+        lambda: ptah.get_session().query(cls) \
             .filter(cls.__uri__ == sqla.sql.bindparam('uri')))
 
     # build cms actions

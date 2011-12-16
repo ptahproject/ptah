@@ -5,7 +5,7 @@ from pyramid.compat import text_type
 from zope.interface import implementer
 
 import ptah
-from ptah.cms.node import Node, Session
+from ptah.cms.node import Node
 from ptah.cms.interfaces import IBlob, IBlobStorage
 
 
@@ -53,15 +53,16 @@ class BlobStorage(object):
     """ simple blob storage """
 
     _sql_get = ptah.QueryFreezer(
-        lambda: Session.query(Blob)
+        lambda: ptah.get_session().query(Blob)
             .filter(Blob.__uri__ == sqla.sql.bindparam('uri')))
 
     _sql_get_by_parent = ptah.QueryFreezer(
-        lambda: Session.query(Blob)
+        lambda: ptah.get_session().query(Blob)
             .filter(Blob.__parent_uri__ == sqla.sql.bindparam('parent')))
 
     def create(self, parent=None):
         blob = Blob(__parent__=parent)
+        Session = ptah.get_session()
         Session.add(blob)
         Session.flush()
 

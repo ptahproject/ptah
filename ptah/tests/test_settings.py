@@ -482,7 +482,8 @@ class TestDBSettings(PtahTestCase):
         self.assertEqual(grp['node1'], 'new text')
         self.assertEqual(grp['node2'], 65)
 
-        from ptah.settings import Session, SettingRecord
+        from ptah.settings import SettingRecord
+        Session = ptah.get_session()
 
         res = {}
         for rec in Session.query(SettingRecord):
@@ -501,7 +502,8 @@ class TestDBSettings(PtahTestCase):
 
         self.assertEqual(grp['node3'], 500)
 
-        from ptah.settings import Session, SettingRecord
+        from ptah.settings import SettingRecord
+        Session = ptah.get_session()
 
         res = {}
         for rec in Session.query(SettingRecord):
@@ -517,7 +519,8 @@ class TestDBSettings(PtahTestCase):
         self.assertEqual(grp['node1'], 'new text')
         self.assertEqual(grp['node2'], 50)
 
-        from ptah.settings import Session, SettingRecord
+        from ptah.settings import SettingRecord
+        Session = ptah.get_session()
 
         res = {}
         for rec in Session.query(SettingRecord):
@@ -532,7 +535,8 @@ class TestDBSettings(PtahTestCase):
         grp.updatedb(node1 = 'new text', node2 = 65)
         grp.updatedb(node1 = 'new text 2', node2 = 50)
 
-        from ptah.settings import Session, SettingRecord
+        from ptah.settings import SettingRecord
+        Session = ptah.get_session()
 
         res = {}
         for rec in Session.query(SettingRecord):
@@ -560,7 +564,8 @@ class TestDBSettings(PtahTestCase):
                      node2 = 65)
         grp.clear()
 
-        from ptah.settings import Session, SettingRecord
+        from ptah.settings import SettingRecord
+        Session = ptah.get_session()
 
         settings = self.registry.__ptah_storage__[SETTINGS_OB_ID]
         settings.load({})

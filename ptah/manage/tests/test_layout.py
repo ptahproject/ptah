@@ -1,4 +1,3 @@
-import sqlahelper
 import sqlalchemy
 from pyramid.testing import DummyRequest
 from pyramid.httpexceptions import HTTPNotFound

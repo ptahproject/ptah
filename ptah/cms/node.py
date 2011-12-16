@@ -1,5 +1,4 @@
 """ Node implementation """
-import sqlahelper
 import sqlalchemy as sqla
 from collections import OrderedDict
 from pyramid.compat import text_type
@@ -11,16 +10,13 @@ from ptah.cms.permissions import View
 from ptah.cms.interfaces import NotFound, Forbidden
 from ptah.cms.interfaces import INode, IApplicationPolicy
 
-Base = sqlahelper.get_base()
-Session = sqlahelper.get_session()
-
 
 @implementer(INode,
              ptah.IACLsAware,
              ptah.IOwnersAware,
              ptah.ILocalRolesAware)
 
-class Node(Base):
+class Node(ptah.get_base()):
     """ Base class for persistent objects.
 
     .. attribute:: __uri__

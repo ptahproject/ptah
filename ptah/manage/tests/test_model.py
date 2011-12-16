@@ -102,8 +102,9 @@ class TestModel(Base):
         content = Content1()
         content.title = 'Content test'
 
-        ptah.cms.Session.add(content)
-        ptah.cms.Session.flush()
+        Session = ptah.get_session()
+        Session.add(content)
+        Session.flush()
 
         rowid = content.__id__
         transaction.commit()
@@ -140,8 +141,9 @@ class TestModel(Base):
         content = Content1()
         content.title = 'Content test'
 
-        ptah.cms.Session.add(content)
-        ptah.cms.Session.flush()
+        Session = ptah.get_session()
+        Session.add(content)
+        Session.flush()
 
         rowid = content.__id__
         transaction.commit()
@@ -161,7 +163,8 @@ class TestModel(Base):
 
         transaction.commit()
 
-        rec = ptah.cms.Session.query(Content1).filter(
+        Session = ptah.get_session()
+        rec = Session.query(Content1).filter(
             Content1.__id__ == rowid).first()
         self.assertIsNone(rec)
 
@@ -171,8 +174,9 @@ class TestModel(Base):
         content = Content1()
         content.title = 'Content test'
 
-        ptah.cms.Session.add(content)
-        ptah.cms.Session.flush()
+        Session = ptah.get_session()
+        Session.add(content)
+        Session.flush()
 
         rowid = content.__id__
         transaction.commit()
@@ -252,11 +256,12 @@ class TestAddRecord(Base):
         id = form.record.__id__
         transaction.commit()
 
+        Session = ptah.get_session()
         self.assertIsInstance(res, HTTPFound)
         self.assertEqual(res.headers['location'], './%s/'%id)
-        self.assertEqual(len(ptah.cms.Session.query(self.Content1).all()), 1)
+        self.assertEqual(len(Session.query(self.Content1).all()), 1)
 
-        content = ptah.cms.Session.query(self.Content1) \
+        content = Session.query(self.Content1) \
             .filter(self.Content1.__id__ == id).first()
         self.assertEqual(content.title, 'Test content')
 
@@ -275,11 +280,12 @@ class TestAddRecord(Base):
         id = form.record.__id__
         transaction.commit()
 
+        Session = ptah.get_session()
         self.assertIsInstance(res, HTTPFound)
         self.assertEqual(res.headers['location'], './%s/'%id)
-        self.assertEqual(len(ptah.cms.Session.query(self.Content2).all()), 1)
+        self.assertEqual(len(Session.query(self.Content2).all()), 1)
 
-        content = ptah.cms.Session.query(self.Content2) \
+        content = Session.query(self.Content2) \
             .filter(self.Content2.__id__ == id).first()
         self.assertEqual(content.title, 'Test content')
 
@@ -292,8 +298,9 @@ class TestEditRecord(Base):
         content = Content1()
         content.title = 'Content test'
 
-        ptah.cms.Session.add(content)
-        ptah.cms.Session.flush()
+        Session = ptah.get_session()
+        Session.add(content)
+        Session.flush()
 
         rowid = content.__id__
         transaction.commit()
@@ -315,8 +322,9 @@ class TestEditRecord(Base):
         content = Content1()
         content.title = 'Content test'
 
-        ptah.cms.Session.add(content)
-        ptah.cms.Session.flush()
+        Session = ptah.get_session()
+        Session.add(content)
+        Session.flush()
 
         rowid = content.__id__
         transaction.commit()
@@ -338,8 +346,9 @@ class TestEditRecord(Base):
         content = Content1()
         content.title = 'Content test'
 
-        ptah.cms.Session.add(content)
-        ptah.cms.Session.flush()
+        Session = ptah.get_session()
+        Session.add(content)
+        Session.flush()
 
         rowid = content.__id__
         transaction.commit()
@@ -359,7 +368,8 @@ class TestEditRecord(Base):
                       ptah.view.render_messages(form.request))
         transaction.commit()
 
-        content = ptah.cms.Session.query(Content1) \
+        Session = ptah.get_session()
+        content = Session.query(Content1) \
             .filter(Content1.__id__ == rowid).first()
         self.assertEqual(content.title, 'Content')
 
@@ -369,8 +379,9 @@ class TestEditRecord(Base):
         content = Content2()
         content.title = 'Content test'
 
-        ptah.cms.Session.add(content)
-        ptah.cms.Session.flush()
+        Session = ptah.get_session()
+        Session.add(content)
+        Session.flush()
 
         rowid = content.__id__
         transaction.commit()
@@ -388,7 +399,8 @@ class TestEditRecord(Base):
                       ptah.view.render_messages(form.request))
         transaction.commit()
 
-        content = ptah.cms.Session.query(Content2) \
+        Session = ptah.get_session()
+        content = Session.query(Content2) \
             .filter(Content2.__id__ == rowid).first()
         self.assertEqual(content.title, 'Content')
 

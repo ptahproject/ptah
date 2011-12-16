@@ -180,7 +180,7 @@ class TestTypeInfo(PtahTestCase):
 
         self.assertTrue(isinstance(content, MyContent))
         self.assertEqual(content.title, 'Test content')
-        self.assertTrue(content not in ptah.cms.Session)
+        self.assertTrue(content not in ptah.get_session())
 
     def test_tinfo_alchemy(self):
         import ptah.cms
@@ -210,7 +210,7 @@ class TestTypeInfo(PtahTestCase):
 
         content = MyContent.__type__.create(title='Test content')
         c_uri = content.__uri__
-        ptah.cms.Session.add(content)
+        ptah.get_session().add(content)
         transaction.commit()
 
         c = ptah.resolve(c_uri)

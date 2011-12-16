@@ -1,7 +1,6 @@
 """ base class """
 import sys
 import unittest
-import sqlahelper
 import sqlalchemy
 import transaction
 from pyramid import testing
@@ -19,7 +18,7 @@ class PtahTestCase(unittest.TestCase):
     _init_ptah = True
     _init_sqla = True
 
-    _settings = {}
+    _settings = {'sqlalchemy.url': 'sqlite://'}
     _packages = ()
     _trusted_manage = True
     _environ = {
@@ -45,9 +44,12 @@ class PtahTestCase(unittest.TestCase):
         ptah.init_settings(self.config, self.registry.settings)
 
         if self._init_sqla:
+            # create engine
+            ptah.reset_session()
+            self.config.ptah_initialize_sql()
+
             # create sql tables
-            Base = sqlahelper.get_base()
-            Base.metadata.drop_all()
+            Base = ptah.get_base()
             Base.metadata.create_all()
             transaction.commit()
 
@@ -66,14 +68,7 @@ class PtahTestCase(unittest.TestCase):
         self.request.registry = self.registry
 
     def setUp(self):
-        if self._init_sqla:
-            try:
-                engine = sqlahelper.get_engine()
-            except: # pragma: no cover
-                engine = sqlalchemy.engine_from_config(
-                    {'sqlalchemy.url': 'sqlite://'})
-                sqlahelper.add_engine(engine)
-
+        ptah.QueryFreezer._testing = True
         self.init_pyramid()
 
         if self._init_ptah: # pragma: no cover

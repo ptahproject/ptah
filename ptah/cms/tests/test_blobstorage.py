@@ -65,7 +65,7 @@ class TestBlob(PtahTestCase):
 
         content = MyContent()
         content_uri = content.__uri__
-        ptah.cms.Session.add(content)
+        ptah.get_session().add(content)
 
         blob_uri = ptah.cms.blob_storage.add(
             BytesIO(bytes_('blob data','utf-8')), content).__uri__

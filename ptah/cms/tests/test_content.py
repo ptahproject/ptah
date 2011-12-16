@@ -37,7 +37,7 @@ class TestContent(PtahTestCase):
                             __parent__ = root,
                             __path__ = '%stest/'%root.__path__)
         c_uri = content.__uri__
-        ptah.cms.Session.add(content)
+        ptah.get_session().add(content)
 
         self.assertTrue(
             content.__name__ == 'test')
@@ -52,7 +52,7 @@ class TestContent(PtahTestCase):
             ApplicationRoot, '/app2', 'root', 'Root App')
         root = factory2(self.request)
 
-        c = ptah.cms.Session.query(MyContent).filter(
+        c = ptah.get_session().query(MyContent).filter(
             MyContent.__uri__ == c_uri).one()
 
         self.assertTrue(

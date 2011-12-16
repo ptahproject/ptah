@@ -1,11 +1,10 @@
 import transaction
-import sqlahelper
 import sqlalchemy as sqla
+import ptah
 from ptah import form
 from ptah.testing import PtahTestCase
 
-SqlaBase = sqlahelper.get_base()
-Session = sqlahelper.get_session()
+Session = ptah.get_session()
 
 
 class TestSqlSchema(PtahTestCase):
@@ -13,7 +12,7 @@ class TestSqlSchema(PtahTestCase):
     def test_sqlschema_fields(self):
         import ptah
 
-        class Test(SqlaBase):
+        class Test(ptah.get_base()):
             __tablename__ = 'test'
 
             id = sqla.Column('id', sqla.Integer, primary_key=True)
@@ -59,7 +58,7 @@ class TestSqlSchema(PtahTestCase):
     def test_sqlschema_extra_fields(self):
         import ptah
 
-        class Test2(SqlaBase):
+        class Test2(ptah.get_base()):
             __tablename__ = 'test2'
 
             id = sqla.Column('id', sqla.Integer, primary_key=True)
@@ -86,7 +85,7 @@ class TestSqlSchema(PtahTestCase):
 
         field = form.TextField('name', title = 'Custom')
 
-        class Test3(SqlaBase):
+        class Test3(ptah.get_base()):
             __tablename__ = 'test3'
             id = sqla.Column('id', sqla.Integer, primary_key=True)
             name = sqla.Column(sqla.Unicode(), info={'field': field})
@@ -102,7 +101,7 @@ class TestSqlSchema(PtahTestCase):
     def test_sqlschema_custom_type(self):
         import ptah
 
-        class Test31(SqlaBase):
+        class Test31(ptah.get_base()):
             __tablename__ = 'test31'
             id = sqla.Column('id', sqla.Integer, primary_key=True)
             name = sqla.Column(sqla.Unicode(), info={'field_type': 'int'})
@@ -116,7 +115,7 @@ class TestSqlSchema(PtahTestCase):
     def test_sqlschema_custom_factory(self):
         import ptah
 
-        class Test32(SqlaBase):
+        class Test32(ptah.get_base()):
             __tablename__ = 'test32'
             id = sqla.Column('id', sqla.Integer, primary_key=True)
             name = sqla.Column(sqla.Unicode(),
@@ -130,7 +129,7 @@ class TestSqlSchema(PtahTestCase):
     def test_sqlschema_skip(self):
         import ptah
 
-        class Test34(SqlaBase):
+        class Test34(ptah.get_base()):
             __tablename__ = 'test34'
             id = sqla.Column('id', sqla.Integer, primary_key=True)
             name = sqla.Column(sqla.Unicode(), info={'skip': True})
@@ -142,7 +141,7 @@ class TestSqlSchema(PtahTestCase):
     def test_sqlschema_unknown(self):
         import ptah
 
-        class Test2(SqlaBase):
+        class Test2(ptah.get_base()):
             __tablename__ = 'test5'
 
             id = sqla.Column('id', sqla.Integer, primary_key=True)
@@ -156,16 +155,18 @@ class TestSqlSchema(PtahTestCase):
 
 class TestQueryFreezer(PtahTestCase):
 
+    _init_sqla = False
+
     def test_freezer_one(self):
         import ptah
 
-        class Test(SqlaBase):
+        class Test(ptah.get_base()):
             __tablename__ = 'test10'
 
             id = sqla.Column('id', sqla.Integer, primary_key=True)
             name = sqla.Column(sqla.Unicode())
 
-        SqlaBase.metadata.create_all()
+        ptah.get_base().metadata.create_all()
         transaction.commit()
 
         sql_get = ptah.QueryFreezer(
@@ -194,13 +195,13 @@ class TestQueryFreezer(PtahTestCase):
     def test_freezer_first(self):
         import ptah
 
-        class Test(SqlaBase):
+        class Test(ptah.get_base()):
             __tablename__ = 'test12'
 
             id = sqla.Column('id', sqla.Integer, primary_key=True)
             name = sqla.Column(sqla.Unicode())
 
-        SqlaBase.metadata.create_all()
+        ptah.get_base().metadata.create_all()
         transaction.commit()
 
         sql_get = ptah.QueryFreezer(
@@ -224,16 +225,22 @@ class TestQueryFreezer(PtahTestCase):
 
 class TestJsonDict(PtahTestCase):
 
+    _init_sqla = False
+
     def test_jsondict(self):
         import ptah
+        ptah.reset_session()
 
-        class Test(SqlaBase):
+        self.config.ptah_initialize_sql()
+
+        class Test(ptah.get_base()):
             __tablename__ = 'test14'
 
             id = sqla.Column('id', sqla.Integer, primary_key=True)
             data = sqla.Column(ptah.JsonDictType())
 
-        SqlaBase.metadata.create_all()
+        Session = ptah.get_session()
+        ptah.get_base().metadata.create_all()
         transaction.commit()
 
         rec = Test()
@@ -262,16 +269,21 @@ class TestJsonDict(PtahTestCase):
 
 class TestJsonList(PtahTestCase):
 
+    _init_sqla = False
+
     def test_jsonlist(self):
         import ptah
 
-        class Test(SqlaBase):
+        Base = ptah.get_base()
+
+        class Test(Base):
             __tablename__ = 'test15'
 
             id = sqla.Column('id', sqla.Integer, primary_key=True)
             data = sqla.Column(ptah.JsonListType())
 
-        SqlaBase.metadata.create_all()
+        Session = ptah.get_session()
+        Base.metadata.create_all()
         transaction.commit()
 
         rec = Test()

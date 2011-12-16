@@ -12,6 +12,11 @@ from ptah.uri import resolver
 from ptah.uri import extract_uri_schema
 from ptah.uri import UriFactory
 
+# sqla
+from ptah.sqlautils import get_base
+from ptah.sqlautils import get_session
+from ptah.sqlautils import reset_session
+
 # events
 from ptah import events
 from ptah.events import event
@@ -78,7 +83,6 @@ from pyramid.security import NO_PERMISSION_REQUIRED
 # ptah settings ids
 CFG_ID_PTAH = 'ptah'
 CFG_ID_FORMAT = 'format'
-CFG_ID_SQLA = 'sqla'
 CFG_ID_PASSWORD = 'password'
 
 # password tool
@@ -104,9 +108,9 @@ from ptah.util import tldata
 from ptah.rst import rst_to_html
 
 # sqlalchemy utils
-from ptah.sqla import QueryFreezer
-from ptah.sqla import JsonDictType
-from ptah.sqla import JsonListType
+from ptah.sqlautils import QueryFreezer
+from ptah.sqlautils import JsonDictType
+from ptah.sqlautils import JsonListType
 from ptah.sqla import generate_fieldset
 from ptah.sqla import build_sqla_fieldset
 
@@ -119,7 +123,6 @@ from ptah import manage
 
 # cms
 from ptah import cms
-from ptah.cms import Session
 
 # form api
 from ptah import form
@@ -189,6 +192,9 @@ def includeme(cfg):
     from ptah import ptahsettings
     cfg.add_directive('ptah_mailer', ptahsettings.set_mailer)
 
+    # initialize sql
+    cfg.add_directive('ptah_initialize_sql', ptahsettings.initialize_sql)
+
     # layout directive
     cfg.add_directive('ptah_layout', layout.pyramid)
 
@@ -203,7 +209,7 @@ def includeme(cfg):
 
 
 # initialize ptah
-def ptah_initialize(cfg):
+def ptah_initialize(cfg, sqla=True):
     """ Initialize ptah package."""
     from pyramid.exceptions import  ConfigurationExecutionError
 
@@ -213,6 +219,10 @@ def ptah_initialize(cfg):
 
         # initialize settings
         init_settings(cfg, cfg.registry.settings)
+
+        # initialize sqlalchemy
+        if sqla:
+            cfg.ptah_initialize_sql()
 
     except config.StopException:
         config.shutdown()

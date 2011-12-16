@@ -40,8 +40,8 @@ class TestTraverser(PtahTestCase):
             __path__ = '%scontent/'%folder.__path__)
         self.content_uri = content.__uri__
 
-        ptah.cms.Session.add(folder)
-        ptah.cms.Session.add(content)
+        ptah.get_session().add(folder)
+        ptah.get_session().add(content)
         transaction.commit()
 
     def test_traverser_root_view(self):

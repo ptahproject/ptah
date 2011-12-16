@@ -5,7 +5,7 @@ from pyramid.compat import string_types
 from pyramid.threadlocal import get_current_registry
 
 import ptah
-from ptah.cms.node import Session, load_parents
+from ptah.cms.node import load_parents
 from ptah.cms.content import Content, BaseContent
 from ptah.cms.security import action
 from ptah.cms.permissions import DeleteContent
@@ -20,11 +20,11 @@ class BaseContainer(BaseContent):
     _v_items = None
 
     _sql_keys = ptah.QueryFreezer(
-        lambda: Session.query(BaseContent.__name_id__)
+        lambda: ptah.get_session().query(BaseContent.__name_id__)
             .filter(BaseContent.__parent_uri__ == sqla.sql.bindparam('uri')))
 
     _sql_values = ptah.QueryFreezer(
-        lambda: Session.query(BaseContent)
+        lambda: ptah.get_session().query(BaseContent)
             .filter(BaseContent.__parent_uri__ == sqla.sql.bindparam('uri')))
 
     def keys(self):
@@ -139,6 +139,7 @@ class BaseContainer(BaseContent):
         item.__parent_uri__ = self.__uri__
         item.__path__ = '%s%s/'%(self.__path__, key)
 
+        Session = ptah.get_session()
         if item not in Session:
             Session.add(item)
 
@@ -185,6 +186,7 @@ class BaseContainer(BaseContent):
             if self._v_items and name in self._v_items:
                 del self._v_items[name]
 
+            Session = ptah.get_session()
             if item in Session:
                 try:
                     Session.delete(item)
