@@ -27,7 +27,7 @@ class BaseTesting(PtahTestCase):
         self.config.autocommit = True
 
         if initsettings:
-            self.config.ptah_initialize_settings()
+            self.config.ptah_init_settings()
 
 
 class TestSettingsResolver(BaseTesting):

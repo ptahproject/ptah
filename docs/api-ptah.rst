@@ -3,8 +3,6 @@ ptah
 
 .. automodule:: ptah
 
-.. autofunction:: ptah_initialize
-
 
 URI
 ~~~
@@ -116,7 +114,7 @@ Settings
 
   .. autofunction:: get_settings
 
-  .. autofunction:: init_settings
+  .. autofunction:: ptah.settings.init_settings
 
   .. autofunction:: register_settings
 

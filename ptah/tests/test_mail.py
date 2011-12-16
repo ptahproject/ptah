@@ -160,7 +160,7 @@ class TestMailTemplate(PtahTestCase):
             def send(self, frm, to, msg):
                 data.append((frm, to, msg))
 
-        self.config.ptah_mailer(Mailer())
+        self.config.ptah_init_mailer(Mailer())
 
         tmpl.send()
 

@@ -1,5 +1,6 @@
 import ptah
 from pyramid.view import view_config
+from pyramid.interfaces import IRouteRequest
 
 
 @ptah.manage.module('rest')
@@ -9,6 +10,11 @@ class RestModule(ptah.manage.PtahModule):
     """
 
     title = 'REST Introspector'
+
+    def available(self):
+        """ check if ptah rest api is enabled """
+        return self.request.registry.queryUtility(
+            IRouteRequest, 'ptah-rest') is not None
 
 
 @view_config(

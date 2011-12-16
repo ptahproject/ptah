@@ -18,7 +18,7 @@ Configuring
 
 The `Manage Interface` is configured through Ptah Settings.  You will do this inside of your WSGI entry point where you return make_wsgi_app(). `config` is the Pyramid configurator.::
 
-    config.ptah_manage(
+    config.ptah_init_manage(
         managers = ['*'],
         disable_modules = ['rest', 'introspect', 'apps', 'permissions', 'settings'])
 

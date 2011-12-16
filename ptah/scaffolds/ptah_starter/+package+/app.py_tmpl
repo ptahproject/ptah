@@ -21,10 +21,13 @@ def main(global_config, **settings):
     config.commit()
 
     # Refer: Ptah: _Initialization_
-    config.ptah_initialize_settings()
+    config.ptah_init_settings()
 
     # Refer: Ptah: _Initialization_
-    config.ptah_initialize_sql()
+    config.ptah_init_sql()
+
+    # enable ptah management
+    config.ptah_init_manage(managers=('*',))
 
     # Refer: SQLAlchemy _Declarative_
     Base = ptah.get_base()
@@ -38,8 +41,5 @@ def main(global_config, **settings):
 
     # Refer: Pyramid's _Configuration Decorations and Code Scanning_
     config.scan()
-
-    # enable ptah management
-    config.ptah_manage(managers=('*',))
 
     return config.make_wsgi_app()

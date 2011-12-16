@@ -231,7 +231,7 @@ class TestJsonDict(PtahTestCase):
         import ptah
         ptah.reset_session()
 
-        self.config.ptah_initialize_sql()
+        self.config.ptah_init_sql()
 
         class Test(ptah.get_base()):
             __tablename__ = 'test14'

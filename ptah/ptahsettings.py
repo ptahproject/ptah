@@ -180,9 +180,12 @@ ptah.register_settings(
     )
 
 
-def set_mailer(config, mailer):
-    PTAH = ptah.get_settings(ptah.CFG_ID_PTAH, config.registry)
-    PTAH['Mailer'] = mailer
+def set_mailer(cfg, mailer):
+    def action(cfg, mailer):
+        PTAH = ptah.get_settings(ptah.CFG_ID_PTAH, cfg.registry)
+        PTAH['Mailer'] = mailer
+
+    cfg.action('ptah.ptah_mailer', action, (cfg, mailer))
 
 
 class DummyMailer(object):
@@ -201,40 +204,48 @@ def initialized(ev):
         (PTAH['email_from_name'], PTAH['email_from_address']))
 
 
-def pyramid_manage(cfg, name=None, access_manager=None,
-                   managers=None, manager_role=None, disable_modules=None):
-    """ pyramid `ptah_manage` directive """
-    PTAH = cfg.ptah_get_settings(ptah.CFG_ID_PTAH)
+def enable_manage(cfg, name='ptah-manage', access_manager=None,
+                  managers=None, manager_role=None, disable_modules=None):
+    """Implementation for pyramid `ptah_init_manage` directive """
+    def action(cfg, name, access_manager,
+               managers, manager_role, disable_modules):
+        PTAH = cfg.ptah_get_settings(ptah.CFG_ID_PTAH)
 
-    if name is not None:
         PTAH['manage'] = name
-    if managers is not None:
-        PTAH['managers'] = managers
-    if manager_role is not None:
-        PTAH['manager_role'] = manager_role
-    if disable_modules is not None:
-        PTAH['disable_modules'] = disable_modules
+        if managers is not None:
+            PTAH['managers'] = managers
+        if manager_role is not None:
+            PTAH['manager_role'] = manager_role
+        if disable_modules is not None:
+            PTAH['disable_modules'] = disable_modules
 
-    name = PTAH['manage']
+        if access_manager is None:
+            access_manager = ptah.manage.PtahAccessManager(cfg.registry)
+
+        ptah.manage.set_access_manager(access_manager, cfg.registry)
+
     cfg.add_route('ptah-manage', '/{0}/*traverse'.format(name),
                   factory=ptah.manage.PtahManageRoute, use_global_views=True)
-
-    if access_manager is None:
-        access_manager = ptah.manage.PtahAccessManager(cfg.registry)
-
-    ptah.manage.set_access_manager(access_manager, cfg.registry)
+    cfg.action(
+        'ptah.ptah_manage', action,
+        (cfg, name, access_manager,
+         managers, manager_role, disable_modules))
 
 
 def initialize_sql(cfg, prefix='sqlalchemy.'):
-    PTAH = cfg.ptah_get_settings(ptah.CFG_ID_PTAH)
-    PTAH['sqlalchemy_cache'] = {}
+    def action(cfg, cache):
+        PTAH = cfg.ptah_get_settings(ptah.CFG_ID_PTAH)
+        PTAH['sqlalchemy_cache'] = {}
 
+    cache = {}
     engine = sqlalchemy.engine_from_config(
         cfg.registry.settings, prefix,
-        execution_options = {'compiled_cache': PTAH['sqlalchemy_cache']})
+        execution_options = {'compiled_cache': cache})
 
     ptah.get_session().configure(bind=engine)
     ptah.get_base().metadata.bind = engine
+
+    cfg.action('ptah.initalize_sql', action, (cfg, cache))
 
 
 @ptah.subscriber(ApplicationCreated)

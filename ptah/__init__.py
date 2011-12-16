@@ -133,6 +133,7 @@ from ptah.testing import PtahTestCase
 def includeme(cfg):
     # auth
     from ptah.security import PtahAuthorizationPolicy
+    from pyramid.compat import configparser
     from pyramid.authentication import AuthTktAuthenticationPolicy
 
     kwargs = {'wild_domain': False,
@@ -146,17 +147,32 @@ def includeme(cfg):
     cfg.include('pyramid_tm')
     cfg.include('ptah.manage')
 
-    # initialize settings
-    from ptah.settings import init_settings
-    cfg.add_directive('ptah_initialize_settings', init_settings)
-
-    # initialize sql
-    from ptah import ptahsettings
-    cfg.add_directive('ptah_initialize_sql', ptahsettings.initialize_sql)
-
     # object events handler
     cfg.registry.registerHandler(
         config.ObjectEventNotify(cfg.registry), (config.IObjectEvent,))
+
+    # initialize settings
+    from ptah import settings
+    def pyramid_init_settings(cfg, custom_settings=None,
+                              section=configparser.DEFAULTSECT):
+        cfg.action('ptah.init_settings',
+                   settings.init_settings, (cfg, custom_settings, section))
+
+    cfg.add_directive('ptah_init_settings', pyramid_init_settings)
+
+    # initialize sql
+    from ptah import ptahsettings
+    cfg.add_directive('ptah_init_sql', ptahsettings.initialize_sql)
+
+    # ptah manage ui directive
+    cfg.add_directive('ptah_init_manage', ptahsettings.enable_manage)
+
+    # ptah mailer directive
+    cfg.add_directive('ptah_init_mailer', ptahsettings.set_mailer)
+
+    # ptah rest api directive
+    from ptah import rest
+    cfg.add_directive('ptah_init_rest', rest.enable_rest_api)
 
     # ptah.config directives
     from ptah.config import pyramid_get_cfg_storage
@@ -183,16 +199,6 @@ def includeme(cfg):
     # ptah.password directives
     from ptah import password
     cfg.add_directive('ptah_password_changer', password_changer.pyramid)
-
-    # ptah rest api directive
-    from ptah import rest
-    cfg.add_directive('ptah_rest_api', rest.enable_rest_api)
-
-    # ptah manage ui directive
-    cfg.add_directive('ptah_manage', ptahsettings.pyramid_manage)
-
-    # ptah mailer directive
-    cfg.add_directive('ptah_mailer', ptahsettings.set_mailer)
 
     # layout directive
     cfg.add_directive('ptah_layout', layout.pyramid)

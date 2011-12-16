@@ -22,7 +22,22 @@ _marker = object()
 
 
 def get_settings(grp, registry=None):
-    """ get settings group by group id """
+    """Get settings group by group id. Also there is `ptah_get_settins`
+    pyramid configurator directive.
+
+    .. code-block:: python
+
+      config = Configurator()
+      config.include('ptah')
+      config.commit()
+
+      # get settings with pyramid directive
+      ptah_settings = config.ptah_get_settings('ptah')
+
+      # get settings with `get_settings`
+      ptah_settings = ptah.get_settings(ptah.CFG_ID_PTAH, config.registry)
+
+    """
     return config.get_cfg_storage(ID_SETTINGS_GROUP, registry)[grp]
 
 
@@ -44,7 +59,19 @@ def pyramid_get_settings(config, grp):
 
 
 def init_settings(pconfig, cfg=None, section=configparser.DEFAULTSECT):
-    """ initialize settings management system """
+    """Initialize settings management system. This function available
+    as pyramid configurator directive. You should call it during
+    application configuration process.
+
+    .. code-block:: python
+
+      config = Configurator()
+      config.include('ptah')
+
+      # initialize ptah setting management system
+      config.ptah_initialize_settings()
+
+    """
     registry = pconfig.registry
     settings = config.get_cfg_storage(SETTINGS_OB_ID,pconfig.registry,Settings)
 
@@ -84,7 +111,12 @@ def init_settings(pconfig, cfg=None, section=configparser.DEFAULTSECT):
 
 
 def register_settings(name, *fields, **kw):
-    """ register settings group """
+    """Register settings group.
+
+    :param name: Name of settings group
+    :param *fields: List of :py:class:`ptah.form.Field` objects
+
+    """
     iname = name
     for ch in ('.', '-'):
         iname = iname.replace(ch, '_')

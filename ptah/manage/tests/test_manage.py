@@ -107,11 +107,12 @@ class TestManageModule(PtahTestCase):
         def access_manager():
             """ """
 
-        config.ptah_manage('test-manage',
-                           access_manager=access_manager,
-                           managers = ('manager',),
-                           manager_role = 'Manager',
-                           disable_modules = ('models',))
+        config.ptah_init_manage(
+            'test-manage',
+            access_manager=access_manager,
+            managers = ('manager',),
+            manager_role = 'Manager',
+            disable_modules = ('models',))
 
         cfg = config.ptah_get_settings(ptah.CFG_ID_PTAH)
 
@@ -131,7 +132,7 @@ class TestManageModule(PtahTestCase):
         config = Configurator(autocommit=True)
         config.include('ptah')
 
-        config.ptah_manage('test-manage')
+        config.ptah_init_manage('test-manage')
 
         cfg = config.ptah_get_settings(ptah.CFG_ID_PTAH)
         self.assertIsInstance(cfg['access_manager'], PtahAccessManager)
