@@ -1,5 +1,5 @@
-ptah.form  API
---------------
+ptah.form
+---------
 
 .. automodule:: ptah.form
 

@@ -1,5 +1,5 @@
-ptah API
---------
+ptah
+----
 
 .. automodule:: ptah
 

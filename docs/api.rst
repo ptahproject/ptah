@@ -1,5 +1,5 @@
-Ptah API
-========
+API
+===
 
 .. toctree::
    :maxdepth: 2

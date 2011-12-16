@@ -5,6 +5,7 @@ Ptah Framework
    :maxdepth: 2
    
    overview.rst
+   tutorial.rst
    rdbms.rst
    manageui.rst
    forms.rst

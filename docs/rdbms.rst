@@ -29,7 +29,7 @@ The `ptah_content` table provides a definition for base content model.  It is us
 +--------------+----------+-------+---------+----------------------+
 | Name         | Type     | Null  | Default | Comments             |
 +==============+==========+=======+=========+======================+
-| id           | int      | False | ''      | PK, FK ptah_nodes.id |         |
+| id           | int      | False | ''      | PK, FK ptah_nodes.id |
 +--------------+----------+-------+---------+----------------------+
 | path         | varchar  | True  |         |                      |
 +--------------+----------+-------+---------+----------------------+

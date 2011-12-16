@@ -1,5 +1,5 @@
-ptah.cms API
-------------
+ptah.cms
+--------
 
 .. automodule:: ptah.cms
 
