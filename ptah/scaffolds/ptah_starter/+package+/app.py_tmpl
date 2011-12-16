@@ -40,9 +40,6 @@ def main(global_config, **settings):
     # Refer: Pyramid's _Configuration Decorations and Code Scanning_
     config.scan()
 
-    # enable ptah rest
-    config.ptah_rest_api()
-
     # enable ptah management
     config.ptah_manage(managers=('*',))
 
