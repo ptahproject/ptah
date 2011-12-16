@@ -59,11 +59,7 @@ def init_settings(pconfig, cfg=None, section=configparser.DEFAULTSECT):
     if cfg is None:
         cfg = pconfig.registry.settings
 
-    try:
-        here = cfg.get('here', './')
-    except:
-        print (cfg,)
-        raise
+    here = cfg.get('here', './')
     include = cfg.get('include', '')
     for f in include.split('\n'):
         f = f.strip()
