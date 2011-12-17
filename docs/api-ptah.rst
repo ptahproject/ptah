@@ -3,6 +3,40 @@ ptah
 
 .. automodule:: ptah
 
+Pyramid Config
+~~~~~~~~~~~~~~
+
+Imperative-style Pyramid Configuration functions.  These are callable with
+a Configurator object, such as::
+
+    config.ptah_init_manage(managers=['*'])
+
+Configurator must be applied before returning WSGI Application.
+
+  .. ptah_init_settings
+  
+  .. ptah_init_sql
+  
+  .. ptah_init_manage
+  
+  .. ptah_init_mailer
+  
+  .. ptah_init_rest
+  
+  .. ptah_auth_checker
+  
+  .. ptah_auth_provider
+  
+  .. ptah_principal_searcher
+  
+  .. ptah_uri_resolver
+  
+  .. ptah_password_changer
+  
+  .. ptah_layout
+  
+  .. ptah_snippet
+  
 
 URI
 ~~~
@@ -17,6 +51,39 @@ URI
   .. autoclass:: UriFactory
      :members: __call__
 
+Snippet
+~~~~~~~
+
+  .. autoclass:: snippet
+     :members: register, pyramid
+
+  .. autofunction:: render_snippet
+
+Layout
+~~~~~~
+
+  .. autoclass:: layout
+     :members: register, pyramid
+
+  .. autofunction:: wrap_layout
+
+Library
+~~~~~~~
+
+  .. autofunction:: library
+  
+  .. autofunction:: include
+  
+  .. autofunction:: render_includes
+
+Settings
+~~~~~~~~
+
+  .. autofunction:: get_settings
+
+  .. autofunction:: ptah.settings.init_settings
+
+  .. autofunction:: register_settings
 
 ACL
 ~~~
@@ -109,18 +176,14 @@ Password utils
      :members: pyramid
 
 
-Settings
-~~~~~~~~
-
-  .. autofunction:: get_settings
-
-  .. autofunction:: ptah.settings.init_settings
-
-  .. autofunction:: register_settings
-
-
 Utilities
 ~~~~~~~~~
+
+  .. autofunction:: get_base
+  
+  .. autofunction:: get_session
+  
+  .. autofunction:: reset_session
 
   .. autoclass:: Pagination
 
@@ -136,25 +199,14 @@ Utilities
   
   .. autofunction:: rst_to_html
 
+Formatter
+~~~~~~~~~
 
-Layout
-~~~~~~
-
-  .. autoclass:: layout
-     :members: register, pyramid
-
-  .. autofunction:: wrap_layout
-
-
-Snippet
-~~~~~~~
-
-  .. autoclass:: snippet
-     :members: register, pyramid
-
-  .. autofunction:: render_snippet
-
-
+  .. autofunction:: format
+  
+  .. autofunction:: formatter
+     
+     
 Status messages
 ~~~~~~~~~~~~~~~
 
