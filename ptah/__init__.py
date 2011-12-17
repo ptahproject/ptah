@@ -40,7 +40,6 @@ from ptah.library import render_includes
 
 # settings
 from ptah.settings import get_settings
-from ptah.settings import init_settings
 from ptah.settings import register_settings
 
 # security
@@ -83,7 +82,6 @@ from pyramid.security import NO_PERMISSION_REQUIRED
 # ptah settings ids
 CFG_ID_PTAH = 'ptah'
 CFG_ID_FORMAT = 'format'
-CFG_ID_PASSWORD = 'password'
 
 # password tool
 from ptah.password import pwd_tool
@@ -134,6 +132,7 @@ from ptah.testing import PtahTestCase
 def includeme(cfg):
     # auth
     from ptah.security import PtahAuthorizationPolicy
+    from pyramid.compat import configparser
     from pyramid.authentication import AuthTktAuthenticationPolicy
 
     kwargs = {'wild_domain': False,
@@ -147,12 +146,32 @@ def includeme(cfg):
     cfg.include('pyramid_tm')
     cfg.include('ptah.manage')
 
-    # directive
-    cfg.add_directive('ptah_initialize', ptah_initialize)
-
     # object events handler
     cfg.registry.registerHandler(
         config.ObjectEventNotify(cfg.registry), (config.IObjectEvent,))
+
+    # initialize settings
+    from ptah import settings
+    def pyramid_init_settings(cfg, custom_settings=None,
+                              section=configparser.DEFAULTSECT):
+        cfg.action('ptah.init_settings',
+                   settings.init_settings, (cfg, custom_settings, section))
+
+    cfg.add_directive('ptah_init_settings', pyramid_init_settings)
+
+    # initialize sql
+    from ptah import ptahsettings
+    cfg.add_directive('ptah_init_sql', ptahsettings.initialize_sql)
+
+    # ptah manage ui directive
+    cfg.add_directive('ptah_init_manage', ptahsettings.enable_manage)
+
+    # ptah mailer directive
+    cfg.add_directive('ptah_init_mailer', ptahsettings.set_mailer)
+
+    # ptah rest api directive
+    from ptah import rest
+    cfg.add_directive('ptah_init_rest', rest.enable_rest_api)
 
     # ptah.config directives
     from ptah.config import pyramid_get_cfg_storage
@@ -180,21 +199,6 @@ def includeme(cfg):
     from ptah import password
     cfg.add_directive('ptah_password_changer', password_changer.pyramid)
 
-    # ptah rest api directive
-    from ptah import rest
-    cfg.add_directive('ptah_rest_api', rest.enable_rest_api)
-
-    # ptah manage ui directive
-    from ptah import ptahsettings
-    cfg.add_directive('ptah_manage', ptahsettings.pyramid_manage)
-
-    # ptah mailer directive
-    from ptah import ptahsettings
-    cfg.add_directive('ptah_mailer', ptahsettings.set_mailer)
-
-    # initialize sql
-    cfg.add_directive('ptah_initialize_sql', ptahsettings.initialize_sql)
-
     # layout directive
     cfg.add_directive('ptah_layout', layout.pyramid)
 
@@ -206,26 +210,3 @@ def includeme(cfg):
 
     # scan ptah
     cfg.scan('ptah')
-
-
-# initialize ptah
-def ptah_initialize(cfg, sqla=True):
-    """ Initialize ptah package."""
-    from pyramid.exceptions import  ConfigurationExecutionError
-
-    cfg.begin()
-    try:
-        auth_service.set_userid(SUPERUSER_URI)
-
-        # initialize settings
-        init_settings(cfg, cfg.registry.settings)
-
-        # initialize sqlalchemy
-        if sqla:
-            cfg.ptah_initialize_sql()
-
-    except config.StopException:
-        config.shutdown()
-        raise
-    finally:
-        cfg.end()

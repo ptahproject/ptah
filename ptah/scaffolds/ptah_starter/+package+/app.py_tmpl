@@ -1,3 +1,4 @@
+import ptah
 from pyramid.config import Configurator
 from pyramid.asset import abspath_from_asset_spec
 from pyramid.authentication import AuthTktAuthenticationPolicy
@@ -19,16 +20,17 @@ def main(global_config, **settings):
     config.include('ptah')
     config.commit()
 
-    # Info: create SQL engine from our settings file; add engine to application
-    import sqlahelper, sqlalchemy
-    engine = sqlalchemy.engine_from_config(settings, 'sqlalchemy.')
-    sqlahelper.add_engine(engine)
+    # Refer: Ptah: _Initialization_
+    config.ptah_init_settings()
 
     # Refer: Ptah: _Initialization_
-    config.ptah_initialize()
+    config.ptah_init_sql()
+
+    # enable ptah management
+    config.ptah_init_manage(managers=('*',))
 
     # Refer: SQLAlchemy _Declarative_
-    Base = sqlahelper.get_base()
+    Base = ptah.get_base()
     Base.metadata.create_all()
 
     # Refer: Pyramid's _URL Dispatch_
@@ -39,8 +41,5 @@ def main(global_config, **settings):
 
     # Refer: Pyramid's _Configuration Decorations and Code Scanning_
     config.scan()
-
-    # enable ptah management
-    config.ptah_manage(managers=('*',))
 
     return config.make_wsgi_app()

@@ -46,21 +46,19 @@ That is it.  Let's take this opportunity to review the main() function.  All com
                               session_factory = session_factory,
                               authentication_policy = auth_policy)
         config.include('ptah')
-        config.commit()
         
-        import sqlahelper, sqlalchemy
-        engine = sqlalchemy.engine_from_config(settings, 'sqlalchemy.')
-        sqlahelper.add_engine(engine)
+        config.ptah_init_sql()
 
-        config.ptah_initialize()
+        config.ptah_init_settings()
 
-        Base = sqlahelper.get_base()
+        config.ptah_init_manage(managers=('*',))
+
+        Base = ptah.get_base()
         Base.metadata.create_all()
 
         config.add_route('home', '/')
         config.add_static_view('_mypkg', 'mypkg:static')
         config.scan()
-        config.ptah_manage(managers=('*',))
 
         return config.make_wsgi_app()
 
@@ -70,12 +68,12 @@ Steeping through code
     1. create a Pyramid Configurator
     
     2. notify Pyramid you are including other extensions such as ptah
-    
-    3. commit the configuration to ensure no conflicting registrations
-    
-    4. setup RDBMS see settings.ini file for connection string
 
-    5. config.ptah_initialize() which initializes additional ptah.settings and sends ptah.events.SettingsInitializing and ptah.events.SettingsInitialized
+    3. setup RDBMS see settings.ini file for connection string
+
+    4. Initialize ptah settings management with config.ptah_init_settings() which initializes additional ptah.settings and sends ptah.events.SettingsInitializing and ptah.events.SettingsInitialized
+
+    5. config.ptah_init_manage() enables the Ptah Manage Interface and manager=('*',) allows anyone access to it.
        
     6. Setup SQLAlchemy ORM and create tables if necessary.
         
@@ -85,9 +83,7 @@ Steeping through code
     
     9. config.scan() which imports all python modules and performs registration.  You will note there is no `import .views` inside the app.py module.
 
-    10. config.ptah_manage() enables the Ptah Manage Interface and manager=('*',) allows anyone access to it.
-   
-    11. return config.make_wsgi_app() is Pyramid returning a configured WSGI application.
+    10. return config.make_wsgi_app() is Pyramid returning a configured WSGI application.
 
 In summary, you put your application configuration inside of the function which will return a WSGI application.  Any Pyramid extension, such as Ptah is included via config.include('package').  We initialize Ptah.  Then add your application views and routes using Pyramid syntax.  And finally after config.scan() & then enable the Manager Interface.  Lastly return a configured WSGI applicatin.
 

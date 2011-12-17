@@ -22,7 +22,22 @@ _marker = object()
 
 
 def get_settings(grp, registry=None):
-    """ get settings group by group id """
+    """Get settings group by group id. Also there is `ptah_get_settins`
+    pyramid configurator directive.
+
+    .. code-block:: python
+
+      config = Configurator()
+      config.include('ptah')
+      config.commit()
+
+      # get settings with pyramid directive
+      ptah_settings = config.ptah_get_settings('ptah')
+
+      # get settings with `get_settings`
+      ptah_settings = ptah.get_settings(ptah.CFG_ID_PTAH, config.registry)
+
+    """
     return config.get_cfg_storage(ID_SETTINGS_GROUP, registry)[grp]
 
 
@@ -43,8 +58,20 @@ def pyramid_get_settings(config, grp):
     return config.get_cfg_storage(ID_SETTINGS_GROUP)[grp]
 
 
-def init_settings(pconfig, cfg, section=configparser.DEFAULTSECT):
-    """ initialize settings management system """
+def init_settings(pconfig, cfg=None, section=configparser.DEFAULTSECT):
+    """Initialize settings management system. This function available
+    as pyramid configurator directive. You should call it during
+    application configuration process.
+
+    .. code-block:: python
+
+      config = Configurator()
+      config.include('ptah')
+
+      # initialize ptah setting management system
+      config.ptah_initialize_settings()
+
+    """
     registry = pconfig.registry
     settings = config.get_cfg_storage(SETTINGS_OB_ID,pconfig.registry,Settings)
 
@@ -56,18 +83,19 @@ def init_settings(pconfig, cfg, section=configparser.DEFAULTSECT):
 
     settings.initialized = True
 
-    if cfg:
-        here = cfg.get('here', './')
+    if cfg is None:
+        cfg = pconfig.registry.settings
 
-        include = cfg.get('include', '')
-        for f in include.split('\n'):
-            f = f.strip()
-            if f and os.path.exists(f):
-                parser = configparser.SafeConfigParser()
-                parser.read(f)
-                if section == configparser.DEFAULTSECT or \
-                       parser.has_section(section):
-                    cfg.update(parser.items(section, vars={'here': here}))
+    here = cfg.get('here', './')
+    include = cfg.get('include', '')
+    for f in include.split('\n'):
+        f = f.strip()
+        if f and os.path.exists(f):
+            parser = configparser.SafeConfigParser()
+            parser.read(f)
+            if section == configparser.DEFAULTSECT or \
+                    parser.has_section(section):
+                cfg.update(parser.items(section, vars={'here': here}))
 
     pconfig.begin()
     try:
@@ -83,7 +111,12 @@ def init_settings(pconfig, cfg, section=configparser.DEFAULTSECT):
 
 
 def register_settings(name, *fields, **kw):
-    """ register settings group """
+    """Register settings group.
+
+    :param name: Name of settings group
+    :param *fields: List of :py:class:`ptah.form.Field` objects
+
+    """
     iname = name
     for ch in ('.', '-'):
         iname = iname.replace(ch, '_')

@@ -14,7 +14,7 @@ class TestInitializeSql(unittest.TestCase):
         config.include('ptah')
         config.commit()
 
-        config.ptah_initialize_sql()
+        config.ptah_init_sql()
         self.assertIsNotNone(ptah.get_base().metadata.bind)
 
 
@@ -25,7 +25,14 @@ class TestPtahInit(unittest.TestCase):
         config.include('ptah')
         config.commit()
 
-        self.assertTrue(hasattr(config, 'ptah_initialize'))
+        for name in ('ptah_init_settings', 'ptah_init_sql',
+                     'ptah_init_manage', 'ptah_init_mailer',
+                     'ptah_init_rest', 'get_cfg_storage',
+                     'ptah_get_settings', 'ptah_auth_checker',
+                     'ptah_auth_provider', 'ptah_principal_searcher',
+                     'ptah_uri_resolver', 'ptah_password_changer',
+                     'ptah_layout', 'ptah_snippet'):
+            self.assertTrue(hasattr(config, name))
 
         from pyramid.interfaces import \
              IAuthenticationPolicy, IAuthorizationPolicy
@@ -36,8 +43,7 @@ class TestPtahInit(unittest.TestCase):
             config.registry.queryUtility(IAuthorizationPolicy))
 
     def test_init_ptah_init(self):
-        config = Configurator(
-            settings = {'sqlalchemy.url': 'sqlite://'})
+        config = Configurator()
 
         data = [False, False]
 
@@ -50,15 +56,13 @@ class TestPtahInit(unittest.TestCase):
             (ptah.events.SettingsInitialized,))
 
         config.include('ptah')
+        config.ptah_init_settings()
         config.commit()
-
-        config.ptah_initialize()
 
         self.assertTrue(data[1])
 
     def test_init_ptah_init_settings_exception(self):
-        config = Configurator(
-            settings = {'sqlalchemy.url': 'sqlite://'})
+        config = Configurator(autocommit = True)
 
         class CustomException(Exception):
             pass
@@ -72,11 +76,10 @@ class TestPtahInit(unittest.TestCase):
             (ptah.events.SettingsInitialized,))
 
         config.include('ptah')
-        config.commit()
 
         err = None
         try:
-            config.ptah_initialize()
+            config.ptah_init_settings()
         except Exception as e:
             err = e
 

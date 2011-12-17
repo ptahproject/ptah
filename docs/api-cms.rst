@@ -85,20 +85,3 @@ Permissions
   .. py:data:: NOT_ALLOWED
 
   .. py:data:: ALL_PERMISSIONS
-
-
-Events
-~~~~~~
-
-  .. autoclass:: ptah.events.ContentEvent
-
-  .. autoclass:: ptah.events.ContentCreatedEvent
-
-  .. autoclass:: ptah.events.ContentAddedEvent
-
-  .. autoclass:: ptah.events.ContentMovedEvent
-
-  .. autoclass:: ptah.events.ContentModifiedEvent
-
-  .. autoclass:: ptah.events.ContentDeletingEvent
-

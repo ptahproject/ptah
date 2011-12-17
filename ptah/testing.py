@@ -41,12 +41,12 @@ class PtahTestCase(unittest.TestCase):
         self.config.commit()
         self.config.autocommit = True
 
-        ptah.init_settings(self.config, self.registry.settings)
+        self.config.ptah_init_settings()
 
         if self._init_sqla:
             # create engine
             ptah.reset_session()
-            self.config.ptah_initialize_sql()
+            self.config.ptah_init_sql()
 
             # create sql tables
             Base = ptah.get_base()

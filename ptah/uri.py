@@ -54,16 +54,18 @@ class resolver(object):
               def __call__(self, uri):
                   return content
 
-        Example::
+        Example:
 
-            >> import ptah
+        .. code-block:: python
 
-            >> @ptah.resolver('custom-schema')
-            >> def my_resolver(uri):
-            ..   ....
+          import ptah
 
-            # now its possible to resolver 'custom-schema:xxx' uri's
-            >> ptah.resolve('custom-schema:xxx')
+          @ptah.resolver('custom-schema')
+          def my_resolver(uri):
+             ....
+
+          # now its possible to resolver 'custom-schema:xxx' uri's
+          ptah.resolve('custom-schema:xxx')
     """
 
     def __init__(self, schema, __depth=1):
@@ -97,32 +99,36 @@ class resolver(object):
         :param schema: uri schema
         :param resolver: Callable object that accept one parameter.
 
-        Example::
+        Example:
 
-            >> import ptah
+        .. code-block:: python
 
-            >> def my_resolver(uri):
-            ..   ....
+          import ptah
 
-            >> ptah.resolver.register('custom-schema', my_resolver)
+          def my_resolver(uri):
+             ....
 
+          ptah.resolver.register('custom-schema', my_resolver)
 
-            # now its possible to resolver 'custom-schema:xxx' uri's
-            >> ptah.resolve('custom-schema:xxx')
+          # now its possible to resolver 'custom-schema:xxx' uri's
+          ptah.resolve('custom-schema:xxx')
 
         """
         cls(schema, 2)(resolver)
 
     @classmethod
     def pyramid(cls, cfg, schema, resolver):
-        """ pyramid configurator directive 'ptah_uri_resolver'::
+        """ pyramid configurator directive `ptah_uri_resolver`.
 
-        >> config = Configurator()
-        >> config.include('ptah')
-        >>
-        >> def my_resolver(uri):
-        >>     ....
-        >> config.ptah_uri_resolver('custom-schema', my_resolver)
+        .. code-block:: python
+
+            config = Configurator()
+            config.include('ptah')
+
+            def my_resolver(uri):
+                ....
+
+            config.ptah_uri_resolver('custom-schema', my_resolver)
         """
         cls(schema, 2)(resolver, cfg)
 
@@ -130,12 +136,14 @@ class resolver(object):
 class UriFactory(object):
     """ Uri Generator
 
-    Example::
+    Example.
 
-       >> uri = UriFactory('cms-content')
+    .. code-block:: python
 
-       >> uri()
-       'cms-content:f73f3266fa15438e94cca3621a3f2dbc'
+      uri = UriFactory('cms-content')
+
+      uri()
+      'cms-content:f73f3266fa15438e94cca3621a3f2dbc'
 
     """
     def __init__(self, schema):
