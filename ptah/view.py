@@ -82,6 +82,14 @@ class ISnippet(Interface):
 
 
 def render_snippet(name, context, request):
+    """Render snippet
+
+    :param name: Name of snippet
+    :param context: Context for snippet
+    :param request: Current request
+    :rtype: string with rendered html
+
+    """
     try:
         return request.registry.getMultiAdapter(
             (context, request), ISnippet, name)
@@ -91,20 +99,26 @@ def render_snippet(name, context, request):
 
 
 class snippet(object):
-    """Register snippet::
+    """Register snippet.
 
     :param name: Snippet name
     :param context: Snippet context
     :param renderer: Pyramid renderer
 
-    Example::
+    Example:
 
-    >> import ptah
-    >> @ptah.snippet('test', Context, renderer='...:test.pt')
-    >> def snippet(request):
-    >>     ...
+    .. code-block:: python
 
-    >> ptah.render_snippet('test', Context(), request)
+      import ptah
+
+      @ptah.snippet('test', Context, renderer='...:test.pt')
+      def snippet(request):
+          ...
+
+      ptah.render_snippet('test', Context(), request)
+
+    To render snippet use :py:func:`ptah.render_snippet` or
+    :py:class:`ptah.View.snippet`.
 
     """
 
@@ -123,22 +137,39 @@ class snippet(object):
 
     @classmethod
     def register(cls, name, context=None, view=None, renderer=None):
-        """ Register snippet::
+        """ Register snippet.
 
-        >> def snippet(request):
-        >>     ...
-        >> ptah.snippet.register('test', Context, view=snippet):
-        >>     ...
+        :param name: Snippet name
+        :param context: Snippet context
+        :param view: View implementation
+        :param renderer: Pyramid renderer
+
+        .. code-block:: python
+
+          def snippet(request):
+              ...
+
+          ptah.snippet.register('test', Context, view=snippet):
+              ...
+
         """
         return snippet(name, context, renderer, 2)(view)
 
     @classmethod
     def pyramid(cls, cfg, name, context=None, view=None, renderer=None):
-        """ Pyramid `ptah_snippet` directive::
+        """ Pyramid `ptah_snippet` directive.
 
-        >> config = Configurator()
-        >> config.include('ptah')
-        >> config.ptah_snippet('test', view=snippet)
+        :param name: Snippet name
+        :param context: Snippet context
+        :param view: View implementation
+        :param renderer: Pyramid renderer
+
+        .. code-block:: python
+
+          config = Configurator()
+          config.include('ptah')
+
+          config.ptah_snippet('test', view=snippet, renderer='.../test.pt')
         """
         return snippet(name, context, renderer, 2)(view, cfg)
 

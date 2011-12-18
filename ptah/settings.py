@@ -69,7 +69,7 @@ def init_settings(pconfig, cfg=None, section=configparser.DEFAULTSECT):
       config.include('ptah')
 
       # initialize ptah setting management system
-      config.ptah_initialize_settings()
+      config.ptah_init_settings()
 
     """
     registry = pconfig.registry
@@ -114,7 +114,7 @@ def register_settings(name, *fields, **kw):
     """Register settings group.
 
     :param name: Name of settings group
-    :param *fields: List of :py:class:`ptah.form.Field` objects
+    :param fields: List of :py:class:`ptah.form.Field` objects
 
     """
     iname = name

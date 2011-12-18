@@ -70,7 +70,11 @@ class PasswordTool(object):
             return self.pm['{plain}']
 
     def check(self, encoded, password):
-        """ check encoded password with plain password """
+        """ Compare encoded password with plain password.
+
+        :param encoded: Encoded password
+        :param password: Plain password
+        """
         try:
             pm, pwd = encoded.split('}', 1)
         except:
@@ -82,31 +86,41 @@ class PasswordTool(object):
         return False
 
     def encode(self, password, salt=None):
-        """ encode password with current password manager """
+        """ Encode password with current password manager """
         return self.manager.encode(password, salt)
 
     def can_change_password(self, principal):
-        """ can principal password be changed """
+        """ Can principal password be changed.
+        :py:class:`ptah.password_changer` is beeing used. """
         return ptah.extract_uri_schema(principal.__uri__) in \
             config.get_cfg_storage(ID_PASSWORD_CHANGER)
 
     def get_principal(self, passcode):
-        """ generate passcode for principal """
+        """ Return principal by previously generated passcode. """
         data = token.service.get(passcode)
 
         if data is not None:
             return ptah.resolve(data)
 
     def generate_passcode(self, principal):
-        """ generate passcode for principal """
+        """ Generate passcode for principal.
+
+        :param principal: Principal object
+        """
         return token.service.generate(TOKEN_TYPE, principal.__uri__)
 
     def remove_passcode(self, passcode):
-        """ remove passcode """
+        """ Remove passcode """
         token.service.remove(passcode)
 
     def change_password(self, passcode, password):
-        """ change password """
+        """ Encode and change password.
+        :py:class:`ptah.password_changer` is beeing used.
+
+        :param passcode: Previously generated passcode
+        :param passsword: Plain password.
+        :rtype: True if password has been changed, False otherwise.
+        """
         principal = self.get_principal(passcode)
 
         self.remove_passcode(passcode)
@@ -142,11 +156,16 @@ pwd_tool = PasswordTool()
 
 
 class password_changer(object):
-    """ decorator for password changer registration::
+    """ Register password changer function.
 
-    >> @ptah.password_change('myuser')
-    >> def change_password(user):
-    >>   ...
+    :param schema: Principal uri schema.
+
+    .. code-block:: python
+
+      @ptah.password_change('myuser')
+      def change_password(principal, password):
+          principal.password = password
+
     """
     def __init__(self, schema, __depth=1):
         self.info = config.DirectiveInfo(__depth)
@@ -172,11 +191,17 @@ class password_changer(object):
 
     @classmethod
     def pyramid(cls, cfg, schema, changer):
-        """ pyramid password changer registration directive::
+        """ pyramid password changer registration directive.
 
-        >> config = Configurator()
-        >> config.include('ptah')
-        >> config.ptah_password_changer('custom-schema', custom_changer)
+        :param schema: Principal uri schema.
+        :param changer: Function
+
+        .. code-block:: python
+
+          config = Configurator()
+          config.include('ptah')
+
+          config.ptah_password_changer('custom-schema', custom_changer)
         """
         cls(schema,2)(changer, cfg)
 

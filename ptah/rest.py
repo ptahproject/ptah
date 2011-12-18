@@ -225,7 +225,7 @@ def Api(request):
 
 
 def enable_rest_api(config):
-    """ Register /__rest__/login and /__rest__/{service}/*subpath routes """
+    """Register /__rest__/login and /__rest__/{service}/*subpath routes."""
 
     config.add_route(
         'ptah-rest-login', '/__rest__/login',

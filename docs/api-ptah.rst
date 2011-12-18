@@ -3,81 +3,6 @@ ptah
 
 .. automodule:: ptah
 
-Pyramid Configurator
-~~~~~~~~~~~~~~~~~~~~
-
-Pyramid Configuration extensions from Ptah.  An example::
-
-    auth_policy = AuthTktAuthenticationPolicy('secret')
-    session_factory = UnencryptedCookieSessionFactoryConfig('secret')
-
-    def main(global_config, **settings):
-        """ This is your application startup."""
-        
-        config = Configurator(settings=settings,
-                              session_factory = session_factory,
-                              authentication_policy = auth_policy)
-        config.include('ptah')
-        config.scan()
-
-        config.ptah_init_settings()
-        config.ptah_init_sql()
-
-ptah_init_sql
-^^^^^^^^^^^^^
-  
-  .. autofunction:: ptah.ptahsettings.initialize_sql
-
-ptah_init_manage
-^^^^^^^^^^^^^^^^
-
-  .. autofunction:: ptah.ptahsettings.enable_manage
-
-ptah_init_mailer
-^^^^^^^^^^^^^^^^
-
-  .. autofunction:: ptah.ptahsettings.set_mailer
-
-ptah_init_rest
-^^^^^^^^^^^^^^
-
-  .. autofunction:: ptah.rest.enable_rest_api
-
-ptah_auth_checker
-^^^^^^^^^^^^^^^^^
-
-  .. automethod:: ptah.authentication.pyramid_auth_checker
-
-ptah_auth_provider
-^^^^^^^^^^^^^^^^^^
-
-  .. automethod:: ptah.authentication.auth_provider.pyramid
-  
-ptah_principal_searcher
-^^^^^^^^^^^^^^^^^^^^^^^
-
-  .. automethod:: ptah.authentication.principal_searcher.pyramid
-  
-ptah_uri_resolver
-^^^^^^^^^^^^^^^^^
-
-  .. automethod:: ptah.resolver.pyramid
-
-ptah_password_changer
-^^^^^^^^^^^^^^^^^^^^^
-
-  .. automethod:: ptah.password.password_changer.pyramid
-
-ptah_layout
-^^^^^^^^^^^
-
-  .. automethod:: ptah.layout.pyramid
-  
-ptah_snippet
-^^^^^^^^^^^^
-
-  .. automethod:: ptah.view.snippet.pyramid
-
 
 URI
 ~~~
@@ -94,6 +19,8 @@ URI
 
 Snippet
 ~~~~~~~
+Snippet is very similar to pyramid view.
+It doesnt availble with pyramid traversing. It doesnt have security.
 
   .. autoclass:: snippet
      :members: register, pyramid
@@ -166,10 +93,6 @@ Roles
 Permissions
 ~~~~~~~~~~~
 
-  .. py:data:: Permissions
-     
-     Permissions dictionary contains all registered permissions in the system.
-
   .. autofunction:: Permission
 
   .. autofunction:: get_permissions
@@ -188,12 +111,22 @@ Security
 
   .. py:data:: auth_service
 
+     Instance of :py:class:`ptah.authentication.AuthInfo` class.
+
+  .. autoclass:: ptah.authentication.AuthInfo
+     :members:
+
+  .. autoclass:: ptah.authentication.Authentication
+     :members:
+
   .. py:data:: SUPERUSER_URI
     
     System user uri. Permission check always passes for user user. 
-    It is possible to use it as effective user::
+    It is possible to use it as effective user:
 
-      >> ptah.auth_service.set_effective_user(ptah.SUPERUSER_URI)
+    .. code-block:: python
+
+        ptah.auth_service.set_effective_user(ptah.SUPERUSER_URI)
       
     This allow to pass security checks for any user.
 
@@ -212,6 +145,11 @@ Password utils
 ~~~~~~~~~~~~~~
 
   .. py:data:: pwd_tool
+
+     Instance of :py:class:`ptah.password.PasswordTool` class
+
+  .. autoclass:: ptah.password.PasswordTool
+     :members:
 
   .. autoclass:: password_changer
      :members: pyramid

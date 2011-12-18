@@ -1,4 +1,3 @@
-from zope.interface import implementer
 from pyramid.security import authenticated_userid
 from pyramid.threadlocal import get_current_request
 
@@ -6,7 +5,6 @@ import ptah
 from ptah import config
 from ptah.uri import resolve, resolver
 from ptah.util import tldata
-from ptah.interfaces import IAuthInfo, IAuthentication
 
 
 class _Superuser(object):
@@ -38,12 +36,16 @@ AUTH_SEARCHER_ID = 'ptah:authsearcher'
 
 
 def auth_checker(checker, __cfg=None, __depth=1):
-    """
-    Register authentication checker::
+    """Register authentication checker. Checker function accepts
+    :py:class:`ptah.authentication.AuthInfo` object.
 
-      >> @ptah.auth_checker
-      >> def my_checker(info):
-      >>     ...
+    :param checker: Checker function.
+
+    .. code-block:: python
+
+      @ptah.auth_checker
+      def my_checker(info):
+          ...
 
     """
     info = config.DirectiveInfo(__depth)
@@ -64,26 +66,35 @@ def auth_checker(checker, __cfg=None, __depth=1):
 
 
 def pyramid_auth_checker(cfg, checker):
-    """ pyramid configurator directive for authentication
-    checker registration::
+    """ Pyramid configurator directive for authentication
+    checker registration.
 
-      >> config = Configurator()
-      >> config.include('ptah')
-      >>
-      >> def my_checker(info):
-      >>     ...
-      >>
-      >>  config.ptah_auth_checker(my_checker)
+    :param checker: Checker function
+
+    .. code-block:: python
+
+      config = Configurator()
+      config.include('ptah')
+
+      def my_checker(info):
+          ...
+
+      config.ptah_auth_checker(my_checker)
     """
     auth_checker(checker, cfg, 2)
 
 
 class auth_provider(object):
-    """ decorator for authentication provider registration::
+    """ Register authentication provider.
+    Auth provider interface :py:class:`ptah.interfaces.AuthProvider`
 
-      >> @ptah.auth_provider('my-provider')
-      >> class AuthProvider(object):
-      >>      ...
+    :param name: provider name
+
+    .. code-block:: python
+
+      @ptah.auth_provider('my-provider')
+      class AuthProvider(object):
+           ...
 
     """
     def __init__(self, name, __depth=1):
@@ -136,9 +147,20 @@ class auth_provider(object):
         cls(name, 3)(provider, cfg)
 
 
-@implementer(IAuthInfo)
 class AuthInfo(object):
     """ Authentication information """
+
+    #: Principal uri or None if principal is not set
+    __uri__ = None
+
+    #: Principal object
+    principal = None
+
+    #: Status, True is principal has been authenticated, false otherwise
+    status = False
+
+    #: Extra message from auth checkers
+    message = False
 
     def __init__(self, principal, status=False, message=''):
         self.__uri__ = getattr(principal, '__uri__', None)
@@ -154,11 +176,15 @@ USER_KEY = '__ptah_userid__'
 EFFECTIVE_USER_KEY = '__ptah_effective__userid__'
 
 
-@implementer(IAuthentication)
 class Authentication(object):
     """ Ptah authentication utility """
 
     def authenticate(self, credentials):
+        """Authenticate credentials.
+
+        :param credentials: Dictionary with `login` and `password`
+        :rtype: :py:class:`ptah.authentication.AuthInfo`
+        """
         providers = config.get_cfg_storage(AUTH_PROVIDER_ID)
         for pname, provider in providers.items():
             principal = provider.authenticate(credentials)
@@ -176,6 +202,12 @@ class Authentication(object):
         return AuthInfo(None)
 
     def authenticate_principal(self, principal):
+        """Authenticate principal, check principal with
+        auth checkers
+
+        :param principal: Principal object
+        :rtype: :py:class:`ptah.authentication.AuthInfo`
+        """
         info = AuthInfo(principal)
 
         for checker in \
@@ -187,9 +219,12 @@ class Authentication(object):
         return info
 
     def set_userid(self, uri):
+        """ Set current user id """
         tldata.set(USER_KEY, uri)
 
     def get_userid(self):
+        """ Get current user id. By default it uses
+        ``pyramid.security.authenticated_userid``"""
         uri = tldata.get(USER_KEY, _not_set)
         if uri is _not_set:
             self.set_userid(authenticated_userid(get_current_request()))
@@ -197,18 +232,22 @@ class Authentication(object):
         return uri
 
     def set_effective_userid(self, uri):
+        """ Set effective user uri """
         tldata.set(EFFECTIVE_USER_KEY, uri)
 
     def get_effective_userid(self):
+        """ Return effective user uri, of current user uri. """
         uri = tldata.get(EFFECTIVE_USER_KEY, _not_set)
         if uri is _not_set:
             return self.get_userid()
         return uri
 
     def get_current_principal(self):
+        """ Resolve and return current user uri """
         return resolve(self.get_userid())
 
     def get_principal_bylogin(self, login):
+        """ Return principal by login """
         providers = config.get_cfg_storage(AUTH_PROVIDER_ID)
 
         for pname, provider in providers.items():

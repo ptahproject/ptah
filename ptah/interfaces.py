@@ -12,53 +12,36 @@ class IURIResolver(interface.Interface):
         """ resolve uri and return context object """
 
 
-class IPrincipal(interface.Interface):
-    """ principal """
+class Principal(object):
+    """ Principal interface """
 
-    __uri__ = interface.Attribute('Unique principal id')
+    #: Principal uri
+    __uri__ = ''
 
-    name = interface.Attribute('Human readable principal name')
+    #: Principal name
+    name = ''
 
-    login = interface.Attribute('Principal login')
-
-
-class IAuthInfo(interface.Interface):
-    """ auth info """
-
-    __uri__ = interface.Attribute('Principal UUID')
-
-    status = interface.Attribute('Status of authentication call')
-
-    message = interface.Attribute('Failed message')
-
-    keywords = interface.Attribute('Additional arguments from provider')
-
-    principal = interface.Attribute('Principal object')
+    #: Principal login
+    login = ''
 
 
-class IAuthentication(interface.Interface):
-    """ authentication utility """
+class AuthInfo(object):
+    """ Authentication information """
 
-    def authenticate(credentials):
-        """ authenticate credentials """
+    #: Principal uri or None if principal is not set
+    __uri__ = None
 
-    def authenticate_principal(principal):
-        """ check principal restrictions """
+    #: :py:class:`ptah.interfaces.Principal` object
+    principal = None
 
-    def set_userid(uri):
-        """ set current user """
+    #: Status, True is principal has been authenticated, false otherwise
+    status = False
 
-    def get_userid():
-        """ get current user """
-
-    def get_current_principal():
-        """ """
-
-    def get_principal_bylogin(login):
-        """ """
+    #: Extra readable message from auth checkers
+    message = False
 
 
-class IAuthChecker(interface.Interface):
+class AuthChecker(interface.Interface):
     """ it is possible to perform additional checks on principal
     during authentication process"""
 
@@ -66,13 +49,14 @@ class IAuthChecker(interface.Interface):
         """ perform principal check """
 
 
-class IAuthProvider(interface.Interface):
-    """ auth provider """
+class AuthProvider(object):
+    """ Authentication provider interface """
 
-    def authenticate(credentials):
-        """ authenticate credentials """
+    def authenticate(self, credentials):
+        """ Authenticate credentials,
+        return `ptah.interfaces.Principal` object """
 
-    def get_principal_bylogin(login):
+    def get_principal_bylogin(self, login):
         """ return principal object """
 
 
