@@ -47,14 +47,7 @@ class resolver(object):
 
         :param schema: uri schema
 
-        Resolver interface::
-
-          class Resolver(object):
-
-              def __call__(self, uri):
-                  return content
-
-        Example:
+        Resolver interface :py:class:`ptah.interfaces.resolver`
 
         .. code-block:: python
 
@@ -135,8 +128,6 @@ class resolver(object):
 
 class UriFactory(object):
     """ Uri Generator
-
-    Example.
 
     .. code-block:: python
 

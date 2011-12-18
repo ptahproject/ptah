@@ -8,3 +8,5 @@ API
    api-ptah.rst
    api-cms.rst
    api-form.rst
+   api-interfaces.rst
+   api-settings.rst

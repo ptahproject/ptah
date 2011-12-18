@@ -97,7 +97,8 @@ Pyramid Configuration directive from Ptah.  An example:
 
 .. function:: ptah_auth_checker(checker)
 
-   Register auth checker.
+   Register auth checker. 
+   Checker function interface :py:class:`ptah.interfaces.auth_checker`
 
    :param checker: Checker function
 
@@ -114,17 +115,22 @@ Pyramid Configuration directive from Ptah.  An example:
 
 .. function:: ptah_auth_provider(name, provider)
 
-   Register auth provider.
+   Register auth provider. Authentication provider 
+   interface :py:class:`ptah.interfaces.AuthProvider`
 
   
 .. function:: ptah_principal_searcher(name, searcher)
 
    Register principal searcher function.
+   Principal searcher function interface 
+   :py:func:`ptah.interfaces.principal_searcher`
 
   
 .. function:: ptah_uri_resolver(schema, resolver)
 
    Register resolver for given schema. 
+   Resolver function interface :py:func:`ptah.interfaces.resolver`
+
 
    :param schema: uri schema
    :param resolver: Callable object that accept one parameter.
@@ -143,6 +149,7 @@ Pyramid Configuration directive from Ptah.  An example:
 .. function:: ptah_password_changer(schema, changer)
 
    Register password changer function for specific user uri schema.
+   Password changer interface :py:func:`ptah.intefaces.password_changer`
 
    :param schema: Principal uri schema.
    :param changer: Function 

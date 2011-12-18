@@ -5,48 +5,59 @@ from zope import interface
 _ = translationstring.TranslationStringFactory('ptah')
 
 
-class IURIResolver(interface.Interface):
-    """ uri resolver """
+def resolver(uri):
+    """Resolve uri to object.
 
-    def __call__(uri):
-        """ resolve uri and return context object """
+    :param uri: Uri string
+    :rtype: Resolved object
+    """
 
 
 class Principal(object):
-    """ Principal interface """
+    """ Principal interface
 
-    #: Principal uri
-    __uri__ = ''
+    .. attribute:: __uri__
 
-    #: Principal name
-    name = ''
+       Principal uri
 
-    #: Principal login
-    login = ''
+    .. attribute:: name
+
+       Principal name
+
+    .. attribute:: login
+
+       Principal login
+
+    """
 
 
 class AuthInfo(object):
-    """ Authentication information """
+    """ Authentication information
 
-    #: Principal uri or None if principal is not set
-    __uri__ = None
+    .. attribute:: __uri__
 
-    #: :py:class:`ptah.interfaces.Principal` object
-    principal = None
+       Principal uri or None if principal is not set
 
-    #: Status, True is principal has been authenticated, false otherwise
-    status = False
+    .. attribute:: principal
+    
+       :py:class:`ptah.interfaces.Principal` object
 
-    #: Extra readable message from auth checkers
-    message = False
+    .. attribute:: status
+    
+       Status, True is principal has been authenticated, false otherwise
+
+    .. attribute:: message
+    
+       Readable message from auth checkers
+
+    """
 
 
-class AuthChecker(interface.Interface):
-    """ it is possible to perform additional checks on principal
-    during authentication process"""
+def auth_checker(info):
+    """ Perform additional checks on principal during authentication process.
 
-    def __call__(principal, authInfo):
-        """ perform principal check """
+    :param info: A instance of :py:class:`ptah.interfaces.AuthInfo` class
+    """
 
 
 class AuthProvider(object):
@@ -54,27 +65,37 @@ class AuthProvider(object):
 
     def authenticate(self, credentials):
         """ Authenticate credentials,
-        return `ptah.interfaces.Principal` object """
+        return :py:class:`ptah.interfaces.Principal` object or None """
 
     def get_principal_bylogin(self, login):
-        """ return principal object """
+        """ return instance of :py:class:`ptah.interfaces.Principal` of None """
 
 
-class IPrincipalSearcher(interface.Interface):
-    """ auth provider with search support """
+def principal_searcher(term):
+    """ Search users by term
 
-    def __call__(term=''):
-        """ search users return IPrincipal object """
+    :param term: search term (str)
+    :rtype: iterator of :py:class:`ptah.interfaces.Principal` instances
 
+    """
 
 class IOwnersAware(interface.Interface):
-    """ owners aware context """
+    """ Owners aware context
+
+    .. attribute:: __owner__
+
+       Owner principal uri
+    """
 
     __owner__ = interface.Attribute('Owner')
 
 
 class ILocalRolesAware(interface.Interface):
-    """ local roles aware context """
+    """ Local roles aware context
+
+    .. attribute:: __local_roles__
+    
+    """
 
     __local_roles__ = interface.Attribute('Local roles dict')
 

@@ -92,7 +92,7 @@ The simplest module example to look at is in `ptah/manage/rest.py` which registe
 Module
 ------
 
-Create a class which subclasses `ptah.manage.PtahModule`.  Decorate the class with :py:function:`ptah.manage.module` decorate.  The label you register using the manage.module decorator is the internal key for that module.  If you wanted to disable it you would use this name in the  ptah_settings['disable_modules'] registration.
+Create a class which subclasses `ptah.manage.PtahModule`.  Decorate the class with :py:func:`ptah.manage.module` decorate.  The label you register using the manage.module decorator is the internal key for that module.  If you wanted to disable it you would use this name in the  ptah_settings['disable_modules'] registration.
 
 An example::
 

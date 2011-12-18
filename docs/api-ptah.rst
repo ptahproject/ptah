@@ -22,15 +22,15 @@ Snippet
 Snippet is very similar to pyramid view.
 It doesnt availble with pyramid traversing. It doesnt have security.
 
-  .. autoclass:: snippet
-     :members: register, pyramid
+  .. autoclass:: snippet()
+     :members: register
 
   .. autofunction:: render_snippet
 
 Layout
 ~~~~~~
 
-  .. autoclass:: layout
+  .. autoclass:: layout()
      :members: register, pyramid
 
   .. autofunction:: wrap_layout
@@ -111,13 +111,7 @@ Security
 
   .. py:data:: auth_service
 
-     Instance of :py:class:`ptah.authentication.AuthInfo` class.
-
-  .. autoclass:: ptah.authentication.AuthInfo
-     :members:
-
-  .. autoclass:: ptah.authentication.Authentication
-     :members:
+     Instance of :py:class:`ptah.authentication.Authentication` class.
 
   .. py:data:: SUPERUSER_URI
     
@@ -133,7 +127,7 @@ Security
   .. autofunction:: auth_checker
 
   .. autoclass:: auth_provider
-     :members: register, pyramid
+     :members: register
 
   .. autofunction:: search_principals
 

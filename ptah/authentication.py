@@ -41,6 +41,8 @@ def auth_checker(checker, __cfg=None, __depth=1):
 
     :param checker: Checker function.
 
+    Checker function interface :py:func:`ptah.interfaces.auth_checker`
+
     .. code-block:: python
 
       @ptah.auth_checker
@@ -70,6 +72,8 @@ def pyramid_auth_checker(cfg, checker):
     checker registration.
 
     :param checker: Checker function
+
+    Checker function interface :py:func:`ptah.interfaces.auth_checker`
 
     .. code-block:: python
 
@@ -124,26 +128,19 @@ class auth_provider(object):
     def register(cls, name, provider):
         """ authentication provider registration::
 
-          >> class AuthProvider(object):
-          >>    ...
-          >>
-          >> ptah.auth_provider.register('my-provider', AuthProvider())
+        .. code-block:: python
+
+          class AuthProvider(object):
+             ...
+          
+          ptah.auth_provider.register('my-provider', AuthProvider)
 
         """
         cls(name, 2)(provider)
 
     @classmethod
     def pyramid(cls, cfg, name, provider):
-        """ pyramid configurator directive for
-        authentication provider registration::
-
-        >> class AuthProvider(object):
-        >>   ...
-        >>
-        >> config = Configurator()
-        >> config.include('ptah')
-        >> config.ptah_auth_provider('my-provider', AuthProvider)
-        """
+        """ ``ptah_auth_provider`` directive implementation """
         cls(name, 3)(provider, cfg)
 
 
@@ -267,13 +264,17 @@ def search_principals(term):
 
 
 class principal_searcher(object):
-    """ decorator for principal searcher registration::
+    """ Register principal searcher function.
 
-      >> @ptah.principal_searcher('test')
-      >> def searcher(term):
-      >>     ...
+    Searcher function interface :py:func:`ptah.interfaces.principal_searcher`
 
-    searcher function recives text as term variable, and
+    .. code-block:: python
+
+      @ptah.principal_searcher('test')
+      def searcher(term):
+           ...
+
+    searcher function receives text as term variable, and
     should return iterator to principal objects.
     """
     def __init__(self, name, __depth=1):
@@ -300,12 +301,14 @@ class principal_searcher(object):
 
     @classmethod
     def register(cls, name, searcher):
-        """ register principal searcher::
+        """ register principal searcher:
 
-        >> def searcher(term):
-        >>     ...
-        >>
-        >> ptah.principal_searcher.register('test', searcher)
+        .. code-block:: python
+
+          def searcher(term):
+              ...
+
+          ptah.principal_searcher.register('test', searcher)
 
         """
         cls(name, 2)(searcher)
