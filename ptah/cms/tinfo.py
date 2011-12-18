@@ -54,6 +54,7 @@ def get_types():
 class TypeInformation(object):
     """ Type information """
 
+    schema = None
     fieldset = None
     description = ''
     permission = ptah.NOT_ALLOWED
@@ -145,14 +146,17 @@ def Type(name, title=None, fieldset=None, **kw):
             'id', sqla.Integer,
             sqla.ForeignKey('ptah_content.id'), primary_key=True)
     if '__uri_factory__' not in f_locals:
-        f_locals['__uri_factory__'] = ptah.UriFactory('cms-%s'%name)
+        schema = 'cms-{0}'.format(name)
+        typeinfo.schema = schema
+
+        f_locals['__uri_factory__'] = ptah.UriFactory(schema)
 
         def resolve_content(uri):
             return typeinfo.cls.__uri_sql_get__.first(uri=uri)
 
         resolve_content.__doc__ = 'CMS Content resolver for %s type'%title
 
-        ptah.resolver('cms-%s'%name, 2)(resolve_content)
+        ptah.resolver(schema, 2)(resolve_content)
 
     # config actino and introspection info
     discr = (TYPES_DIR_ID, name)

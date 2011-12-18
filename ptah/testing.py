@@ -3,9 +3,14 @@ import sys
 import unittest
 import sqlalchemy
 import transaction
+import pkg_resources
+from zope.interface import directlyProvides
 from pyramid import testing
 from pyramid.interfaces import \
      IRequest, IAuthenticationPolicy, IAuthorizationPolicy
+from pyramid.interfaces import IRouteRequest
+from pyramid.view import render_view, render_view_to_response
+from pyramid.path import package_name
 from pyramid.authorization import ACLAuthorizationPolicy
 from pyramid.authentication import AuthTktAuthenticationPolicy
 
@@ -24,6 +29,7 @@ class PtahTestCase(unittest.TestCase):
     _environ = {
         'wsgi.url_scheme':'http',
         'wsgi.version':(1,0),
+        'HTTP_HOST': 'example.com',
         'SCRIPT_NAME': '',
         'PATH_INFO': '/',}
 
@@ -36,8 +42,21 @@ class PtahTestCase(unittest.TestCase):
 
     def init_ptah(self, *args, **kw):
         self.registry.settings.update(self._settings)
+        self.config.include('ptah')
 
-        self.config.scan('ptah')
+        #pkg = package_name(sys.modules[self.__class__.__module__])
+        #if pkg != 'ptah':
+        #    packages = []
+        #    parts = self.__class__.__module__.split('.')
+        #    for l in range(len(parts)):
+        #        pkg = '.'.join(parts[:l+1])
+        #        if pkg == 'ptah' or pkg.startswith('ptah.'):
+        #            continue
+        #        try:
+        #            self.config.include(pkg)
+        #        except:
+        #            pass
+
         self.config.commit()
         self.config.autocommit = True
 
@@ -62,7 +81,6 @@ class PtahTestCase(unittest.TestCase):
         self.request = request = self.make_request()
         self.config = testing.setUp(
             request=request, settings=self._settings, autocommit=False)
-        self.config.include('ptah')
         self.config.get_routes_mapper()
         self.registry = self.config.registry
         self.request.registry = self.registry
@@ -71,7 +89,7 @@ class PtahTestCase(unittest.TestCase):
         ptah.QueryFreezer._testing = True
         self.init_pyramid()
 
-        if self._init_ptah: # pragma: no cover
+        if self._init_ptah:
             self.init_ptah()
 
     def tearDown(self):
@@ -89,3 +107,9 @@ class PtahTestCase(unittest.TestCase):
 
         testing.tearDown()
         transaction.abort()
+
+    def render_route_view(self, context, request, route_name, view=''):
+        directlyProvides(
+            request, self.registry.getUtility(IRouteRequest, route_name))
+
+        return render_view_to_response(context, request, view)
