@@ -3,40 +3,81 @@ ptah
 
 .. automodule:: ptah
 
-Pyramid Config
-~~~~~~~~~~~~~~
+Pyramid Configurator
+~~~~~~~~~~~~~~~~~~~~
 
-Imperative-style Pyramid Configuration functions.  These are callable with
-a Configurator object, such as::
+Pyramid Configuration extensions from Ptah.  An example::
 
-    config.ptah_init_manage(managers=['*'])
+    auth_policy = AuthTktAuthenticationPolicy('secret')
+    session_factory = UnencryptedCookieSessionFactoryConfig('secret')
 
-Configurator must be applied before returning WSGI Application.
+    def main(global_config, **settings):
+        """ This is your application startup."""
+        
+        config = Configurator(settings=settings,
+                              session_factory = session_factory,
+                              authentication_policy = auth_policy)
+        config.include('ptah')
+        config.scan()
 
-  .. ptah_init_settings
+        config.ptah_init_settings()
+        config.ptah_init_sql()
+
+ptah_init_sql
+^^^^^^^^^^^^^
   
-  .. ptah_init_sql
+  .. autofunction:: ptah.ptahsettings.initialize_sql
+
+ptah_init_manage
+^^^^^^^^^^^^^^^^
+
+  .. autofunction:: ptah.ptahsettings.enable_manage
+
+ptah_init_mailer
+^^^^^^^^^^^^^^^^
+
+  .. autofunction:: ptah.ptahsettings.set_mailer
+
+ptah_init_rest
+^^^^^^^^^^^^^^
+
+  .. autofunction:: ptah.rest.enable_rest_api
+
+ptah_auth_checker
+^^^^^^^^^^^^^^^^^
+
+  .. automethod:: ptah.authentication.pyramid_auth_checker
+
+ptah_auth_provider
+^^^^^^^^^^^^^^^^^^
+
+  .. automethod:: ptah.authentication.auth_provider.pyramid
   
-  .. ptah_init_manage
+ptah_principal_searcher
+^^^^^^^^^^^^^^^^^^^^^^^
+
+  .. automethod:: ptah.authentication.principal_searcher.pyramid
   
-  .. ptah_init_mailer
+ptah_uri_resolver
+^^^^^^^^^^^^^^^^^
+
+  .. automethod:: ptah.resolver.pyramid
+
+ptah_password_changer
+^^^^^^^^^^^^^^^^^^^^^
+
+  .. automethod:: ptah.password.password_changer.pyramid
+
+ptah_layout
+^^^^^^^^^^^
+
+  .. automethod:: ptah.layout.pyramid
   
-  .. ptah_init_rest
-  
-  .. ptah_auth_checker
-  
-  .. ptah_auth_provider
-  
-  .. ptah_principal_searcher
-  
-  .. ptah_uri_resolver
-  
-  .. ptah_password_changer
-  
-  .. ptah_layout
-  
-  .. ptah_snippet
-  
+ptah_snippet
+^^^^^^^^^^^^
+
+  .. automethod:: ptah.view.snippet.pyramid
+
 
 URI
 ~~~
@@ -198,14 +239,7 @@ Utilities
   .. autofunction:: build_sqla_fieldset
   
   .. autofunction:: rst_to_html
-
-Formatter
-~~~~~~~~~
-
-  .. autofunction:: format
-  
-  .. autofunction:: formatter
-     
+ 
      
 Status messages
 ~~~~~~~~~~~~~~~
