@@ -106,9 +106,9 @@ class TestRestView(PtahTestCase):
 
         self.assertIsNone(mapper.get_route('ptah-rest'))
         self.assertIsNone(mapper.get_route('ptah-rest-login'))
+        self.init_ptah()
 
         self.config.ptah_init_rest()
-        self.init_ptah()
 
         marker = object()
 

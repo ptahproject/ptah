@@ -237,7 +237,7 @@ class DirectiveInfo(object):
             data = AttachData()
             setattr(self.module, ATTACH_ATTR, data)
 
-        if action.hash in data:
+        if cfg is None and action.hash in data:
             raise TypeError(
                 "Directive registered twice: %s" % (action.discriminator,))
         data[action.hash] = action
