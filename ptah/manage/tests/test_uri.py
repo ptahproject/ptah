@@ -36,30 +36,3 @@ class TestUriView(PtahTestCase):
 
         self.assertEqual(view.data[0]['name'],
                          'ptah.authentication.superuser_resolver')
-
-
-class TestUriIntrospect(PtahTestCase):
-
-    _cleanup_mod = False
-
-    def _test_uri_introspect(self):
-        from ptah.manage.uri import ID_RESOLVER
-        from ptah.manage.intr_renderers import UriRenderer
-
-        def resolver(uri): # pragma: no cover
-            return 'Resolved'
-
-        self.config.ptah_uri_resolver('uri-intro-test', resolver)
-
-        data = ptah.config.scan(self.__class__.__module__, set())
-
-        actions = []
-        for action in data:
-            if action.discriminator[0] == ID_RESOLVER:
-                actions.append(action)
-
-        ti = UriRenderer(self.request)
-        res = ti(actions[0])
-
-        self.assertIn('uri-intro-test', res)
-        self.assertIn('ptah.manage.tests.test_uri', res)

@@ -203,7 +203,7 @@ class password_changer(object):
 
           config.ptah_password_changer('custom-schema', custom_changer)
         """
-        cls(schema,2)(changer, cfg)
+        cls(schema, 3)(changer, cfg)
 
 
 def passwordValidator(field, appstruct):

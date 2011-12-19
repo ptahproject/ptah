@@ -98,6 +98,44 @@ class TestManageModule(PtahTestCase):
         cfg['managers'] = ['admin@ptahproject.org']
         self.assertTrue(PtahAccessManager()('test:user', self.request))
 
+    def test_manage_access_manager_role(self):
+        from ptah.manage.manage import PtahAccessManager
+
+        class Principal(object):
+            id = 'test-user'
+            login = 'admin@ptahproject.org'
+
+        principal = Principal()
+
+        @ptah.resolver('test')
+        def principalResolver(uri):
+            return principal
+
+        self.init_ptah()
+
+        orig_lr = ptah.get_local_roles
+
+        def get_lr(userid, request, context):
+            if userid == 'test:user':
+                return ('Manager',)
+            return ()
+
+        ptah.get_local_roles = get_lr
+
+        cfg = ptah.get_settings(ptah.CFG_ID_PTAH, self.registry)
+        cfg['manager_role'] = 'Manager'
+
+        self.assertTrue(PtahAccessManager()('test:user', self.request))
+        self.assertFalse(PtahAccessManager()('test:user2', self.request))
+
+        ptah.get_local_roles = orig_lr
+
+    def test_manage_check_access_no_manager(self):
+        self.init_ptah()
+        cfg = ptah.get_settings(ptah.CFG_ID_PTAH, self.registry)
+        del cfg['access_manager']
+        self.assertFalse(ptah.manage.check_access('test:user2', self.request))
+
     def test_manage_pyramid_directive(self):
         from pyramid.config import Configurator
 

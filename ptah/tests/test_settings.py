@@ -589,3 +589,14 @@ class TestDBSettings(PtahTestCase):
         settings.load_fromdb()
         self.assertEqual(grp['node1'], 'new text')
         self.assertEqual(grp['node2'], 65)
+
+    def test_settings_load_from_db_on_startup(self):
+        grp = self._make_grp()
+
+        grp.updatedb(node1 = 'new text',
+                     node2 = 65)
+        grp.clear()
+
+        self.config.make_wsgi_app()
+        self.assertEqual(grp['node1'], 'new text')
+        self.assertEqual(grp['node2'], 65)

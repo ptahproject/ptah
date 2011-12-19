@@ -171,7 +171,7 @@ class snippet(object):
 
           config.ptah_snippet('test', view=snippet, renderer='.../test.pt')
         """
-        return snippet(name, context, renderer, 2)(view, cfg)
+        return snippet(name, context, renderer, 3)(view, cfg)
 
     def _register(self, cfg):
         intr = self.intr

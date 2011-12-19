@@ -44,18 +44,18 @@ class PtahTestCase(unittest.TestCase):
         self.registry.settings.update(self._settings)
         self.config.include('ptah')
 
-        #pkg = package_name(sys.modules[self.__class__.__module__])
-        #if pkg != 'ptah':
-        #    packages = []
-        #    parts = self.__class__.__module__.split('.')
-        #    for l in range(len(parts)):
-        #        pkg = '.'.join(parts[:l+1])
-        #        if pkg == 'ptah' or pkg.startswith('ptah.'):
-        #            continue
-        #        try:
-        #            self.config.include(pkg)
-        #        except:
-        #            pass
+        pkg = package_name(sys.modules[self.__class__.__module__])
+        if pkg != 'ptah':
+            packages = []
+            parts = self.__class__.__module__.split('.')
+            for l in range(len(parts)):
+                pkg = '.'.join(parts[:l+1])
+                if pkg == 'ptah' or pkg.startswith('ptah.'):
+                    continue
+                try: # pragma: no cover
+                    self.config.include(pkg)
+                except: # pragma: no cover
+                    pass
 
         self.config.commit()
         self.config.autocommit = True
@@ -108,7 +108,7 @@ class PtahTestCase(unittest.TestCase):
         testing.tearDown()
         transaction.abort()
 
-    def render_route_view(self, context, request, route_name, view=''):
+    def render_route_view(self, context, request, route_name, view=''): # pragma: no cover
         directlyProvides(
             request, self.registry.getUtility(IRouteRequest, route_name))
 

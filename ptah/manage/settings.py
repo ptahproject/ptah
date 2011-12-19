@@ -85,7 +85,7 @@ class EditForm(ptah.form.Form):
     @ptah.form.button('Modify', actype=ptah.form.AC_PRIMARY)
     def modify_handler(self):
         data, errors = self.extract()
-        if errors:
+        if errors: # pragma: no cover
             self.message(errors, 'form-error')
             return
 
@@ -93,9 +93,9 @@ class EditForm(ptah.form.Form):
         self.context.group.updatedb(**data)
         return HTTPFound('../#{0}'.format(self.context.group.__name__))
 
-    @ptah.form.button('Reset defaults', actype=ptah.form.AC_INFO)
-    def reset_handler(self):
-        pass
+    #@ptah.form.button('Reset defaults', actype=ptah.form.AC_INFO)
+    #def reset_handler(self):
+    #    pass
 
     @ptah.form.button('Back')
     def back_handler(self):

@@ -123,7 +123,7 @@ class resolver(object):
 
             config.ptah_uri_resolver('custom-schema', my_resolver)
         """
-        cls(schema, 2)(resolver, cfg)
+        cls(schema, 3)(resolver, cfg)
 
 
 class UriFactory(object):

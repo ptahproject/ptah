@@ -39,15 +39,15 @@ class AuthInfo(object):
        Principal uri or None if principal is not set
 
     .. attribute:: principal
-    
+
        :py:class:`ptah.interfaces.Principal` object
 
     .. attribute:: status
-    
+
        Status, True is principal has been authenticated, false otherwise
 
     .. attribute:: message
-    
+
        Readable message from auth checkers
 
     """
@@ -94,7 +94,7 @@ class ILocalRolesAware(interface.Interface):
     """ Local roles aware context
 
     .. attribute:: __local_roles__
-    
+
     """
 
     __local_roles__ = interface.Attribute('Local roles dict')

@@ -85,3 +85,15 @@ class TestPtahInit(unittest.TestCase):
 
         self.assertIsInstance(err, ptah.config.StopException)
         self.assertIsInstance(err.exc, CustomException)
+
+
+class TestDummyMailer(ptah.PtahTestCase):
+
+    def test_dummy_mailer(self):
+        from ptah.ptahsettings import DummyMailer
+
+        PTAH = ptah.get_settings(ptah.CFG_ID_PTAH, self.registry)
+
+        self.assertIsInstance(PTAH['Mailer'], DummyMailer)
+
+        PTAH['Mailer'].send('test@example.com', 'to@example.com', 'msg')

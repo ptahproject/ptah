@@ -85,7 +85,7 @@ def pyramid_auth_checker(cfg, checker):
 
       config.ptah_auth_checker(my_checker)
     """
-    auth_checker(checker, cfg, 2)
+    auth_checker(checker, cfg, 3)
 
 
 class auth_provider(object):
@@ -132,7 +132,7 @@ class auth_provider(object):
 
           class AuthProvider(object):
              ...
-          
+
           ptah.auth_provider.register('my-provider', AuthProvider)
 
         """
@@ -317,4 +317,4 @@ class principal_searcher(object):
     def pyramid(cls, cfg, name, searcher):
         """ pyramid configurator directive for
         principal searcher registration """
-        cls(name, 2)(searcher, cfg)
+        cls(name, 3)(searcher, cfg)
