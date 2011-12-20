@@ -177,7 +177,7 @@ class BaseMultiChoiceField(VocabularyField):
 
 @field('text')
 class TextField(InputField):
-    __doc__ = _('HTML Text input widget')
+    """HTML Text input widget. Field name is ``text``."""
 
     klass = 'text-widget'
     value = ''
@@ -218,7 +218,7 @@ class Number(object):
 
 @field('int')
 class IntegerField(Number, InputField):
-    __doc__ = _('Integer input widget')
+    """Integer input widget. Field name is ``int``."""
 
     num = int
     value = 0
@@ -227,7 +227,7 @@ class IntegerField(Number, InputField):
 
 @field('float')
 class FloatField(Number, InputField):
-    __doc__ = _('Float input widget')
+    """Float input widget. Field name is ``float``."""
 
     num = float
     klass = 'float-widget'
@@ -235,7 +235,7 @@ class FloatField(Number, InputField):
 
 @field('decimal')
 class DecimalField(Number, InputField):
-    __doc__ = _('Decimal input widget')
+    """Decimal input widget. Field name is ``decimal``."""
 
     klass = 'decimal-widget'
 
@@ -245,7 +245,7 @@ class DecimalField(Number, InputField):
 
 @field('textarea')
 class TextAreaField(TextField):
-    __doc__ = _('HTML Text Area input widget')
+    """HTML Text Area input widget. Field name is ``textarea``."""
 
     klass = 'textarea-widget'
     value = ''
@@ -258,7 +258,7 @@ class TextAreaField(TextField):
 
 @field('file')
 class FileField(TextField):
-    __doc__ = _('HTML File input widget')
+    """HTML File input widget. Field name is ``file``."""
 
     klass = 'input-file'
 
@@ -280,8 +280,8 @@ class FileField(TextField):
 
 @field('lines')
 class LinesField(TextAreaField):
-    __doc__ = _('Text area based widget, each line is treated as '
-                'sequence element.')
+    """Text area based widget, each line is treated as sequence element.
+    Field name is ``lines``."""
 
     klass = 'textlines-widget'
 
@@ -314,7 +314,7 @@ class LinesField(TextAreaField):
 
 @field('password')
 class PasswordField(TextField):
-    __doc__ = _('HTML Password input widget.')
+    """HTML Password input widget. Field name is ``password``."""
 
     klass = 'password-widget'
 
@@ -324,14 +324,14 @@ class PasswordField(TextField):
 
 @field('multichoice')
 class MultiChoiceField(BaseMultiChoiceField):
-    __doc__ = _('HTML Checkboxs input based widget.')
+    """HTML Checkboxs input based widget. Field name is ``multichoice``."""
 
     klass = 'multichoice-widget'
     tmpl_input = 'ptah.form:templates/fields/multichoice-input.pt'
 
 
 class DateField(TextField):
-    __doc__ = _('Simple date input field.')
+    """Simple date input field."""
 
     tmpl_display = 'ptah.form:templates/fields/date-display.pt'
 
@@ -410,7 +410,7 @@ class DateTimeField(TextField):
 
 @field('radio')
 class RadioField(BaseChoiceField):
-    __doc__ = _('HTML Radio input widget.')
+    """HTML Radio input widget. Field name is ``radio``."""
 
     klass = 'radio-widget'
     tmpl_input = 'ptah.form:templates/fields/radio-input.pt'
@@ -418,7 +418,7 @@ class RadioField(BaseChoiceField):
 
 @field('bool')
 class BoolField(BaseChoiceField):
-    __doc__ = _('Boolean input widget.')
+    """Boolean input widget. Field name is ``bool``."""
 
     vocabulary = vocabulary.SimpleVocabulary.from_items(
         (True, 'true',  _('yes')),
@@ -429,7 +429,7 @@ class BoolField(BaseChoiceField):
 
 @field('choice')
 class ChoiceField(BaseChoiceField):
-    __doc__ = _('HTML Select input widget.')
+    """HTML Select input widget. Field name is ``choice``."""
 
     size = 1
     klass = 'select-widget'
@@ -454,14 +454,20 @@ class ChoiceField(BaseChoiceField):
 
 @field('multiselect')
 class MultiSelectField(ChoiceField):
-    __doc__ = _('HTML Multi Select input widget.')
+    """HTML Multi Select input widget. Field name is ``multiselect``.
+
+    Extra params:
+
+    :param size: Size of multiselect field, default is ``5``
+    """
 
     size = 5
     multiple = 'multiple'
 
 
+@field('timezone')
 class TimezoneField(ChoiceField):
-    """ timezone field """
+    """ Timezone field. Field name is ``timezone``."""
 
     _tzs = dict((str(tz).lower(), str(tz)) for tz in pytz.all_timezones)
     vocabulary = vocabulary.SimpleVocabulary.from_items(

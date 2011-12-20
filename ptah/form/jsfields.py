@@ -10,7 +10,14 @@ from ptah.form.fields import TextAreaField, TextField, DateTimeField
 
 @field('tinymce')
 class TinymceField(TextAreaField):
-    __doc__ = 'TinyMCE Text Area input widget'
+    """TinyMCE Text Area input widget. Field name is ``tinymce``.
+
+    Extra params:
+
+    :param width: Width of widget, default is ``400px``
+    :param height: Height os widget, default is ``300px``
+    :param theme: TinyMCE theme
+    """
 
     klass = 'tinymce-widget'
 
@@ -23,7 +30,7 @@ class TinymceField(TextAreaField):
 
 @field('date')
 class JSDateField(TextField):
-    __doc__ = 'Date input widget with JQuery Datepicker.'
+    """Date input widget with JQuery Datepicker. Field name is ``date``."""
 
     klass = 'date-widget'
     value = ''
@@ -56,7 +63,8 @@ class JSDateField(TextField):
 
 @field('datetime')
 class JSDateTimeField(DateTimeField):
-    __doc__ = 'DateTime input widget with JQuery Datepicker.'
+    """DateTime input widget with JQuery Datepicker.
+    Field name is ``datetime``."""
 
     klass = 'datetime-widget'
     value = ''

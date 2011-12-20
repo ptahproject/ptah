@@ -1,29 +1,39 @@
+Interfaces
+==========
+
 Ptah interfaces
 ---------------
 
-Various ptah interfaces.
+  .. automodule:: ptah.interfaces
+
+    .. autofunction:: resolver
+
+    .. autoclass:: Principal
+
+    .. autofunction:: auth_checker
+
+    .. autofunction:: principal_searcher
+
+    .. autoclass:: AuthInfo
+
+    .. autoclass:: AuthProvider
+       :members:
+
+    .. autoclass:: ptah.authentication.Authentication
+       :members:
+
+    .. autoclass:: IOwnersAware()
+
+    .. autoclass:: ILocalRolesAware()
+
+    .. autoclass:: IACLsAware()
 
 
-.. automodule:: ptah.interfaces
+Form interfaces
+---------------
 
-  .. autofunction:: resolver
+  .. automodule:: ptah.form.interfaces
 
-  .. autoclass:: Principal
+    .. autofunction:: Validator
 
-  .. autofunction:: auth_checker
-
-  .. autofunction:: principal_searcher
-
-  .. autoclass:: AuthInfo
-
-  .. autoclass:: AuthProvider
-     :members:
-
-  .. autoclass:: ptah.authentication.Authentication
-     :members:
-
-  .. autoclass:: IOwnersAware()
-
-  .. autoclass:: ILocalRolesAware()
-
-  .. autoclass:: IACLsAware()
+    .. autofunction:: Preview

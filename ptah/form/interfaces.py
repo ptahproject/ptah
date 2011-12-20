@@ -10,6 +10,8 @@ FORM_DISPLAY = 'form-display'
 
 
 class Invalid(Exception):
+    """An exception raised by data types and validators indicating that
+    the value for a particular node was not valid."""
 
     def __init__(self, field, msg):
         self.field = field
@@ -281,3 +283,24 @@ class IInputForm(interface.Interface):
     csrf = interface.Attribute('Enable csrf protection')
     csrfname = interface.Attribute('csrf field name')
     token = interface.Attribute('csrf token')
+
+
+def Validator(field, value):
+    """
+    A validator is called during field value validation.
+
+    If ``value`` is not valid, raise a :class:`ptah.form.Invalid`
+    instance as an exception after.
+
+    ``field`` is a :class:`ptah.form.Field` instance, for use when
+    raising a :class:`ptah.form.Invalid` exception.
+    """
+
+
+def Preview(request):
+    """
+    A preview is called by ``Field types`` management module.
+
+    :param request: Pyramid request object
+    :rtype: Html snippet
+    """

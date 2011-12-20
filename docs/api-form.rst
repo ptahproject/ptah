@@ -5,7 +5,11 @@ ptah.form
 
   .. py:data:: null
 
+     Represents a null value in field-related operations.
+
   .. py:data:: required
+
+     Represents a required value in field-related operations.
 
   .. autoclass:: Invalid
 
@@ -42,6 +46,26 @@ Field
   .. autofunction:: get_field_preview
 
 
+Button
+~~~~~~
+
+  .. autofunction:: button
+
+  .. autoclass:: Button()
+
+  .. autoclass:: Buttons
+
+  .. py:data:: AC_DEFAULT
+
+  .. py:data:: AC_PRIMARY
+
+  .. py:data:: AC_DANGER
+
+  .. py:data:: AC_SUCCESS
+
+  .. py:data:: AC_INFO
+
+
 Vocabulary
 ~~~~~~~~~~
 
@@ -72,6 +96,27 @@ Validators
 
 Predefined fields
 ~~~~~~~~~~~~~~~~~
+
+  Any field can be create with two different way.
+  Using field class:
+
+  .. code-block:: python
+
+      field = ptah.form.TextField(
+          'field',
+          title='Text',
+	  description='Field description')
+
+
+  Or using field factory:
+
+  .. code-block:: python
+
+      field = ptah.form.FieldFactory(
+          'text', 'field',
+          title='Text',
+	  description='Field description')
+
 
   .. autoclass:: TextField
 
@@ -108,26 +153,6 @@ Predefined fields
   .. autoclass:: JSDateTimeField
 
   .. autoclass:: TinymceField
-
-
-Button
-~~~~~~
-
-  .. autofunction:: button
-
-  .. autoclass:: Button
-
-  .. autoclass:: Buttons
-
-  .. py:data:: AC_DEFAULT
-
-  .. py:data:: AC_PRIMARY
-
-  .. py:data:: AC_DANGER
-
-  .. py:data:: AC_SUCCESS
-
-  .. py:data:: AC_INFO
 
 
 Form snippets

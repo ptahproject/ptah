@@ -13,7 +13,7 @@ PREVIEW_ID = 'ptah.form:field-preview'
 
 
 class field(object):
-    """ Field registration directive
+    """ Field registration directive.
 
     """
 
@@ -45,6 +45,11 @@ class field(object):
 
 
 def fieldpreview(cls):
+    """Register fieldpreview factory for field class.
+    Fieldpreview factory is used in ``Field types`` management module.
+    It should be an object that implements the
+    :py:class:`ptah.form.interfaces.Preview` interface.
+    """
     info = config.DirectiveInfo()
 
     def wrapper(func):
@@ -65,10 +70,12 @@ def fieldpreview(cls):
 
 
 def get_field_factory(name):
+    """Return field factory."""
     return config.get_cfg_storage(FIELD_ID).get(name, None)
 
 
 def get_field_preview(cls):
+    """Return field preview factory for field class."""
     return config.get_cfg_storage(PREVIEW_ID).get(cls, None)
 
 
@@ -222,38 +229,47 @@ class FieldsetErrors(list):
 
 
 class Field(object):
-    """Field base class."""
+    """Field base class.
+
+    ``name``: Name of this field.
+
+    ``title``: The title of this field.  Defaults to a titleization
+      of the ``name`` (underscores replaced with empty strings and the
+      first letter of every resulting word capitalized).  The title is
+      used by form for generating html form.
+
+    ``description``: The description for this field.  Defaults to
+      ``''`` (the empty string).  The description is used by form.
+
+    ``validator``: Optional validator for this field.  It should be
+      an object that implements the
+      :py:class:`ptah.form.interfaces.Validator` interface.
+
+    ``tmpl_input``: The path to input widget template. It should be
+      compatible with pyramid renderers.
+
+    ``tmpl_display``: The path to display widget template. It should be
+      compatible with pyramid renderers.
+
+    """
 
     __field__ = ''
 
-    #: field name
     name = ''
-
-    #: field title
     title = ''
-    #: field description
     description = ''
-    #: field required
     required = False
-    #: field validation error
     error = None
 
     params = {}
-    #: field mode
     mode = None
-    #: current field value
     value = null
-    #: generated field value suitable for html form
     form_value = None
 
-    #: field html id
     id = None
-    #: field css class
     klass = None
 
-    #: template path for input widget
     tmpl_input = None
-    #: template path for display widget
     tmpl_display = None
 
     def __init__(self, name, **kw):

@@ -29,6 +29,7 @@ class Button(object):
     disabled = False
     tabindex = None
     klass = 'btn'
+    actype = ''
 
     template = "ptah.form:templates/submit.pt"
 
@@ -85,7 +86,7 @@ class Button(object):
 
 
 class Buttons(OrderedDict):
-    """Buttons manager"""
+    """Form buttons manager."""
 
     def __init__(self, *args):
         super(Buttons, self).__init__()
@@ -100,6 +101,7 @@ class Buttons(OrderedDict):
         self.add(*buttons)
 
     def add(self, *btns):
+        """Add buttons to this manager."""
         for btn in btns:
             if btn.name in self:
                 raise ValueError("Duplicate name", btn.name)
@@ -107,6 +109,7 @@ class Buttons(OrderedDict):
             self[btn.name] = btn
 
     def add_action(self, title, **kwargs):
+        """Add action to this manager."""
         # Add the title to button constructor keyword arguments
         kwargs['title'] = title
         if 'name' not in kwargs:
@@ -123,7 +126,7 @@ class Buttons(OrderedDict):
 
 
 class Actions(OrderedDict):
-    """Form actions manager"""
+    """Form actions manager."""
 
     prefix = 'buttons.'
 
@@ -172,17 +175,21 @@ def create_btn_id(name):
 
 
 def button(title, **kwargs):
-    """ decorator for button definition::
+    """ Register new form button.
 
-    >> class CustomForm(form.Form):
-    >>
-    >>    field = form.Fieldset()
-    >>
-    >>    @form.button('Cancel')
-    >>    def handle_cancel(self):
-    >>        ...
+    :param title: Button title. it is beeing used for html form generations.
+    :param kwargs: Keyword arguments
+
+    .. code-block:: python
+
+      class CustomForm(form.Form):
+
+          field = form.Fieldset()
+
+          @form.button('Cancel')
+          def handle_cancel(self):
+              ...
     """
-
     # install buttons manager
     f_locals = sys._getframe(1).f_locals
 
