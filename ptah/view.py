@@ -216,8 +216,10 @@ class SnippetRenderer(object):
         self.mapped_view = mapper()(view)
 
     def __call__(self, context, request):
+        orig_view = getattr(request, '__view__', None)
         value = self.mapped_view(context, request)
         if self.renderer is None:
+            request.__view__ = orig_view
             return value
 
         if value is None:
@@ -228,7 +230,9 @@ class SnippetRenderer(object):
                   'context': context,
                   'request': request}
 
-        return self.renderer.render(value, system, request)
+        result = self.renderer.render(value, system, request)
+        request.__view__ = orig_view
+        return result
 
 
 def add_message(request, msg, type='info'):
