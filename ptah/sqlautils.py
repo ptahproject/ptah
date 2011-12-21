@@ -19,6 +19,7 @@ def get_base():
 
 
 def reset_session():
+    """Reset sqla session"""
     global _zte, _session
 
     _zte = ZopeTransactionExtension()

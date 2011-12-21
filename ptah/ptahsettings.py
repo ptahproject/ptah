@@ -167,7 +167,6 @@ ptah.register_settings(
         title = _('Time'),
         description = _('Time full format')),
 
-    ttw = True,
     title = 'Site formats',
     )
 

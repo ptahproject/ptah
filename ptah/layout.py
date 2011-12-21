@@ -1,6 +1,7 @@
 """ layout implementation """
-import logging
+import json, logging, random
 from collections import namedtuple
+from collections import OrderedDict
 from zope.interface import providedBy, Interface
 
 from pyramid.compat import text_, string_types
@@ -22,7 +23,7 @@ LAYOUT_ID = 'ptah.view:layout'
 LAYOUT_WRAPPER_ID = 'ptah.view:layout-wrapper'
 
 LayoutInfo = namedtuple(
-    'LayoutInfo', 'name layout view original renderer action')
+    'LayoutInfo', 'name layout view original renderer intr')
 
 
 class ILayout(Interface):
@@ -226,7 +227,7 @@ class layout(object):
         mapped_view = mapper()(view)
 
         info = LayoutInfo(
-            name, layout, mapped_view, view, renderer, cfg.__ptah_action__)
+            name, layout, mapped_view, view, renderer, intr)
         cfg.registry.registerAdapter(
             info, (root, request_iface, context), ILayout, name)
 
@@ -235,6 +236,30 @@ class LayoutRenderer(object):
 
     def __init__(self, layout):
         self.layout = layout
+
+    def layout_info(self, layout, context, content,
+                    colors=('green','blue','yellow','gray','black')):
+        intr = layout.intr
+        view = intr['view']
+
+        data = OrderedDict(
+            (('name', intr['name']),
+             ('parent-layout', intr['parent']),
+             ('class', '%s.%s'%(view.__module__,
+                                view.__name__)),
+             ('python-module', intr['codeinfo'].module),
+             ('python-module-location', intr['codeinfo'].filename),
+             ('python-module-line', intr['codeinfo'].lineno),
+             ('renderer', intr['renderer']),
+             ('context', '%s.%s'%(context.__class__.__module__,
+                                  context.__class__.__name__)),
+             ))
+
+        content = u'\n<!-- layout:\n%s \n-->\n'\
+                  u'<div style="border: 2px solid %s">%s</div>'%(
+            json.dumps(data, indent=2), random.choice(colors), content)
+
+        return content
 
     def __call__(self, context, request):
         chain = query_layout_chain(request.root, context, request, self.layout)
@@ -245,7 +270,13 @@ class LayoutRenderer(object):
         if isinstance(request.wrapped_response, HTTPException):
             return request.wrapped_response
 
+        debug = getattr(request, '__layout_debug__', False)
+
         content = text_(request.wrapped_body, 'utf-8')
+
+        if debug:
+            content = u'\n<!-- view: -->\n'\
+                      u'<div style="border: 2px solid red">%s</div>'%content
 
         for layout, layoutcontext in chain:
             value = layout.view(layoutcontext, request)
@@ -259,6 +290,9 @@ class LayoutRenderer(object):
                       'wrapped_content': content}
 
             content = layout.renderer.render(value, system, request)
+
+            if debug:
+                content = self.layout_info(layout, layoutcontext, content)
 
         request.response.text = content
         return request.response
