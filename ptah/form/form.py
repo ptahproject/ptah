@@ -137,14 +137,13 @@ class Form(ptah.View):
     enctype = 'multipart/form-data'
     accept = None
     acceptCharset = None
+    params = None
 
     #: enable/disable form csrf protection
     csrf = False
 
     #: csrf field name
     csrfname = 'csrf-token'
-
-    params = MultiDict({})
 
     __view_mapper__ = FormViewMapper
 
@@ -175,12 +174,15 @@ class Form(ptah.View):
 
     def form_params(self):
         """ get request params """
+        if self.params is not None:
+            if not isinstance(self.params, MultiDict):
+                return MultiDict(self.params)
+            return self.params
+
         if self.method == 'post':
             return self.request.POST
         elif self.method == 'get':
             return self.request.GET
-        elif self.method == 'params':
-            return self.params
         else:
             return self.params
 

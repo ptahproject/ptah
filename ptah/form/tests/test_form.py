@@ -1,5 +1,6 @@
 import unittest
 from ptah.testing import PtahTestCase
+from webob.multidict import MultiDict
 from pyramid.compat import text_
 from pyramid.view import view_config, render_view_to_response
 from pyramid.testing import DummyRequest
@@ -131,7 +132,13 @@ class TestForm(PtahTestCase):
         self.assertIs(form.form_params(), get)
 
         form.method = 'unknown'
-        self.assertEqual(dict(form.form_params()), {})
+        self.assertEqual(form.form_params(), None)
+
+        params = {'params': 'info'}
+        form.method = 'POST'
+        form.params = params
+        self.assertIn('params', form.form_params().keys())
+        self.assertIsInstance(form.form_params(), MultiDict)
 
     def test_form_params_method(self):
         from ptah.form.form import Form
@@ -141,7 +148,8 @@ class TestForm(PtahTestCase):
         params = {'post': 'info'}
         form.params = params
 
-        self.assertIs(form.form_params(), params)
+        self.assertEqual(form.form_params().keys(), ['post'])
+        self.assertEqual(form.form_params().values(), ['info'])
 
     def test_form_mode(self):
         from ptah.form.form import Form, DisplayForm, \
