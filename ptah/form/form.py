@@ -262,6 +262,7 @@ class DisplayForm(Form):
     """ Special form that just display content """
 
     mode = FORM_DISPLAY
+    params = MultiDict([])
 
     def form_params(self):
         return self.params
