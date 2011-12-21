@@ -2,7 +2,7 @@
   <div class="page-header">
     <h2>${acl.title} <small>${acl.id}</small></h2>
     <p>Defined: 
-      <a href="/${view.manage}/source.html?pkg=${acl.directiveInfo.module.__name__}#sl-${acl.directiveInfo.codeinfo[1]}">${acl.directiveInfo.module.__name__}</a></p>
+      <a href="${view.manage}/source.html?pkg=${acl.directiveInfo.module.__name__}#sl-${acl.directiveInfo.codeinfo[1]}">${acl.directiveInfo.module.__name__}</a></p>
     <p>${acl.description}
   </div>
 
