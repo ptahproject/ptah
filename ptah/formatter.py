@@ -154,8 +154,9 @@ def timedelta_formatter(value, type='short', request=None):
 
 _size_types = {
     'b': (1.0, 'B'),
-    'k': (1024.0, 'Kb'),
-    'm': (1048576.0, 'Mb'),
+    'k': (1024.0, 'KB'),
+    'm': (1024.0*1024.0, 'MB'),
+    'g': (1024.0*1024.0*1024.0, 'GB'),
 }
 
 
@@ -172,21 +173,26 @@ def size_formatter(value, type='k', request=None):
     kylobytes::
 
         >> ptah.format.size(v, 'k')
-        '1.00 Kb'
+        '1.00 KB'
 
     megabytes::
 
         >> ptah.format.size(1024*768, 'm')
-        '0.75 Mb'
+        '0.75 MB'
 
         >> ptah.format.size(1024*768*768, 'm')
-        '576.00 Mb'
+        '576.00 MB'
+
+    terabytes::
+
+        >> ptah.format.size(1024*768*768, 'g')
+        '0.56 GB'
 
     """
     if not isinstance(value, (int, float)):
         return value
 
-    f, t = _size_types.get(type, (1024.0, 'Kb'))
+    f, t = _size_types.get(type, (1024.0, 'KB'))
 
     if t == 'B':
         return '%.0f %s' % (value / f, t)

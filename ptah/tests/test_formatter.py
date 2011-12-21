@@ -118,7 +118,9 @@ class TestFormatter(PtahTestCase):
         v = 1024
         self.assertEqual(format.size(v, 'b'), '1024 B')
 
-        self.assertEqual(format.size(v, 'k'), '1.00 Kb')
+        self.assertEqual(format.size(v, 'k'), '1.00 KB')
 
-        self.assertEqual(format.size(1024*768, 'm'), '0.75 Mb')
-        self.assertEqual(format.size(1024*768*768, 'm'), '576.00 Mb')
+        self.assertEqual(format.size(1024*768, 'm'), '0.75 MB')
+        self.assertEqual(format.size(1024*768*768, 'm'), '576.00 MB')
+
+        self.assertEqual(format.size(1024*768*768, 'g'), '0.56 GB')
