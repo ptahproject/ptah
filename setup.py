@@ -51,11 +51,11 @@ setup(name='ptah',
       include_package_data = True,
       zip_safe = False,
       entry_points = {
-          'console_scripts': [
-              'settings = ptah.scripts.settings:main',
+        'console_scripts': [
+            'ptah-settings = ptah.scripts.settings:main',
             ],
-          'pyramid.scaffold': [
-              'ptah_starter = ptah.scaffolds:PtahStarterProjectTemplate',
-              ],
-          },
+        'pyramid.scaffold': [
+            'ptah_starter = ptah.scaffolds:PtahStarterProjectTemplate',
+            ],
+        },
       )

@@ -124,7 +124,7 @@ class TestForm(PtahTestCase):
         request.POST = post
 
         self.assertIs(form.form_params(), post)
-        self.assertIs(disp_form.form_params(), Form.params)
+        self.assertIs(disp_form.form_params(), DisplayForm.params)
 
         get = {'get': 'info'}
         request.GET = get

@@ -3,6 +3,7 @@ import argparse
 import textwrap
 
 from collections import OrderedDict
+from pyramid.paster import bootstrap
 from pyramid.config import Configurator
 from pyramid.compat import configparser, NativeIO
 
@@ -34,15 +35,12 @@ nameDescriptionWrap = textwrap.TextWrapper(
 
 
 def main(init=True):
-    if init:  # pragma: no cover
-        pconfig = Configurator()
-        pconfig.begin()
-        pconfig.include('ptah')
-        config.initialize(pconfig, autoinclude=True)
-        pconfig.commit()
-        ptah.initialize_settings(pconfig, None)
-
     args = SettingsCommand.parser.parse_args()
+
+    # bootstrap pyramid
+    if init: # pragma: no cover
+        env = bootstrap(args.config, )
+
     cmd = SettingsCommand(args)
     cmd.run()
 
@@ -51,6 +49,8 @@ class SettingsCommand(object):
     """ 'settings' command"""
 
     parser = argparse.ArgumentParser(description="ptah settings management")
+    parser.add_argument('config', metavar='config',
+                        help='Config file')
     parser.add_argument('-a', '--all', action="store_true",
                         dest='all',
                         help='List all registered settings')
@@ -62,6 +62,7 @@ class SettingsCommand(object):
                         help='Print default settings in ConfigParser format')
 
     def __init__(self, args):
+        self.config = config
         self.options = args
 
     def run(self):

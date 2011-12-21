@@ -34,7 +34,7 @@ class TestCommand(PtahTestCase):
         group2 = ptah.get_settings('group2', self.registry)
 
         # all
-        sys.argv[1:] = ['-a']
+        sys.argv[1:] = ['-a', 'ptah.ini']
 
         stdout = sys.stdout
         out = NativeIO()
@@ -50,7 +50,7 @@ class TestCommand(PtahTestCase):
         self.assertIn('group2.node', val)
 
         # section
-        sys.argv[1:] = ['-l', 'group1']
+        sys.argv[1:] = ['-l', 'group1', 'ptah.ini']
 
         stdout = sys.stdout
         out = NativeIO()
@@ -66,7 +66,7 @@ class TestCommand(PtahTestCase):
         self.assertNotIn('group2.node', val)
 
         # print
-        sys.argv[1:] = ['-p']
+        sys.argv[1:] = ['-p', 'ptah.ini']
 
         stdout = sys.stdout
         out = NativeIO()
