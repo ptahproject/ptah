@@ -1,5 +1,8 @@
 """ layout implementation """
-import json, logging, random
+import json
+import logging
+import random
+import inspect
 from collections import namedtuple
 from collections import OrderedDict
 from zope.interface import providedBy, Interface
@@ -237,7 +240,7 @@ class LayoutRenderer(object):
     def __init__(self, layout):
         self.layout = layout
 
-    def layout_info(self, layout, context, content,
+    def layout_info(self, layout, context, request, content,
                     colors=('green','blue','yellow','gray','black')):
         intr = layout.intr
         view = intr['view']
@@ -245,19 +248,40 @@ class LayoutRenderer(object):
         data = OrderedDict(
             (('name', intr['name']),
              ('parent-layout', intr['parent']),
-             ('class', '%s.%s'%(view.__module__,
-                                view.__name__)),
+             ('layout-factory', '%s.%s'%(view.__module__, view.__name__)),
              ('python-module', intr['codeinfo'].module),
              ('python-module-location', intr['codeinfo'].filename),
              ('python-module-line', intr['codeinfo'].lineno),
              ('renderer', intr['renderer']),
              ('context', '%s.%s'%(context.__class__.__module__,
                                   context.__class__.__name__)),
+             ('context-path', request.resource_url(context)),
              ))
 
         content = u'\n<!-- layout:\n%s \n-->\n'\
                   u'<div style="border: 2px solid %s">%s</div>'%(
             json.dumps(data, indent=2), random.choice(colors), content)
+
+        return content
+
+    def view_info(self, context, request, content):
+        view = request.wrapped_view.__original_view__
+
+        data = OrderedDict(
+            (('name', 'unknown'),
+             ('view-factory', '%s.%s'%(view.__module__, view.__name__)),
+             ('python-module', inspect.getmodule(view).__name__),
+             ('python-module-location', inspect.getsourcefile(view)),
+             ('python-module-line', inspect.getsourcelines(view)[-1]),
+             ('renderer', 'unknown'),
+             ('context', '%s.%s'%(context.__class__.__module__,
+                                  context.__class__.__name__)),
+             ('context-path', request.resource_url(context)),
+             ))
+
+        content = u'\n<!-- view:\n%s \n-->\n'\
+                  u'<div style="border: 2px solid red">%s</div>'%(
+            json.dumps(data, indent=2), content)
 
         return content
 
@@ -275,8 +299,7 @@ class LayoutRenderer(object):
         content = text_(request.wrapped_body, 'utf-8')
 
         if debug:
-            content = u'\n<!-- view: -->\n'\
-                      u'<div style="border: 2px solid red">%s</div>'%content
+            content = self.view_info(context, request, content)
 
         for layout, layoutcontext in chain:
             value = layout.view(layoutcontext, request)
@@ -292,7 +315,8 @@ class LayoutRenderer(object):
             content = layout.renderer.render(value, system, request)
 
             if debug:
-                content = self.layout_info(layout, layoutcontext, content)
+                content = self.layout_info(
+                    layout, layoutcontext, request, content)
 
         request.response.text = content
         return request.response
