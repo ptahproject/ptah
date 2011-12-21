@@ -264,16 +264,28 @@ class LayoutRenderer(object):
 
         return content
 
-    def view_info(self, context, request, content):
-        view = request.wrapped_view.__original_view__
+    def view_info(self, discr, context, request, content):
+        introspector = request.registry.introspector
+
+        template = 'unknown'
+        intr = introspector.get('templates', discr)
+        if intr is not None: # pragma: no cover
+            template = intr['name']
+
+        intr = introspector.get('views', discr)
+        if intr is None: # pragma: no cover
+            return content
+
+        view = intr['callable']
 
         data = OrderedDict(
-            (('name', 'unknown'),
+            (('name', intr['name']),
+             ('route-name', intr['route_name']),
              ('view-factory', '%s.%s'%(view.__module__, view.__name__)),
              ('python-module', inspect.getmodule(view).__name__),
              ('python-module-location', inspect.getsourcefile(view)),
              ('python-module-line', inspect.getsourcelines(view)[-1]),
-             ('renderer', 'unknown'),
+             ('renderer', template),
              ('context', '%s.%s'%(context.__class__.__module__,
                                   context.__class__.__name__)),
              ('context-path', request.resource_url(context)),
@@ -299,7 +311,7 @@ class LayoutRenderer(object):
         content = text_(request.wrapped_body, 'utf-8')
 
         if debug:
-            content = self.view_info(context, request, content)
+            content = self.view_info(debug, context, request, content)
 
         for layout, layoutcontext in chain:
             value = layout.view(layoutcontext, request)

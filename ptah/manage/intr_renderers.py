@@ -29,45 +29,6 @@ class EventRenderer(Renderer):
 
 
 @ptah.snippet(
-    'ptah.config:adapter', IIntrospectable,
-    renderer='ptah.manage:templates/intr-adapter.pt')
-class AdapterDirective(object):
-    """ List of adapter registrations """
-
-    title = 'zc adapters'
-
-    def getInfo(self, action):
-        context = action.info.context
-
-        if inspect.isclass(context):
-            isclass = True
-            requires, name = action.args[:2]
-        else:
-            context = action.args[1]
-            requires = action.args[2]
-            name = action.kw['name']
-
-        provided = list(interface.implementedBy(context))
-        if len(provided):
-            iface = provided[0]
-        else: # pragma: no cover
-            iface = 'unknown'
-
-        return {'iface': iface,
-                'context': context,
-                'provided': provided,
-                'name': name,
-                'requires': requires}
-
-    def renderActions(self, *actions):
-        return self.actions(
-            actions = actions,
-            getInfo = self.getInfo,
-            manage = get_manage_url(self.request),
-            request = self.request)
-
-
-@ptah.snippet(
     'ptah.config:subscriber', IIntrospectable,
     renderer='ptah.manage:templates/intr-subscriber.pt')
 class SubscriberRenderer(Renderer):

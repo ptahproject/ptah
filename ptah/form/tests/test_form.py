@@ -140,6 +140,11 @@ class TestForm(PtahTestCase):
         self.assertIn('params', form.form_params().keys())
         self.assertIsInstance(form.form_params(), MultiDict)
 
+        params = MultiDict({'params': 'info'})
+        form.method = 'POST'
+        form.params = params
+        self.assertIs(form.form_params(), params)
+
     def test_form_params_method(self):
         from ptah.form.form import Form
 

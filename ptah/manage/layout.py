@@ -18,6 +18,6 @@ def layoutPreview(context, request):
     if view is None:
         return HTTPNotFound()
 
-    request.__layout_debug__ = True
+    request.__layout_debug__ = view.__discriminator__(context, request)
 
     return view(context, request)

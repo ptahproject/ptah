@@ -168,7 +168,7 @@ class Settings(object):
 
             group.update(data)
 
-        if defaults is None:
+        if defaults is None: # pragma: no cover
             return
 
         self.load(defaults, True)
