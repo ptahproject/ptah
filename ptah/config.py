@@ -286,7 +286,7 @@ def shutdown():
             pass
 
 
-def processShutdown(sig, frame):
+def process_shutdown(sig, frame):
     """ os signal handler """
     shutdown()
 
@@ -299,8 +299,10 @@ def processShutdown(sig, frame):
     if sig == signal.SIGTERM:
         raise sys.exit()
 
-try:
-    import mod_wsgi
-except ImportError:
-    signal.signal(signal.SIGINT, processShutdown)
-    signal.signal(signal.SIGTERM, processShutdown)
+
+def install_sigterm_handler(): # pragma: no cover
+    try:
+        import mod_wsgi
+    except ImportError:
+        signal.signal(signal.SIGINT, process_shutdown)
+        signal.signal(signal.SIGTERM, process_shutdown)

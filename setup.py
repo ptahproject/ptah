@@ -1,16 +1,18 @@
 import os
+import logging
+import multiprocessing # atexit exception
 from setuptools import setup, find_packages
 
-version='0.2dev'
+version='0.2'
 
 install_requires = ['setuptools',
                     'chameleon >= 2.6.1',
-                    'pyramid >= 1.3a1',
+                    'pyramid >= 1.3a3',
                     'pyramid_tm',
                     'zope.interface >= 3.8.0',
                     'zope.sqlalchemy >= 0.7.0',
                     'transaction >= 1.2.0',
-                    'venusian', # we get it as part of pyramid
+                    'venusian',
                     'WebOb >= 1.2b2',
                     'SQLAlchemy',
                     'Pygments',
@@ -36,7 +38,6 @@ setup(name='ptah',
           "Programming Language :: Python :: 3",
           "Programming Language :: Python :: 3.2",
           "Programming Language :: Python :: Implementation :: CPython",
-          "Programming Language :: Python :: Implementation :: PyPy",
           "Framework :: Pylons",
           "Topic :: Internet :: WWW/HTTP",
           'Topic :: Internet :: WWW/HTTP :: WSGI'],

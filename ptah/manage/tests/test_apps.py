@@ -1,8 +1,9 @@
 import ptah
-from ptah import cms, config, view
+from ptah import cms
 from ptah.testing import PtahTestCase
+from zope import interface
 from pyramid.testing import DummyRequest
-from pyramid.interfaces import IRequest
+from pyramid.interfaces import IRequest, IRouteRequest
 from pyramid.httpexceptions import HTTPFound
 from pyramid.view import render_view_to_response
 
@@ -84,6 +85,26 @@ class TestAppsModule(PtahTestCase):
         self.assertIs(request.app_factory, factory2)
 
         self.assertRaises(KeyError, mod.__getitem__, 'app3')
+
+    def test_apps_app_view(self):
+        from ptah.manage.apps import ApplicationsModule
+
+        factory1 = cms.ApplicationFactory(
+            TestApp1, '/test1', 'app1', 'Root App 1')
+
+        self.init_ptah()
+
+        request = DummyRequest()
+        request.request_iface = self.registry.getUtility(
+            IRouteRequest, name=ptah.manage.MANAGE_APP_ROUTE)
+        interface.directlyProvides(request, request.request_iface)
+        mod = ApplicationsModule(None, request)
+
+        item = mod['app1']
+
+        res = render_view_to_response(item, request)
+        self.assertIn('<h1>Application: Root App 1</h1>', res.text)
+        self.assertIn('<td>Root App 1</td>', res.text)
 
 
 class TestAppSharingForm(PtahTestCase):
@@ -169,7 +190,7 @@ class TestAppSharingForm(PtahTestCase):
         form.update()
 
         self.assertIn('Please specify search term',
-                      view.render_messages(form.request))
+                      ptah.render_messages(form.request))
 
     def test_sharingform_update(self):
         from ptah.manage.apps import SharingForm

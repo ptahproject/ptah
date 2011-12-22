@@ -108,6 +108,15 @@ class TestFieldPreviews(PtahTestCase):
         html = fieldpreviews.passwordPreview(request)
         self.assertIn('Password field', html)
 
+    def test_timezonePreview(self):
+        previews = config.get_cfg_storage(PREVIEW_ID)
+        self.assertIs(previews[form.TimezoneField],
+                      fieldpreviews.timezonePreview)
+
+        request = DummyRequest()
+        html = fieldpreviews.timezonePreview(request)
+        self.assertIn('Timezone field', html)
+
 
 class TestFieldsModule(PtahTestCase):
 

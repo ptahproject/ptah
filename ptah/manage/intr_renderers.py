@@ -42,7 +42,7 @@ class SubscriberRenderer(Renderer):
         required = intr['required']
         factoryInfo = '%s.%s'%(intr['codeinfo'].module, handler.__name__)
 
-        if len(required) > 1:
+        if len(required) > 1: # pragma: no cover
             obj = required[0]
             klass = required[1]
             #event = config.get_cfg_storage(config.ID_EVENT).get(

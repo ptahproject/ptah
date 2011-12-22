@@ -19,7 +19,7 @@ class TestShutdownHandlers(unittest.TestCase):
 
         err = None
         try:
-            shutdown.processShutdown(signal.SIGINT, None)
+            shutdown.process_shutdown(signal.SIGINT, None)
         except BaseException as e:
             err = e
 
@@ -38,7 +38,7 @@ class TestShutdownHandlers(unittest.TestCase):
 
         err = None
         try:
-            shutdown.processShutdown(signal.SIGINT, None)
+            shutdown.process_shutdown(signal.SIGINT, None)
         except BaseException as e:
             err = e
 
@@ -54,7 +54,7 @@ class TestShutdownHandlers(unittest.TestCase):
         shutdown = sys.modules['ptah.config']
         shutdown._shutdown = False
         try:
-            shutdown.processShutdown(signal.SIGTERM, None)
+            shutdown.process_shutdown(signal.SIGTERM, None)
         except:
             pass
 

@@ -1,4 +1,5 @@
 import sqlalchemy
+from pyramid.compat import text_
 from pyramid.testing import DummyRequest
 from pyramid.httpexceptions import HTTPNotFound
 
@@ -25,7 +26,7 @@ class TestLayoutPreview(ptah.PtahTestCase):
             __name__ = 'test'
 
         def View(context, request):
-            request.response.body = 'test body'
+            request.response.text = text_('test body')
             return request.response
 
         self.init_ptah()
@@ -38,7 +39,7 @@ class TestLayoutPreview(ptah.PtahTestCase):
 
         request = DummyRequest()
 
-        res = layoutPreview(Context(), request).body
+        res = layoutPreview(Context(), request).text
 
         self.assertIn('"python-module": "ptah.manage.tests.test_layout"', res)
         self.assertIn('"renderer": "ptah.manage:tests/test_layout.pt"', res)

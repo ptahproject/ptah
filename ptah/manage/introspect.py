@@ -2,7 +2,7 @@
 import urllib
 from zope.interface import Interface
 from pyramid.view import view_config
-from pyramid.compat import string_types
+from pyramid.compat import string_types, url_unquote
 from pyramid.interfaces import IIntrospectable
 
 import ptah
@@ -17,7 +17,7 @@ class IntrospectModule(ptah.manage.PtahModule):
     title = 'Introspect'
 
     def __getitem__(self, key):
-        key = urllib.unquote(key)
+        key = url_unquote(key)
         if key in self.request.registry.introspector.categories():
             return Introspector(key, self, self.request)
 

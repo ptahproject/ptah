@@ -1,6 +1,6 @@
 import ptah
 from ptah.testing import PtahTestCase
-from pyramid.view import render_view
+from pyramid.view import render_view_to_response
 from pyramid.testing import DummyRequest
 
 
@@ -44,11 +44,11 @@ class TestIntrospectModule(PtahTestCase):
         request = DummyRequest()
         mod = IntrospectModule(None, request)
 
-        res = render_view(mod, request)
-        self.assertIn('Uri resolvers', res)
+        res = render_view_to_response(mod, request)
+        self.assertIn('Uri resolvers', res.text)
         self.assertIn(
           '<a href="http://example.com/ptah-manage/introspect/ptah:resolver/">',
-          res)
+          res.text)
 
     def test_intr_view(self):
         from ptah.manage.introspect import IntrospectModule, Introspector
@@ -59,5 +59,5 @@ class TestIntrospectModule(PtahTestCase):
 
         intr = mod['ptah:resolver']
 
-        res = render_view(intr, request)
-        self.assertIn('System super user', res)
+        res = render_view_to_response(intr, request)
+        self.assertIn('System super user', res.text)

@@ -403,22 +403,3 @@ class TestEditRecord(Base):
         content = Session.query(Content2) \
             .filter(Content2.__id__ == rowid).first()
         self.assertEqual(content.title, 'Content')
-
-
-class _TestTypeIntrospect(PtahTestCase):
-
-    def test_type_introspect(self):
-        from ptah.manage.model import TypeIntrospection
-
-        data = ptah.config.scan(self.__class__.__module__, set())
-
-        actions = []
-        for action in data:
-            if action.discriminator[0] == 'ptah-cms:type':
-                actions.append(action)
-
-        ti = TypeIntrospection(self.request)
-        res = ti.renderActions(*actions)
-
-        self.assertIn('<small>cms-type:content1</small>', res)
-        self.assertIn('<small>cms-type:content2</small>', res)

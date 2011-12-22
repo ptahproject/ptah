@@ -258,8 +258,8 @@ class LayoutRenderer(object):
              ('context-path', request.resource_url(context)),
              ))
 
-        content = u'\n<!-- layout:\n%s \n-->\n'\
-                  u'<div style="border: 2px solid %s">%s</div>'%(
+        content = text_('\n<!-- layout:\n%s \n-->\n'\
+                        '<div style="border: 2px solid %s">%s</div>')%(
             json.dumps(data, indent=2), random.choice(colors), content)
 
         return content
@@ -291,8 +291,8 @@ class LayoutRenderer(object):
              ('context-path', request.resource_url(context)),
              ))
 
-        content = u'\n<!-- view:\n%s \n-->\n'\
-                  u'<div style="border: 2px solid red">%s</div>'%(
+        content = text_('\n<!-- view:\n%s \n-->\n'\
+                        '<div style="border: 2px solid red">%s</div>')%(
             json.dumps(data, indent=2), content)
 
         return content

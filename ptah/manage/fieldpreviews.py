@@ -1,3 +1,4 @@
+import pytz
 import decimal, datetime
 
 from ptah import form
@@ -187,6 +188,19 @@ def tinemcePreview(request):
         description = 'TinyMCE field preview description',
         default = 'Test text in tinymce field.',
         width = '200px')
+
+    widget = field.bind('preview.', form.null, {})
+    widget.update(request)
+    return widget.snippet('form-widget', widget)
+
+
+@form.fieldpreview(form.TimezoneField)
+def timezonePreview(request):
+    field = form.TimezoneField(
+        'TimezoneField',
+        title = 'Timezone field',
+        description = 'Timezone field preview description',
+        default = pytz.timezone('US/Central'))
 
     widget = field.bind('preview.', form.null, {})
     widget.update(request)

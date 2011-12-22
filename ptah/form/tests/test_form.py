@@ -153,8 +153,8 @@ class TestForm(PtahTestCase):
         params = {'post': 'info'}
         form.params = params
 
-        self.assertEqual(form.form_params().keys(), ['post'])
-        self.assertEqual(form.form_params().values(), ['info'])
+        self.assertEqual(list(form.form_params().keys()), ['post'])
+        self.assertEqual(list(form.form_params().values()), ['info'])
 
     def test_form_mode(self):
         from ptah.form.form import Form, DisplayForm, \
