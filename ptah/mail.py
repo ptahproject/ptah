@@ -43,10 +43,7 @@ class MailGenerator(object):
         mail_body = context.render()
         maintype, subtype = contentType.split('/')
 
-        message = MIMEText(
-            mail_body.encode(charset), subtype, charset)
-
-        return message
+        return MIMEText(mail_body, subtype, charset)
 
     def get_attachments(self):
         attachments = []
