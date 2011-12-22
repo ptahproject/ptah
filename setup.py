@@ -3,7 +3,7 @@ import logging
 import multiprocessing # atexit exception
 from setuptools import setup, find_packages
 
-version='0.2'
+version='0.3dev'
 
 install_requires = ['setuptools',
                     'chameleon >= 2.6.1',
