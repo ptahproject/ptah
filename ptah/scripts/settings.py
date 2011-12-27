@@ -1,4 +1,4 @@
-""" paste commands """
+""" ptah-settings command """
 import argparse
 import textwrap
 

@@ -53,6 +53,7 @@ setup(name='ptah',
       zip_safe = False,
       entry_points = {
         'console_scripts': [
+            'ptah-manage = ptah.scripts.manage:main',
             'ptah-settings = ptah.scripts.settings:main',
             ],
         'pyramid.scaffold': [

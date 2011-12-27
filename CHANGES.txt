@@ -5,7 +5,9 @@ CHANGES
 0.3 (unreleased)
 ----------------
 
-- ...
+- Added `ptah-manage` console script.
+
+- Fixed mail template generation on python3
 
 
 0.2 (2011-12-21)
