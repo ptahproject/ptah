@@ -1,6 +1,4 @@
 import sys
-import unittest
-
 import ptah
 from ptah.scripts import settings
 from ptah.testing import PtahTestCase

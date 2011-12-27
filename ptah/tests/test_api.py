@@ -1,7 +1,7 @@
-import unittest
+from ptah.testing import TestCase
 
 
-class StopExceptionTesting(unittest.TestCase):
+class StopExceptionTesting(TestCase):
 
     def test_api_stopexception_msg(self):
         from ptah import config
@@ -23,7 +23,7 @@ class StopExceptionTesting(unittest.TestCase):
         self.assertIn("raise ValueError('err')", s_err.print_tb())
 
 
-class LoadpackageTesting(unittest.TestCase):
+class LoadpackageTesting(TestCase):
 
     def test_stop_exc(self):
         from ptah import config

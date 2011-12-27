@@ -1,7 +1,8 @@
 import ptah
-import unittest
+from ptah.testing import TestCase
 
-class TestPagination(unittest.TestCase):
+
+class TestPagination(TestCase):
 
     def test_pagination_values(self):
         page = ptah.Pagination(10)

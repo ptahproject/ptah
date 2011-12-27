@@ -1,5 +1,4 @@
-import unittest
-from ptah.testing import PtahTestCase
+from ptah.testing import PtahTestCase, TestCase
 
 
 class TestButton(PtahTestCase):
@@ -85,7 +84,7 @@ class TestButton(PtahTestCase):
         self.assertRaises(TypeError, btn, Test())
 
 
-class TestButtons(unittest.TestCase):
+class TestButtons(TestCase):
 
     def test_ctor(self):
         from ptah import form
@@ -154,7 +153,7 @@ class TestButtons(unittest.TestCase):
         self.assertEqual(list(btns.values()), [btn1, btn2])
 
 
-class TestButtonDecorator(unittest.TestCase):
+class TestButtonDecorator(TestCase):
 
     def test_decorator(self):
         from ptah import form
@@ -197,7 +196,7 @@ class TestButtonDecorator(unittest.TestCase):
                          binascii.hexlify('Test title'.encode('utf-8')))
 
 
-class TestActions(unittest.TestCase):
+class TestActions(TestCase):
 
     def _makeOne(self, form, request):
         from ptah.form.button import Actions

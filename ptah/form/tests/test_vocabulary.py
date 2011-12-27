@@ -13,11 +13,11 @@
 ##############################################################################
 """Test of the Vocabulary and related support APIs.
 """
-import unittest
 from ptah.form import vocabulary
+from ptah.testing import TestCase
 
 
-class SimpleVocabularyTests(unittest.TestCase):
+class SimpleVocabularyTests(TestCase):
 
     list_vocab = vocabulary.SimpleVocabulary.from_values(1, 2, 3)
     items_vocab = vocabulary.SimpleVocabulary.from_items(
@@ -33,9 +33,9 @@ class SimpleVocabularyTests(unittest.TestCase):
 
     def test_simple_term_title(self):
         t = vocabulary.SimpleTerm(1)
-        self.failUnless(t.title is None)
+        self.assertIsNone(t.title)
         t = vocabulary.SimpleTerm(1, title="Title")
-        self.failUnlessEqual(t.title, "Title")
+        self.assertEqual(t.title, "Title")
 
     def test_order(self):
         value = 1

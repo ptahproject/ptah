@@ -1,4 +1,5 @@
-import unittest
+from ptah.testing import TestCase
+
 
 def invalid_exc(func, *arg, **kw):
     from ptah.form import Invalid
@@ -20,7 +21,7 @@ class DummyValidator(object):
             raise Invalid(node, self.msg)
 
 
-class TestAll(unittest.TestCase):
+class TestAll(TestCase):
     def _makeOne(self, validators):
         from ptah.form import All
         return All(*validators)
@@ -39,7 +40,7 @@ class TestAll(unittest.TestCase):
         self.assertEqual(e.msg, ['msg1', 'msg2'])
 
 
-class TestFunction(unittest.TestCase):
+class TestFunction(TestCase):
     def _makeOne(self, *arg, **kw):
         from ptah.form import Function
         return Function(*arg, **kw)
@@ -67,7 +68,7 @@ class TestFunction(unittest.TestCase):
         validator = self._makeOne(lambda x: 'a' in x, 'msg')
         self.assertRaises(TypeError, validator, None, None)
 
-class TestRange(unittest.TestCase):
+class TestRange(TestCase):
     def _makeOne(self, **kw):
         from ptah.form import Range
         return Range(**kw)
@@ -109,7 +110,7 @@ class TestRange(unittest.TestCase):
         e = invalid_exc(validator, None, 2)
         self.assertEqual(e.msg, 'wrong')
 
-class TestRegex(unittest.TestCase):
+class TestRegex(TestCase):
     def _makeOne(self, pattern):
         from ptah.form import Regex
         return Regex(pattern)
@@ -133,7 +134,7 @@ class TestRegex(unittest.TestCase):
         self.assertRaises(Invalid, self._makeOne(regex), None, 't')
 
 
-class TestEmail(unittest.TestCase):
+class TestEmail(TestCase):
     def _makeOne(self):
         from ptah.form import Email
         return Email()
@@ -159,7 +160,7 @@ class TestEmail(unittest.TestCase):
         self.assertRaises(Invalid, validator, None, '@here.us')
         self.assertRaises(Invalid, validator, None, '(name)@here.info')
 
-class TestLength(unittest.TestCase):
+class TestLength(TestCase):
     def _makeOne(self, min=None, max=None):
         from ptah.form import Length
         return Length(min=min, max=max)
@@ -190,7 +191,7 @@ class TestLength(unittest.TestCase):
         e = invalid_exc(validator, None, 'ab')
         self.assertEqual(e.msg.interpolate(), 'Longer than maximum length 1')
 
-class TestOneOf(unittest.TestCase):
+class TestOneOf(TestCase):
     def _makeOne(self, values):
         from ptah.form import OneOf
         return OneOf(values)

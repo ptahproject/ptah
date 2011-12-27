@@ -1,6 +1,5 @@
 """ base class """
 import sys
-import unittest
 import sqlalchemy
 import transaction
 import pkg_resources
@@ -14,11 +13,16 @@ from pyramid.path import package_name
 from pyramid.authorization import ACLAuthorizationPolicy
 from pyramid.authentication import AuthTktAuthenticationPolicy
 
+if sys.version_info[:2] == (2, 6):
+    from unittest2 import TestCase
+else:
+    from unittest import TestCase
+
 import ptah
 from ptah import config
 
 
-class PtahTestCase(unittest.TestCase):
+class PtahTestCase(TestCase):
 
     _init_ptah = True
     _init_sqla = True

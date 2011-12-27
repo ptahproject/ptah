@@ -1,6 +1,5 @@
 """ directives tests """
 import sys
-import unittest
 from pyramid import testing
 from pyramid.exceptions import ConfigurationConflictError
 
@@ -10,9 +9,10 @@ from zope.interface.interfaces import IObjectEvent
 
 import ptah
 from ptah import config
+from ptah.testing import TestCase
 
 
-class BaseTesting(unittest.TestCase):
+class BaseTesting(TestCase):
 
     def _init_ptah(self, *args, **kw):
         self.config.include('ptah')

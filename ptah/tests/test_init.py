@@ -1,12 +1,12 @@
 import sys
-import unittest
 from pyramid.router import Router
 from pyramid.config import Configurator
 
 import ptah
+from ptah.testing import TestCase
 
 
-class TestInitializeSql(unittest.TestCase):
+class TestInitializeSql(TestCase):
 
     def test_ptahinit_sqla(self):
         config = Configurator(
@@ -18,7 +18,7 @@ class TestInitializeSql(unittest.TestCase):
         self.assertIsNotNone(ptah.get_base().metadata.bind)
 
 
-class TestPtahInit(unittest.TestCase):
+class TestPtahInit(TestCase):
 
     def test_init_includeme(self):
         config = Configurator()

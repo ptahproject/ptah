@@ -7,17 +7,20 @@ Ptah is loosely affiliated with the Pyramid, Django, Drupal and Zope/Plone commu
 
 Most documentation requires Ptah 0.2 or greater.
 
+
 Requirements
 ------------
 
-- Python 2.7+ or Python 3.2+, we use collections.OrderedDict
+- Python 2.6+ or Python 3.2+
 
 - virtualenv
+
 
 Note for Windows Users
 ----------------------
 
 On Windows virtualenv/bin will be virtualenv/Scripts besides this difference everything else below is the same.
+
 
 Grab the release
 ----------------
@@ -25,6 +28,7 @@ Grab the release
 If you do not want to faff about with source, cloning repos, etc.  Just grab the latest released version of ptah. 
 
   $ /path/to/virtualenv/bin/pip install ptah
+
 
 Ptah from source
 ----------------
@@ -39,6 +43,7 @@ then run the tests::
 
   $ /path/to/virtualenv/bin/python setup.py test
 
+
 An empty project
 ----------------
 
@@ -51,12 +56,14 @@ Let's generate a empty project using the `ptah_starter` scaffolding. You can sta
 
 Open your browser to http://localhost:6543/ if you want examples that do more such as demonstrating editing models and authentication.  Check out the examples.
   
+
 Examples
 --------
 
 There are several example applications ready for you to install and see Ptah in action.  You can find them in the `examples` repository at github.
 
 https://github.com/ptahproject/examples
+
 
 Support and Documentation
 -------------------------
@@ -69,15 +76,18 @@ Documentation can be found in `docs` directory.  You can also see it rendered at
 
 Report bugs at `Ptahproject @ Github <https://github.com/ptahproject/ptah/issues>`_
 
+
 Known Issues
 ------------
 
-On some versions of Ubuntu you may get Python exiting stating it has "Aborted." There is a bug in ctypes on that particular Ubuntu platform.
+On some versions of Ubuntu you may get Python 2.7 exiting stating it has "Aborted." There is a bug in ctypes on that particular Ubuntu platform.
+
 
 License
 -------
 
 Ptah is offered under the BSD3 license.
+
 
 Authors
 -------

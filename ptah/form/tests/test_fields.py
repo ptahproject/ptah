@@ -1,8 +1,7 @@
 import decimal
-import unittest
 from ptah import form
 from ptah.form import iso8601
-from ptah.testing import PtahTestCase
+from ptah.testing import TestCase, PtahTestCase
 from webob.multidict import MultiDict
 
 
@@ -410,7 +409,7 @@ class TestMultiChoiceField(PtahTestCase):
         #print strip(field.render(request))
 
 
-class TestDateTime(unittest.TestCase):
+class TestDateTime(TestCase):
     def _makeOne(self, name='test', *arg, **kw):
         return form.DateTimeField(name, *arg, **kw)
 
@@ -487,7 +486,7 @@ class TestDateTime(unittest.TestCase):
     def test_deserialize_invalid_ParseError(self):
         typ = self._makeOne()
         e = invalid_exc(typ.deserialize, 'garbage')
-        self.failUnless('Invalid' in e.msg)
+        self.assertTrue('Invalid' in e.msg)
 
     def test_deserialize_null(self):
         typ = self._makeOne()
@@ -525,7 +524,7 @@ class TestDateTime(unittest.TestCase):
         self.assertEqual(result.isoformat(), dt.isoformat())
 
 
-class TestDate(unittest.TestCase):
+class TestDate(TestCase):
     def _makeOne(self, name='test', *arg, **kw):
         return form.DateField(name, *arg, **kw)
 
@@ -565,12 +564,12 @@ class TestDate(unittest.TestCase):
     def test_deserialize_invalid_ParseError(self):
         typ = self._makeOne()
         e = invalid_exc(typ.deserialize, 'garbage')
-        self.failUnless('Invalid' in e.msg)
+        self.assertTrue('Invalid' in e.msg)
 
     def test_deserialize_invalid_weird(self):
         typ = self._makeOne()
         e = invalid_exc(typ.deserialize, '10-10-10-10')
-        self.failUnless('Invalid' in e.msg)
+        self.assertTrue('Invalid' in e.msg)
 
     def test_deserialize_null(self):
         typ = self._makeOne()
@@ -730,12 +729,12 @@ class TestJSDateField(PtahTestCase):
     def test_deserialize_invalid(self):
         typ = self._makeOne()
         e = invalid_exc(typ.deserialize, 'garbage')
-        self.failUnless('Invalid' in e.msg)
+        self.assertTrue('Invalid' in e.msg)
 
     def test_deserialize_invalid_weird(self):
         typ = self._makeOne()
         e = invalid_exc(typ.deserialize, '10-10-10-10')
-        self.failUnless('Invalid' in e.msg)
+        self.assertTrue('Invalid' in e.msg)
 
     def test_deserialize_null(self):
         typ = self._makeOne()

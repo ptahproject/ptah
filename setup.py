@@ -1,9 +1,10 @@
 import os
+import sys
 import logging
 import multiprocessing # atexit exception
 from setuptools import setup, find_packages
 
-version='0.3dev'
+version='0.2.1dev'
 
 install_requires = ['setuptools',
                     'chameleon >= 2.6.1',
@@ -19,8 +20,14 @@ install_requires = ['setuptools',
                     'pytz',
                     'sphinx',
                     ]
-tests_require = ['nose']
 
+if sys.version_info[:2] == (2, 6):
+    install_requires.extend((
+            'argparse',
+            'ordereddict',
+            'unittest2'))
+
+tests_require = install_requires + ['nose']
 
 def read(f):
     return open(os.path.join(os.path.dirname(__file__), f)).read().strip()

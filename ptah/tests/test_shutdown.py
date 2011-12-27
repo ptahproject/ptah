@@ -1,11 +1,10 @@
 import signal
 import sys
-import unittest
-
 from ptah import config
+from ptah.testing import TestCase
 
 
-class TestShutdownHandlers(unittest.TestCase):
+class TestShutdownHandlers(TestCase):
 
     def test_shutdown_handler(self):
         shutdownExecuted = []

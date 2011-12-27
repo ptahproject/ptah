@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
-import unittest
 import ptah
 from ptah import form, config
-from ptah.testing import PtahTestCase
+from ptah.testing import TestCase, PtahTestCase
 from pyramid import testing
 from pyramid.compat import text_type, text_, bytes_
 from pyramid.exceptions import ConfigurationConflictError
@@ -64,7 +63,7 @@ class TestPasswordSchema(PtahTestCase):
         PasswordTool.validate = vp
 
 
-class TestSHAPasswordManager(unittest.TestCase):
+class TestSHAPasswordManager(TestCase):
 
     def test_password_ssha(self):
         from ptah.password import SSHAPasswordManager
@@ -83,7 +82,7 @@ class TestSHAPasswordManager(unittest.TestCase):
         self.assertTrue(manager.check(encoded, password))
 
 
-class TestPlainPasswordManager(unittest.TestCase):
+class TestPlainPasswordManager(TestCase):
 
     def test_password_plain(self):
         from ptah.password import PlainPasswordManager

@@ -1,7 +1,6 @@
 import os
 import shutil
 import tempfile
-import unittest
 from pyramid.compat import bytes_
 from zope.interface.interface import InterfaceClass
 from zope.interface.interfaces import IObjectEvent

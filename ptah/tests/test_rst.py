@@ -1,8 +1,8 @@
-import unittest
 from ptah import rst
+from ptah.testing import TestCase
 
 
-class TestRST(unittest.TestCase):
+class TestRST(TestCase):
 
     def tearDown(self):
         rst.local_data.sphinx = None

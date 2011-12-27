@@ -1,5 +1,4 @@
-import unittest
-from ptah.testing import PtahTestCase
+from ptah.testing import PtahTestCase, TestCase
 from webob.multidict import MultiDict
 from pyramid.compat import text_
 from pyramid.view import view_config, render_view_to_response
@@ -7,7 +6,7 @@ from pyramid.testing import DummyRequest
 from pyramid.httpexceptions import HTTPFound, HTTPForbidden
 
 
-class TestFormWidgets(unittest.TestCase):
+class TestFormWidgets(TestCase):
     def _makeOne(self, fields, form, request):
         from ptah.form.form import FormWidgets
         return FormWidgets(fields, form, request)
