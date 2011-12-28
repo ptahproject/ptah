@@ -1,3 +1,7 @@
+=======
+License
+=======
+
 This software is licensed under a Simplified BSD License. Read more http://en.wikipedia.org/wiki/BSD_licenses
 
 Copyright (c) 2011, RUNYAGA, LLC. All rights reserved.
