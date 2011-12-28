@@ -90,7 +90,8 @@ class SettingsCommand(object):
             section = self.options.section
 
         # print description
-        groups = sorted(config.get_cfg_storage(ID_SETTINGS_GROUP).items())
+        groups = sorted(config.get_cfg_storage(ID_SETTINGS_GROUP).items(),
+                        key = lambda item: item[1].__title__)
 
         for name, group in groups:
             if section and name != section:
@@ -99,7 +100,7 @@ class SettingsCommand(object):
             print ('')
             title = group.__title__ or name
 
-            print (grpTitleWrap.fill(title))
+            print (grpTitleWrap.fill('{0} ({1})'.format(title, name)))
             if group.__description__:
                 print (grpDescriptionWrap.fill(
                     group.__description__))

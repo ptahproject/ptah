@@ -32,13 +32,6 @@ ptah.register_settings(
                         'cookie signing'),
         default = ''),
 
-    ptah.form.IntegerField(
-        'settings_dbpoll',
-        title = _('Settings db poll interval (seconds).'),
-        description = _('If you allow to change setting ttw. '
-                        '"0" means do not poll'),
-        default = 0),
-
     ptah.form.TextField(
         'manage',
         title = 'Ptah manage id',

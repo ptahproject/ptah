@@ -9,6 +9,7 @@ Ptah Framework
    manageui.rst
    forms.rst
    authentication.rst
+   scripts.rst
    faq.rst
    api.rst
 

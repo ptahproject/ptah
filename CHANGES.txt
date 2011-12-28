@@ -3,28 +3,36 @@ CHANGES
 =======
 
 0.2.1 (unreleased)
-------------------
+==================
 
-- Added python2.6 support
+Features
+--------
 
-- Added `ptah-manage` console script
+- Added python2.6 support.
+
+- Added a ``ptah-manage`` script. It is documented
+  in the "Command-Line utilities" chapter.
+
+
+Bug Fixes
+---------
 
 - Fixed mail template generation on python3
 
 
 0.2 (2011-12-21)
-----------------
+================
 
 - require pyramid 1.3
 
 
 0.1.1 (2011-12-05)
-------------------
+==================
 
 - Fix rst renderer
 
 
 0.1 (2011-11-19)
-----------------
+================
 
 - Initial release

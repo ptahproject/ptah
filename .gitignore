@@ -13,8 +13,9 @@ var/*
 *.pyo
 *.pt.py
 *.bak
+*.egg
+.tox
 .DS_Store
 .coverage
 .noseids
-htmlcov
 docs/_build/

@@ -13,7 +13,7 @@ from pyramid.path import package_name
 from pyramid.authorization import ACLAuthorizationPolicy
 from pyramid.authentication import AuthTktAuthenticationPolicy
 
-if sys.version_info[:2] == (2, 6):
+if sys.version_info[:2] == (2, 6): # pragma: no cover
     from unittest2 import TestCase
 else:
     from unittest import TestCase
