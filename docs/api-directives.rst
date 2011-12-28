@@ -1,4 +1,4 @@
-Pyramid Directives
+Pyramid directives
 ------------------
 
 Pyramid Configuration directive from Ptah.  An example:

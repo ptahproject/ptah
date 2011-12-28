@@ -62,7 +62,7 @@ That is it.  Let's take this opportunity to review the main() function.  All com
 
         return config.make_wsgi_app()
 
-Steeping through code
+Stepping through code
 ~~~~~~~~~~~~~~~~~~~~~
 
     1. create a Pyramid Configurator

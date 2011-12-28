@@ -1,7 +1,7 @@
 Ptah Forms
 ==========
 
-There are several aspect to Forms when working with Ptah that you should understand.  ptah.form provides the fields library and form infrastucture.  The only public usage of Form is in ptah.form and ptah.cmsapp.  Ptah App provides two forms, AddForm and EditForm found at ptah.cmsapp/forms.py which can assume you are working with content and provides form actions such as Submit and Cancel.
+`ptah.form` is an optional form library package.  It provides some benefits when using it with the integrated environment such as autogeneration of forms for models, validation using the sqlalchemy constraints, and JSON representations for the REST api.  
 
 Form
 ----
@@ -43,6 +43,31 @@ Field Validation
 ~~~~~~~~~~~~~~~~
 Specific validation rules or whether a field is required is validated through the field validation.
 
+.. code-block:: python
+   :linenos:
+   
+    TELEPHONE_REGEX = u'^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$'
+    class Telephone(form.Regex):
+        """ Telephone number validator """
+        def __init__(self, msg=None):
+            if msg is None:
+                msg = "Invalid telephone number"
+            super(Telephone, self).__init__(TELEPHONE_REGEX, msg=msg)
+
+A `ptah.form.Field` accepts a `validator` in its constructor.  The 
+fields' validator will be called by the form with both `field` and `value`
+as parameters.
+
+.. code-block:: python
+   :linenos:
+   :emphasize-lines: 5
+
+    form.TextField(
+        'phone',
+        title = u'Telephone number',
+        description=u'Please provide telephone number',
+        validator = Telephone()),
+
 Field Extraction
 ~~~~~~~~~~~~~~~~
 Extracts the value from request.  
@@ -53,14 +78,131 @@ Expert level usage.  This is how Ptah's internals work.
 
 Examples
 --------
-This is low level internal implementation note for manually working with forms.
-This example does not contain the droids you are looking for.
 
-Using form without context and request::
+There are 2 form examples which can be found in `ptah_models` package in
+the `examples repository <https://github.com/ptahproject/examples>`_.  You can find both examples in `ptah_models/views.py`.
 
-    from pprint import pprint
+Manual Form & Fieldset
+~~~~~~~~~~~~~~~~~~~~~~
+
+The contact-us form in `ptah_models`.
+
+.. code-block:: python
+   :linenos:
+
+    contactform = form.Form(context, request)
+    contactform.fields = form.Fieldset(
+        form.TextField(
+            'fullname',
+            title = u'First & Last Name'),
+
+        form.TextField(
+            'phone',
+            title = u'Telephone number',
+            description=u'Please provide telephone number',
+            validator = Telephone()),
+
+        form.TextField(
+            'email',
+            title = u'Your email',
+            description = u'Please provide email address.',
+            validator = form.Email()),
+
+        form.TextAreaField(
+            'subject',
+            title = u'How can we help?',
+            missing = u''),
+        )
+
+    # form actions
+    def cancelAction(form):
+        return HTTPFound(location='/')
+
+    def updateAction(form):
+        data, errors = form.extract()
+
+        if errors:
+            form.message(errors, 'form-error')
+            return
+
+        # form.context is ...
+        form.context.fullname = data['fullname']
+        form.context.phone = data['phone']
+        form.context.email = data['email']
+        form.context.subject = data['subject']
+
+        # You would add any logic/database updates/insert here.
+        # You would probably also redirect.
+
+        log.info('The form was updated successfully')
+        form.message('The form was updated successfully')
+
+    contactform.label = u'Contact us'
+    contactform.buttons.add_action('Update', action=updateAction)
+    contactform.buttons.add_action('Cancel', action=cancelAction)
+
+    # form default values
+    contactform.content = {}
+
+    # compute the form
+    result = contactform.update()
+    if isinstance(result, HTTPFound):
+        return result
+    
+    # generate HTML from form
+    html = contactform.render()
+
+
+Manual Form & Auto-Fieldset
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+In the `ptah_models` package there is a content model, Link.  This model can
+be found in ``ptah_models/models.py``.  This code-snippet is found in
+the ``ptah_models/views.py``.   
+
+.. code-block:: python
+   :linenos:
+
+    linkform = form.Form(context,request)
+    linkform.fields = models.Link.__type__.fieldset
+
+    def cancelAction(form):
+        return HTTPFound(location='/')
+
+    def updateAction(form):
+        data, errors = form.extract()
+        if errors:
+            form.message(errors, 'form-error')
+            return
+
+        link = models.Link(title = data['title'],
+                           href = data['href'],
+                           color = data['color'])
+        ptah.get_session().add(link)
+
+        form.message('Link has been created.')
+        return HTTPFound(location='/')
+
+    linkform.label = u'Add link'
+    linkform.buttons.add_action('Add', action=updateAction)
+    linkform.buttons.add_action('Cancel', action=cancelAction)
+
+    result = linkform.update() # prepare form for rendering
+    if isinstance(result, HTTPFound):
+        return result
+
+    rendered_form = linkform.render()
+
+Everything Manual
+~~~~~~~~~~~~~~~~~
+
+Using form without context and request.
+
+.. code-block:: python
+   :linenos:
+
     from ptah import form
-    from ptah.cmsapp.content import Page
+    from ptah_models.models import Link
 
     def action1(form):
         print ('action1', form)
@@ -71,7 +213,7 @@ Using form without context and request::
     eform = form.Form(None, None)
     eform.params = {}
     eform.method = 'params'
-    eform.fields = Page.__type__.fieldset
+    eform.fields = Link.__type__.fieldset
 
     eform.buttons.add_action('Test submit', name='ac1', action=action1)
     eform.buttons.add_action('Test action2', name='ac2', action=action2)
@@ -91,3 +233,8 @@ Using form without context and request::
     print
     print "ERRORS:"
     pprint(errors)
+
+Class-based Form
+~~~~~~~~~~~~~~~~
+
+Example of subclassing ptah.form.Form.

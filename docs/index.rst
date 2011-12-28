@@ -1,5 +1,5 @@
-Ptah Framework
-==============
+Ptah
+====
 
 .. toctree::
    :maxdepth: 2
@@ -12,7 +12,8 @@ Ptah Framework
    scripts.rst
    faq.rst
    api.rst
-
+   license.rst
+   
 Indices and tables
 ------------------
 

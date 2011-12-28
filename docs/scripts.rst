@@ -7,8 +7,8 @@ Your ptah application can be controlled and inspected using a variety
 of command-line utilities. These utilities are documented in this chapter.
 
 
-Displaying Application Settings
--------------------------------
+Application Settings
+--------------------
 
 You can use the ``ptah-settings`` command in a terminal window to print a 
 summary of settings to your application registered with 
@@ -65,8 +65,8 @@ It is possible to print all settings in ``.ini`` format.
    ptah.pwd_min_length = 5
 
 
-Displaying Various Application Information
-------------------------------------------
+Application Information
+-----------------------
 
 You can use the ``ptah-manage`` command in a terminal window to print a 
 summary of different information of your application. The ``ptah-manage`` 
