@@ -13,7 +13,14 @@ PREVIEW_ID = 'ptah.form:field-preview'
 
 
 class field(object):
-    """ Field registration directive.
+    """ Field registration directive. Field should be inherited from
+    :py:class:`ptah.form.Field` class.
+
+    .. code-block:: python
+
+      @form.field('text')
+      class TextField(form.Field):
+          ...
 
     """
 
@@ -49,6 +56,21 @@ def fieldpreview(cls):
     Fieldpreview factory is used in ``Field types`` management module.
     It should be an object that implements the
     :py:class:`ptah.form.interfaces.Preview` interface.
+
+    .. code-block:: python
+
+      @form.fieldpreview(form.TextField)
+      def textPreview(request):
+          field = form.TextField(
+              'TextField',
+              title = 'Text field',
+              description = 'Text field preview description',
+              default = 'Test text in text field.')
+
+          widget = field.bind('preview.', form.null, {})
+          widget.update(request)
+          return widget.snippet('form-widget', widget)
+
     """
     info = config.DirectiveInfo()
 
@@ -70,7 +92,7 @@ def fieldpreview(cls):
 
 
 def get_field_factory(name):
-    """Return field factory."""
+    """Return field factory by name."""
     return config.get_cfg_storage(FIELD_ID).get(name, None)
 
 
@@ -245,6 +267,10 @@ class Field(object):
       an object that implements the
       :py:class:`ptah.form.interfaces.Validator` interface.
 
+    ``default``: Default field value.
+
+    ``missing``: Field value if value is not specified in bound value.
+
     ``tmpl_input``: The path to input widget template. It should be
       compatible with pyramid renderers.
 
@@ -381,17 +407,22 @@ class Field(object):
 
 
 class FieldFactory(Field):
-    """ Create field by name
+    """ Create field by name. First argument name of field registered
+    with :py:func:`ptah.form.field` decorator.
 
-    Field should be registered with `field` directive::
+    Example:
 
-    >> @form.field('customfield')
-    >> class CustomField(form.Field):
-    >>     ...
+    .. code-block:: python
 
-    Now `customfield` can be used for generating field::
+       @form.field('customfield')
+       class CustomField(form.Field):
+           ...
 
-    >> field = form.FieldFactory('customfield', 'fieldname', ...)
+       # Now `customfield` can be used for generating field:
+
+       field = form.FieldFactory(
+           'customfield', 'fieldname', ...)
+
     """
 
     __field__ = ''

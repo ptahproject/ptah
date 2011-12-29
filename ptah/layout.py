@@ -70,7 +70,7 @@ def query_layout_chain(root, context, request, layoutname=''):
         if layout.layout in contexts:
             l_context = contexts[layout.layout].__parent__
         else:
-            l_context = layoutcontext
+            l_context = context
 
         layout, layoutcontext = query_layout(
             root, l_context, request, layout.layout)

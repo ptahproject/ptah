@@ -19,3 +19,5 @@ var/*
 .coverage
 .noseids
 docs/_build/
+nosetests.xml
+ptah/coverage.xml

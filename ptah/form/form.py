@@ -26,7 +26,8 @@ def formErrorMessage(context, request):
 
 
 class FormWidgets(OrderedDict):
-    """ Form widget manager"""
+    """ Form widgets manager.
+    Widget is bound to content field. """
 
     mode = FORM_INPUT
     prefix = 'widgets.'
@@ -102,47 +103,72 @@ class FormViewMapper(DefaultViewMapper):
 
 
 class Form(ptah.View):
-    """ A form """
+    """ A form
 
-    #: form fields :py:class:`ptah.form.Fieldset`
+    ``id``: Form id
+
+    ``name``: Form name
+
+    ``label``: Form label
+
+    ``description``: Form description
+
+    ``prefix``: Form prefix, it used for html elements `id` generations.
+
+    ``fields``: Form fields :py:class:`ptah.form.Fieldset`
+
+    ``buttons``: Form buttons :py:class:`ptah.form.Buttons`
+
+    ``actions``: Instance of :py:class:`ptah.form.Actions` class
+
+    ``widgets``: Instance of :py:class:`FormWidgets` class
+
+    ``content``: Form content, it should be `None` or dictionary with
+    data for fields.
+
+    ``params``: None
+
+    ``mode``: Form mode. It can be :py:data:`ptah.form.FORM_INPUT` or
+        :py:data:`ptah.form.FORM_DISPLAY`
+
+    ``action``: Form action, by default ``request.url``
+
+    ``method``: HTML Form method (`post`, `get`)
+
+    ``csrf``: Enable/disable form csrf protection
+
+    ``token``: csrf token
+
+    ``csrf-name``: csrf field name
+
+    """
+
     fields = Fieldset()
 
-    #: form buttons :py:class:`ptah.form.Buttons`
     buttons = None
 
-    #: Form label
     label = None
 
-    #: Form description
     description = ''
 
-    #: Form prefix, it used for html elements `id` generations.
     prefix = 'form.'
 
-    #: Instance of py:class:`ptah.form.Actions` class
     actions = None
 
-    #: Instance of py:class:`FormWidgets` class
     widgets = None
 
-    #: Form content, it should be `None` or dictionary with data for fields.
     content = None
 
-    #: Form mode. It can be py:data::`ptah.form.FORM_INPUT` or
-    #: py:data::`ptah.form.FORM_DISPLAY`
     mode = FORM_INPUT
 
-    #: HTML Form method (`post`, `get`)
     method = 'post'
     enctype = 'multipart/form-data'
     accept = None
     acceptCharset = None
     params = None
 
-    #: enable/disable form csrf protection
     csrf = False
 
-    #: csrf field name
     csrfname = 'csrf-token'
 
     __view_mapper__ = FormViewMapper
@@ -155,21 +181,19 @@ class Form(ptah.View):
 
     @reify
     def action(self):
-        """ form action, by default `request.url` """
         return self.request.url
 
     @reify
     def name(self):
-        """ form action """
         return self.prefix.strip('.')
 
     @reify
     def id(self):
-        """ form id """
         return self.name.replace('.', '-')
 
     def form_content(self):
-        """ get form content """
+        """ Return form content.
+        By default it returns ``Form.content`` attribute. """
         return self.content
 
     def form_params(self):
@@ -193,13 +217,13 @@ class Form(ptah.View):
         self.widgets.update()
 
     def update_actions(self):
-        """ prepare form actions """
+        """ Prepare form actions, this method should be called directly.
+        ``Form.update`` calls this method during initialization."""
         self.actions = Actions(self, self.request)
         self.actions.update()
 
     @property
     def token(self):
-        """ csrf token """
         return self.request.session.get_csrf_token()
 
     def validate(self, data, errors):
@@ -242,7 +266,7 @@ class Form(ptah.View):
         return result
 
     def __call__(self):
-        """ update form and render for to response """
+        """ update form and render form to response """
         result = self.update()
 
         response = self.request.registry.queryAdapterOrSelf(result, IResponse)
