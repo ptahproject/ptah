@@ -23,7 +23,7 @@ Ptah does not use deform; but you can.  Ptah ships with a form subsystem, :py:mo
 Why does Ptah use a Folder paradigm?
 ------------------------------------
 
-Ptah *does not* require a Folder paradigm or containment.  `examples/ptah_minicms` demonstrates the features of ptah.cms and one of those features are content hierarchies.  Thus the Page/Folder experience in ptah.cmsapp.  We currently have a Poll add-on which does not participate in Page/Folder heirarchy.
+Ptah *does not* require a Folder paradigm or containment.  `examples/ptah_minicms` demonstrates the features of ptah.cms and one of those features are content hierarchies.  Thus the Page/Folder experience in `ptah_minicms`.
 
 Why does Ptah use sqlite?
 -------------------------
@@ -40,6 +40,28 @@ Traversal, wtf?
 ---------------
 
 Traversal is not required.  It is optional.  It is a feature which can you use if you like.  Traversal works quite well & if you have used Apache - you have used traversal - instead of a database Apache uses a filesystem.
+
+Layout vs. Macros/Inheritance
+-----------------------------
+
+Layouts are 100% optional.  They provide an alternative for template 
+inheritance. Layouts are renderer independent.  This means you can use Jinja, Chameleon, & Mako with the Layout subsystem.
+
+Several reasons exist for Layouts:
+
+  * A layout is a view with a template.
+    This provides a encapsulated template and view.  Meaning a template
+    which is used as a layout has its own view (methods, data, etc).
+    
+  * The contract between layouts is a string.
+    Layouts can only be passed a ``wrapped_content`` string which is the
+    result of rendering the "inner" block.
+    
+  * Since layout's work from the "inside-out" there is a desirable side-effect,
+    by the time the <HEAD> layout is rendered all static assets (CSS, JS) 
+    that are requirements for form elements or for your custom view will have
+    been computed.  This is not possible to do generically with the ZPT/MACRO
+    or the Jinja inheritance system.
 
 Getting a pkg_resources.DistributionNotFound: myapp Exception
 -------------------------------------------------------------
