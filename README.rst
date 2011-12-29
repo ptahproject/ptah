@@ -7,6 +7,8 @@ Ptah is loosely affiliated with the Pyramid, Django, Drupal and Zope/Plone commu
 
 Most documentation requires Ptah 0.2 or greater.
 
+You can read the `ptah` documentation on-line at 
+`http://ptahproject.readthedocs.org <http://ptahproject.readthedocs.org/en/latest/index.html>`_.
 
 Requirements
 ------------
@@ -14,7 +16,6 @@ Requirements
 - Python 2.6+ or Python 3.2+
 
 - virtualenv
-
 
 Note for Windows Users
 ----------------------
@@ -72,7 +73,7 @@ Ptahproject google groups/mailing list, `Ptahproject Google Groups <http://group
 
 On irc, use the freenode network and find us on channels, #ptahproject and #pyramid.
 
-Documentation can be found in `docs` directory.  You can also see it rendered at `ptahproject.readthedocs.org  <http://ptahproject.readthedocs.org/en/latest/index.html>`_
+Documentation can be found in `docs` directory.  You can also see it online at `http://ptahproject.readthedocs.org/  <http://ptahproject.readthedocs.org/en/latest/index.html>`_
 
 Report bugs at `Ptahproject @ Github <https://github.com/ptahproject/ptah/issues>`_
 
