@@ -170,3 +170,8 @@ Conclusion
 
 That demonstrates most of the view functionality.  In the exampeles repository you can look at `ptah_models` for an example of using `ptah.library`.  It ships with a colourpicker widget which requires a javascript library.
 
+More Examples
+~~~~~~~~~~~~~
+
+There is a separate `repository for examples <https://github.com/ptahproject/examples>`_.  You can read the `Examples` documentation on-line at 
+`http://ptah-examples.readthedocs.org <http://ptah-examples.readthedocs.org/en/latest/index.html>`_.
