@@ -27,6 +27,9 @@ from ptah.cms.root import ApplicationRoot
 from ptah.cms.root import ApplicationPolicy
 from ptah.cms.root import ApplicationFactory
 
+# content traverser
+from ptah.cms.traverser import ContentTraverser
+
 # blob storage
 from ptah.cms.blob import blob_storage
 from ptah.cms.interfaces import IBlob
