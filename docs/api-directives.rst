@@ -241,9 +241,9 @@ ptah_populate()
 ptah_populate_step()
 ~~~~~~~~~~~~~~~~~~~~
 
-    Register populate step. Snippet is very similar to pyramid view.
-    It doesnt availble with pyramid traversing. It doesnt have
-    security.
+    Register populate step. 
+    Step interface :py:class:`ptah.interfaces.populate_step`.
+
 
     :param name: Step name
     :param factory: Step callable factory
