@@ -8,6 +8,23 @@ class TestManageCommand(ptah.PtahTestCase):
 
     _init_ptah = False
 
+    def test_manage_no_params(self):
+        self.init_ptah()
+
+        sys.argv[:] = ['ptah-manage', 'ptah.ini']
+
+        stdout = sys.stdout
+        out = NativeIO()
+        sys.stdout = out
+
+        manage.main(False)
+        sys.stdout = stdout
+
+        val = out.getvalue()
+
+        self.assertIn(
+            '[-h] [--list-modules] [--list-models] config', val)
+
     def test_list_modules(self):
 
         @ptah.manage.module('custom')

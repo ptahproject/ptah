@@ -12,12 +12,6 @@ POPULATE_ID = 'ptah:populate-step'
 POPULATE_DB_SCHEMA = 'ptah-db-schema'
 
 
-class BeforeCreateDbSchema(object):
-
-    def __init__(self, registry):
-        self.registry = registry
-
-
 class populate(object):
     """Registers a data populate step. Populate steps are used by
     :ref:`data_populate_script` command line tool and by
@@ -26,7 +20,7 @@ class populate(object):
     :param name: Unique step name
     :param title: Human readable title
     :param active: Should this step automaticly executed or not
-    :param requirest: List of steps that should be executed before this step
+    :param requires: List of steps that should be executed before this step
 
     Populate step interface :py:class:`ptah.interfaces.populate_step`.
     Steps are executed after configuration is completed.
@@ -113,7 +107,7 @@ class Populate(object):
                         "Can't find populate step '{0}'.".format(dep))
                 _step(dep, steps[dep])
 
-            sorted_steps.append((name, step))
+            sorted_steps.append(step)
 
         if p_steps is not None:
             for name in p_steps:
@@ -146,8 +140,8 @@ class Populate(object):
 
         log = logging.getLogger('ptah')
 
-        for name, step in steps:
-            log.info('Executing populate step: %s', name)
+        for step in steps:
+            log.info('Executing populate step: %s', step['name'])
             step['factory'](registry)
 
         transaction.commit()
@@ -156,7 +150,7 @@ class Populate(object):
 
 @populate(POPULATE_DB_SCHEMA, title='Create db schema')
 def create_db_schema(registry):
-    registry.notify(BeforeCreateDbSchema(registry))
+    registry.notify(ptah.events.BeforeCreateDbSchema(registry))
 
     skip_tables = ptah.get_settings(ptah.CFG_ID_PTAH)['db_skip_tables']
 

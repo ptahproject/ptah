@@ -23,4 +23,5 @@ def bootstrap(config_uri):
     config_file = config_uri.split('#', 1)[0]
     setup_logging(config_file)
 
-    return {'app': app, 'registry': registry, 'request': request}
+    ptah.POPULATE = False
+    return {'app':app, 'registry':registry, 'request': request}

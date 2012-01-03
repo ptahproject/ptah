@@ -37,10 +37,10 @@ def main():
 
         print('')
 
-        for name, step in populate.list_steps(all=True):
+        for step in populate.list_steps(all=True):
             print(titleWrap.fill('{0}: {1} ({2})'.format(
-                name, step['title'],
-                'active' if step['active'] else 'inactive')))
+                        step['name'], step['title'],
+                        'active' if step['active'] else 'inactive')))
             if step['factory'].__doc__:
                 print(descWrap.fill(step['factory'].__doc__))
 

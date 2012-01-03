@@ -192,6 +192,11 @@ UI Actions
 Data population
 ~~~~~~~~~~~~~~~
 
+  .. py:data:: POPULATE_DB_SCHEMA
+
+     Id for database schema creation step. Use it as ``requires`` dependency 
+     to make sure that db schema is cerated before execute any other steps.
+
   .. autoclass:: populate()
 
 
@@ -237,3 +242,8 @@ Principal events
   .. autofunction:: ptah.events.PrincipalAddedEvent
 
   .. autofunction:: ptah.events.PrincipalRegisteredEvent
+
+
+Populate db schema
+
+  .. autofunction:: ptah.events.BeforeCreateDbSchema

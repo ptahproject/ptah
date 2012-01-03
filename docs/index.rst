@@ -10,6 +10,7 @@ Ptah
    forms.rst
    authentication.rst
    scripts.rst
+   populate.rst
    faq.rst
    api.rst
    license.rst

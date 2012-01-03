@@ -188,3 +188,15 @@ class ContentDeletingEvent(ContentEvent):
     """ :py:class:`ptah.cms.Container` will send event before content has been
         deleted through containers __delitem__ method.
     """
+
+
+# db schema creation
+class BeforeCreateDbSchema(object):
+    """ :py:data:`ptah.POPULATE_DB_SCHEMA` populate step sends event before
+    tables have been created.
+
+    ``registry``: Pyramid registry object
+    """
+
+    def __init__(self, registry):
+        self.registry = registry
