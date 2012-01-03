@@ -4,7 +4,10 @@ import logging
 import transaction
 from zope import interface
 from zope.interface import implementer
+from pyramid.request import Request
 from pyramid.registry import Registry
+from pyramid.interfaces import IRequestFactory
+from pyramid.threadlocal import manager as threadlocal_manager
 
 POPULATE_DB_SCHEMA = 'ptah-db-schema'
 
@@ -62,7 +65,17 @@ class Populate(object):
 
         return sorted_steps
 
-    def execute(self, p_steps=None):
+    def execute(self, p_steps=None, request=None):
+        registry = self.registry
+        if request is None:
+            request_factory = registry.queryUtility(
+                IRequestFactory, default=Request)
+            request = request_factory.blank('/')
+            request.registry = registry
+
+        threadlocals = {'registry':registry, 'request':request}
+        threadlocal_manager.push(threadlocals)
+
         steps = self.list_steps(p_steps)
 
         log = logging.getLogger('ptah')
@@ -72,6 +85,8 @@ class Populate(object):
             step.execute()
 
         transaction.commit()
+
+        threadlocal_manager.pop()
 
 
 @implementer(IPopulateStep)
@@ -96,7 +111,8 @@ class CreateDbSchemaStep(PopulateStep):
     def execute(self):
         self.registry.notify(BeforeCreateDbSchema(self.registry))
 
-        skip_tables = ptah.get_settings(CFG_ID_PTAH)['db_skip_tables']
+        skip_tables = ptah.get_settings(
+            ptah.CFG_ID_PTAH)['db_skip_tables']
 
         Base = ptah.get_base()
 

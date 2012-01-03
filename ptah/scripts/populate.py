@@ -3,23 +3,14 @@ import sys
 import argparse
 import logging
 import textwrap
-from pyramid.config import Configurator
-from pyramid.config import global_registries
-from pyramid.paster import get_app
-from pyramid.paster import setup_logging
-from pyramid.request import Request
-from pyramid.interfaces import IRequestFactory
-from pyramid.threadlocal import manager as threadlocal_manager
 
 import ptah
-from ptah import populate as populate_mod
+from ptah import scripts, populate as populate_mod
 
 log = logging.getLogger('ptah')
 
 
 def main():
-    ptah.POPULATE = True
-
     parser = argparse.ArgumentParser(description="ptah populate")
     parser.add_argument('config', metavar='config',
                         help='ini config file')
@@ -29,24 +20,11 @@ def main():
                         help='list of registered populate steps')
     parser.add_argument('-a', action="store_true", dest='all',
                         help='execute all active populate steps')
-
     args = parser.parse_args()
 
-    app = get_app(args.config)
-    registry = global_registries.last
+    env = scripts.bootstrap(args.config)
 
-    request_factory = registry.queryUtility(IRequestFactory, default=Request)
-    request = request_factory.blank('/')
-    request.registry = registry
-
-    threadlocals = {'registry':registry, 'request':request}
-    threadlocal_manager.push(threadlocals)
-
-    config_uri = args.config
-    config_file = config_uri.split('#', 1)[0]
-    setup_logging(config_file)
-
-    populate = ptah.Populate(registry)
+    populate = ptah.Populate(env['registry'])
 
     if args.list:
         titleWrap = textwrap.TextWrapper(

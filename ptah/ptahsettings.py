@@ -101,7 +101,8 @@ ptah.register_settings(
 
     ptah.form.LinesField(
         'db_skip_tables',
-        title = 'Do not create listed tables',
+        title = 'Skip table creation',
+        description = 'Do not create listed tables during data population.',
         default = ()),
 
     title = _('Ptah settings'),
@@ -239,7 +240,7 @@ def initialize_sql(cfg, prefix='sqlalchemy.'):
 
 @ptah.subscriber(ApplicationCreated)
 def starting(ev):
-    if ptah.POPULATE:
+    if ptah.POPULATE: # pragma: no cover
         return
 
     # load db settings

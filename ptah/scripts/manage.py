@@ -4,11 +4,10 @@ import sys
 import argparse
 import textwrap
 from collections import OrderedDict
-from pyramid.paster import bootstrap
-from pyramid.config import Configurator
 from pyramid.compat import configparser, NativeIO
 
 import ptah
+from ptah import scripts
 from ptah.manage.manage import MANAGE_ID
 
 
@@ -26,7 +25,7 @@ def main(init=True):
 
     # bootstrap pyramid
     if init: # pragma: no cover
-        env = bootstrap(args.config, )
+        env = scripts.bootstrap(args.config)
 
     cmd = ManageCommand(args)
     cmd.run()
@@ -52,9 +51,10 @@ class ManageCommand(object):
         print ('')
         if self.options.modules:
             self.list_modules()
-
-        if self.options.models:
+        elif self.options.models:
             self.list_models()
+        else:
+            self.parser.print_help()
 
     def list_modules(self):
         cfg = ptah.get_settings(ptah.CFG_ID_PTAH)

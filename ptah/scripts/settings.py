@@ -3,12 +3,10 @@ import argparse
 import textwrap
 
 from collections import OrderedDict
-from pyramid.paster import bootstrap
-from pyramid.config import Configurator
 from pyramid.compat import configparser, NativeIO
 
 import ptah
-from ptah import config
+from ptah import config, scripts
 from ptah.settings import SETTINGS_OB_ID
 from ptah.settings import ID_SETTINGS_GROUP
 
@@ -39,7 +37,7 @@ def main(init=True):
 
     # bootstrap pyramid
     if init: # pragma: no cover
-        env = bootstrap(args.config, )
+        env = scripts.bootstrap(args.config)
 
     cmd = SettingsCommand(args)
     cmd.run()
