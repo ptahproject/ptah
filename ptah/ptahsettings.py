@@ -234,6 +234,9 @@ def initialize_sql(cfg, prefix='sqlalchemy.'):
 
 @ptah.subscriber(ApplicationCreated)
 def starting(ev):
+    if ptah.POPULATE:
+        return
+
     # load db settings
     s_ob = ptah.config.get_cfg_storage(
         settings.SETTINGS_OB_ID, default_factory=settings.Settings)

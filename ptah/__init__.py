@@ -132,6 +132,12 @@ from ptah import cms
 # form api
 from ptah import form
 
+# populate
+POPULATE = False
+from ptah.populate import Populate
+from ptah.populate import PopulateStep
+from ptah.populate import POPULATE_DB_SCHEMA
+
 # simple test case
 from ptah.testing import PtahTestCase
 
@@ -159,10 +165,12 @@ def includeme(cfg):
 
     # initialize settings
     from ptah import settings
+    from pyramid.interfaces import PHASE1_CONFIG
     def pyramid_init_settings(cfg, custom_settings=None,
                               section=configparser.DEFAULTSECT):
         cfg.action('ptah.init_settings',
-                   settings.init_settings, (cfg, custom_settings, section))
+                   settings.init_settings, (cfg, custom_settings, section),
+                   order=PHASE1_CONFIG)
 
     cfg.add_directive('ptah_init_settings', pyramid_init_settings)
 
@@ -211,6 +219,14 @@ def includeme(cfg):
 
     # snippet directive
     cfg.add_directive('ptah_snippet', snippet.pyramid)
+
+    # populate
+    def pyramid_populate(cfg):
+        if not POPULATE:
+            cfg.action('ptah.populate',
+                       Populate(cfg.registry).execute, order=999999)
+
+    cfg.add_directive('ptah_populate', pyramid_populate)
 
     # ptah static assets
     cfg.add_static_view('_ptah/static', 'ptah:static/')

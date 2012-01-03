@@ -209,3 +209,15 @@ Pyramid Configuration directive from Ptah.  An example:
        config.include('ptah')
 
        config.ptah_snippet('test', view=snippet, renderer='.../test.pt')
+
+
+.. function:: ptah_populate
+    
+    Execute populate steps.
+
+    .. code-block:: python
+
+       config = Configurator()
+       config.include('ptah')
+
+       config.ptah_populate()

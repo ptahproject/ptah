@@ -4,7 +4,7 @@ import logging
 import multiprocessing # atexit exception
 from setuptools import setup, find_packages
 
-version='0.2.2dev'
+version='0.3.0dev'
 
 install_requires = ['setuptools',
                     'chameleon >= 2.6.1',
@@ -60,12 +60,13 @@ setup(name='ptah',
       include_package_data = True,
       zip_safe = False,
       entry_points = {
-        'console_scripts': [
-            'ptah-manage = ptah.scripts.manage:main',
-            'ptah-settings = ptah.scripts.settings:main',
-            ],
-        'pyramid.scaffold': [
-            'ptah_starter = ptah.scaffolds:PtahStarterProjectTemplate',
-            ],
-        },
+          'console_scripts': [
+              'ptah-manage = ptah.scripts.manage:main',
+              'ptah-settings = ptah.scripts.settings:main',
+              'ptah-populate = ptah.scripts.populate:main',
+              ],
+          'pyramid.scaffold': [
+              'ptah_starter = ptah.scaffolds:PtahStarterProjectTemplate',
+              ],
+          },
       )

@@ -2,10 +2,16 @@
 CHANGES
 =======
 
-0.2.2 (unreleased)
+0.3.0 (unreleased)
 ==================
 
-- ...
+Features
+--------
+
+- Added data population subsystem.
+
+- Added a ``ptah-populate`` script. It is documented
+  in the "Command-Line utilities" chapter.
 
 
 0.2.1 (2011-12-28)

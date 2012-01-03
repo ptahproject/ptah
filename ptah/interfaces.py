@@ -104,3 +104,18 @@ class IACLsAware(interface.Interface):
     """ acl maps aware context """
 
     __acls__ = interface.Attribute('List of acl map ids')
+
+
+class PopulateStep(object):
+    """ Base class for populate step.
+
+    `title`: Step title.
+
+    `requires`: Requires steps.
+
+    `active`: Active step.
+
+    """
+
+    def execute():
+        """ Execute step """
