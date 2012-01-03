@@ -134,8 +134,8 @@ from ptah import form
 
 # populate
 POPULATE = False
+from ptah.populate import populate
 from ptah.populate import Populate
-from ptah.populate import PopulateStep
 from ptah.populate import POPULATE_DB_SCHEMA
 
 # simple test case
@@ -227,6 +227,7 @@ def includeme(cfg):
                        Populate(cfg.registry).execute, order=9999999)
 
     cfg.add_directive('ptah_populate', pyramid_populate)
+    cfg.add_directive('ptah_populate_step', populate.pyramid)
 
     # ptah static assets
     cfg.add_static_view('_ptah/static', 'ptah:static/')

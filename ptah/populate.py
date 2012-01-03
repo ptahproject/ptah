@@ -1,25 +1,91 @@
 """ populate data """
-import ptah
 import logging
 import transaction
-from zope import interface
-from zope.interface import implementer
 from pyramid.request import Request
-from pyramid.registry import Registry
 from pyramid.interfaces import IRequestFactory
 from pyramid.threadlocal import manager as threadlocal_manager
 
+import ptah
+from ptah import config
+
+POPULATE_ID = 'ptah:populate-step'
 POPULATE_DB_SCHEMA = 'ptah-db-schema'
-
-
-class IPopulateStep(interface.Interface):
-    """ Populate step """
 
 
 class BeforeCreateDbSchema(object):
 
     def __init__(self, registry):
         self.registry = registry
+
+
+class populate(object):
+    """Registers a data populate step. Populate steps are used by
+    :ref:`data_populate_script` command line tool and by
+    :ref:`ptah_populate_dir` pyramid directive for populate system data.
+
+    :param name: Unique step name
+    :param title: Human readable title
+    :param active: Should this step automaticly executed or not
+    :param requirest: List of steps that should be executed before this step
+
+    Populate step interface :py:class:`ptah.interfaces.populate_step`.
+    Steps are executed after configuration is completed.
+
+    .. code-block:: python
+
+       import ptah
+
+       @ptah.populate('custom-user',
+                      title='Create custom user',
+                      requires=(ptah.POPULATE_DB_SCHEMA,))
+       def create_custom_user(registry):
+           # create user
+
+    ``create_custom_user`` executes only after ``ptah.POPULATE_DB_SCHEMA`` step.
+
+    Perpose of inactive steps is for example entering testing data or executing
+    custom step.
+    """
+
+    def __init__(self, name, title='', active=True, requires=(), __depth=1):
+        self.info = config.DirectiveInfo(__depth)
+        self.discr = (POPULATE_ID, name)
+
+        self.intr = intr = config.Introspectable(
+            POPULATE_ID, self.discr, name, POPULATE_ID)
+
+        intr['name'] = name
+        intr['title'] = title
+        intr['active'] = active
+        intr['requires'] = requires
+        intr['codeinfo'] = self.info.codeinfo
+
+    @classmethod
+    def pyramid(cls, cfg, name, factory=None,
+                title='', active=True, requires=()):
+        """ Pyramid `ptah_populate_step` directive:
+
+        .. code-block:: python
+
+          config = Configurator()
+          config.include('ptah')
+
+          config.ptah_populate_step('ptah-create-db-schema', factory=..)
+        """
+        l = populate(name, title, active, requires, 3)(factory, cfg)
+
+    def __call__(self, factory, cfg=None):
+        intr = self.intr
+        intr['factory'] = factory
+
+        self.info.attach(
+            config.Action(
+                lambda cfg, name, intr:
+                    cfg.get_cfg_storage(POPULATE_ID).update({name: intr}),
+                (intr['name'], intr),
+                   discriminator=self.discr, introspectables=(intr,)),
+            cfg)
+        return factory
 
 
 class Populate(object):
@@ -31,8 +97,8 @@ class Populate(object):
         seen = set()
 
         steps = dict(
-            (name, s) for name, s in
-            self.registry.getAdapters((self.registry,), IPopulateStep))
+            (name, intr) for name, intr in
+            ptah.get_cfg_storage(POPULATE_ID, self.registry).items())
 
         sorted_steps = []
         def _step(name, step):
@@ -41,7 +107,7 @@ class Populate(object):
 
             seen.add(name)
 
-            for dep in step.requires:
+            for dep in step['requires']:
                 if dep not in steps:
                     raise RuntimeError(
                         "Can't find populate step '{0}'.".format(dep))
@@ -60,7 +126,7 @@ class Populate(object):
             for name, step in steps.items():
                 if all:
                     _step(name, step)
-                elif step.active:
+                elif step['active']:
                     _step(name, step)
 
         return sorted_steps
@@ -82,45 +148,25 @@ class Populate(object):
 
         for name, step in steps:
             log.info('Executing populate step: %s', name)
-            step.execute()
+            step['factory'](registry)
 
         transaction.commit()
-
         threadlocal_manager.pop()
 
 
-@implementer(IPopulateStep)
-class PopulateStep(object):
+@populate(POPULATE_DB_SCHEMA, title='Create db schema')
+def create_db_schema(registry):
+    registry.notify(BeforeCreateDbSchema(registry))
 
-    title = ''
-    requires = ()
-    active = True
+    skip_tables = ptah.get_settings(ptah.CFG_ID_PTAH)['db_skip_tables']
 
-    def __init__(self, registry):
-        self.registry = registry
+    Base = ptah.get_base()
 
-    def execute(self):
-        raise NotImplemented()
+    log = logging.getLogger('ptah')
 
+    for name, table in Base.metadata.tables.items():
+        if name not in skip_tables and not table.exists():
+            log.info("Creating db table `%s`.", name)
+            table.create()
 
-@ptah.adapter(Registry, name=POPULATE_DB_SCHEMA)
-class CreateDbSchemaStep(PopulateStep):
-
-    title = 'Create db schema'
-
-    def execute(self):
-        self.registry.notify(BeforeCreateDbSchema(self.registry))
-
-        skip_tables = ptah.get_settings(
-            ptah.CFG_ID_PTAH)['db_skip_tables']
-
-        Base = ptah.get_base()
-
-        log = logging.getLogger('ptah')
-
-        for name, table in Base.metadata.tables.items():
-            if name not in skip_tables and not table.exists():
-                log.info("Creating db table `%s`.", name)
-                table.create()
-
-        transaction.commit()
+    transaction.commit()

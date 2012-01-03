@@ -189,6 +189,12 @@ UI Actions
   .. autofunction:: list_uiactions
 
 
+Data population
+~~~~~~~~~~~~~~~
+
+  .. autoclass:: populate()
+
+
 Events
 ~~~~~~
 

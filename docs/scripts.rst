@@ -117,3 +117,52 @@ registered ptah models.
 
    ...
 
+
+.. _data_populate_script:
+
+Data population
+---------------
+
+You can use the ``ptah-populate`` command in a terminal window to execute a 
+populate steps registered with :py:func:`ptah.populate` api. Much like 
+the any pyramid command, the ``ptah-populate`` command accepts one argument 
+with the format ``config_file#section_name``.
+
+Use ``-l`` argument to list all registered steps.
+
+.. code-block:: text
+   :linenos:
+   
+   [fafhrd@... MyProject]$ ../bin/ptah-populate development.ini -l
+
+   * ptah-db-schema: Create db schema (active)
+
+   * ptah-crowd-admin: Create admin user (active)
+
+   ...
+
+It shows step name, then step title, and activity state. If step is active
+it is beeing executed automatically with ``-a`` argument.
+
+Use ``-a`` argument to execute all active steps.
+
+.. code-block:: text
+   :linenos:
+   
+   [fafhrd@... MyProject]$ ../bin/ptah-populate development.ini -a
+   2012-01-03 12:43:46,796 INFO  [ptah][MainThread] Executing populate step: ptah-db-schema
+   2012-01-03 12:43:46,797 INFO  [ptah][MainThread] Creating db table `ptah_crowd`.
+   2012-01-03 12:43:46,931 INFO  [ptah][MainThread] Creating db table `ptah_blobs`
+   ...
+   2012-01-03 12:43:48,087 INFO  [ptah][MainThread] Executing populate step: ptah-crowd-admin
+   2012-01-03 12:43:48,092 INFO  [ptah_crowd][MainThread] Creating admin user `admin` Ptah admin
+   ...
+
+
+Its possible to execute `inactive` steps or specific step with all required
+steps. Specify step names in command line after your ini file.
+
+.. code-block:: text
+   :linenos:
+
+   [fafhrd@... MyProject]$ ../bin/ptah-populate development.ini ptah-db-schema ptah-crowd-admin

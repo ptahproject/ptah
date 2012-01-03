@@ -28,8 +28,7 @@ Ptah interfaces
 
     .. autoclass:: IACLsAware()
 
-    .. autoclass:: PopulateStep(registry)
-       :members:
+    .. autofunction:: populate_step
 
 
 Form interfaces

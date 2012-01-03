@@ -106,16 +106,8 @@ class IACLsAware(interface.Interface):
     __acls__ = interface.Attribute('List of acl map ids')
 
 
-class PopulateStep(object):
-    """ Base class for populate step.
+def populate_step(registry):
+    """ Populate data step.
 
-    `title`: Step title.
-
-    `requires`: Requires steps.
-
-    `active`: Active step.
-
+    :param registry: Pyramid :py:class:`pyramid.registry.Registry` object
     """
-
-    def execute():
-        """ Execute step """
