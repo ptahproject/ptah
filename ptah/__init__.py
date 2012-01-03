@@ -169,8 +169,8 @@ def includeme(cfg):
     def pyramid_init_settings(cfg, custom_settings=None,
                               section=configparser.DEFAULTSECT):
         cfg.action('ptah.init_settings',
-                   settings.init_settings, (cfg, custom_settings, section),
-                   order=PHASE1_CONFIG)
+                   settings.init_settings,
+                   (cfg, custom_settings, section), order=999999)
 
     cfg.add_directive('ptah_init_settings', pyramid_init_settings)
 
@@ -224,7 +224,7 @@ def includeme(cfg):
     def pyramid_populate(cfg):
         if not POPULATE:
             cfg.action('ptah.populate',
-                       Populate(cfg.registry).execute, order=999999)
+                       Populate(cfg.registry).execute, order=9999999)
 
     cfg.add_directive('ptah_populate', pyramid_populate)
 

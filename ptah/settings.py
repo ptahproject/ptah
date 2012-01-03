@@ -149,8 +149,7 @@ def register_settings(name, *fields, **kw):
         config.Action(
             lambda config, group: config.get_cfg_storage(ID_SETTINGS_GROUP)\
                 .update({group.__name__: group.clone(config.registry)}),
-            (group,), discriminator=discr, introspectables=(intr,),
-            order=PHASE1_CONFIG-1)
+            (group,), discriminator=discr, introspectables=(intr,))
         )
 
 
