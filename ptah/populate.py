@@ -96,8 +96,7 @@ class CreateDbSchemaStep(PopulateStep):
     def execute(self):
         self.registry.notify(BeforeCreateDbSchema(self.registry))
 
-        #skip_tables = ptah.get_settings(CFG_ID_PTAH)['skip_tables']
-        skip_tables = []
+        skip_tables = ptah.get_settings(CFG_ID_PTAH)['db_skip_tables']
 
         Base = ptah.get_base()
 

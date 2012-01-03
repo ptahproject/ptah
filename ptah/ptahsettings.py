@@ -99,6 +99,11 @@ ptah.register_settings(
         description = 'Use letters in mixed case.',
         default = False),
 
+    ptah.form.LinesField(
+        'db_skip_tables',
+        title = 'Do not create listed tables',
+        default = ()),
+
     title = _('Ptah settings'),
 )
 

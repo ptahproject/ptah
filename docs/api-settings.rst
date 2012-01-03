@@ -77,3 +77,9 @@ All values passed inside of Pyramid configurator are in Python format::
   auth_tkt cookie signing.  e.g.::
   
       ptah.secret = "s3cr3t"
+
+``ptah.db_skip_tables``
+
+  Do not create listed tables during data population process. e.g.::
+  
+      ptah.db_skip_tables = ["ptah_nodes", "ptah_content"]
