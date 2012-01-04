@@ -66,9 +66,10 @@ class PtahTestCase(TestCase):
 
         self.config.ptah_init_settings()
 
+        ptah.reset_session()
+
         if self._init_sqla:
             # create engine
-            ptah.reset_session()
             self.config.ptah_init_sql()
 
             # create sql tables

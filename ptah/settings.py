@@ -196,7 +196,8 @@ class Settings(object):
             group.update(data)
 
     def load_fromdb(self):
-        self.load(dict(ptah.get_session().query(SettingRecord.name,SettingRecord.value)))
+        self.load(dict(ptah.get_session().\
+                           query(SettingRecord.name, SettingRecord.value)))
 
     def export(self, default=False):
         groups = config.get_cfg_storage(ID_SETTINGS_GROUP).items()

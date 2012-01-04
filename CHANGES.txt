@@ -13,6 +13,8 @@ Features
 - Added a ``ptah-populate`` script. It is documented
   in the "Command-Line utilities" chapter.
 
+- Its possible to start ptah without database.
+
 
 0.2.1 (2011-12-28)
 ==================

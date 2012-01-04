@@ -464,9 +464,7 @@ class TestSettingsInitialization(BaseTesting):
         self.assertEqual(group['node2'], 10)
 
 
-class TestDBSettings(PtahTestCase):
-
-    _init_ptah = False
+class TestDBSettingsBase(PtahTestCase):
 
     def _make_grp(self):
         node1 = ptah.form.TextField(
@@ -485,6 +483,11 @@ class TestDBSettings(PtahTestCase):
         self.init_ptah()
 
         return ptah.get_settings('group', self.registry)
+
+
+class TestDBSettings(TestDBSettingsBase):
+
+    _init_ptah = False
 
     def test_settings_updatedb(self):
         grp = self._make_grp()
@@ -599,3 +602,21 @@ class TestDBSettings(PtahTestCase):
         self.config.make_wsgi_app()
         self.assertEqual(grp['node1'], 'new text')
         self.assertEqual(grp['node2'], 65)
+
+
+class TestDBSettings2(TestDBSettingsBase):
+
+    _init_ptah = False
+    _init_sqla = False
+
+    def test_settings_load_from_db_on_startup_do_not_brake(self):
+        from ptah.settings import SettingRecord
+        ptah.get_base().metadata.drop_all()
+
+        grp = self._make_grp()
+
+        self.config.make_wsgi_app()
+
+        self.assertEqual(grp['node1'], 'test')
+        self.assertEqual(grp['node2'], 50)
+        self.assertFalse(SettingRecord.__table__.exists())

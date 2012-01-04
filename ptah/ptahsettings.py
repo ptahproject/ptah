@@ -240,7 +240,8 @@ def initialize_sql(cfg, prefix='sqlalchemy.'):
 
 @ptah.subscriber(ApplicationCreated)
 def starting(ev):
-    if ptah.POPULATE: # pragma: no cover
+    session = ptah.get_session()
+    if not (session.bind and settings.SettingRecord.__table__.exists()):
         return
 
     # load db settings
