@@ -95,7 +95,7 @@ class Token(ptah.get_base()):
     id = sqla.Column(sqla.Integer, primary_key=True)
     token = sqla.Column(sqla.Unicode(48))
     valid = sqla.Column(sqla.DateTime)
-    data = sqla.Column(sqla.Unicode)
+    data = sqla.Column(sqla.UnicodeText)
     typ = sqla.Column('type', sqla.Unicode(48))
 
     def __init__(self, typ, data):

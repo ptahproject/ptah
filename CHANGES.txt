@@ -15,6 +15,11 @@ Features
 
 - Its possible to start ptah without database.
 
+Bug Fixes
+---------
+
+- MySQL Compatibility #116
+
 
 0.2.1 (2011-12-28)
 ==================
@@ -27,9 +32,6 @@ Features
 - Added a ``ptah-manage`` script. It is documented
   in the "Command-Line utilities" chapter.
 
-
-Bug Fixes
----------
 
 - Fixed mail template generation on python3
 

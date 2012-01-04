@@ -230,7 +230,7 @@ def initialize_sql(cfg, prefix='sqlalchemy.'):
     cache = {}
     engine = sqlalchemy.engine_from_config(
         cfg.registry.settings, prefix,
-        execution_options = {'compiled_cache': cache})
+        execution_options = {'compiled_cache': cache, 'echo': True})
 
     ptah.get_session().configure(bind=engine)
     ptah.get_base().metadata.bind = engine

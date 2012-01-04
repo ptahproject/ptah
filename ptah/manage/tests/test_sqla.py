@@ -11,13 +11,12 @@ from ptah.testing import PtahTestCase
 
 Session = ptah.get_session()
 
-
 class TestSqlaModuleTable(ptah.get_base()):
 
     __tablename__ = 'test_sqla_table'
-
+    
     id = sqla.Column('id', sqla.Integer, primary_key=True)
-    name = sqla.Column(sqla.Unicode())
+    name = sqla.Column(sqla.Unicode(255))
 
 
 class TestSqlaModule(PtahTestCase):
@@ -29,6 +28,13 @@ class TestSqlaModule(PtahTestCase):
             __table_args__ = {'extend_existing': True}
             __type__ = ptah.cms.Type('Test')
             name = sqla.Column(sqla.Unicode())
+
+        #global TestSqlaModuleTable
+        #class TestSqlaModuleTable(ptah.get_base()):
+        #    __tablename__ = 'test_sqla_table'
+        #    id = sqla.Column('id', sqla.Integer, primary_key=True)
+        #    name = sqla.Column(sqla.Unicode(255))
+
         super(TestSqlaModule, self).setUp()
 
     def test_sqla_module(self):

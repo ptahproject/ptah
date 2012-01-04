@@ -90,14 +90,14 @@ class BaseContent(Node):
 
     __id__ = sqla.Column('id', sqla.Integer,
                          sqla.ForeignKey('ptah_nodes.id'), primary_key=True)
-    __path__ = sqla.Column('path', sqla.Unicode,
+    __path__ = sqla.Column('path', sqla.Unicode(1024),
                            default=text_type(''), index=True)
     __name_id__ = sqla.Column('name', sqla.Unicode(255))
 
-    title = sqla.Column(sqla.Unicode, default=text_type(''))
-    description = sqla.Column(sqla.Unicode, default=text_type(''),
+    title = sqla.Column(sqla.Unicode(1024), default=text_type(''))
+    description = sqla.Column(sqla.UnicodeText, default=text_type(''),
                               info = {'missing': '', 'field_type': 'textarea'})
-    view = sqla.Column(sqla.Unicode, default=text_type(''))
+    view = sqla.Column(sqla.String(255), default='')
 
     created = sqla.Column(sqla.DateTime)
     modified = sqla.Column(sqla.DateTime)
@@ -106,8 +106,9 @@ class BaseContent(Node):
 
     creators = sqla.Column(ptah.JsonListType(), default=[])
     subjects = sqla.Column(ptah.JsonListType(), default=[])
-    publisher = sqla.Column(sqla.Unicode, default=text_type(''))
+    publisher = sqla.Column(sqla.Unicode(128), default=text_type(''))
     contributors = sqla.Column(ptah.JsonListType(), default=[])
+    language = sqla.Column(sqla.String(12), default='en', info={'skip':True})
 
     # sql queries
     _sql_get = ptah.QueryFreezer(

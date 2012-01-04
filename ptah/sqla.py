@@ -52,7 +52,7 @@ def generate_fieldset(model, fieldNames=None, namesFilter=None,
 
 
 mapping = {
-    (sqla.Unicode, sqla.UnicodeText, sqla.String): 'text',
+    (sqla.Unicode, sqla.UnicodeText, sqla.String, sqla.Text): 'text',
     sqla.Integer: 'int',
     sqla.Float: 'float',
     sqla.Date: 'date',

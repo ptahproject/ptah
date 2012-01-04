@@ -332,5 +332,5 @@ class SettingRecord(ptah.get_base()):
 
     __tablename__ = 'ptah_settings'
 
-    name = sqla.Column(sqla.String, primary_key=True)
-    value = sqla.Column(sqla.String)
+    name = sqla.Column(sqla.String(128), primary_key=True)
+    value = sqla.Column(sqla.UnicodeText)

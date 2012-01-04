@@ -20,8 +20,8 @@ class Blob(Node):
     __id__ = sqla.Column('id', sqla.Integer,
                          sqla.ForeignKey('ptah_nodes.id'), primary_key=True)
 
-    mimetype = sqla.Column(sqla.String(), default=text_type(''))
-    filename = sqla.Column(sqla.String(), default=text_type(''))
+    mimetype = sqla.Column(sqla.String(128), default=text_type(''))
+    filename = sqla.Column(sqla.String(255), default=text_type(''))
     size = sqla.Column(sqla.Integer, default=0)
     data = sqla.orm.deferred(sqla.Column(sqla.LargeBinary))
 
