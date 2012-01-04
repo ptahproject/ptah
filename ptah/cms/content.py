@@ -90,7 +90,8 @@ class BaseContent(Node):
 
     __id__ = sqla.Column('id', sqla.Integer,
                          sqla.ForeignKey('ptah_nodes.id'), primary_key=True)
-    __path__ = sqla.Column('path', sqla.Unicode, default=text_type(''))
+    __path__ = sqla.Column('path', sqla.Unicode,
+                           default=text_type(''), index=True)
     __name_id__ = sqla.Column('name', sqla.Unicode(255))
 
     title = sqla.Column(sqla.Unicode, default=text_type(''))

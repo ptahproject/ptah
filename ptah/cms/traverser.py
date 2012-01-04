@@ -48,10 +48,10 @@ class ContentTraverser(object):
 
                 queries[idx] = ptah.QueryFreezer(
                     lambda: ptah.get_session().query(BaseContent)\
-                        .filter(BaseContent.__path__.in_(bindparams))
-                        .order_by(sql.desc(BaseContent.__path__)))
+                        .filter(BaseContent.__path__.in_(bindparams)))
 
-            parents = queries[idx].all(**paths)
+            parents = sorted(queries[idx].all(**paths), reverse=True,
+                             key = lambda item: item.__path__)
         else:
             parents = []
 

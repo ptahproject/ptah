@@ -158,9 +158,12 @@ def create_db_schema(registry):
 
     log = logging.getLogger('ptah')
 
+    tables = []
     for name, table in Base.metadata.tables.items():
         if name not in skip_tables and not table.exists():
             log.info("Creating db table `%s`.", name)
-            table.create()
+            tables.append(table)
 
-    transaction.commit()
+    if tables:
+        Base.metadata.create_all(tables=tables)
+        transaction.commit()
