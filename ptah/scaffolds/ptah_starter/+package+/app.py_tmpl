@@ -11,7 +11,7 @@ session_factory = UnencryptedCookieSessionFactoryConfig('secret')
 def main(global_config, **settings):
     """ Function which returns a configured Pyramid/Ptah WSIG Application """
 
-    # Info: This is how Pyramid is configured.    
+    # Info: This is how Pyramid is configured.
     config = Configurator(settings=settings,
                           session_factory = session_factory,
                           authentication_policy = auth_policy)
@@ -29,9 +29,8 @@ def main(global_config, **settings):
     # enable ptah management
     config.ptah_init_manage(managers=('*',))
 
-    # Refer: SQLAlchemy _Declarative_
-    Base = ptah.get_base()
-    Base.metadata.create_all()
+    # populate database
+    config.ptah_populate()
 
     # Refer: Pyramid's _URL Dispatch_
     config.add_route('home', '/')
