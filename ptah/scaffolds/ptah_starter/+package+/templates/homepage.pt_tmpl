@@ -30,7 +30,7 @@
           <ul>
             <li><a href="http://www.pylonsproject.org/">Pyramid</a></li>
             <li><a href="http://www.sqlalchemy.org/">SQLAlchemy</a></li>
-            <li><a href="http://www.sqlalchemy.org/">Chameleon</a></li>
+            <li><a href="http://pagetemplates.org/">Chameleon</a></li>
           </ul>
         </div>
       </div>
@@ -45,7 +45,7 @@
         </div>
 
         <footer>
-          <p>&copy; Ptah Project 2011</p>
+          <p>&copy; Ptah Project 2011-2012</p>
         </footer>
       </div>
     </div>
