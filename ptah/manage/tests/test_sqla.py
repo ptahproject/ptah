@@ -14,7 +14,7 @@ Session = ptah.get_session()
 class TestSqlaModuleTable(ptah.get_base()):
 
     __tablename__ = 'test_sqla_table'
-    
+
     id = sqla.Column('id', sqla.Integer, primary_key=True)
     name = sqla.Column(sqla.Unicode(255))
 
