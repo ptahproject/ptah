@@ -52,7 +52,7 @@ Let's generate a empty project using the `ptah_starter` scaffolding. You can sta
 
   /path/to/virtualenv $ bin/pcreate -t ptah_starter myapp
   /path/to/virtualenv $ cd myapp
-  /path/to/virtualenv/myapp $ ../bin/python setup.py
+  /path/to/virtualenv/myapp $ ../bin/python setup.py develop
   /path/to/virtaulenv/myapp $ ../bin/pserve settings.ini --reload
 
 Open your browser to http://localhost:6543/ if you want examples that do more such as demonstrating editing models and authentication.  Check out the examples.
