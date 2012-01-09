@@ -182,6 +182,7 @@ class DummyMailer(object):
 
     def send(self, from_, to_, message):
         log.warning("Mailer is not configured.")
+        log.warning(message)
 
 
 @ptah.subscriber(ptah.events.SettingsInitializing)
@@ -189,9 +190,10 @@ def initialized(ev):
     PTAH = ptah.get_settings(ptah.CFG_ID_PTAH, ev.registry)
 
     # mail
-    PTAH['Mailer'] = DummyMailer()
-    PTAH['full_email_address'] = formataddr(
-        (PTAH['email_from_name'], PTAH['email_from_address']))
+    if PTAH.get('Mailer') is None:
+        PTAH['Mailer'] = DummyMailer()
+        PTAH['full_email_address'] = formataddr(
+            (PTAH['email_from_name'], PTAH['email_from_address']))
 
 
 def enable_manage(cfg, name='ptah-manage', access_manager=None,
