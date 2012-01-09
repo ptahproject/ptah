@@ -221,7 +221,7 @@ def enable_manage(cfg, name='ptah-manage', access_manager=None,
     cfg.action(
         'ptah.ptah_manage', action,
         (cfg, name, access_manager,
-         managers, manager_role, disable_modules))
+         managers, manager_role, disable_modules), order=999999+1)
 
 
 def initialize_sql(cfg, prefix='sqlalchemy.'):
