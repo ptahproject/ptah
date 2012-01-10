@@ -148,7 +148,7 @@ def revision(pkg, rev=None, message=None):
     if rev in revs:
         raise KeyError('Revision already exists')
 
-    script.generate_rev(rev, message)
+    return script.generate_rev(rev, message)
 
 
 def ptah_migrate(cfg):

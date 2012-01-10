@@ -1,5 +1,7 @@
 import os
 import ptah
+import shutil
+import tempfile
 from pyramid.config import ConfigurationConflictError
 
 
@@ -103,3 +105,47 @@ class TestScriptDirectory(ptah.PtahTestCase):
         self.init_ptah()
 
         self.assertRaises(CommandError, ScriptDirectory, 'test')
+
+
+class TestRevision(ptah.PtahTestCase):
+
+    def setUp(self):
+        from ptah import migrate
+
+        dir = self.dir = tempfile.mkdtemp()
+
+        class ScriptDirectory(migrate.ScriptDirectory):
+
+            def __init__(self, pkg):
+                self.dir = os.path.join(
+                    os.path.dirname(ptah.__file__), 'scripts')
+                self.versions = dir
+
+        self.orig_ScriptDirectory = migrate.ScriptDirectory
+        migrate.ScriptDirectory = ScriptDirectory
+
+        super(TestRevision, self).setUp()
+
+    def tearDown(self):
+        super(TestRevision, self).tearDown()
+
+        shutil.rmtree(self.dir)
+
+        from ptah import migrate
+        migrate.ScriptDirectory = self.orig_ScriptDirectory
+
+    def test_revision_default(self):
+        from ptah.migrate import revision
+
+        rev = revision('test', message='Test message')
+        self.assertIn('{0}.py'.format(rev), os.listdir(self.dir))
+
+    def test_revision_custom(self):
+        from ptah.migrate import revision
+
+        rev = revision('test', rev='001', message='Test message')
+        self.assertEqual(rev, '001')
+        self.assertIn('001.py', os.listdir(self.dir))
+
+        self.assertRaises(
+            KeyError, revision, 'test', rev='001')
