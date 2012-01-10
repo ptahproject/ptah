@@ -1,5 +1,7 @@
+import os
 import logging
 import functools
+import pkg_resources
 import sqlalchemy as sqla
 
 import alembic.util
@@ -11,12 +13,12 @@ import ptah
 from ptah import config
 from pyramid.path import package_name, AssetResolver
 
-MIGRATION_ID = 'ptah.manage:alembic'
+MIGRATION_ID = 'ptah:migrate'
 
 
 class Version(ptah.get_base()):
 
-    __tablename__ = 'ptah_alembic_version'
+    __tablename__ = 'ptah_db_version'
 
     package = sqla.Column(sqla.String(128), primary_key=True)
     version_num = sqla.Column(sqla.String(32), nullable=False)
@@ -33,6 +35,10 @@ class ScriptDirectory(ScriptDirectory):
         self.dir = res.resolve('ptah:scripts').abspath()
         self.versions = res.resolve(path).abspath()
 
+        if not os.access(self.versions, os.F_OK):
+            raise alembic.util.CommandError(
+                "Path doesn't exist: %r." % self.versions)
+
 
 class Context(alembic.context.Context):
 
@@ -46,6 +52,8 @@ class Context(alembic.context.Context):
                 raise alembic.util.CommandError(
                     "Can't specify current_rev to context "
                     "when using a database connection")
+            Version.__table__.create(checkfirst=True)
+
         item = ptah.get_session().query(Version.version_num).filter(
             Version.package == self.pkg_name).first()
         return getattr(item, 'version_num', None)
@@ -60,13 +68,13 @@ class Context(alembic.context.Context):
             self.impl._exec(
                 Version.__table__.insert().
                 values(package=self.pkg_name,
-                       version_num=literal_column("'%s'" % new))
+                       version_num=sqla.literal_column("'%s'" % new))
                 )
         else:
             self.impl._exec(
                 Version.__table__.update().
                 values(package=self.pkg_name,
-                       version_num=literal_column("'%s'" % new))
+                       version_num=sqla.literal_column("'%s'" % new))
                 )
 
     def run_migrations(self, **kw):
@@ -75,6 +83,11 @@ class Context(alembic.context.Context):
         self.impl.start_migrations()
 
         for change, prev_rev, rev in self._migrations_fn(self._current_rev()):
+            if current_rev is False:
+                current_rev = prev_rev
+                if self.as_sql and not current_rev:
+                    Version.__table__.create(checkfirst=True)
+
             log.info("%s: running %s %s -> %s",
                      self.pkg_name, change.__name__, prev_rev, rev)
             if self.as_sql:
@@ -91,11 +104,11 @@ class Context(alembic.context.Context):
             if self.impl.transactional_ddl:
                 self._update_current_rev(current_rev, rev)
 
-            #if self.as_sql and not rev:
-            #    _version.drop(self.connection)
+            if self.as_sql and not rev:
+                Version.__table___.drop()
 
 
-def register_migrations(path, title=''):
+def register_migration(path, title=''):
     info = config.DirectiveInfo()
     discr = (MIGRATION_ID, path)
     pkg_name = package_name(info.module)
@@ -145,9 +158,53 @@ def upgrade(pkg, sql=False):
         alembic.context.run_migrations()
 
 
-def ptah_migratedb(cfg):
-    def action(cfg,):
-        PTAH = ptah.get_settings(ptah.CFG_ID_PTAH, cfg.registry)
-        PTAH['Mailer'] = mailer
+def revision(pkg, rev=None, message=None):
+    """Create a new revision file."""
+    script = ScriptDirectory(pkg)
+    revs = [sc.revision for sc in script.walk_revisions()]
 
-    cfg.action('ptah.ptah_migratedb', action, (cfg,))
+    if not rev:
+        rev = alembic.util.rev_id()
+
+    if rev in revs:
+        raise KeyError('Revision already exists')
+
+    script.generate_rev(rev, message)
+
+
+def current(pkg):
+    """Display the current revision."""
+    script = ScriptDirectory(pkg)
+    log = logging.getLogger('ptah.alembic')
+
+    def display_version(rev):
+        rev = script._get_rev(rev)
+        log.info("Package '{0}' rev: {1}{2} {3}".format(
+            pkg, rev.revision, '(head)' if rev.is_head else "", rev.doc))
+        return []
+
+    conn = ptah.get_base().metadata.bind.connect()
+
+    alembic.context.Context = Context
+    alembic.context.Context.pkg_name = pkg
+
+    alembic.context._opts(
+        alembic.config.Config(''),
+        script,
+        fn = display_version
+    )
+
+    alembic.context.configure(
+        connection=conn,
+        config=alembic.config.Config(''))
+
+    with alembic.context.begin_transaction():
+        alembic.context.run_migrations()
+
+
+def ptah_migrate(cfg):
+    def action(cfg,):
+        for pkg in cfg.get_cfg_storage(MIGRATION_ID).keys():
+            upgrade(pkg)
+
+    cfg.action('ptah.ptah_migrate', action, (cfg,), order=999999+1)

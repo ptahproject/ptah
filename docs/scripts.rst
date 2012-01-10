@@ -166,3 +166,14 @@ steps. Specify step names in command line after your ini file.
    :linenos:
 
    [fafhrd@... MyProject]$ ../bin/ptah-populate development.ini ptah-db-schema ptah-crowd-admin
+
+
+.. _data_migration_script:
+
+Data migration
+--------------
+
+You can use the ``ptah-migrate`` command in a terminal window to execute a 
+migration steps registered with :py:func:`ptah.registr_migrations` api. 
+Much like  the any pyramid command, the ``ptah-migrate`` command accepts 
+first argument with the format ``config_file#section_name``.

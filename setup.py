@@ -62,10 +62,10 @@ setup(name='ptah',
       zip_safe = False,
       entry_points = {
           'console_scripts': [
-              'ptah-alembic = ptah.scripts.ptahalembic:main',
               'ptah-manage = ptah.scripts.manage:main',
-              'ptah-settings = ptah.scripts.settings:main',
+              'ptah-migrate = ptah.scripts.migrate:main',
               'ptah-populate = ptah.scripts.populate:main',
+              'ptah-settings = ptah.scripts.settings:main',
               ],
           'pyramid.scaffold': [
               'ptah_starter = ptah.scaffolds:PtahStarterProjectTemplate',

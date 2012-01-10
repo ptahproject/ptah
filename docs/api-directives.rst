@@ -263,3 +263,17 @@ ptah_populate_step()
        config.ptah_populate_step('ptah-create-db-schemas', 
            factory=create_db_schemas,
            title='Create db scehams', active=True, requires=())
+
+
+ptah_migrate()
+~~~~~~~~~~~~~~
+
+    Execute all registered database migration scripts. 
+    Check :ref:`data_migration_chapter` chapter for detailed description.
+
+    .. code-block:: python
+
+       config = Configurator()
+       config.include('ptah')
+
+       config.ptah_migrate()

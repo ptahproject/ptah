@@ -11,6 +11,7 @@ Ptah
    authentication.rst
    scripts.rst
    populate.rst
+   migration.rst
    faq.rst
    api.rst
    license.rst

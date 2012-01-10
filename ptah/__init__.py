@@ -141,10 +141,10 @@ from ptah.populate import POPULATE_DB_SCHEMA
 # simple test case
 from ptah.testing import PtahTestCase
 
-# register migrations
-from ptah.ptahalembic import register_migrations
+# register migration
+from ptah.migrate import register_migration
 
-register_migrations('ptah:migrations')
+register_migration('ptah:migrations')
 
 
 def includeme(cfg):
@@ -235,8 +235,8 @@ def includeme(cfg):
     cfg.add_directive('ptah_populate_step', populate.pyramid)
 
     # migrations
-    from ptah import ptahalembic
-    cfg.add_directive('ptah_migratedb', ptahalembic.ptah_migratedb)
+    from ptah import migrate
+    cfg.add_directive('ptah_migrate', migrate.ptah_migrate)
 
     # ptah static assets
     cfg.add_static_view('_ptah/static', 'ptah:static/')

@@ -1,21 +1,17 @@
-""" ptah-alembic command """
+""" ptah-migrate command """
 from __future__ import print_function
 import logging
 import argparse
 import textwrap
 
-import alembic.util
-import alembic.config
-import alembic.context
-
 import ptah
 from ptah import scripts
-from ptah.ptahalembic import \
-     MIGRATION_ID, upgrade, Version, Context, ScriptDirectory
+from ptah.migrate import upgrade, revision, current
+from ptah.migrate import ScriptDirectory, MIGRATION_ID
 
 
 def main():
-    parser = argparse.ArgumentParser(description="ptah alembic")
+    parser = argparse.ArgumentParser(description="ptah migrate")
     parser.add_argument('config', metavar='config',
                         help='ini config file')
 
@@ -27,6 +23,9 @@ def main():
         help=revision.__doc__)
     subparser.add_argument('package', metavar='package',
                            help='package name')
+    subparser.add_argument("-r", "--revision",
+                           type=str, dest='revid',
+                           help="Unique revision id")
     subparser.add_argument("-m", "--message",
                            type=str, dest='message',
                            help="Message string to use with 'revision'")
@@ -70,7 +69,11 @@ def main():
             current(pkg)
 
     if args.cmd == 'revision':
-        return revision(args.package, args.message)
+        for ch in ',.;-':
+            if ch in args.revid:
+                raise RuntimeError('Revision id contains forbidden characters')
+
+        return revision(args.package, args.revid, args.message)
 
     if args.cmd == 'upgrade':
         for pkg in args.package:
@@ -84,12 +87,6 @@ def main():
             history(pkg)
 
 
-def revision(pkg, message=None):
-    """Create a new revision file."""
-    script = ScriptDirectory(pkg)
-    script.generate_rev(alembic.util.rev_id(), message)
-
-
 def history(pkg):
     """List changeset scripts in chronological order."""
     script = ScriptDirectory(pkg)
@@ -98,33 +95,3 @@ def history(pkg):
     print ('='*len(pkg))
     for sc in script.walk_revisions():
         print('{0}: {1}'.format(sc.revision, sc.doc))
-
-
-def current(pkg):
-    """Display the current revision."""
-    script = ScriptDirectory(pkg)
-    log = logging.getLogger('ptah.alembic')
-
-    def display_version(rev):
-        rev = script._get_rev(rev)
-        log.info("Package '{0}' rev: {1}{2} {3}".format(
-            pkg, rev.revision, '(head)' if rev.is_head else "", rev.doc))
-        return []
-
-    conn = ptah.get_base().metadata.bind.connect()
-
-    alembic.context.Context = Context
-    alembic.context.Context.pkg_name = pkg
-
-    alembic.context._opts(
-        alembic.config.Config(''),
-        script,
-        fn = display_version
-    )
-
-    alembic.context.configure(
-        connection=conn,
-        config=alembic.config.Config(''))
-
-    with alembic.context.begin_transaction():
-        alembic.context.run_migrations()
