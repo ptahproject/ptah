@@ -29,15 +29,14 @@ class ScriptDirectory(ScriptDirectory):
     def __init__(self, pkg):
         path = ptah.get_cfg_storage(MIGRATION_ID).get(pkg)
         if path is None:
-            raise RuntimeError("Can't find package.")
+            raise ValueError("Can't find package.")
 
         res = AssetResolver(pkg)
         self.dir = res.resolve('ptah:scripts').abspath()
         self.versions = res.resolve(path).abspath()
 
         if not os.access(self.versions, os.F_OK):
-            raise alembic.util.CommandError(
-                "Path doesn't exist: %r." % self.versions)
+            raise alembic.util.CommandError("Path doesn't exist: %r." % path)
 
 
 class Context(alembic.context.Context):
@@ -108,26 +107,6 @@ class Context(alembic.context.Context):
                 Version.__table___.drop()
 
 
-def register_migration(path, title=''):
-    info = config.DirectiveInfo()
-    discr = (MIGRATION_ID, path)
-    pkg_name = package_name(info.module)
-
-    intr = config.Introspectable(MIGRATION_ID, discr, path, MIGRATION_ID)
-    intr['package'] = pkg_name
-    intr['path'] = path
-    intr['title'] = title
-
-    def _complete(cfg, name, path):
-        cfg.get_cfg_storage(MIGRATION_ID)[name] = path
-
-    info.attach(
-        config.Action(
-            _complete, (pkg_name, path),
-            discriminator=discr, introspectables=(intr,))
-        )
-
-
 def upgrade(pkg, sql=False):
     """Upgrade to a later version."""
     if ':' in pkg:
@@ -172,39 +151,44 @@ def revision(pkg, rev=None, message=None):
     script.generate_rev(rev, message)
 
 
-def current(pkg):
-    """Display the current revision."""
-    script = ScriptDirectory(pkg)
-    log = logging.getLogger('ptah.alembic')
-
-    def display_version(rev):
-        rev = script._get_rev(rev)
-        log.info("Package '{0}' rev: {1}{2} {3}".format(
-            pkg, rev.revision, '(head)' if rev.is_head else "", rev.doc))
-        return []
-
-    conn = ptah.get_base().metadata.bind.connect()
-
-    alembic.context.Context = Context
-    alembic.context.Context.pkg_name = pkg
-
-    alembic.context._opts(
-        alembic.config.Config(''),
-        script,
-        fn = display_version
-    )
-
-    alembic.context.configure(
-        connection=conn,
-        config=alembic.config.Config(''))
-
-    with alembic.context.begin_transaction():
-        alembic.context.run_migrations()
-
-
 def ptah_migrate(cfg):
     def action(cfg,):
         for pkg in cfg.get_cfg_storage(MIGRATION_ID).keys():
             upgrade(pkg)
 
     cfg.action('ptah.ptah_migrate', action, (cfg,), order=999999+1)
+
+
+def register_migration(pkg, path, title=''):
+    """Registers a migration for package.
+    Check :ref:`data_migration_chapter` chapter for detailed description.
+
+    :param pkg: Package name
+    :param path: String implying a path or `asset specification`
+        (e.g. ``ptah:migrations``). Path to directory with migration scripts.
+    :param title: Optional human readable title.
+
+    .. code-block:: python
+
+      import ptah
+
+      ptah.register_migration(
+          'ptah', 'ptah:migrations', 'Ptah database migration')
+
+    """
+    info = config.DirectiveInfo()
+    discr = (MIGRATION_ID, pkg)
+
+    intr = config.Introspectable(MIGRATION_ID, discr, pkg, MIGRATION_ID)
+    intr['package'] = pkg
+    intr['path'] = path
+    intr['title'] = title
+
+    def _complete(cfg, pkg, path):
+        cfg.get_cfg_storage(MIGRATION_ID)[pkg] = path
+
+    info.attach(
+        config.Action(
+            _complete, (pkg, path),
+            discriminator=discr, introspectables=(intr,))
+        )

@@ -144,7 +144,7 @@ from ptah.testing import PtahTestCase
 # register migration
 from ptah.migrate import register_migration
 
-register_migration('ptah:migrations')
+register_migration('ptah', 'ptah:migrations', 'Ptah database migration')
 
 
 def includeme(cfg):

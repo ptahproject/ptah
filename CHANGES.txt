@@ -8,7 +8,14 @@ CHANGES
 Features
 --------
 
-- Added data population subsystem.
+- Added data migration subsystem. It is documented
+  in the "Data migration" chapter.
+
+- Added data population subsystem. It is documented
+  in the "Data population" chapter.
+
+- Added a ``ptah-migrate`` script. It is documented
+  in the "Command-Line utilities" chapter.
 
 - Added a ``ptah-populate`` script. It is documented
   in the "Command-Line utilities" chapter.

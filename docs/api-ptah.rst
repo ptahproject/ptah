@@ -200,6 +200,12 @@ Data population
   .. autoclass:: populate()
 
 
+Data migration
+~~~~~~~~~~~~~~~
+
+  .. autofunction:: register_migration
+
+
 Events
 ~~~~~~
 

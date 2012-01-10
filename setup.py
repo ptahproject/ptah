@@ -9,7 +9,7 @@ version='0.3.0dev'
 install_requires = ['setuptools',
                     'alembic',
                     'chameleon >= 2.6.1',
-                    'pyramid >= 1.3a3',
+                    'pyramid >= 1.3a5',
                     'pyramid_tm',
                     'zope.interface >= 3.8.0',
                     'zope.sqlalchemy >= 0.7.0',

@@ -3,11 +3,13 @@ from __future__ import print_function
 import logging
 import argparse
 import textwrap
+import alembic.config
+import alembic.context
 
 import ptah
 from ptah import scripts
-from ptah.migrate import upgrade, revision, current
-from ptah.migrate import ScriptDirectory, MIGRATION_ID
+from ptah.migrate import upgrade, revision
+from ptah.migrate import Context, ScriptDirectory, MIGRATION_ID
 
 
 def main():
@@ -95,3 +97,36 @@ def history(pkg):
     print ('='*len(pkg))
     for sc in script.walk_revisions():
         print('{0}: {1}'.format(sc.revision, sc.doc))
+
+
+def current(pkg):
+    """Display the current revision."""
+    script = ScriptDirectory(pkg)
+    log = logging.getLogger('ptah.alembic')
+
+    def display_version(rev):
+        rev = script._get_rev(rev)
+        if rev is None:
+            log.info("Package '{0}' rev: None".format(pkg))
+        else:
+            log.info("Package '{0}' rev: {1}{2} {3}".format(
+                    pkg, rev.revision, '(head)' if rev.is_head else "",rev.doc))
+        return []
+
+    conn = ptah.get_base().metadata.bind.connect()
+
+    alembic.context.Context = Context
+    alembic.context.Context.pkg_name = pkg
+
+    alembic.context._opts(
+        alembic.config.Config(''),
+        script,
+        fn = display_version
+    )
+
+    alembic.context.configure(
+        connection=conn,
+        config=alembic.config.Config(''))
+
+    with alembic.context.begin_transaction():
+        alembic.context.run_migrations()
