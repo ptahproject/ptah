@@ -7,6 +7,7 @@ from setuptools import setup, find_packages
 version='0.3.0dev'
 
 install_requires = ['setuptools',
+                    'alembic',
                     'chameleon >= 2.6.1',
                     'pyramid >= 1.3a3',
                     'pyramid_tm',
@@ -61,6 +62,7 @@ setup(name='ptah',
       zip_safe = False,
       entry_points = {
           'console_scripts': [
+              'ptah-alembic = ptah.scripts.ptahalembic:main',
               'ptah-manage = ptah.scripts.manage:main',
               'ptah-settings = ptah.scripts.settings:main',
               'ptah-populate = ptah.scripts.populate:main',
