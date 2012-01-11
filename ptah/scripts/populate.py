@@ -7,8 +7,6 @@ import textwrap
 import ptah
 from ptah import scripts, populate as populate_mod
 
-log = logging.getLogger('ptah')
-
 
 def main():
     parser = argparse.ArgumentParser(description="ptah populate")
