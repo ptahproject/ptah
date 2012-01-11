@@ -1,6 +1,6 @@
 import sqlalchemy as sqla
 import ptah
-from ptah.populate import POPULATE_ID
+from ptah.populate import POPULATE_ID, Populate
 from pyramid import testing
 from pyramid.exceptions import ConfigurationConflictError
 
@@ -115,7 +115,7 @@ class TestListSteps(ptah.PtahTestCase):
             'custom-step2', title='Custom step 2',
             active=False, factory=step2)
 
-        steps = ptah.Populate(self.registry).list_steps()
+        steps = Populate(self.registry).list_steps()
         steps = dict((s['name'], s) for s in steps)
 
         self.assertIn('custom-step1', steps)
@@ -136,7 +136,7 @@ class TestListSteps(ptah.PtahTestCase):
             'custom-step2', title='Custom step 2',
             active=False, factory=step2)
 
-        steps = ptah.Populate(self.registry).list_steps(all=True)
+        steps = Populate(self.registry).list_steps(all=True)
         steps = dict((s['name'], s) for s in steps)
 
         self.assertIn('custom-step1', steps)
@@ -158,7 +158,7 @@ class TestListSteps(ptah.PtahTestCase):
             'custom-step2', title='Custom step 2',
             active=False, factory=step2)
 
-        steps = ptah.Populate(self.registry).list_steps(('custom-step2',))
+        steps = Populate(self.registry).list_steps(('custom-step2',))
         steps = dict((s['name'], s) for s in steps)
 
         self.assertNotIn('custom-step1', steps)
@@ -176,7 +176,7 @@ class TestListSteps(ptah.PtahTestCase):
             'custom-step2', title='Custom step 2',
             active=False, factory=step2)
 
-        steps = ptah.Populate(self.registry).list_steps()
+        steps = Populate(self.registry).list_steps()
         d_steps = dict((s['name'], s) for s in steps)
 
         self.assertIn('custom-step1', d_steps)
@@ -194,7 +194,7 @@ class TestListSteps(ptah.PtahTestCase):
             'custom-step2', title='Custom step 2',
             active=False, factory=step2)
 
-        steps = ptah.Populate(self.registry).list_steps()
+        steps = Populate(self.registry).list_steps()
         l_steps = [s['name'] for s in steps]
 
         self.assertTrue(l_steps.index('custom-step2') <
@@ -208,7 +208,7 @@ class TestListSteps(ptah.PtahTestCase):
         self.config.ptah_populate_step(
             'custom-step3', title='Custom step 3', requires=('custom-step2',))
 
-        steps = ptah.Populate(self.registry).list_steps()
+        steps = Populate(self.registry).list_steps()
 
         count = 0
         for step in steps:
@@ -220,14 +220,14 @@ class TestListSteps(ptah.PtahTestCase):
     def test_list_unknown(self):
         self.assertRaises(
             RuntimeError,
-            ptah.Populate(self.registry).list_steps, ('unknown',))
+            Populate(self.registry).list_steps, ('unknown',))
 
     def test_list_unknown_dependency(self):
         self.config.ptah_populate_step(
             'custom-step1', title='Custom step 1', requires=('unknown',))
 
         self.assertRaises(
-            RuntimeError, ptah.Populate(self.registry).list_steps)
+            RuntimeError, Populate(self.registry).list_steps)
 
 
 class TestCreateDbSchema(ptah.PtahTestCase):

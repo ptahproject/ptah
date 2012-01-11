@@ -5,7 +5,8 @@ import logging
 import textwrap
 
 import ptah
-from ptah import scripts, populate as populate_mod
+from ptah import scripts
+from ptah.populate import Populate
 
 
 def main():
@@ -22,7 +23,7 @@ def main():
 
     env = scripts.bootstrap(args.config)
 
-    populate = ptah.Populate(env['registry'])
+    populate = Populate(env['registry'])
 
     if args.list:
         titleWrap = textwrap.TextWrapper(

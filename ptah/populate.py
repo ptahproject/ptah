@@ -138,7 +138,7 @@ class Populate(object):
 
         steps = self.list_steps(p_steps)
 
-        log = logging.getLogger('ptah')
+        log = logging.getLogger(' ptah ')
 
         for step in steps:
             log.info('Executing populate step: %s', step['name'])

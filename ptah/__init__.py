@@ -135,7 +135,6 @@ from ptah import form
 # populate
 POPULATE = False
 from ptah.populate import populate
-from ptah.populate import Populate
 from ptah.populate import POPULATE_DB_SCHEMA
 
 # simple test case
@@ -227,6 +226,7 @@ def includeme(cfg):
 
     # populate
     def pyramid_populate(cfg):
+        from ptah.populate import Populate
         if not POPULATE:
             cfg.action('ptah.populate',
                        Populate(cfg.registry).execute, order=9999999)
