@@ -7,17 +7,17 @@ from ptah.testing import PtahTestCase
 class TestContainer(PtahTestCase):
 
     def setUp(self):
-        global Content, Container
-        class Content(ptah.cms.Content):
+        global TestCMSContent, TestCMSContainer
+        class TestCMSContent(ptah.cms.Content):
             __type__ = ptah.cms.Type('content', 'Test Content')
             __uri_factory__ = ptah.UriFactory('cms-content')
 
-        class Container(ptah.cms.Container):
+        class TestCMSContainer(ptah.cms.Container):
             __type__ = ptah.cms.Type('container', 'Test Container')
             __uri_factory__ = ptah.UriFactory('cms-container')
 
-        self.Content = Content
-        self.Container = Container
+        self.Content = TestCMSContent
+        self.Container = TestCMSContainer
 
         super(TestContainer, self).setUp()
 
@@ -91,7 +91,7 @@ class TestContainer(PtahTestCase):
 
         container = ptah.resolve(container_uri)
 
-        c2 = Content(title='Content2')
+        c2 = self.Content(title='Content2')
         container['content2'] = c2
 
         self.assertEqual(container.keys(), ['content', 'content2'])
@@ -339,7 +339,7 @@ class TestContainer(PtahTestCase):
         container = ptah.resolve(container_uri)
         self.assertEqual(container.keys(), [])
         self.assertRaises(KeyError, container.__delitem__, 'content')
-        self.assertRaises(KeyError, container.__delitem__, Content())
+        self.assertRaises(KeyError, container.__delitem__, self.Content())
 
     def test_container_delete_recursive(self):
         container = self.Container(__name__='container', __path__='/container/')

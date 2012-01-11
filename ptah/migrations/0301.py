@@ -6,6 +6,8 @@ Create Date: 2012-01-10 10:53:51.715491
 
 """
 
+force = True
+
 # downgrade revision identifier, used by Alembic.
 down_revision = None
 

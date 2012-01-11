@@ -37,12 +37,6 @@ class BaseContent(Node):
 
        Content description which is editable by end user.
 
-    .. attribute:: view
-
-       A URI which can be resolved with :py:func:`ptah.resolve` function
-       which represents the 'default' view for content. Akin to index.html
-       or default.php in Apache.
-
     .. attribute:: created
 
        Content creation time which is set by
@@ -65,25 +59,10 @@ class BaseContent(Node):
 
        :type: :py:class:`datetime.datetime` or None
 
-    .. attribute:: creators
+    .. attribute:: lang
 
-       a :py:class:`ptah.JsonListType` which contains sequence of users.  Using
-       principal URIs is a good idea.
+       Content language code. `en` is default value.
 
-    .. attribute:: subjects
-
-       a :py:class:`ptah.JsonListType` which contains sequence of subjects.
-       Holding a sequence of URIs could resolve to subject objects. Or you can
-       use strings.
-
-    .. attribute: publisher
-
-       a Unicode string which should identify the publisher.
-
-    .. attribute: contributors
-
-       a :py:class:`ptah.JsonListType` which contains sequence of contributors.
-       You could keep a sequence of principal URIs.
     """
 
     __tablename__ = 'ptah_content'
@@ -92,7 +71,7 @@ class BaseContent(Node):
                          sqla.ForeignKey('ptah_nodes.id'), primary_key=True)
     __path__ = sqla.Column('path', sqla.Unicode(1024),
                            default=text_type(''), index=True)
-    __name_id__ = sqla.Column('name', sqla.Unicode(255))
+    __name_id__ = sqla.Column('name', sqla.Unicode(255), default=text_type(''))
 
     title = sqla.Column(sqla.Unicode(1024), default=text_type(''))
     description = sqla.Column(sqla.UnicodeText, default=text_type(''),
@@ -103,12 +82,7 @@ class BaseContent(Node):
     modified = sqla.Column(sqla.DateTime)
     effective = sqla.Column(sqla.DateTime)
     expires = sqla.Column(sqla.DateTime)
-
-    creators = sqla.Column(ptah.JsonListType(), default=[])
-    subjects = sqla.Column(ptah.JsonListType(), default=[])
-    publisher = sqla.Column(sqla.Unicode(128), default=text_type(''))
-    contributors = sqla.Column(ptah.JsonListType(), default=[])
-    language = sqla.Column(sqla.String(12), default='en', info={'skip':True})
+    lang = sqla.Column(sqla.String(12), default='en', info={'skip':True})
 
     # sql queries
     _sql_get = ptah.QueryFreezer(

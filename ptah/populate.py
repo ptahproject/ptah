@@ -7,6 +7,7 @@ from pyramid.threadlocal import manager as threadlocal_manager
 
 import ptah
 from ptah import config
+from ptah.migrate import update_versions
 
 POPULATE_ID = 'ptah:populate-step'
 POPULATE_DB_SCHEMA = 'ptah-db-schema'
@@ -167,3 +168,6 @@ def create_db_schema(registry):
     if tables:
         Base.metadata.create_all(tables=tables)
         transaction.commit()
+
+    # update db versions
+    update_versions(registry)

@@ -1,12 +1,13 @@
 """ ptah-migrate command """
 from __future__ import print_function
-import logging
 import argparse
 import textwrap
 import alembic.config
 import alembic.context
+from pyramid.path import AssetResolver
 
 import ptah
+import ptah.migrate
 from ptah import scripts
 from ptah.migrate import upgrade, revision
 from ptah.migrate import Context, ScriptDirectory, MIGRATION_ID
@@ -20,7 +21,7 @@ def main():
     subparsers = parser.add_subparsers()
 
     # revision
-    subparser =  subparsers.add_parser(
+    subparser = subparsers.add_parser(
         revision.__name__,
         help=revision.__doc__)
     subparser.add_argument('package', metavar='package',
@@ -34,7 +35,7 @@ def main():
     subparser.set_defaults(cmd='revision')
 
     # current
-    subparser =  subparsers.add_parser(
+    subparser = subparsers.add_parser(
         current.__name__,
         help=current.__doc__)
     subparser.add_argument('package', metavar='package',
@@ -42,7 +43,7 @@ def main():
     subparser.set_defaults(cmd='current')
 
     # upgrade
-    subparser =  subparsers.add_parser(
+    subparser = subparsers.add_parser(
         upgrade.__name__,
         help=upgrade.__doc__)
     subparser.add_argument('package', metavar='package',
@@ -50,12 +51,17 @@ def main():
     subparser.set_defaults(cmd='upgrade')
 
     # history
-    subparser =  subparsers.add_parser(
+    subparser = subparsers.add_parser(
         history.__name__,
         help=history.__doc__)
     subparser.add_argument('package', metavar='package',
                            nargs='*', help='package name')
     subparser.set_defaults(cmd='history')
+
+    # list
+    subparser = subparsers.add_parser(
+        'list', help='List registered migrations.')
+    subparser.set_defaults(cmd='list')
 
     # parse
     args = parser.parse_args()
@@ -64,34 +70,40 @@ def main():
     env = scripts.bootstrap(args.config)
 
     if args.cmd == 'current':
-        if args.package is not None:
+        print ('')
+        if not args.package:
             args.package = ptah.get_cfg_storage(MIGRATION_ID).keys()
 
         for pkg in args.package:
             current(pkg)
 
     if args.cmd == 'revision':
-        for ch in ',.;-':
-            if ch in args.revid:
-                raise RuntimeError('Revision id contains forbidden characters')
+        if args.revid:
+            for ch in ',.;-':
+                if ch in args.revid:
+                    print ('Revision id contains forbidden characters')
+                    return
 
         return revision(args.package, args.revid, args.message)
 
     if args.cmd == 'upgrade':
         for pkg in args.package:
-            return upgrade(pkg)
+            upgrade(pkg)
 
     if args.cmd == 'history':
-        if args.package is not None:
+        if not args.package:
             args.package = ptah.get_cfg_storage(MIGRATION_ID).keys()
 
         for pkg in args.package:
             history(pkg)
 
+    if args.cmd == 'list':
+        return list_migrations(env['registry'])
+
 
 def history(pkg):
     """List changeset scripts in chronological order."""
-    script = ScriptDirectory(pkg)
+    script = ptah.migrate.ScriptDirectory(pkg)
     print('')
     print (pkg)
     print ('='*len(pkg))
@@ -101,15 +113,14 @@ def history(pkg):
 
 def current(pkg):
     """Display the current revision."""
-    script = ScriptDirectory(pkg)
-    log = logging.getLogger('ptah.alembic')
+    script = ptah.migrate.ScriptDirectory(pkg)
 
     def display_version(rev):
         rev = script._get_rev(rev)
         if rev is None:
-            log.info("Package '{0}' rev: None".format(pkg))
+            print ("Package '{0}' rev: None".format(pkg))
         else:
-            log.info("Package '{0}' rev: {1}{2} {3}".format(
+            print ("Package '{0}' rev: {1}{2} {3}".format(
                     pkg, rev.revision, '(head)' if rev.is_head else "",rev.doc))
         return []
 
@@ -130,3 +141,26 @@ def current(pkg):
 
     with alembic.context.begin_transaction():
         alembic.context.run_migrations()
+
+
+def list_migrations(registry):
+    print ('')
+    wrpTitle = textwrap.TextWrapper(
+        initial_indent='* ',
+        subsequent_indent='  ')
+
+    wrpDesc = textwrap.TextWrapper(
+        initial_indent='    ',
+        subsequent_indent='    ')
+
+    res = []
+    for item in registry.introspector.get_category(MIGRATION_ID):
+        intr = item['introspectable']
+        res.append((intr['package'], intr['title'], intr['path']))
+
+    for pkg, title, path in sorted(res):
+        res = AssetResolver(pkg)
+        print (wrpTitle.fill('{0}: {1}'.format(pkg, title)))
+        print (wrpDesc.fill(path))
+        print (wrpDesc.fill(res.resolve(path).abspath()))
+        print ('')

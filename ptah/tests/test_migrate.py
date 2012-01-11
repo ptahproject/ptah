@@ -107,7 +107,7 @@ class TestScriptDirectory(ptah.PtahTestCase):
         self.assertRaises(CommandError, ScriptDirectory, 'test')
 
 
-class TestRevision(ptah.PtahTestCase):
+class BaseScript(ptah.PtahTestCase):
 
     def setUp(self):
         from ptah import migrate
@@ -124,15 +124,18 @@ class TestRevision(ptah.PtahTestCase):
         self.orig_ScriptDirectory = migrate.ScriptDirectory
         migrate.ScriptDirectory = ScriptDirectory
 
-        super(TestRevision, self).setUp()
+        super(BaseScript, self).setUp()
 
     def tearDown(self):
-        super(TestRevision, self).tearDown()
+        super(BaseScript, self).tearDown()
 
         shutil.rmtree(self.dir)
 
         from ptah import migrate
         migrate.ScriptDirectory = self.orig_ScriptDirectory
+
+
+class TestRevision(BaseScript):
 
     def test_revision_default(self):
         from ptah.migrate import revision
@@ -149,3 +152,153 @@ class TestRevision(ptah.PtahTestCase):
 
         self.assertRaises(
             KeyError, revision, 'test', rev='001')
+
+
+class TestUpdateVersions(BaseScript):
+
+    _init_ptah = False
+
+    def test_update_force(self):
+        from ptah.migrate import Version, revision, update_versions
+
+        ptah.register_migration(
+            'test', 'ptah.tests:migrations', force=True)
+        self.init_ptah()
+
+        rev = revision('test', message='Test message')
+
+        update_versions(self.registry)
+
+        session = ptah.get_session()
+
+        versions = dict((v.package, v.version_num)
+                        for v in session.query(Version).all())
+        self.assertNotIn('test', versions)
+
+    def test_update_versions(self):
+        from ptah.migrate import Version, revision, update_versions
+
+        ptah.register_migration('test', 'ptah.tests:migrations')
+        self.init_ptah()
+
+        rev = revision('test', message='Test message')
+
+        update_versions(self.registry)
+
+        session = ptah.get_session()
+
+        versions = dict((v.package, v.version_num)
+                        for v in session.query(Version).all())
+        self.assertIn('test', versions)
+        self.assertEqual(versions['test'], rev)
+
+    def test_update_version_exists(self):
+        from ptah.migrate import Version, revision, update_versions
+
+        ptah.register_migration('test', 'ptah.tests:migrations')
+        self.init_ptah()
+
+        rev = revision('test', message='Test message')
+
+        session = ptah.get_session()
+
+        session.add(Version(package='test', version_num='123'))
+        session.flush()
+
+        update_versions(self.registry)
+
+        versions = dict((v.package, v.version_num)
+                        for v in session.query(Version).all())
+        self.assertIn('test', versions)
+        self.assertEqual(versions['test'], '123')
+
+
+class TestUpgrade(BaseScript):
+
+    _init_ptah = False
+
+    def test_upgrade_to_rev(self):
+        from ptah.migrate import Version, revision, upgrade
+
+        ptah.register_migration(
+            'test', 'ptah.tests:migrations', force=True)
+        self.init_ptah()
+
+        rev1 = revision('test', message='Test message1')
+        rev2 = revision('test', message='Test message2')
+
+        upgrade('test:%s'%rev1)
+
+        versions = dict((v.package, v.version_num)
+                        for v in ptah.get_session().query(Version).all())
+        self.assertEqual(versions['test'], rev1)
+
+    def test_upgrade_to_head(self):
+        from ptah.migrate import Version, revision, upgrade
+
+        ptah.register_migration(
+            'test', 'ptah.tests:migrations', force=True)
+        self.init_ptah()
+
+        rev1 = revision('test', message='Test message1')
+        rev2 = revision('test', message='Test message2')
+
+        upgrade('test:head')
+
+        versions = dict((v.package, v.version_num)
+                        for v in ptah.get_session().query(Version).all())
+        self.assertEqual(versions['test'], rev2)
+
+    def test_upgrade_to_head_by_default(self):
+        from ptah.migrate import Version, revision, upgrade
+
+        ptah.register_migration(
+            'test', 'ptah.tests:migrations', force=True)
+        self.init_ptah()
+
+        rev1 = revision('test', message='Test message1')
+        rev2 = revision('test', message='Test message2')
+
+        upgrade('test')
+
+        versions = dict((v.package, v.version_num)
+                        for v in ptah.get_session().query(Version).all())
+        self.assertEqual(versions['test'], rev2)
+
+    def test_upgrade_to_same_rev(self):
+        from ptah.migrate import Version, revision, upgrade
+
+        ptah.register_migration(
+            'test', 'ptah.tests:migrations', force=True)
+        self.init_ptah()
+
+        rev1 = revision('test', message='Test message1')
+        rev2 = revision('test', message='Test message2')
+
+        upgrade('test')
+
+        upgrade('test')
+
+        versions = dict((v.package, v.version_num)
+                        for v in ptah.get_session().query(Version).all())
+        self.assertEqual(versions['test'], rev2)
+
+    def test_upgrade_in_two_steps(self):
+        from ptah.migrate import Version, revision, upgrade
+
+        ptah.register_migration(
+            'test', 'ptah.tests:migrations', force=True)
+        self.init_ptah()
+
+        rev1 = revision('test', message='Test message1')
+        rev2 = revision('test', message='Test message2')
+
+        upgrade('test:%s'%rev1)
+        versions = dict((v.package, v.version_num)
+                        for v in ptah.get_session().query(Version).all())
+        self.assertEqual(versions['test'], rev1)
+
+        upgrade('test')
+        versions = dict((v.package, v.version_num)
+                        for v in ptah.get_session().query(Version).all())
+        self.assertEqual(versions['test'], rev2)

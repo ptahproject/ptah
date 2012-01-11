@@ -47,6 +47,10 @@ class Node(ptah.get_base()):
        a :py:class:`ptah.JsonListType` of :py:class:`ptah.ACL` strings
        registered with security machinery.
 
+    .. attribute:: __annotations__
+
+       a dictionary which contains strings arbitrary annotations data.
+
     .. attribute:: __uri_factory__
 
        function which will return value for __uri__.  the uri must be
@@ -69,6 +73,7 @@ class Node(ptah.get_base()):
                             default='', info={'uri':True})
     __local_roles__ = sqla.Column('roles', ptah.JsonDictType(), default={})
     __acls__ = sqla.Column('acls', ptah.JsonListType(), default=[])
+    __annotations__ = sqla.Column('annotations', ptah.JsonDictType(),default={})
 
     __children__ = sqla.orm.relationship(
         'Node',

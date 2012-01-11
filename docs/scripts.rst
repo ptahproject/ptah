@@ -174,6 +174,81 @@ Data migration
 --------------
 
 You can use the ``ptah-migrate`` command in a terminal window to execute a 
-migration steps registered with :py:func:`ptah.registr_migrations` api. 
+migration steps registered with :py:func:`ptah.register_migration` api. 
 Much like  the any pyramid command, the ``ptah-migrate`` command accepts 
 first argument with the format ``config_file#section_name``.
+
+Use ``list`` argument to list all registered migrations.
+
+.. code-block:: text
+   :linenos:
+   
+   [fafhrd@... MyProject]$ ../bin/ptah-migrate development.ini list
+
+   * ptah: Ptah database migration
+       ptah:migrations
+       /...src/ptah/ptah/migrations
+
+   ...
+
+
+Use ``revision`` argument to create new revision for registered migration.
+
+.. code-block:: text
+   :linenos:
+   
+   [fafhrd@... MyProject]$ ../bin/ptah-migrate development.ini revision ptah
+     Generating /../src/ptah/ptah/migrations/3fd73c8b8727.py...done
+   ...
+
+Additional arguments:
+
+  ``-r`` specify custom revision id. revision id has to contain only 
+  letters and numbers.
+
+  ``-m`` specify revision message
+
+Full command can look like:
+
+.. code-block:: text
+   :linenos:
+   
+   [fafhrd@... MyProject]$ ../bin/ptah-migrate development.ini revision ptah -r 001 -m "Add new column X"
+     ...
+
+
+Use ``upgrade`` argument to upgrade package to specific revision. You can 
+specify one or more packages after ``upgrade`` argument.
+
+.. code-block:: text
+   :linenos:
+   
+   [fafhrd@... MyProject]$ ../bin/ptah-migrate development.ini upgrade ptah
+   2012-01-11 17:00:44,506 INFO  [ptah.alembic] ptah: running upgrade None -> 0301
+   ...
+
+To specify specific revision number use ``:`` and revision number. For example
+``ptah:0301``
+
+
+Use ``current`` argument to check current package revision. You can
+specify any number of package after ``current`` argument. If package is not 
+specified script shows information for all packages.
+
+.. code-block:: text
+   :linenos:
+   
+   [fafhrd@... MyProject]$ ../bin/ptah-migrate development.ini current ptah
+   Package 'ptah' rev: 0301(head) Migration to ptah 0.3
+
+
+Use ``history`` argument to check migrations history.
+
+.. code-block:: text
+   :linenos:
+   
+   [fafhrd@... MyProject]$ ../bin/ptah-migrate development.ini history ptah
+
+   ptah
+   ====
+   0301: Ptah 0.3.0 changes
