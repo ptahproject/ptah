@@ -1,6 +1,5 @@
+from pyramid import paster
 from pyramid.config import global_registries
-from pyramid.paster import get_app
-from pyramid.paster import setup_logging
 from pyramid.request import Request
 from pyramid.interfaces import IRequestFactory
 from pyramid.threadlocal import manager as threadlocal_manager
@@ -21,7 +20,25 @@ def bootstrap(config_uri):
     threadlocal_manager.push(threadlocals)
 
     config_file = config_uri.split('#', 1)[0]
-    setup_logging(config_file)
+    paster.setup_logging(config_file)
 
     ptah.POPULATE = False
     return {'app':app, 'registry':registry, 'request': request}
+
+
+def get_app(config_uri):
+    from pyramid.router import Router
+    from pyramid.config import Configurator
+
+    def make_wsgi_app(self):
+        self.commit()
+        global_registries.add(self.registry)
+        return Router(self.registry)
+
+    # ugly hack
+    orig = Configurator.make_wsgi_app
+
+    Configurator.make_wsgi_app = make_wsgi_app
+    app = paster.get_app(config_uri)
+    Configurator.make_wsgi_app = orig
+    return app

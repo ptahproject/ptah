@@ -80,4 +80,5 @@ Previously to ptah 0.3; all of the tables were created automatically without int
 
   $ virtualenv/bin/ptah-populate settings.ini
   
-The ``ptah-populate`` script takes the .INI settings file as a parameter. Once this completes you will be able to start your application.
+The ``ptah-populate`` script takes the .INI settings file as a parameter. Once this completes you will be able to start your application. For details check 
+:ref:`data_populate_script` chapter.

@@ -265,6 +265,8 @@ ptah_populate_step()
            title='Create db scehams', active=True, requires=())
 
 
+.. _ptah_migrate_dir: 
+
 ptah_migrate()
 ~~~~~~~~~~~~~~
 

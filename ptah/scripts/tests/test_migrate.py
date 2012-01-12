@@ -98,8 +98,8 @@ class TestMigrateCommand(ptah.PtahTestCase):
     def test_upgrade_one(self):
         from ptah.migrate import revision, Version
 
-        ptah.register_migration('test1', 'test1:path', 'Test migration')
-        ptah.register_migration('test2', 'test2:path', 'Test migration')
+        ptah.register_migration('test1', 'test1:path', 'Test migration',True)
+        ptah.register_migration('test2', 'test2:path', 'Test migration',True)
 
         self.init_ptah()
 

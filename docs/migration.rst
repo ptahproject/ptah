@@ -5,7 +5,14 @@ Data migration
 
 Ptah migration based on `alembic <http://readthedocs.org/docs/alembic/>`_ package.
 Ptah adds per package migration. Migration is not required `alembic` 
-environment. Here are the steps for ptah migrations generation.
+environment. 
+
+
+Create package migration
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+You can use `alembic operations <http://readthedocs.org/docs/alembic/en/latest/ops.html>`_ for ddl manipulation. Here are the steps for ptah migrations 
+generation.
 
 * Create directory in your package that will contain migration steps. 
 
@@ -66,11 +73,42 @@ environment. Here are the steps for ptah migrations generation.
 Check :ref:`data_migration_script` chapter for ``ptah-migrate`` script detailed description.
 
 
-Note
-~~~~
+Migration data during start up
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Ptah stores package revision numbers in ``ptah_db_versions`` table. During
-data population process `ptah` checks if ``ptah_db_versions`` table contains
-version info, if it doesnt contain version information ``ptah`` just set latest
-revision without running migration steps. It assumes if there is no version
-information then database schema is latest.
+Use :ref:`ptah_migrate_dir` pyramid directive for migration data schema
+during startup.
+
+
+.. code-block:: python
+
+  import ptah
+  from pyramid.config import Configurator
+
+  def main(global_settings, **settings):
+  
+      config = Configurator(settings=settings)
+      config.include('ptah')
+
+      ...
+
+      config.ptah_migrate()
+
+      ...
+
+      return config.make_wsgi_app()
+
+Migration steps are executed after configration commited.
+
+
+Notes
+~~~~~
+
+* Ptah stores package revision numbers in ``ptah_db_versions`` table. During
+  data population process `ptah` checks if ``ptah_db_versions`` table contains
+  version info, if it doesnt contain version information ``ptah`` just set 
+  latest revision without running migration steps. It assumes if there is no 
+  version information then database schema is latest.
+
+* ``ptah-migrate`` script calls populate subsystem before running any upgrade
+  steps.

@@ -76,7 +76,6 @@ class BaseContent(Node):
     title = sqla.Column(sqla.Unicode(1024), default=text_type(''))
     description = sqla.Column(sqla.UnicodeText, default=text_type(''),
                               info = {'missing': '', 'field_type': 'textarea'})
-    view = sqla.Column(sqla.String(255), default='')
 
     created = sqla.Column(sqla.DateTime)
     modified = sqla.Column(sqla.DateTime)
@@ -147,7 +146,6 @@ class BaseContent(Node):
                 val = getattr(self, field.name, field.default)
                 info[field.name] = field.serialize(val)
 
-        info['view'] = self.view
         info['created'] = self.created
         info['modified'] = self.modified
         info['effective'] = self.effective
