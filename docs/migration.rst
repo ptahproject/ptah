@@ -110,5 +110,5 @@ Notes
   latest revision without running migration steps. It assumes if there is no 
   version information then database schema is latest.
 
-* ``ptah-migrate`` script calls populate subsystem before running any upgrade
-  steps.
+* ``ptah-migrate`` script executes ``POPULATE_DB_SCHEMA`` populate step before 
+  running any upgrade steps.

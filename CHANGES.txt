@@ -13,7 +13,8 @@ Features
 Bug fixes
 ---------
 
-- ...
+- Execute ``POPULATE_DB_SCHEMA`` populate step
+  instead of all populate steps during migration.
 
 
 0.3.0 (2012-01-12)

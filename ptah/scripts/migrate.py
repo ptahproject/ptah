@@ -9,7 +9,7 @@ from pyramid.path import AssetResolver
 import ptah
 import ptah.migrate
 from ptah import scripts
-from ptah.populate import Populate
+from ptah.populate import create_db_schema
 from ptah.migrate import upgrade, revision
 from ptah.migrate import Context, ScriptDirectory, MIGRATION_ID
 
@@ -88,9 +88,8 @@ def main():
         return revision(args.package, args.revid, args.message)
 
     if args.cmd == 'upgrade':
-        # run populate before upgrade
-        populate = Populate(env['registry'])
-        populate.execute()
+        # create db schemas
+        create_db_schema(env['registry'])
 
         for pkg in args.package:
             upgrade(pkg)
