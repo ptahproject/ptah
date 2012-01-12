@@ -206,12 +206,13 @@ class password_changer(object):
         cls(schema, 3)(changer, cfg)
 
 
-def passwordValidator(field, appstruct):
+def passwordValidator(field, value):
     """ password schema validator
     that uses password tool for additional checks"""
-    err = pwd_tool.validate(appstruct)
-    if err is not None:
-        raise form.Invalid(field, err)
+    if value is not ptah.form.null:
+        err = pwd_tool.validate(value)
+        if err is not None:
+            raise form.Invalid(field, err)
 
 
 def passwordSchemaValidator(field, appstruct):
