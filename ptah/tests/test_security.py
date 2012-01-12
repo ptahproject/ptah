@@ -364,9 +364,12 @@ class TestDefaultRoles(PtahTestCase):
         roles = sorted(list(ptah.get_roles().keys()))[:3]
 
         self.assertTrue(['Authenticated', 'Everyone', 'Owner'] == roles)
-        self.assertTrue(ptah.get_roles()['Everyone'].id == 'system.Everyone')
-        self.assertTrue(ptah.get_roles()['Authenticated'].id=='system.Authenticated')
-        self.assertTrue(ptah.get_roles()['Owner'].id=='system.Owner')
+        self.assertTrue(
+            ptah.get_roles()['Everyone'].id == 'system.Everyone')
+        self.assertTrue(
+            ptah.get_roles()['Authenticated'].id=='system.Authenticated')
+        self.assertTrue(
+            ptah.get_roles()['Owner'].id=='system.Owner')
 
 
 class Content(object):
@@ -388,12 +391,35 @@ class TestLocalRoles(PtahTestCase):
 
         content = Content(iface=security.ILocalRolesAware)
 
-        self.assertEqual(security.get_local_roles('userid', context=content), [])
+        self.assertEqual(security.get_local_roles('userid', context=content),[])
 
         content.__local_roles__['userid'] = ('role:test',)
 
         self.assertEqual(
             security.get_local_roles('userid', context=content), ['role:test'])
+
+    def test_local_role_default_roles(self):
+        from ptah import security
+
+        cfg = ptah.get_settings(ptah.CFG_ID_PTAH)
+        cfg['default_roles'] = ['role1', 'role2']
+
+        content = Content(iface=security.ILocalRolesAware)
+
+        roles = security.get_local_roles('userid', context=content)
+        self.assertIn('role1', roles)
+        self.assertIn('role2', roles)
+
+    def test_local_role_default_roles_for_non_localaware(self):
+        from ptah import security
+
+        cfg = ptah.get_settings(ptah.CFG_ID_PTAH)
+        cfg['default_roles'] = ['role1', 'role2']
+
+        content = Content()
+        roles = security.get_local_roles('userid', context=content)
+        self.assertIn('role1', roles)
+        self.assertIn('role2', roles)
 
     def test_local_role_lineage(self):
         from ptah import security
@@ -401,7 +427,7 @@ class TestLocalRoles(PtahTestCase):
         parent = Content(iface=security.ILocalRolesAware)
         content = Content(parent=parent, iface=security.ILocalRolesAware)
 
-        self.assertEqual(security.get_local_roles('userid', context=content), [])
+        self.assertEqual(security.get_local_roles('userid', context=content),[])
 
         parent.__local_roles__['userid'] = ('role:test',)
 
@@ -414,7 +440,7 @@ class TestLocalRoles(PtahTestCase):
         parent = Content(iface=security.ILocalRolesAware)
         content = Content(parent=parent, iface=security.ILocalRolesAware)
 
-        self.assertEqual(security.get_local_roles('userid', context=content), [])
+        self.assertEqual(security.get_local_roles('userid', context=content),[])
 
         parent.__local_roles__['userid'] = ('role:test',)
         content.__local_roles__['userid'] = ('role:test2',)
@@ -429,7 +455,7 @@ class TestLocalRoles(PtahTestCase):
         parent = Content(iface=security.ILocalRolesAware)
         content = Content(parent=parent)
 
-        self.assertEqual(security.get_local_roles('userid', context=content), [])
+        self.assertEqual(security.get_local_roles('userid', context=content),[])
 
         parent.__local_roles__['userid'] = ('role:test',)
 
@@ -450,13 +476,15 @@ class TestLocalRoles(PtahTestCase):
 
         request.root = content
 
-        self.assertEqual(security.get_local_roles('userid', request), ['role:test'])
+        self.assertEqual(
+            security.get_local_roles('userid', request), ['role:test'])
 
         content2 = Content(iface=security.ILocalRolesAware)
         content2.__local_roles__['userid'] = ('role:test2',)
 
         request.context = content2
-        self.assertEqual(security.get_local_roles('userid', request), ['role:test2'])
+        self.assertEqual(
+            security.get_local_roles('userid', request), ['role:test2'])
 
 
 class Content2(object):

@@ -20,7 +20,16 @@ Features
 - Added a ``ptah-populate`` script. It is documented
   in the "Command-Line utilities" chapter.
 
+- Added a ``default_roles`` settings. It is defined
+  list of roles that each principal has.
+
 - Its possible to start ptah without database.
+
+- Added json dict column ``ptah_nodes.annotations``.
+
+- Removed `ptah_content` table columns,
+  `view`, `creators`, `subjects`, `publisher`, `contributors`.
+
 
 Bug Fixes
 ---------

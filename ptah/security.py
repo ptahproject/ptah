@@ -1,4 +1,3 @@
-from ptah import config, view
 from collections import OrderedDict
 from pyramid.compat import string_types
 from pyramid.location import lineage
@@ -9,8 +8,11 @@ from pyramid.interfaces import IAuthorizationPolicy
 from pyramid.threadlocal import get_current_registry
 from pyramid.httpexceptions import HTTPForbidden
 
+import ptah
+from ptah import config
 from ptah import auth_service
 from ptah import SUPERUSER_URI
+from ptah.settings import get_settings
 from ptah.interfaces import IOwnersAware
 from ptah.interfaces import ILocalRolesAware
 
@@ -254,7 +256,8 @@ class Role(object):
         DEFAULT_ACL.unset(self.id, *permissions)
 
 
-def get_local_roles(userid, request=None, context=None):
+def get_local_roles(userid, request=None,
+                    context=None, get_settings=get_settings):
     """ calculates local roles for userid """
     if context is None:
         context = getattr(request, 'context', None)
@@ -280,6 +283,9 @@ def get_local_roles(userid, request=None, context=None):
         if val is Allow:
             data.append(r)
 
+    cfg = get_settings(ptah.CFG_ID_PTAH, getattr(request,'registry',None))
+
+    data.extend(cfg['default_roles'])
     return data
 
 

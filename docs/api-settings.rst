@@ -83,3 +83,9 @@ All values passed inside of Pyramid configurator are in Python format::
   Do not create listed tables during data population process. e.g.::
   
       ptah.db_skip_tables = ["ptah_nodes", "ptah_content"]
+
+``ptah.default_roles``
+
+  List of default principal roles::
+  
+      ptah.default_roles = ["role:Editor"]

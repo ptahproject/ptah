@@ -106,6 +106,12 @@ ptah.register_settings(
         description = 'Do not create listed tables during data population.',
         default = ()),
 
+    ptah.form.LinesField(
+        'default_roles',
+        title = 'Default roles',
+        description = 'List of default assigned roles for all principals.',
+        default = ()),
+
     title = _('Ptah settings'),
 )
 
