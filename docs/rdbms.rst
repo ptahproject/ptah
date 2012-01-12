@@ -106,8 +106,8 @@ The `ptah_tokens` table provides a space for transient tokens which are generate
 | type  | varchar  | True  |         | MaxLength 48        |
 +-------+----------+-------+---------+---------------------+
 
-ptah_db_version
----------------
+ptah_db_versions
+----------------
 The `ptah_db_versions` table contains migration revisions information.
 
 +-------------+----------+-------+---------+---------------------+

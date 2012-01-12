@@ -6,6 +6,7 @@ class Test_bootstrap(unittest.TestCase):
 
     def setUp(self):
         import ptah.scripts
+        import pyramid.paster
         self.original_get_app = ptah.scripts.get_app
         self.original_global_registries = ptah.scripts.global_registries
 
@@ -21,12 +22,13 @@ class Test_bootstrap(unittest.TestCase):
                 self.kw = kw
                 return app
 
-        ptah.scripts.get_app = DummyGetApp()
+        pyramid.paster.get_app = DummyGetApp()
         ptah.scripts.global_registries = DummyGetApp()
 
     def tearDown(self):
         import ptah.scripts
-        ptah.scripts.get_app = self.original_get_app
+        import pyramid.paster
+        pyramid.paster.get_app = self.original_get_app
         ptah.scripts.global_registries = self.original_global_registries
 
     def test_boostrap(self):

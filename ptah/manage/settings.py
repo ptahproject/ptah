@@ -44,10 +44,14 @@ class SettingsView(ptah.View):
 
             schema = []
             for field in group.__fields__.values():
+                if getattr(field, 'tint', False):
+                    value = '* * * * * * *'
+                else:
+                    value = field.dumps(group[field.name])
                 schema.append(
                     ({'name': '{0}.{1}'.format(name, field.name),
                       'type': field.__class__.__name__,
-                      'value': field.dumps(group[field.name]),
+                      'value': value,
                       'title': field.title,
                       'description': field.description,
                       'default': field.dumps(field.default)}))

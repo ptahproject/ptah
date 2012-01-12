@@ -30,7 +30,8 @@ ptah.register_settings(
         title = _('Authentication policy secret'),
         description = _('The secret (a string) used for auth_tkt '
                         'cookie signing'),
-        default = ''),
+        default = '',
+        tint = True),
 
     ptah.form.TextField(
         'manage',

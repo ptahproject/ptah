@@ -5,6 +5,24 @@ from pyramid.interfaces import IRequestFactory
 from pyramid.threadlocal import manager as threadlocal_manager
 
 
+def get_app(config_uri):
+    from pyramid.router import Router
+    from pyramid.config import Configurator
+
+    def make_wsgi_app(self): # pragma: no cover
+        self.commit()
+        global_registries.add(self.registry)
+        return Router(self.registry)
+
+    # ugly hack
+    orig = Configurator.make_wsgi_app
+
+    Configurator.make_wsgi_app = make_wsgi_app
+    app = paster.get_app(config_uri)
+    Configurator.make_wsgi_app = orig
+    return app
+
+
 def bootstrap(config_uri):
     import ptah
     ptah.POPULATE = True
@@ -24,21 +42,3 @@ def bootstrap(config_uri):
 
     ptah.POPULATE = False
     return {'app':app, 'registry':registry, 'request': request}
-
-
-def get_app(config_uri):
-    from pyramid.router import Router
-    from pyramid.config import Configurator
-
-    def make_wsgi_app(self):
-        self.commit()
-        global_registries.add(self.registry)
-        return Router(self.registry)
-
-    # ugly hack
-    orig = Configurator.make_wsgi_app
-
-    Configurator.make_wsgi_app = make_wsgi_app
-    app = paster.get_app(config_uri)
-    Configurator.make_wsgi_app = orig
-    return app

@@ -42,7 +42,7 @@ class TestSettingsTTW(PtahTestCase):
         ptah.register_settings(
             'test',
             ptah.form.TextField('node1', default='test1'),
-            ptah.form.TextField('node2', default='test2'),
+            ptah.form.TextField('node2', default='test2', tint=True),
             title = 'Test settings')
 
         self.init_ptah()
