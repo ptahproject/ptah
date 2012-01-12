@@ -2,7 +2,7 @@
 CHANGES
 =======
 
-0.3.0 (unreleased)
+0.3.0 (2012-01-12)
 ==================
 
 Features
@@ -20,8 +20,8 @@ Features
 - Added a ``ptah-populate`` script. It is documented
   in the "Command-Line utilities" chapter.
 
-- Added a ``default_roles`` settings. It is defined
-  list of roles that each principal has.
+- Added a ``default_roles`` setting. It defines
+  list of roles for principal.
 
 - Its possible to start ptah without database.
 
