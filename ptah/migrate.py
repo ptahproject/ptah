@@ -12,6 +12,7 @@ from alembic.script import ScriptDirectory
 import ptah
 from ptah import config
 from pyramid.path import package_name, AssetResolver
+from pyramid.events import ApplicationCreated
 
 MIGRATION_ID = 'ptah:migrate'
 
@@ -218,3 +219,31 @@ def update_versions(registry):
             if sc.is_head:
                 session.add(Version(package=pkg, version_num=sc.revision))
                 break
+
+
+@ptah.subscriber(ApplicationCreated)
+def check_version(ev):
+    if not Version.__table__.exists():
+        return
+
+    versions = dict((v.package, v.version_num)
+                    for v in ptah.get_session().query(Version).all())
+    packages = ptah.get_cfg_storage(MIGRATION_ID).keys()
+
+    has_steps = False
+    log = logging.getLogger('ptah.alembic')
+
+    for pkg in packages:
+        version = versions.get(pkg)
+        script = ScriptDirectory(pkg)
+        for sc in script.walk_revisions():
+            if sc.is_head:
+                if sc.revision != version:
+                    has_steps = True
+                    log.error("Package '%s' current revision: '%s', head: '%s'",
+                              pkg, version, sc.revision)
+                break
+
+    if has_steps:
+        log.error("Please run `ptah-migrate` script. Stopping...")
+        raise SystemExit(1)

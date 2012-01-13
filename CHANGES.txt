@@ -13,6 +13,9 @@ Features
 Bug fixes
 ---------
 
+- Stop process if current revisions are 
+  different from head revisions.
+
 - Execute ``POPULATE_DB_SCHEMA`` populate step
   instead of all populate steps during migration.
 

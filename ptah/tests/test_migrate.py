@@ -112,11 +112,17 @@ class BaseScript(ptah.PtahTestCase):
     def setUp(self):
         from ptah import migrate
 
-        dir = self.dir = tempfile.mkdtemp()
+        self.dirs = dirs = {}
 
         class ScriptDirectory(migrate.ScriptDirectory):
 
             def __init__(self, pkg):
+                if pkg in dirs:
+                    dir = dirs[pkg]
+                else:
+                    dir = tempfile.mkdtemp()
+                    dirs[pkg] = dir
+
                 self.dir = os.path.join(
                     os.path.dirname(ptah.__file__), 'scripts')
                 self.versions = dir
@@ -129,7 +135,8 @@ class BaseScript(ptah.PtahTestCase):
     def tearDown(self):
         super(BaseScript, self).tearDown()
 
-        shutil.rmtree(self.dir)
+        for dir in self.dirs.values():
+            shutil.rmtree(dir)
 
         from ptah import migrate
         migrate.ScriptDirectory = self.orig_ScriptDirectory
@@ -141,14 +148,14 @@ class TestRevision(BaseScript):
         from ptah.migrate import revision
 
         rev = revision('test', message='Test message')
-        self.assertIn('{0}.py'.format(rev), os.listdir(self.dir))
+        self.assertIn('{0}.py'.format(rev), os.listdir(self.dirs['test']))
 
     def test_revision_custom(self):
         from ptah.migrate import revision
 
         rev = revision('test', rev='001', message='Test message')
         self.assertEqual(rev, '001')
-        self.assertIn('001.py', os.listdir(self.dir))
+        self.assertIn('001.py', os.listdir(self.dirs['test']))
 
         self.assertRaises(
             KeyError, revision, 'test', rev='001')
@@ -302,3 +309,48 @@ class TestUpgrade(BaseScript):
         versions = dict((v.package, v.version_num)
                         for v in ptah.get_session().query(Version).all())
         self.assertEqual(versions['test'], rev2)
+
+    def test_startup_check_version(self):
+        from ptah.migrate import Version, revision, check_version
+
+        ptah.register_migration(
+            'test1', 'ptah.tests1:migrations')
+        ptah.register_migration(
+            'test2', 'ptah.tests2:migrations')
+        self.init_ptah()
+
+        rev1 = revision('test1', message='Test message1')
+        rev2 = revision('test2', message='Test message2')
+
+        session = ptah.get_session()
+        session.add(Version(package='test1', version_num=rev1))
+        session.add(Version(package='test2', version_num=rev2))
+        session.flush()
+
+        exc = None
+        try:
+            check_version(None)
+        except SystemExit as err: # pragma: no cover
+            exc = err
+
+        self.assertIsNone(exc)
+
+    def test_startup_check_version_exit(self):
+        from ptah.migrate import Version, revision, check_version
+
+        ptah.register_migration(
+            'test1', 'ptah.tests1:migrations')
+        ptah.register_migration(
+            'test2', 'ptah.tests2:migrations')
+        self.init_ptah()
+
+        rev1 = revision('test1', message='Test message1')
+        rev2 = revision('test2', message='Test message2')
+
+        exc = None
+        try:
+            check_version(None)
+        except SystemExit as err: # pragma: no cover
+            exc = err
+
+        self.assertIsInstance(exc, SystemExit)

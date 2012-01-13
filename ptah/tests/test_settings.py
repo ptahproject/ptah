@@ -599,6 +599,8 @@ class TestDBSettings(TestDBSettingsBase):
                      node2 = 65)
         grp.clear()
 
+        ptah.get_base().metadata.tables['ptah_db_versions'].drop()
+
         self.config.make_wsgi_app()
         self.assertEqual(grp['node1'], 'new text')
         self.assertEqual(grp['node2'], 65)
