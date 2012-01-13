@@ -30,10 +30,10 @@ ptah.library(
           'ptah:static/bootstrap/js/bootstrap-buttons.js',
           'ptah:static/bootstrap/js/bootstrap-dropdown.js',
           'ptah:static/bootstrap/js/bootstrap-modal.js',
-          'ptah:static/bootstrap/js/bootstrap-popover.js',
           'ptah:static/bootstrap/js/bootstrap-scrollspy.js',
           'ptah:static/bootstrap/js/bootstrap-tabs.js',
-          'ptah:static/bootstrap/js/bootstrap-twipsy.js'),
+          'ptah:static/bootstrap/js/bootstrap-twipsy.js',
+          'ptah:static/bootstrap/js/bootstrap-popover.js'),
     type="js",
     require="jquery")
 
