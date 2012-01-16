@@ -39,3 +39,5 @@ Form interfaces
     .. autofunction:: Validator
 
     .. autofunction:: Preview
+
+    .. autofunction:: VocabularyFactory

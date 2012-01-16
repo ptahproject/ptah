@@ -183,6 +183,26 @@ class TestLinesField(PtahTestCase):
 
 class TestVocabularyField(PtahTestCase):
 
+    def test_ctor(self):
+        from ptah.form.fields import VocabularyField
+
+        voc = object()
+
+        self.assertRaises(ValueError, VocabularyField, 'test')
+        self.assertRaises(ValueError, VocabularyField, 'test',
+                          vocabulary=voc, voc_factory=voc)
+
+    def test_voc_factory(self):
+        from ptah.form.fields import VocabularyField
+
+        voc = object()
+        def factory():
+            return voc
+
+        field = VocabularyField('test', voc_factory=factory)
+        clone = field.bind('p.', None, None)
+        self.assertIs(clone.vocabulary, voc)
+
     def test_vocabulary_field(self):
         voc = form.SimpleVocabulary.from_items(
             (1, 'one', 'One'),

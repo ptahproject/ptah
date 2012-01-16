@@ -304,3 +304,11 @@ def Preview(request):
     :param request: Pyramid request object
     :rtype: Html snippet
     """
+
+
+def VocabularyFactory():
+    """ :class:`ptah.form.fields.VocabularyField` instantiate vocabulary
+    during field binding process.
+
+    :rtype: Vocabulary instance
+    """

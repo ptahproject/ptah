@@ -46,13 +46,26 @@ class InputField(Field, ptah.View):
 class VocabularyField(InputField):
 
     vocabulary = None
+    voc_factory = None
+
     noValueToken = '--NOVALUE--'
 
     def __init__(self, name, **kw):
         super(VocabularyField, self).__init__(name, **kw)
 
-        if self.vocabulary is None:
-            raise ValueError("Vocabulary is not specified.")
+        if self.voc_factory is None and self.vocabulary is None:
+            raise ValueError("Vocabulary or vocabulary factory is required.")
+
+        if self.voc_factory is not None and self.vocabulary is not None:
+            raise ValueError("Vocabulary and vocabulary factory are defined.")
+
+    def bind(self, prefix, value, params):
+        clone = super(VocabularyField, self).bind(prefix, value, params)
+
+        if clone.vocabulary is None:
+            clone.vocabulary = self.voc_factory()
+
+        return clone
 
     def is_checked(self, term):
         raise NotImplementedError()
