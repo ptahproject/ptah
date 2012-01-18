@@ -287,7 +287,8 @@ class DummyFields(object):
             fieldset = DummyFieldset()
         self.fieldset = fieldset
 
-    def bind(self, data, params): # pragma: no cover
+    def bind(self, data, params, context=None): # pragma: no cover
         self.data = data
         self.params = params
+        self.context = context
         return self.fieldset
