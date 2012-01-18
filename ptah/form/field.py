@@ -165,7 +165,7 @@ class Fieldset(OrderedDict):
     def validate(self, data):
         self.validator(self, data)
 
-    def bind(self, data=None, params={}):
+    def bind(self, data=None, params={}, context=None):
         clone = Fieldset(
             name=self.name,
             title=self.title,
@@ -178,10 +178,10 @@ class Fieldset(OrderedDict):
         for name, field in self.items():
             if isinstance(field, Fieldset):
                 clone[name] = field.bind(
-                    data.get(name, None), params)
+                    data.get(name, None), params, context)
             else:
                 clone[name] = field.bind(
-                    self.prefix, data.get(name, null), params)
+                    self.prefix, data.get(name, null), params, context)
 
         clone.params = params
         clone.data = data
@@ -291,6 +291,7 @@ class Field(object):
     mode = None
     value = null
     form_value = None
+    context = None
 
     id = None
     klass = None
@@ -311,7 +312,7 @@ class Field(object):
         self.validator = kw.get('validator', None)
         self.required = self.missing is required
 
-    def bind(self, prefix, value, params):
+    def bind(self, prefix, value, params, context=None):
         """ Bind field to value and request params """
         clone = self.__class__.__new__(self.__class__)
         clone.__dict__.update(self.__dict__)
@@ -319,6 +320,7 @@ class Field(object):
         clone.params = params
         clone.name = '%s%s' % (prefix, self.name)
         clone.id = clone.name.replace('.', '-')
+        clone.context = context
         return clone
 
     def update(self, request):
@@ -432,7 +434,7 @@ class FieldFactory(Field):
 
         super(FieldFactory, self).__init__(name, **kw)
 
-    def bind(self, prefix, value, params):
+    def bind(self, prefix, value, params, context=None):
         try:
             cls = config.get_cfg_storage(FIELD_ID)[self.__field__]
         except:
@@ -447,4 +449,6 @@ class FieldFactory(Field):
         clone.value = value
         clone.params = params
         clone.name = '%s%s' % (prefix, self.name)
+        clone.id = clone.name.replace('.', '-')
+        clone.context = context
         return clone

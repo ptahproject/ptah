@@ -196,12 +196,29 @@ class TestVocabularyField(PtahTestCase):
         from ptah.form.fields import VocabularyField
 
         voc = object()
-        def factory():
+        def factory(context):
             return voc
 
         field = VocabularyField('test', voc_factory=factory)
         clone = field.bind('p.', None, None)
         self.assertIs(clone.vocabulary, voc)
+
+    def test_voc_factory_context(self):
+        from ptah.form.fields import VocabularyField
+
+        voc = object()
+        data = []
+        def factory(context):
+            data.append(context)
+            return voc
+
+        field = VocabularyField('test', voc_factory=factory)
+        clone = field.bind('p.', None, None)
+        self.assertIsNone(data[-1])
+
+        context = object()
+        clone = field.bind('p.', None, None, context)
+        self.assertIs(data[-1], context)
 
     def test_vocabulary_field(self):
         voc = form.SimpleVocabulary.from_items(

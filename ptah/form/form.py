@@ -48,7 +48,8 @@ class FormWidgets(OrderedDict):
         content = self.form.form_content()
         prefix = '%s%s' % (self.form.prefix, self.prefix)
 
-        self.fieldset = self.form_fields.bind(content, params)
+        self.fieldset = self.form_fields.bind(
+            content, params, self.form.context)
         self.fieldsets = fieldsets = []
 
         # Walk through each field, making a widget out of it.

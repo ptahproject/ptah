@@ -59,11 +59,12 @@ class VocabularyField(InputField):
         if self.voc_factory is not None and self.vocabulary is not None:
             raise ValueError("Vocabulary and vocabulary factory are defined.")
 
-    def bind(self, prefix, value, params):
-        clone = super(VocabularyField, self).bind(prefix, value, params)
+    def bind(self, prefix, value, params, context=None):
+        clone = super(VocabularyField, self).bind(
+            prefix, value, params, context)
 
         if clone.vocabulary is None:
-            clone.vocabulary = self.voc_factory()
+            clone.vocabulary = self.voc_factory(clone.context)
 
         return clone
 

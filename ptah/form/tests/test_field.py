@@ -297,8 +297,14 @@ class TestField(PtahTestCase):
         self.assertEqual(field.preparer, 'Preparer')
         self.assertEqual(field.validator, 'validator')
         self.assertEqual(field.custom_attr, 'Custom attr')
+        self.assertIsNone(field.context)
+        self.assertIsNone(orig_field.context)
 
         self.assertEqual(repr(field), "<Field 'field.test'>")
+
+        context = object()
+        field = orig_field.bind('field.', form.null, {}, context)
+        self.assertIs(field.context, context)
 
     def test_field_field_api(self):
         from ptah import form

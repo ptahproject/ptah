@@ -306,9 +306,10 @@ def Preview(request):
     """
 
 
-def VocabularyFactory():
+def VocabularyFactory(context):
     """ :class:`ptah.form.fields.VocabularyField` instantiate vocabulary
     during field binding process.
 
+    :param context: Field context
     :rtype: Vocabulary instance
     """
