@@ -167,6 +167,7 @@ class Form(ptah.View):
     accept = None
     acceptCharset = None
     params = None
+    context = None
 
     csrf = False
 

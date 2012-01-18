@@ -268,6 +268,7 @@ class TestForm(PtahTestCase):
 
 
 class DummyForm(object):
+    context = None
     prefix = 'prefix'
     def form_params(self): # pragma: no cover
         return None
