@@ -71,4 +71,5 @@ setup(name='ptah',
               'ptah_starter = ptah.scaffolds:PtahStarterProjectTemplate',
               ],
           },
+      package_data = {'migrations': ['ptah/migrations/*.py']},
       )
