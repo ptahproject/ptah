@@ -5,7 +5,7 @@ Ptah is a fast, fun, open source high-level Python web development environment. 
 
 Ptah is loosely affiliated with the Pyramid, Django, Drupal and Zope/Plone communities.  
 
-Most documentation requires Ptah 0.2 or greater.
+Most documentation requires Ptah 0.3 or greater.
 
 You can read the `ptah` documentation on-line at 
 `http://ptahproject.readthedocs.org <http://ptahproject.readthedocs.org/en/latest/index.html>`_.
