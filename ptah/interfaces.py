@@ -111,3 +111,13 @@ def populate_step(registry):
 
     :param registry: Pyramid :py:class:`pyramid.registry.Registry` object
     """
+
+
+def roles_provider(context, uid, registry):
+    """ Roles provider interface
+
+    :param context: Current context object
+    :param userid: User id
+    :param registry: Pyramid registry object
+    :rtype: Sequence of roles
+    """

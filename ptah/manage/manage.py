@@ -8,6 +8,7 @@ from ptah import config
 
 CONFIG_ID = 'ptah.manage:config'
 MANAGE_ID = 'ptah.manage:module'
+MANAGE_ACTIONS = 'ptah.manage:actions'
 
 
 class PtahModule(object):
@@ -110,11 +111,16 @@ def set_access_manager(manager, registry=None):
     ptah.get_settings(ptah.CFG_ID_PTAH, registry)['access_manager'] = manager
 
 
+class root(object):
+    __name__ = None
+    __parent__ = None
+
+
 class PtahManageRoute(object):
     """ ptah management route """
 
     __name__ = 'ptah-manage'
-    __parent__ = None
+    __parent__ = root()
 
     def __init__(self, request):
         self.request = request
@@ -165,6 +171,7 @@ class LayoutManage(ptah.View):
                 break
 
         self.module = mod
+        self.actions = ptah.list_uiactions(mod, self.request, MANAGE_ACTIONS)
 
 
 @view_config(

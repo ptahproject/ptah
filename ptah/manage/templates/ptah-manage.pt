@@ -14,6 +14,12 @@
 	<div class="container">
 	  <h3><a href="${view.manage_url}/">Ptah Manage</a></h3>
 
+	  <ul class="nav" tal:condition="view.actions">
+	    <li tal:repeat="item view.actions">
+	      <a href="${item['url']}">${item['title']}</a>
+	    </li>
+	  </ul>
+
 	  <ul class="nav secondary-nav" tal:condition="view.user">
 	    <li>
 	      <h5>

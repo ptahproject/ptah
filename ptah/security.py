@@ -19,6 +19,7 @@ from ptah.interfaces import ILocalRolesAware
 
 ID_ACL = 'ptah:aclmap'
 ID_ROLE = 'ptah:role'
+ID_ROLES_PROVIDER = 'ptah:roles-provider'
 ID_PERMISSION = 'ptah:permission'
 
 
@@ -256,8 +257,58 @@ class Role(object):
         DEFAULT_ACL.unset(self.id, *permissions)
 
 
+class roles_provider(object):
+    """ Register roles provider.
+
+    roles provider accepts userid and registry and returns
+    sequence of roles.
+
+    :param name: Unique name
+
+    Roles provider interface :py:func:`ptah.interfaces.roles_provider`.
+
+    .. code-block:: python
+
+       import ptah
+
+       @ptah.roles_provider('custom-roles')
+       def custom_roles(context, userid, registry):
+           if userid == '...':
+               return ['Role1', 'Role2']
+    """
+
+    def __init__(self, name, __depth=1):
+        self.info = config.DirectiveInfo(__depth)
+        self.discr = (ID_ROLES_PROVIDER, name)
+
+        self.intr = intr = config.Introspectable(
+            ID_ROLES_PROVIDER, self.discr, name, ID_ROLES_PROVIDER)
+
+        intr['name'] = name
+        intr['codeinfo'] = self.info.codeinfo
+
+    def __call__(self, factory, cfg=None):
+        intr = self.intr
+        intr['factory'] = factory
+
+        self.info.attach(
+            config.Action(
+                lambda cfg, name, f:
+                    cfg.get_cfg_storage(ID_ROLES_PROVIDER).update({name: f}),
+                (intr['name'], factory),
+                discriminator=self.discr, introspectables=(intr,)),
+            cfg)
+        return factory
+
+
+@roles_provider('ptah_default_roles')
+def ptah_default_roles(context, uid, registry):
+    cfg = get_settings(ptah.CFG_ID_PTAH, registry)
+    return cfg['default_roles']
+
+
 def get_local_roles(userid, request=None,
-                    context=None, get_settings=get_settings):
+                    context=None, get_cfg_storage=config.get_cfg_storage):
     """ calculates local roles for userid """
     if context is None:
         context = getattr(request, 'context', None)
@@ -283,9 +334,10 @@ def get_local_roles(userid, request=None,
         if val is Allow:
             data.append(r)
 
-    cfg = get_settings(ptah.CFG_ID_PTAH, getattr(request,'registry',None))
+    registry = get_current_registry()
+    for provider in get_cfg_storage(ID_ROLES_PROVIDER, registry).values():
+        data.extend(provider(context, userid, registry))
 
-    data.extend(cfg['default_roles'])
     return data
 
 

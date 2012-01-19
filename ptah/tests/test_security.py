@@ -701,3 +701,69 @@ class TestAauthorization(PtahTestCase):
             authz.permits(content, ('test-user',), 'View'))
         self.assertFalse(
             authz.permits(content, ('test-user',), ptah.NOT_ALLOWED))
+
+
+class TestRolesProvider(PtahTestCase):
+
+    _init_ptah = False
+
+    def test_roles_provider(self):
+        import ptah
+        from ptah.security import ID_ROLES_PROVIDER
+
+        @ptah.roles_provider('test1')
+        def provider1(context, uid, registry):
+            """ """
+
+        @ptah.roles_provider('test2')
+        def provider2(context, uid, registry):
+            """ """
+
+        self.init_ptah()
+
+        data = self.config.get_cfg_storage(ID_ROLES_PROVIDER)
+
+        self.assertIn('test1', data)
+        self.assertIn('test2', data)
+        self.assertIs(data['test1'], provider1)
+        self.assertIs(data['test2'], provider2)
+
+    def test_roles_provider_conflict(self):
+        import ptah
+        from ptah.security import ID_ROLES_PROVIDER
+
+        @ptah.roles_provider('test1')
+        def provider1(context, uid, registry):
+            """ """
+
+        @ptah.roles_provider('test1')
+        def provider2(context, uid, registry):
+            """ """
+
+        self.assertRaises(ConfigurationConflictError, self.init_ptah)
+
+    def test_get_local_roles(self):
+        import ptah
+        from ptah import security
+
+        data = {}
+
+        @ptah.roles_provider('test1')
+        def provider1(context, uid, registry):
+            data['test1'] = uid
+            return ('Role1',)
+
+        @ptah.roles_provider('test2')
+        def provider2(context, uid, registry):
+            data['test2'] = uid
+            return ('Role2',)
+
+        self.init_ptah()
+
+        content = Content()
+
+        roles = security.get_local_roles('userid', context=content)
+        self.assertIn('Role1', roles)
+        self.assertIn('Role2', roles)
+        self.assertIn('test1', data)
+        self.assertIn('test2', data)

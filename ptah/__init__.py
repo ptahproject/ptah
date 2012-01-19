@@ -69,6 +69,7 @@ from ptah.interfaces import IACLsAware
 from ptah.security import Role
 from ptah.security import get_roles
 from ptah.security import get_local_roles
+from ptah.security import roles_provider
 from ptah.interfaces import IOwnersAware
 from ptah.interfaces import ILocalRolesAware
 
