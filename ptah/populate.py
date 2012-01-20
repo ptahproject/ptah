@@ -150,7 +150,7 @@ class Populate(object):
 
 
 @populate(POPULATE_DB_SCHEMA, title='Create db schema')
-def create_db_schema(registry):
+def create_db_schema(registry, update=True):
     registry.notify(ptah.events.BeforeCreateDbSchema(registry))
 
     skip_tables = ptah.get_settings(ptah.CFG_ID_PTAH)['db_skip_tables']
@@ -170,4 +170,5 @@ def create_db_schema(registry):
         transaction.commit()
 
     # update db versions
-    update_versions(registry)
+    if update:
+        update_versions(registry)

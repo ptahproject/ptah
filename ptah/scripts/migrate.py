@@ -83,13 +83,14 @@ def main():
             for ch in ',.;-':
                 if ch in args.revid:
                     print ('Revision id contains forbidden characters')
+                    ptah.shutdown()
                     return
 
-        return revision(args.package, args.revid, args.message)
+        revision(args.package, args.revid, args.message)
 
     if args.cmd == 'upgrade':
         # create db schemas
-        create_db_schema(env['registry'])
+        create_db_schema(env['registry'], False)
 
         for pkg in args.package:
             upgrade(pkg)
