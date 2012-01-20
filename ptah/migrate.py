@@ -12,7 +12,6 @@ from alembic.script import ScriptDirectory
 import ptah
 from ptah import config
 from pyramid.path import package_name, AssetResolver
-from pyramid.events import ApplicationCreated
 
 MIGRATION_ID = 'ptah:migrate'
 
@@ -221,8 +220,8 @@ def update_versions(registry):
                 break
 
 
-@ptah.subscriber(ApplicationCreated)
 def check_version(ev):
+    """ ApplicationCreated event handler """
     if not Version.__table__.exists():
         return
 

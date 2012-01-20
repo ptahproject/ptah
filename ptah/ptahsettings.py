@@ -235,6 +235,7 @@ def initialize_sql(cfg, prefix='sqlalchemy.'):
     def action(cfg, cache):
         PTAH = cfg.ptah_get_settings(ptah.CFG_ID_PTAH)
         PTAH['sqlalchemy_cache'] = {}
+        PTAH['sqlalchemy_initialized'] = True
 
     cache = {}
     engine = sqlalchemy.engine_from_config(
@@ -245,6 +246,10 @@ def initialize_sql(cfg, prefix='sqlalchemy.'):
     ptah.get_base().metadata.bind = engine
 
     cfg.action('ptah.initalize_sql', action, (cfg, cache))
+
+    # check_version
+    from ptah import migrate
+    cfg.add_subscriber(migrate.check_version, ApplicationCreated)
 
 
 @ptah.subscriber(ApplicationCreated)

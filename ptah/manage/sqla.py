@@ -29,6 +29,10 @@ class SQLAModule(ptah.manage.PtahModule):
         md = self.metadata[id][0]
         return Table(md.tables[table], self, self.request)
 
+    def available(self):
+        PTAH = ptah.get_settings(ptah.CFG_ID_PTAH, self.request.registry)
+        return PTAH.get('sqlalchemy_initialized', False)
+
     @classmethod
     def addMetadata(cls, md, id, title=''):
         cls.metadata[id] = [md, title or id.capitalize()]
