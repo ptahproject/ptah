@@ -102,7 +102,9 @@ def main():
             history(pkg)
 
     if args.cmd == 'list':
-        return list_migrations(env['registry'])
+        list_migrations(env['registry'])
+
+    ptah.shutdown()
 
 
 def history(pkg):

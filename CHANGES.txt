@@ -8,6 +8,15 @@ CHANGES
 - JQuery 1.7.1
 
 
+Bug fixes
+---------
+
+- Check migration version information only if sqla 
+  has been configured.
+
+- Run ptah.shutdown() before exit from process. 
+
+
 0.3.1 (2012-01-19)
 ==================
 

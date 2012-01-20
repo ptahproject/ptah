@@ -42,6 +42,8 @@ def main(init=True):
     cmd = SettingsCommand(args)
     cmd.run()
 
+    ptah.shutdown()
+
 
 class SettingsCommand(object):
     """ 'settings' command"""

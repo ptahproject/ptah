@@ -30,6 +30,8 @@ def main(init=True):
     cmd = ManageCommand(args)
     cmd.run()
 
+    ptah.shutdown()
+
 
 class ManageCommand(object):
 

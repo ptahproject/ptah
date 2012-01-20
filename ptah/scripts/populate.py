@@ -50,3 +50,5 @@ def main():
         populate.execute(args.step)
     else:
         parser.print_help()
+
+    ptah.shutdown()

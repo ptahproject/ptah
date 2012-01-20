@@ -244,5 +244,6 @@ def check_version(ev):
                 break
 
     if has_steps:
+        config.shutdown()
         log.error("Please run `ptah-migrate` script. Stopping...")
         raise SystemExit(1)
