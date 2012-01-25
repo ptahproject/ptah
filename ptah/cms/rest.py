@@ -21,7 +21,7 @@ def cmsApplications(request, *args):
     apps = []
 
     for name, factory in ptah.cms.get_app_factories().items():
-        root = factory(request)
+        root = factory()
 
         try:
             info = wrap(root).info()
