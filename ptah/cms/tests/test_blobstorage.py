@@ -101,8 +101,8 @@ class TestBlob(PtahTestCase):
         self.assertEqual(response.body, bytes_('blob data','utf-8'))
         self.assertEqual(
             response.headerlist,
-            [('Content-Disposition', bytes_('filename="test.txt"','utf-8')),
-             ('Content-Type', 'text/plain'),
+            [('Content-Type', bytes_('text/plain')),
+             ('Content-Disposition', bytes_('filename="test.txt"','utf-8')),
              ('Content-Length', '9')])
 
     def test_blob_rest_data_headers_unicode(self):
@@ -117,4 +117,5 @@ class TestBlob(PtahTestCase):
 
         headers = response.headers
         for hdr in headers:
-            self.assertTrue(isinstance(headers[hdr], binary_type))
+            if hdr.lower() != 'content-length':
+                self.assertTrue(isinstance(headers[hdr], binary_type))

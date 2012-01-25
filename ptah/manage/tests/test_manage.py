@@ -150,14 +150,16 @@ class TestManageModule(PtahTestCase):
             access_manager=access_manager,
             managers = ('manager',),
             manager_role = 'Manager',
-            disable_modules = ('models',))
+            disable_modules = ('module',),
+            enable_modules = ('module2',))
 
         cfg = config.ptah_get_settings(ptah.CFG_ID_PTAH)
 
         self.assertEqual(cfg['manage'], 'test-manage')
         self.assertEqual(cfg['managers'], ('manager',))
         self.assertEqual(cfg['manager_role'], 'Manager')
-        self.assertEqual(cfg['disable_modules'], ('models',))
+        self.assertEqual(cfg['disable_modules'], ('module',))
+        self.assertEqual(cfg['enable_modules'], ('module2',))
         self.assertIs(cfg['access_manager'], access_manager)
 
         iface = config.registry.getUtility(IRouteRequest, 'ptah-manage')
