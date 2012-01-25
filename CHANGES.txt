@@ -5,6 +5,13 @@ CHANGES
 0.3.3 (Unreleased)
 ==================
 
+Features
+--------
+
+- Added `ptah.enable_modules` setting, list of enabled
+  management modules.
+
+
 Bug fixes
 ---------
 

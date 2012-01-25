@@ -18,6 +18,13 @@ All values passed inside of Pyramid configurator are in Python format::
   
     ptah.disable_modules = ["rest", "apps"]
 
+``ptah.enable_modules``
+
+  Enable Modules in Management UI. List of modules names to enable in 
+  manage ui. e.g.::
+  
+    ptah.enable_modules = ["rest", "apps"]
+
 ``ptah.disable_models``
 
   Provides a mechanism to hide models in the Model Management UI.  A list of models to hide in model manage ui. e.g.::

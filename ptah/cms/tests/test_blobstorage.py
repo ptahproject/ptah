@@ -1,6 +1,6 @@
 import transaction
 from io import BytesIO
-from pyramid.compat import bytes_, binary_type
+from pyramid.compat import bytes_, binary_type, text_type
 from ptah.testing import PtahTestCase
 
 
@@ -111,7 +111,7 @@ class TestBlob(PtahTestCase):
 
         blob = ptah.cms.blob_storage.add(
             BytesIO(bytes_('blob data','utf-8')),
-            filename='test.jpg', mimetype=u'image/jpeg')
+            filename='test.jpg', mimetype=text_type('image/jpeg'))
 
         response = blobData(blob, self.request)
 

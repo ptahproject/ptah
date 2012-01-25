@@ -258,6 +258,75 @@ class TestManageModule(PtahTestCase):
         mod = route['test-module']
         self.assertIsInstance(mod, TestModule)
 
+    def test_manage_enable_modules(self):
+        from ptah.manage.manage import \
+            module, PtahModule, PtahManageRoute, ManageView, set_access_manager
+
+        @module('test-module1')
+        class TestModule1(PtahModule):
+            title = 'Test module1'
+
+        @module('test-module2')
+        class TestModule2(PtahModule):
+            title = 'Test module2'
+
+        def accessManager(id, request):
+            return True
+
+        self.init_ptah()
+
+        set_access_manager(accessManager)
+        ptah.auth_service.set_userid('test-user')
+
+        cfg = ptah.get_settings(ptah.CFG_ID_PTAH, self.registry)
+        cfg['enable_modules'] = ('test-module1',)
+
+        request = DummyRequest()
+        route = PtahManageRoute(request)
+
+        view = ManageView(route, request)
+        view.update()
+
+        self.assertEqual(len(view.modules), 1)
+        self.assertTrue(isinstance(view.modules[0], TestModule1))
+
+        cfg['enable_modules'] = ('test-module2',)
+
+        view = ManageView(route, request)
+        view.update()
+
+        self.assertEqual(len(view.modules), 1)
+        self.assertTrue(isinstance(view.modules[0], TestModule2))
+
+    def test_manage_enable_modules_traverse(self):
+        from ptah.manage.manage import \
+            module, PtahModule, PtahManageRoute, set_access_manager
+
+        @module('test-module1')
+        class TestModule1(PtahModule):
+            title = 'Test module1'
+
+        @module('test-module2')
+        class TestModule2(PtahModule):
+            title = 'Test module2'
+
+        def accessManager(id, request):
+            return True
+
+        self.init_ptah()
+
+        set_access_manager(accessManager)
+        ptah.auth_service.set_userid('test-user')
+
+        cfg = ptah.get_settings(ptah.CFG_ID_PTAH, self.registry)
+        cfg['enable_modules'] = ('test-module1',)
+
+        request = DummyRequest()
+        route = PtahManageRoute(request)
+
+        self.assertIsNotNone(route['test-module1'])
+        self.assertRaises(KeyError, route.__getitem__, 'test-module2')
+
     def test_manage_disable_modules(self):
         from ptah.manage.manage import \
             module, PtahModule, PtahManageRoute, ManageView, set_access_manager

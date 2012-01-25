@@ -58,6 +58,12 @@ ptah.register_settings(
         default = ()),
 
     ptah.form.LinesField(
+        'enable_modules',
+        title = 'Enable Modules in Management UI',
+        description = 'List of modules names to enable in manage ui',
+        default = ()),
+
+    ptah.form.LinesField(
         'disable_models',
         title = 'Hide Models in Model Management UI',
         description = 'List of models to hide in model manage ui',
@@ -204,7 +210,8 @@ def initialized(ev):
 
 
 def enable_manage(cfg, name='ptah-manage', access_manager=None,
-                  managers=None, manager_role=None, disable_modules=None):
+                  managers=None, manager_role=None,
+                  disable_modules=None, enable_modules=None):
     """Implementation for pyramid `ptah_init_manage` directive """
     def action(cfg, name, access_manager,
                managers, manager_role, disable_modules):
@@ -217,6 +224,8 @@ def enable_manage(cfg, name='ptah-manage', access_manager=None,
             PTAH['manager_role'] = manager_role
         if disable_modules is not None:
             PTAH['disable_modules'] = disable_modules
+        if enable_modules is not None:
+            PTAH['enable_modules'] = enable_modules
 
         if access_manager is None:
             access_manager = ptah.manage.PtahAccessManager(cfg.registry)

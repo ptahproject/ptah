@@ -136,9 +136,14 @@ class PtahManageRoute(object):
         ptah.auth_service.set_effective_userid(ptah.SUPERUSER_URI)
 
     def __getitem__(self, key):
-        if key not in self.cfg['disable_modules']:
-            mod = ptah.get_cfg_storage(MANAGE_ID).get(key)
+        if self.cfg['enable_modules']:
+            if key in self.cfg['enable_modules']:
+                mod = ptah.get_cfg_storage(MANAGE_ID).get(key)
+                if mod is not None:
+                    return mod(self, self.request)
 
+        elif key not in self.cfg['disable_modules']:
+            mod = ptah.get_cfg_storage(MANAGE_ID).get(key)
             if mod is not None:
                 return mod(self, self.request)
 
@@ -190,8 +195,12 @@ class ManageView(ptah.View):
 
         mods = []
         for name, mod in ptah.get_cfg_storage(MANAGE_ID).items():
+            if self.cfg['enable_modules'] and \
+                    name not in self.cfg['enable_modules']:
+                continue
             if name in self.cfg['disable_modules']:
                 continue
+
             mod = mod(context, request)
             if not mod.available():
                 continue

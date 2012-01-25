@@ -67,6 +67,7 @@ ptah_init_manage()
        `ptah management ui`.
    :param manager_role: Specific role with access rights to ptah management ui.
    :param disable_modules: List of modules names to hide in manage ui
+   :param enable_modules: List of modules names to enable in manage ui
 
    Also it possible to enable and configure management subsystem with
    settings in ini file::
