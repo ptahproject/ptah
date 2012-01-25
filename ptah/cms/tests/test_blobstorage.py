@@ -1,6 +1,6 @@
 import transaction
 from io import BytesIO
-from pyramid.compat import bytes_
+from pyramid.compat import bytes_, binary_type
 from ptah.testing import PtahTestCase
 
 
@@ -102,4 +102,19 @@ class TestBlob(PtahTestCase):
         self.assertEqual(
             response.headerlist,
             [('Content-Disposition', bytes_('filename="test.txt"','utf-8')),
+             ('Content-Type', 'text/plain'),
              ('Content-Length', '9')])
+
+    def test_blob_rest_data_headers_unicode(self):
+        import ptah.cms
+        from ptah.cms.rest import blobData
+
+        blob = ptah.cms.blob_storage.add(
+            BytesIO(bytes_('blob data','utf-8')),
+            filename='test.jpg', mimetype=u'image/jpeg')
+
+        response = blobData(blob, self.request)
+
+        headers = response.headers
+        for hdr in headers:
+            self.assertTrue(isinstance(headers[hdr], binary_type))

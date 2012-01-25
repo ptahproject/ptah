@@ -275,10 +275,10 @@ def blobData(content, request, *args):
     response = request.response
 
     info = content.info()
-    response.content_type = info['mimetype']
     if info['filename']:
-        response.headerlist = {
+        response.headers = {
             'Content-Disposition':
             bytes_('filename="{0}"'.format(info['filename']), 'utf-8')}
+    response.content_type = info['mimetype'].encode('utf-8')
     response.body = content.read()
     return response
