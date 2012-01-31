@@ -2,7 +2,7 @@
 CHANGES
 =======
 
-0.3.3 (Unreleased)
+0.3.3 (2012-01-31)
 ==================
 
 Features
@@ -11,6 +11,8 @@ Features
 - Added `ptah.enable_modules` setting, list of enabled
   management modules.
 
+- Require alembic 0.1.1
+
 
 Bug fixes
 ---------
@@ -18,7 +20,7 @@ Bug fixes
 - Encode `content-type` header for blob `data` rest action
 
 - Do not use `request` for application factories in
-  `applications` rest action. This brakes security and current root object.
+  `applications` rest action. It brakes security for current root object.
 
 
 0.3.2 (2012-01-20)

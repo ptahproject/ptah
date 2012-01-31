@@ -7,9 +7,9 @@ from setuptools import setup, find_packages
 version='0.3.2'
 
 install_requires = ['setuptools',
-                    'alembic',
+                    'alembic == 0.1.1',
                     'chameleon >= 2.6.1',
-                    'pyramid >= 1.3a5',
+                    'pyramid >= 1.3a6',
                     'pyramid_tm',
                     'zope.interface >= 3.8.0',
                     'zope.sqlalchemy >= 0.7.0',
