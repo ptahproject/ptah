@@ -32,7 +32,7 @@ class TestButton(PtahTestCase):
         self.assertIs(widget.params, params)
         self.assertEqual(widget.id, 'test-test')
         self.assertEqual(widget.name, 'test.test')
-        self.assertEqual(widget.klass, 'btn primary')
+        self.assertEqual(widget.klass, 'btn btn-primary')
 
     def test_activated(self):
         from ptah import form
@@ -62,7 +62,7 @@ class TestButton(PtahTestCase):
         widget = btn.bind('test.', params, context, request)
         self.assertEqual(
             widget.render().strip(),
-            """<input id="test-test" name="test.test" class="btn primary" value="Test" type="submit" />""")
+            """<input id="test-test" name="test.test" class="btn btn-primary" value="Test" type="submit" />""")
 
     def test_execute(self):
         from ptah import form

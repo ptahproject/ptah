@@ -84,3 +84,4 @@ from ptah.form.button import AC_PRIMARY
 from ptah.form.button import AC_DANGER
 from ptah.form.button import AC_SUCCESS
 from ptah.form.button import AC_INFO
+from ptah.form.button import AC_WARNING

@@ -1,4 +1,4 @@
-<table class="zebra-striped">
+<table class="table table-striped">
   <tbody>
     <tr tal:repeat="action actions">
       <td tal:define="info getInfo(action);

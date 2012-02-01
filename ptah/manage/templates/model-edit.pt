@@ -3,12 +3,12 @@
 </div>
 
 <div class="row">
-  <div class="span10">
+  <div class="span8">
     ${structure: view.snippet('form-view', view)}
   </div>
 
 <div class="span4" tal:define="url '%s/uri.html'%view.manage">
-  <table class="zebra-striped">
+  <table class="table table-striped">
     <tbody tal:define="r context.record">
       <tr>
 	<td>Id</td>

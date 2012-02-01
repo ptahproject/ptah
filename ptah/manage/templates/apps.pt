@@ -3,7 +3,7 @@
   <p>${context.__doc__}</p>
 </div>
 
-<table class="zebra-striped">
+<table class="table table-striped">
   <tbody>
     <tr tal:repeat="f view.factories">
       <td>

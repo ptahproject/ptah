@@ -3,12 +3,12 @@
   <p tal:content="context.__doc__"></p>
 </div>
 
-<table class="zebra-striped">
+<table class="table table-striped">
   <tbody>
     <tr tal:repeat="field view.fields">
       <td>
 	<h4>${field['name']}</h4>
-	<p>${structure:field['doc']}</p>
+	<div>${structure:field['doc']}</div>
       </td>
       <td>
 	<form tal:condition="field['preview'] is not None">

@@ -54,13 +54,13 @@
 </div>
 
 <div class="sidebar">
-    <form onsubmit="return false;">
+    <form onsubmit="return false;" class="form-inline">
       <fieldset>
-        <div class="clearfix">
+        <div class="control-group">
             <label for="xlInput">URL</label>
-            <div class="input">
-              <input class="xxlarge" id="xlInput" value="${view.url}" type="text">
-              <button id="query" class="btn primary">Query</button>
+            <div class="controls">
+              <input class="span6" id="xlInput" value="${view.url}" type="text">
+              <button id="query" class="btn btn-primary">Query</button>
             </div>
         </div>
       </fieldset>

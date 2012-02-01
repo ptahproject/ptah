@@ -5,7 +5,7 @@
 ${structure: view.render_messages()}
 
 <div class="row">
-  <div class="span3 columns">
+  <div class="span4">
     <ul>
       <li tal:repeat="action view.actions">
 	<a href="${action['url']}">${action['title']}</a>
@@ -13,7 +13,7 @@ ${structure: view.render_messages()}
     </ul>
   </div>
 
-  <div class="span13 columns">
+  <div class="span12">
     ${structure: wrapped_content}
   </div>
 </div>

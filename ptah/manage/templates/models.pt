@@ -3,7 +3,7 @@
   <p>${context.__doc__}</p>
 </div>
 
-<table class="zebra-striped"
+<table class="table table-striped"
        tal:define="url request.application_url">
   <tbody>
     <tr tal:repeat="ti view.types">

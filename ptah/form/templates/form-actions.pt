@@ -1,4 +1,4 @@
-<div class="actions" tal:condition="context.actions.values()">
+<div class="form-actions" tal:condition="context.actions.values()">
   <tal:block tal:repeat="action context.actions.values()"
              tal:content="structure action.render()">
   </tal:block>

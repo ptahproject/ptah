@@ -6,13 +6,11 @@
     <p>${acl.description}
   </div>
 
-  <div class="content">
-    <table class="zebra-striped">
+  <table class="table table-striped">
       <tr tal:repeat="rec acl">
 	<td>${rec[0]}</td>
 	<td>${rec[1]}</td>
 	<td>${rec[2]}</td>
       </tr>
-    </table>
-  </div>
+  </table>
 </tal:block>

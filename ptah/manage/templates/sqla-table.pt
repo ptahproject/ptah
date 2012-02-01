@@ -3,7 +3,7 @@
 </div>
 
 <div class="row" tal:define="url request.url">
-  <div class="span12" tal:condition="view.inheritance">
+  <div class="span8" tal:condition="view.inheritance">
     <strong>Inherits from:</strong>
     <ul>
       <li tal:repeat="tname view.inheritance">
@@ -13,13 +13,13 @@
     <br /><br />
   </div>
 
-  <div class="span16 columns">
+  <div class="span12">
     <tal:block tal:condition="not view.size">
       Table is empty.
     </tal:block>
 
     <form method="post" action="${structure: request.url}">
-      <table class="zebra-striped" tal:condition="view.size">
+      <table class="table table-striped" tal:condition="view.size">
 	<tr>
 	  <th>&nbsp;</th>
 	  <th tal:repeat="c view.table.columns">

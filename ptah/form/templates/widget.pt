@@ -1,17 +1,18 @@
-<div class="${structure: 'clearfix error' if error else 'clearfix'}"
+<div class="${'control-group error' if error else 'control-group'}"
      tal:define="error context.error">
-  <label tal:attributes="for context.id;
+  <label class="control-label"
+	 tal:attributes="for context.id;
 			 title context.description">
     ${structure: context.title}
     <tal:block condition="context.required">*</tal:block>
   </label>
-  <div class="input">
+  <div class="controls">
     <tal:block tal:content="structure context.render(request)" />
     <span class="help-inline"
 	  tal:condition="error"
 	  tal:content="structure error.msg"></span>
-    <span class="help-block"
-	  tal:condition="context.description"
-	  tal:content="structure context.description"></span>
+    <p class="help-block"
+       tal:condition="context.description"
+       tal:content="structure context.description"></p>
   </div>
 </div>

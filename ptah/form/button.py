@@ -11,12 +11,14 @@ AC_PRIMARY = 1
 AC_DANGER = 2
 AC_SUCCESS = 3
 AC_INFO = 4
+AC_WARNING = 4
 
 css = {
-    AC_PRIMARY: 'primary',
-    AC_DANGER: 'danger',
-    AC_SUCCESS: 'success',
-    AC_INFO: 'info'}
+    AC_PRIMARY: 'btn-primary',
+    AC_DANGER: 'btn-danger',
+    AC_SUCCESS: 'btn-success',
+    AC_INFO: 'btn-info',
+    AC_WARNING: 'brn-warning'}
 
 
 class Button(object):

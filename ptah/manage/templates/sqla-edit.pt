@@ -3,7 +3,7 @@
 </div>
 
 <div class="row">
-  <div class="span12" tal:condition="view.inheritance">
+  <div class="span8" tal:condition="view.inheritance">
     <strong>Inherits from:</strong>
     <ul>
       <li tal:repeat="tname view.inheritance">

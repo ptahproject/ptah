@@ -10,7 +10,7 @@
 </p>
 
 <p>
-  <table class="zebra-striped">
+  <table class="table table-striped">
     <tr tal:repeat="field context['group'].__fields__.fields()">
       <td>${field.name}</td>
       <td>${field.__class__.__name__}</td>

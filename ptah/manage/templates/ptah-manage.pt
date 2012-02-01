@@ -4,29 +4,27 @@
     <title>Ptah Manage</title>
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
 
-    ${view.include('jquery')}
     ${view.include('bootstrap')}
+    ${view.include('bootstrap-js')}
     <tal:block content="structure view.render_includes()" />
   </head>
   <body>
-    <div class="topbar">
-      <div class="fill">
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
 	<div class="container">
-	  <h3><a href="${view.manage_url}/">Ptah Manage</a></h3>
-
+	  <a class="brand" href="${view.manage_url}/">Ptah Manage</a>
+	  
 	  <ul class="nav" tal:condition="view.actions">
 	    <li tal:repeat="item view.actions">
 	      <a href="${item['url']}">${item['title']}</a>
 	    </li>
 	  </ul>
-
-	  <ul class="nav secondary-nav" tal:condition="view.user">
+	  
+	  <ul class="nav pull-right" tal:condition="view.user">
 	    <li>
-	      <h5>
-		<a href="${view.application_url}/"
-		   tal:content="view.user.name">:
-		</a>
-	      </h5>
+	      <a href="${view.application_url}/"
+		 tal:content="view.user.name">:
+	      </a>
 	    </li>
 	    <li class="active">
 	      <a href="${view.application_url}/logout.html">Logout</a>
@@ -38,7 +36,7 @@
 
     <div style="margin-top: 60px;">
       <div class="container">
-          ${structure: wrapped_content}
+        ${structure: wrapped_content}
       </div>
     </div>
   </body>

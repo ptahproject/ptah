@@ -3,13 +3,13 @@
 </div>
 
 <div class="row" tal:define="url request.url">
-  <div class="span16 columns">
+  <div class="span12">
     <tal:block tal:condition="not view.size">
       There are no records.
     </tal:block>
 
     <form method="post" action="${request.url}">
-      <table class="zebra-striped" tal:condition="view.size">
+      <table class="table table-striped" tal:condition="view.size">
 	<thead>
 	  <tr>
 	    <th>&nbsp;</th>
@@ -30,7 +30,7 @@
 		${info.get(f.name, '')}
 	      </td>
 	      <td>
-		<a class="btn info"
+		<a class="btn btn-info"
 		   href="${url}/${item.__id__}/">Edit</a>
 	      </td>
 	    </tr>

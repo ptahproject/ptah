@@ -3,17 +3,17 @@
 </div>
 
 <div class="row" tal:repeat="group data">
-  <div class="span16 columns">
+  <div class="span12">
     <h3>${group['title']}
       <small tal:condition="group['ttw']">
-	<a href="./${group['name']}/" class="btn">Modify</a>
+        <a href="./${group['name']}/" class="btn">Modify</a>
       </small>
     </h3>
     <small>${structure: group['description']}</small>
     <a name="${group['name']}"></a>
-    
+
     <p>
-      <table class="zebra-striped">
+      <table class="table table-striped">
 	<tr tal:repeat="field group['schema']">
 	  <td>
 	    <a name="${field['name']}"></a>

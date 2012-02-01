@@ -168,9 +168,9 @@ class Form(ptah.View):
     acceptCharset = None
     params = None
     context = None
+    klass = 'form-horizontal'
 
     csrf = False
-
     csrfname = 'csrf-token'
 
     __view_mapper__ = FormViewMapper

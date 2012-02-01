@@ -1,11 +1,11 @@
-<div class="clearfix">
+<div class="control-group">
   <label tal:attributes="for context.id;
 			 title context.description">
     ${structure: context.title}
     <tal:block condition="context.required">*</tal:block>
   </label>
 
-  <div class="input">
+  <div class="controls">
     <tal:block tal:content="structure context.render(request)" />
     <span class="help-block"
 	  tal:condition="context.description"

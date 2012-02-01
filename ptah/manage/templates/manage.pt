@@ -3,14 +3,16 @@
 </div>
 
 <div class="row">
-  <div class="span12 columns">
-    <table class="zebra-striped">
-      <tr tal:repeat="mod view.modules">
-	<td>
-	  <h4><a href="${mod.url()}/">${mod.title}</a></h4>
-	  <p>${structure: view.rst_to_html(mod.__doc__)}</p>
-	</td>
-      </tr>
+  <div class="span12">
+    <table class="table table-striped">
+      <tbody>
+	<tr tal:repeat="mod view.modules">
+	  <td>
+	    <h4><a href="${mod.url()}/">${mod.title}</a></h4>
+	    <p>${structure: view.rst_to_html(mod.__doc__)}</p>
+	  </td>
+	</tr>
+      </tbody>
     </table>
   </div>
 </div>

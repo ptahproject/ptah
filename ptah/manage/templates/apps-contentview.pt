@@ -1,6 +1,6 @@
 <h3>Attributes</h3>
 
-<table class="zebra-striped span8">
+<table class="table table-striped span8">
   <tbody>
     <tr tal:repeat="widget view.widgets.values()">
       <td>${widget.title}</td>
@@ -12,7 +12,7 @@
 
 <h3>Node Info</h3>
 
-<table class="zebra-striped span8">
+<table class="table table-striped span8">
   <tbody>
     <tr>
       <td>Id</td>
