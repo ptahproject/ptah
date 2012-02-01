@@ -2,8 +2,8 @@
 from __future__ import print_function
 import argparse
 import textwrap
-import alembic.config
-import alembic.context
+from alembic.config import Config
+from alembic.environment import EnvironmentContext
 from pyramid.path import AssetResolver
 
 import ptah
@@ -11,7 +11,7 @@ import ptah.migrate
 from ptah import scripts
 from ptah.populate import create_db_schema
 from ptah.migrate import upgrade, revision
-from ptah.migrate import Context, ScriptDirectory, MIGRATION_ID
+from ptah.migrate import MigrationContext, MIGRATION_ID
 
 
 def main():
@@ -120,9 +120,8 @@ def history(pkg):
 
 def current(pkg):
     """Display the current revision."""
-    script = ptah.migrate.ScriptDirectory(pkg)
 
-    def display_version(rev):
+    def display_version(rev, context):
         rev = script._get_rev(rev)
         if rev is None:
             print ("Package '{0}' rev: None".format(pkg))
@@ -133,21 +132,15 @@ def current(pkg):
 
     conn = ptah.get_base().metadata.bind.connect()
 
-    alembic.context.Context = Context
-    alembic.context.Context.pkg_name = pkg
+    script = ptah.migrate.ScriptDirectory(pkg)
+    env = EnvironmentContext(Config(''), script)
+    env.configure(connection=conn, fn=display_version)
 
-    alembic.context._opts(
-        alembic.config.Config(''),
-        script,
-        fn = display_version
-    )
+    mc = env._migration_context
+    env._migration_context = MigrationContext(pkg, conn.dialect, conn, mc.opts)
 
-    alembic.context.configure(
-        connection=conn,
-        config=alembic.config.Config(''))
-
-    with alembic.context.begin_transaction():
-        alembic.context.run_migrations()
+    with env.begin_transaction():
+        env.run_migrations()
 
 
 def list_migrations(registry):

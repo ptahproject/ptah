@@ -5,9 +5,8 @@ import pkg_resources
 import sqlalchemy as sqla
 
 import alembic.util
-import alembic.config
-import alembic.context
 from alembic.script import ScriptDirectory
+from alembic.migration import MigrationContext
 
 import ptah
 from ptah import config
@@ -26,6 +25,8 @@ class Version(ptah.get_base()):
 
 class ScriptDirectory(ScriptDirectory):
 
+    file_template = "%(rev)s"
+
     def __init__(self, pkg):
         path = ptah.get_cfg_storage(MIGRATION_ID).get(pkg)
         if path is None:
@@ -39,9 +40,13 @@ class ScriptDirectory(ScriptDirectory):
             raise alembic.util.CommandError("Path doesn't exist: %r." % path)
 
 
-class Context(alembic.context.Context):
+class MigrationContext(MigrationContext):
 
     pkg_name = ''
+
+    def __init__(self, pkg, dialect, connection, opts):
+        self.pkg_name = pkg
+        super(MigrationContext, self).__init__(dialect, connection, opts)
 
     def _current_rev(self):
         if self.as_sql: # pragma: no cover
@@ -81,7 +86,8 @@ class Context(alembic.context.Context):
         log = logging.getLogger('ptah.alembic')
         self.impl.start_migrations()
 
-        for change, prev_rev, rev in self._migrations_fn(self._current_rev()):
+        for change, prev_rev, rev in \
+                self._migrations_fn(self._current_rev(), self):
             if current_rev is False:
                 current_rev = prev_rev
                 if self.as_sql and not current_rev: # pragma: no cover
@@ -109,32 +115,35 @@ class Context(alembic.context.Context):
 
 def upgrade(pkg, sql=False):
     """Upgrade to a later version."""
+    from alembic.config import Config
+    from alembic.environment import EnvironmentContext
+
     if ':' in pkg:
         pkg, rev = pkg.split(':',1)
     else:
         rev = 'head'
 
     script = ScriptDirectory(pkg)
+    env = EnvironmentContext(Config(''), script)
+    conn = ptah.get_base().metadata.bind.connect()
 
-    alembic.context.Context = Context
-    alembic.context.Context.pkg_name = pkg
-    alembic.context._opts(
-        alembic.config.Config(''),
-        script,
+    env.configure(
+        connection = conn,
         fn = functools.partial(script.upgrade_from, rev),
         as_sql = sql,
         starting_rev = None,
         destination_rev = rev,
     )
 
-    conn = ptah.get_base().metadata.bind.connect()
+    mc = env._migration_context
+    env._migration_context = MigrationContext(pkg, conn.dialect, conn, mc.opts)
 
-    alembic.context.configure(
-        connection=conn,
-        config=alembic.config.Config(''))
-
-    with alembic.context.begin_transaction():
-        alembic.context.run_migrations()
+    with env:
+        try:
+            with env.begin_transaction():
+                env.run_migrations()
+        finally:
+            conn.close()
 
 
 def revision(pkg, rev=None, message=None):

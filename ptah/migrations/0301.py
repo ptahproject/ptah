@@ -6,7 +6,8 @@ Create Date: 2012-01-10 10:53:51.715491
 
 """
 
-# downgrade revision identifier, used by Alembic.
+# revision identifiers, used by Alembic.
+revision = '0301'
 down_revision = None
 
 import ptah

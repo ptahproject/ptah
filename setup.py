@@ -4,10 +4,10 @@ import logging
 import multiprocessing # atexit exception
 from setuptools import setup, find_packages
 
-version='0.3.3'
+version='0.4.0dev'
 
 install_requires = ['setuptools',
-                    'alembic == 0.1.1',
+                    'alembic == 0.2.1',
                     'chameleon >= 2.6.1',
                     'pyramid >= 1.3a6',
                     'pyramid_tm',
@@ -15,7 +15,7 @@ install_requires = ['setuptools',
                     'zope.sqlalchemy >= 0.7.0',
                     'transaction >= 1.2.0',
                     'venusian',
-                    'WebOb >= 1.2b2',
+                    'WebOb >= 1.2b3',
                     'SQLAlchemy',
                     'Pygments',
                     'pytz',

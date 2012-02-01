@@ -119,7 +119,8 @@ class MailGenerator(object):
         message = self.message(multipart_format, *args, **kw)
 
         message['Date'] = formatdate()
-        message['Message-ID'] = context.message_id
+        if context.message_id:
+            message['Message-ID'] = context.message_id
 
         if not message.get('To') and context.to_address:
             message['To'] = context.to_address
