@@ -80,7 +80,7 @@ def datetime_formatter(value, tp='medium', request=None):
     if not isinstance(value, datetime):
         return value
 
-    FORMAT = ptah.get_settings('format', request)
+    FORMAT = ptah.get_settings('format', getattr(request, 'registry', None))
 
     tz = FORMAT['timezone']
     if value.tzinfo is None:
