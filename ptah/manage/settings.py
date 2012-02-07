@@ -34,11 +34,16 @@ class SettingsWrapper(object):
 class SettingsView(ptah.View):
     """ Settings manage module view """
 
+    grps = None
+
     def update(self):
         groups = ptah.get_cfg_storage(ID_SETTINGS_GROUP).items()
 
         data = []
         for name, group in sorted(groups):
+            if self.grps is not None and name not in self.grps:
+                continue
+
             title = group.__title__ or name
             description = group.__description__
 
