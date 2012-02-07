@@ -191,7 +191,8 @@ class Settings(object):
 
             for k, v in data.items():
                 if v is not form.null:
-                    group.__fields__[k].default = v
+                    if setdefaults:
+                        group.__fields__[k].default = v
 
             group.update(data)
 
