@@ -3,9 +3,9 @@
     ${context['schema']}
     <small>
       <a href="${manage_url}/source.html?pkg=${context['codeinfo'].module}#sl-${context['codeinfo'].lineno}">
-	${r.__name__}</a>
+        ${r.__name__}</a>
     </small>
   </h4>
-    
+
   <p>${structure: view.rst_to_html(r.__doc__ or '')}</p>
 </tal:block>

@@ -8,7 +8,7 @@ ${structure: view.render_messages()}
   <div class="span4">
     <ul>
       <li tal:repeat="action view.actions">
-	<a href="${action['url']}">${action['title']}</a>
+        <a href="${action['url']}">${action['title']}</a>
       </li>
     </ul>
   </div>

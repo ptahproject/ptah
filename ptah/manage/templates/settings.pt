@@ -14,18 +14,18 @@
 
     <p>
       <table class="table table-striped">
-	<tr tal:repeat="field group['schema']">
-	  <td>
-	    <a name="${field['name']}"></a>
-	    ${field['name']}
-	  </td>
-	  <td>${field['type']}</td>
-	  <td>${field['value']}</td>
-	  <td>${field['title']}</td>
-	  <td>
-	    <em>${field['description']}</em>
-	  </td>
-	</tr>
+        <tr tal:repeat="field group['schema']">
+          <td>
+            <a name="${field['name']}"></a>
+            ${field['name']}
+          </td>
+          <td>${field['type']}</td>
+          <td>${field['value']}</td>
+          <td>${field['title']}</td>
+          <td>
+            <em>${field['description']}</em>
+          </td>
+        </tr>
       </table>
     </p>
   </div>

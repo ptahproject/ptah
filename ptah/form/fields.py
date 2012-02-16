@@ -2,6 +2,7 @@
 import pytz
 import datetime
 import decimal
+from pyramid.compat import NativeIO
 
 import ptah
 from ptah.form import iso8601
@@ -282,12 +283,19 @@ class FileField(TextField):
         value = self.params.get(self.name, default)
 
         if hasattr(value, 'file'):
-            data = {}
-            data['fp'] = value.file
-            data['filename'] = value.filename
-            data['mimetype'] = value.type
-            data['size'] = value.length
-            return data
+            return {
+                'fp': value.file,
+                'filename': value.filename,
+                'mimetype': value.type,
+                'size': value.length}
+        elif value:
+            fp = NativeIO(value)
+            fp.filename = self.params.get('%s-filename'%self.name, '')
+            return {
+                'fp': fp,
+                'filename': self.params.get('%s-filename'%self.name, ''),
+                'mimetype': self.params.get('%s-mimetype'%self.name, ''),
+                'size': len(value)}
 
         return default
 

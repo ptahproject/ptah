@@ -7,7 +7,7 @@
     <strong>Inherits from:</strong>
     <ul>
       <li tal:repeat="tname view.inheritance">
-	<a href="../psqla-${tname}/">${tname}</a>
+        <a href="../psqla-${tname}/">${tname}</a>
       </li>
     </ul>
     <br /><br />
@@ -20,59 +20,59 @@
 
     <form method="post" action="${structure: request.url}">
       <table class="table table-striped" tal:condition="view.size">
-	<tr>
-	  <th>&nbsp;</th>
-	  <th tal:repeat="c view.table.columns">
-	    ${c.name}
-	  </th>
-	  <th>&nbsp;</th>
-	</tr>
-	<tr tal:repeat="row view.data">
-	  <td>
-	    <input type="checkbox" name="rowid" 
-		   value="${getattr(row, view.primary)}" />
-	  </td>
-	  <td tal:repeat="val row">
-	    <a href="../../uri.html?uri=${structure: view.quote(val)}"
-	       tal:condition="val is not None"
-	       tal:omit-tag="repeat['val'].index not in view.uris">
-	      <tal:block tal:on-error="nothing" 
-			 tal:content="view.val(val)" />
-	    </a>
-	  </td>
-	  <td>
-	    <a class="btn info"
-	       href="${url}${getattr(row, view.primary)}/">Edit</a>
-	  </td>
-	</tr>
+        <tr>
+          <th>&nbsp;</th>
+          <th tal:repeat="c view.table.columns">
+            ${c.name}
+          </th>
+          <th>&nbsp;</th>
+        </tr>
+        <tr tal:repeat="row view.data">
+          <td>
+            <input type="checkbox" name="rowid"
+                   value="${getattr(row, view.primary)}" />
+          </td>
+          <td tal:repeat="val row">
+            <a href="../../uri.html?uri=${structure: view.quote(val)}"
+               tal:condition="val is not None"
+               tal:omit-tag="repeat['val'].index not in view.uris">
+              <tal:block tal:on-error="nothing"
+                         tal:content="view.val(val)" />
+            </a>
+          </td>
+          <td>
+            <a class="btn info"
+               href="${url}${getattr(row, view.primary)}/">Edit</a>
+          </td>
+        </tr>
       </table>
 
       <div class="pagination" tal:condition="len(view.pages)>1">
-	<ul>
-	  <li class="${'prev' if view.prev else 'prev disabled'}">
-	    <a href="?batch=${view.prev}">&larr; Previous</a>
-	  </li>
-	  
-	  <tal:block repeat="idx view.pages">
-	    <li tal:define="klass '' if idx else 'disabled'"
-		tal:attributes="class 'active' if idx==view.current else klass">
-	      <a href="?batch=${idx}">${idx if idx else '...'}</a>
-	    </li>
-	  </tal:block>
-	  
-	  <li class="${'next' if view.next else 'next disabled'}">
-	    <a href="?batch=${view.next}">
-	      Next &rarr;
-	    </a>
-	  </li>
-	</ul>
+        <ul>
+          <li class="${'prev' if view.prev else 'prev disabled'}">
+            <a href="?batch=${view.prev}">&larr; Previous</a>
+          </li>
+
+          <tal:block repeat="idx view.pages">
+            <li tal:define="klass '' if idx else 'disabled'"
+                tal:attributes="class 'active' if idx==view.current else klass">
+              <a href="?batch=${idx}">${idx if idx else '...'}</a>
+            </li>
+          </tal:block>
+
+          <li class="${'next' if view.next else 'next disabled'}">
+            <a href="?batch=${view.next}">
+              Next &rarr;
+            </a>
+          </li>
+        </ul>
       </div>
 
       <input type="hidden" name="${view.csrfname}" value="${view.token}" />
 
       <tal:block
-	 condition="view.show_actions"
-	 content="structure view.snippet('form-actions', view)" />
+         condition="view.show_actions"
+         content="structure view.snippet('form-actions', view)" />
     </form>
   </div>
 </div>

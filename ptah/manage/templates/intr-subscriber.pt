@@ -11,14 +11,14 @@
     listen to:
     <div>
       <tal:block condition="obj">
-	<tal:block tal:content="obj" />
+        <tal:block tal:content="obj" />
       </tal:block>
-      
+
       <a tal:condition="event" href="../events.html?ev=${event.name}">
-	${event.title}</a>
+        ${event.title}</a>
       <tal:block tal:condition="not event" tal:content="info['klass']"/>
     </div>
-    
+
     <tal:block condition="factory.__doc__">
       <br />
       <em tal:content="factory.__doc__" />

@@ -33,6 +33,7 @@ from ptah.events import event
 # view api
 from ptah.view import View
 from ptah.view import add_message
+from ptah.view import render_message
 from ptah.view import render_messages
 
 from ptah.view import snippet

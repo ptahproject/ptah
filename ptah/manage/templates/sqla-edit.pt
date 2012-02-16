@@ -7,7 +7,7 @@
     <strong>Inherits from:</strong>
     <ul>
       <li tal:repeat="tname view.inheritance">
-	<a href="../../psqla-${tname}/${context.__name__}/">${tname}</a>
+        <a href="../../psqla-${tname}/${context.__name__}/">${tname}</a>
       </li>
     </ul>
   </div>

@@ -21,27 +21,27 @@
     <tr>
       <td>Type</td>
       <td>
-	<a href="../../uri.html?uri=${context.__type__.__uri__}">
-	  ${context.__type__.title}
-	</a>
+        <a href="../../uri.html?uri=${context.__type__.__uri__}">
+          ${context.__type__.title}
+        </a>
       </td>
     </tr>
     <tr>
       <td>URI</td>
       <td>
-	<a href="../../uri.html?uri=${context.__uri__}">
-	  ${context.__uri__}</a>
+        <a href="../../uri.html?uri=${context.__uri__}">
+          ${context.__uri__}</a>
       </td>
     </tr>
     <tr>
       <td>Owner</td>
       <td><a href="../../uri.html?uri=${context.__owner__}">
-	  ${context.__owner__}</a>
+          ${context.__owner__}</a>
       </td>
     </tr>
       <tr>
-	<td>Local roles</td>
-	<td>${context.__local_roles__}</td>
+        <td>Local roles</td>
+        <td>${context.__local_roles__}</td>
       </tr>
     <tr>
       <td>ACLs</td>

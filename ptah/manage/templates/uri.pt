@@ -6,34 +6,34 @@
   <table class="table table-striped">
     <tr tal:repeat="rec view.data">
       <td>
-	<tal:block condition="rec['resolver'] is not None">
-	  <h3>${structure: rec['resolver']}: <i>${rec['uri']}</i></h3>
-	  <p>${structure: rec['r_doc']}</p>
+        <tal:block condition="rec['resolver'] is not None">
+          <h3>${structure: rec['resolver']}: <i>${rec['uri']}</i></h3>
+          <p>${structure: rec['r_doc']}</p>
 
-	  <strong>Resolver:</strong>
-	  <a href="source.html?pkg=${rec['module']}#sl-${rec['line']}"
-	     tal:content="rec['name']" />
-	  <br />
+          <strong>Resolver:</strong>
+          <a href="source.html?pkg=${rec['module']}#sl-${rec['line']}"
+             tal:content="rec['name']" />
+          <br />
 
-	  <br />
-	  <strong>URI:</strong> ${rec['uri']}
-	  <br />
-	  <strong>Object:</strong> ${rec['obj']}
-	  
-	  <tal:block condition="rec['cls']">
-	    <br />
-	    <strong>Class:</strong>
-	    <a href="source.html?pkg=${rec['clsmod']}#sl-${rec['clsline']}">
-	      ${rec['cls']}
-	    <br />
-	    ${structure: rec['clsdoc']}
-	  </tal:block>
-	</tal:block>
-	<tal:block condition="rec['resolver'] is None">
-	  <h3>Unknown</h3>
-	  <strong>URI:</strong>
-	  ${rec['uri']}
-	</tal:block>
+          <br />
+          <strong>URI:</strong> ${rec['uri']}
+          <br />
+          <strong>Object:</strong> ${rec['obj']}
+
+          <tal:block condition="rec['cls']">
+            <br />
+            <strong>Class:</strong>
+            <a href="source.html?pkg=${rec['clsmod']}#sl-${rec['clsline']}">
+              ${rec['cls']}
+            <br />
+            ${structure: rec['clsdoc']}
+          </tal:block>
+        </tal:block>
+        <tal:block condition="rec['resolver'] is None">
+          <h3>Unknown</h3>
+          <strong>URI:</strong>
+          ${rec['uri']}
+        </tal:block>
       </td>
     </tr>
   </table>

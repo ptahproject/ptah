@@ -259,6 +259,19 @@ def add_message(request, msg, type='info'):
     request.session.flash(msg, 'status')
 
 
+def render_message(request, msg, type='info'):
+    """ Render message, return html """
+    message = Message(msg, request)
+    try:
+        msg = request.registry.getMultiAdapter(
+            (message, request), ISnippet, type)
+    except Exception as e:
+        log = logging.getLogger('ptah.view')
+        log.exception(str(e))
+
+    return msg
+
+
 def render_messages(request):
     """ Render previously added messages """
     return ''.join(request.session.pop_flash('status'))

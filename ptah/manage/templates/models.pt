@@ -8,16 +8,16 @@
   <tbody>
     <tr tal:repeat="ti view.types">
       <td>
-	<h3>
-	  <a href="${ti.name}/">${ti.title}</a> 
-	  
-	  <small>${ti.__uri__}</small>
-	</h3>
-	<p>${ti.description}</p>
-	
-	<p tal:condition="ti.cls.__doc__">
-	  ${structure: view.rst_to_html(ti.cls.__doc__)}
-	</p>
+        <h3>
+          <a href="${ti.name}/">${ti.title}</a>
+
+          <small>${ti.__uri__}</small>
+        </h3>
+        <p>${ti.description}</p>
+
+        <p tal:condition="ti.cls.__doc__">
+          ${structure: view.rst_to_html(ti.cls.__doc__)}
+        </p>
       </td>
     </tr>
   </tbody>

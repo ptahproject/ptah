@@ -1,7 +1,7 @@
 <tal:block tal:repeat="item context.items">
   <label class="checkbox" tal:attributes="for item['id']">
     <input type="checkbox" checked="checked"
-	   tal:condition="item.checked"
+           tal:condition="item.checked"
            tal:attributes="id item.id;
                            name item.name;
                            class context.klass;
@@ -25,7 +25,7 @@
                            readonly context.readonly;
                            alt context.alt;
                            accesskey context.accesskey;" />
-    
+
     ${item['label']}
   </label>
   <p class="help-block" tal:condition="item['description']">

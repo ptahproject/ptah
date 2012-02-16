@@ -9,13 +9,13 @@
                         size context.size">
   <tal:block repeat="item context.items">
     <option selected="selected"
-	    tal:condition="item['checked']"
-	    tal:attributes="id item['id'];
-			    value item['value']"
+            tal:condition="item['checked']"
+            tal:attributes="id item['id'];
+                            value item['value']"
             tal:content="item['label']">label</option>
     <option tal:condition="not item['checked']"
             tal:attributes="id item['id'];
                             value item['value']"
-	    tal:content="item['label']">label</option>
+            tal:content="item['label']">label</option>
   </tal:block>
 </select>

@@ -10,57 +10,57 @@
 
     <form method="post" action="${request.url}">
       <table class="table table-striped" tal:condition="view.size">
-	<thead>
-	  <tr>
-	    <th>&nbsp;</th>
-	    <th tal:repeat="f view.widgets.fields()">
-	      ${f.title}
-	    </th>
-	    <th>&nbsp;</th>
-	  </tr>
-	</thead>
-	<tbody>
-	  <tal:block tal:repeat="item view.data">
-	    <tr tal:define="info view.get_record_info(item)">
-	      <td>
-		<input type="checkbox" name="rowid"
-		       value="${item.__id__}" />
-	      </td>
-	      <td tal:repeat="f view.widgets.fields()">
-		${info.get(f.name, '')}
-	      </td>
-	      <td>
-		<a class="btn btn-info"
-		   href="${url}/${item.__id__}/">Edit</a>
-	      </td>
-	    </tr>
-	  </tal:block>
-	</tbody>
+        <thead>
+          <tr>
+            <th>&nbsp;</th>
+            <th tal:repeat="f view.widgets.fields()">
+              ${f.title}
+            </th>
+            <th>&nbsp;</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tal:block tal:repeat="item view.data">
+            <tr tal:define="info view.get_record_info(item)">
+              <td>
+                <input type="checkbox" name="rowid"
+                       value="${item.__id__}" />
+              </td>
+              <td tal:repeat="f view.widgets.fields()">
+                ${info.get(f.name, '')}
+              </td>
+              <td>
+                <a class="btn btn-info"
+                   href="${url}/${item.__id__}/">Edit</a>
+              </td>
+            </tr>
+          </tal:block>
+        </tbody>
       </table>
 
       <div class="pagination" tal:condition="len(view.pages)>1">
-	<ul>
-	  <li class="${'prev' if view.prev else 'prev disabled'}">
-	    <a href="?batch=${view.prev}">&larr; Previous</a>
-	  </li>
-	  
-	  <tal:block repeat="idx view.pages">
-	    <li tal:define="klass '' if idx else 'disabled'"
-		tal:attributes="class 'active' if idx==view.current else klass">
-	      <a href="?batch=${idx}">${idx if idx else '...'}</a>
-	    </li>
-	  </tal:block>
-	  
-	  <li class="${'next' if view.next else 'next disabled'}">
-	    <a href="?batch=${view.next}">
-	      Next &rarr;
-	    </a>
-	  </li>
-	</ul>
+        <ul>
+          <li class="${'prev' if view.prev else 'prev disabled'}">
+            <a href="?batch=${view.prev}">&larr; Previous</a>
+          </li>
+
+          <tal:block repeat="idx view.pages">
+            <li tal:define="klass '' if idx else 'disabled'"
+                tal:attributes="class 'active' if idx==view.current else klass">
+              <a href="?batch=${idx}">${idx if idx else '...'}</a>
+            </li>
+          </tal:block>
+
+          <li class="${'next' if view.next else 'next disabled'}">
+            <a href="?batch=${view.next}">
+              Next &rarr;
+            </a>
+          </li>
+        </ul>
       </div>
 
-      <input type="hidden" tal:condition="view.csrf" 
-	     name="${view.csrfname}" value="${view.token}" />
+      <input type="hidden" tal:condition="view.csrf"
+             name="${view.csrfname}" value="${view.token}" />
 
       <tal:block content="structure view.snippet('form-actions', view)" />
     </form>

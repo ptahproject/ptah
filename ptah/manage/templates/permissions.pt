@@ -1,16 +1,16 @@
 <tal:block tal:repeat="acl view.acls">
   <div class="page-header">
     <h2>${acl.title} <small>${acl.id}</small></h2>
-    <p>Defined: 
+    <p>Defined:
       <a href="${view.manage}/source.html?pkg=${acl.directiveInfo.module.__name__}#sl-${acl.directiveInfo.codeinfo[1]}">${acl.directiveInfo.module.__name__}</a></p>
     <p>${acl.description}
   </div>
 
   <table class="table table-striped">
       <tr tal:repeat="rec acl">
-	<td>${rec[0]}</td>
-	<td>${rec[1]}</td>
-	<td>${rec[2]}</td>
+        <td>${rec[0]}</td>
+        <td>${rec[1]}</td>
+        <td>${rec[2]}</td>
       </tr>
   </table>
 </tal:block>

@@ -8,16 +8,16 @@
     <h3>${data[0]}</h3>
     <table class="table table-striped">
       <tr tal:repeat="tb data[2]">
-	<td>
-	  <h4>
-	    <a href="${url}/${data[1]}-${tb[0]}/">${tb[0]}</a>
-	  </h4>
-	  <p>
-	    <tal:block tal:repeat="rec tb[1][1]">
-	      ${rec}<br />
-	    </tal:block>
-	  </p>
-	</td>
+        <td>
+          <h4>
+            <a href="${url}/${data[1]}-${tb[0]}/">${tb[0]}</a>
+          </h4>
+          <p>
+            <tal:block tal:repeat="rec tb[1][1]">
+              ${rec}<br />
+            </tal:block>
+          </p>
+        </td>
       </tr>
     </table>
   </div>

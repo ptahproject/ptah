@@ -7,11 +7,11 @@
   <tbody>
     <tr tal:repeat="f view.factories">
       <td>
-	<h3><a href="${f.name}/">${f.title}</a> <small>${f.name}</small></h3>
-	<p>${f.type.description}</p>
+        <h3><a href="${f.name}/">${f.title}</a> <small>${f.name}</small></h3>
+        <p>${f.type.description}</p>
 
-	<strong>Mount:</strong> ${f.path}<br />
-	<strong>Type:</strong> ${f.type.title} <br />
+        <strong>Mount:</strong> ${f.path}<br />
+        <strong>Type:</strong> ${f.type.title} <br />
       </td>
     </tr>
   </tbody>
