@@ -276,7 +276,6 @@ class FileField(TextField):
     """HTML File input widget. Field name is ``file``."""
 
     klass = 'input-file'
-
     tmpl_input = 'ptah.form:templates/fields/file-input.pt'
 
     def extract(self, default=null):
@@ -289,6 +288,9 @@ class FileField(TextField):
                 'mimetype': value.type,
                 'size': value.length}
         elif value:
+            if isinstance(value, unicode):
+                value = value.encode('latin1')
+                
             fp = NativeIO(value)
             fp.filename = self.params.get('%s-filename'%self.name, '')
             return {
