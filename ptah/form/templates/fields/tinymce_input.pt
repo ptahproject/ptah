@@ -14,18 +14,12 @@
                    accesskey context.accesskey;"
    tal:content="context.form_value" />
 
-${view.include('tiny_mce')}
+${view.include('ckeditor')}
 <script language="javascript" type="text/javascript">
   $(function() {
-       tinyMCE.init({
-          elements : '${context.id}',
-          mode : 'exact',
-          height: '${context.height}',
-          width: '${context.width}',
-          theme : '${context.theme}',
-          theme_advanced_resizing : true,
-          theme_advanced_toolbar_align : 'left',
-          theme_advanced_toolbar_location : 'top'
-      })
+     if (CKEDITOR.instances['${context.id}']) {
+        CKEDITOR.instances['${context.id}'].destroy(true)
+     }
+     $('#${context.id}').ckeditor(function(){}, {'toolbar': 'Basic'})
   });
 </script>

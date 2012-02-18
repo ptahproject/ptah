@@ -30,9 +30,10 @@ ptah.library(
     type="js",
     require="jquery")
 
-# TinyMCE
+# CKEditor
 ptah.library(
-    "tiny_mce",
-    path='ptah:static/tiny_mce/tiny_mce.js',
+    'ckeditor',
+    path=('ptah:static/ckeditor/ckeditor.js',
+          'ptah:static/ckeditor/adapters/jquery.js'),
     type="js",
-    require='jquery')
+    require="jquery")

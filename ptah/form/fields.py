@@ -290,7 +290,7 @@ class FileField(TextField):
         elif value:
             if isinstance(value, unicode):
                 value = value.encode('latin1')
-                
+
             fp = NativeIO(value)
             fp.filename = self.params.get('%s-filename'%self.name, '')
             return {

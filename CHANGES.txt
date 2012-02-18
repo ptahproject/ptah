@@ -14,6 +14,8 @@ Features
 
 - twitter bootstrap 2.0
 
+- CKEditor (instead of tinymce)
+
 
 0.3.3 (2012-01-31)
 ==================
