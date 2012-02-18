@@ -17,7 +17,8 @@
 ${view.include('tiny_mce')}
 <script language="javascript" type="text/javascript">
   $(function() {
-      $("#${context.id}").tinymce({
+       tinyMCE.init({
+          elements : '${context.id}',
           mode : 'exact',
           height: '${context.height}',
           width: '${context.width}',
@@ -25,6 +26,6 @@ ${view.include('tiny_mce')}
           theme_advanced_resizing : true,
           theme_advanced_toolbar_align : 'left',
           theme_advanced_toolbar_location : 'top'
-      });
+      })
   });
 </script>

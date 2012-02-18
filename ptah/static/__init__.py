@@ -15,7 +15,7 @@ ptah.library(
 
 ptah.library(
     'jquery-ui',
-    'ptah:static/jquery/jquery-ui-1.8.17.min.css',
+    'ptah:static/jquery/jquery-ui-1.8.17.css',
     type='css')
 
 # Bootstrap css
@@ -33,7 +33,6 @@ ptah.library(
 # TinyMCE
 ptah.library(
     "tiny_mce",
-    path=('ptah:static/tiny_mce/tiny_mce.js',
-          'ptah:static/tiny_mce/jquery.tinymce.js'),
+    path='ptah:static/tiny_mce/tiny_mce.js',
     type="js",
     require='jquery')
