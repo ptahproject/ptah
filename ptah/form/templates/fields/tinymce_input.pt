@@ -1,6 +1,7 @@
 <textarea
    id="" name="" class="" cols="" rows=""
    tabindex="" disabled="" readonly="" accesskey=""
+   style="display: none"
    tal:attributes="id context.id;
                    name context.name;
                    class context.klass;
@@ -17,9 +18,10 @@
 ${view.include('ckeditor')}
 <script language="javascript" type="text/javascript">
   $(function() {
-     if (CKEDITOR.instances['${context.id}']) {
-        CKEDITOR.instances['${context.id}'].destroy(true)
-     }
-     $('#${context.id}').ckeditor(function(){}, {'toolbar': 'Basic'})
-  });
+    setTimeout(function() {
+       if (CKEDITOR.instances['${context.id}']) {
+          CKEDITOR.instances['${context.id}'].destroy(true)
+       }
+       $('#${context.id}').ckeditor(function(){}, {'toolbar': 'Basic'})
+     }, 100)});
 </script>
