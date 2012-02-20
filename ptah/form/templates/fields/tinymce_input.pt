@@ -1,3 +1,4 @@
+<div style="height: 250px">
 <textarea
    id="" name="" class="" cols="" rows=""
    tabindex="" disabled="" readonly="" accesskey=""
@@ -14,6 +15,7 @@
                    readonly context.readonly;
                    accesskey context.accesskey;"
    tal:content="context.form_value" />
+</div>
 
 ${view.include('ckeditor')}
 <script language="javascript" type="text/javascript">
@@ -22,6 +24,9 @@ ${view.include('ckeditor')}
        if (CKEDITOR.instances['${context.id}']) {
           CKEDITOR.instances['${context.id}'].destroy(true)
        }
-       $('#${context.id}').ckeditor(function(){}, {'toolbar': 'Basic'})
+       $('#${context.id}').ckeditor(function(){
+          $('#${context.id}').parent().css('height', 'auto')
+       }, {'toolbar': 'Basic'})
+       
      }, 100)});
 </script>
