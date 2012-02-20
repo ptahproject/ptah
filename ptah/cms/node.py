@@ -1,5 +1,5 @@
 """ Node implementation """
-import sqlalchemy as sqla
+import sqlalchemy as sa
 from collections import OrderedDict
 from pyramid.compat import text_type
 from zope.interface import implementer
@@ -60,24 +60,22 @@ class Node(ptah.get_base()):
 
     __tablename__ = 'ptah_nodes'
 
-    __id__ = sqla.Column('id', sqla.Integer, primary_key=True)
-    __type_id__ = sqla.Column('type', sqla.String(128), info={'uri':True})
+    __id__ = sa.Column('id', sa.Integer, primary_key=True)
+    __type_id__ = sa.Column('type', sa.String(128), info={'uri':True})
     __type__ = None
 
-    __uri__ = sqla.Column('uri', sqla.String(255), unique=True,
-                          nullable=False, info={'uri':True})
-    __parent_uri__ = sqla.Column('parent', sqla.String(255),
-                                 sqla.ForeignKey(__uri__), info={'uri': True})
+    __uri__ = sa.Column('uri', sa.String(255), unique=True,
+                        nullable=False, info={'uri':True})
+    __parent_uri__ = sa.Column('parent', sa.String(255),
+                               sa.ForeignKey(__uri__), info={'uri': True})
 
-    __owner__ = sqla.Column('owner', sqla.String(255),
-                            default='', info={'uri':True})
-    __local_roles__ = sqla.Column('roles', ptah.JsonDictType(), default={})
-    __acls__ = sqla.Column('acls', ptah.JsonListType(), default=[])
-    __annotations__ = sqla.Column('annotations', ptah.JsonDictType(),default={})
+    __owner__ = sa.Column('owner', sa.String(255), default='',info={'uri':True})
+    __local_roles__ = sa.Column('roles', ptah.JsonDictType(), default={})
+    __acls__ = sa.Column('acls', ptah.JsonListType(), default=[])
+    __annotations__ = sa.Column('annotations', ptah.JsonDictType(),default={})
 
-    __children__ = sqla.orm.relationship(
-        'Node',
-        backref=sqla.orm.backref('__parent_ref__',remote_side=[__uri__]))
+    __children__ = sa.orm.relationship(
+        'Node', backref=sa.orm.backref('__parent_ref__', remote_side=[__uri__]))
 
     __mapper_args__ = {'polymorphic_on': __type_id__}
 
@@ -113,6 +111,9 @@ class Node(ptah.get_base()):
              ))
 
         return info
+
+    def get_session(self):
+        return sa.orm.object_session(self)
 
 
 def load(uri, permission=None):

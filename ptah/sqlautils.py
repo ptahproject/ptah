@@ -26,6 +26,33 @@ def reset_session():
     _session = orm.scoped_session(orm.sessionmaker(extension=[_zte]))
 
 
+_sa_session = local()
+
+class transaction(object):
+
+    def __init__(self, sa):
+        self.sa = sa
+
+    def __enter__(self):
+        global _sa_session
+        _sa_session.sa = self.sa
+
+        return self.sa
+
+    def __exit__(self, type, value, traceback):
+        global _sa_session
+        _sa_session.sa = None
+
+        if type is None:
+            try:
+                self.sa.commit()
+            except:
+                self.sa.rollback()
+                raise
+        else:
+            self.sa.rollback()
+
+
 def get_session():
     """Return the central SQLAlchemy contextual session.
 
@@ -43,7 +70,7 @@ def get_session():
 
         ptah.get_session().configure(ext=[ptah._zte, ...])
     """
-    return _session
+    return getattr(_sa_session, 'sa', _session) or _session
 
 
 class QueryFreezer(object):
