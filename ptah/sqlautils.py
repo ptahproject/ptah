@@ -1,3 +1,4 @@
+import uuid
 import json
 from threading import local
 
@@ -87,28 +88,38 @@ class QueryFreezer(object):
     _testing = False
 
     def __init__(self, builder):
+        self.id = uuid.uuid4().int
         self.builder = builder
-        self.data = local()
 
     def reset(self):
-        self.data = local()
+        pass
 
     def iter(self, **params):
-        data = self.data
-        if not hasattr(data, 'query') or self._testing:
-            data.query = self.builder()
-            data.mapper = data.query._mapper_zero_or_none()
-            data.querycontext = data.query._compile_context()
-            data.querycontext.statement.use_labels = True
-            data.stmt = data.querycontext.statement
+        sa = get_session()
+        try:
+            data = sa.__ptah_cache__
+        except AttributeError:
+            sa.__ptah_cache__ = data = {}
 
-        conn = data.query._connection_from_session(
-            mapper=data.mapper,
-            clause=data.stmt,
+        q = data.get(self.id, None)
+
+        if q is None or self._testing:
+            query = self.builder()
+            mapper = query._mapper_zero_or_none()
+            querycontext = query._compile_context()
+            querycontext.statement.use_labels = True
+            stmt = querycontext.statement
+            data[self.id] = (query, mapper, querycontext, stmt)
+        else:
+            query, mapper, querycontext, stmt = q
+
+        conn = query._connection_from_session(
+            mapper=mapper,
+            clause=stmt,
             close_with_result=True)
 
-        result = conn.execute(data.stmt, **params)
-        return data.query.instances(result, data.querycontext)
+        result = conn.execute(stmt, **params)
+        return query.instances(result, querycontext)
 
     def one(self, **params):
         ret = list(self.iter(**params))
