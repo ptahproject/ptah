@@ -53,7 +53,7 @@ class TestView(PtahTestCase):
 
         self.assertEqual(
             v.render_messages(),
-            text_('<div class="alert alert-info">\n  <a class="close" href="#">×</a>\n  message\n</div>\n', 'utf-8'))
+            text_('<div class="alert alert-info">\n  <a class="close" data-dismiss="alert">×</a>\n  message\n</div>\n', 'utf-8'))
 
 
 class TestSnippet(PtahTestCase):
@@ -156,7 +156,7 @@ class TestStatusMessages(PtahTestCase):
 
         self.assertEqual(
             res,
-            text_('<div class="alert alert-info">\n  <a class="close" href="#">×</a>\n  message\n</div>\n','utf-8'))
+            text_('<div class="alert alert-info">\n  <a class="close" data-dismiss="alert">×</a>\n  message\n</div>\n','utf-8'))
 
     def test_messages_warning_msg(self):
         from ptah import view
@@ -165,7 +165,7 @@ class TestStatusMessages(PtahTestCase):
         view.add_message(self.request, 'warning', 'warning')
         self.assertEqual(
             view.render_messages(self.request),
-            text_('<div class="alert alert-warning">\n  <a class="close" href="#">×</a>\n  warning\n</div>\n','utf-8'))
+            text_('<div class="alert alert-warning">\n  <a class="close" data-dismiss="alert">×</a>\n  warning\n</div>\n','utf-8'))
 
     def test_messages_error_msg(self):
         from ptah import view
@@ -174,12 +174,12 @@ class TestStatusMessages(PtahTestCase):
         view.add_message(self.request, 'error', 'error')
         self.assertEqual(
             view.render_messages(self.request),
-            text_('<div class="alert alert-error">\n  <a class="close" href="#">×</a>\n  error\n</div>\n','utf-8'))
+            text_('<div class="alert alert-error">\n  <a class="close" data-dismiss="alert">×</a>\n  error\n</div>\n','utf-8'))
 
         view.add_message(self.request, ValueError('Error'), 'error')
         self.assertEqual(
             view.render_messages(self.request),
-            text_('<div class="alert alert-error">\n  <a class="close" href="#">×</a>\n  ValueError: Error\n</div>\n','utf-8'))
+            text_('<div class="alert alert-error">\n  <a class="close" data-dismiss="alert">×</a>\n  ValueError: Error\n</div>\n','utf-8'))
 
     def test_messages_custom_msg(self):
         from ptah import view
@@ -202,7 +202,7 @@ class TestStatusMessages(PtahTestCase):
         view.add_message(self.request, 'message')
         self.assertEqual(
             view.render_messages(self.request),
-            text_('<div class="alert alert-info">\n  <a class="close" href="#">×</a>\n  message\n</div>\n','utf-8'))
+            text_('<div class="alert alert-info">\n  <a class="close" data-dismiss="alert">×</a>\n  message\n</div>\n','utf-8'))
 
         msg = view.render_messages(self.request)
         self.assertEqual(msg, '')

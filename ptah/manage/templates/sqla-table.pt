@@ -41,7 +41,7 @@
             </a>
           </td>
           <td>
-            <a class="btn info"
+            <a class="btn btn-info"
                href="${url}${getattr(row, view.primary)}/">Edit</a>
           </td>
         </tr>

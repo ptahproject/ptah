@@ -29,7 +29,7 @@
       </tbody>
     </table>
     <div class="actions">
-      <input type="submit" class="btn primary"
+      <input type="submit" class="btn btn-primary"
              value="Save" name="form.buttons.savelocal" />
     </div>
   </div>
@@ -65,7 +65,7 @@
       </tbody>
     </table>
     <div class="actions">
-      <input type="submit" class="btn primary"
+      <input type="submit" class="btn btn-primary"
              value="Save" name="form.buttons.save" />
     </div>
   </form>
