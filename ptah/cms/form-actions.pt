@@ -1,7 +1,7 @@
 <tal:block condition="context.name_widgets">
   ${structure: view.snippet('form-widget',context.name_widgets['__name__'])}
 </tal:block>
-<div class="actions" tal:condition="context.actions.values()">
+<div class="form-actions" tal:condition="context.actions.values()">
   <tal:block tal:repeat="action context.actions.values()"
              tal:content="structure action.render()">
   </tal:block>
