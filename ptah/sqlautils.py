@@ -12,6 +12,7 @@ from zope.sqlalchemy import ZopeTransactionExtension
 _base = declarative.declarative_base()
 _zte = ZopeTransactionExtension()
 _session = orm.scoped_session(orm.sessionmaker(extension=[_zte]))
+_session_maker = orm.sessionmaker()
 
 
 def get_base():
@@ -52,6 +53,14 @@ class transaction(object):
                 raise
         else:
             self.sa.rollback()
+
+
+def sa_session():
+    return transaction(_session_maker())
+
+
+def get_session_maker():
+    return _session_maker
 
 
 def get_session():

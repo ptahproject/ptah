@@ -22,8 +22,10 @@ from ptah.uri import extract_uri_schema
 from ptah.uri import UriFactory
 
 # sqla
+from ptah.sqlautils import sa_session
 from ptah.sqlautils import get_base
 from ptah.sqlautils import get_session
+from ptah.sqlautils import get_session_maker
 from ptah.sqlautils import reset_session
 
 # events
