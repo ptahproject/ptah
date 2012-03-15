@@ -1,10 +1,10 @@
 import os
 import sys
 import logging
-import multiprocessing # atexit exception
+import multiprocessing  # atexit exception
 from setuptools import setup, find_packages
 
-version='0.4.0dev'
+version = '0.4.0dev'
 
 install_requires = ['setuptools',
                     'alembic == 0.2.1',
@@ -29,6 +29,7 @@ if sys.version_info[:2] == (2, 6):
             'unittest2'))
 
 tests_require = install_requires + ['nose']
+
 
 def read(f):
     return open(os.path.join(os.path.dirname(__file__), f)).read().strip()
@@ -55,12 +56,12 @@ setup(name='ptah',
       url='https://github.com/ptahproject/ptah/',
       license='BSD-derived',
       packages=find_packages(),
-      install_requires = install_requires,
-      tests_require = tests_require,
-      test_suite = 'nose.collector',
-      include_package_data = True,
-      zip_safe = False,
-      entry_points = {
+      install_requires=install_requires,
+      tests_require=tests_require,
+      test_suite='nose.collector',
+      include_package_data=True,
+      zip_safe=False,
+      entry_points={
           'console_scripts': [
               'ptah-manage = ptah.scripts.manage:main',
               'ptah-migrate = ptah.scripts.migrate:main',
@@ -71,5 +72,15 @@ setup(name='ptah',
               'ptah_starter = ptah.scaffolds:PtahStarterProjectTemplate',
               ],
           },
-      package_data = {'migrations': ['ptah/migrations/*.py']},
+      package_data={'migrations': ['ptah/migrations/*.py']},
+      message_extractors={'ptah': [
+        ('migrations/**', 'ignore', None),
+        ('scaffolds/**', 'ignore', None),
+        ('scripts/**', 'ignore', None),
+        ('static/**', 'ignore', None),
+        ('tests/**', 'ignore', None),
+        ('*/tests/**', 'ignore', None),
+        ('**.py', 'python', None),
+        ('**.pt', 'lingua_xml', None),
+      ]},
       )

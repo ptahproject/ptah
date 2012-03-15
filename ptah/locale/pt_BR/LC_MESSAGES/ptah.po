@@ -1,0 +1,199 @@
+# Portuguese (Brazil) translations for ptah.
+# Copyright (C) 2012 ORGANIZATION
+# This file is distributed under the same license as the ptah project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2012.
+# Nando Florestan <nandoflorestan@gmail.com>, 2012.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: ptah 0.4.0dev\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2012-03-14 22:13-0300\n"
+"PO-Revision-Date: 2012-03-14 16:56-0300\n"
+"Last-Translator: Nando Florestan <nandoflorestan@gmail.com>\n"
+"Language-Team: Portuguese <>\n"
+"Plural-Forms: nplurals=2; plural=(n!=1)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 0.9.6\n"
+
+#: ptah/password.py:149
+msgid "Password should contain both letters and digits."
+msgstr "A senha deve contar letras e dígitos."
+
+#: ptah/password.py:152
+msgid "Password should contain letters in mixed case."
+msgstr "A senha deve conter maiúsculas e minúsculas."
+
+#: ptah/password.py:224
+msgid "Password and Confirm Password should be the same."
+msgstr "A senha e a confirmação precisam bater."
+
+#: ptah/password.py:234
+msgid "Password"
+msgstr "Senha"
+
+#: ptah/password.py:235
+msgid ""
+"Enter password. No spaces or special characters, should contain digits "
+"and letters in mixed case."
+msgstr ""
+"Digite sua senha. Sem espaços ou caracteres especiais. Deve conter "
+"dígitos, maiúsculas e minúsculas."
+
+#: ptah/password.py:243
+msgid "Confirm password"
+msgstr "Confirmar senha"
+
+#: ptah/password.py:244
+msgid "Re-enter the password. Make sure the passwords are identical."
+msgstr "Digite a senha novamente para prevenir erro de digitação."
+
+#: ptah/ptahsettings.py:24
+msgid "Authentication policy"
+msgstr "Política de autenticação"
+
+#: ptah/ptahsettings.py:25
+msgid "Enable authentication policy."
+msgstr "Habilitar política de autenticação."
+
+#: ptah/ptahsettings.py:30
+msgid "Authentication policy secret"
+msgstr "Segredo da política de autenticação"
+
+#: ptah/ptahsettings.py:31
+msgid "The secret (a string) used for auth_tkt cookie signing"
+msgstr "String usada para assinar o cookie de autenticação"
+
+#: ptah/ptahsettings.py:121
+msgid "Ptah settings"
+msgstr "Configurações do Ptah"
+
+#: ptah/ptahsettings.py:131
+msgid "Timezone"
+msgstr "Fuso-horário"
+
+#: ptah/ptahsettings.py:132
+msgid "Site wide timezone."
+msgstr "Fuso-horário do site."
+
+#: ptah/ptahsettings.py:137 ptah/ptahsettings.py:143 ptah/ptahsettings.py:149
+#: ptah/ptahsettings.py:155
+msgid "Date"
+msgstr "Data"
+
+#: ptah/ptahsettings.py:138
+msgid "Date short format"
+msgstr "Formato curto de data"
+
+#: ptah/ptahsettings.py:144
+msgid "Date medium format"
+msgstr "Formato médio de data"
+
+#: ptah/ptahsettings.py:150
+msgid "Date long format"
+msgstr "Formato longo de data"
+
+#: ptah/ptahsettings.py:156
+msgid "Date full format"
+msgstr "Formato completo de data"
+
+#: ptah/ptahsettings.py:161 ptah/ptahsettings.py:167 ptah/ptahsettings.py:173
+#: ptah/ptahsettings.py:179
+msgid "Time"
+msgstr "Hora"
+
+#: ptah/ptahsettings.py:162
+msgid "Time short format"
+msgstr "Formato curto de hora"
+
+#: ptah/ptahsettings.py:168
+msgid "Time medium format"
+msgstr "Formato médio de hora"
+
+#: ptah/ptahsettings.py:174
+msgid "Time long format"
+msgstr "Formato longo de hora"
+
+#: ptah/ptahsettings.py:180
+msgid "Time full format"
+msgstr "Formato completo de hora"
+
+#: ptah/form/field.py:379
+msgid "Required"
+msgstr "Obrigatório"
+
+#: ptah/form/fields.py:103 ptah/form/fields.py:114 ptah/form/fields.py:151
+#: ptah/form/fields.py:164
+msgid "\"${val}\" is not in vocabulary"
+msgstr "\"${val}\" não consta do vocabulário"
+
+#: ptah/form/fields.py:219 ptah/form/fields.py:231
+msgid "\"${val}\" is not a number"
+msgstr "\"${val}\" não é um número"
+
+#: ptah/form/fields.py:322 ptah/form/fields.py:334
+msgid "\"${val}\" is not a list"
+msgstr "\"${val}\" não é uma lista"
+
+#: ptah/form/fields.py:371 ptah/form/jsfields.py:49
+msgid "\"${val}\" is not a date object"
+msgstr "\"${val}\" não é um objeto de data"
+
+#: ptah/form/fields.py:389 ptah/form/fields.py:430 ptah/form/jsfields.py:61
+msgid "Invalid date"
+msgstr "Data inválida"
+
+#: ptah/form/fields.py:409
+msgid "\"${val}\" is not a datetime object"
+msgstr "\"${val}\" não é uma data e hora"
+
+#: ptah/form/fields.py:448
+msgid "yes"
+msgstr "sim"
+
+#: ptah/form/fields.py:449
+msgid "no"
+msgstr "não"
+
+#: ptah/form/fields.py:461
+msgid "select a value ..."
+msgstr "selecione..."
+
+#: ptah/form/fields.py:531
+msgid "\"${val}\" is not a timezone"
+msgstr "\"${val}\" não é um fuso-horário"
+
+#: ptah/form/validator.py:53
+msgid "Invalid value"
+msgstr "Inválido"
+
+#: ptah/form/validator.py:90
+msgid "String does not match expected pattern"
+msgstr "O texto não se conforma ao padrão esperado"
+
+#: ptah/form/validator.py:107
+msgid "Invalid email address"
+msgstr "Email inválido"
+
+#: ptah/form/validator.py:138
+msgid "${val} is less than minimum value ${min}"
+msgstr "${val} é menor que o mínimo ${min}"
+
+#: ptah/form/validator.py:139
+msgid "${val} is greater than maximum value ${max}"
+msgstr "${val} é maior que o máximo ${max}"
+
+#: ptah/form/validator.py:175
+msgid "Shorter than minimum length ${min}"
+msgstr "Mais curto que o mínimo ${min}"
+
+#: ptah/form/validator.py:181
+msgid "Longer than maximum length ${max}"
+msgstr "Mais longo que o máximo ${max}"
+
+#: ptah/form/validator.py:196
+msgid "\"${val}\" is not one of ${choices}"
+msgstr "\"${val}\" não pertence a ${choices}"
+
