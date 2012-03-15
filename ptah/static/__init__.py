@@ -9,7 +9,7 @@ ptah.library(
 
 ptah.library(
     'jquery-ui',
-    path='ptah:static/jquery/jquery-ui-1.8.17.min.js',
+    path='ptah:static/jquery/jquery-ui-1.8.18.min.js',
     type="js",
     require="jquery")
 
