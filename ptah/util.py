@@ -3,6 +3,16 @@ import threading
 from datetime import timedelta
 from pyramid.interfaces import INewRequest
 
+try:
+    import ujson as json
+except ImportError: # pragma: no cover
+    # Faster
+    try:
+        import simplejson as json
+    except ImportError:
+        # Slowest
+        import json
+
 
 class ThreadLocalManager(threading.local):
 

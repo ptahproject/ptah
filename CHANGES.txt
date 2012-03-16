@@ -16,6 +16,8 @@ Features
 
 - CKEditor (instead of tinymce)
 
+- Allow to use lz4 compression for json based columns
+
 
 0.3.3 (2012-01-31)
 ==================

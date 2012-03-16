@@ -296,7 +296,7 @@ class TestSettings(BaseTesting):
             ptah.config.StopException,
             get_settings_ob().init,
             self.config,
-            {'group.node1': '1,l'})
+            {'group.node1': 'l,1'})
 
     def test_settings_init_with_no_loader_with_defaults(self):
         group = self._create_default_group()

@@ -119,10 +119,12 @@ from ptah.util import tldata
 from ptah.rst import rst_to_html
 
 # sqlalchemy utils
+from ptah.sqlautils import lz4on
 from ptah.sqlautils import transaction
 from ptah.sqlautils import QueryFreezer
 from ptah.sqlautils import JsonDictType
 from ptah.sqlautils import JsonListType
+from ptah.sqlautils import set_jsontype_serializer
 from ptah.sqla import generate_fieldset
 from ptah.sqla import build_sqla_fieldset
 

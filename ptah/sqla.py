@@ -1,6 +1,5 @@
 """ sqlalchemy query wrapper """
 import ptah
-import json
 import sqlalchemy as sqla
 
 

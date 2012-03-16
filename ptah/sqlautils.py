@@ -1,5 +1,4 @@
 import uuid
-import json
 from threading import local
 
 import sqlalchemy as sqla
@@ -8,6 +7,8 @@ from sqlalchemy.ext import declarative
 from sqlalchemy.ext.mutable import Mutable
 from sqlalchemy.types import TypeDecorator, TEXT
 from zope.sqlalchemy import ZopeTransactionExtension
+
+from ptah.util import json
 
 _base = declarative.declarative_base()
 _zte = ZopeTransactionExtension()
@@ -153,19 +154,50 @@ class QueryFreezer(object):
         return list(self.iter(**params))
 
 
+try:
+    import lz4
+
+    class LZ4Serializer(object):
+
+        def dumps(self, val):
+            return '.z'+lz4.dumps(json.dumps(val))
+
+        def loads(self, val):
+            if val[:2] == '.z':
+                return json.loads(lz4.loads(val))
+            return json.loads(val)
+
+    lz4on = LZ4Serializer()
+except:
+    lz4on = None
+
+
+def set_jsontype_serializer(serializer):
+    if serializer is None:
+        serializer = json
+
+    JsonType.serializer = serializer
+
+
 class JsonType(TypeDecorator):
     """Represents an immutable structure as a json-encoded string."""
 
     impl = TEXT
+    serializer = json
+
+    def __init__(self, serializer=None, *args, **kw):
+        if serializer is not None:
+            self.serializer = serializer
+        super(JsonType, self).__init__(*args, **kw)
 
     def process_bind_param(self, value, dialect):
         if value is not None:
-            value = json.dumps(value)
+            value = self.serializer.dumps(value)
         return value
 
     def process_result_value(self, value, dialect):
         if value is not None:
-            value = json.loads(value)
+            value = self.serializer.loads(value)
         return value
 
 
@@ -213,20 +245,19 @@ class MutationDict(Mutable, dict):
         self.changed()
 
 
-def JsonDictType():
+def JsonDictType(serializer=None):
     """
     function which returns a SQLA Column Type suitable to store a Json dict.
 
     :returns: ptah.sqla.MutationDict
     """
-    return MutationDict.as_mutable(JsonType)
+    return MutationDict.as_mutable(JsonType(serializer=serializer))
 
 
-def JsonListType():
+def JsonListType(serializer=None):
     """
     function which returns a SQLA Column Type suitable to store a Json array.
 
     :returns: ptah.sqla.MutationList
     """
-
-    return MutationList.as_mutable(JsonType)
+    return MutationList.as_mutable(JsonType(serializer=serializer))

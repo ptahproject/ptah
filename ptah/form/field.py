@@ -1,9 +1,9 @@
-import json
 from collections import OrderedDict
 from pyramid import renderers
 from pyramid.compat import string_types
 
 from ptah import config
+from ptah.util import json
 from ptah.form.validator import All
 from ptah.form.interfaces import _, null, required
 from ptah.form.interfaces import Invalid, FORM_INPUT, FORM_DISPLAY
