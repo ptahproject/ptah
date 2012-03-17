@@ -11,6 +11,7 @@ from pyramid.interfaces import PHASE1_CONFIG
 
 import ptah
 from ptah import uri, form, config
+from ptah.sqlautils import JsonType
 from ptah.config import StopException
 
 log = logging.getLogger('ptah')
@@ -197,8 +198,24 @@ class Settings(object):
             group.update(data)
 
     def load_fromdb(self):
-        self.load(dict(ptah.get_session().\
-                           query(SettingRecord.name, SettingRecord.value)))
+        records = dict(ptah.get_session().
+                       query(SettingRecord.name, SettingRecord.value))
+        self.load(records)
+
+        # load non defined fields
+        groups = config.get_cfg_storage(ID_SETTINGS_GROUP).items()
+
+        for name, group in groups:
+            name = '%s.'%name
+            for attr, val in records.items():
+                if attr.startswith(name):
+                    fname = attr[len(name):]
+                    if fname not in group.__fields__:
+                        print (fname, val)
+                        try:
+                            group[fname] = JsonType.serializer.loads(val)
+                        except ValueError:
+                            pass
 
     def export(self, default=False):
         groups = config.get_cfg_storage(ID_SETTINGS_GROUP).items()
@@ -307,22 +324,22 @@ class Group(OrderedDict):
                 .filter(SettingRecord.name.in_(keys)).delete(False)
 
         # insert new data
-        result = []
         for fname in data.keys():
-            if fname not in fields:
-                continue
+            if fname in fields:
+                field = fields[fname]
+                value = self[fname]
+                if value == field.default:
+                    continue
+                
+                rec = SettingRecord(name='{0}.{1}'.format(name, fname),
+                                    value = field.dumps(value))
+            else:
+                rec = SettingRecord(
+                    name='{0}.{1}'.format(name, fname),
+                    value = JsonType.serializer.dumps(data[fname]))
+                
+            Session.add(rec)
 
-            field = fields[fname]
-            value = self[fname]
-            if value == field.default:
-                continue
-
-            result.append(
-                {'name': '{0}.{1}'.format(name,fname),
-                 'value': field.dumps(value)})
-            Session.add(
-                SettingRecord(name='{0}.{1}'.format(name,fname),
-                              value=field.dumps(value)))
         Session.flush()
 
         self.__registry__.notify(ptah.events.SettingsGroupModified(self))

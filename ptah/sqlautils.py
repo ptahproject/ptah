@@ -160,6 +160,9 @@ try:
     class LZ4Serializer(object):
 
         def dumps(self, val):
+            print '========================'
+            print (json.dumps(val),)
+            print (lz4.dumps(json.dumps(val)),)
             return '.z'+lz4.dumps(json.dumps(val))
 
         def loads(self, val):
