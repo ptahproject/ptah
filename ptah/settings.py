@@ -211,7 +211,6 @@ class Settings(object):
                 if attr.startswith(name):
                     fname = attr[len(name):]
                     if fname not in group.__fields__:
-                        print (fname, val)
                         try:
                             group[fname] = JsonType.serializer.loads(val)
                         except ValueError:

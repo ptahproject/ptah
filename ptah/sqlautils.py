@@ -154,27 +154,6 @@ class QueryFreezer(object):
         return list(self.iter(**params))
 
 
-try:
-    import lz4
-
-    class LZ4Serializer(object):
-
-        def dumps(self, val):
-            print '========================'
-            print (json.dumps(val),)
-            print (lz4.dumps(json.dumps(val)),)
-            return '.z'+lz4.dumps(json.dumps(val))
-
-        def loads(self, val):
-            if val[:2] == '.z':
-                return json.loads(lz4.loads(val))
-            return json.loads(val)
-
-    lz4on = LZ4Serializer()
-except:
-    lz4on = None
-
-
 def set_jsontype_serializer(serializer):
     if serializer is None:
         serializer = json

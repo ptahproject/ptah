@@ -119,7 +119,6 @@ from ptah.util import tldata
 from ptah.rst import rst_to_html
 
 # sqlalchemy utils
-from ptah.sqlautils import lz4on
 from ptah.sqlautils import transaction
 from ptah.sqlautils import QueryFreezer
 from ptah.sqlautils import JsonDictType
