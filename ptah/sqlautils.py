@@ -1,3 +1,11 @@
+# -*- coding: utf-8 -*-
+
+'''
+'''
+
+from __future__ import (absolute_import, division, print_function,
+    unicode_literals)  # Avoid breaking Python 3
+
 import uuid
 from threading import local
 
@@ -28,8 +36,8 @@ def reset_session():
     _zte = ZopeTransactionExtension()
     _session = orm.scoped_session(orm.sessionmaker(extension=[_zte]))
 
-
 _sa_session = local()
+
 
 class transaction(object):
 
