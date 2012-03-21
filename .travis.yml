@@ -6,3 +6,5 @@ python:
 install: 
   - python setup.py develop
 script: python setup.py test
+notifications:
+  irc: "irc.freenode.org#ptahproject"
