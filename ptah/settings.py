@@ -329,14 +329,14 @@ class Group(OrderedDict):
                 value = self[fname]
                 if value == field.default:
                     continue
-                
+
                 rec = SettingRecord(name='{0}.{1}'.format(name, fname),
                                     value = field.dumps(value))
             else:
                 rec = SettingRecord(
                     name='{0}.{1}'.format(name, fname),
                     value = JsonType.serializer.dumps(data[fname]))
-                
+
             Session.add(rec)
 
         Session.flush()
