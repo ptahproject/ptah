@@ -4,7 +4,7 @@
 <form>
   <fieldset tal:condition="context.widgets">
     <tal:block tal:repeat="widget context.widgets.values()"
-               tal:content="structure 
+               tal:content="structure
                             view.snippet('form-display-widget',widget)" />
   </fieldset>
 </form>

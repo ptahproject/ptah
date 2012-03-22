@@ -1,17 +1,34 @@
 import ptah
 import threading
-from datetime import timedelta
+from datetime import datetime, timedelta
 from pyramid.interfaces import INewRequest
 
 try:
     import ujson as json
 except ImportError: # pragma: no cover
+    def dthandler(obj):
+        return obj.isoformat() if isinstance(obj, datetime) else None
+
+    kwargs = {'default': dthandler, 'separators': (',', ':')}
+
     # Faster
     try:
-        import simplejson as json
+        import simplejson as jsonmod
     except ImportError:
         # Slowest
-        import json
+        import json as jsonmod
+
+    class json(object):
+
+        @staticmethod
+        def dumps(o, **kw):
+            kw.update(kwargs)
+            return jsonmod.dumps(o, **kw)
+
+        @staticmethod
+        def loads(s, **kw):
+            return jsonmod.loads(s, **kw)
+
 
 
 class ThreadLocalManager(threading.local):

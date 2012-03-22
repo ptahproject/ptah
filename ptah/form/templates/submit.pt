@@ -1,5 +1,5 @@
 <input id="" name="" class="" value=""
-       accesskey="" type="submit" 
+       accesskey="" type="submit"
        tal:attributes="id context.id;
                        name context.name;
                        class context.klass;

@@ -1,4 +1,4 @@
-<h4>${context['permission'].title} 
+<h4>${context['permission'].title}
   <small>
     <a href="${manage_url}/source.html?pkg=${context['codeinfo'].module}#sl-${context['codeinfo'].lineno}">
       ${context['permission']}

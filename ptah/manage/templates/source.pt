@@ -11,7 +11,7 @@
       <small>${view.file}</small>
     </h2>
   </div>
-  
+
   <div class="row">
     <div class="span12">
       <tal:block content="structure view.source" />

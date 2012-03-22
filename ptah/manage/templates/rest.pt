@@ -9,7 +9,7 @@
         var ret_val = '"__link__": ' + tag;
         return ret_val;
     }
-         
+
     function linkify(text) {
         var re = /\"__link__\":\s*\"(http|https):\/\/.*\"/g//;
         re = RegExp(re);
@@ -26,7 +26,7 @@
     }
 
     $(function() {
-        $("#query").bind("click", query); 
+        $("#query").bind("click", query);
         $("#result a").live("click", function() {
             /*
              |  var value = $(this).attr('href');
@@ -43,7 +43,7 @@
             location += '?url=' + $(this).attr('href');
             window.location = location;
             return false;
-        }); 
+        });
         query();
     });
 

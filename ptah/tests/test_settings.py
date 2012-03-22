@@ -513,9 +513,9 @@ class TestDBSettings(TestDBSettingsBase):
         grp = self._make_grp()
         grp.updatedb(node1 = 'new text',
                      node2 = 65,
-                     node3 = [1,2,3])
+                     node3 = 500)
 
-        self.assertEqual(grp['node3'], [1,2,3])
+        self.assertEqual(grp['node3'], 500)
 
         from ptah.settings import SettingRecord
         Session = ptah.get_session()
@@ -525,7 +525,14 @@ class TestDBSettings(TestDBSettingsBase):
             res[rec.name] = rec.value
 
         self.assertEqual(len(res), 3)
-        self.assertEqual(res['group.node3'], '[1, 2, 3]')
+        self.assertEqual(res['group.node3'], '500')
+
+        grp['node3'] = 600
+        self.assertEqual(grp['node3'], 600)
+
+        settings = self.config.get_cfg_storage('ptah:settings')
+        settings.load_fromdb()
+        self.assertEqual(grp['node3'], 500)
 
     def test_settings_updatedb_partial(self):
         grp = self._make_grp()

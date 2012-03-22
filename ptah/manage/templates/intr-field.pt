@@ -3,7 +3,7 @@
     ${context['name']}</a>
 </h4>
 <p tal:condition="context['field'].__doc__">${context['field'].__doc__}</p>
-  
+
 <form tal:condition="context['field'] in previews">
   <hr />
   <fieldset>

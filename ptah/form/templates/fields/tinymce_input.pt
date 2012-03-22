@@ -27,6 +27,6 @@ ${view.include('ckeditor')}
        $('#${context.id}').ckeditor(function(){
           $('#${context.id}').parent().css('height', 'auto')
        }, {'toolbar': 'Basic'})
-       
+
      }, 100)});
 </script>

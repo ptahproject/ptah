@@ -7,7 +7,7 @@ ${view.include('jquery-ui')}
 
 <input id="" type="text" name="" class="" title="" lang="" disabled=""
        readonly="" alt="" tabindex="" accesskey="" size="" maxlength=""
-       value="" 
+       value=""
        tal:attributes="id context.id;
                        name context.name;
                        class context.klass;
