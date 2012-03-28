@@ -2,7 +2,7 @@
 import pytz
 import datetime
 import decimal
-from pyramid.compat import NativeIO
+from pyramid.compat import NativeIO, text_type
 
 import ptah
 from ptah.form import iso8601
@@ -288,7 +288,7 @@ class FileField(TextField):
                 'mimetype': value.type,
                 'size': value.length}
         elif value:
-            if isinstance(value, unicode):
+            if isinstance(value, text_type):
                 value = value.encode('latin1')
 
             fp = NativeIO(value)
