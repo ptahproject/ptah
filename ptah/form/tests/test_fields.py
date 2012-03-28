@@ -3,6 +3,7 @@ from ptah import form
 from ptah.form import iso8601
 from ptah.testing import TestCase, PtahTestCase
 from webob.multidict import MultiDict
+from pyramid.compat import text_type
 
 
 class DummyRequest(object):
@@ -675,7 +676,7 @@ class TestFileField(PtahTestCase):
         self.assertIs(field.extract(), form.null)
 
         params = {
-            'test': u' '*1024,
+            'test': text_type(' '*1024),
             'test-filename': 'test.jpg',
             'test-mimetype': 'image/jpeg'}
 
