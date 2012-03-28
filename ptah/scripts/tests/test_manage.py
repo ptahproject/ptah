@@ -91,7 +91,7 @@ class TestManageCommand(ptah.PtahTestCase):
         self.assertIn('* cms-type:custom: Custom model (disabled: False)', val)
         self.assertIn('Custom model description', val)
         self.assertIn('class: CustomModel', val)
-        self.assertIn('module: ptah.scripts.tests.test_manage', val)
+        self.assertIn('module: test_manage', val)
 
         # disable
         cfg = ptah.get_settings(ptah.CFG_ID_PTAH)

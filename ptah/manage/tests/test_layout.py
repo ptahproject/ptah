@@ -41,5 +41,5 @@ class TestLayoutPreview(ptah.PtahTestCase):
 
         res = layoutPreview(Context(), request).text
 
-        self.assertIn('"python-module": "ptah.manage.tests.test_layout"', res)
+        self.assertIn('"python-module": "test_layout"', res)
         self.assertIn('"renderer": "ptah.manage:tests/test_layout.pt"', res)

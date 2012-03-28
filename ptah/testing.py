@@ -61,6 +61,8 @@ class PtahTestCase(TestCase):
                 except: # pragma: no cover
                     pass
 
+        self.config.scan(self.__class__.__module__)
+
         self.config.commit()
         self.config.autocommit = True
 

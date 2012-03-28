@@ -9,7 +9,6 @@ from pyramid.view import render_view_to_response
 import ptah
 from ptah.testing import PtahTestCase
 
-Session = ptah.get_session()
 
 class TestSqlaModuleTable(ptah.get_base()):
 
@@ -23,17 +22,19 @@ class TestSqlaModule(PtahTestCase):
 
     def setUp(self):
         global TestSqlaModuleContent
+
+        Base = ptah.get_base()
+        Session = ptah.get_session()
+
+        table = Base.metadata.tables['test_sqla_table']
+        if not table.exists():
+            Base.metadata.create_all(tables=(table,))
+
         class TestSqlaModuleContent(ptah.cms.Content):
             __tablename__ = 'test_sqla_content'
             __table_args__ = {'extend_existing': True}
             __type__ = ptah.cms.Type('Test')
             name = sqla.Column(sqla.Unicode())
-
-        #global TestSqlaModuleTable
-        #class TestSqlaModuleTable(ptah.get_base()):
-        #    __tablename__ = 'test_sqla_table'
-        #    id = sqla.Column('id', sqla.Integer, primary_key=True)
-        #    name = sqla.Column(sqla.Unicode(255))
 
         super(TestSqlaModule, self).setUp()
 
@@ -92,7 +93,7 @@ class TestSqlaModule(PtahTestCase):
     def test_sqla_table_view_model(self):
         from ptah.manage.sqla import SQLAModule, TableView
 
-        Session.add(TestSqlaModuleContent(title='test'))
+        ptah.get_session().add(TestSqlaModuleContent(title='test'))
 
         request = DummyRequest()
 
@@ -109,8 +110,8 @@ class TestSqlaModule(PtahTestCase):
         from ptah.manage.sqla import SQLAModule, TableView
 
         rec = TestSqlaModuleContent(title='test')
-        Session.add(rec)
-        Session.flush()
+        ptah.get_session().add(rec)
+        ptah.get_session().flush()
 
         uri = rec.__uri__
         type_uri = rec.__type__.__uri__
@@ -148,8 +149,8 @@ class TestSqlaModule(PtahTestCase):
         from ptah.settings import SettingRecord
 
         inst = SettingRecord(name='test', value='12345')
-        Session.add(inst)
-        Session.flush()
+        ptah.get_session().add(inst)
+        ptah.get_session().flush()
 
         mod = SQLAModule(None, DummyRequest())
         table = mod['psqla-ptah_settings']
@@ -216,7 +217,7 @@ class TestSqlaModule(PtahTestCase):
                       ptah.view.render_messages(request))
         self.assertIsInstance(res, HTTPFound)
 
-        rec = Session.query(TestSqlaModuleTable).first()
+        rec = ptah.get_session().query(TestSqlaModuleTable).first()
         self.assertEqual(rec.name, 'Test')
 
     def test_sqla_table_addrec_create_multi(self):
@@ -248,7 +249,7 @@ class TestSqlaModule(PtahTestCase):
         self.assertIn('Table record has been created.',
                       ptah.view.render_messages(request))
 
-        rec = Session.query(TestSqlaModuleTable).first()
+        rec = ptah.get_session().query(TestSqlaModuleTable).first()
         self.assertEqual(rec.name, 'Test multi')
 
     def test_sqla_table_editrec_basics(self):
@@ -256,8 +257,8 @@ class TestSqlaModule(PtahTestCase):
 
         rec = TestSqlaModuleTable()
         rec.name = 'Test record'
-        Session.add(rec)
-        Session.flush()
+        ptah.get_session().add(rec)
+        ptah.get_session().flush()
 
         rec_id = rec.id
 
@@ -289,8 +290,8 @@ class TestSqlaModule(PtahTestCase):
 
         rec = TestSqlaModuleTable()
         rec.name = 'Test record'
-        Session.add(rec)
-        Session.flush()
+        ptah.get_session().add(rec)
+        ptah.get_session().flush()
 
         rec_id = rec.id
 
@@ -322,7 +323,7 @@ class TestSqlaModule(PtahTestCase):
         self.assertIsInstance(res, HTTPFound)
         self.assertEqual(res.headers['location'], '..')
 
-        rec = Session.query(TestSqlaModuleTable).filter(
+        rec = ptah.get_session().query(TestSqlaModuleTable).filter(
             TestSqlaModuleTable.id == rec_id).first()
         self.assertEqual(rec.name, 'Record modified')
 
@@ -331,8 +332,8 @@ class TestSqlaModule(PtahTestCase):
 
         rec = TestSqlaModuleTable()
         rec.name = 'Test record'
-        Session.add(rec)
-        Session.flush()
+        ptah.get_session().add(rec)
+        ptah.get_session().flush()
 
         rec_id = rec.id
 
@@ -353,7 +354,7 @@ class TestSqlaModule(PtahTestCase):
         self.assertIsInstance(res, HTTPFound)
         self.assertEqual(res.headers['location'], '..')
 
-        rec = Session.query(TestSqlaModuleTable).filter(
+        rec = ptah.get_session().query(TestSqlaModuleTable).filter(
             TestSqlaModuleTable.id == rec_id).first()
         self.assertIsNone(rec, None)
 
@@ -377,8 +378,8 @@ class TestSqlaModule(PtahTestCase):
 
         rec = TestSqlaModuleTable()
         rec.name = 'Test record'
-        Session.add(rec)
-        Session.flush()
+        ptah.get_session().add(rec)
+        ptah.get_session().flush()
 
         rec_id = rec.id
 
@@ -419,7 +420,7 @@ class TestSqlaModule(PtahTestCase):
         self.assertIn('Select records have been removed.',
                       ptah.view.render_messages(request))
 
-        rec = Session.query(TestSqlaModuleTable).filter(
+        rec = ptah.get_session().query(TestSqlaModuleTable).filter(
             TestSqlaModuleTable.id == rec_id).first()
         self.assertIsNone(rec, None)
 
@@ -428,8 +429,8 @@ class TestSqlaModule(PtahTestCase):
 
         rec = TestSqlaModuleContent()
         rec.name = 'Test record'
-        Session.add(rec)
-        Session.flush()
+        ptah.get_session().add(rec)
+        ptah.get_session().flush()
 
         rec_id = rec.__id__
 

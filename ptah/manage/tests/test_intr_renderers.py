@@ -19,7 +19,7 @@ class TestUriIntrospect(ptah.PtahTestCase):
         rendered = ptah.render_snippet(ID_RESOLVER, intr, self.request)
 
         self.assertIn('uri-intro-test', rendered)
-        self.assertIn('ptah.manage.tests.test_intr_renderers', rendered)
+        self.assertIn('test_intr_renderers', rendered)
 
 
 class TestTypeIntrospect(ptah.PtahTestCase):
