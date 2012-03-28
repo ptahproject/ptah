@@ -589,6 +589,9 @@ class TestDBSettings(TestDBSettingsBase):
         from ptah.settings import SettingRecord
         Session = ptah.get_session()
 
+        # non json obj
+        Session.add(SettingRecord(name='group.node3', value='value'))
+
         settings = self.registry.__ptah_storage__[SETTINGS_OB_ID]
         settings.load({})
 
@@ -598,6 +601,8 @@ class TestDBSettings(TestDBSettingsBase):
         settings.load_fromdb()
         self.assertEqual(grp['node1'], 'new text')
         self.assertEqual(grp['node2'], 65)
+
+        self.assertEqual(grp['node3'], 'value')
 
     def test_settings_load_from_db_on_startup(self):
         grp = self._make_grp()

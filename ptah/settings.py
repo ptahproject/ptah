@@ -214,7 +214,7 @@ class Settings(object):
                         try:
                             group[fname] = JsonType.serializer.loads(val)
                         except ValueError:
-                            pass
+                            group[fname] = val
 
     def export(self, default=False):
         groups = config.get_cfg_storage(ID_SETTINGS_GROUP).items()
