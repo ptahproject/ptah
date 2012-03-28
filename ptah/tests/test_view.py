@@ -195,6 +195,32 @@ class TestStatusMessages(PtahTestCase):
             view.render_messages(self.request),
             '<div class="customMsg">message</div>')
 
+    def test_messages_render_message(self):
+        from ptah import view
+
+        @view.snippet('custom', view.Message)
+        def customMessage(context, request):
+            return '<div class="customMsg">{0}</div>'.format(context.message)
+
+        self.init_ptah()
+
+        self.assertEqual(
+            ptah.render_message(self.request, 'message', 'custom'),
+            '<div class="customMsg">message</div>')
+
+    def test_messages_render_message_with_error(self):
+        from ptah import view
+
+        @view.snippet('custom', view.Message)
+        def customMessage(context, request):
+            raise ValueError()
+
+        self.init_ptah()
+
+        self.assertEqual(
+            ptah.render_message(self.request, 'message', 'custom'),
+            'message')
+
     def test_messages_render(self):
         from ptah import view
         self.init_ptah()

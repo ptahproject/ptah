@@ -25,6 +25,7 @@ class TestNode(PtahTestCase):
             ptah.cms.Node.__uri__ == _uri).one()
 
         self.assertTrue(isinstance(c, ptah.cms.Node))
+        self.assertIs(ptah.get_session().object_session(c), c.get_session())
 
     def test_polymorphic_node(self):
         import ptah.cms

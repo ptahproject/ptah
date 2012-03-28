@@ -665,6 +665,27 @@ class TestFileField(PtahTestCase):
         self.assertIs(type(res), dict)
         self.assertEqual(res['filename'], 'test.jpg')
 
+    def test_fields_html5(self):
+        request = DummyRequest()
+
+        field = self._makeOne('test')
+        field = field.bind('', 'content', {})
+        field.update(request)
+
+        self.assertIs(field.extract(), form.null)
+
+        params = {
+            'test': u' '*1024,
+            'test-filename': 'test.jpg',
+            'test-mimetype': 'image/jpeg'}
+
+        field = field.bind('', 'content', params)
+        field.update(request)
+
+        res = field.extract()
+        self.assertIs(type(res), dict)
+        self.assertEqual(res['filename'], 'test.jpg')
+
 
 class TestJSDateTimeField(PtahTestCase):
 

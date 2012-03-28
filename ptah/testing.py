@@ -55,8 +55,8 @@ class PtahTestCase(TestCase):
             for l in range(len(parts)):
                 pkg = '.'.join(parts[:l+1])
                 if pkg == 'ptah' or pkg.startswith('ptah.'):
-                    continue
-                try: # pragma: no cover
+                    continue # pragma: no cover
+                try:
                     self.config.include(pkg)
                 except: # pragma: no cover
                     pass
