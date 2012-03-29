@@ -1,5 +1,6 @@
 import ptah
 from ptah.testing import PtahTestCase
+from pyramid.compat import text_
 from pyramid.testing import DummyRequest
 from pyramid.view import render_view_to_response
 from pyramid.httpexceptions import HTTPFound
@@ -31,7 +32,7 @@ class TestSettingsModule(PtahTestCase):
         res = render_view_to_response(mod, request, '', False)
         SettingsView.grps = None
         self.assertEqual(res.status, '200 OK')
-        self.assertIn('Ptah settings', res.body)
+        self.assertIn('Ptah settings', text_(res.body))
 
 
 class TestSettingsTTW(PtahTestCase):
