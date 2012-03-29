@@ -27,9 +27,11 @@ class TestSettingsModule(PtahTestCase):
         request = DummyRequest()
 
         mod = SettingsModule(None, request)
-
+        SettingsView.grps = ('ptah',)
         res = render_view_to_response(mod, request, '', False)
+        SettingsView.grps = None
         self.assertEqual(res.status, '200 OK')
+        self.assertIn('Ptah settings', res.body)
 
 
 class TestSettingsTTW(PtahTestCase):
