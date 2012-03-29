@@ -2,7 +2,7 @@ import transaction
 import sqlalchemy as sqla
 import ptah
 from ptah import form
-from ptah.testing import PtahTestCase
+from ptah.testing import TestCase, PtahTestCase
 
 Session = ptah.get_session()
 
@@ -313,3 +313,24 @@ class TestJsonList(PtahTestCase):
 
         rec = Session.query(Test).filter_by(id = id).one()
         self.assertEqual(rec.data, ['test'])
+
+
+class TestJsonSerializer(TestCase):
+
+    def test_global_custom_serializer(self):
+        from ptah.sqlautils import JsonType
+
+        s = object()
+
+        ptah.set_jsontype_serializer(s)
+
+        jsType = JsonType()
+        self.assertIs(jsType.serializer, s)
+
+    def test_custom_serializer(self):
+        from ptah.sqlautils import JsonType
+
+        s = object()
+
+        jsType = JsonType(serializer=s)
+        self.assertIs(jsType.serializer, s)

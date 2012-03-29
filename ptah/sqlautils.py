@@ -18,6 +18,7 @@ _base = declarative.declarative_base()
 _zte = ZopeTransactionExtension()
 _session = orm.scoped_session(orm.sessionmaker(extension=[_zte]))
 _session_maker = orm.sessionmaker()
+_sa_session = local()
 
 
 def get_base():
@@ -32,8 +33,6 @@ def reset_session():
     _zte = ZopeTransactionExtension()
     _session = orm.scoped_session(orm.sessionmaker(extension=[_zte]))
 
-_sa_session = local()
-
 
 class transaction(object):
 
@@ -42,13 +41,20 @@ class transaction(object):
 
     def __enter__(self):
         global _sa_session
+
+        t = getattr(_sa_session, 'transaction', None)
+        if t is not None:
+            raise RuntimeError("Nested transactions are not allowed")
+
         _sa_session.sa = self.sa
+        _sa_session.transaction = self
 
         return self.sa
 
     def __exit__(self, type, value, traceback):
         global _sa_session
         _sa_session.sa = None
+        _sa_session.transaction = None
 
         if type is None:
             try:
@@ -99,7 +105,6 @@ class QueryFreezer(object):
             lambda: Session.query(Content)
                 .filter(Content.__uri__ == sqla.sql.bindparam('parent')))
     """
-    _testing = False
 
     def __init__(self, builder):
         self.id = uuid.uuid4().int
@@ -117,7 +122,7 @@ class QueryFreezer(object):
 
         q = data.get(self.id, None)
 
-        if q is None or self._testing:
+        if q is None:
             query = self.builder()
             mapper = query._mapper_zero_or_none()
             querycontext = query._compile_context()
@@ -159,9 +164,6 @@ class QueryFreezer(object):
 
 
 def set_jsontype_serializer(serializer):
-    if serializer is None:
-        serializer = json
-
     JsonType.serializer = serializer
 
 
