@@ -28,7 +28,10 @@ if sys.version_info[:2] == (2, 6):
             'ordereddict',
             'unittest2'))
 
-tests_require = install_requires + ['nose', 'simplejson']
+if sys.version_info[:2] in ((2,6),(2,7)):
+    install_requires.extend(('simplejson',))
+
+tests_require = install_requires + ['nose']
 
 
 def read(f):
