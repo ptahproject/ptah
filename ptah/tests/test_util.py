@@ -6,7 +6,7 @@ class TestJson(TestCase):
 
     def test_datetime(self):
         from ptah import util
-        dt = datetime(2011, 10, 1, 01, 56)
+        dt = datetime(2011, 10, 1, 1, 56)
 
         self.assertEqual(util.dthandler(dt), '2011-10-01T01:56:00')
         self.assertIsNone(util.dthandler(object()))
@@ -14,7 +14,7 @@ class TestJson(TestCase):
     def test_json(self):
         from ptah import util
 
-        data = {'date': datetime(2011, 10, 1, 01, 56),
+        data = {'date': datetime(2011, 10, 1, 1, 56),
                 'int': 10,
                 'str': 'string'}
 
