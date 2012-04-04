@@ -36,7 +36,8 @@ def main():
 
         print('')
 
-        for step in populate.list_steps(all=True):
+        for step in sorted(populate.list_steps(all=True),
+                           key=lambda i:i['name']):
             print(titleWrap.fill('{0}: {1} ({2})'.format(
                         step['name'], step['title'],
                         'active' if step['active'] else 'inactive')))

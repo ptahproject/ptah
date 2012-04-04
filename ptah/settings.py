@@ -60,6 +60,17 @@ def pyramid_get_settings(config, grp):
     return config.get_cfg_storage(ID_SETTINGS_GROUP)[grp]
 
 
+def load_dbsettings(registry=None):
+    session = ptah.get_session()
+    if not (session.bind and SettingRecord.__table__.exists()):
+        return
+
+    # load db settings
+    s_ob = config.get_cfg_storage(
+        SETTINGS_OB_ID, registry, default_factory=Settings)
+    s_ob.load_fromdb()
+
+
 def init_settings(pconfig, cfg=None, section=configparser.DEFAULTSECT):
     """Initialize settings management system. This function available
     as pyramid configurator directive. You should call it during

@@ -53,6 +53,7 @@ from ptah.library import render_includes
 # settings
 from ptah.settings import get_settings
 from ptah.settings import register_settings
+from ptah.settings import load_dbsettings
 
 # security
 from ptah.authentication import auth_service

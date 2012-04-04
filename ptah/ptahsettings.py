@@ -264,11 +264,4 @@ def initialize_sql(cfg, prefix='sqlalchemy.'):
 
 @ptah.subscriber(ApplicationCreated)
 def starting(ev):
-    session = ptah.get_session()
-    if not (session.bind and settings.SettingRecord.__table__.exists()):
-        return
-
-    # load db settings
-    s_ob = ptah.config.get_cfg_storage(
-        settings.SETTINGS_OB_ID, default_factory=settings.Settings)
-    s_ob.load_fromdb()
+    settings.load_dbsettings()
