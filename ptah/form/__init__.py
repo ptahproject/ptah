@@ -57,7 +57,10 @@ from ptah.form.fields import TimezoneField
 # js fields (temporary)
 from ptah.form.jsfields import JSDateField
 from ptah.form.jsfields import JSDateTimeField
-from ptah.form.jsfields import TinymceField
+from ptah.form.jsfields import CKEditorField
+
+# backward compatibility
+#TinymceField = CKEditorField
 
 # helper field classes
 from ptah.form.fields import VocabularyField

@@ -180,13 +180,13 @@ def jsdatetimePreview(request):
     return widget.snippet('form-widget', widget)
 
 
-@form.fieldpreview(form.TinymceField)
-def tinemcePreview(request):
-    field = form.TinymceField(
-        'TinymceField',
-        title = 'TinyMCE field',
-        description = 'TinyMCE field preview description',
-        default = 'Test text in tinymce field.',
+@form.fieldpreview(form.CKEditorField)
+def ckeditorPreview(request):
+    field = form.CKEditorField(
+        'CKEditorField',
+        title = 'CKEditor field',
+        description = 'CKEditor field preview description',
+        default = 'Test text in ckeditor field.',
         width = '200px')
 
     widget = field.bind('preview.', form.null, {})

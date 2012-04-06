@@ -2,7 +2,7 @@
 CHANGES
 =======
 
-0.4.0 (Unreleased)
+0.4.0 (2012-04-06)
 ==================
 
 Features
@@ -10,7 +10,7 @@ Features
 
 - Added html5 file api support in FileField
 
-- alembic 0.2.1
+- alembic 0.2.x
 
 - twitter bootstrap 2.0
 

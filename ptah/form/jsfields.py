@@ -9,23 +9,22 @@ from ptah.form.fields import TextAreaField, TextField, DateTimeField
 
 
 @field('tinymce')
-class TinymceField(TextAreaField):
-    """TinyMCE Text Area input widget. Field name is ``tinymce``.
+@field('ckeditor')
+class CKEditorField(TextAreaField):
+    """ CKEditor input widget. Field name is ``ckeditor``.
 
     Extra params:
 
     :param width: Width of widget, default is ``400px``
     :param height: Height os widget, default is ``300px``
-    :param theme: TinyMCE theme
     """
 
-    klass = 'tinymce-widget'
+    klass = 'ckeditor-widget'
 
     width = '400px'
     height = '300px'
-    theme = "advanced"
 
-    tmpl_input = "ptah.form:templates/fields/tinymce_input.pt"
+    tmpl_input = "ptah.form:templates/fields/ckeditor-input.pt"
 
 
 @field('date')
