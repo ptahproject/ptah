@@ -90,11 +90,11 @@ class TypeInformation(object):
         self.cls = cls
         self.name = name
 
-    def add(self, container, content):
+    def add(self, content, *args, **kw):
         if self.add_method is None:
             raise TypeException("Add method is not defined")
 
-        return self.add_method(container, content)
+        return self.add_method(content, *args, **kw)
 
     def create(self, **data):
         content = self.cls(**data)
@@ -178,7 +178,7 @@ def register_type_impl(config, cls, tinfo, name, **kw):
         handler(config, cls, tinfo, name, **kw)
 
 
-def sqla_add_method(container, content):
+def sqla_add_method(content, *args, **kw):
     ptah.get_session().add(content)
     return content
 
@@ -193,7 +193,7 @@ def register_sqla_type(config, cls, tinfo, name, **kw):
     fieldset = tinfo.fieldset
 
     if fieldset is None:
-        fieldset = ptah.generate_fieldset(cls)
+        fieldset = ptah.generate_fieldset(cls, fieldNames=kw.get('fieldNames'))
         log.info("Generating fieldset for %s content type.", cls)
 
     if fieldset is not None:

@@ -12,6 +12,16 @@ class TestTypeInfo(PtahTestCase):
     _init_auth = True
     _init_ptah = False
 
+    def tearDown(self):
+        super(TestTypeInfo, self).tearDown()
+
+        from ptah import tinfo
+        t = []
+        for name, h in tinfo.phase2_data:
+            if name !='test':
+                t.append((name, h))
+        tinfo.phase2_data[:] = t
+
     def test_tinfo(self):
         import ptah
 
@@ -191,3 +201,121 @@ class TestTypeInfo(PtahTestCase):
 
         self.assertEqual(tinfo_uri, 'type:mycontent2')
         self.assertIs(ptah.resolve(tinfo_uri), MyContent.__type__)
+
+    def test_add_method(self):
+        import ptah
+
+        global MyContent
+        class MyContent(object):
+            __type__ = ptah.Type('mycontent2', 'MyContent')
+
+        self.init_ptah()
+
+        tinfo = MyContent.__type__
+
+        err=None
+        try:
+            tinfo.add(None, MyContent())
+        except Exception as e:
+            err=e
+
+        self.assertIsNotNone(err)
+
+        added = []
+        def add_content(item):
+            added.append(item)
+
+        tinfo.add_method = add_content
+
+        item = MyContent()
+        tinfo.add(item)
+        self.assertIn(item, added)
+
+    def test_phase2_err(self):
+        from ptah.tinfo import phase2
+
+        @phase2('test')
+        def t(): pass
+
+        err = None
+        try:
+            @phase2('test')
+            def t1(): pass
+        except Exception as e:
+            err = e
+
+        self.assertIsNotNone(err)
+
+
+class TestSqlTypeInfo(PtahTestCase):
+
+    _init_auth = True
+    _init_ptah = False
+
+    def tearDown(self):
+        super(TestSqlTypeInfo, self).tearDown()
+
+        from ptah import tinfo
+        t = []
+        for name, h in tinfo.phase2_data:
+            if name !='test':
+                t.append((name, h))
+        tinfo.phase2_data[:] = t
+
+    def test_tinfo(self):
+        import ptah
+        from ptah import tinfo
+        import sqlalchemy as sqla
+
+        global MyContentSql
+        class MyContentSql(ptah.get_base()):
+
+            __tablename__ = 'tinfo_sql_test'
+            __type__ = ptah.Type('mycontent', 'MyContent')
+
+            id = sqla.Column('id', sqla.Integer, primary_key=True)
+
+        self.init_ptah()
+
+        ti = ptah.get_type('type:mycontent')
+        self.assertIs(ti.add_method, tinfo.sqla_add_method)
+
+    def test_custom_fieldset(self):
+        import ptah
+        from ptah import tinfo
+        import sqlalchemy as sqla
+
+        global MyContentSql
+        class MyContentSql(ptah.get_base()):
+
+            __tablename__ = 'tinfo_sql_test2'
+            __type__ = ptah.Type('mycontent', 'MyContent')
+
+            id = sqla.Column(sqla.Integer, primary_key=True)
+            test = sqla.Column(sqla.Unicode)
+
+        self.init_ptah()
+
+        ti = ptah.get_type('type:mycontent')
+        self.assertIn('test', ti.fieldset)
+
+    def test_sqla_add_method(self):
+        import ptah
+        from ptah import tinfo
+        import sqlalchemy as sqla
+
+        global MyContentSql
+        class MyContentSql(ptah.get_base()):
+
+            __tablename__ = 'tinfo_sql_test3'
+            __type__ = ptah.Type('mycontent', 'MyContent')
+            id = sqla.Column(sqla.Integer, primary_key=True)
+            test = sqla.Column(sqla.Unicode)
+
+        self.init_ptah()
+
+        ti = ptah.get_type('type:mycontent')
+
+        item = ti.add(MyContentSql(test='title'))
+        sa = ptah.get_session()
+        self.assertIn(item, sa)
