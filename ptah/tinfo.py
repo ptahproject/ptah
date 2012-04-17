@@ -136,7 +136,7 @@ class TypeInformation(object):
         return types
 
 
-def Type(name, **kw):
+def Type(name, title=None, **kw):
     """ Declare new type. This function has to be called within a content
     class declaration.
 
@@ -148,9 +148,7 @@ def Type(name, **kw):
 
     """
     info = config.DirectiveInfo(allowed_scope=('class',))
-
-    if kw.get('title') is None:
-        kw['title'] = name.capitalize()
+    kw['title'] = name.capitalize() if title is None else title
 
     typeinfo = TypeInformation(None, name, **kw)
 

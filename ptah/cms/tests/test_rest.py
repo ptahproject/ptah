@@ -110,7 +110,7 @@ class TestRestApi(RestBase):
         info = cmsTypes(self.request)
 
         self.assertEqual(info[0]['name'], 'app')
-        self.assertEqual(info[0]['__uri__'], 'type:app')
+        self.assertEqual(info[0]['__uri__'], 'cms-type:app')
         self.assertEqual(len(info[0]['fieldset']), 2)
         self.assertEqual(info[0]['fieldset'][0]['name'], 'title')
         self.assertEqual(info[0]['fieldset'][1]['name'], 'description')

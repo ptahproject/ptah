@@ -169,23 +169,26 @@ class Content(BaseContent):
 def content_created_handler(ev):
     """ Assigns created, modified, __owner__
         attributes for newly created content """
-    now = datetime.utcnow()
-    ev.object.created = now
-    ev.object.modified = now
+    if isinstance(ev.object, BaseContent):
+        now = datetime.utcnow()
+        ev.object.created = now
+        ev.object.modified = now
 
-    user = ptah.auth_service.get_userid()
-    if user:
-        ev.object.__owner__ = user
+        user = ptah.auth_service.get_userid()
+        if user:
+            ev.object.__owner__ = user
 
 
 @ptah.subscriber(ptah.events.ContentModifiedEvent)
 def content_modified_handler(ev):
     """ Updates the modified attribute on content """
-    ev.object.modified = datetime.utcnow()
+    if isinstance(ev.object, BaseContent):
+        ev.object.modified = datetime.utcnow()
 
 
 @ptah.subscriber(ptah.events.ContentEvent)
 def content_event_handler(ev):
     """ Resend uri invalidate event """
-    get_current_registry().notify(
-        ptah.events.UriInvalidateEvent(ev.object.__uri__))
+    if isinstance(ev.object, Node):
+        get_current_registry().notify(
+            ptah.events.UriInvalidateEvent(ev.object.__uri__))

@@ -88,14 +88,14 @@ class TestManageCommand(ptah.PtahTestCase):
 
         val = out.getvalue()
 
-        self.assertIn('* type:custom: Custom model (disabled: False)', val)
+        self.assertIn('* cms-type:custom: Custom model (disabled: False)', val)
         self.assertIn('Custom model description', val)
         self.assertIn('class: CustomModel', val)
         self.assertIn('module: test_manage', val)
 
         # disable
         cfg = ptah.get_settings(ptah.CFG_ID_PTAH)
-        cfg['disable_models'] = ('type:custom',)
+        cfg['disable_models'] = ('cms-type:custom',)
 
         out = NativeIO()
         sys.stdout = out
@@ -105,4 +105,4 @@ class TestManageCommand(ptah.PtahTestCase):
 
         val = out.getvalue()
 
-        self.assertIn('* type:custom: Custom model (disabled: True)', val)
+        self.assertIn('* cms-type:custom: Custom model (disabled: True)', val)
