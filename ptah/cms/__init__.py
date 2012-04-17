@@ -17,8 +17,6 @@ from ptah.cms.container import BaseContainer
 
 # type information
 from ptah.cms.tinfo import Type
-from ptah.cms.tinfo import TypeInformation
-from ptah.cms.tinfo import get_type, get_types
 
 # application root
 from ptah.cms.root import get_app_factories

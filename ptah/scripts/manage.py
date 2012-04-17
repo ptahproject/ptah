@@ -81,7 +81,7 @@ class ManageCommand(object):
         disabled = cfg['disable_models']
 
         types = []
-        for ti in ptah.cms.get_types().values():
+        for ti in ptah.get_types().values():
             types.append(
                 {'name': ti.__uri__,
                  'title': ti.title,

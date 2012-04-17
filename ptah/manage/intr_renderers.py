@@ -160,7 +160,7 @@ class TokenTypeRenderer(Renderer):
 
 
 @ptah.snippet(
-    'ptah.cms:type', IIntrospectable,
+    'ptah:type', IIntrospectable,
     renderer='ptah.manage:templates/intr-contenttype.pt')
 class ContentTypeRenderer(Renderer):
     """ Ptah content types """

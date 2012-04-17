@@ -444,8 +444,6 @@ class TestMultiChoiceField(PtahTestCase):
         field = field.bind('', [1,3], {})
         field.update(request)
 
-        #print strip(field.render(request))
-
 
 class TestDateTime(TestCase):
     def _makeOne(self, name='test', *arg, **kw):

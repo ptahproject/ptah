@@ -1,21 +1,12 @@
 """ interfaces """
 from zope import interface
+from pyramid.httpexceptions import HTTPServerError
+
 from ptah import form
-from pyramid.httpexceptions import HTTPNotFound, HTTPForbidden, HTTPServerError
+from ptah.interfaces import TypeException, Forbidden, NotFound
 
 
-class CmsException(Exception):
-    """ """
-
-class Forbidden(HTTPForbidden, CmsException):
-    """ something forbidden """
-
-
-class NotFound(HTTPNotFound, CmsException):
-    """ something not found """
-
-
-class Error(HTTPServerError, CmsException):
+class Error(HTTPServerError, TypeException):
     """ internale error """
 
 
@@ -55,32 +46,6 @@ class IApplicationRootFactory(interface.Interface):
 
     def __call__(**kw):
         """ return ApplicationRoot object """
-
-
-class ITypeInformation(interface.Interface):
-    """ Content type information """
-
-    name = interface.Attribute('Name')
-    title = interface.Attribute('Title')
-    description = interface.Attribute('Description')
-
-    permission = interface.Attribute('Add permission')
-
-    filter_content_types = interface.Attribute('Filter addable types')
-    allowed_content_types = interface.Attribute('List of addable types')
-    global_allow = interface.Attribute('Addable globally')
-
-    def create(**data):
-        """ construct new content instance """
-
-    def is_allowed(container):
-        """ allow create this content in container """
-
-    def check_context(container):
-        """ same as isAllowed, but raises HTTPForbidden """
-
-    def list_types(self, container):
-        """ list addable content types """
 
 
 class IBlob(INode):

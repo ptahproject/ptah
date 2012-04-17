@@ -4,7 +4,7 @@ from pyramid.decorator import reify
 from pyramid.httpexceptions import HTTPFound
 
 import ptah
-from ptah import cms, form
+from ptah import form
 from ptah.manage import get_manage_url
 
 
@@ -15,7 +15,7 @@ class ModelModule(ptah.manage.PtahModule):
     title = 'Models'
 
     def __getitem__(self, key):
-        ti = cms.get_type('cms-type:%s'%key)
+        ti = ptah.get_type('type:%s'%key)
 
         if ti is not None:
             return Model(ti, self, self.request)
@@ -23,7 +23,7 @@ class ModelModule(ptah.manage.PtahModule):
         raise KeyError(key)
 
     def available(self):
-        return bool(cms.get_types())
+        return bool(ptah.get_types())
 
 
 class Model(object):
@@ -71,7 +71,7 @@ class ModelModuleView(ptah.View):
         cfg = ptah.get_settings(ptah.CFG_ID_PTAH, self.request.registry)
 
         types = []
-        for ti in cms.get_types().values():
+        for ti in ptah.get_types().values():
             if ti.__uri__ in cfg['disable_models']:
                 continue
             types.append((ti.title, ti))

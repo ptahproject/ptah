@@ -26,16 +26,16 @@ class TestTypeIntrospect(ptah.PtahTestCase):
 
     def test_type_introspect(self):
         global Content1
-        class Content1(ptah.cms.Content):
-            __type__ = ptah.cms.Type('content1')
+        class Content1(object):
+            __type__ = ptah.Type('content1')
 
         self.config.scan(self.__class__.__module__)
 
         intr = self.registry.introspector.get(
-            'ptah.cms:type', ('ptah.cms:type', 'content1'))
+            'ptah:type', ('ptah:type', 'content1'))
 
-        res = ptah.render_snippet('ptah.cms:type', intr, self.request)
-        self.assertIn('<small>cms-type:content1</small>', res)
+        res = ptah.render_snippet('ptah:type', intr, self.request)
+        self.assertIn('<small>type:content1</small>', res)
 
 
 class SubscribersIntrospect(ptah.PtahTestCase):

@@ -1,6 +1,7 @@
 """ interfaces """
 import translationstring
 from zope import interface
+from pyramid.httpexceptions import HTTPForbidden, HTTPNotFound
 
 _ = translationstring.TranslationStringFactory('ptah')
 
@@ -121,3 +122,41 @@ def roles_provider(context, uid, registry):
     :param registry: Pyramid registry object
     :rtype: Sequence of roles
     """
+
+
+class TypeException(Exception):
+    """ type exception """
+
+
+class Forbidden(HTTPForbidden, TypeException):
+    """ something is forbidden """
+
+
+class NotFound(HTTPNotFound, TypeException):
+    """ something is not found """
+
+
+class ITypeInformation(interface.Interface):
+    """ Content type information """
+
+    name = interface.Attribute('Name')
+    title = interface.Attribute('Title')
+    description = interface.Attribute('Description')
+
+    permission = interface.Attribute('Add permission')
+
+    filter_content_types = interface.Attribute('Filter addable types')
+    allowed_content_types = interface.Attribute('List of addable types')
+    global_allow = interface.Attribute('Addable globally')
+
+    def create(**data):
+        """ construct new content instance """
+
+    def is_allowed(container):
+        """ allow create this content in container """
+
+    def check_context(container):
+        """ same as isAllowed, but raises HTTPForbidden """
+
+    def list_types(self, container):
+        """ list addable content types """

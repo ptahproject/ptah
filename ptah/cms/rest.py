@@ -8,7 +8,7 @@ from ptah import config
 from ptah.cms import wrap
 from ptah.cms.node import load
 from ptah.cms.container import Container
-from ptah.cms.interfaces import NotFound, CmsException
+from ptah.cms.interfaces import NotFound, TypeException
 from ptah.cms.interfaces import INode, IBlob, IContent, IContainer
 from ptah.cms.permissions import View, ModifyContent, DeleteContent
 
@@ -25,7 +25,7 @@ def cmsApplications(request, *args):
 
         try:
             info = wrap(root).info()
-        except (AttributeError, CmsException):
+        except (AttributeError, TypeException):
             continue
 
         info['__mount__'] = name
@@ -44,7 +44,7 @@ def cmsApplications(request, *args):
 def cmsTypes(request, *args):
     types = []
 
-    for name, tinfo in ptah.cms.get_types().items():
+    for name, tinfo in ptah.get_types().items():
         types.append((tinfo.title, name, typeInfo(tinfo, request)))
 
     return [info for _t, name, info in sorted(types)]

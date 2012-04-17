@@ -110,7 +110,7 @@ class TestRestApi(RestBase):
         info = cmsTypes(self.request)
 
         self.assertEqual(info[0]['name'], 'app')
-        self.assertEqual(info[0]['__uri__'], 'cms-type:app')
+        self.assertEqual(info[0]['__uri__'], 'type:app')
         self.assertEqual(len(info[0]['fieldset']), 2)
         self.assertEqual(info[0]['fieldset'][0]['name'], 'title')
         self.assertEqual(info[0]['fieldset'][1]['name'], 'description')
@@ -298,7 +298,7 @@ class TestCMSRestAction(RestBase):
         from ptah.cms import rest
         self.init_ptah()
 
-        all_types = ptah.cms.get_types()
+        all_types = ptah.get_types()
 
         all_types[Content.__type__.__uri__] = Content.__type__
 
