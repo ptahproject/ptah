@@ -14,12 +14,29 @@ from ptah.tinfo import TYPES_DIR_ID, TypeInformation
 log = logging.getLogger('ptah.cms')
 
 
+@ptah.resolver('cms-type')
+def typeInfoResolver(uri):
+    """Type resolver
+
+       :Parameters:
+         - type scheme, e.g. blob-sql
+       :Returns:
+         - :py:class:`ptah.cms.TypeInformation`
+    """
+    return config.get_cfg_storage(TYPES_DIR_ID).get(uri[4:])
+
+
 class TypeInformation(TypeInformation):
     """ Type information """
 
     schema = None
     global_allow = True
     addview = None # addview action, path relative to current container
+
+    def __init__(self, cls, name, **kw):
+        super(TypeInformation, self).__init__(cls, name, **kw)
+
+        self.__uri__ = 'cms-type:%s'%name
 
     def is_allowed(self, container):
         if not isinstance(container, BaseContainer):
@@ -55,6 +72,7 @@ def Type(name, title=None, fieldset=None, **kw):
     f_locals = sys._getframe(1).f_locals
     if '__mapper_args__' not in f_locals:
         f_locals['__mapper_args__'] = {'polymorphic_identity': typeinfo.__uri__}
+
     if '__id__' not in f_locals and '__tablename__' in f_locals:
         f_locals['__id__'] = sqla.Column(
             'id', sqla.Integer,
@@ -116,7 +134,7 @@ def register_type_impl(
 
     tinfo.cls = cls
 
-    config.get_cfg_storage(TYPES_DIR_ID)[tinfo.__uri__] = tinfo
+    config.get_cfg_storage(TYPES_DIR_ID)[tinfo.__uri__[4:]] = tinfo
 
     # sql query for content resolver
     cls.__uri_sql_get__ = ptah.QueryFreezer(
