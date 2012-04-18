@@ -138,9 +138,6 @@ from ptah.uiactions import list_uiactions
 # manage
 from ptah import manage
 
-# cms
-from ptah import cms
-
 # form api
 from ptah import form
 
@@ -173,7 +170,6 @@ def includeme(cfg):
 
     # include extra packages
     cfg.include('pyramid_tm')
-    cfg.include('ptah.manage')
 
     # object events handler
     cfg.registry.registerHandler(

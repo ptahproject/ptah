@@ -29,7 +29,7 @@ class SourceView(ptah.View):
         while 1:
             try:
                 dist = pkg_resources.get_distribution(pkg_name)
-                if dist is not None:
+                if dist is not None: # pragma: no cover
                     break
             except pkg_resources.DistributionNotFound:
                 if '.' not in pkg_name:

@@ -89,18 +89,6 @@ ptah_init_mailer(mailer)
    :param mailer: Mailer object
 
 
-ptah_init_rest()
-~~~~~~~~~~~~~~~~
-
-   Eanble ptah rest api. It registers two routes::
-
-     /__rest__/login
-
-     and
-
-     /__rest__/{service}/*subpath
-
-
 ptah_auth_checker(checker)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 

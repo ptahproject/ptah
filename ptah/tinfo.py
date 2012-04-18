@@ -194,7 +194,9 @@ def register_sqla_type(config, cls, tinfo, name, **kw):
     fieldset = tinfo.fieldset
 
     if fieldset is None:
-        fieldset = ptah.generate_fieldset(cls, fieldNames=kw.get('fieldNames'))
+        fieldset = ptah.generate_fieldset(
+            cls, fieldNames=kw.get('fieldNames'),
+            namesFilter=kw.get('namesFilter'))
         log.info("Generating fieldset for %s content type.", cls)
 
     if fieldset is not None:

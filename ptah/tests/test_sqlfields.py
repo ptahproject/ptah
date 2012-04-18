@@ -222,6 +222,32 @@ class TestQueryFreezer(PtahTestCase):
         rec = sql_get.one(name='test')
         self.assertEqual(rec.name, 'test')
 
+    def test_freezer_all(self):
+        import ptah
+
+        class Test(ptah.get_base()):
+            __tablename__ = 'test13'
+
+            id = sqla.Column('id', sqla.Integer, primary_key=True)
+            name = sqla.Column(sqla.Unicode())
+
+        ptah.get_base().metadata.create_all()
+        transaction.commit()
+
+        sql_get = ptah.QueryFreezer(
+            lambda: Session.query(Test)
+            .filter(Test.name == sqla.sql.bindparam('name')))
+
+        self.assertIsNone(sql_get.first(name='test'))
+
+        rec = Test()
+        rec.name = 'test'
+        Session.add(rec)
+        Session.flush()
+
+        rec = sql_get.all(name='test')
+        self.assertEqual(rec[0].name, 'test')
+
 
 class TestJsonDict(PtahTestCase):
 

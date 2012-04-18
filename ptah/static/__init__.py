@@ -4,7 +4,7 @@ import ptah
 # jQuery library
 ptah.library(
     'jquery',
-    path='ptah:static/jquery/jquery-1.7.1.min.js',
+    path='ptah:static/jquery/jquery-1.7.2.min.js',
     type="js")
 
 ptah.library(

@@ -196,9 +196,9 @@ class MutationList(Mutable, list):
         if not isinstance(value, MutationList):
             if isinstance(value, list):
                 return MutationList(value)
-            return Mutable.coerce(key, value)  # pragma: no cover
+            return Mutable.coerce(key, value) # pragma: no cover
         else:
-            return value
+            return value # pragma: no cover
 
     def append(self, value):
         list.append(self, value)
@@ -222,7 +222,7 @@ class MutationDict(Mutable, dict):
                 return MutationDict(value)
             return Mutable.coerce(key, value)  # pragma: no cover
         else:
-            return value
+            return value # pragma: no cover
 
     def __setitem__(self, key, value):
         dict.__setitem__(self, key, value)

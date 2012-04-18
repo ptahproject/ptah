@@ -299,6 +299,52 @@ class TestSqlTypeInfo(PtahTestCase):
         ti = ptah.get_type('type:mycontent')
         self.assertIn('test', ti.fieldset)
 
+    def test_custom_fieldset_fieldNames(self):
+        import ptah
+        from ptah import tinfo
+        import sqlalchemy as sqla
+
+        global MyContentSql
+        class MyContentSql(ptah.get_base()):
+
+            __tablename__ = 'tinfo_sql_test21'
+            __type__ = ptah.Type(
+                'mycontent', 'MyContent', fieldNames=['test'])
+
+            id = sqla.Column(sqla.Integer, primary_key=True)
+            test = sqla.Column(sqla.Unicode)
+            test1 = sqla.Column(sqla.Unicode)
+
+        self.init_ptah()
+
+        ti = ptah.get_type('type:mycontent')
+        self.assertIn('test', ti.fieldset)
+        self.assertNotIn('test1', ti.fieldset)
+
+    def test_custom_fieldset_namesFilter(self):
+        import ptah
+        from ptah import tinfo
+        import sqlalchemy as sqla
+
+        def filter(n, names):
+            return n != 'test'
+
+        global MyContentSql
+        class MyContentSql(ptah.get_base()):
+
+            __tablename__ = 'tinfo_sql_test22'
+            __type__ = ptah.Type('mycontent', 'MyContent', namesFilter=filter)
+
+            id = sqla.Column(sqla.Integer, primary_key=True)
+            test = sqla.Column(sqla.Unicode)
+            test1 = sqla.Column(sqla.Unicode)
+
+        self.init_ptah()
+
+        ti = ptah.get_type('type:mycontent')
+        self.assertIn('test1', ti.fieldset)
+        self.assertNotIn('test', ti.fieldset)
+
     def test_sqla_add_method(self):
         import ptah
         from ptah import tinfo

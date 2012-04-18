@@ -22,6 +22,9 @@ Subprojects
 * `Ptah Examples <https://github.com/ptahproject/examples>`_ and its 
   `associated documentation <http://ptah-examples.readthedocs.org/>`_.
 
+* `ptah cmf <https://github.com/ptahproject/ptah_cms>`_ and its 
+  `associated documentation <http://ptah-cmf.readthedocs.org/>`_.
+
 * `ptah_crowd <https://github.com/ptahproject/ptah_crowd>`_, an out-of-the-box user registration/management sub-system and
   its `associated documentation <http://ptah_crowd.readthedocs.org>`_.
 
