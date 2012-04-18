@@ -3,20 +3,26 @@ import logging
 import tempfile
 import threading
 import pkg_resources
-from docutils import io
-from docutils.core import Publisher
 from pyramid.compat import text_type, bytes_
 
-from sphinx.application import Sphinx
-from sphinx.writers.html import HTMLWriter, HTMLTranslator
+try:
+    from docutils import io
+    from docutils.core import Publisher
+
+    from sphinx.application import Sphinx
+    from sphinx.writers.html import HTMLWriter, HTMLTranslator
+
+    has_sphinx = True
+    tempdir = tempfile.mkdtemp()
+    tmp = open(os.path.join(tempdir, 'conf.py'), 'wb')
+    tmp.write(bytes_('# -*- coding: utf-8 -*-'))
+    tmp.close()
+except ImportError: # pragma: no cover
+    has_sphinx = False
+
 
 log = logging.getLogger('ptah.rst')
 local_data = threading.local()
-
-tempdir = tempfile.mkdtemp()
-tmp = open(os.path.join(tempdir, 'conf.py'), 'wb')
-tmp.write(bytes_('# -*- coding: utf-8 -*-'))
-tmp.close()
 
 
 def get_sphinx():
@@ -50,6 +56,9 @@ def rst_to_html(text):
     if not isinstance(text, text_type):
         text = text_type(text)
 
+    if not has_sphinx: # pragma: no cover
+        return '<pre>%s</pre>' % text if text else ''
+
     sphinx, pub = get_sphinx()
 
     pub.set_source(text, None)
@@ -73,10 +82,11 @@ def rst_to_html(text):
                     parts['docinfo'], parts['body']))
 
 
-class CustomHTMLTranslator(HTMLTranslator):
+if has_sphinx:
+    class CustomHTMLTranslator(HTMLTranslator):
 
-    def visit_pending_xref(self, node):
-        pass
+        def visit_pending_xref(self, node):
+            pass
 
-    def depart_pending_xref(self, node):
-        pass
+        def depart_pending_xref(self, node):
+            pass

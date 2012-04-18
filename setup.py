@@ -4,7 +4,7 @@ import logging
 import multiprocessing  # atexit exception
 from setuptools import setup, find_packages
 
-version = '0.4.1'
+version = '0.5.0'
 
 install_requires = ['setuptools',
                     'alembic == 0.2.2',
@@ -17,9 +17,7 @@ install_requires = ['setuptools',
                     'venusian',
                     'WebOb >= 1.2b3',
                     'SQLAlchemy',
-                    'Pygments',
                     'pytz',
-                    'sphinx',
                     ]
 
 if sys.version_info[:2] == (2, 6):
@@ -31,7 +29,7 @@ if sys.version_info[:2] == (2, 6):
 if sys.version_info[:2] in ((2,6),(2,7)):
     install_requires.extend(('simplejson',))
 
-tests_require = install_requires + ['nose']
+tests_require = install_requires + ['nose', 'sphinx', 'Pygments']
 
 
 def read(f):
@@ -60,6 +58,7 @@ setup(name='ptah',
       license='BSD-derived',
       packages=find_packages(),
       install_requires=install_requires,
+      extras_require = dict(test=tests_require),
       tests_require=tests_require,
       test_suite='nose.collector',
       include_package_data=True,

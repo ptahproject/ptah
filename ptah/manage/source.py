@@ -53,20 +53,25 @@ class SourceView(ptah.View):
             source = open(abspath, 'rb').read()
 
             if not self.format:
-                from pygments import highlight
-                from pygments.lexers import PythonLexer
-                from pygments.formatters import HtmlFormatter
+                try:
+                    from pygments import highlight
+                    from pygments.lexers import PythonLexer
+                    from pygments.formatters import HtmlFormatter
 
-                html = HtmlFormatter(
-                    linenos='inline',
-                    lineanchors='sl',
-                    anchorlinenos=True,
-                    noclasses = True,
-                    cssclass="ptah-source")
+                    html = HtmlFormatter(
+                        linenos='inline',
+                        lineanchors='sl',
+                        anchorlinenos=True,
+                        noclasses = True,
+                        cssclass="ptah-source")
 
-                def format(self, code, highlight=highlight,
-                           lexer = PythonLexer()):
-                    return highlight(code, lexer, html)
+                    def format(self, code, highlight=highlight,
+                               lexer = PythonLexer()):
+                        return highlight(code, lexer, html)
+
+                except ImportError: # pragma: no cover
+                    def format(self, text):
+                        return '<pre>%s</pre>'%text
 
                 self.__class__.format = format
 

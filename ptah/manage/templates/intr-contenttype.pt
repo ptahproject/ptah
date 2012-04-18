@@ -4,5 +4,5 @@
   <small>${context['type'].__uri__}</small>
 </h4>
 <p tal:condition="context['type'].cls.__doc__">
-  ${view.rst_to_html(context['type'].cls.__doc__)}
+  ${structure: view.rst_to_html(context['type'].cls.__doc__)}
 </p>
