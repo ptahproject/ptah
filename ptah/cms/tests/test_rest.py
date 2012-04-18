@@ -40,10 +40,10 @@ class RestBase(PtahTestCase):
 class TestRestApi(RestBase):
 
     def test_rest_srv(self):
-        import ptah.rest
+        from ptah.cms import restsrv
         self.init_ptah()
 
-        services = config.get_cfg_storage(ptah.rest.ID_REST)
+        services = config.get_cfg_storage(restsrv.ID_REST)
 
         self.assertIn('cms', services)
 

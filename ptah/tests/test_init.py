@@ -27,7 +27,7 @@ class TestPtahInit(TestCase):
 
         for name in ('ptah_init_settings', 'ptah_init_sql',
                      'ptah_init_manage', 'ptah_init_mailer',
-                     'ptah_init_rest', 'get_cfg_storage',
+                     'get_cfg_storage',
                      'ptah_get_settings', 'ptah_auth_checker',
                      'ptah_auth_provider', 'ptah_principal_searcher',
                      'ptah_uri_resolver', 'ptah_password_changer',

@@ -110,9 +110,6 @@ from ptah.password import password_changer
 # formatter
 from ptah.formatter import format, formatter
 
-# rest api
-from ptah.rest import RestService
-
 # mail templates
 from ptah import mail
 
@@ -202,10 +199,6 @@ def includeme(cfg):
 
     # ptah mailer directive
     cfg.add_directive('ptah_init_mailer', ptahsettings.set_mailer)
-
-    # ptah rest api directive
-    from ptah import rest
-    cfg.add_directive('ptah_init_rest', rest.enable_rest_api)
 
     # ptah.config directives
     from ptah.config import pyramid_get_cfg_storage

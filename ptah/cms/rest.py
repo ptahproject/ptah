@@ -6,6 +6,7 @@ from pyramid.compat import bytes_
 import ptah
 from ptah import config
 from ptah.cms import wrap
+from ptah.cms import RestService
 from ptah.cms.node import load
 from ptah.cms.container import Container
 from ptah.cms.interfaces import NotFound, TypeException
@@ -13,7 +14,7 @@ from ptah.cms.interfaces import INode, IBlob, IContent, IContainer
 from ptah.cms.permissions import View, ModifyContent, DeleteContent
 
 ID_CMS_REST = 'ptah-cms:rest-action'
-CMS = ptah.RestService('cms', 'Ptah CMS API')
+CMS = RestService('cms', 'Ptah CMS API')
 
 
 @CMS.action('applications', 'List applications')

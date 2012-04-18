@@ -54,9 +54,18 @@ from ptah import NOT_ALLOWED
 from pyramid.security import ALL_PERMISSIONS
 from pyramid.security import NO_PERMISSION_REQUIRED
 
+# rest api
+from ptah.cms.restsrv import RestService
+
 # cms rest
 from ptah.cms.rest import restaction
 
 # content add/edit form helpers
 from ptah.cms.forms import AddForm
 from ptah.cms.forms import EditForm
+
+
+def includeme(cfg):
+    # ptah rest api directive
+    from ptah.cms import restsrv
+    cfg.add_directive('ptah_init_rest', restsrv.enable_rest_api)

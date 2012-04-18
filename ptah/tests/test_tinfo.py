@@ -388,7 +388,7 @@ class TestSqlTypeInfo(PtahTestCase):
 
         id = None
         uri = None
-        
+
         with ptah.sa_session() as sa:
             item = MyContentSql(test='title')
             sa.add(item)
@@ -418,5 +418,3 @@ class TestUriProperty(TestCase):
         item.id = 10
 
         self.assertEqual(item.__uri__, 'test-uri:10')
-
-        

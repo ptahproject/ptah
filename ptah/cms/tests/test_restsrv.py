@@ -13,29 +13,29 @@ class TestRestRegistrations(PtahTestCase):
     _init_ptah = False
 
     def test_rest_registerService(self):
-        import ptah.rest
+        from ptah.cms import restsrv
 
-        srv = ptah.rest.RestService('test', 'Test service')
+        srv = restsrv.RestService('test', 'Test service')
         self.init_ptah()
 
-        services = config.get_cfg_storage(ptah.rest.ID_REST)
+        services = config.get_cfg_storage(restsrv.ID_REST)
 
         self.assertEqual(srv.name, 'test')
         self.assertIn('test', services)
         self.assertIn(srv, services.values())
 
     def test_rest_registerService_conflicts(self):
-        import ptah.rest
+        from ptah.cms import restsrv
 
-        ptah.rest.RestService('test', 'Test service')
-        ptah.rest.RestService('test', 'Test service2')
+        restsrv.RestService('test', 'Test service')
+        restsrv.RestService('test', 'Test service2')
 
         self.assertRaises(ConfigurationConflictError, self.init_ptah)
 
     def test_rest_registerService_action(self):
-        import ptah.rest
+        from ptah.cms import restsrv
 
-        srv = ptah.rest.RestService('test', 'Test service')
+        srv = restsrv.RestService('test', 'Test service')
 
         @srv.action('action', 'Action')
         def raction(request, *args):
@@ -53,12 +53,12 @@ class TestRestRegistrations(PtahTestCase):
         self.assertRaises(HTTPNotFound, srv, None, 'unknown')
 
     def test_rest_registerService_apidoc(self):
-        import ptah.rest
+        from ptah.cms import restsrv
 
-        ptah.rest.RestService('test', 'Test service')
+        restsrv.RestService('test', 'Test service')
         self.init_ptah()
 
-        srv = config.get_cfg_storage(ptah.rest.ID_REST)['test']
+        srv = config.get_cfg_storage(restsrv.ID_REST)['test']
 
         @srv.action('action', 'Action')
         def raction(request, *args):
@@ -100,13 +100,14 @@ class TestRestView(PtahTestCase):
     _settings = {'auth.secret': 'test'}
 
     def test_rest_enable_api(self):
-        from ptah.rest import RestLoginRoute, RestApiRoute
+        from ptah.cms.restsrv import RestLoginRoute, RestApiRoute
 
         mapper = self.config.get_routes_mapper()
 
         self.assertIsNone(mapper.get_route('ptah-rest'))
         self.assertIsNone(mapper.get_route('ptah-rest-login'))
         self.init_ptah()
+        self.config.include('ptah.cms')
 
         self.config.ptah_init_rest()
 
@@ -121,7 +122,7 @@ class TestRestView(PtahTestCase):
         self.assertIs(factory(marker).request, marker)
 
     def test_rest_login(self):
-        from ptah.rest import Login
+        from ptah.cms.restsrv import Login
 
         request = DummyRequest()
         login = Login(request)
@@ -130,7 +131,7 @@ class TestRestView(PtahTestCase):
         self.assertEqual(request.response.status, '403 Forbidden')
 
     def test_rest_login_success(self):
-        from ptah.rest import Login
+        from ptah.cms.restsrv import Login
         from ptah import authentication
         self.init_ptah()
 
@@ -145,7 +146,7 @@ class TestRestView(PtahTestCase):
         self.assertEqual(request.response.status, '200 OK')
 
     def test_rest_api_auth(self):
-        from ptah.rest import Api, Login
+        from ptah.cms.restsrv import Api, Login
         from ptah import authentication
         self.init_ptah()
 
@@ -178,7 +179,7 @@ class TestRestApi(PtahTestCase):
     _init_ptah = False
 
     def test_rest_unknown_service(self):
-        from ptah.rest import Api
+        from ptah.cms.restsrv import Api
         self.init_ptah()
 
         request = DummyRequest()
@@ -189,7 +190,7 @@ class TestRestApi(PtahTestCase):
         self.assertIn("KeyError: 'test'", res['traceback'])
 
     def test_rest_arguments(self):
-        from ptah.rest import Api, ID_REST
+        from ptah.cms.restsrv import Api, ID_REST
         self.init_ptah()
 
         services = config.get_cfg_storage(ID_REST)
@@ -210,7 +211,7 @@ class TestRestApi(PtahTestCase):
         self.assertEqual(data[1], ('test', '1', '2'))
 
     def test_rest_httpexception(self):
-        from ptah.rest import Api, ID_REST
+        from ptah.cms.restsrv import Api, ID_REST
         self.init_ptah()
 
         services = config.get_cfg_storage(ID_REST)
@@ -229,7 +230,7 @@ class TestRestApi(PtahTestCase):
             res['message'], 'The resource could not be found.')
 
     def test_rest_response(self):
-        from ptah.rest import Api, ID_REST
+        from ptah.cms.restsrv import Api, ID_REST
         self.init_ptah()
 
         services = config.get_cfg_storage(ID_REST)
@@ -247,7 +248,7 @@ class TestRestApi(PtahTestCase):
 
     def test_rest_response_data(self):
         import datetime
-        from ptah.rest import Api, ID_REST
+        from ptah.cms.restsrv import Api, ID_REST
         self.init_ptah()
 
         services = config.get_cfg_storage(ID_REST)
