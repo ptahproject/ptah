@@ -8,8 +8,9 @@ from pyramid.exceptions import ConfigurationError
 
 import ptah
 from ptah import config
-from ptah.interfaces import ITypeInformation, Forbidden, TypeException
+from ptah.uri import ID_RESOLVER
 from ptah.security import NOT_ALLOWED
+from ptah.interfaces import ITypeInformation, Forbidden, TypeException
 
 log = logging.getLogger('ptah')
 
@@ -201,3 +202,41 @@ def register_sqla_type(config, cls, tinfo, name, **kw):
 
     if tinfo.add_method is None:
         tinfo.add_method = sqla_add_method
+
+    # install __uri__ property
+    if not hasattr(cls, '__uri__'):
+        pname = None
+        for cl in cls.__table__.columns:
+            if cl.primary_key:
+                pname = cl.name
+                break
+
+        l = len(tinfo.name)+1
+        cls.__uri__ = UriProperty(tinfo.name, cl.name)
+
+        cls.__uri_sql_get__ = ptah.QueryFreezer(
+            lambda: ptah.get_session().query(cls) \
+                .filter(getattr(cls, pname) == sqla.sql.bindparam('uri')))
+
+        def resolver(uri):
+            """Content resolver for %s type'"""%tinfo.name
+            return cls.__uri_sql_get__.first(uri=uri[l:])
+
+        storage = config.get_cfg_storage(ID_RESOLVER)
+        if tinfo.name in storage:
+            raise ConfigurationError(
+                'Resolver for "%s" already registered'%tinfo.name)
+        storage[tinfo.name] = resolver
+
+
+class UriProperty(object):
+
+    def __init__(self, prefix, cname):
+        self.cname = cname
+        self.prefix = prefix
+
+    def __get__(self, inst, cls):
+        if inst is None:
+            return self
+
+        return '%s:%s'%(self.prefix, getattr(inst, self.cname))

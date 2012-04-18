@@ -1,10 +1,10 @@
 import transaction
 import sqlalchemy as sqla
 from pyramid.httpexceptions import HTTPForbidden
-from pyramid.exceptions import ConfigurationConflictError
+from pyramid.exceptions import ConfigurationError, ConfigurationConflictError
 
 from ptah import config, form
-from ptah.testing import PtahTestCase
+from ptah.testing import PtahTestCase, TestCase
 
 
 class TestTypeInfo(PtahTestCase):
@@ -319,3 +319,104 @@ class TestSqlTypeInfo(PtahTestCase):
         item = ti.add(MyContentSql(test='title'))
         sa = ptah.get_session()
         self.assertIn(item, sa)
+
+    def test_uri_prop(self):
+        import ptah
+        import sqlalchemy as sqla
+
+        global MyContentSql
+        class MyContentSql(ptah.get_base()):
+
+            __tablename__ = 'tinfo_sql_test4'
+            __type__ = ptah.Type('mycontent', 'MyContent')
+            id = sqla.Column(sqla.Integer, primary_key=True)
+            test = sqla.Column(sqla.Unicode)
+
+        self.init_ptah()
+
+        self.assertTrue(hasattr(MyContentSql, '__uri__'))
+
+        self.assertEqual(MyContentSql.__uri__.cname, 'id')
+        self.assertEqual(MyContentSql.__uri__.prefix, 'mycontent')
+
+    def test_uri_prop_exist(self):
+        import ptah
+        import sqlalchemy as sqla
+
+        global MyContentSql
+        class MyContentSql(ptah.get_base()):
+
+            __uri__ = 'test'
+
+            __tablename__ = 'tinfo_sql_test5'
+            __type__ = ptah.Type('mycontent', 'MyContent')
+            id = sqla.Column(sqla.Integer, primary_key=True)
+            test = sqla.Column(sqla.Unicode)
+
+        self.init_ptah()
+        self.assertTrue(MyContentSql.__uri__, 'test')
+
+    def test_uri_resolver_exists(self):
+        import ptah
+        import sqlalchemy as sqla
+
+        def resolver(uri):
+            """"""
+        ptah.resolver.register('mycontent', resolver)
+
+        global MyContentSql
+        class MyContentSql(ptah.get_base()):
+            __tablename__ = 'tinfo_sql_test6'
+            __type__ = ptah.Type('mycontent', 'MyContent')
+            id = sqla.Column(sqla.Integer, primary_key=True)
+            test = sqla.Column(sqla.Unicode)
+
+        self.assertRaises(ConfigurationError, self.init_ptah)
+
+    def test_uri_resolver(self):
+        import ptah
+        import sqlalchemy as sqla
+
+        global MyContentSql
+        class MyContentSql(ptah.get_base()):
+            __tablename__ = 'tinfo_sql_test7'
+            __type__ = ptah.Type('mycontent', 'MyContent')
+            id = sqla.Column(sqla.Integer, primary_key=True)
+            test = sqla.Column(sqla.Unicode)
+
+        self.init_ptah()
+
+        id = None
+        uri = None
+        
+        with ptah.sa_session() as sa:
+            item = MyContentSql(test='title')
+            sa.add(item)
+            sa.flush()
+
+            id = item.id
+            uri = item.__uri__
+
+        self.assertEqual(uri, 'mycontent:%s'%id)
+
+        item = ptah.resolve(uri)
+        self.assertTrue(item.id == id)
+
+
+class TestUriProperty(TestCase):
+
+    def test_uri_property(self):
+        from ptah.tinfo import UriProperty
+
+        class Test(object):
+
+            __uri__ = UriProperty('test-uri', 'id')
+
+        self.assertTrue(isinstance(Test.__uri__, UriProperty))
+
+        item = Test()
+        item.id = 10
+
+        self.assertEqual(item.__uri__, 'test-uri:10')
+
+        
