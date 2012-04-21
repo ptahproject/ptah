@@ -2,7 +2,7 @@ import transaction
 import sqlalchemy as sqla
 from webob.multidict import MultiDict
 from pyramid.testing import DummyRequest
-from pyramid.compat import url_quote_plus
+from pyramid.compat import url_quote_plus, text_type
 from pyramid.httpexceptions import HTTPFound
 from pyramid.view import render_view_to_response
 
@@ -11,8 +11,8 @@ from ptah.testing import PtahTestCase
 
 
 class TestSqlaModuleTable(ptah.get_base()):
-
     __tablename__ = 'test_sqla_table'
+    __table_args__ = {'extend_existing': True}
 
     id = sqla.Column('id', sqla.Integer, primary_key=True)
     name = sqla.Column(sqla.Unicode(255))
@@ -23,7 +23,7 @@ class TestSqlaModuleBase(ptah.get_base()):
     __table_args__ = {'extend_existing': True}
 
     id = sqla.Column(sqla.Integer(), primary_key=True)
-    name = sqla.Column(sqla.Unicode(), default='123')
+    name = sqla.Column(sqla.Unicode(), default=text_type('123'))
     title = sqla.Column(sqla.Unicode(), info={'uri':True})
 
 
@@ -39,10 +39,10 @@ class TestSqlaModule(PtahTestCase):
         if not table.exists():
             Base.metadata.create_all(tables=(table,))
 
+        @ptah.type('Test')
         class TestSqlaModuleContent(TestSqlaModuleBase):
             __tablename__ = 'test_sqla_content'
             __table_args__ = {'extend_existing': True}
-            __type__ = ptah.Type('Test')
             __mapper_args__ = {'polymorphic_identity': 'nodes'}
 
             id = sqla.Column(

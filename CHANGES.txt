@@ -10,6 +10,8 @@ Features
 
 - Split ptah.cms to external package
 
+- ptah.Type changed to @ptah.type class decorator
+
 - Move TypeInformation to ptah
 
 - Sphinx and Pygments are optional

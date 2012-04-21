@@ -25,9 +25,9 @@ class TestUriIntrospect(ptah.PtahTestCase):
 class TestTypeIntrospect(ptah.PtahTestCase):
 
     def test_type_introspect(self):
-        global Content1
+        @ptah.type('content1')
         class Content1(object):
-            __type__ = ptah.Type('content1')
+            pass
 
         self.config.scan(self.__class__.__module__)
 

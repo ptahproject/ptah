@@ -50,20 +50,19 @@ def get_types():
     return config.get_cfg_storage(TYPES_DIR_ID)
 
 
-phase2_data = []
-
+phase_data = []
 
 class phase2(object):
 
     def __init__(self, name):
         self.name = name
-        for n, _ in phase2_data:
+        for n, _ in phase_data:
             if n == name:
                 raise ConfigurationError(
-                    'type phase2 "%s" is already registered'%name)
+                    'type phase "%s" is already registered'%name)
 
     def __call__(self, callback):
-        phase2_data.append((self.name, callback))
+        phase_data.append((self.name, callback))
         return callback
 
 
@@ -137,46 +136,49 @@ class TypeInformation(object):
         return types
 
 
-def Type(name, title=None, **kw):
+class type(object):
     """ Declare new type. This function has to be called within a content
     class declaration.
 
     .. code-block:: python
 
+        @ptah.type('My content')
         class MyContent(object):
-
-            __type__ = Type('My content')
+            pass
 
     """
-    info = config.DirectiveInfo(allowed_scope=('class',))
-    kw['title'] = name.capitalize() if title is None else title
 
-    typeinfo = TypeInformation(None, name, **kw)
+    def __init__(self, name, title=None, **kw):
+        self.name = name
+        self.info = config.DirectiveInfo()
+        kw['title'] = name.capitalize() if title is None else title
+        self.kw = kw
 
-    # config actino and introspection info
-    discr = (TYPES_DIR_ID, name)
-    intr = config.Introspectable(TYPES_DIR_ID, discr, name, TYPES_DIR_ID)
-    intr['name'] = name
-    intr['type'] = typeinfo
-    intr['codeinfo'] = info.codeinfo
+    def __call__(self, cls):
+        typeinfo = TypeInformation(cls, self.name, **self.kw)
+        cls.__type__ = typeinfo
 
-    info.attach(
-        config.ClassAction(
-            register_type_impl, (typeinfo, name), kw,
-            discriminator=discr, introspectables=(intr,))
-        )
-    return typeinfo
+        # config actino and introspection info
+        discr = (TYPES_DIR_ID, self.name)
+        intr = config.Introspectable(
+            TYPES_DIR_ID, discr, self.name, TYPES_DIR_ID)
+        intr['name'] = self.name
+        intr['type'] = typeinfo
+        intr['codeinfo'] = self.info.codeinfo
 
+        def register_type_impl(cfg):
+            # run phase handlers
+            for name, handler in phase_data:
+                handler(cfg, cls, typeinfo, self.name, **self.kw)
 
-def register_type_impl(config, cls, tinfo, name, **kw):
-    tinfo.__dict__.update(kw)
-    tinfo.cls = cls
+            cfg.get_cfg_storage(TYPES_DIR_ID)[typeinfo.__uri__] = typeinfo
 
-    config.get_cfg_storage(TYPES_DIR_ID)[tinfo.__uri__] = tinfo
+        self.info.attach(
+            config.Action(register_type_impl,
+                          discriminator=discr, introspectables=(intr,))
+            )
 
-    # run phase2 handlers
-    for name, handler in phase2_data:
-        handler(config, cls, tinfo, name, **kw)
+        return cls
 
 
 def sqla_add_method(content, *args, **kw):

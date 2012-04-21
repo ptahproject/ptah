@@ -64,16 +64,14 @@ class TestManageCommand(ptah.PtahTestCase):
         self.assertIn('* custom: Custom Module (disabled: True)', val)
 
     def test_list_models(self):
-        global CustomModel
+        @ptah.type(
+            'custom', title='Custom model',
+            description = 'Custom model description')
 
         class CustomModel(object):
             """ Custom module description """
 
             title = 'Custom Module'
-
-            __type__ = ptah.Type(
-                'custom', title='Custom model',
-                description = 'Custom model description')
 
         self.init_ptah()
 

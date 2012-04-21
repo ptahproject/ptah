@@ -94,7 +94,7 @@ from pyramid.security import ALL_PERMISSIONS
 from pyramid.security import NO_PERMISSION_REQUIRED
 
 # type information
-from ptah.tinfo import Type
+from ptah.tinfo import type
 from ptah.tinfo import TypeInformation
 from ptah.tinfo import get_type, get_types
 from ptah.interfaces import NotFound, Forbidden

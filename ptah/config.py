@@ -172,12 +172,12 @@ class Action(object):
                 raise
 
 
-class ClassAction(Action):
+class ClassAction(Action): # pragma: no cover
 
     def __call__(self, cfg):
         try:
             self.callable(cfg, self.info.context, *self.args, **self.kw)
-        except:  # pragma: no cover
+        except:
             log.exception(self.discriminator)
             raise
 
@@ -221,8 +221,8 @@ class DirectiveInfo(object):
             self.hash = (module.__name__, codeinfo[1])
 
     @property
-    def context(self):
-        if self.scope == 'module': # pragma: no cover
+    def context(self): # pragma: no cover
+        if self.scope == 'module':
             return self.module
         else:
             return getattr(self.module, self.name, None)
