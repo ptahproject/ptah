@@ -188,10 +188,6 @@ CodeInfo = namedtuple('Codeinfo', 'filename lineno function source module')
 class AttachData(OrderedDict):
     """ container for Attach infos """
 
-    def __init__(self, mod):
-        super(AttachData, self).__init__()
-        self.__module__ = mod
-
 
 class DirectiveInfo(object):
 
@@ -238,7 +234,7 @@ class DirectiveInfo(object):
 
         data = getattr(self.module, ATTACH_ATTR, None)
         if data is None:
-            data = AttachData(self.module.__name__)
+            data = AttachData()
             setattr(self.module, ATTACH_ATTR, data)
 
         if cfg is None and action.hash in data:
@@ -255,7 +251,7 @@ class DirectiveInfo(object):
                 introspectables=action.introspectables,
                 order=action.order)
 
-        venusian.attach(data, callback, category='ptah')
+        venusian.attach(data, callback, category='ptah', depth=2)
 
         if cfg is not None:
             cfg.action(
