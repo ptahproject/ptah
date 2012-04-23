@@ -8,13 +8,13 @@ class TestRST(TestCase):
         rst.local_data.sphinx = None
 
     def test_rst_py_domain(self):
-        text = """ Test text :py:class:`ptah.cms.Node` """
+        text = """ Test text :py:class:`ptahcms.Node` """
 
-        self.assertIn('<span class="pre">ptah.cms.Node</span>',
+        self.assertIn('<span class="pre">ptahcms.Node</span>',
                       rst.rst_to_html(text))
 
     def test_rst_error(self):
-        text = """ Test text `ptah.cms.Node` """
+        text = """ Test text `ptahcms.Node` """
 
         self.assertEqual(
-            '<pre> Test text `ptah.cms.Node` </pre>', rst.rst_to_html(text))
+            '<pre> Test text `ptahcms.Node` </pre>', rst.rst_to_html(text))

@@ -160,32 +160,32 @@ class ContentEvent(ObjectEvent):
 
 @event('Content created event')
 class ContentCreatedEvent(ContentEvent):
-    """ :py:class:`ptah.cms.TypeInformation` will send event during create().
+    """ :py:class:`ptah.TypeInformation` will send event during create().
     """
 
 
 @event('Content added event')
 class ContentAddedEvent(ContentEvent):
-    """ :py:class:`ptah.cms.Container` will send event when content has been
+    """ :py:class:`ptahcms.Container` will send event when content has been
         created through containers __setitem__ method.
     """
 
 
 @event('Content moved event')
 class ContentMovedEvent(ContentEvent):
-    """ :py:class:`ptah.cms.Container` will send event when content has moved.
+    """ :py:class:`ptahcms.Container` will send event when content has moved.
     """
 
 
 @event('Content modified event')
 class ContentModifiedEvent(ContentEvent):
-    """ :py:class:`ptah.cms.Content` will send event during update().
+    """ :py:class:`ptahcms.Content` will send event during update().
     """
 
 
 @event('Content deleting event')
 class ContentDeletingEvent(ContentEvent):
-    """ :py:class:`ptah.cms.Container` will send event before content has been
+    """ :py:class:`ptahcms.Container` will send event before content has been
         deleted through containers __delitem__ method.
     """
 

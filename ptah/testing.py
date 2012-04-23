@@ -26,6 +26,7 @@ class PtahTestCase(TestCase):
 
     _init_ptah = True
     _init_sqla = True
+    _includes = ()
 
     _settings = {'sqlalchemy.url': 'sqlite://'}
     _packages = ()
@@ -48,13 +49,16 @@ class PtahTestCase(TestCase):
         self.registry.settings.update(self._settings)
         self.config.include('ptah')
 
+        for pkg in self._includes:
+            self.config.include(pkg)
+
         pkg = package_name(sys.modules[self.__class__.__module__])
         if pkg != 'ptah':
             packages = []
             parts = self.__class__.__module__.split('.')
             for l in range(len(parts)):
                 pkg = '.'.join(parts[:l+1])
-                if pkg == 'ptah' or pkg.startswith('ptah.'):
+                if pkg == 'ptah' or pkg.startswith('ptah.') or pkg in self._includes:
                     continue # pragma: no cover
                 try:
                     self.config.include(pkg)
