@@ -102,6 +102,7 @@ class auth_provider(object):
 
     """
     def __init__(self, name, __depth=1):
+        self.depth = __depth
         self.info = config.DirectiveInfo(__depth)
 
         self.discr = (AUTH_PROVIDER_ID, name)
@@ -121,7 +122,7 @@ class auth_provider(object):
                     .update({n: cls()}),
                 (self.intr['name'], cls),
                 discriminator=self.discr, introspectables=(self.intr,)),
-            __cfg)
+            __cfg, self.depth)
         return cls
 
     @classmethod
@@ -278,6 +279,7 @@ class principal_searcher(object):
     should return iterator to principal objects.
     """
     def __init__(self, name, __depth=1):
+        self.depth = __depth
         self.info = config.DirectiveInfo(__depth)
 
         self.discr = (AUTH_SEARCHER_ID, name)
@@ -295,7 +297,7 @@ class principal_searcher(object):
                         .update({name: searcher}),
                 (self.intr['name'], searcher),
                 discriminator=self.discr, introspectables=(self.intr,)),
-            cfg)
+            cfg, self.depth)
 
         return searcher
 

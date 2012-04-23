@@ -168,8 +168,8 @@ def Type(name, title=None, fieldset=None, **kw):
     info.attach(
         config.ClassAction(
             register_type_impl, (typeinfo, name, fieldset), kw,
-            discriminator=discr, introspectables=(intr,))
-        )
+            discriminator=discr, introspectables=(intr,)),
+        depth=2)
     return typeinfo
 
 

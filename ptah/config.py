@@ -227,7 +227,7 @@ class DirectiveInfo(object):
         cfg.__ptah_action__ = action
         action(cfg)
 
-    def attach(self, action, cfg=None):
+    def attach(self, action, cfg=None, depth=1):
         action.info = self
         if action.hash is None:
             action.hash = self.hash
@@ -251,7 +251,7 @@ class DirectiveInfo(object):
                 introspectables=action.introspectables,
                 order=action.order)
 
-        venusian.attach(data, callback, category='ptah', depth=2)
+        venusian.attach(data, callback, category='ptah', depth=depth+1)
 
         if cfg is not None:
             cfg.action(
