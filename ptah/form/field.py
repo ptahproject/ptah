@@ -25,6 +25,7 @@ class field(object):
     """
 
     def __init__(self, name, __depth=1):
+        self.depth = __depth
         self.info = config.DirectiveInfo(__depth)
         self.discr = (FIELD_ID, name)
 
@@ -46,8 +47,8 @@ class field(object):
                 lambda cfg, cls, name:
                     cfg.get_cfg_storage(FIELD_ID).update({name: cls}),
                 (cls, self.intr['name']),
-                discriminator=self.discr, introspectables=(self.intr,))
-            )
+                discriminator=self.discr, introspectables=(self.intr,)),
+            depth=self.depth)
         return cls
 
 
@@ -84,8 +85,8 @@ def fieldpreview(cls):
             config.Action(
                 lambda config, cls, func:
                     config.get_cfg_storage(PREVIEW_ID).update({cls: func}),
-                (cls, func), discriminator=discr, introspectables=(intr,))
-            )
+                (cls, func), discriminator=discr, introspectables=(intr,)),
+            depth=1)
         return func
 
     return wrapper

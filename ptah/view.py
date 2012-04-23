@@ -123,6 +123,7 @@ class snippet(object):
     """
 
     def __init__(self, name, context=None, renderer=None, __depth=1):
+        self.depth = __depth
         self.info = config.DirectiveInfo(__depth)
 
         self.discr = discr = (SNIPPET_ID, name, context)
@@ -201,7 +202,7 @@ class snippet(object):
             config.Action(
                 self._register,
                 discriminator=self.discr, introspectables=(intr,)),
-            cfg)
+            cfg, self.depth)
         return view
 
 

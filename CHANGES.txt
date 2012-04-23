@@ -17,6 +17,15 @@ Features
 - Sphinx and Pygments are optional
 
 
+0.4.2 (2012-04-23)
+==================
+
+Bug fixes
+---------
+
+- venusian 1.0a6 compatibility
+
+
 0.4.1 (2012-04-16)
 ==================
 

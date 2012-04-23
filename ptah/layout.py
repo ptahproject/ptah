@@ -133,6 +133,7 @@ class layout(object):
                  __depth=1):
         self.info = config.DirectiveInfo(__depth)
         self.discr = (LAYOUT_ID, name, context, route_name)
+        self.depth = __depth
 
         self.intr = intr = config.Introspectable(
             LAYOUT_ID, self.discr, name, LAYOUT_ID)
@@ -195,7 +196,7 @@ class layout(object):
             config.Action(
                 self._register,
                 discriminator=self.discr, introspectables=(intr,)),
-            cfg)
+            cfg, self.depth)
         return view
 
     def _register(self, cfg):

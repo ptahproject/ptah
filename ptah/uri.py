@@ -62,6 +62,7 @@ class resolver(object):
     """
 
     def __init__(self, schema, __depth=1):
+        self.depth = __depth
         self.info = config.DirectiveInfo(__depth)
         self.discr = (ID_RESOLVER, schema)
 
@@ -81,7 +82,7 @@ class resolver(object):
                         .update({schema: resolver}),
                 (self.intr['schema'], resolver),
                 discriminator=self.discr, introspectables=(self.intr,)),
-            cfg)
+            cfg, self.depth)
 
         return resolver
 
