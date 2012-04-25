@@ -89,8 +89,3 @@ License
 
 Ptah is offered under the BSD3 license.
 
-
-Authors
--------
-
-Ptah is written by Python enthusiasts who refuse to compromise.
