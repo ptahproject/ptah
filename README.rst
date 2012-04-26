@@ -10,8 +10,10 @@ Most documentation requires Ptah 0.3 or greater.
 You can read the `ptah` documentation on-line at 
 `http://ptahproject.readthedocs.org <http://ptahproject.readthedocs.org/en/latest/index.html>`_.
 
-Current test status |travis-status|
-.. |travis-status| image:: https://secure.travis-ci.org/ptahproject/ptah.png 
+<a href="https://secure.travis-ci.org/ptahproject/ptah">
+  <img src="https://secure.travis-ci.org/ptahproject/ptah.png" />
+</a>
+
 
 Requirements
 ------------
