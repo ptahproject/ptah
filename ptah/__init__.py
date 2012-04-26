@@ -177,12 +177,11 @@ def includeme(cfg):
 
     # initialize settings
     from ptah import settings
-    from pyramid.interfaces import PHASE1_CONFIG
     def pyramid_init_settings(cfg, custom_settings=None,
                               section=configparser.DEFAULTSECT):
         cfg.action('ptah.init_settings',
                    settings.init_settings,
-                   (cfg, custom_settings, section), order=999999)
+                   (cfg, custom_settings, section), order=999998)
 
     cfg.add_directive('ptah_init_settings', pyramid_init_settings)
 
