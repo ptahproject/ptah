@@ -9,13 +9,13 @@ ptah.library(
 
 ptah.library(
     'jquery-ui',
-    path='ptah:static/jquery/jquery-ui-1.8.18.min.js',
+    path='ptah:static/jquery/jquery-ui-1.8.20.min.js',
     type="js",
     require="jquery")
 
 ptah.library(
     'jquery-ui',
-    'ptah:static/jquery/jquery-ui-1.8.18.css',
+    'ptah:static/jquery/jquery-ui-1.8.20.css',
     type='css')
 
 # Bootstrap css
