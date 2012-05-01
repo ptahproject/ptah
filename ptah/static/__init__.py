@@ -33,7 +33,6 @@ ptah.library(
 # CKEditor
 ptah.library(
     'ckeditor',
-    path=('ptah:static/ckeditor/ckeditor.js',
-          'ptah:static/ckeditor/adapters/jquery.js'),
+    path='ptah:static/ckeditor/ckeditor.js',
     type="js",
     require="jquery")
