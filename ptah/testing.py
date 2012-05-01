@@ -27,6 +27,7 @@ class PtahTestCase(TestCase):
     _init_ptah = True
     _init_sqla = True
     _includes = ()
+    _auto_commit = True
 
     _settings = {'sqlalchemy.url': 'sqlite://'}
     _packages = ()
@@ -68,7 +69,7 @@ class PtahTestCase(TestCase):
         self.config.scan(self.__class__.__module__)
 
         self.config.commit()
-        self.config.autocommit = True
+        self.config.autocommit = self._auto_commit
 
         self.config.ptah_init_settings()
 
@@ -97,7 +98,6 @@ class PtahTestCase(TestCase):
         self.request.registry = self.registry
 
     def setUp(self):
-        ptah.QueryFreezer._testing = True
         self.init_pyramid()
 
         if self._init_ptah:
