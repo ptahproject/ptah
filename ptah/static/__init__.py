@@ -21,12 +21,12 @@ ptah.library(
 # Bootstrap css
 ptah.library(
     'bootstrap',
-    path='ptah:static/bootstrap/bootstrap-2.0.2.min.css',
+    path='ptah:static/bootstrap/bootstrap.min.css',
     type="css")
 
 ptah.library(
     'bootstrap-js',
-    path='ptah:static/bootstrap/bootstrap-2.0.2.min.js',
+    path='ptah:static/bootstrap/bootstrap.min.js',
     type="js",
     require="jquery")
 
