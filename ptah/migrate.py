@@ -48,7 +48,7 @@ class MigrationContext(MigrationContext):
         self.pkg_name = pkg
         super(MigrationContext, self).__init__(dialect, connection, opts)
 
-    def _current_rev(self):
+    def get_current_rev(self):
         if self.as_sql: # pragma: no cover
             return self._start_from_rev
         else:
@@ -87,7 +87,7 @@ class MigrationContext(MigrationContext):
         self.impl.start_migrations()
 
         for change, prev_rev, rev in \
-                self._migrations_fn(self._current_rev(), self):
+                self._migrations_fn(self.get_current_rev(), self):
             if current_rev is False:
                 current_rev = prev_rev
                 if self.as_sql and not current_rev: # pragma: no cover
@@ -127,9 +127,12 @@ def upgrade(pkg, sql=False):
     env = EnvironmentContext(Config(''), script)
     conn = ptah.get_base().metadata.bind.connect()
 
+    def upgrade(revision, context):
+        return script._upgrade_revs(rev, revision)
+
     env.configure(
         connection = conn,
-        fn = functools.partial(script.upgrade_from, rev),
+        fn = upgrade,
         as_sql = sql,
         starting_rev = None,
         destination_rev = rev,
@@ -157,7 +160,7 @@ def revision(pkg, rev=None, message=None):
     if rev in revs:
         raise KeyError('Revision already exists')
 
-    return script.generate_rev(rev, message)
+    return script.generate_revision(rev, message, True).revision
 
 
 def ptah_migrate(cfg):

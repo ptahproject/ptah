@@ -16,6 +16,8 @@ Features
 
 - Sphinx and Pygments are optional
 
+- alembic 0.3.2
+
 - CKEditor 3.6.3
 
 

@@ -50,7 +50,7 @@ class PtahTestCase(TestCase):
         self.registry.settings.update(self._settings)
         self.config.include('ptah')
 
-        for pkg in self._includes:
+        for pkg in self._includes: # pragma: no cover
             self.config.include(pkg)
 
         pkg = package_name(sys.modules[self.__class__.__module__])
