@@ -5,7 +5,7 @@ CHANGES
 0.5.1 (Unreleased)
 ==================
 
-- ...
+- Fixed js datetime widget #134
 
 
 0.5.0 (2012-05-03)

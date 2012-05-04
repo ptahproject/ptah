@@ -113,10 +113,14 @@ class JSDateTimeField(DateTimeField):
             return null
 
         FORMAT = ptah.get_settings(ptah.CFG_ID_FORMAT, self.request.registry)
-        format = '%s %s' % ('%m/%d/%Y', FORMAT['time_short'])
         try:
-            dt = datetime.datetime.strptime('%s %s' % (date, time), format)
+            dt = datetime.datetime.strptime(
+                '%s %s' % (date, time), '%m/%d/%Y %H:%M')
         except ValueError:
-            return null
+            try:
+                dt = datetime.datetime.strptime(
+                    '%s %s' % (date, time), '%m/%d/%Y %I:%M %p')
+            except ValueError:
+                return null
 
         return dt.replace(tzinfo=self.tzinfo).isoformat()
