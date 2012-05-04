@@ -182,7 +182,9 @@ class type(object):
 
 
 def sqla_add_method(content, *args, **kw):
-    ptah.get_session().add(content)
+    sa = ptah.get_session()
+    sa.add(content)
+    sa.flush()
     return content
 
 
