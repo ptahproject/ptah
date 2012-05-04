@@ -2,7 +2,7 @@
 CHANGES
 =======
 
-0.5.1 (Unreleased)
+0.5.1 (2012-05-04)
 ==================
 
 - Fixed js datetime widget #134
