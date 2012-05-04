@@ -4,6 +4,8 @@ import shutil
 import tempfile
 from pyramid.config import ConfigurationConflictError
 
+ptah.register_migration('ptah', 'ptah:tests/migrations')
+
 
 class TestRegisterMigration(ptah.PtahTestCase):
 
@@ -65,6 +67,7 @@ class TestPyramidDirective(ptah.PtahTestCase):
 
         config = Configurator()
         config.include('ptah')
+        config.scan(self.__class__.__module__)
         config.ptah_migrate()
         config.commit()
 
@@ -84,6 +87,8 @@ class TestScriptDirectory(ptah.PtahTestCase):
 
     def test_normal(self):
         self.init_ptah()
+        self.config.get_cfg_storage(
+            'ptah:migrate')['ptah']='ptah:tests/migrations'
 
         from ptah.migrate import ScriptDirectory
 
@@ -95,7 +100,7 @@ class TestScriptDirectory(ptah.PtahTestCase):
 
         self.assertEqual(
             script.versions,
-            os.path.join(os.path.dirname(ptah.__file__), 'migrations'))
+            os.path.join(os.path.dirname(ptah.__file__), 'tests', 'migrations'))
 
     def test_doesnt_exist(self):
         from alembic.util import CommandError

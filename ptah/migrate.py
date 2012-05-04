@@ -210,7 +210,7 @@ def register_migration(pkg, path, title='', force=False):
 
 def update_versions(registry):
     packages = []
-    for item in registry.introspector.get_category(MIGRATION_ID):
+    for item in registry.introspector.get_category(MIGRATION_ID,()):
         intr = item['introspectable']
         if not intr['force']:
             packages.append(intr['package'])
