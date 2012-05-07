@@ -1,8 +1,6 @@
-${view.include('jquery-ui')}
+${request.include_library('jquery-ui')}
 <script>
-  $(function() {
-     $("#${context.id}" ).datepicker();
-  });
+  curl(['jquery-ui'], function() {$("#${context.id}" ).datepicker()})
 </script>
 
 <input id="" type="text" name="" class="" title="" lang="" disabled=""

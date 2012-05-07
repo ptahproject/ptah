@@ -1,8 +1,5 @@
-<tal:block define="dummy view.include('jquery-ui')"/>
 <script>
-  $(function() {
-     $("#${context.id}-date" ).datepicker();
-  });
+  curl(['jquery-ui'], function() {$("#${context.id}-date" ).datepicker()})
 </script>
 
 <input id="" name="" class="" title="" lang="" disabled=""

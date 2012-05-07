@@ -1,0 +1,39 @@
+<div class="pagination">
+  <ul>
+    {{#if prev}}
+    <li class="prev">
+      <a href="javascript: void(0)"
+        data-action="page" data-page="{{prev}}">&larr; Previous</a>
+    </li>
+    {{else}}
+    <li class="prev disabled">
+      <a href="javascript:void(0)">&larr; Previous</a>
+    </li>
+    {{/if}}
+
+    {{#pages}}
+      {{#if no}}
+      <li class="{{cls}}">
+        <a href="javascript:void(0)"
+          data-action="page" data-page="{{no}}">{{no}}</a>
+      </li>
+      {{else}}
+      <li class="disabled">
+        <a href="javascript: void(0)">...</a>
+      </li>
+      {{/if}}
+    {{/pages}}
+
+    {{#if next}}
+    <li class="next">
+      <a href="javascript:void(0)"
+        data-action="page" data-page="{{next}}">Next &rarr;</a>
+    </li>
+    {{else}}
+    <li class="next disabled">
+      <a href="javascript: void(0)">Next &rarr;</a>
+    </li>
+    {{/if}}
+
+  </ul>
+</div>

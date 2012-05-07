@@ -4,7 +4,7 @@ import logging
 import multiprocessing  # atexit exception
 from setuptools import setup, find_packages
 
-version = '0.5.1'
+version = '0.6.0dev'
 
 install_requires = ['setuptools',
                     'alembic == 0.3.2',
@@ -29,7 +29,7 @@ if sys.version_info[:2] == (2, 6):
 if sys.version_info[:2] in ((2,6),(2,7)):
     install_requires.extend(('simplejson',))
 
-tests_require = install_requires + ['nose', 'sphinx', 'Pygments']
+tests_require = install_requires + ['nose', 'sphinx', 'Pygments', 'pyramid_sockjs']
 
 
 def read(f):
@@ -65,6 +65,7 @@ setup(name='ptah',
       zip_safe=False,
       entry_points={
           'console_scripts': [
+              'ptah-amdjs = ptah.scripts.amd:main',
               'ptah-manage = ptah.scripts.manage:main',
               'ptah-migrate = ptah.scripts.migrate:main',
               'ptah-populate = ptah.scripts.populate:main',

@@ -1,18 +1,41 @@
 """ assets libraries """
 import ptah
 
+def includeme(config):
+    # amd modules
+    config.register_amd_module(
+        'jquery', 'ptah:static/jquery/jquery-1.7.2.min.js')
+    config.register_amd_module(
+        'jquery-ui', 'ptah:static/jquery/jquery-ui-1.8.20.min.js')
+    config.register_amd_module(
+        'sockjs', 'ptah:static/lib/sockjs-0.3.1.min.js')
+    config.register_amd_module(
+        'underscore', 'ptah:static/lib/underscore-1.3.1.js')
+    config.register_amd_module(
+        'handlebars', 'ptah:static/lib/handlebars.runtime.js')
+    config.register_amd_module(
+        'bootstrap', 'ptah:static/bootstrap/bootstrap.min.js')
+    config.register_amd_module(
+        'ckeditor', 'ptah:static/ckeditor/ckeditor.js')
+
+    # ptah
+    config.register_amd_module(
+        'ptah', 'ptah:static/ptah.js')
+    config.register_amd_module(
+        'ptah-date-format', 'ptah:static/date-format.js')
+    config.register_amd_module(
+        'ptah-ws', 'ptah:static/connect.js')
+
+    # ptah ui classes
+    config.register_amd_module(
+        'ptah-form', 'ptah:static/form.js')
+    config.register_amd_module(
+        'ptah-form2', 'ptah:static/form.js')
+    config.register_amd_module(
+        'ptah-pager', 'ptah:static/pager.js')
+
+
 # jQuery library
-ptah.library(
-    'jquery',
-    path='ptah:static/jquery/jquery-1.7.2.min.js',
-    type="js")
-
-ptah.library(
-    'jquery-ui',
-    path='ptah:static/jquery/jquery-ui-1.8.20.min.js',
-    type="js",
-    require="jquery")
-
 ptah.library(
     'jquery-ui',
     'ptah:static/jquery/jquery-ui-1.8.20.css',
@@ -24,15 +47,14 @@ ptah.library(
     path='ptah:static/bootstrap/bootstrap.min.css',
     type="css")
 
-ptah.library(
-    'bootstrap-js',
-    path='ptah:static/bootstrap/bootstrap.min.js',
-    type="js",
-    require="jquery")
 
-# CKEditor
+# curl
 ptah.library(
-    'ckeditor',
-    path='ptah:static/ckeditor/ckeditor.js',
-    type="js",
-    require="jquery")
+    'curl',
+    path='ptah:static/lib/curl-0.6.2.js',
+    type="js")
+
+ptah.library(
+    'curl-debug',
+    path='ptah:static/lib/curl-debug.js',
+    type="js")

@@ -59,7 +59,8 @@ class PtahTestCase(TestCase):
             parts = self.__class__.__module__.split('.')
             for l in range(len(parts)):
                 pkg = '.'.join(parts[:l+1])
-                if pkg == 'ptah' or pkg.startswith('ptah.') or pkg in self._includes:
+                if pkg == 'ptah' or pkg.startswith('ptah.') or \
+                       pkg in self._includes:
                     continue # pragma: no cover
                 try:
                     self.config.include(pkg)

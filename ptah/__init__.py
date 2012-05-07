@@ -152,6 +152,12 @@ from ptah.testing import PtahTestCase
 # register migration
 from ptah.migrate import register_migration
 
+# sockjs
+try:
+    from ptah import sockjs
+except ImportError: # pragma: no cover
+    pass
+
 
 def includeme(cfg):
     # auth
@@ -225,6 +231,21 @@ def includeme(cfg):
     # snippet directive
     cfg.add_directive('ptah_snippet', snippet.pyramid)
 
+    # library helpers
+    from ptah.library import include, render_includes
+    def get_include_helper(request):
+        def incl(*args):
+            return include(request, *args)
+        return incl
+
+    def get_render_includes(request):
+        def incl(*args):
+            return render_includes(request)
+        return incl
+
+    cfg.set_request_property(get_include_helper, 'include_library', True)
+    cfg.set_request_property(get_render_includes, 'render_includes', True)
+
     # populate
     def pyramid_populate(cfg):
         from ptah.populate import Populate
@@ -239,10 +260,54 @@ def includeme(cfg):
     from ptah import migrate
     cfg.add_directive('ptah_migrate', migrate.ptah_migrate)
 
+    # request `render_amd_includes`
+    from .amd import render_amd_includes
+    def get_amd_includes(request):
+        return render_amd_includes(request)
+
+    cfg.set_request_property(get_amd_includes, 'render_amd_includes', True)
+
+    # request `render_amd_container`
+    from .amd import render_amd_container
+    def get_amd_container(request):
+        def f(*args, **kw):
+            return render_amd_container(request, *args, **kw)
+        return f
+
+    cfg.set_request_property(get_amd_container, 'render_amd_container', True)
+
+    # amd
+    from .amd import register_amd_module
+    cfg.add_directive('register_amd_module', register_amd_module)
+
+    # amd init
+    cfg.add_route('ptah-amd-init', '/_amd_{specname}.js')
+
+    # amd bundle route
+    cfg.add_route('ptah-amd-spec', '/_amd_{specname}/{name}')
+
     # ptah static assets
     cfg.add_static_view('_ptah/static', 'ptah:static/')
 
+    # mustache bundle
+    from .mustache import register_mustache_bundle
+
+    cfg.add_directive(
+        'register_mustache_bundle', register_mustache_bundle)
+    cfg.add_route(
+        'ptah-mustache-bundle', '/_mustache/{name}.js')
+    cfg.register_mustache_bundle(
+        'ptah-templates', 'ptah:templates/mustache/')
+
+    # sockjs connection
+    try:
+        from .sockjs import register_ptah_sm
+        cfg.add_directive('ptah_init_sockjs', register_ptah_sm)
+    except ImportError: # pragma: no cover
+        pass
+
     # scan ptah
     cfg.scan('ptah')
+    cfg.include('ptah.static')
 
     cfg.add_translation_dirs('ptah:locale')

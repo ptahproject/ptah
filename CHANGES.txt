@@ -2,6 +2,19 @@
 CHANGES
 =======
 
+0.6.0 (Unreleased)
+==================
+
+Features
+--------
+
+- amd js
+
+- handlebars
+
+- sockjs support
+
+
 0.5.1 (2012-05-04)
 ==================
 

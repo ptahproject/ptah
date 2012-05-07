@@ -1,0 +1,24 @@
+{{&error}}
+
+{{#fieldsets}}
+  <fieldset>
+    {{#if title}}<legend>{{&title}}</legend>{{/if}}
+    {{#widgets}}
+      <div class="control-group {{#error}}error{{/error}}">
+        <label class="control-label" for="{{id}} title="{{title}}">
+          {{title}} {{#required}}*{{/required}}
+        </label>
+        <div class="controls">
+          {{&field}}
+
+          {{#if error}}
+          <span class="help-inline">{{error}}</span>
+          {{/if}}
+          {{#if description}}
+          <p class="help-block">{{&description}}</p>
+          {{/if}}
+        </div>
+      </div>
+    {{/widgets}}
+  </fieldset>
+{{/fieldsets}}

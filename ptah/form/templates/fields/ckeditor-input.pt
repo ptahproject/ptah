@@ -17,9 +17,10 @@
    tal:content="context.form_value" />
 </div>
 
-${view.include('ckeditor')}
+${view.include('curl')}
 <script language="javascript" type="text/javascript">
-  $(function() {
+  curl(['ckeditor'],
+  function() {
     setTimeout(function() {
        if (CKEDITOR.instances['${context.id}']) {
           CKEDITOR.instances['${context.id}'].destroy(true)
@@ -28,5 +29,5 @@ ${view.include('ckeditor')}
           $('#${context.id}').parent().css('height', 'auto')
        }, {'toolbar': 'Basic'})
 
-     }, 100)});
+     }, 100)})
 </script>

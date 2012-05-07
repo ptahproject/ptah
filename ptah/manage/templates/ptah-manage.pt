@@ -4,9 +4,9 @@
     <title>Ptah Manage</title>
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
 
-    ${view.include('bootstrap')}
-    ${view.include('bootstrap-js')}
-    <tal:block content="structure view.render_includes()" />
+    ${request.include_library('bootstrap')}
+    ${structure: request.render_includes()}
+    ${structure: request.render_amd_includes()}
   </head>
   <body>
     <div class="navbar navbar-fixed-top">

@@ -88,6 +88,23 @@ class TestLibraryManagement(PtahTestCase):
             ptah.render_includes(self.request),
             '<link type="text/css" rel="stylesheet" href="http://ptah.org/style.css" />')
 
+    def test_library_request(self):
+        ptah.library('test-lib2', path='http://ptah.org/style.css', type='css')
+        self.init_ptah()
+
+        from pyramid.request import Request
+        from pyramid.events import NewRequest
+        from pyramid.config.factories import _set_request_properties
+
+        req = Request(environ=self._environ)
+        req.registry = self.registry
+        _set_request_properties(NewRequest(req))
+
+        req.include_library('test-lib2')
+        self.assertEqual(
+            req.render_includes(),
+            '<link type="text/css" rel="stylesheet" href="http://ptah.org/style.css" />')
+
     def test_library_include_errors(self):
         # render not included
         self.assertEqual(ptah.render_includes(self.request), '')

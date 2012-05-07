@@ -118,6 +118,28 @@ ptah.register_settings(
         description = 'List of default assigned roles for all principals.',
         default = ()),
 
+    ptah.form.BoolField(
+        'amd-spec-enabled',
+        title = 'AMD spec',
+        description = 'Status of amd spec support (true/false).',
+        default = False),
+
+    ptah.form.LinesField(
+        'amd-specs',
+        title = 'Amd spec files',
+        default = ()),
+
+    ptah.form.TextField(
+        'amd-spec-dir',
+        title = 'Directory for compiled files',
+        default = ''),
+
+    ptah.form.TextField(
+        'nodejs-path',
+        title = 'NodeJS path',
+        description = 'Path to nodejs executable.',
+        default = ''),
+
     title = _('Ptah settings'),
 )
 

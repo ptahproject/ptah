@@ -4,8 +4,8 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 */
 if (typeof define === 'function' && define.amd) {
     define('ckeditor',['jquery'], function(jquery) {});
-    if (typeof jca_modules !== 'undefined' && jca_modules.ckeditor) {
-        window.CKEDITOR_BASEPATH = jca_modules.ckeditor.substr(0, jca_modules.ckeditor.indexOf('ckeditor')) + '/ckeditor/';
+    if (typeof ptah_amd_modules !== 'undefined' && ptah_amd_modules.ckeditor) {
+        window.CKEDITOR_BASEPATH = ptah_amd_modules.ckeditor.substr(0, ptah_amd_modules.ckeditor.indexOf('ckeditor')) + '/ckeditor/';
     }
 }
 
