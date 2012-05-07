@@ -263,7 +263,9 @@ def includeme(cfg):
     # request `render_amd_includes`
     from .amd import render_amd_includes
     def get_amd_includes(request):
-        return render_amd_includes(request)
+        def f(*args, **kw):
+            return render_amd_includes(request, *args, **kw)
+        return f
 
     cfg.set_request_property(get_amd_includes, 'render_amd_includes', True)
 

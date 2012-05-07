@@ -1,6 +1,8 @@
 import os, tempfile
 import ptah
+from pyramid.path import AssetResolver
 from pyramid.config import Configurator
+from pyramid.response import FileResponse
 from pyramid.exceptions import ConfigurationError, ConfigurationConflictError
 from pyramid.httpexceptions import HTTPNotFound
 
@@ -43,12 +45,83 @@ class TestAmd(ptah.PtahTestCase):
             ConfigurationConflictError, self.config.commit)
 
 
-class TestptahInit(ptah.PtahTestCase):
+class TestAmdSpec(ptah.PtahTestCase):
+
+    def test_unknown_spec(self):
+        from ptah.amd import amd_spec, ID_AMD_SPEC
+
+        self.request.matchdict['name'] = 'test.js'
+        self.request.matchdict['specname'] = 'test'
+
+        self.assertIsInstance(amd_spec(self.request), HTTPNotFound)
+
+    def test_spec_without_path(self):
+        from ptah.amd import amd_spec, ID_AMD_SPEC
+
+        self.request.matchdict['name'] = 'test.js'
+        self.request.matchdict['specname'] = 'test'
+
+        self.registry[ID_AMD_SPEC] = {'test': {'test.js': {'url':'http://...'}}}
+        self.assertIsInstance(amd_spec(self.request), HTTPNotFound)
+
+    def test_spec(self):
+        from ptah.amd import amd_spec, ID_AMD_SPEC
+
+        self.request.matchdict['name'] = 'test.js'
+        self.request.matchdict['specname'] = 'test'
+
+        resolver = AssetResolver()
+        path = resolver.resolve('ptah:tests/dir/test.js').abspath()
+
+        self.registry[ID_AMD_SPEC] = {'test': {'test.js': {'path':path}}}
+        self.assertIsInstance(amd_spec(self.request), FileResponse)
+
+
+class TestAmdInit(ptah.PtahTestCase):
 
     def setUp(self):
-        super(TestptahInit, self).setUp()
+        super(TestAmdInit, self).setUp()
 
         self.config.add_static_view('_tests', 'ptah:tests/dir/')
+
+    def test_amd_init_no_spec(self):
+        from ptah.amd import amd_init
+
+        self.config.register_amd_module(
+            'test-mod', 'ptah:tests/dir/test.js')
+
+        self.request.matchdict['specname'] = 'unknown'
+
+        resp = amd_init(self.request)
+        self.assertIsInstance(resp, HTTPNotFound)
+
+    def test_amd_init_with_spec_url(self):
+        from ptah.amd import amd_init, ID_AMD_MODULE, ID_AMD_SPEC
+
+        self.registry[ID_AMD_MODULE] = {'ptah': 'ptah:static/ptah.js'}
+        self.registry[ID_AMD_SPEC] = \
+            {'test': {'ptah': {'url': 'http://test.com/example.js'}}}
+
+        self.request.matchdict['specname'] = 'test'
+
+        resp = amd_init(self.request)
+        self.assertEqual(resp.status, '200 OK')
+
+        self.registry[ID_AMD_SPEC] = \
+            {'test': {'ptah': {'name':'test', 'path':'ptah:static/example.js'}}}
+        resp = amd_init(self.request)
+        self.assertIn('"ptah": "http://example.com/_amd_test/t"', resp.body)
+
+    def test_amd_init_with_spec_mustache(self):
+        from ptah.amd import amd_init, ID_AMD_MODULE, ID_AMD_SPEC
+
+        self.request.matchdict['specname'] = 'test'
+        self.registry[ID_AMD_SPEC] = \
+            {'test': {'ptah-templates':
+                      {'name':'test', 'path':'ptah:static/example.js'}}}
+        resp = amd_init(self.request)
+        self.assertIn(
+            '"ptah-templates":"http://example.com/_amd_test/t"', resp.body)
 
     def test_amd_mod_paths(self):
         from ptah.amd import amd_init
@@ -84,11 +157,37 @@ class TestInitAmdSpec(ptah.PtahTestCase):
 
         super(TestInitAmdSpec, self).tearDown()
 
+    def test_empty_spec(self):
+        fn = self._create_file("[test.js]\nmodules = lib1")
+
+        cfg = ptah.get_settings(ptah.CFG_ID_PTAH, self.registry)
+        cfg['amd-specs'] = ''
+
+        from ptah.amd import init_amd_spec, ID_AMD_SPEC
+
+        # no amd-spec-dir
+        init_amd_spec(self.config)
+
+        storage = self.registry[ID_AMD_SPEC]
+        self.assertEqual(storage, {})
+
+    def test_empty_dir(self):
+        fn = self._create_file("[test.js]\nmodules = lib1")
+
+        cfg = ptah.get_settings(ptah.CFG_ID_PTAH, self.registry)
+        cfg['amd-specs'] = ['%s'%fn, 'test:%s'%fn]
+
+        from ptah.amd import init_amd_spec, ID_AMD_SPEC
+
+        # no amd-spec-dir
+        self.assertRaises(ConfigurationError, init_amd_spec, self.config)
+
     def test_simple(self):
         fn = self._create_file("[test.js]\nmodules = lib1")
 
         cfg = ptah.get_settings(ptah.CFG_ID_PTAH, self.registry)
         cfg['amd-specs'] = ['%s'%fn, 'test:%s'%fn]
+        cfg['amd-spec-dir'] = '/test'
 
         from ptah.amd import init_amd_spec, ID_AMD_SPEC
         init_amd_spec(self.config)
@@ -104,6 +203,7 @@ class TestInitAmdSpec(ptah.PtahTestCase):
 
         cfg = ptah.get_settings(ptah.CFG_ID_PTAH, self.registry)
         cfg['amd-specs'] = [fn]
+        cfg['amd-spec-dir'] = '/test'
 
         from ptah.amd import init_amd_spec, ID_AMD_SPEC
         init_amd_spec(self.config)
@@ -126,16 +226,65 @@ modules = lib2
 
         cfg = ptah.get_settings(ptah.CFG_ID_PTAH, self.registry)
         cfg['amd-specs'] = ['test:%s'%fn, 'test:%s'%fn]
+        cfg['amd-spec-dir'] = '/unknown'
 
         from ptah.amd import init_amd_spec
         self.assertRaises(ConfigurationError, init_amd_spec, self.config)
 
 
-class TestAmdSpec(ptah.PtahTestCase):
+class TestRequestRenderers(ptah.PtahTestCase):
 
-    def test_unknown(self):
-        self.request.matchdict['name'] = 'unknown'
-        self.request.matchdict['specname'] = 'unknown'
+    def setUp(self):
+        super(TestRequestRenderers, self).setUp()
 
-        from ptah.amd import amd_spec
-        self.assertIsInstance(amd_spec(self.request), HTTPNotFound)
+        self.cfg = ptah.get_settings(ptah.CFG_ID_PTAH, self.registry)
+
+        from pyramid.events import NewRequest
+        from pyramid.config.factories import _set_request_properties
+        _set_request_properties(NewRequest(self.request))
+
+    def make_request(self):
+        from pyramid.request import Request
+        return Request(environ=self._environ)
+
+    def test_render_amd_container(self):
+        text = self.request.render_amd_container('app', attr='123')
+
+        self.assertEqual(
+            text,
+            '<div ptah="app" class="ptah-container" data-attr="123"></div>')
+
+    def test_render_amd_includes(self):
+        self.cfg['amd-spec-enabled'] = False
+
+        text = self.request.render_amd_includes().strip()
+        self.assertEqual(
+            text, '<script src="http://example.com/_amd__.js"> </script>')
+
+        text = self.request.render_amd_includes('test-spec').strip()
+        self.assertEqual(
+            text, '<script src="http://example.com/_amd__.js"> </script>')
+
+    def test_render_amd_includes_unknown_spec(self):
+        self.cfg['amd-spec-enabled'] = True
+
+        self.assertRaises(
+            RuntimeError, self.request.render_amd_includes)
+        self.assertRaises(
+            RuntimeError, self.request.render_amd_includes, 'spec')
+
+    def test_render_amd_includes_spec(self):
+        from ptah.amd import ID_AMD_SPEC
+
+        self.cfg['amd-spec-enabled'] = True
+
+        self.registry[ID_AMD_SPEC] = {'test':
+                                      {'test.js': {'path':'/test/test.js'}}}
+
+        text = self.request.render_amd_includes('test').strip()
+        self.assertEqual(
+            text, '<script src="http://example.com/_amd_test.js"> </script>')
+
+        text = self.request.render_amd_includes('test', 'test').strip()
+        self.assertEqual(
+            text, '<script src="http://example.com/_amd_test.js"> </script>\n<script src="http://example.com/_amd_test/test.js"></script>')

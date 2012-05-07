@@ -12,15 +12,21 @@ from ptah.util import json
 from ptah.mustache import list_bundles
 
 ID_AMD_SPEC = 'ptah:amd-spec'
+ID_AMD_SPEC_ = 'ptah:amd-spec_'
 ID_AMD_MODULE = 'ptah:amd-module'
 
 
-def init_amd_spec(config):
+def init_amd_spec(config, cache_max_age=None):
     cfg = ptah.get_settings(ptah.CFG_ID_PTAH, config.registry)
-    if not cfg['amd-specs'] or not cfg['amd-specs']:
+    config.registry[ID_AMD_SPEC] = {}
+    if not cfg['amd-specs']:
         return
 
+    if not cfg['amd-spec-dir']:
+        raise ConfigurationError("amd-spec-dir is required.")
+
     resolver = AssetResolver()
+    directory = resolver.resolve(cfg['amd-spec-dir']).abspath()
 
     specs = {}
     for item in cfg['amd-specs']:
@@ -34,8 +40,6 @@ def init_amd_spec(config):
             raise ConfigurationError("Spec '%s' already defined."%spec)
 
         specs[spec] = specfile
-
-    directory = resolver.resolve(cfg['amd-spec-dir']).abspath()
 
     spec_mods = {}
 
@@ -65,6 +69,7 @@ def init_amd_spec(config):
         spec_mods[spec] = mods
 
     config.registry[ID_AMD_SPEC] = spec_mods
+    config.registry[ID_AMD_SPEC_] = cache_max_age
 
 
 def register_amd_module(cfg, name, path, description=''):
@@ -116,19 +121,22 @@ def amd_spec(request):
     if name not in spec or 'path' not in spec[name]:
         return HTTPNotFound()
 
-    cfg = ptah.get_settings(ptah.CFG_ID_PTAH, request.registry)
-    return FileResponse(spec[name]['path'], request, cfg['cache_max_age'])
+    return FileResponse(
+        spec[name]['path'], request, request.registry.get(ID_AMD_SPEC_))
 
 
 @view_config(route_name='ptah-amd-init')
 def amd_init(request):
     specname = request.matchdict['specname']
     storage = request.registry.get(ID_AMD_MODULE)
-    spec = request.registry.get(ID_AMD_SPEC, {}).get(specname,{})
+    spec = request.registry.get(ID_AMD_SPEC, {}).get(specname)
     if spec is None and specname != '_':
         return HTTPNotFound()
 
     js = []
+
+    if spec is None:
+        spec = {}
 
     if storage:
         for name, path in storage.items():
@@ -170,39 +178,32 @@ amd_incl = """
 %(components)s
 """
 
-def render_amd_includes(request):
+def render_amd_includes(request, spec='', bundles=()):
     registry = request.registry
     cfg = ptah.get_settings(ptah.CFG_ID_PTAH, request.registry)
 
-    def renderer(spec='', bundles=()):
-        url = request.static_url('ptah:static/')
-        app_url = request.application_url
+    ptah.include(request, 'curl')
 
-        ptah.include(request, 'curl')
+    c_tmpls = []
+    if cfg['amd-spec-enabled']:
+        specstorage = request.registry.get(ID_AMD_SPEC, {})
+        specdata = specstorage.get(spec)
+        if specdata is None:
+            raise RuntimeError("Spec '%s' is not found."%spec)
+    else:
+        spec = '_'
+        specdata = ()
 
-        c_tmpls = []
-        if cfg['amd-spec-enabled']:
-            specstorage = request.registry.get(ID_AMD_SPEC, ())
-            specdata = specstorage.get(spec)
-            if specdata is None:
-                raise RuntimeError("Spec '%s' is not found."%spec)
-        else:
-            spec = '_'
-            specdata = ()
+    for name in (bundles if not isinstance(bundles, str) else (bundles,)):
+        name = '%s.js'%name
+        if name in specdata:
+            c_tmpls.append(
+                '<script src="%s"></script>'%
+                request.route_url('ptah-amd-spec',specname=spec,name=name))
 
-        for name in (bundles if not isinstance(bundles, str) else (bundles,)):
-            name = '%s.js'%name
-            if name in specdata:
-                c_tmpls.append(
-                    '<script src="%s"></script>'%
-                    request.route_url('ptah-amd-spec',specname=spec,name=name))
-
-        return amd_incl%{'url': url,
-                         'app_url': app_url,
-                         'specname': spec,
-                         'components': '\n'.join(c_tmpls),
-                         }
-    return renderer
+    return amd_incl%{'app_url': request.application_url,
+                     'specname': spec,
+                     'components': '\n'.join(c_tmpls)}
 
 
 def render_amd_container(request, name, **kw):
