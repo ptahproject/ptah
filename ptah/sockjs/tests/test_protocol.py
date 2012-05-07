@@ -4,8 +4,16 @@ from pyramid.exceptions import ConfigurationError, ConfigurationConflictError
 from pyramid.httpexceptions import HTTPNotFound
 
 import ptah
+from ptah.testing import unittest
+
+try:
+    import pyramid_sockjs
+    has_sockjs = True
+except ImportError:
+    has_sockjs = False
 
 
+@unittest.skipIf(not has_sockjs, 'No pyramid_sockjs')
 class TestProtocolDirective(ptah.PtahTestCase):
 
     _auto_commit = False

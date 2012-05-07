@@ -97,11 +97,12 @@ curl(
   {paths: ptah_amd_modules || {}}, ['jquery'],
   function($) {
     $(function() {
-      curl(['ptah','ptah-date-format']).then(
-          function(ptah) {ptah.scan_and_create()})
+      curl(['ptah','ptah-date-format']).then(function(ptah) {
+          ptah.scan_and_create()
+          window.ptah = ptah
+          window.ptah_jquery = $
+        })
     })
-    window.ptah = ptah
-    window.ptah_jquery = $
   }
 )
 """

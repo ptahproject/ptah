@@ -9,6 +9,7 @@ from pyramid.exceptions import ConfigurationError
 import ptah
 from ptah.util import json
 
+
 def check_output(*popenargs, **kwargs):
     """ python2.7 subprocess.checkoutput copy """
     process = subprocess.Popen(stdout=subprocess.PIPE, *popenargs, **kwargs)
@@ -23,6 +24,7 @@ def check_output(*popenargs, **kwargs):
 
 
 ID_BUNDLE = 'ptah:mustache'
+ID_AMD_MODULE = 'ptah:amd-module'
 NODE_PATH = check_output(('which', 'node')).strip()
 HB = AssetResolver().resolve(
     'ptah:node_modules/handlebars/bin/handlebars').abspath()
@@ -44,7 +46,7 @@ def register_mustache_bundle(cfg, name, path='', description=''):
     if not os.path.isdir(d):
         raise ConfigurationError("Directory is required: %s"%path)
 
-    discr = (ID_BUNDLE, name)
+    discr = (ID_AMD_MODULE, name)
 
     resolver = AssetResolver()
     abs_path = resolver.resolve(path).abspath()
@@ -52,7 +54,7 @@ def register_mustache_bundle(cfg, name, path='', description=''):
     if not path or not os.path.isdir(abs_path):
         raise ConfigurationError("Directory is required: %s"%path)
 
-    intr = Introspectable(ID_BUNDLE, discr, name, ID_BUNDLE)
+    intr = Introspectable(ID_AMD_MODULE, discr, name, ID_AMD_MODULE)
     intr['name'] = name
     intr['path'] = path
     intr['abs_path'] = abs_path

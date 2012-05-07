@@ -14,8 +14,10 @@ from pyramid.authorization import ACLAuthorizationPolicy
 from pyramid.authentication import AuthTktAuthenticationPolicy
 
 if sys.version_info[:2] == (2, 6): # pragma: no cover
+    import unittest2 as unittest
     from unittest2 import TestCase
 else:
+    import unittest
     from unittest import TestCase
 
 import ptah

@@ -23,8 +23,6 @@ def includeme(config):
         'ptah', 'ptah:static/ptah.js')
     config.register_amd_module(
         'ptah-date-format', 'ptah:static/date-format.js')
-    config.register_amd_module(
-        'ptah-ws', 'ptah:static/connect.js')
 
     # ptah ui classes
     config.register_amd_module(
