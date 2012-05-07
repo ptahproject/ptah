@@ -5,7 +5,6 @@ import sys
 import argparse
 import textwrap
 import tempfile
-import subprocess
 from collections import OrderedDict
 from pprint import pprint
 from pyramid.path import AssetResolver
@@ -14,7 +13,7 @@ from pyramid.compat import configparser, NativeIO
 import ptah
 from ptah import scripts
 from ptah.amd import ID_AMD_MODULE
-from ptah.mustache import build_hb_bundle, ID_BUNDLE
+from ptah.mustache import build_hb_bundle, check_output, ID_BUNDLE
 
 
 grpTitleWrap = textwrap.TextWrapper(
@@ -67,17 +66,17 @@ class ManifestCommand(object):
         #    self.parser.print_help()
 
     def build_bundles(self):
-        NODE_PATH = subprocess.check_output(('which', 'node')).strip()
+        NODE_PATH = check_output(('which', 'node')).strip()
         if not NODE_PATH:
             print ("Can't find nodejs")
             return
 
-        cfg = ptah.get_settings('jca', self.registry)
-        if not cfg['specs']:
+        cfg = ptah.get_settings(ptah.CFG_ID_PTAH, self.registry)
+        if not cfg['amd-specs']:
             print ("Spec files are not specified in .ini file")
             return
 
-        if not cfg['directory']:
+        if not cfg['amd-spec-dir']:
             print ("No static directory is specified in .ini file")
             return
 
@@ -88,7 +87,7 @@ class ManifestCommand(object):
         resolver = AssetResolver()
 
         specs = OrderedDict()
-        for item in cfg['specs']:
+        for item in cfg['amd-specs']:
             if ':' not in item:
                 spec = ''
                 specfile = item
@@ -129,9 +128,9 @@ class ManifestCommand(object):
             for jsname, url, modules in bundles:
                 js = []
                 for module in modules:
-                    tmod = module[5:]
-                    if tmod in tmp_storage:
-                        text = build_hb_bundle(tmod, tmp_storage[tmod])
+                    if module in tmp_storage:
+                        text = build_hb_bundle(
+                            module, tmp_storage[module], self.registry)
                         processed.append(module)
                         js.append((module, None, text))
                         continue
@@ -164,13 +163,12 @@ class ManifestCommand(object):
 
                 f.close()
 
-                path = os.path.join(cfg['directory'] + jsname)
+                path = os.path.join(cfg['amd-spec-dir'] + jsname)
                 with open(path, 'wb') as dest:
                     if self.options.debug:
                         dest.write(open(tpath, 'rb').read())
                     else:
-                        js = subprocess.check_output(
-                            (NODE_PATH,UGLIFY,'-nc',tpath))
+                        js = check_output((NODE_PATH,UGLIFY,'-nc',tpath))
                         dest.write(js)
 
                 os.unlink(tpath)

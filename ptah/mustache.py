@@ -9,8 +9,21 @@ from pyramid.exceptions import ConfigurationError
 import ptah
 from ptah.util import json
 
+def check_output(*popenargs, **kwargs):
+    """ python2.7 subprocess.checkoutput copy """
+    process = subprocess.Popen(stdout=subprocess.PIPE, *popenargs, **kwargs)
+    output, unused_err = process.communicate()
+    retcode = process.poll()
+    if retcode:
+        cmd = kwargs.get("args")
+        if cmd is None:
+            cmd = popenargs[0]
+        raise subprocess.CalledProcessError(retcode, cmd, output=output)
+    return output
+
+
 ID_BUNDLE = 'ptah:mustache'
-NODE_PATH = subprocess.check_output(('which', 'node')).strip()
+NODE_PATH = check_output(('which', 'node')).strip()
 HB = AssetResolver().resolve(
     'ptah:node_modules/handlebars/bin/handlebars').abspath()
 
@@ -59,7 +72,7 @@ def compile_template(path, node_path):
         with open(cname, 'rb') as f:
             tmpl = f.read()
     else:
-        tmpl = subprocess.check_output((node_path, HB, '-s', path))
+        tmpl = check_output((node_path, HB, '-s', path))
         with open(cname, 'wb') as f:
             f.write(tmpl)
 

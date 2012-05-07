@@ -296,8 +296,6 @@ def includeme(cfg):
         'register_mustache_bundle', register_mustache_bundle)
     cfg.add_route(
         'ptah-mustache-bundle', '/_mustache/{name}.js')
-    cfg.register_mustache_bundle(
-        'ptah-templates', 'ptah:templates/mustache/')
 
     # sockjs connection
     try:

@@ -29,7 +29,10 @@ if sys.version_info[:2] == (2, 6):
 if sys.version_info[:2] in ((2,6),(2,7)):
     install_requires.extend(('simplejson',))
 
-tests_require = install_requires + ['nose', 'sphinx', 'Pygments', 'pyramid_sockjs']
+tests_require = install_requires + ['nose', 'sphinx', 'Pygments']
+
+if sys.version_info[:2] in ((2,6),(2,7)):
+    tests_require.extend(('pyramid_sockjs',))
 
 
 def read(f):

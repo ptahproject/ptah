@@ -34,6 +34,10 @@ def includeme(config):
     config.register_amd_module(
         'ptah-pager', 'ptah:static/pager.js')
 
+    # templates
+    config.register_mustache_bundle(
+        'ptah-templates', 'ptah:templates/mustache/')
+
 
 # jQuery library
 ptah.library(
