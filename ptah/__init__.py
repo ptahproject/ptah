@@ -311,3 +311,8 @@ def includeme(cfg):
     cfg.include('ptah.static')
 
     cfg.add_translation_dirs('ptah:locale')
+
+    # init amd specs
+    from .amd import init_amd_spec
+    cfg.action(
+        'ptah.init_amd_spec', init_amd_spec, (cfg,), order=999999+1)
