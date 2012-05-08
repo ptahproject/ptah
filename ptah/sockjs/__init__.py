@@ -1,12 +1,15 @@
 # sockjs
 
-from .form import Form
-from .protocol import handler
-from .protocol import protocol
-from .protocol import Protocol
+try:
+    from .form import Form
+    from .protocol import handler
+    from .protocol import protocol
+    from .protocol import Protocol
 
-from .session import Session
-from .session import get_session_manager
+    from .session import Session
+    from .session import get_session_manager
+except ImportError:
+    pass
 
 
 def register_ptah_sm(cfg, session=None):

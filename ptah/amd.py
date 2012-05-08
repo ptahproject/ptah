@@ -1,6 +1,6 @@
 import os
 from pyramid.path import AssetResolver
-from pyramid.compat import escape, configparser
+from pyramid.compat import escape, configparser, text_type
 from pyramid.view import view_config
 from pyramid.registry import Introspectable
 from pyramid.response import FileResponse
@@ -165,11 +165,11 @@ def amd_init(request):
 
     response = request.response
     response.content_type = 'application/javascript'
-    response.body = amd_init_tmpl%{
+    response.text = text_type(amd_init_tmpl%{
         'app_url': request.application_url,
         'mods': ',\n'.join(sorted(js)),
         'exrta': '\n'.join('var %s = %s'%(name, json.dumps(val))
-                           for name, val in options.items())}
+                           for name, val in options.items())})
     return response
 
 

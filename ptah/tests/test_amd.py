@@ -2,6 +2,7 @@ import os, tempfile
 import ptah
 from pyramid.path import AssetResolver
 from pyramid.config import Configurator
+from pyramid.compat import binary_type, text_type, bytes_
 from pyramid.response import FileResponse
 from pyramid.exceptions import ConfigurationError, ConfigurationConflictError
 from pyramid.httpexceptions import HTTPNotFound
@@ -110,7 +111,7 @@ class TestAmdInit(ptah.PtahTestCase):
         self.registry[ID_AMD_SPEC] = \
             {'test': {'ptah': {'name':'test', 'path':'ptah:static/example.js'}}}
         resp = amd_init(self.request)
-        self.assertIn('"ptah": "http://example.com/_amd_test/t"', resp.body)
+        self.assertIn('"ptah": "http://example.com/_amd_test/t"', resp.text)
 
     def test_amd_init_with_spec_mustache(self):
         from ptah.amd import amd_init, ID_AMD_MODULE, ID_AMD_SPEC
@@ -121,7 +122,7 @@ class TestAmdInit(ptah.PtahTestCase):
                       {'name':'test', 'path':'ptah:static/example.js'}}}
         resp = amd_init(self.request)
         self.assertIn(
-            '"ptah-templates":"http://example.com/_amd_test/t"', resp.body)
+            '"ptah-templates":"http://example.com/_amd_test/t"', resp.text)
 
     def test_amd_mod_paths(self):
         from ptah.amd import amd_init
@@ -132,9 +133,9 @@ class TestAmdInit(ptah.PtahTestCase):
         self.request.matchdict['specname'] = '_'
 
         resp = amd_init(self.request)
-        self.assertIn('var ptah_amd_modules = {', resp.body)
+        self.assertIn('var ptah_amd_modules = {', resp.text)
         self.assertIn(
-            '"test-mod": "http://example.com/_tests/test"', resp.body)
+            '"test-mod": "http://example.com/_tests/test"', resp.text)
 
 
 class TestInitAmdSpec(ptah.PtahTestCase):
@@ -147,7 +148,7 @@ class TestInitAmdSpec(ptah.PtahTestCase):
         d, fn = tempfile.mkstemp()
         self._files.append(fn)
         with open(fn, 'wb') as f:
-            f.write(text)
+            f.write(bytes_(text, 'utf-8'))
 
         return fn
 

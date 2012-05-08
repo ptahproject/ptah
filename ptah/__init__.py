@@ -299,20 +299,21 @@ def includeme(cfg):
     cfg.add_route(
         'ptah-mustache-bundle', '/_mustache/{name}.js')
 
+    # scan ptah
+    cfg.scan('ptah', ignore=('ptah.sockjs',))
+    cfg.include('ptah.static')
+
     # sockjs connection
     try:
         from .sockjs import register_ptah_sm
         cfg.add_directive('ptah_init_sockjs', register_ptah_sm)
+        cfg.scan('ptah.scokjs')
     except ImportError: # pragma: no cover
         pass
 
-    # scan ptah
-    cfg.scan('ptah')
-    cfg.include('ptah.static')
-
+    # translation
     cfg.add_translation_dirs('ptah:locale')
 
     # init amd specs
     from .amd import init_amd_spec
-    cfg.action(
-        'ptah.init_amd_spec', init_amd_spec, (cfg,), order=999999+1)
+    cfg.action('ptah.init_amd_spec', init_amd_spec, (cfg,), order=999999+1)

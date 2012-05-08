@@ -2,6 +2,7 @@ import os
 import subprocess
 from pyramid.view import view_config
 from pyramid.path import AssetResolver
+from pyramid.compat import text_
 from pyramid.registry import Introspectable
 from pyramid.httpexceptions import HTTPNotFound
 from pyramid.exceptions import ConfigurationError
@@ -15,11 +16,8 @@ def check_output(*popenargs, **kwargs):
     process = subprocess.Popen(stdout=subprocess.PIPE, *popenargs, **kwargs)
     output, unused_err = process.communicate()
     retcode = process.poll()
-    if retcode:
-        cmd = kwargs.get("args")
-        if cmd is None:
-            cmd = popenargs[0]
-        raise subprocess.CalledProcessError(retcode, cmd, output=output)
+    if retcode: # pragma: nocover
+        return ''
     return output
 
 
@@ -132,7 +130,8 @@ def bundle_view(request):
     name = str(name)
     response = request.response
     response.content_type = 'application/javascript'
-    response.body = build_hb_bundle(name, storage[name], request.registry)
+    response.text = text_(
+        build_hb_bundle(name, storage[name], request.registry), 'utf-8')
     return response
 
 

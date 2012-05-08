@@ -13,7 +13,24 @@ except ImportError:
     has_sockjs = False
 
 
-@unittest.skipIf(not has_sockjs, 'No pyramid_sockjs')
+@unittest.skipUnless(has_sockjs, 'No pyramid_sockjs')
+class TestInitDirective(ptah.PtahTestCase):
+
+    _init_ptah = False
+
+    def test_init_sockjs_directive(self):
+        self.assertFalse(hasattr(self.config, 'ptah_init_sockjs'))
+        self.config.include('ptah')
+        self.config.include('pyramid_sockjs')
+
+        self.assertTrue(hasattr(self.config, 'ptah_init_sockjs'))
+
+        self.config.ptah_init_sockjs()
+        self.assertIsNotNone(
+            pyramid_sockjs.get_session_manager('ptah', self.registry))
+
+
+@unittest.skipUnless(has_sockjs, 'No pyramid_sockjs')
 class TestProtocolDirective(ptah.PtahTestCase):
 
     _auto_commit = False
@@ -87,6 +104,7 @@ class TestProtocolDirective(ptah.PtahTestCase):
         self.assertIs(item[0], TestProtocol)
 
 
+@unittest.skipUnless(has_sockjs, 'No pyramid_sockjs')
 class TestHandlerDirective(ptah.PtahTestCase):
 
     def test_handler(self):
@@ -128,6 +146,7 @@ class TestHandlerDirective(ptah.PtahTestCase):
         self.assertEqual(MessageHandler, TestProtocol.__handlers__['message'])
 
 
+@unittest.skipUnless(has_sockjs, 'No pyramid_sockjs')
 class TestProtocol(ptah.PtahTestCase):
 
     def _make_one(self, id='session'):

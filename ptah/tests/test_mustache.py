@@ -1,4 +1,6 @@
+import os, tempfile, shutil, time
 from zope.interface import implementedBy
+from pyramid.compat import binary_type, text_type, text_
 from pyramid.config import Configurator
 from pyramid.exceptions import ConfigurationError, ConfigurationConflictError
 from pyramid.httpexceptions import HTTPNotFound
@@ -80,9 +82,9 @@ class TestBundleRoute(ptah.PtahTestCase):
 
         res = bundle_view(self.request)
         self.assertIn(
-            '"test-bundle",["ptah","handlebars"],', res.body)
+            '"test-bundle",["ptah","handlebars"],', res.text)
         self.assertIn(
-            '"cat2":new ptah.Templates("cat2",{"form2"', res.body)
+            '"cat2":new ptah.Templates("cat2",{"form2"', res.text)
 
     def test_list_bundles(self):
         from ptah.mustache import list_bundles
@@ -114,4 +116,61 @@ class TestBundleRoute(ptah.PtahTestCase):
 
         res = amd_init(self.request)
         self.assertIn(
-            '"test-bundle":"http://example.com/_mustache/test-bundle"',res.body)
+            '"test-bundle":"http://example.com/_mustache/test-bundle"',res.text)
+
+
+class TestBuildBundle(ptah.PtahTestCase):
+
+    def setUp(self):
+        super(TestBuildBundle, self).setUp()
+
+        self.path = tempfile.mkdtemp()
+
+        from ptah import mustache
+        self.storage = self.registry.get(mustache.ID_BUNDLE)
+        self._node_path = mustache.NODE_PATH
+
+    def tearDown(self):
+        super(TestBuildBundle, self).setUp()
+        from ptah import mustache
+        mustache.NODE_PATH = self._node_path
+
+        shutil.rmtree(self.path)
+
+    def test_no_nodejs(self):
+        from ptah import mustache
+
+        mustache.NODE_PATH = ''
+
+        self.assertRaises(
+            RuntimeError, mustache.build_hb_bundle,
+            'ptah-templates', self.storage['ptah-templates'], self.registry)
+
+    def test_compile_new(self):
+        from ptah import mustache
+
+        f = os.path.join(self.path, 'template')
+        with open(f, 'w') as fn:
+            fn.write('<div>{{test}}</div>')
+
+        tmpl = text_type(mustache.compile_template(f, mustache.NODE_PATH))
+
+        self.assertTrue(os.path.isfile('%s.js'%f))
+        self.assertIn(
+            'function (Handlebars,depth0,helpers,partials,data) {', tmpl)
+
+    def test_compile_existing(self):
+        from ptah import mustache
+
+        f = os.path.join(self.path, 'template')
+        with open(f, 'w') as fn:
+            fn.write('<div>{{test}}</div>')
+
+        time.sleep(0.01)
+
+        f1 = '%s.js'%f
+        with open(f1, 'w') as fn:
+            fn.write('existing')
+
+        tmpl = text_(mustache.compile_template(f, mustache.NODE_PATH))
+        self.assertEqual('existing', tmpl)
