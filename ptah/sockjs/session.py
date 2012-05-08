@@ -9,8 +9,6 @@ from pyramid.registry import Introspectable
 import pyramid_sockjs
 from pyramid_sockjs import json
 
-ID_FACTORY = 'ptah:protocol-factory'
-
 log = logging.getLogger('ptah')
 
 
@@ -25,25 +23,16 @@ class Session(pyramid_sockjs.Session):
 
         self.protocols = {}
 
-    @reify
-    def factories(self):
-        return self.registry.get(ID_FACTORY, {})
-
     def get_protocol(self, name, _marker=object()):
         protocol = self.protocols.get(name)
 
         if protocol is None:
-            intr = self.factories.get(name)
-            if intr is not None:
-                factory = intr['protocol']
-                permission = intr.get('permission', None)
+            item = self.registry.adapters.lookup(
+                (providedBy(self),), IProtocol, name=name)
+            if item is not None:
+                factory, permission = item
             else:
-                item = self.registry.adapters.lookup(
-                    (providedBy(self),), IProtocol, name=name)
-                if item is not None:
-                    factory, permission = item
-                else:
-                    factory, permission = None, None
+                factory, permission = None, None
 
             # permission
             if permission:
