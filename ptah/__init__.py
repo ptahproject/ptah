@@ -307,7 +307,7 @@ def includeme(cfg):
     try:
         from .sockjs import register_ptah_sm
         cfg.add_directive('ptah_init_sockjs', register_ptah_sm)
-        cfg.scan('ptah.scokjs')
+        cfg.scan('ptah.sockjs')
     except ImportError: # pragma: no cover
         pass
 
