@@ -79,7 +79,7 @@ Stepping through the code
 
     7. `config.add_route('home', '/')` registers / to the HomepageView
 
-    8. `config.add_static_view('_mypkg', 'mypkg:static')` allows you to call http://localhost:6543/_mkpkg/app.css which you can see on filesystem, mypkg/static/app.css
+    8. `config.add_static_view('_mypkg', 'mypkg:static')` allows you to call http://localhost:6543/_mypkg/app.css which you can see on filesystem, mypkg/static/app.css
 
     9. config.scan() imports all python modules in your application and performs registration. You will note there is no `import .views` inside the app.py module, because the scan makes that unnecessary.
 
