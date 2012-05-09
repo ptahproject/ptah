@@ -59,12 +59,14 @@ def init_amd_spec(config, cache_max_age=None):
                            if not s.startswith('#')]
 
                 if url:
-                    mods[section] = {'url':url}
+                    item = {'url': url, 'name': section}
                 elif modules:
-                    mods[section] = {'path': os.path.join(directory, section)}
+                    item = {'name': section,
+                            'path': os.path.join(directory,section)}
 
-                #for mod in modules:
-                #    mods[mod] = item
+                mods[section] = item
+                for mod in modules:
+                    mods[mod] = item
 
         spec_mods[spec] = mods
 
@@ -148,6 +150,10 @@ def amd_init(request):
                 url = '%s'%request.static_url(path)
 
             js.append('"%s": "%s"'%(name, url[:-3]))
+
+    from pprint import pprint
+    print specname, spec
+    pprint(js)
 
     for name, url in list_bundles(request):
         info = spec.get(name)
