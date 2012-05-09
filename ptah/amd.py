@@ -151,10 +151,6 @@ def amd_init(request):
 
             js.append('"%s": "%s"'%(name, url[:-3]))
 
-    from pprint import pprint
-    print specname, spec
-    pprint(js)
-
     for name, url in list_bundles(request):
         info = spec.get(name)
         if info and 'path' in info:

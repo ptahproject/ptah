@@ -270,9 +270,16 @@ class TestRequestRenderers(ptah.PtahTestCase):
         self.cfg['amd-spec-enabled'] = True
 
         self.assertRaises(
-            RuntimeError, self.request.render_amd_includes)
+            RuntimeError, self.request.render_amd_includes, 'unknown')
         self.assertRaises(
             RuntimeError, self.request.render_amd_includes, 'spec')
+
+    def test_render_amd_includes_default(self):
+        self.cfg['amd-spec-enabled'] = True
+
+        text = self.request.render_amd_includes().strip()
+        self.assertEqual(
+            text, '<script src="http://example.com/_amd__.js"> </script>')
 
     def test_render_amd_includes_spec(self):
         from ptah.amd import ID_AMD_SPEC
