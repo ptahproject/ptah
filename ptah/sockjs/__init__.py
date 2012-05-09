@@ -8,7 +8,7 @@ try:
 
     from .session import Session
     from .session import get_session_manager
-except ImportError:
+except ImportError: # pragma: no cover
     pass
 
 

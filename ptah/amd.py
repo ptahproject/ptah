@@ -185,7 +185,7 @@ def render_amd_includes(request, spec='', bundles=()):
     ptah.include(request, 'curl')
 
     c_tmpls = []
-    if cfg['amd-spec-enabled']:
+    if spec and cfg['amd-spec-enabled']:
         specstorage = request.registry.get(ID_AMD_SPEC, {})
         specdata = specstorage.get(spec)
         if specdata is None:
