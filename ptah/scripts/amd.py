@@ -62,8 +62,6 @@ class AmdjsCommand(object):
         self.registry = get_current_registry()
 
     def run(self):
-        self.build_bundles()
-
         if self.options.build:
             self.build_bundles()
         elif self.options.amd_mods:
