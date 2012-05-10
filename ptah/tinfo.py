@@ -210,7 +210,7 @@ def register_sqla_type(config, cls, tinfo, name, **kw):
         tinfo.add_method = sqla_add_method
 
     # install __uri__ property
-    if not hasattr(cls, '__uri__'):
+    if not hasattr(cls, '__uri__') or hasattr(cls, '__uri_reinstall__'):
         pname = None
         for cl in cls.__table__.columns:
             if cl.primary_key:
@@ -218,6 +218,7 @@ def register_sqla_type(config, cls, tinfo, name, **kw):
                 break
 
         l = len(tinfo.name)+1
+        cls.__uri_reinstall__ = True
         cls.__uri__ = UriProperty(tinfo.name, cl.name)
 
         cls.__uri_sql_get__ = ptah.QueryFreezer(
