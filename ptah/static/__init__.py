@@ -34,8 +34,6 @@ def includeme(config):
     config.register_amd_module(
         'ptah-form', 'ptah:static/form.js')
     config.register_amd_module(
-        'ptah-form2', 'ptah:static/form.js')
-    config.register_amd_module(
         'ptah-pager', 'ptah:static/pager.js')
 
     # templates

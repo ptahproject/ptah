@@ -1,5 +1,5 @@
 <div class="modal" data-type="window"
-     style="max-height: 10000px; position:absolute">
+     style="max-height: 10000px">
   <div class="modal-header">
     <a class="close" data-dismiss="modal">×</a>
     <h3>{{label}}</h3>
@@ -17,7 +17,8 @@
   <div data-tag="actions">
     <div class="modal-footer">
       {{#actions}}
-        <a href="#" class="{{cls}}" data-action="{{name}}">{{title}}</a>
+        <a href="#" class="{{cls}}"
+           data-action="action" data-name="{{name}}">{{title}}</a>
       {{/actions}}
     </div>
   </div>
