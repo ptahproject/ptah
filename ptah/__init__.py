@@ -231,20 +231,15 @@ def includeme(cfg):
     # snippet directive
     cfg.add_directive('ptah_snippet', snippet.pyramid)
 
-    # library helpers
-    from ptah.library import include, render_includes
-    def get_include_helper(request):
-        def incl(*args):
-            return include(request, *args)
-        return incl
+    # library request helpers
+    from ptah.library import request_include, request_render_includes
+    cfg.set_request_property(request_include, 'include_library', True)
+    cfg.set_request_property(request_render_includes, 'render_includes', True)
 
-    def get_render_includes(request):
-        def incl(*args):
-            return render_includes(request)
-        return incl
-
-    cfg.set_request_property(get_include_helper, 'include_library', True)
-    cfg.set_request_property(get_render_includes, 'render_includes', True)
+    # message request helpers
+    from ptah.view import request_add_message, request_render_messages
+    cfg.set_request_property(request_add_message, 'add_message', True)
+    cfg.set_request_property(request_render_messages, 'render_messages', True)
 
     # populate
     def pyramid_populate(cfg):

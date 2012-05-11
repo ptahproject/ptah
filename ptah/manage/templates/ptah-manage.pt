@@ -4,7 +4,7 @@
     <title>Ptah Manage</title>
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
 
-    ${request.include_library('bootstrap')}
+    ${request.include_library('curl', 'bootstrap')}
     ${structure: request.render_includes()}
     ${structure: request.render_amd_includes()}
   </head>

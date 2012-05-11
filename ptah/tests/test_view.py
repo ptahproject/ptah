@@ -241,3 +241,26 @@ class TestStatusMessages(PtahTestCase):
         self.assertEqual(
             view.render_messages(self.request),
             text_('message','utf-8'))
+
+    def test_messages_request_attr(self):
+        from ptah import view
+        self.init_ptah()
+
+        from pyramid.request import Request
+        from pyramid.events import NewRequest
+        from pyramid.testing import DummySession
+        from pyramid.config.factories import _set_request_properties
+
+        req = Request(environ=self._environ)
+        req.registry = self.registry
+        req.session = DummySession()
+        _set_request_properties(NewRequest(req))
+
+        # add_message
+        req.add_message('message')
+
+        res = req.render_messages()
+
+        self.assertEqual(
+            res,
+            text_('<div class="alert alert-info">\n  <a class="close" data-dismiss="alert">×</a>\n  message\n</div>\n','utf-8'))

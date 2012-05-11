@@ -63,7 +63,7 @@ def library(name, path='', type='',
         )
 
 
-def include(request, name):
+def include(request, *args):
     """
     Given a library name; the library will be attached to the request.
     See render_includes function to compute the HTML from attached libraries.
@@ -75,7 +75,7 @@ def include(request, name):
     if libs is None:
         libs = []
 
-    libs.append(name)
+    libs.extend(args)
     request.__includes = libs
 
 
@@ -177,3 +177,15 @@ class Library(object):
 
     def __repr__(self):
         return '<ptah.Library "%s">'%self.name
+
+
+# request attributes
+def request_include(request):
+    def wrp(*args):
+        include(request, *args)
+    return wrp
+
+def request_render_includes(request):
+    def wrp(*args):
+        return render_includes(request)
+    return wrp

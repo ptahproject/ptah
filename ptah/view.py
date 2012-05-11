@@ -47,8 +47,8 @@ class View(object):
 
         return result
 
-    def include(self, name):
-        include(self.request, name)
+    def include(self, *args):
+        include(self.request, *args)
 
     def render_includes(self):
         return render_includes(self.request)
@@ -307,3 +307,15 @@ def errorMessage(context, request):
         message = e
 
     return {'message': message}
+
+
+# request attributes
+def request_add_message(request):
+    def wrp(*args, **kw):
+        return add_message(request, *args, **kw)
+    return wrp
+
+def request_render_messages(request):
+    def wrp(*args, **kw):
+        return render_messages(request, *args, **kw)
+    return wrp
