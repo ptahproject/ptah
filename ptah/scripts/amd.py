@@ -9,6 +9,7 @@ from collections import OrderedDict
 from pprint import pprint
 from pyramid.path import AssetResolver
 from pyramid.compat import configparser, NativeIO
+from pyramid.threadlocal import get_current_registry
 
 import ptah
 from ptah import scripts
@@ -26,77 +27,87 @@ grpDescriptionWrap = textwrap.TextWrapper(
 
 
 def main(init=True):
-    args = ManifestCommand.parser.parse_args()
+    args = AmdjsCommand.parser.parse_args()
 
     # bootstrap pyramid
     if init: # pragma: no cover
         env = scripts.bootstrap(args.config)
 
-    cmd = ManifestCommand(args, env['registry'], env['request'])
+    cmd = AmdjsCommand(args)
     cmd.run()
 
     ptah.shutdown()
 
 
-class ManifestCommand(object):
+class AmdjsCommand(object):
 
-    parser = argparse.ArgumentParser(description="jca manifest")
+    parser = argparse.ArgumentParser(description="amdjs management")
     parser.add_argument('config', metavar='config',
                         help='ini config file')
 
-    parser.add_argument('--list', action="store_true",
-                        dest='amd',
-                        help='List js bundles')
+    parser.add_argument('-b', action="store_true",
+                        dest='build',
+                        help='Build js bundles')
 
-    parser.add_argument('--debug', action="store_true",
-                        dest='debug',
-                        help='Generate debug js bundles')
+    parser.add_argument('-m', action="store_true",
+                        dest='amd_mods',
+                        help='List amd modules')
 
-    def __init__(self, args, registry, request):
+    parser.add_argument('--no-min', action="store_true",
+                        dest='nomin',
+                        help='Do not minimize js bundles')
+
+    def __init__(self, args):
         self.options = args
-        self.registry = registry
-        self.request = request
+        self.registry = get_current_registry()
 
     def run(self):
         self.build_bundles()
 
-        #if self.options.amd:
-        #    self.build_bundles()
-        #else:
-        #    self.parser.print_help()
+        if self.options.build:
+            self.build_bundles()
+        elif self.options.amd_mods:
+            self.list_amd_mods()
+        else:
+            self.parser.print_help()
+
+    def list_amd_mods(self):
+        print()
+        for name, intr in sorted(self.registry.get(ID_AMD_MODULE).items()):
+            print(grpTitleWrap.fill('%s: %s'%(name, intr['path'])))
+            desc = grpDescriptionWrap.fill(intr['description'])
+            print (desc)
+            if desc:
+                print()
 
     def build_bundles(self):
-        NODE_PATH = check_output(('which', 'node')).strip()
+        cfg = ptah.get_settings(ptah.CFG_ID_PTAH, self.registry)
+
+        NODE_PATH = cfg['nodejs-path']
         if not NODE_PATH:
+            NODE_PATH = check_output(('which', 'node')).strip()
+
+        if not NODE_PATH: # pragma: no cover
             print ("Can't find nodejs")
             return
 
-        cfg = ptah.get_settings(ptah.CFG_ID_PTAH, self.registry)
         if not cfg['amd-specs']:
             print ("Spec files are not specified in .ini file")
             return
 
         if not cfg['amd-spec-dir']:
-            print ("No static directory is specified in .ini file")
+            print ("Destination directory is not specified in .ini file")
             return
 
         storage = self.registry.get(ID_AMD_MODULE)
-        if not storage:
+        if not storage: # pragma: no cover
             return
 
         resolver = AssetResolver()
 
         specs = OrderedDict()
         for item in cfg['amd-specs']:
-            if ':' not in item:
-                spec = ''
-                specfile = item
-            else:
-                spec, specfile = item.split(':',1)
-
-            if spec in specs:
-                raise ConfigurationError("Spec '%s' already defined."%spec)
-
+            spec, specfile = item.split(':',1)
             specs[spec] = specfile
 
         UGLIFY = resolver.resolve(
@@ -135,13 +146,14 @@ class ManifestCommand(object):
                         js.append((module, None, text))
                         continue
 
-                    path = storage.get(module)
-                    if not path:
+                    intr = storage.get(module)
+                    if not intr: # pragma: no cover
                         print ("Can't find module '%s'"%module)
                         return
 
                     processed.append(module)
-                    js.append((module, path, resolver.resolve(path).abspath()))
+                    js.append((module, intr['path'],
+                               resolver.resolve(intr['path']).abspath()))
 
                 _, tpath = tempfile.mkstemp()
 
@@ -163,9 +175,10 @@ class ManifestCommand(object):
 
                 f.close()
 
-                path = os.path.join(cfg['amd-spec-dir'] + jsname)
+                path = os.path.join(cfg['amd-spec-dir'], jsname)
+                print ('write to:', path)
                 with open(path, 'wb') as dest:
-                    if self.options.debug:
+                    if self.options.nomin:
                         dest.write(open(tpath, 'rb').read())
                     else:
                         js = check_output((NODE_PATH,UGLIFY,'-nc',tpath))
@@ -180,5 +193,5 @@ class ManifestCommand(object):
 
             if spec in ('','main') and notprocessed:
                 print ("\n\nList of not processed modules:")
-                for name, path, in sorted(notprocessed):
-                    print(grpDescriptionWrap.fill('%s: %s'%(name, path)))
+                for name, intr, in sorted(notprocessed):
+                    print(grpDescriptionWrap.fill('%s: %s'%(name,intr['path'])))

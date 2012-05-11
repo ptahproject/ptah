@@ -89,7 +89,7 @@ def register_amd_module(cfg, name, path, description=''):
     intr['description'] = description
 
     storage = cfg.registry.setdefault(ID_AMD_MODULE, {})
-    storage[name] = path
+    storage[name] = intr
 
     cfg.action(discr, introspectables=(intr,))
 
@@ -141,7 +141,8 @@ def amd_init(request):
         spec = {}
 
     if storage:
-        for name, path in storage.items():
+        for name, intr in storage.items():
+            path = intr['path']
             info = spec.get(name)
             if info and 'path' in info:
                 url = request.route_url(

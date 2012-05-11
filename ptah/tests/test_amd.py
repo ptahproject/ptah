@@ -32,7 +32,7 @@ class TestAmd(ptah.PtahTestCase):
 
         data = self.registry.get(ID_AMD_MODULE)
         self.assertIn('test', data)
-        self.assertEqual(data['test'], 'ptah:tests/dir/test.js')
+        self.assertEqual(data['test']['path'], 'ptah:tests/dir/test.js')
 
     def test_reg_conflict(self):
         self.init_ptah()
@@ -99,7 +99,7 @@ class TestAmdInit(ptah.PtahTestCase):
     def test_amd_init_with_spec_url(self):
         from ptah.amd import amd_init, ID_AMD_MODULE, ID_AMD_SPEC
 
-        self.registry[ID_AMD_MODULE] = {'ptah': 'ptah:static/ptah.js'}
+        self.registry[ID_AMD_MODULE] = {'ptah': {'path':'ptah:static/ptah.js'}}
         self.registry[ID_AMD_SPEC] = \
             {'test': {'ptah': {'url': 'http://test.com/example.js'}}}
 
