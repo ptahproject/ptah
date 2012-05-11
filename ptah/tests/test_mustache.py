@@ -207,4 +207,4 @@ class TextExtractI18N(TestCase):
         f = NativeIO('<div>{{#i18n}}Test \n message{{/i18n}}</div>')
 
         d = extract_i18n_mustache(f, [], [], [])
-        self.assertEqual(d[0], (0, None, 'Test \n message', []))
+        self.assertEqual(d[0], (5, None, text_type('Test \n message'), []))

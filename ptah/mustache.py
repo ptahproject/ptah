@@ -1,4 +1,3 @@
-import re
 import os
 import tempfile
 import subprocess
@@ -12,8 +11,6 @@ from pyramid.exceptions import ConfigurationError
 
 import ptah
 from ptah.util import json
-
-i18n_re = re.compile('{{#i18n}}(.*){{/i18n}}', re.DOTALL)
 
 
 def check_output(*popenargs, **kwargs):
@@ -113,20 +110,18 @@ def compile_template(name, path, node_path, cache_dir):
 
             # i18n
             pos = 0
-            for m in i18n_re.finditer(data):
-                start, end = m.span()
-                s = data[start+9:end-9]
+            for start, end, message in extract_i18n_str(data):
                 text.append(data[pos:start])
                 text.append('{{#i18n-%s}}'%name)
-                text.append(s)
+                text.append(message)
                 text.append('{{/i18n-%s}}'%name)
                 pos = end
-                i18n.append(s)
+                i18n.append(message)
 
             text.append(data[pos:])
 
         with open(tname, 'wb') as f:
-            f.write(bytes_(''.join(text)))
+            f.write(bytes_(''.join(text), 'utf-8'))
 
         if i18n:
             with open(iname, 'wb') as f:
@@ -243,13 +238,27 @@ def list_bundles(request):
     return res
 
 
-def extract_i18n_mustache(fileobj, keywords, comment_tags, options):
-    text = fileobj.read()
+def extract_i18n_str(text):
+    pos = 0
+    first = last = -1
 
     messages = []
-    for m in i18n_re.finditer(text):
-        start, end = m.span()
-        s = text[start+9:end-9]
-        messages.append((0, None, s, []))
+
+    while 1:
+        first = text.find('{{#i18n}}', pos)
+        if first >= 0:
+            last = text.find('{{/i18n}}', first)
+            if last >= 0:
+                pos = last + 9
+                messages.append((first, pos, text[first+9:last]))
+                first = last = -1
+                continue
+        break
 
     return messages
+
+
+def extract_i18n_mustache(fileobj, keywords, comment_tags, options):
+    text = text_type(fileobj.read(), 'utf-8')
+    return [(first, None, message, [])
+            for first, last, message in extract_i18n_str(text)]

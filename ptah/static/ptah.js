@@ -534,7 +534,7 @@ define (
                             try {
                                 component.on_connect.call(component)
                             } catch(e) {
-                                console.log('Exception in ',that.handler,e)
+                                console.log('Exception in ', that.handler,e)
                             }
                     }
                     that.reconnect_time=ptah.Connection.prototype.reconnect_time
@@ -549,7 +549,6 @@ define (
                         if (component.on_disconnect)
                             component.on_disconnect.call(component)
                     }
-                    that.components = []
 
                     if (ev.code != 1000) {
                         that.conn = null;
