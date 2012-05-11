@@ -6,6 +6,7 @@ from pyramid.exceptions import ConfigurationError, ConfigurationConflictError
 from pyramid.httpexceptions import HTTPNotFound
 
 import ptah
+from ptah.testing import TestCase
 
 
 class TestBundleDirective(ptah.PtahTestCase):
@@ -27,7 +28,7 @@ class TestBundleReg(ptah.PtahTestCase):
         from ptah.mustache import ID_BUNDLE
 
         self.config.register_mustache_bundle(
-            'test-bundle', 'ptah:tests/bundle/')
+            'test-bundle', 'ptah:tests/bundle/', i18n_domain='ptah')
         self.config.commit()
 
         data = self.registry.get(ID_BUNDLE)
@@ -35,6 +36,7 @@ class TestBundleReg(ptah.PtahTestCase):
 
         intr = data['test-bundle']
         self.assertTrue(intr['abs_path'].endswith('tests/bundle/'))
+        self.assertEqual(intr['i18n_domain'], 'ptah')
 
     def test_bundle_unknown(self):
         self.assertRaises(
@@ -194,3 +196,15 @@ class TestBuildBundle(ptah.PtahTestCase):
                 'test', f, mustache.NODE_PATH, self.path)[0])
 
         self.assertEqual('existing2', tmpl)
+
+
+class TextExtractI18N(TestCase):
+
+    def test_extract(self):
+        from pyramid.compat import NativeIO
+        from ptah.mustache import extract_i18n_mustache
+
+        f = NativeIO('<div>{{#i18n}}Test \n message{{/i18n}}</div>')
+
+        d = extract_i18n_mustache(f, [], [], [])
+        self.assertEqual(d[0], (0, None, 'Test \n message', []))

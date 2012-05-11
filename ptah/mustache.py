@@ -2,9 +2,10 @@ import re
 import os
 import tempfile
 import subprocess
+from pyramid.i18n import get_localizer
 from pyramid.view import view_config
 from pyramid.path import AssetResolver
-from pyramid.compat import text_
+from pyramid.compat import text_, bytes_
 from pyramid.registry import Introspectable
 from pyramid.httpexceptions import HTTPNotFound
 from pyramid.exceptions import ConfigurationError
@@ -12,7 +13,7 @@ from pyramid.exceptions import ConfigurationError
 import ptah
 from ptah.util import json
 
-i18n_re = re.compile('{{#i18n}}(.*){{/i18n}}')
+i18n_re = re.compile('{{#i18n}}(.*){{/i18n}}', re.DOTALL)
 
 
 def check_output(*popenargs, **kwargs):
@@ -29,27 +30,27 @@ ID_BUNDLE = 'ptah:mustache'
 ID_AMD_MODULE = 'ptah:amd-module'
 
 try:
-    if os.sys.platform == 'win32':
+    if os.sys.platform == 'win32': # pragma: no cover
         NODE_PATH = r'C:\Program Files (x86)\nodejs\node.exe'
         os.stat(NODE_PATH)
-    else:    
+    else:
         NODE_PATH = check_output(('which', 'node')).strip()
-except:
+except: # pragma: no cover
     NODE_PATH = ''
-    
-NODE_PATH = check_output(('which', 'node')).strip()
+
 HB = AssetResolver().resolve(
     'ptah:node_modules/handlebars/bin/handlebars').abspath()
 
-ext_mustache = ('.mustache', '.handlebars')
+ext_mustache = ('.mustache', '.hb')
 
 
-def register_mustache_bundle(cfg, name, path='', description=''):
+def register_mustache_bundle(cfg, name, path='',description='',i18n_domain=''):
     """ Register mustache bundle;
 
     :param name: module name
     :param path: asset path
     :param description:
+    :param i18n_domain: i18n domain
 
     """
     resolver = AssetResolver()
@@ -71,6 +72,7 @@ def register_mustache_bundle(cfg, name, path='', description=''):
     intr['path'] = path
     intr['abs_path'] = abs_path
     intr['description'] = description
+    intr['i18n_domain'] = i18n_domain
 
     storage = cfg.registry.setdefault(ID_BUNDLE, {})
     storage[name] = intr
@@ -99,16 +101,17 @@ def compile_template(name, path, node_path, cache_dir):
     if os.path.exists(cname) and \
            (os.path.getmtime(tname) < os.path.getmtime(cname)):
         with open(cname, 'rb') as f:
-            tmpl = f.read()
+            tmpl = text_(f.read())
 
         if os.path.exists(iname):
             with open(iname, 'rb') as f:
-                i18n.extend([v for v in f.read().split('\n') if v])
+                i18n.extend(json.loads(f.read()))
     else:
         text = []
         with open(tname, 'rb') as f:
-            data = f.read()
+            data = text_(f.read())
 
+            # i18n
             pos = 0
             for m in i18n_re.finditer(data):
                 start, end = m.span()
@@ -123,11 +126,11 @@ def compile_template(name, path, node_path, cache_dir):
             text.append(data[pos:])
 
         with open(tname, 'wb') as f:
-            f.write(''.join(text))
+            f.write(bytes_(''.join(text)))
 
         if i18n:
             with open(iname, 'wb') as f:
-                f.write('\n'.join(i18n))
+                f.write(json.dumps(i18n))
 
         # compile
         tmpl = check_output((node_path, HB, '-s', tname))
@@ -142,7 +145,14 @@ function(ptah, Handlebars) {
 var bundle={%s};ptah.Templates.bundles["%s"]=bundle;%sreturn bundle})
 """
 
-i18n_template = """\nHandlebars.registerHelper('%s',function(context, options) {return ptah.i18n(bundle, this, context, options)});"""
+i18n_template = """\nHandlebars.registerHelper('%s',function(context, options) {return ptah.i18n(bundle, this, context, options)});
+bundle.__i18n__ = %s;"""
+
+class _r(object):
+    def __init__(self, registry, locale):
+        self.registry = registry
+        self.locale_name = locale
+
 
 def build_hb_bundle(name, intr, registry):
     cfg = ptah.get_settings(ptah.CFG_ID_PTAH, registry)
@@ -151,15 +161,16 @@ def build_hb_bundle(name, intr, registry):
     if not node_path:
         node_path = NODE_PATH
 
-    if not cfg['amd-cache']:
-        cfg['amd-cache'] = tempfile.mkdtemp()
+    if not cfg['mustache-cache']:
+        cfg['mustache-cache'] = tempfile.mkdtemp()
 
-    cache_dir = cfg['amd-cache']
+    cache_dir = cfg['mustache-cache']
 
     if not node_path:
         raise RuntimeError("Can't find nodejs")
 
     path = intr['abs_path']
+    i18n_domain = intr['i18n_domain']
 
     i18n = {}
     templates = []
@@ -178,16 +189,30 @@ def build_hb_bundle(name, intr, registry):
                     mustache.append('"%s":Handlebars.template(%s)'%(
                         tname.rsplit('.', 1)[0], tmpl))
                 if _i18n:
-                    i18n.update(dict((v, '') for v in _i18n))
+                    i18n.update(dict((v, None) for v in _i18n))
 
         templates.append(
             '"%s":new ptah.Templates("%s",{%s})'%(
                 bname, bname, ','.join(mustache)))
 
-    i18n_tmpl = i18n_template%('i18n-%s'%name) if i18n else ''
-
     name = str(name)
-    return template%(name, ',\n'.join(templates), name, i18n_tmpl)
+
+    if i18n:
+        i18n_data = {}
+        for lang in cfg['mustache-langs']:
+            localizer = get_localizer(_r(registry, lang))
+            for t, data in i18n.items():
+                r = localizer.translate(t,i18n_domain)
+                if t != r:
+                    if t not in i18n_data:
+                        i18n_data[t] = {}
+                    i18n_data[t][lang] = r
+
+
+        i18n_tmpl = i18n_template%('i18n-%s'%name, json.dumps(i18n_data))
+        return template%(name, ',\n'.join(templates), name, i18n_tmpl)
+    else:
+        return template%(name, ',\n'.join(templates), name, '')
 
 
 @view_config(route_name='ptah-mustache-bundle')
@@ -216,3 +241,15 @@ def list_bundles(request):
         res.append((name, request.route_url('ptah-mustache-bundle', name=name)))
 
     return res
+
+
+def extract_i18n_mustache(fileobj, keywords, comment_tags, options):
+    text = fileobj.read()
+
+    messages = []
+    for m in i18n_re.finditer(text):
+        start, end = m.span()
+        s = text[start+9:end-9]
+        messages.append((0, None, s, []))
+
+    return messages

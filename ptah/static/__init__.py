@@ -38,7 +38,7 @@ def includeme(config):
 
     # templates
     config.register_mustache_bundle(
-        'ptah-templates', 'ptah:templates/mustache/')
+        'ptah-templates', 'ptah:templates/mustache/', i18n_domain='ptah')
 
 
 # jQuery library

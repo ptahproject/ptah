@@ -3,7 +3,7 @@ import cgi
 import logging
 from zope.interface import Interface
 from pyramid.decorator import reify
-from pyramid.compat import string_types
+from pyramid.compat import string_types, escape
 from pyramid.renderers import RendererHelper
 from pyramid.config.views import DefaultViewMapper
 
@@ -302,7 +302,7 @@ def errorMessage(context, request):
 
     if isinstance(e, Exception):
         message = '%s: %s'%(
-            e.__class__.__name__, cgi.escape(str(e), True))
+            e.__class__.__name__, escape(str(e), True))
     else:
         message = e
 

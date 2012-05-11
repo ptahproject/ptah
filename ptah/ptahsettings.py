@@ -135,9 +135,14 @@ ptah.register_settings(
         default = ''),
 
     ptah.form.TextField(
-        'amd-cache',
+        'mustache-cache',
         title = 'Directory for compiled files',
         default = ''),
+
+    ptah.form.LinesField(
+        'mustache-langs',
+        title = 'Mustache i18n languages',
+        default = []),
 
     ptah.form.TextField(
         'nodejs-path',

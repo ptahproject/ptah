@@ -12,6 +12,8 @@ Features
 
 - handlebars
 
+- handlevars i18n
+
 - sockjs support
 
 

@@ -735,9 +735,16 @@ define (
             }
         }
 
+        ptah.language = 'en'
+
         ptah.i18n = function(bundle, context, fn, options) {
             var text = fn.call(context, context, options)
-            console.log(text)
+
+            if (bundle.__i18n__ &&
+                bundle.__i18n__[text] &&
+                bundle.__i18n__[text][ptah.language])
+                return bundle.__i18n__[text][ptah.language]
+
             return text
         }
 
