@@ -72,10 +72,7 @@ class Session(pyramid_sockjs.Session):
 
         protocol = self.get_protocol(name)
         if protocol is not None:
-            try:
-                protocol.dispatch(tp, payload, msg)
-            except Exception as e:
-                log.exception(str(e))
+            protocol.dispatch(tp, payload, msg)
         else:
             log.warning("Can't find protocol %s"%name)
 
