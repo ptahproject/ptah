@@ -15,9 +15,6 @@ class Form(ptah.form.Form):
         self.params = payload
         self.protocol = protocol
 
-        # backward
-        self.component = protocol
-
     def __call__(self):
         self.update()
 
@@ -26,11 +23,10 @@ class Form(ptah.form.Form):
             handler = self.actions.get(action)
             if handler is not None:
                 self.errors = handler(self)
+                if not self.errors:
+                    return
             else:
                 log.warning("Can't find '%s' message handler", action)
-
-            if not self.errors:
-                return
 
         self.protocol.send(self.mtype, self.render())
 
