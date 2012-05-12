@@ -102,7 +102,7 @@ def compile_template(name, path, node_path, cache_dir):
 
         if os.path.exists(iname):
             with open(iname, 'rb') as f:
-                i18n.extend(json.loads(f.read()))
+                i18n.extend(json.loads(text_(f.read(),'utf-8')))
     else:
         text = []
         with open(tname, 'rb') as f:
@@ -125,7 +125,7 @@ def compile_template(name, path, node_path, cache_dir):
 
         if i18n:
             with open(iname, 'wb') as f:
-                f.write(json.dumps(i18n))
+                f.write(bytes_(json.dumps(i18n), 'utf-8'))
 
         # compile
         tmpl = check_output((node_path, HB, '-s', tname))

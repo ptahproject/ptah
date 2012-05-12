@@ -120,6 +120,23 @@ class TestBundleRoute(ptah.PtahTestCase):
         self.assertIn(
             '"test-bundle":"http://example.com/_mustache/test-bundle"',res.text)
 
+    def test_build_bundle_toplevel_i18n(self):
+        from ptah.mustache import bundle_view
+        cfg = ptah.get_settings(ptah.CFG_ID_PTAH, self.registry)
+        cfg['mustache-langs'] = ['en','pt_BR']
+
+        self.config.register_mustache_bundle(
+            'test-bundle', 'ptah:tests/bundle2/', i18n_domain='ptah')
+        self.request.matchdict['name'] = 'test-bundle'
+
+        res = bundle_view(self.request)
+        self.assertIn(
+            "Handlebars.registerHelper('i18n-test-bundle'", res.text)
+        self.assertIn(
+            'ar bundle=new ptah.Templates("test-bundle",{"form"', res.text)
+        self.assertIn('bundle.__i18n__ = {"Password":{"pt_BR":"Senha"}}',
+                      res.text)
+
 
 class TestBuildBundle(ptah.PtahTestCase):
 
@@ -137,7 +154,7 @@ class TestBuildBundle(ptah.PtahTestCase):
         from ptah import mustache
         mustache.NODE_PATH = self._node_path
 
-        #shutil.rmtree(self.path)
+        shutil.rmtree(self.path)
 
     def test_no_nodejs(self):
         from ptah import mustache
@@ -160,7 +177,7 @@ class TestBuildBundle(ptah.PtahTestCase):
             fn.write('<div>{{test}}</div>')
 
         tmpl = text_type(mustache.compile_template(
-                'test', f, mustache.NODE_PATH, self.path)[0])
+            'test', f, mustache.NODE_PATH, self.path)[0])
 
         self.assertTrue(os.path.isfile(
                 os.path.join(self.path, 'test-%s-template'%prefix)))
@@ -168,6 +185,28 @@ class TestBuildBundle(ptah.PtahTestCase):
                 os.path.join(self.path, 'test-%s-template.js'%prefix)))
         self.assertIn(
             'function (Handlebars,depth0,helpers,partials,data) {', tmpl)
+
+    def test_compile_new_i18n(self):
+        from ptah import mustache
+
+        cfg = ptah.get_settings(ptah.CFG_ID_PTAH, self.registry)
+        cfg['amd-cache'] = self.path
+        prefix = os.path.split(self.path)[-1]
+
+        f = os.path.join(self.path, 'template')
+        with open(f, 'w') as fn:
+            fn.write('<div>{{test}}{{#i18n}}i18n text{{/i18n}}</div>')
+
+        tmpl, i18n = mustache.compile_template(
+            'test', f, mustache.NODE_PATH, self.path)
+        tmpl = text_type(tmpl)
+
+        self.assertIn('i18n text', i18n)
+        self.assertTrue(os.path.isfile(
+            os.path.join(self.path, 'test-%s-template.i18n'%prefix)))
+        self.assertEqual(
+            open(os.path.join(self.path,'test-%s-template'%prefix),'r').read(),
+            '<div>{{test}}{{#i18n-test}}i18n text{{/i18n-test}}</div>')
 
     def test_compile_existing(self):
         from ptah import mustache
@@ -196,6 +235,40 @@ class TestBuildBundle(ptah.PtahTestCase):
                 'test', f, mustache.NODE_PATH, self.path)[0])
 
         self.assertEqual('existing2', tmpl)
+
+    def test_compile_existing_i18n(self):
+        from ptah import mustache
+
+        cfg = ptah.get_settings(ptah.CFG_ID_PTAH, self.registry)
+        cfg['amd-cache'] = self.path
+        prefix = os.path.split(self.path)[-1]
+
+        f = os.path.join(self.path, 'template')
+        with open(f, 'w') as fn:
+            fn.write('<div>{{test}}</div>')
+
+        time.sleep(0.01)
+
+        f1 = os.path.join(self.path, 'test-%s-template'%prefix)
+        with open(f1, 'w') as fn:
+            fn.write('existing1')
+
+        time.sleep(0.01)
+
+        f2 = os.path.join(self.path, 'test-%s-template.js'%prefix)
+        with open(f2, 'w') as fn:
+            fn.write('existing2')
+
+        time.sleep(0.01)
+
+        f1 = os.path.join(self.path, 'test-%s-template.i18n'%prefix)
+        with open(f1, 'w') as fn:
+            fn.write('["existing3"]')
+
+        tmpl,i18n = mustache.compile_template(
+                'test', f, mustache.NODE_PATH, self.path)
+
+        self.assertEqual(['existing3'], i18n)
 
 
 class TextExtractI18N(TestCase):
