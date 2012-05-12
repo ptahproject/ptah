@@ -259,6 +259,6 @@ def extract_i18n_str(text):
 
 
 def extract_i18n_mustache(fileobj, keywords, comment_tags, options):
-    text = text_type(fileobj.read(), 'utf-8')
+    text = text_(fileobj.read(), 'utf-8')
     return [(first, None, message, [])
             for first, last, message in extract_i18n_str(text)]
