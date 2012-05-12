@@ -7,23 +7,19 @@ define (
         var console = window.console
 
         var ptah = {
-            consts: {}
-
-            , guid: function() {
+            guid: function() {
                 var S4 = function() {
                     return (((1+Math.random())*0x10000)|0)
-                        .toString(16).substring(1);
-                };
-                return (S4()+S4()+"-"+S4()+"-"+S4()+
-                        "-"+S4()+"-"+S4()+S4()+S4())
+                        .toString(16).substring(1)}
+                return (S4()+S4()+"-"+S4()+"-"+S4()+"-"+S4()+"-"+S4()+S4()+S4())
             }
 
             , utc: function() {
-                var d = new Date();
-                var localTime = d.getTime();
-                var localOffset = d.getTimezoneOffset() * 60000;
-                d.setTime(localTime + localOffset);
-                return d;
+                var d = new Date()
+                var localTime = d.getTime()
+                var localOffset = d.getTimezoneOffset() * 60000
+                d.setTime(localTime + localOffset)
+                return d
             }
 
             , gen_url: function(path) {
@@ -44,23 +40,26 @@ define (
                 return options
             }
 
-            , scan_and_create:  function(context, parent) {
-                parent = parent || null
-
-                jquery('[ptah]', context).each(function(index, el) {
-                    var container = jquery(el)
-                    if (!container.attr('ptah-object')) {
-                        var name = container.attr('ptah')
-                        container.attr('ptah-object', '1')
-
-                        curl([name]).then(
-                            function(factory) {
-                                new factory(
-                                    parent, container, ptah.get_options(el))
-                            }
-                        )
-                    }
-                })
+            , init: function(modules) {
+                ptah.modules = modules
+                curl({paths:ptah.modules}, ['jquery','ptah-date-format'],
+                     function($) {
+                         $(function() {
+                             $('[ptah]').each(function(index, el) {
+                                 var dom = $(el)
+                                 var name = dom.attr('ptah')
+                                 if (ptah.modules[name])
+                                     curl({paths:ptah.modules}, [name]).then(
+                                         function(factory) {
+                                             new factory(
+                                                 null,dom,ptah.get_options(el))
+                                         })
+                                 else
+                                     console.log("Module is not found:", name)
+                             })
+                             window.ptah = ptah
+                         })
+                     })
             }
         }
 
@@ -170,7 +169,7 @@ define (
                 this.prototype.__initializers__.slice(0)
 
             for (var p in prototype) {
-                if (ptah.initializers[p] && (typeof prototype[p] !== "function"))
+                if (ptah.initializers[p] && (typeof prototype[p]!=="function"))
                     try {
                         ptah.initializers[p](
                             Object, Object.prototype, prototype[p])
@@ -266,13 +265,13 @@ define (
                         priority: priority
                     }
 
-                    for (; i >= 0; i--) {
+                    for (; i >= 0; i--)
                         if (this.subscriptions[topic][i].priority <= priority) {
-                            this.subscriptions[topic].splice(i+1, 0, subscriptionInfo);
+                            this.subscriptions[topic].splice(
+                                i+1, 0, subscriptionInfo)
                             added = true
                             break
                         }
-                    }
 
                     if (!added)
                         this.subscriptions[topic].unshift(subscriptionInfo)
@@ -282,12 +281,11 @@ define (
 
             unsubscribe: function(topic, callback) {
                 if (typeof(topic) === 'object') {
-                    for (var i = 0; i < this.handlers.length; i++) {
+                    for (var i = 0; i < this.handlers.length; i++)
                         if (this.handlers[i].context === topic) {
                             this.handlers.splice(i, 1)
                             i--
                         }
-                    }
                     return
                 }
 
@@ -296,12 +294,11 @@ define (
 
                 var length = this.subscriptions[topic].length
 
-                for (var i = 0; i < length; i++) {
+                for (var i = 0; i < length; i++)
                     if (this.subscriptions[topic][i].callback === callback) {
                         this.subscriptions[topic].splice(i, 1)
                         break
                     }
-                }
             }
         }
 
@@ -352,8 +349,12 @@ define (
                 this.__parent__ = parent
                 this.__container__ = dom
                 this.__uuid__ = ptah.guid()
+                this.__views__ = []
 
-                if (options && options.__id__)
+                if (typeof(options) === 'undefined')
+                    options = {}
+
+                if (options.__id__)
                     this.__id__ = options.__id__
 
                 if (this.__id__)
@@ -366,12 +367,50 @@ define (
                 this.options = options
                 this.events = new ptah.EventChannel('on_')
                 this.events.subscribe(this)
-                this.actions = new ptah.ActionChannel(this.__dom__, {scope:this})
+                this.actions = new ptah.ActionChannel(this.__dom__,{scope:this})
+
+                if (this.__parent__)
+                    this.__parent__.add_subview(this)
             }
 
             , destroy: function() {
+                this.reset()
+                if (this.__parent__)
+                    this.__parent__.remove_subview(this)
                 this.__dom__.remove()
                 this._super()
+            }
+
+            , add_subview: function(view) {
+                for (var i=0; i < this.__views__.length; i++)
+                    if (this.__views__[i] === view)
+                        return
+
+                this.__views__.push(view)
+                this.events.publish('subview_added', view)
+            }
+
+            , remove_subview: function(view) {
+                var i = 0
+                while (i < this.__views__.length) {
+                    if (this.__views__[i] === view) {
+                        this.__views__.splice(i, 1)
+                        this.events.publish('subview_removed', view)
+                    } else {
+                        i++
+                    }
+                }
+            }
+
+            , reset: function() {
+                while (this.__views__.length) {
+                    var view = this.__views__[0]
+                    view.destroy()
+                    this.remove_subview(view)
+                }
+
+                this.__views__ = []
+                this.__dom__.empty()
             }
 
             , hide: function() {
@@ -381,6 +420,8 @@ define (
             , show: function() {
                 this.__dom__.show()
             }
+
+            , resize: function() {}
         })
 
         ptah.ViewContainer = ptah.View.extend({
@@ -389,28 +430,15 @@ define (
             view_name: null
 
             , __init__: function(parent, dom, options) {
-                this.__views__ = {}
-
                 this._super(parent, dom, options)
 
                 if (!this.__workspace__)
                     this.__workspace__ = this.__dom__
             }
 
-            , resize: function() {}
-
-            , destroy: function() {
-                this.clear()
+            , reset: function() {
                 this._super()
-            }
-
-            , clear: function() {
-                for (var key in this.__views__) {
-                    this.__views__[key].destroy()
-                }
                 this.view = null
-                this.__views__ = {}
-                this.__dom__.empty()
             }
 
             , activate: function(name, options) {
@@ -422,31 +450,33 @@ define (
                     return
                 }
 
-                this.view_name = name
+                for (var i=0; i < this.__views__.length; i++)
+                    if (this.__views__[i].__view_name__ === name) {
+                        if (this.view)
+                            this.view.hide()
+                        this.view = this.__views__[i]
+                        this.view.show(options)
+                        this.view_name = name
+                        this.resize()
+                        this.events.publish('activated', name)
+                        return
+                    }
 
-                if (this.__views__[name]) {
-                    if (this.view)
-                        this.view.hide()
-                    this.view = this.__views__[name]
-                    this.view.show(options)
-                    this.resize()
-                    this.events.publish('activated', name)
-                } else {
-                    var that = this
-                    curl([name]).then(
-                        function(factory) {
-                            if (that.view)
-                                that.view.hide()
+                var that = this
+                curl([name]).then(
+                    function(factory) {
+                        if (that.view)
+                            that.view.hide()
 
-                            var comp = new factory(that, that.__workspace__)
-                            comp.__dom__.attr("data-container", name)
-                            that.__views__[name] = comp
-                            that.view = comp
-                            that.view.show(options)
-                            that.events.publish('activated', name)
-                            setTimeout(function(){that.resize()}, 200)
-                        })
-                }
+                        var comp = new factory(that, that.__workspace__)
+                        comp.__view_name__ = name
+                        that.view = comp
+                        that.view.show(options)
+                        that.view_name = name
+                        that.events.publish('activated', name)
+                        setTimeout(function(){that.resize()}, 50)
+                    }
+                )
             }
         })
 
@@ -459,8 +489,7 @@ define (
                     ptah.connection.register(name, inst.connect)
 
                     inst.add_cleanup_item(
-                        function() {
-                            ptah.connection.unregister(inst.connect)})
+                        function() {ptah.connection.unregister(inst.connect)})
                 }
             )
             proto.send = function(tp, payload) {
@@ -506,6 +535,9 @@ define (
             , unsubscribe: function(topic, callback) {
                 this.events.unsubscribe(topic, callback)
             }
+
+            , on_connect: function() {}
+            , on_disconnect: function() {}
         })
 
         ptah.protocols = {}
@@ -624,8 +656,8 @@ define (
 
         ptah.Connector = function(name, instance){
             this.name = name
-            this.instance = instance
             this.io = new ptah.EventChannel('msg_')
+            this.parent = instance
         }
         ptah.Connector.prototype = {
             register: function() {
@@ -638,13 +670,13 @@ define (
                 var hid = 'msg_'+type
                 var has_handler = false
 
-                if (this.instance[hid])
+                if (this.parent[hid])
                     try {
                         has_handler = true
-                        this.instance[hid](payload, msg)
+                        this.parent[hid](payload, msg)
                     } catch(e) {
                         console.log(
-                            "Exception in handler:", this.instance[hid], e)
+                            "Exception in handler:", this.parent[hid], e)
                     }
 
                 // distach to event channel
@@ -653,9 +685,9 @@ define (
                     this.io.publish(type, payload, msg)
                 }
 
-                if (this.instance.on_message) {
+                if (this.parent.on_message) {
                     has_handler = true
-                    this.instance.on_message(type, payload, msg)
+                    this.parent.on_message(type, payload, msg)
                 } else if (!has_handler) {
                     console.log("Unknown message: "+this.name+':'+type)
                 }
@@ -666,27 +698,31 @@ define (
             }
 
             , on_connect: function() {
-                if (this.instance && this.instance.on_connect)
+                if (this.parent.on_connect)
                     try {
-                        this.instance.on_connect()
+                        this.parent.on_connect()
                     } catch(e) {
-                        console.log('on_connect excetion', this.instance, e)
+                        console.log('on_connect excetion', this.parent, e)
                     }
             }
 
             , on_disconnect: function() {
-                if (this.instance && this.instance.on_disconnect)
+                if (this.parent.on_disconnect)
                     try {
-                        this.instance.on_disconnect()
+                        this.parent.on_disconnect()
                     } catch(e) {
-                        console.log('on_disconnect excetion', this.instance, e)
+                        console.log('on_disconnect excetion', this.parent, e)
                     }
             }
         }
 
-        ptah.Templates = function (name, templates) {
+        ptah.Templates = function (name, templates, categories) {
             this.name = name
             this.templates = templates
+            if (categories) {
+                for (var n in categories)
+                    this[n] = categories[n]
+            }
         }
 
         ptah.get_templates = function(name, category) {

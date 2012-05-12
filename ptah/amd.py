@@ -96,22 +96,10 @@ def register_amd_module(cfg, name, path, description=''):
 
 amd_init_tmpl = """
 var ptah_amd_modules = {\n%(mods)s}
-
 %(exrta)s
 
-curl({paths: ptah_amd_modules || {}})
-curl(
-  {paths: ptah_amd_modules || {}}, ['jquery'],
-  function($) {
-    $(function() {
-      curl(['ptah','ptah-date-format']).then(function(ptah) {
-          ptah.scan_and_create()
-          window.ptah = ptah
-          window.ptah_jquery = $
-        })
-    })
-  }
-)
+curl({paths: ptah_amd_modules})
+curl(['ptah'], function(ptah) {ptah.init(ptah_amd_modules)})
 """
 
 @view_config(route_name='ptah-amd-spec')
@@ -211,6 +199,6 @@ def render_amd_includes(request, spec='', bundles=()):
 
 def render_amd_container(request, name, **kw):
     registry = request.registry
-    opt =' '.join('data-%s="%s"'%(key, escape(val))
-                  for key, val in kw.items())
-    return '<div ptah="%s" class="ptah-container" %s></div>'%(name, opt)
+    attrs = ['ptah="%s"'%name, ' '.join('data-%s="%s"'%(key, escape(val))
+                                        for key, val in kw.items())]
+    return '<div %s></div>'%(' '.join(v for v in attrs if v))

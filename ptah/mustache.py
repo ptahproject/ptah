@@ -137,7 +137,7 @@ def compile_template(name, path, node_path, cache_dir):
 
 template = text_type("""define("%s",["ptah","handlebars"],
 function(ptah, Handlebars) {
-var bundle={%s};ptah.Templates.bundles["%s"]=bundle;%sreturn bundle})
+var bundle=%s;ptah.Templates.bundles["%s"]=bundle;%sreturn bundle})
 """)
 
 i18n_template = text_type("""\nHandlebars.registerHelper('%s',function(context, options) {return ptah.i18n(bundle, this, context, options)});
@@ -168,27 +168,44 @@ def build_hb_bundle(name, intr, registry):
     i18n_domain = intr['i18n_domain']
 
     i18n = {}
+    top = []
     templates = []
 
     for bname in os.listdir(path):
         bdir = os.path.join(path, bname)
-        if not os.path.isdir(bdir):
-            continue
 
-        mustache = []
-        for tname in os.listdir(bdir):
-            if tname.endswith(ext_mustache) and tname[0] not in ('.#~'):
-                fname = os.path.join(bdir, tname)
+        if not os.path.isdir(bdir):
+            if bname.endswith(ext_mustache) and bname[0] not in ('.#~'):
+                fname = os.path.join(path, bname)
                 tmpl, _i18n = compile_template(name,fname,node_path,cache_dir)
                 if tmpl:
-                    mustache.append(text_type('"%s":Handlebars.template(%s)')%(
-                        tname.rsplit('.', 1)[0], tmpl))
+                    top.append(text_type('"%s":Handlebars.template(%s)')%(
+                        bname.rsplit('.', 1)[0], tmpl))
                 if _i18n:
                     i18n.update(dict((v, None) for v in _i18n))
+        else:
+            mustache = []
+            for tname in os.listdir(bdir):
+                if tname.endswith(ext_mustache) and tname[0] not in ('.#~'):
+                    fname = os.path.join(bdir, tname)
+                    tmpl, _i18n = compile_template(
+                        name, fname, node_path, cache_dir)
+                    if tmpl:
+                        mustache.append(
+                            text_type('"%s":Handlebars.template(%s)')%(
+                                tname.rsplit('.', 1)[0], tmpl))
+                    if _i18n:
+                        i18n.update(dict((v, None) for v in _i18n))
 
-        templates.append(
-            text_type('"%s":new ptah.Templates("%s",{%s})')%(
-                bname, bname, ','.join(mustache)))
+            templates.append(
+                text_type('"%s":new ptah.Templates("%s",{%s})')%(
+                    bname, bname, ','.join(mustache)))
+
+    if top:
+        tmpl = text_type('new ptah.Templates("%s",{%s},{%s})')%(
+            name, text_type(',\n').join(top), text_type(',\n').join(templates))
+    else:
+        tmpl = text_type('{%s}')%(text_type(',\n').join(templates))
 
     name = str(name)
 
@@ -205,9 +222,9 @@ def build_hb_bundle(name, intr, registry):
 
 
         i18n_tmpl = i18n_template%('i18n-%s'%name, json.dumps(i18n_data))
-        return template%(name, text_type(',\n').join(templates),name,i18n_tmpl)
+        return template%(name, tmpl, name, i18n_tmpl)
     else:
-        return template%(name, text_type(',\n').join(templates), name, '')
+        return template%(name, tmpl, name, '')
 
 
 @view_config(route_name='ptah-mustache-bundle')

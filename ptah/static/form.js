@@ -16,10 +16,11 @@ define (
                 this.mtype = mtype
                 this.data = data
 
-                if (typeof(options) === 'undefined')
-                    options = {}
+                var view = options.parent
+                if (!view)
+                    view = connect instanceof ptah.View?connect:connect.parent
 
-                this._super(null, $('body'), options)
+                this._super(view, $('body'), options)
             }
 
             , init: function() {
@@ -50,7 +51,7 @@ define (
             , __send: function(self, data) {
                 for (var i = 0; i < self.readers.length; i++) {
                     if (self.readers[i].readyState == 1) {
-                        setTimeout(function() {self.__send(self, data)}, 200)
+                        setTimeout(function() {self.__send(self, data)}, 100)
                         return
                     }
                 }
@@ -159,7 +160,6 @@ define (
 
             , init: function() {
                 var that = this
-                this.__readers = []
 
                 this.__dom__.append(this.template(this.data))
                 this.window = $('[data-type="window"]', this.__dom__)

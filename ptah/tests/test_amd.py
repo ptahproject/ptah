@@ -252,8 +252,7 @@ class TestRequestRenderers(ptah.PtahTestCase):
         text = self.request.render_amd_container('app', attr='123')
 
         self.assertEqual(
-            text,
-            '<div ptah="app" class="ptah-container" data-attr="123"></div>')
+            text, '<div ptah="app" data-attr="123"></div>')
 
     def test_render_amd_includes(self):
         self.cfg['amd-enabled'] = False
