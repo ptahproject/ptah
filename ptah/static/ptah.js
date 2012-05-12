@@ -400,15 +400,17 @@ define (
             , resize: function() {}
 
             , destroy: function() {
+                this.clear()
+                this._super()
+            }
+
+            , clear: function() {
                 for (var key in this.__views__) {
                     this.__views__[key].destroy()
                 }
                 this.view = null
-                this.view_name = null
                 this.__views__ = {}
-                this.__workspace__.empty()
-
-                this._super()
+                this.__dom__.empty()
             }
 
             , activate: function(name, options) {
@@ -454,7 +456,7 @@ define (
             proto.__initializers__.push(
                 function(inst) {
                     inst.connect = new ptah.Connector(name, inst)
-                    ptah.connection.register(inst.connect)
+                    ptah.connection.register(name, inst.connect)
 
                     inst.add_cleanup_item(
                         function() {
@@ -490,7 +492,7 @@ define (
                 this.connect = new ptah.Connector(this.protocol, this)
                 this.io = this.connect.io
 
-                ptah.connection.register(this.connect)
+                this.connect.register()
             }
 
             , send: function(tp, payload) {
@@ -528,27 +530,15 @@ define (
                     console.log('[ptah.conn] Connected.')
 
                     // notify components
-                    for (var name in that.components) {
-                        var component = that.components[name]
-                        if (component.on_connect)
-                            try {
-                                component.on_connect.call(component)
-                            } catch(e) {
-                                console.log('Exception in ', that.handler,e)
-                            }
-                    }
-                    that.reconnect_time=ptah.Connection.prototype.reconnect_time
+                    for (var i=0; i<that.components.length; i++)
+                        that.components[i].component.on_connect()
 
-                    // scan for components
-                    ptah.scan_and_create()
+                    that.reconnect_time=ptah.Connection.prototype.reconnect_time
                 }
 
                 conn.onclose = function(ev) {
-                    for (var name in that.components) {
-                        var component = that.components[name]
-                        if (component.on_disconnect)
-                            component.on_disconnect.call(component)
-                    }
+                    for (var i=0; i<that.components.length; i++)
+                        that.components[i].component.on_disconnect()
 
                     if (ev.code != 1000) {
                         that.conn = null;
@@ -566,19 +556,14 @@ define (
                 conn.onmessage = function(msg) {
                     var found = false
                     var data = msg.data
-                    var component
+                    var item
 
                     for (var i=0; i<that.components.length; i++) {
-                        component = that.components[i]
-                        if (component.__ptah_name__ === data['protocol']) {
+                        item = that.components[i]
+                        if (item.name === data['protocol']) {
                             found = true
-                            try {
-                                component.__dispatch_io__(
-                                    data['type'], data['payload'], msg)
-                            } catch(e) {
-                                console.log("Exception in component:",
-                                            data['protocol'], e)
-                            }
+                            item.component.__dispatch_io__(
+                                data['type'], data['payload'], msg)
                         }
                     }
 
@@ -604,16 +589,23 @@ define (
                 this.conn.send(json_text)
             },
 
-            register: function(component) {
-                this.components.push(component)
-                if (this.conn && component.on_connect)
+            register: function(name, component) {
+                this.components.push({name:name, component:component})
+                if (this.conn)
                     component.on_connect()
             },
 
             unregister: function(component) {
-                for (var i=0; i < this.components.length; i++)
-                    if (this.components[i] === component)
-                        delete this.components[i]
+                var i = 0
+                while (i < this.components.length) {
+                    if (this.components[i].component === component) {
+                        if (this.conn)
+                            this.components[i].component.on_disconnect()
+                        this.components.splice(i, 1)
+                    } else {
+                        i++
+                    }
+                }
             },
 
             toString: function() {
@@ -634,12 +626,16 @@ define (
             this.name = name
             this.instance = instance
             this.io = new ptah.EventChannel('msg_')
-            this.__ptah_name__ = name
         }
         ptah.Connector.prototype = {
+            register: function() {
+                ptah.connection.register(this.name, this)
+            },
+            unregister: function() {
+                ptah.connection.unregister(this)
+            },
             __dispatch_io__: function(type, payload, msg) {
                 var hid = 'msg_'+type
-                var handler = this[hid]
                 var has_handler = false
 
                 if (this.instance[hid])
@@ -647,7 +643,8 @@ define (
                         has_handler = true
                         this.instance[hid](payload, msg)
                     } catch(e) {
-                        console.log("Exception in handler:", handler, e)
+                        console.log(
+                            "Exception in handler:", this.instance[hid], e)
                     }
 
                 // distach to event channel
@@ -670,12 +667,20 @@ define (
 
             , on_connect: function() {
                 if (this.instance && this.instance.on_connect)
-                    this.instance.on_connect()
+                    try {
+                        this.instance.on_connect()
+                    } catch(e) {
+                        console.log('on_connect excetion', this.instance, e)
+                    }
             }
 
             , on_disconnect: function() {
                 if (this.instance && this.instance.on_disconnect)
-                    this.instance.on_disconnect()
+                    try {
+                        this.instance.on_disconnect()
+                    } catch(e) {
+                        console.log('on_disconnect excetion', this.instance, e)
+                    }
             }
         }
 
