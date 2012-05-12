@@ -165,11 +165,11 @@ class AmdjsCommand(object):
 
                     if path is None:
                         f.write(bytes_(fpath, 'utf8'))
-                        f.write(binary_type(';\n'))
+                        f.write(binary_type(';\n', 'utf8'))
                     else:
                         with open(fpath, 'rb') as source:
                             f.write(source.read())
-                            f.write(binary_type(';\n'))
+                            f.write(binary_type(';\n', 'utf8'))
 
                 f.close()
 
