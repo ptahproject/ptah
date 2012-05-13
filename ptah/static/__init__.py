@@ -13,7 +13,7 @@ def includeme(config):
         'sockjs', 'ptah:static/lib/sockjs-0.3.1.min.js',
         'SockJS Client library')
     config.register_amd_module(
-        'underscore', 'ptah:static/lib/underscore-1.3.1.js')
+        'underscore', 'ptah:static/lib/underscore-min.js')
     config.register_amd_module(
         'handlebars', 'ptah:static/lib/handlebars.runtime.js',
         'Handlebars runtime library')
@@ -52,7 +52,6 @@ ptah.library(
     'bootstrap',
     path='ptah:static/bootstrap/bootstrap.min.css',
     type="css")
-
 
 # curl
 ptah.library(

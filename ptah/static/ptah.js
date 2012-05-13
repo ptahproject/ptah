@@ -1,7 +1,7 @@
 define (
-    'ptah', ['jquery', 'handlebars'],
+    'ptah', ['handlebars'],
 
-    function (jquery, handlebars) {
+    function (handlebars) {
         "use strict";
 
         var console = window.console
@@ -44,21 +44,19 @@ define (
                 ptah.modules = modules
                 curl({paths:ptah.modules}, ['jquery','ptah-date-format'],
                      function($) {
-                         $(function() {
-                             $('[ptah]').each(function(index, el) {
-                                 var dom = $(el)
-                                 var name = dom.attr('ptah')
-                                 if (ptah.modules[name])
-                                     curl({paths:ptah.modules}, [name]).then(
-                                         function(factory) {
-                                             new factory(
-                                                 null,dom,ptah.get_options(el))
-                                         })
-                                 else
-                                     console.log("Module is not found:", name)
-                             })
-                             window.ptah = ptah
+                         $('[ptah]').each(function(index, el) {
+                             var dom = $(el)
+                             var name = dom.attr('ptah')
+                             if (ptah.modules[name])
+                                 curl({paths:ptah.modules}, [name]).then(
+                                     function(factory) {
+                                         new factory(
+                                             null,dom,ptah.get_options(el))
+                                     })
+                             else
+                                 console.log("Module is not found:", name)
                          })
+                         window.ptah = ptah
                      })
             }
         }
