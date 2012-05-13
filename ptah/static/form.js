@@ -16,7 +16,7 @@ define (
                 this.mtype = mtype
                 this.data = data
 
-                var view = options.parent
+                var view = options ? options.parent : null
                 if (!view)
                     view = connect instanceof ptah.View?connect:connect.parent
 

@@ -30,12 +30,14 @@ define (
                 return host + path
             }
 
-            , get_options: function(el, opts) {
+            , get_options: function(el, prefix, opts) {
+                prefix = prefix || 'data-'
+                var len = prefix.length
                 var options = opts || {}
                 for (var idx=0; idx < el.attributes.length; idx++) {
                     var item = el.attributes[idx]
-                    if (item.name.substr(0, 5) === 'data-')
-                        options[item.name.substr(5)] = item.value
+                    if (item.name.substr(0, len) === prefix)
+                        options[item.name.substr(len)] = item.value
                 }
                 return options
             }
@@ -44,19 +46,21 @@ define (
                 ptah.modules = modules
                 curl({paths:ptah.modules}, ['jquery','ptah-date-format'],
                      function($) {
-                         $('[ptah]').each(function(index, el) {
-                             var dom = $(el)
-                             var name = dom.attr('ptah')
-                             if (ptah.modules[name])
-                                 curl({paths:ptah.modules}, [name]).then(
-                                     function(factory) {
-                                         new factory(
-                                             null,dom,ptah.get_options(el))
-                                     })
-                             else
-                                 console.log("Module is not found:", name)
+                         $(function() {
+                             $('[ptah]').each(function(index, el) {
+                                 var dom = $(el)
+                                 var name = dom.attr('ptah')
+                                 if (ptah.modules[name])
+                                     curl({paths:ptah.modules}, [name]).then(
+                                         function(factory) {
+                                             new factory(
+                                                 null,dom,ptah.get_options(el))
+                                         })
+                                 else
+                                     console.log("Module is not found:", name)
+                             })
+                             window.ptah = ptah
                          })
-                         window.ptah = ptah
                      })
             }
         }
@@ -309,6 +313,7 @@ define (
             if (dom) {
                 dom.undelegate('[data-action]', 'click')
                 dom.delegate('[data-action]', 'click', this, this.__dispatch__)
+                dom.delegate('[event-click]', 'click', this, this.__dispatch__)
             }
         }
 
@@ -322,19 +327,21 @@ define (
                 }
 
                 var that = ev.data
+
                 var params = ptah.get_options(this)
-                var options = ptah.get_options(ev.target, params)
+                var options = ptah.get_options(ev.target, null, params)
+                var action = params.action
 
-                if (that.events && that.events.has(params.action))
-                    that.events.publish(params.action, options)
+                if (that.events && that.events.has(action))
+                    that.events.publish(action, options)
 
-                var name = that.prefix+params.action
+                var name = that.prefix+action
                 var handler = that.scope[name]
                 if (handler && handler.call) {
                     try {
                         handler.call(that.scope, options, ev, ev.target)
                     } catch (e) {
-                        console.log("Action:", params.action, e)
+                        console.log("Action:", action, e)
                     }
                 }
             }
@@ -777,6 +784,8 @@ define (
 
         ptah.i18n = function(bundle, context, fn, options) {
             var text = fn.call(context, context, options)
+
+            console.log(text, ptah.language)
 
             if (bundle.__i18n__ &&
                 bundle.__i18n__[text] &&
