@@ -18,6 +18,17 @@ class Form(ptah.form.Form):
     def __call__(self):
         self.update()
 
+        if '__validate__' in self.params:
+            data, errors = self.extract()
+            if errors:
+                errs = {}
+                for err in errors:
+                    if err.field is not None:
+                        errs[err.field.name] = err.msg
+
+                self.protocol.send(self.mtype, {'errors': errs})
+                return
+
         if '__action__' in self.params:
             action = self.params['__action__']
             handler = self.actions.get(action)
