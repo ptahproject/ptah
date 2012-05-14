@@ -415,6 +415,20 @@ class TestField(PtahTestCase):
         widget.update(request)
         self.assertEqual(widget.form_value, 'form value')
 
+    def test_field_update_with_error(self):
+        from ptah import form
+
+        class MyField(form.Field):
+            def serialize(self, value):
+                raise form.Invalid(self, 'Invalid value')
+
+        request = object()
+
+        field = MyField('test')
+        widget = field.bind('field.', '12345', {})
+        widget.update(request)
+        self.assertIs(widget.form_value, None)
+
 
 class TestFieldFactory(PtahTestCase):
 

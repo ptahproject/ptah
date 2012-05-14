@@ -352,7 +352,12 @@ class Field(object):
 
         # Convert the value to one that the widget can understand
         if value is not null:
-            value = self.serialize(value)
+            try:
+                value = self.serialize(value)
+            except Invalid as err:
+                value = null
+                config.log.error("%s", err)
+
             self.form_value = value if value is not null else None
 
     def serialize(self, value):
