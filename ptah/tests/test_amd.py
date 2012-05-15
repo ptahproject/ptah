@@ -162,7 +162,7 @@ class TestInitAmdSpec(ptah.PtahTestCase):
         fn = self._create_file("[test.js]\nmodules = lib1")
 
         cfg = ptah.get_settings(ptah.CFG_ID_PTAH, self.registry)
-        cfg['amd-specs'] = ''
+        cfg['amd-spec'] = ''
 
         from ptah.amd import init_amd_spec, ID_AMD_SPEC
 
@@ -176,7 +176,7 @@ class TestInitAmdSpec(ptah.PtahTestCase):
         fn = self._create_file("[test.js]\nmodules = lib1")
 
         cfg = ptah.get_settings(ptah.CFG_ID_PTAH, self.registry)
-        cfg['amd-specs'] = ['%s'%fn, 'test:%s'%fn]
+        cfg['amd-spec'] = ['%s'%fn, 'test:%s'%fn]
 
         from ptah.amd import init_amd_spec, ID_AMD_SPEC
 
@@ -187,8 +187,8 @@ class TestInitAmdSpec(ptah.PtahTestCase):
         fn = self._create_file("[test.js]\nmodules = lib1")
 
         cfg = ptah.get_settings(ptah.CFG_ID_PTAH, self.registry)
-        cfg['amd-specs'] = ['%s'%fn, 'test:%s'%fn]
-        cfg['amd-spec-dir'] = '/test'
+        cfg['amd-spec'] = ['%s'%fn, 'test:%s'%fn]
+        cfg['amd-dir'] = '/test'
 
         from ptah.amd import init_amd_spec, ID_AMD_SPEC
         init_amd_spec(self.config)
@@ -203,8 +203,8 @@ class TestInitAmdSpec(ptah.PtahTestCase):
             "[test.js]\nurl=http://example.com/test.js\nmodules = lib1")
 
         cfg = ptah.get_settings(ptah.CFG_ID_PTAH, self.registry)
-        cfg['amd-specs'] = [fn]
-        cfg['amd-spec-dir'] = '/test'
+        cfg['amd-spec'] = [fn]
+        cfg['amd-dir'] = '/test'
 
         from ptah.amd import init_amd_spec, ID_AMD_SPEC
         init_amd_spec(self.config)
@@ -226,8 +226,8 @@ modules = lib2
         fn = self._create_file(self.text1)
 
         cfg = ptah.get_settings(ptah.CFG_ID_PTAH, self.registry)
-        cfg['amd-specs'] = ['test:%s'%fn, 'test:%s'%fn]
-        cfg['amd-spec-dir'] = '/unknown'
+        cfg['amd-spec'] = ['test:%s'%fn, 'test:%s'%fn]
+        cfg['amd-dir'] = '/unknown'
 
         from ptah.amd import init_amd_spec
         self.assertRaises(ConfigurationError, init_amd_spec, self.config)
@@ -256,7 +256,7 @@ class TestRequestRenderers(ptah.PtahTestCase):
             '<div ptah="app" class="ptah-container" data-attr="123"></div>')
 
     def test_render_amd_includes(self):
-        self.cfg['amd-spec-enabled'] = False
+        self.cfg['amd-enabled'] = False
 
         text = self.request.render_amd_includes().strip()
         self.assertEqual(
@@ -267,7 +267,7 @@ class TestRequestRenderers(ptah.PtahTestCase):
             text, '<script src="http://example.com/_amd__.js"> </script>')
 
     def test_render_amd_includes_unknown_spec(self):
-        self.cfg['amd-spec-enabled'] = True
+        self.cfg['amd-enabled'] = True
 
         self.assertRaises(
             RuntimeError, self.request.render_amd_includes, 'unknown')
@@ -275,7 +275,7 @@ class TestRequestRenderers(ptah.PtahTestCase):
             RuntimeError, self.request.render_amd_includes, 'spec')
 
     def test_render_amd_includes_default(self):
-        self.cfg['amd-spec-enabled'] = True
+        self.cfg['amd-enabled'] = True
 
         text = self.request.render_amd_includes().strip()
         self.assertEqual(
@@ -284,7 +284,7 @@ class TestRequestRenderers(ptah.PtahTestCase):
     def test_render_amd_includes_spec(self):
         from ptah.amd import ID_AMD_SPEC
 
-        self.cfg['amd-spec-enabled'] = True
+        self.cfg['amd-enabled'] = True
 
         self.registry[ID_AMD_SPEC] = {'test':
                                       {'test.js': {'path':'/test/test.js'}}}

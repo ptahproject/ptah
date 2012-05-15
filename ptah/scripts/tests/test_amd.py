@@ -71,7 +71,7 @@ class TestAmdCommand(ptah.PtahTestCase):
 
         self.assertIn('Spec files are not specified in .ini file', val)
 
-        cfg['amd-specs'] = ['main:ptah:scripts/tests/amd.spec']
+        cfg['amd-spec'] = ['main:ptah:scripts/tests/amd.spec']
 
         out = NativeIO()
         sys.stdout = out
@@ -82,7 +82,7 @@ class TestAmdCommand(ptah.PtahTestCase):
         self.assertIn('Destination directory is not specified in .ini file',val)
 
         d = tempfile.mkdtemp()
-        cfg['amd-spec-dir'] = d
+        cfg['amd-dir'] = d
 
         out = NativeIO()
         sys.stdout = out
@@ -101,7 +101,7 @@ class TestAmdCommand(ptah.PtahTestCase):
         shutil.rmtree(d)
 
         d = tempfile.mkdtemp()
-        cfg['amd-spec-dir'] = d
+        cfg['amd-dir'] = d
 
         sys.argv[1:] = ['-b', '--no-min', 'ptah.ini']
 

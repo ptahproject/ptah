@@ -89,11 +89,11 @@ class AmdjsCommand(object):
             print ("Can't find nodejs")
             return
 
-        if not cfg['amd-specs']:
+        if not cfg['amd-spec']:
             print ("Spec files are not specified in .ini file")
             return
 
-        if not cfg['amd-spec-dir']:
+        if not cfg['amd-dir']:
             print ("Destination directory is not specified in .ini file")
             return
 
@@ -104,7 +104,7 @@ class AmdjsCommand(object):
         resolver = AssetResolver()
 
         specs = OrderedDict()
-        for item in cfg['amd-specs']:
+        for item in cfg['amd-spec']:
             spec, specfile = item.split(':',1)
             specs[spec] = specfile
 
@@ -173,7 +173,7 @@ class AmdjsCommand(object):
 
                 f.close()
 
-                path = os.path.join(cfg['amd-spec-dir'], jsname)
+                path = os.path.join(cfg['amd-dir'], jsname)
                 print ('write to:', path)
                 with open(path, 'wb') as dest:
                     if self.options.nomin:

@@ -19,17 +19,17 @@ ID_AMD_MODULE = 'ptah:amd-module'
 def init_amd_spec(config, cache_max_age=None):
     cfg = ptah.get_settings(ptah.CFG_ID_PTAH, config.registry)
     config.registry[ID_AMD_SPEC] = {}
-    if not cfg['amd-specs']:
+    if not cfg['amd-spec']:
         return
 
-    if not cfg['amd-spec-dir']:
-        raise ConfigurationError("amd-spec-dir is required.")
+    if not cfg['amd-dir']:
+        raise ConfigurationError("amd-dir is required.")
 
     resolver = AssetResolver()
-    directory = resolver.resolve(cfg['amd-spec-dir']).abspath()
+    directory = resolver.resolve(cfg['amd-dir']).abspath()
 
     specs = {}
-    for item in cfg['amd-specs']:
+    for item in cfg['amd-spec']:
         if ':' not in item:
             spec = ''
             specfile = item
@@ -188,7 +188,7 @@ def render_amd_includes(request, spec='', bundles=()):
     ptah.include(request, 'curl')
 
     c_tmpls = []
-    if spec and cfg['amd-spec-enabled']:
+    if spec and cfg['amd-enabled']:
         specstorage = request.registry.get(ID_AMD_SPEC, {})
         specdata = specstorage.get(spec)
         if specdata is None:

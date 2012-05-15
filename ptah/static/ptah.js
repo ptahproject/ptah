@@ -1,62 +1,37 @@
 define (
-    'ptah', ['jquery'],
+    'ptah', ['jquery', 'handlebars'],
 
-    function (jquery) {
+    function (jquery, handlebars) {
         "use strict";
 
+        var console = window.console
+
         var ptah = {
-            consts: {},
+            consts: {}
 
-            log: function(){
-                if (window.console && console.log && console.log.apply) {
-                    console.log.apply(console, arguments)
-                }
-            },
-
-            guid: function() {
+            , guid: function() {
                 var S4 = function() {
                     return (((1+Math.random())*0x10000)|0)
                         .toString(16).substring(1);
                 };
                 return (S4()+S4()+"-"+S4()+"-"+S4()+
                         "-"+S4()+"-"+S4()+S4()+S4())
-            },
+            }
 
-            utc: function() {
+            , utc: function() {
                 var d = new Date();
                 var localTime = d.getTime();
                 var localOffset = d.getTimezoneOffset() * 60000;
                 d.setTime(localTime + localOffset);
                 return d;
-            },
+            }
 
-            gen_url: function(path) {
+            , gen_url: function(path) {
                 var host = window.ptah_host || '//' + window.location.host
                 if (host[host.length-1] === '/')
                     host = host.substr(host.length-1, 1)
 
                 return host + path
-            },
-
-            get_logger: function(name) {
-                var logger = function(name) {
-                    this.name = name;
-                }
-
-                logger.prototype = {
-                    _log: function(args) {
-                        if (window.console && console.log && console.log.apply)
-                            console.log.apply(console, args)
-                    },
-
-                    info: function() {
-                        var args = Array.prototype.slice.call(arguments);
-                        args.unshift('[INFO] ['+this.name+']')
-                        this._log(args);
-                    }
-                }
-
-                return new logger(name);
             }
 
             , get_options: function(el, opts) {
@@ -88,7 +63,6 @@ define (
                 })
             }
         }
-        ptah.logger = ptah.get_logger('ptah');
 
         /* Simple JavaScript Inheritance
          * By John Resig http://ejohn.org/
@@ -200,7 +174,7 @@ define (
                     try {
                         ptah.initializers[p](
                             Object, Object.prototype, prototype[p])
-                    } catch(e) {ptah.logger.info(e)}
+                    } catch(e) {console.log(e)}
             }
             return Object
         }
@@ -365,7 +339,7 @@ define (
                     try {
                         handler.call(that.scope, options, ev, ev.target)
                     } catch (e) {
-                        ptah.logger.info("Action:", params.action, e)
+                        console.log("Action:", params.action, e)
                     }
                 }
             }
@@ -500,10 +474,10 @@ define (
             }
 
             ptah.Protocol.registry[name] = proto
-            ptah.logger.info('Protocol has been registered:', name)
+            console.log('Protocol has been registered:', name)
 
             if (!ptah.protocols[name]) {
-                ptah.logger.info("Creating '"+name+"' protocol.")
+                console.log("Creating '"+name+"' protocol.")
                 ptah.protocols[name] = new ctor()
             }
         }
@@ -538,7 +512,6 @@ define (
         ptah.Connection = function(options) {
             this.conn = null
             this.components = []
-            this.logger = ptah.get_logger('ptah.connection')
         }
 
         ptah.Connection.prototype = {
@@ -552,7 +525,7 @@ define (
 
                 conn.onopen = function() {
                     that.conn = conn
-                    that.logger.info('Connected.')
+                    console.log('[ptah.conn] Connected.')
 
                     // notify components
                     for (var name in that.components) {
@@ -561,7 +534,7 @@ define (
                             try {
                                 component.on_connect.call(component)
                             } catch(e) {
-                                that.logger.info('Exception in ',that.handler,e)
+                                console.log('Exception in ',that.handler,e)
                             }
                     }
                     that.reconnect_time=ptah.Connection.prototype.reconnect_time
@@ -580,8 +553,8 @@ define (
 
                     if (ev.code != 1000) {
                         that.conn = null;
-                        that.logger.info('Disconnected.')
                         that.reconnect_time = that.reconnect_time*2
+                        console.log('Disconnected.')
                         if (that.reconnect_time > 10000)
                             that.reconnect_time = 10000
 
@@ -604,15 +577,14 @@ define (
                                 component.__dispatch_io__(
                                     data['type'], data['payload'], msg)
                             } catch(e) {
-                                that.logger.info(
-                                    "Exception in component:",
-                                    data['component'], e)
+                                console.log("Exception in component:",
+                                            data['protocol'], e)
                             }
                         }
                     }
 
                     if (!found)
-                        that.logger.info("Unknown component:",data['component'])
+                        console.log("Unknown protocol:", data['protocol'])
                 }
             },
 
@@ -676,7 +648,7 @@ define (
                         has_handler = true
                         this.instance[hid](payload, msg)
                     } catch(e) {
-                        ptah.logger.info("Exception in handler:", handler, e)
+                        console.log("Exception in handler:", handler, e)
                     }
 
                 // distach to event channel
@@ -689,7 +661,7 @@ define (
                     has_handler = true
                     this.instance.on_message(type, payload, msg)
                 } else if (!has_handler) {
-                    ptah.logger.info("Unknown message: "+this.name+':'+type)
+                    console.log("Unknown message: "+this.name+':'+type)
                 }
             }
 
@@ -711,7 +683,6 @@ define (
         ptah.Templates = function (name, templates) {
             this.name = name
             this.templates = templates
-            this.logger = ptah.get_logger(name)
         }
 
         ptah.get_templates = function(name, category) {
@@ -750,19 +721,34 @@ define (
                     partials = this.templates
 
                 if (!this.templates[name]) {
-                    this.logger.info("Can't find template:", name)
+                    console.log("Can't find template:", name)
                     return ''
                 } else {
                     try {
                         return this.templates[name](
                             context, {partials: partials})
                     } catch(e) {
-                        ptah.logger.info(e)
+                        console.log(e)
                     }
                 }
                 return ''
             }
         }
+
+        handlebars.registerHelper(
+            'i18n', function(context, options) {
+                var name=null;
+                if (typeof(context) === 'string') {
+                    name = context
+                    context = options
+                }
+                console.log(arguments)
+                console.log(this)
+                var text = context.call(this, this)
+                console.log(text)
+                return text
+            }
+        )
 
         return ptah
     }

@@ -119,18 +119,23 @@ ptah.register_settings(
         default = ()),
 
     ptah.form.BoolField(
-        'amd-spec-enabled',
+        'amd-enabled',
         title = 'AMD spec',
         description = 'Status of amd spec support (true/false).',
         default = False),
 
     ptah.form.LinesField(
-        'amd-specs',
+        'amd-spec',
         title = 'Amd spec files',
         default = ()),
 
     ptah.form.TextField(
-        'amd-spec-dir',
+        'amd-dir',
+        title = 'Directory for javascript bundles',
+        default = ''),
+
+    ptah.form.TextField(
+        'amd-cache',
         title = 'Directory for compiled files',
         default = ''),
 
