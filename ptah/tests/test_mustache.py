@@ -135,7 +135,7 @@ class TestBuildBundle(ptah.PtahTestCase):
         from ptah import mustache
         mustache.NODE_PATH = self._node_path
 
-        shutil.rmtree(self.path)
+        #shutil.rmtree(self.path)
 
     def test_no_nodejs(self):
         from ptah import mustache
@@ -149,18 +149,30 @@ class TestBuildBundle(ptah.PtahTestCase):
     def test_compile_new(self):
         from ptah import mustache
 
+        cfg = ptah.get_settings(ptah.CFG_ID_PTAH, self.registry)
+        cfg['amd-cache'] = self.path
+        prefix = os.path.split(self.path)[-1]
+
         f = os.path.join(self.path, 'template')
         with open(f, 'w') as fn:
             fn.write('<div>{{test}}</div>')
 
-        tmpl = text_type(mustache.compile_template(f, mustache.NODE_PATH))
+        tmpl = text_type(mustache.compile_template(
+                'test', f, mustache.NODE_PATH, self.path))
 
-        self.assertTrue(os.path.isfile('%s.js'%f))
+        self.assertTrue(os.path.isfile(
+                os.path.join(self.path, 'test-%s-template'%prefix)))
+        self.assertTrue(os.path.isfile(
+                os.path.join(self.path, 'test-%s-template.js'%prefix)))
         self.assertIn(
             'function (Handlebars,depth0,helpers,partials,data) {', tmpl)
 
     def test_compile_existing(self):
         from ptah import mustache
+
+        cfg = ptah.get_settings(ptah.CFG_ID_PTAH, self.registry)
+        cfg['amd-cache'] = self.path
+        prefix = os.path.split(self.path)[-1]
 
         f = os.path.join(self.path, 'template')
         with open(f, 'w') as fn:
@@ -168,9 +180,17 @@ class TestBuildBundle(ptah.PtahTestCase):
 
         time.sleep(0.01)
 
-        f1 = '%s.js'%f
+        f1 = os.path.join(self.path, 'test-%s-template'%prefix)
         with open(f1, 'w') as fn:
-            fn.write('existing')
+            fn.write('existing1')
 
-        tmpl = text_(mustache.compile_template(f, mustache.NODE_PATH))
-        self.assertEqual('existing', tmpl)
+        time.sleep(0.01)
+
+        f2 = os.path.join(self.path, 'test-%s-template.js'%prefix)
+        with open(f2, 'w') as fn:
+            fn.write('existing2')
+
+        tmpl = text_type(mustache.compile_template(
+                'test', f, mustache.NODE_PATH, self.path))
+
+        self.assertEqual('existing2', tmpl)

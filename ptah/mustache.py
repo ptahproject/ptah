@@ -1,4 +1,5 @@
 import os
+import tempfile
 import subprocess
 from pyramid.view import view_config
 from pyramid.path import AssetResolver
@@ -64,14 +65,27 @@ def register_mustache_bundle(cfg, name, path='', description=''):
     cfg.action(discr, introspectables=(intr,))
 
 
-def compile_template(path, node_path):
+def compile_template(name, path, node_path, cache_dir):
     tmpl = ''
-    cname = '%s.js'%path
+
+    dir, tname = os.path.split(path)
+    tname = os.path.join(
+        cache_dir, '%s-%s-%s'%(name, os.path.split(dir)[-1], tname))
+
+    # copy to temp dir
+    if not os.path.exists(tname) or \
+           (os.path.getmtime(path) > os.path.getmtime(tname)):
+        with open(tname, 'wb') as f:
+            f.write(open(path, 'rb').read())
+
+    # check if .js file exists
+    cname = '%s.js'%tname
     if os.path.exists(cname) and \
-           (os.path.getmtime(path) < os.path.getmtime(cname)):
+           (os.path.getmtime(tname) < os.path.getmtime(cname)):
         with open(cname, 'rb') as f:
             tmpl = f.read()
     else:
+        # compile
         tmpl = check_output((node_path, HB, '-s', path))
         with open(cname, 'wb') as f:
             f.write(tmpl)
@@ -91,6 +105,11 @@ def build_hb_bundle(name, intr, registry):
     if not node_path:
         node_path = NODE_PATH
 
+    if not cfg['amd-cache']:
+        cfg['amd-cache'] = tempfile.mkdtemp()
+
+    cache_dir = cfg['amd-cache']
+
     if not node_path:
         raise RuntimeError("Can't find nodejs")
 
@@ -107,7 +126,7 @@ def build_hb_bundle(name, intr, registry):
         for tname in os.listdir(bdir):
             if tname.endswith(ext_mustache) and tname[0] not in ('.#~'):
                 fname = os.path.join(bdir, tname)
-                tmpl = compile_template(fname, node_path)
+                tmpl = compile_template(name, fname, node_path, cache_dir)
                 if tmpl:
                     mustache.append('"%s":Handlebars.template(%s)'%(
                         tname.rsplit('.', 1)[0], tmpl))
