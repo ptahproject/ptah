@@ -735,20 +735,11 @@ define (
             }
         }
 
-        handlebars.registerHelper(
-            'i18n', function(context, options) {
-                var name=null;
-                if (typeof(context) === 'string') {
-                    name = context
-                    context = options
-                }
-                console.log(arguments)
-                console.log(this)
-                var text = context.call(this, this)
-                console.log(text)
-                return text
-            }
-        )
+        ptah.i18n = function(bundle, context, fn, options) {
+            var text = fn.call(context, context, options)
+            console.log(text)
+            return text
+        }
 
         return ptah
     }

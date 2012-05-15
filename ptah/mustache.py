@@ -1,3 +1,4 @@
+import re
 import os
 import tempfile
 import subprocess
@@ -10,6 +11,8 @@ from pyramid.exceptions import ConfigurationError
 
 import ptah
 from ptah.util import json
+
+i18n_re = re.compile('{{#i18n}}(.*){{/i18n}}')
 
 
 def check_output(*popenargs, **kwargs):
@@ -78,25 +81,58 @@ def compile_template(name, path, node_path, cache_dir):
         with open(tname, 'wb') as f:
             f.write(open(path, 'rb').read())
 
+    i18n = []
+
     # check if .js file exists
     cname = '%s.js'%tname
+    iname = '%s.i18n'%tname
     if os.path.exists(cname) and \
            (os.path.getmtime(tname) < os.path.getmtime(cname)):
         with open(cname, 'rb') as f:
             tmpl = f.read()
+
+        if os.path.exists(iname):
+            with open(iname, 'rb') as f:
+                i18n.extend([v for v in f.read().split('\n') if v])
     else:
+        text = []
+        with open(tname, 'rb') as f:
+            data = f.read()
+
+            pos = 0
+            for m in i18n_re.finditer(data):
+                start, end = m.span()
+                s = data[start+9:end-9]
+                text.append(data[pos:start])
+                text.append('{{#i18n-%s}}'%name)
+                text.append(s)
+                text.append('{{/i18n-%s}}'%name)
+                pos = end
+                i18n.append(s)
+
+            text.append(data[pos:])
+
+        with open(tname, 'wb') as f:
+            f.write(''.join(text))
+
+        if i18n:
+            with open(iname, 'wb') as f:
+                f.write('\n'.join(i18n))
+
         # compile
-        tmpl = check_output((node_path, HB, '-s', path))
+        tmpl = check_output((node_path, HB, '-s', tname))
         with open(cname, 'wb') as f:
             f.write(tmpl)
 
-    return tmpl
+    return tmpl, i18n
 
 
 template = """define("%s",["ptah","handlebars"],
 function(ptah, Handlebars) {
-var bundle={%s};ptah.Templates.bundles["%s"]=bundle;return bundle})
+var bundle={%s};ptah.Templates.bundles["%s"]=bundle;%sreturn bundle})
 """
+
+i18n_template = """\nHandlebars.registerHelper('%s',function(context, options) {return ptah.i18n(bundle, this, context, options)});"""
 
 def build_hb_bundle(name, intr, registry):
     cfg = ptah.get_settings(ptah.CFG_ID_PTAH, registry)
@@ -115,6 +151,7 @@ def build_hb_bundle(name, intr, registry):
 
     path = intr['abs_path']
 
+    i18n = {}
     templates = []
 
     for bname in os.listdir(path):
@@ -126,17 +163,21 @@ def build_hb_bundle(name, intr, registry):
         for tname in os.listdir(bdir):
             if tname.endswith(ext_mustache) and tname[0] not in ('.#~'):
                 fname = os.path.join(bdir, tname)
-                tmpl = compile_template(name, fname, node_path, cache_dir)
+                tmpl, _i18n = compile_template(name,fname,node_path,cache_dir)
                 if tmpl:
                     mustache.append('"%s":Handlebars.template(%s)'%(
                         tname.rsplit('.', 1)[0], tmpl))
+                if _i18n:
+                    i18n.update(dict((v, '') for v in _i18n))
 
         templates.append(
             '"%s":new ptah.Templates("%s",{%s})'%(
                 bname, bname, ','.join(mustache)))
 
+    i18n_tmpl = i18n_template%('i18n-%s'%name) if i18n else ''
+
     name = str(name)
-    return template%(name, ',\n'.join(templates), name)
+    return template%(name, ',\n'.join(templates), name, i18n_tmpl)
 
 
 @view_config(route_name='ptah-mustache-bundle')

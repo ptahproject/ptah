@@ -158,7 +158,7 @@ class TestBuildBundle(ptah.PtahTestCase):
             fn.write('<div>{{test}}</div>')
 
         tmpl = text_type(mustache.compile_template(
-                'test', f, mustache.NODE_PATH, self.path))
+                'test', f, mustache.NODE_PATH, self.path)[0])
 
         self.assertTrue(os.path.isfile(
                 os.path.join(self.path, 'test-%s-template'%prefix)))
@@ -191,6 +191,6 @@ class TestBuildBundle(ptah.PtahTestCase):
             fn.write('existing2')
 
         tmpl = text_type(mustache.compile_template(
-                'test', f, mustache.NODE_PATH, self.path))
+                'test', f, mustache.NODE_PATH, self.path)[0])
 
         self.assertEqual('existing2', tmpl)
