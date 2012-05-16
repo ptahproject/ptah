@@ -150,6 +150,7 @@ define (
         form.Window = ptah.View.extend({
             __name__: 'ptah.Window',
 
+            data: null,
             template: null
 
             , __init__: function(parent, options) {
@@ -160,7 +161,7 @@ define (
                 var that = this
                 this.__readers = []
 
-                this.__dom__.append(this.template())
+                this.__dom__.append(this.template(this.data))
                 this.window = $('[data-type="window"]', this.__dom__)
                 this.window.modal()
                 this.window.on('hidden', function() {that.destroy()})

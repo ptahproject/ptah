@@ -5,7 +5,7 @@ import subprocess
 from pyramid.i18n import get_localizer
 from pyramid.view import view_config
 from pyramid.path import AssetResolver
-from pyramid.compat import text_, bytes_
+from pyramid.compat import text_, bytes_, text_type
 from pyramid.registry import Introspectable
 from pyramid.httpexceptions import HTTPNotFound
 from pyramid.exceptions import ConfigurationError
@@ -101,7 +101,7 @@ def compile_template(name, path, node_path, cache_dir):
     if os.path.exists(cname) and \
            (os.path.getmtime(tname) < os.path.getmtime(cname)):
         with open(cname, 'rb') as f:
-            tmpl = text_(f.read())
+            tmpl = text_(f.read(), 'utf-8')
 
         if os.path.exists(iname):
             with open(iname, 'rb') as f:
@@ -109,7 +109,7 @@ def compile_template(name, path, node_path, cache_dir):
     else:
         text = []
         with open(tname, 'rb') as f:
-            data = text_(f.read())
+            data = text_(f.read(), 'utf-8')
 
             # i18n
             pos = 0
@@ -137,16 +137,16 @@ def compile_template(name, path, node_path, cache_dir):
         with open(cname, 'wb') as f:
             f.write(tmpl)
 
-    return tmpl, i18n
+    return text_(tmpl, 'utf-8'), i18n
 
 
-template = """define("%s",["ptah","handlebars"],
+template = text_type("""define("%s",["ptah","handlebars"],
 function(ptah, Handlebars) {
 var bundle={%s};ptah.Templates.bundles["%s"]=bundle;%sreturn bundle})
-"""
+""")
 
-i18n_template = """\nHandlebars.registerHelper('%s',function(context, options) {return ptah.i18n(bundle, this, context, options)});
-bundle.__i18n__ = %s;"""
+i18n_template = text_type("""\nHandlebars.registerHelper('%s',function(context, options) {return ptah.i18n(bundle, this, context, options)});
+bundle.__i18n__ = %s;""")
 
 class _r(object):
     def __init__(self, registry, locale):
@@ -186,13 +186,13 @@ def build_hb_bundle(name, intr, registry):
                 fname = os.path.join(bdir, tname)
                 tmpl, _i18n = compile_template(name,fname,node_path,cache_dir)
                 if tmpl:
-                    mustache.append('"%s":Handlebars.template(%s)'%(
+                    mustache.append(text_type('"%s":Handlebars.template(%s)')%(
                         tname.rsplit('.', 1)[0], tmpl))
                 if _i18n:
                     i18n.update(dict((v, None) for v in _i18n))
 
         templates.append(
-            '"%s":new ptah.Templates("%s",{%s})'%(
+            text_type('"%s":new ptah.Templates("%s",{%s})')%(
                 bname, bname, ','.join(mustache)))
 
     name = str(name)
@@ -210,9 +210,9 @@ def build_hb_bundle(name, intr, registry):
 
 
         i18n_tmpl = i18n_template%('i18n-%s'%name, json.dumps(i18n_data))
-        return template%(name, ',\n'.join(templates), name, i18n_tmpl)
+        return template%(name, text_type(',\n').join(templates),name,i18n_tmpl)
     else:
-        return template%(name, ',\n'.join(templates), name, '')
+        return template%(name, text_type(',\n').join(templates), name, '')
 
 
 @view_config(route_name='ptah-mustache-bundle')
