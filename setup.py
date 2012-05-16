@@ -27,7 +27,7 @@ if sys.version_info[:2] == (2, 6):
             'unittest2'))
 
 if sys.version_info[:2] in ((2,6),(2,7)):
-    install_requires.extend(('simplejson >= 2.5.2',))
+    install_requires.extend(('simplejson',))
 
 tests_require = install_requires + ['nose', 'sphinx', 'Pygments']
 
