@@ -27,6 +27,16 @@ def check_output(*popenargs, **kwargs):
 
 ID_BUNDLE = 'ptah:mustache'
 ID_AMD_MODULE = 'ptah:amd-module'
+
+try:
+    if os.sys.platform == 'win32':
+        NODE_PATH = r'C:\Program Files (x86)\nodejs\node.exe'
+        os.stat(NODE_PATH)
+    else:    
+        NODE_PATH = check_output(('which', 'node')).strip()
+except:
+    NODE_PATH = ''
+    
 NODE_PATH = check_output(('which', 'node')).strip()
 HB = AssetResolver().resolve(
     'ptah:node_modules/handlebars/bin/handlebars').abspath()
