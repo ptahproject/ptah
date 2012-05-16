@@ -18,7 +18,7 @@ ID_SUBSCRIBER = 'ptah.config:subscriber'
 
 __all__ = ('initialize', 'get_cfg_storage', 'StopException',
            'event', 'adapter', 'subscriber', 'shutdown', 'shutdown_handler',
-           'Action', 'ClassAction', 'DirectiveInfo')
+           'Action', 'DirectiveInfo')
 
 log = logging.getLogger('ptah')
 
@@ -170,16 +170,6 @@ class Action(object):
             except:  # pragma: no cover
                 log.exception(self.discriminator)
                 raise
-
-
-class ClassAction(Action): # pragma: no cover
-
-    def __call__(self, cfg):
-        try:
-            self.callable(cfg, self.info.context, *self.args, **self.kw)
-        except:
-            log.exception(self.discriminator)
-            raise
 
 
 CodeInfo = namedtuple('Codeinfo', 'filename lineno function source module')
