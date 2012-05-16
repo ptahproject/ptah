@@ -8,7 +8,7 @@ import tempfile
 from collections import OrderedDict
 from pprint import pprint
 from pyramid.path import AssetResolver
-from pyramid.compat import configparser, NativeIO, bytes_
+from pyramid.compat import configparser, NativeIO, bytes_, binary_type
 from pyramid.threadlocal import get_current_registry
 
 import ptah
@@ -164,12 +164,12 @@ class AmdjsCommand(object):
                             '%s: %s'%(name, path or 'templates bundle')))
 
                     if path is None:
-                        f.write(bytes_(fpath))
-                        f.write(bytes_(';\n'))
+                        f.write(bytes_(fpath, 'utf8'))
+                        f.write(binary_type(';\n'))
                     else:
                         with open(fpath, 'rb') as source:
                             f.write(source.read())
-                            f.write(bytes_(';\n'))
+                            f.write(binary_type(';\n'))
 
                 f.close()
 
