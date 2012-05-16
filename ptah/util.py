@@ -3,8 +3,16 @@ import threading
 from datetime import datetime, timedelta
 from pyramid.interfaces import INewRequest
 
+_days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+_months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+           'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+
 def dthandler(obj):
-    return obj.isoformat() if isinstance(obj, datetime) else None
+    if isinstance(obj, datetime):
+        now = obj.timetuple()
+        return '%s, %02d %s %04d %02d:%02d:%02d -0000' % (
+            _days[now[6]], now[2],
+            _months[now[1] - 1], now[0], now[3], now[4], now[5])
 
 kwargs = {'default': dthandler, 'separators': (',', ':')}
 
