@@ -557,10 +557,11 @@ define (
             reconnect_count: 5,
             reconnect_time: 200,
 
-            connect: function(url) {
+            connect: function(url, transports) {
                 this.url = url
+                this.transports = transports
                 var that = this
-                var conn = new ptah.sockjs(this.url, this.transports)
+                var conn = new ptah.sockjs(this.url, transports)
 
                 conn.onopen = function() {
                     that.conn = conn
@@ -585,7 +586,7 @@ define (
                             that.reconnect_time = 10000
 
                         setTimeout(
-                            function() {that.connect(that.url)},
+                            function() {that.connect(that.url, transports)},
                             that.reconnect_time)
                     }
                 }
@@ -651,11 +652,12 @@ define (
         }
         ptah.connection = new ptah.Connection()
 
-        ptah.connect = function() {
+        ptah.connect = function(transports) {
             curl({paths: ptah_amd_modules || {}}, ['sockjs'],
                  function(sockjs) {
                      ptah.sockjs = sockjs
-                     ptah.connection.connect(ptah.gen_url('/_ptah_connection'))
+                     ptah.connection.connect(
+                         ptah.gen_url('/_ptah_connection'), transports)
                  })
         }
 
