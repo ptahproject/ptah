@@ -150,10 +150,32 @@ class TestForm(ptah.PtahTestCase):
         P = self._make_p()
         Form = self._make_form()
 
-        # unknown action
+        p = P(self.request)
+        form = Form('test', {'__validate__': True, 'name': 'test'}, p)
+        form()
+        self.assertTrue('error' not in p.data[0][1])
+
+    def test_validate_with_action(self):
+        from ptah import sockjs
+
+        P = self._make_p()
+        Form = self._make_form()
+
+        p = P(self.request)
+        form = Form('test', {'__action__': 'submit',
+                             '__validate__': True, 'name': 'test'}, p)
+        form()
+        self.assertEqual(len(p.data), 0)
+        self.assertEqual(form._action, 1)
+
+    def test_validate_with_err(self):
+        from ptah import sockjs
+
+        P = self._make_p()
+        Form = self._make_form()
+
         p = P(self.request)
         form = Form('test', {'__validate__': True}, p)
-        form.err = True
         form()
-        #print p.data
         self.assertEqual(len(p.data), 1)
+        self.assertEqual(p.data[0][1]['errors']['name'], 'Required')
