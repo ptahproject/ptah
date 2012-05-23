@@ -143,3 +143,17 @@ class TestForm(ptah.PtahTestCase):
         form()
         self.assertEqual(len(p.data), 0)
         self.assertEqual(form._action, 1)
+
+    def test_validate(self):
+        from ptah import sockjs
+
+        P = self._make_p()
+        Form = self._make_form()
+
+        # unknown action
+        p = P(self.request)
+        form = Form('test', {'__validate__': True}, p)
+        form.err = True
+        form()
+        #print p.data
+        self.assertEqual(len(p.data), 1)

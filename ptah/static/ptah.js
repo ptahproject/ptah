@@ -354,7 +354,7 @@ define (
                 this.__parent__ = parent
                 this.__container__ = dom
                 this.__uuid__ = ptah.guid()
-                this.__views__ = []
+                this.__views__ = new Array()
 
                 if (typeof(options) === 'undefined')
                     options = {}
@@ -567,16 +567,20 @@ define (
                     that.conn = conn
                     console.log('[ptah.conn] Connected.')
 
-                    // notify components
-                    for (var i=0; i<that.components.length; i++)
-                        that.components[i].component.on_connect()
+                    // notify components, while notifing
+                    // new component can be registered and that can cause doudle
+                    // on_connect call
+                    var components = that.components.slice()
+                    for (var i=0; i<components.length; i++)
+                        components[i].component.on_connect()
 
                     that.reconnect_time=ptah.Connection.prototype.reconnect_time
                 }
 
                 conn.onclose = function(ev) {
-                    for (var i=0; i<that.components.length; i++)
-                        that.components[i].component.on_disconnect()
+                    var components = that.components.slice()
+                    for (var i=0; i<components.length; i++)
+                        components[i].component.on_disconnect()
 
                     if (ev.code != 1000) {
                         that.conn = null;
