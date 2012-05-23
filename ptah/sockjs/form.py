@@ -1,5 +1,6 @@
 import ptah
 import logging
+from webob.multidict import MultiDict
 
 log = logging.getLogger('ptah')
 
@@ -12,8 +13,8 @@ class Form(ptah.form.Form):
         super(Form, self).__init__(protocol, protocol.request)
 
         self.mtype = mtype
-        self.params = payload
         self.protocol = protocol
+        self.params = MultiDict(payload)
 
     def __call__(self):
         self.update()

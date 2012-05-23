@@ -136,3 +136,10 @@ class TestForm(ptah.PtahTestCase):
         form()
         self.assertEqual(len(p.data), 0)
         self.assertEqual(form._action, 1)
+
+        # action with different payload format
+        p = P(self.request)
+        form = Form('test', [['__action__', 'submit']], p)
+        form()
+        self.assertEqual(len(p.data), 0)
+        self.assertEqual(form._action, 1)

@@ -28,14 +28,11 @@ define (
                 this.connect.io.subscribe(this.mtype, this, this.message)
 
                 // start interaction
-                var d = {'__init__': true}
-                for (var name in this.data) {
-                    d[name] = this.data[name]
-                }
-                this.connect.send(this.mtype, d)
+                var d = [['__init__', true]]
+                for (var name in this.data)
+                    d.push([name, this.data[name]])
 
-                // FileReader
-                this.readers = []
+                this.connect.send(this.mtype, d)
 
                 this.window = null
             }
@@ -46,16 +43,6 @@ define (
 
                 this.connect.io.unsubscribe(this.mtype, this.message)
                 this._super()
-            }
-
-            , __send: function(self, data) {
-                for (var i = 0; i < self.readers.length; i++) {
-                    if (self.readers[i].readyState == 1) {
-                        setTimeout(function() {self.__send(self, data)}, 100)
-                        return
-                    }
-                }
-                self.connect.send(self.mtype, data)
             }
 
             , action_action: function(options) {
@@ -70,33 +57,61 @@ define (
                 } else {
                     this.__dom__.css('cursor', 'wait')
 
-                    var that = this
-                    var data = {'__action__': action}
-                    for (var name in this.data) {
-                        data[name] = this.data[name]
-                    }
+                    // predefined data
+                    var data = [['__action__', action]]
+                    for (var name in this.data)
+                        data.push([name, this.data[name]])
 
+                    // form data
                     var params = this.form.serializeArray()
-                    for (var k in params) {
-                        data[params[k].name] = params[k].value
-                    }
+                    for (var i=0; i<params.length; i++)
+                        data.push([params[i].name, params[i].value])
 
-                    var onload = function(name, reader, data) {
-                        return function() {data[name] = reader.result}
-                    }
-
+                    // file fields
+                    var form_files = []
                     $('input[type="file"]', this.form).each(function() {
-                        if (this.files.length) {
-                            var reader = new FileReader()
-                            that.readers[that.readers.length] = reader
-
-                            reader.onload = onload(this.name, reader, data)
-                            reader.readAsBinaryString(this.files[0])
-                            data[this.name+'-filename'] = this.files[0].name
-                            data[this.name+'-mimetype'] = this.files[0].type
-                        }
+                        if (this.files.length)
+                            form_files.push(this)
                     })
-                    this.__send(this, data)
+
+                    var idx = 0
+                    var that = this
+
+                    var process_files = function() {
+                        var f = form_files[idx]
+                        var name = f.name
+                        idx += 1
+                        if (idx >= form_files.length) {
+                            that.connect.send(that.mtype, data)
+                            return
+                        }
+
+                        if (f.files.length) {
+                            var fidx = 0
+                            var process_file = function(files) {
+                                var file = files[fidx];
+                                var reader = new FileReader();
+                                reader.onload = function (ev) {
+                                    data.push([name+'-filename', file.name])
+                                    data.push([name+'-mimetype', file.type])
+                                    data.push([name, reader.result])
+
+                                    fidx += 1
+                                    if (fidx < files.length) {
+                                        process_file(files)
+                                    } else {
+                                        process_files()
+                                    }
+                                }
+                                reader.readAsBinaryString(file)
+                            }
+                        }
+                    }
+
+                    if (form_files.length)
+                        process_files()
+                    else
+                        this.connect.send(this.mtype, data)
                 }
             }
 
