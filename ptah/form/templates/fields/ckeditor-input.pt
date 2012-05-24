@@ -19,8 +19,8 @@
 
 ${request.include_library('curl')}
 <script language="javascript" type="text/javascript">
-  curl(['ckeditor'],
-  function() {
+  curl(['jquery', 'ckeditor'],
+  function($) {
     setTimeout(function() {
        if (CKEDITOR.instances['${context.id}']) {
           CKEDITOR.instances['${context.id}'].destroy(true)
