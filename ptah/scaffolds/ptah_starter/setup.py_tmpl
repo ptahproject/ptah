@@ -6,14 +6,9 @@ here = os.path.abspath(os.path.dirname(__file__))
 
 requires = [
     'ptah',
-    'pyramid', 
-    'pyramid_debugtoolbar']
-
-test_requires = [
-    'nose',
-    'ptah',
-    'pyramid',]
-
+    'pyramid_debugtoolbar'
+    'waitress',
+    ]
 
 setup(name='{{project}}',
       version='0.0',
@@ -28,13 +23,11 @@ setup(name='{{project}}',
       author='',
       author_email='',
       url='',
-      keywords='web pyramid pylons',
+      keywords='web pyramid pylons ptah',
       packages=find_packages(),
       include_package_data=True,
       zip_safe=False,
       install_requires=requires,
-      tests_require=test_requires,
-      test_suite = 'nose.collector',
       entry_points = """\
         [paste.app_factory]
         main = {{package}}.app:main
