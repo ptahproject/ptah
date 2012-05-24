@@ -9,24 +9,22 @@
           href="${request.static_url('{{package}}:static/app.css')}" />
     <link rel="shortcut icon"
           href="${request.static_url('{{package}}:static/ico/favicon.ico')}" />
-
   </head>
-
-  <body>
+<body>
+  <div class="container-fluid">
     <div class="navbar navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container-fluid">
-          <a class="brand" href="#">Project {{package}}</a>
+          <a class="brand" href="#">Project starter</a>
           <ul class="nav">
             <li class="active"><a href="#">Home</a></li>
           </ul>
         </div>
       </div>
     </div>
-
-    <div class="container-fluid app-body">
-      <div class="sidebar">
-        <div class="well">
+    <div style="margin-top: 60px; margin-left: 20px;" class="row-fluid">
+      <div class="span2">
+          <div class="well">
           <h5>Links</h5>
           <ul>
             <li><a href="http://www.pylonsproject.org/">Pyramid</a></li>
@@ -35,21 +33,20 @@
           </ul>
         </div>
       </div>
-      <div class="content">
+      <div class="span9">
         <div class="hero-unit">
-          <h1>Welcome to {{package}}!</h1>
-          <p>The {{package}} application uses Ptah, a modern web publishing framework.
+          <h1>Welcome to starter!</h1>
+          <p>The starter application uses Ptah, a modern web publishing framework.
           </p>
           <p>
             <a class="btn btn-primary btn-large" href="/ptah-manage/">Goto Ptah Manage UI &raquo;</a>
           </p>
         </div>
-
         <footer>
           <p>&copy; Ptah Project 2011-2012</p>
         </footer>
       </div>
     </div>
-
+  </div>    
   </body>
 </html>
