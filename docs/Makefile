@@ -3,8 +3,8 @@
 
 # You can set these variables from the command line.
 SPHINXOPTS    =
-SPHINXBUILD   = ../bin/sphinx-build
-#SPHINXBUILD   = ../../../Scripts/sphinx-build
+#SPHINXBUILD   = ../bin/sphinx-build
+SPHINXBUILD   = ../../Scripts/sphinx-build
 PAPER         =
 
 # Internal variables.

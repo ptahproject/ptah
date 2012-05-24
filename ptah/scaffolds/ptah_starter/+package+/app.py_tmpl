@@ -24,7 +24,7 @@ def main(global_config, **settings):
 
     config.ptah_init_sql()
 
-    # enable ptah management, manager=('*',) anyone can can see management UI
+    # enable ptah management, manager=('*',) anyone can see management UI
     config.ptah_init_manage(managers=('*',))
 
     # populate database
