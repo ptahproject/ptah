@@ -158,6 +158,8 @@ try:
 except ImportError: # pragma: no cover
     pass
 
+from ptah.util import json
+
 
 def includeme(cfg):
     # auth
