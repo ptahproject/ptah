@@ -7,16 +7,16 @@ from setuptools import setup, find_packages
 version = '0.6.0dev'
 
 install_requires = ['setuptools',
-                    'alembic == 0.3.2',
+                    'alembic == 0.3.4',
                     'Chameleon >= 2.6.1',
-                    'pyramid >= 1.3.1',
+                    'pyramid >= 1.3.2',
                     'pyramid_tm',
-                    'zope.interface >= 4.0.0',
+                    'zope.interface >= 4.0.1',
                     'zope.sqlalchemy >= 0.7.1',
                     'transaction >= 1.3.0',
                     'venusian >= 1.0a6',
-                    'WebOb >= 1.2b3',
-                    'SQLAlchemy',
+                    'WebOb >= 1.2',
+                    'SQLAlchemy >= 0.7.2',
                     'pytz',
                     ]
 

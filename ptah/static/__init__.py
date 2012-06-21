@@ -10,7 +10,7 @@ def includeme(config):
         'jquery-ui', 'ptah:static/jquery/jquery-ui-1.8.20.min.js',
         'JQuery UI Library')
     config.register_amd_module(
-        'sockjs', 'ptah:static/lib/sockjs-0.3.1.min.js',
+        'sockjs', 'ptah:static/lib/sockjs-0.3.2.min.js',
         'SockJS Client library')
     config.register_amd_module(
         'underscore', 'ptah:static/lib/underscore-min.js')
