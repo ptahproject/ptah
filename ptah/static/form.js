@@ -120,8 +120,11 @@ define (
                 if (typeof(this.template) === 'undefined')
                     this.__dom__.append(
                         this.templates.render('form-window',data))
-                else
+                else {
                     this.__dom__.append(this.template(data))
+                    $('[data-tag="fields"]', this.__dom__).append(
+                        this.templates.render('form', data))
+                }
 
                 this.form = $('form', this.__dom__)
 

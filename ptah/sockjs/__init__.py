@@ -12,9 +12,8 @@ except ImportError: # pragma: no cover
     pass
 
 
-def register_ptah_sm(cfg, session=None):
+def register_ptah_sm(cfg, session=None, **kw):
     # sockjs connection
     from .session import SessionManager
-    cfg.add_sockjs_route(
-        'ptah', '/_ptah_connection',
-        session_manager=SessionManager('ptah', cfg.registry, session))
+    kw['session_manager'] = SessionManager('ptah', cfg.registry, session)
+    cfg.add_sockjs_route('ptah', '/_ptah_connection', **kw)
