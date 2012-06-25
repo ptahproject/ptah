@@ -24,6 +24,10 @@ define (
                 this.select_page(this.current)
             }
 
+            , set_current: function(current) {
+                this.current = current | 1
+            }
+
             , offset: function(current) {
                 if (!current)
                     current = this.current
