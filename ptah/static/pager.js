@@ -21,11 +21,7 @@ define (
 
             , set_size: function(size) {
                 this.size = size
-                this.select_page(this.current)
-            }
-
-            , set_current: function(current) {
-                this.current = current | 1
+                this.select_page(1)
             }
 
             , offset: function(current) {
