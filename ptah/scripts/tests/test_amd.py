@@ -27,7 +27,7 @@ class TestAmdCommand(ptah.PtahTestCase):
 
         val = out.getvalue()
 
-        self.assertIn('[-h] [-b] [-m] [--no-min] config', val)
+        self.assertIn('[-h] [-b] [-m] [--deps] [--no-min] config', val)
 
     def test_list_modules(self):
         self.init_ptah()

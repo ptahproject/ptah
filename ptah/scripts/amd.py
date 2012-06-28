@@ -13,7 +13,7 @@ from pyramid.threadlocal import get_current_registry
 
 import ptah
 from ptah import scripts
-from ptah.amd import ID_AMD_MODULE
+from ptah.amd import ID_AMD_MODULE, ID_AMD_SPEC
 from ptah.mustache import build_hb_bundle, check_output, ID_BUNDLE
 
 
@@ -53,6 +53,10 @@ class AmdjsCommand(object):
                         dest='amd_mods',
                         help='List amd modules')
 
+    parser.add_argument('--deps', action="store_true",
+                        dest='deps',
+                        help='Print dependency tree')
+
     parser.add_argument('--no-min', action="store_true",
                         dest='nomin',
                         help='Do not minimize js bundles')
@@ -60,14 +64,75 @@ class AmdjsCommand(object):
     def __init__(self, args):
         self.options = args
         self.registry = get_current_registry()
+        self.resolver = AssetResolver()
 
     def run(self):
         if self.options.build:
             self.build_bundles()
         elif self.options.amd_mods:
             self.list_amd_mods()
+        elif self.options.deps:
+            self.deps_tree()
         else:
             self.parser.print_help()
+
+    def extract_deps(self, mod):
+        if mod['path']:
+            path = self.resolver.resolve(mod['path']).abspath()
+            if os.path.isfile(path):
+                text = open(path, 'rb').read()
+                p1 = text.find('define(')
+                if p1 >= 0:
+                    p2 = text.find('function(')
+                    if p2 >= 0:
+                        chunk = ''.join(ch.strip()
+                                        for ch in text[p1+7:p2].split())
+                        if chunk.startswith("'"):
+                            chunk = chunk.split(',',1)[-1]
+                        deps = [d for d in
+                                ''.join(ch for ch in chunk
+                                        if ch not in "\"'[]").split(',')
+                                if d]
+                        if deps:
+                            return deps
+
+        return mod['require']
+
+    def deps_tree(self):
+        print()
+        mods = self.registry.get(ID_AMD_MODULE)
+        specs = self.registry.get(ID_AMD_SPEC)
+        if not specs:
+            print ("No specs found")
+            return
+
+        for spec, names in specs.items():
+            print(grpTitleWrap.fill('Spec: %s'%spec))
+
+            tree = []
+            seen = set()
+
+            def process(name):
+                if name in seen:
+                    return
+
+                seen.add(name)
+                mod = mods.get(name)
+                if mod is not None:
+                    deps = self.extract_deps(mod)
+                    for n in deps:
+                        process(n)
+
+                tree.append(name)
+
+            for name in names.keys():
+                if not name.endswith('.js'):
+                    process(name)
+
+            for n in tree:
+                print(grpDescriptionWrap.fill(n))
+
+            print()
 
     def list_amd_mods(self):
         print()
@@ -101,7 +166,7 @@ class AmdjsCommand(object):
         if not storage: # pragma: no cover
             return
 
-        resolver = AssetResolver()
+        resolver = self.resolver
 
         specs = OrderedDict()
         for item in cfg['amd-spec']:
