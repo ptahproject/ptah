@@ -1,4 +1,5 @@
 import os
+import logging
 from pyramid.path import AssetResolver
 from pyramid.compat import escape, configparser, text_type
 from pyramid.view import view_config
@@ -74,12 +75,13 @@ def init_amd_spec(config, cache_max_age=None):
     config.registry[ID_AMD_SPEC_] = cache_max_age
 
 
-def register_amd_module(cfg, name, path, description=''):
+def register_amd_module(cfg, name, path, description='', require=()):
     """ register amd js module
 
     :param name: name
     :param path: asset path
-    :param description:
+    :param description: module description
+    :param deps: module dependencies
     """
     discr = (ID_AMD_MODULE, name)
 
@@ -88,10 +90,70 @@ def register_amd_module(cfg, name, path, description=''):
     intr['path'] = path
     intr['description'] = description
 
+    if isinstance(require, str):
+        require = (require,)
+    intr['require'] = require
+
     storage = cfg.registry.setdefault(ID_AMD_MODULE, {})
     storage[name] = intr
 
     cfg.action(discr, introspectables=(intr,))
+
+
+def extract_mod(filename, path, log):
+    mods = {}
+    name = filename.split('.js')[0]
+    if os.path.isfile(path):
+        text = open(path, 'rb').read()
+        pos = 0
+        while 1:
+            p1 = text.find('define(', pos)
+            if p1 < 0:
+                break
+
+            p2 = text.find('function(', p1)
+            if p2 < 0:
+                break
+
+            pos = p2
+            chunk = ''.join(ch.strip() for ch in text[p1+7:p2].split())
+            if chunk.startswith("'") or chunk.startswith('"'):
+                name, chunk = chunk.split(',',1)
+                name = ''.join(ch for ch in name if ch not in "\"'[]")
+            else:
+                log.warning("Empty name is not supported, %s"%filename)
+                continue
+
+            deps = [d for d in
+                    ''.join(ch for ch in chunk
+                            if ch not in "\"'[]").split(',') if d]
+            mods[name] = deps
+
+    return mods.items()
+
+
+def register_amd_dir(cfg, path):
+    """ read and load amd modules from directory
+
+    :param path: asset path
+    """
+    log = logging.getLogger('ptah.amd')
+
+    resolver = AssetResolver()
+    directory = resolver.resolve(path).abspath()
+
+    mods = []
+    for filename in os.listdir(directory):
+        if not filename.endswith('.js'):
+            continue
+        for name, deps in extract_mod(filename,
+                                      os.path.join(directory, filename), log):
+            p = os.path.join(path, filename)
+            mods.append((name, p))
+
+    for name, p in sorted(mods):
+        register_amd_module(cfg, name, p)
+        log.info("Add amd module: %s path:%s"%(name, p))
 
 
 amd_init_tmpl = """
@@ -99,7 +161,6 @@ var ptah_amd_modules = {\n%(mods)s}
 %(exrta)s
 
 curl({paths: ptah_amd_modules})
-curl(['ptah'], function(ptah) {ptah.init(ptah_amd_modules)})
 """
 
 @view_config(route_name='ptah-amd-spec')
@@ -164,16 +225,9 @@ def amd_init(request):
     return response
 
 
-amd_incl = """
-<script src="%(app_url)s/_amd_%(specname)s.js"> </script>
-%(components)s
-"""
-
-def render_amd_includes(request, spec='', bundles=()):
+def render_amd_includes(request, spec='', bundles=(), init=True):
     registry = request.registry
     cfg = ptah.get_settings(ptah.CFG_ID_PTAH, request.registry)
-
-    ptah.include(request, 'curl')
 
     c_tmpls = []
     if spec and cfg['amd-enabled']:
@@ -185,6 +239,13 @@ def render_amd_includes(request, spec='', bundles=()):
         spec = '_'
         specdata = ()
 
+    c_tmpls.append(
+        '<script src="%s"> </script>'%
+        request.static_url('ptah:static/lib/curl.js'))
+    c_tmpls.append(
+        '<script src="%s/_amd_%s.js"> </script>'%(
+            request.application_url, spec))
+
     for name in (bundles if not isinstance(bundles, str) else (bundles,)):
         name = '%s.js'%name
         if name in specdata:
@@ -192,9 +253,11 @@ def render_amd_includes(request, spec='', bundles=()):
                 '<script src="%s"></script>'%
                 request.route_url('ptah-amd-spec',specname=spec,name=name))
 
-    return amd_incl%{'app_url': request.application_url,
-                     'specname': spec,
-                     'components': '\n'.join(c_tmpls)}
+    if init:
+        c_tmpls.append(
+            "<script>curl(['domReady!']).next(['ptah'], function(ptah) {ptah.init(ptah_amd_modules)})</script>")
+
+    return '\n'.join(c_tmpls)
 
 
 def render_amd_container(request, name, **kw):

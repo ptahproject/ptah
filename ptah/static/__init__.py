@@ -8,7 +8,7 @@ def includeme(config):
         'JQuery Library')
     config.register_amd_module(
         'jquery-ui', 'ptah:static/jquery/jquery-ui-1.8.20.min.js',
-        'JQuery UI Library')
+        'JQuery UI Library', ('jquery',))
     config.register_amd_module(
         'sockjs', 'ptah:static/lib/sockjs-0.3.2.min.js',
         'SockJS Client library')
@@ -19,22 +19,25 @@ def includeme(config):
         'Handlebars runtime library')
     config.register_amd_module(
         'bootstrap', 'ptah:static/bootstrap/bootstrap.min.js',
-        'Twitter bootstrap javscript library')
+        'Twitter bootstrap javscript library', ('jquery',))
     config.register_amd_module(
         'ckeditor', 'ptah:static/ckeditor/ckeditor.js',
-        'CKEditor')
+        'CKEditor', ('jquery',))
 
     # ptah
     config.register_amd_module(
-        'ptah', 'ptah:static/ptah.js')
+        'ptah', 'ptah:static/ptah.js', 'Ptah', ('handlebars','sockjs','jquery'))
     config.register_amd_module(
-        'ptah-date-format', 'ptah:static/date-format.js')
+        'ptah-date-format', 'ptah:static/date-format.js',
+        require=('jquery', 'handlebars'))
 
     # ptah ui classes
     config.register_amd_module(
-        'ptah-form', 'ptah:static/form.js')
+        'ptah-form', 'ptah:static/form.js',
+        require=('jquery', 'ptah', 'ptah-templates', 'bootstrap'))
     config.register_amd_module(
-        'ptah-pager', 'ptah:static/pager.js')
+        'ptah-pager', 'ptah:static/pager.js',
+        require=('jquery', 'ptah', 'ptah-templates'))
 
     # templates
     config.register_mustache_bundle(
@@ -56,7 +59,7 @@ ptah.library(
 # curl
 ptah.library(
     'curl',
-    path='ptah:static/lib/curl-0.6.2.js',
+    path='ptah:static/lib/curl-0.6.4.js',
     type="js")
 
 ptah.library(

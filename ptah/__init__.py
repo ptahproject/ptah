@@ -276,8 +276,9 @@ def includeme(cfg):
     cfg.set_request_property(get_amd_container, 'render_amd_container', True)
 
     # amd
-    from .amd import register_amd_module
+    from .amd import register_amd_module, register_amd_dir
     cfg.add_directive('register_amd_module', register_amd_module)
+    cfg.add_directive('register_amd_dir', register_amd_dir)
 
     # amd init
     cfg.add_route('ptah-amd-init', '/_amd_{specname}.js')

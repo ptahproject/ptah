@@ -34,6 +34,16 @@ class TestAmd(ptah.PtahTestCase):
         self.assertIn('test', data)
         self.assertEqual(data['test']['path'], 'ptah:tests/dir/test.js')
 
+    def test_amd_registration_with_require(self):
+        from ptah.amd import ID_AMD_MODULE
+
+        self.config.register_amd_module(
+            'test', 'ptah:tests/dir/test.js', require='test2')
+        self.config.commit()
+
+        data = self.registry.get(ID_AMD_MODULE)
+        self.assertEqual(data['test']['require'], ('test2',))
+
     def test_reg_conflict(self):
         self.init_ptah()
 
@@ -44,6 +54,15 @@ class TestAmd(ptah.PtahTestCase):
 
         self.assertRaises(
             ConfigurationConflictError, self.config.commit)
+
+    def test_amd_dir(self):
+        from ptah.amd import ID_AMD_MODULE
+
+        self.config.register_amd_dir('ptah:tests/dir/')
+        self.config.commit()
+
+        data = self.registry.get(ID_AMD_MODULE)
+        self.assertEqual(data['jca-globals']['path'], 'ptah:tests/dir/test.js')
 
 
 class TestAmdSpec(ptah.PtahTestCase):
@@ -259,11 +278,18 @@ class TestRequestRenderers(ptah.PtahTestCase):
 
         text = self.request.render_amd_includes().strip()
         self.assertEqual(
-            text, '<script src="http://example.com/_amd__.js"> </script>')
+            text, '<script src="http://example.com/_ptah/static/lib/curl.js"> </script>\n<script src="http://example.com/_amd__.js"> </script>\n<script>curl([\'domReady!\']).next([\'ptah\'], function(ptah) {ptah.init(ptah_amd_modules)})</script>')
 
         text = self.request.render_amd_includes('test-spec').strip()
+        self.assertIn(
+            '<script src="http://example.com/_amd__.js"> </script>', text)
+
+    def test_render_amd_includes_no_init(self):
+        self.cfg['amd-enabled'] = False
+
+        text = self.request.render_amd_includes(init=False).strip()
         self.assertEqual(
-            text, '<script src="http://example.com/_amd__.js"> </script>')
+            text, '<script src="http://example.com/_ptah/static/lib/curl.js"> </script>\n<script src="http://example.com/_amd__.js"> </script>')
 
     def test_render_amd_includes_unknown_spec(self):
         self.cfg['amd-enabled'] = True
@@ -278,7 +304,7 @@ class TestRequestRenderers(ptah.PtahTestCase):
 
         text = self.request.render_amd_includes().strip()
         self.assertEqual(
-            text, '<script src="http://example.com/_amd__.js"> </script>')
+            text, '<script src="http://example.com/_ptah/static/lib/curl.js"> </script>\n<script src="http://example.com/_amd__.js"> </script>\n<script>curl([\'domReady!\']).next([\'ptah\'], function(ptah) {ptah.init(ptah_amd_modules)})</script>')
 
     def test_render_amd_includes_spec(self):
         from ptah.amd import ID_AMD_SPEC
@@ -289,9 +315,9 @@ class TestRequestRenderers(ptah.PtahTestCase):
                                       {'test.js': {'path':'/test/test.js'}}}
 
         text = self.request.render_amd_includes('test').strip()
-        self.assertEqual(
-            text, '<script src="http://example.com/_amd_test.js"> </script>')
+        self.assertIn(
+            '<script src="http://example.com/_amd_test.js"> </script>', text)
 
         text = self.request.render_amd_includes('test', 'test').strip()
-        self.assertEqual(
-            text, '<script src="http://example.com/_amd_test.js"> </script>\n<script src="http://example.com/_amd_test/test.js"></script>')
+        self.assertIn(
+            '<script src="http://example.com/_amd_test.js"> </script>\n<script src="http://example.com/_amd_test/test.js"></script>', text)
