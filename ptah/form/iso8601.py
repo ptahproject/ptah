@@ -60,6 +60,7 @@ class FixedOffset(tzinfo):
     def __repr__(self): # pragma: no cover
         return "<FixedOffset %r>" % self.__name
 
+
 def parse_timezone(tzstring, default_timezone=UTC):
     """Parses ISO 8601 time zone specs into tzinfo offsets
 
@@ -79,6 +80,7 @@ def parse_timezone(tzstring, default_timezone=UTC):
         minutes = -minutes
     return FixedOffset(hours, minutes, tzstring)
 
+
 def parse_date(datestring, default_timezone=UTC):
     """Parses ISO 8601 dates into datetime objects
 
@@ -87,6 +89,8 @@ def parse_date(datestring, default_timezone=UTC):
     default timezone specified in default_timezone is used. This is UTC by
     default.
     """
+    if isinstance(datestring, datetime):
+        return datestring
     if not isinstance(datestring, string_types):
         raise ParseError("Expecting a string %r" % datestring)
     m = ISO8601_REGEX.match(datestring)
