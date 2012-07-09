@@ -1,7 +1,7 @@
 import os
 import logging
 from pyramid.path import AssetResolver
-from pyramid.compat import escape, configparser, text_type
+from pyramid.compat import escape, configparser, text_type, text_
 from pyramid.view import view_config
 from pyramid.registry import Introspectable
 from pyramid.response import FileResponse
@@ -104,7 +104,7 @@ def extract_mod(filename, path, log):
     mods = {}
     name = filename.split('.js')[0]
     if os.path.isfile(path):
-        text = open(path, 'rb').read()
+        text = text_(open(path, 'rb').read())
         pos = 0
         while 1:
             p1 = text.find('define(', pos)
