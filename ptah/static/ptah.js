@@ -354,6 +354,7 @@ define (
                 this.__parent__ = parent
                 this.__container__ = dom
                 this.__uuid__ = ptah.guid()
+                this.__destroyed__ = false
                 this.__views__ = new Array()
 
                 if (typeof(options) === 'undefined')
@@ -383,6 +384,7 @@ define (
                 if (this.__parent__)
                     this.__parent__.remove_subview(this)
                 this.__dom__.remove()
+                this.__destroyed__ = true
                 this._super()
             }
 
@@ -624,9 +626,7 @@ define (
                 var json_text = JSON.stringify(
                     {protocol: component,
                      type: type,
-                     payload: payload
-                    },
-                    null, 2);
+                     payload: payload}, null, 2)
 
                 this.conn.send(json_text)
             },

@@ -177,6 +177,10 @@ define (
             }
 
             , init: function() {
+                this.create()
+            }
+
+            , create: function() {
                 var that = this
 
                 this.__dom__.append(this.template(this.data))
