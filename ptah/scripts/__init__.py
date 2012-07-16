@@ -37,8 +37,13 @@ def bootstrap(config_uri):
     threadlocals = {'registry':registry, 'request':request}
     threadlocal_manager.push(threadlocals)
 
+    # logging config
+    def fileConfig(f, defaults):
+        from logging.config import fileConfig
+        return fileConfig(f, defaults, disable_existing_loggers = False)
+    
     config_file = config_uri.split('#', 1)[0]
-    paster.setup_logging(config_file)
+    paster.setup_logging(config_file, fileConfig)
 
     ptah.POPULATE = False
     return {'app':app, 'registry':registry, 'request': request}

@@ -64,11 +64,16 @@ class Session(pyramid_sockjs.Session):
         kw['payload'] = payload
         super(Session, self).send(kw)
 
-    def on_message(self, msg):
-        msg = json.loads(msg)
+    def _message(self, name, tp, msg):
+        pass
+
+    def on_message(self, raw_msg):
+        msg = json.loads(raw_msg)
         tp = msg.get('type')
         payload = msg.get('payload')
         name = msg.get('protocol')
+
+        self._message(name, tp, raw_msg)
 
         protocol = self.get_protocol(name)
         if protocol is not None:
