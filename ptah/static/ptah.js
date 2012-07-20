@@ -616,17 +616,15 @@ define (
                 }
             },
 
-            send: function(component, type, payload) {
+            send: function(protocol, type, payload) {
                 if (!this.conn)
                     return
 
                 if (typeof(payload) == 'undefined')
                     payload = {}
 
-                var json_text = JSON.stringify(
-                    {protocol: component,
-                     type: type,
-                     payload: payload}, null, 2)
+                var json_text = protocol + '|' + type + '|' +
+                        JSON.stringify(payload, null, 2)
 
                 this.conn.send(json_text)
             },

@@ -41,7 +41,7 @@ def bootstrap(config_uri):
     def fileConfig(f, defaults):
         from logging.config import fileConfig
         return fileConfig(f, defaults, disable_existing_loggers = False)
-    
+
     config_file = config_uri.split('#', 1)[0]
     paster.setup_logging(config_file, fileConfig)
 

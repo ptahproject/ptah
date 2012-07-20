@@ -44,7 +44,7 @@ class Protocol(object):
     def send(self, tp, data, **kw):
         self.session.send(self.__name__, tp, data, **kw)
 
-    def dispatch(self, tp, payload, msg):
+    def dispatch(self, tp, payload):
         handler = getattr(self, 'msg_%s'%tp, None)
         if handler is not None:
             try:
