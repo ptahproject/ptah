@@ -142,8 +142,7 @@ class TestSession(ptah.PtahTestCase):
         sm = SessionManager('ptah', self.registry)
         s = sm.get('12345', True, self.request)
 
-        s.on_message(json.dumps(
-                {'protocol':'p', 'type': 'test', 'payload': {'data': 1}}))
+        s.on_message('p|test|%s'%json.dumps({'data': 1}))
 
         self.assertIn('test', data)
         self.assertEqual(data['test'], {'data': 1})
@@ -154,8 +153,7 @@ class TestSession(ptah.PtahTestCase):
         sm = SessionManager('ptah', self.registry)
         s = sm.get('12345', True, self.request)
 
-        s.on_message(json.dumps(
-                {'protocol':'p', 'type': 'unknown', 'payload': {'data': 1}}))
+        s.on_message('p|unknown|%s'%json.dumps({'data': 1}))
 
     def test_send(self):
         from ptah.sockjs.session import Session, SessionManager

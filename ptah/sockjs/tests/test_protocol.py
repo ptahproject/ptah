@@ -228,7 +228,7 @@ class TestProtocol(ptah.PtahTestCase):
 
         p = Protocol(s1, storage)
 
-        p.dispatch('message', {}, None)
+        p.dispatch('message', {})
         self.assertEqual(len(gdata), 1)
         self.assertEqual(gdata[0], ('msg_message', {}))
 
@@ -245,7 +245,7 @@ class TestProtocol(ptah.PtahTestCase):
 
         p = Protocol(s1, storage)
 
-        p.dispatch('message', {}, None)
+        p.dispatch('message', {})
         self.assertEqual(len(gdata), 1)
         self.assertEqual(gdata[0], ('msg_message', {}))
 
@@ -262,7 +262,7 @@ class TestProtocol(ptah.PtahTestCase):
 
         p = Protocol(s1, storage)
 
-        p.dispatch('test message', {}, None)
+        p.dispatch('test message', {})
         self.assertEqual(len(gdata), 1)
         self.assertEqual(gdata[0], ('test message', {}))
 
@@ -280,7 +280,7 @@ class TestProtocol(ptah.PtahTestCase):
 
         p = Protocol(s1, storage)
 
-        p.dispatch('test message', {}, None)
+        p.dispatch('test message', {})
         self.assertEqual(len(gdata), 1)
         self.assertEqual(gdata[0], ('test message', {}))
 
@@ -299,7 +299,7 @@ class TestProtocol(ptah.PtahTestCase):
 
         p = Protocol(s1, storage)
 
-        p.dispatch('test message', {}, None)
+        p.dispatch('test message', {})
         self.assertEqual(len(gdata), 1)
         self.assertEqual(gdata[0], ('test message', {}))
 
@@ -323,7 +323,7 @@ class TestProtocol(ptah.PtahTestCase):
 
         p = Protocol(s1, storage)
 
-        p.dispatch('test message', {}, None)
+        p.dispatch('test message', {})
         self.assertEqual(len(gdata), 1)
         self.assertEqual(gdata[0], ('test message', {}))
 
@@ -336,5 +336,5 @@ class TestProtocol(ptah.PtahTestCase):
             """ """
 
         p = Protocol(s1, storage)
-        p.dispatch('test message', {}, None)
+        p.dispatch('test message', {})
         self.assertEqual(len(gdata), 0)
