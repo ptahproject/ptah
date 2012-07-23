@@ -17,7 +17,6 @@
    tal:content="context.form_value" />
 </div>
 
-${request.include_library('curl')}
 <script language="javascript" type="text/javascript">
   curl(['jquery', 'ckeditor'],
   function($) {
