@@ -201,6 +201,8 @@ class TextField(InputField):
         if not s.startswith('"'):
             s = '"{0}"'.format(s)
 
+        s = s.replace('\n', '\\n')
+
         return super(TextField, self).loads(s)
 
 
