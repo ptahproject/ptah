@@ -30,6 +30,9 @@ class Action(object):
         self.__dict__.update(kw)
 
     def url(self, context, request, url=''):
+        if request is None:
+            return ''
+
         if self.action_factory is not None:
             return self.action_factory(context, request)
 
@@ -39,6 +42,9 @@ class Action(object):
             return '%s%s'%(url, self.action)
 
     def check(self, context, request):
+        if request is None:
+            return True
+
         if self.permission:
             if not ptah.check_permission(
                 self.permission, context, request):
@@ -88,13 +94,16 @@ def uiaction(context, id, title, description='',
         )
 
 
-def list_uiactions(content, request, category=''):
+def list_uiactions(content, request=None, registry=None, category=''):
     """ List ui actions for specific content """
-    url = request.resource_url(content)
+    if request is not None:
+        registry = request.registry
+        url = request.resource_url(content)
+    else:
+        url = ''
 
     actions = []
-    for name, action in request.registry.adapters.lookupAll(
-        (providedBy(content),), IAction):
+    for name, action in registry.adapters.lookupAll((providedBy(content),), IAction):
         if (action.category == category) and action.check(content, request):
             actions.append(
                 (action.sort_weight,
