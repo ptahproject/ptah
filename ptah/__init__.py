@@ -152,12 +152,7 @@ from ptah.testing import PtahTestCase
 # register migration
 from ptah.migrate import register_migration
 
-# sockjs
-try:
-    from ptah import sockjs
-except ImportError: # pragma: no cover
-    pass
-
+# json
 from ptah.util import json
 
 

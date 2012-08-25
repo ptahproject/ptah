@@ -12,9 +12,7 @@ Features
 
 - handlebars
 
-- handlevars i18n
-
-- sockjs support
+- handlebars i18n
 
 
 0.5.1 (2012-05-04)
