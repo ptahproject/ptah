@@ -10,7 +10,7 @@ from ptah.manage.manage import PtahManageRoute
 
 
 @view_config(
-    'source.html', context=PtahManageRoute, wrapper=ptah.wrap_layout(),
+    name='source.html', context=PtahManageRoute, wrapper=ptah.wrap_layout(),
     renderer='ptah.manage:templates/source.pt')
 
 class SourceView(ptah.View):

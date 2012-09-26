@@ -297,7 +297,7 @@ class EditRecord(ptah.form.Form):
 
 
 
-@view_config('add.html', context=Table, wrapper=ptah.wrap_layout())
+@view_config(name='add.html', context=Table, wrapper=ptah.wrap_layout())
 
 class AddRecord(ptah.form.Form):
     """ Add new table record. """

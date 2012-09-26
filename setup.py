@@ -31,9 +31,6 @@ if sys.version_info[:2] in ((2,6),(2,7)):
 
 tests_require = install_requires + ['nose', 'sphinx', 'Pygments']
 
-if sys.version_info[:2] in ((2,6),(2,7)):
-    tests_require.extend(('pyramid_sockjs',))
-
 
 def read(f):
     return open(os.path.join(os.path.dirname(__file__), f)).read().strip()

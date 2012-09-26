@@ -10,7 +10,7 @@ from ptah.manage.manage import PtahManageRoute, get_manage_url
 
 
 @view_config(
-    'uri.html', context=PtahManageRoute, wrapper=ptah.wrap_layout(),
+    name='uri.html', context=PtahManageRoute, wrapper=ptah.wrap_layout(),
     renderer='ptah.manage:templates/uri.pt')
 
 class UriResolver(form.Form):

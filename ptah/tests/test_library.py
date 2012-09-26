@@ -93,12 +93,12 @@ class TestLibraryManagement(PtahTestCase):
         self.init_ptah()
 
         from pyramid.request import Request
-        from pyramid.events import NewRequest
-        from pyramid.config.factories import _set_request_properties
+        from pyramid.interfaces import IRequestExtensions
 
         req = Request(environ=self._environ)
         req.registry = self.registry
-        _set_request_properties(NewRequest(req))
+        extensions = self.registry.getUtility(IRequestExtensions)
+        req._set_extensions(extensions)
 
         req.include_library('test-lib2')
         self.assertEqual(

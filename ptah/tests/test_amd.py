@@ -259,9 +259,9 @@ class TestRequestRenderers(ptah.PtahTestCase):
 
         self.cfg = ptah.get_settings(ptah.CFG_ID_PTAH, self.registry)
 
-        from pyramid.events import NewRequest
-        from pyramid.config.factories import _set_request_properties
-        _set_request_properties(NewRequest(self.request))
+        from pyramid.interfaces import IRequestExtensions
+        extensions = self.registry.getUtility(IRequestExtensions)
+        self.request._set_extensions(extensions)
 
     def make_request(self):
         from pyramid.request import Request

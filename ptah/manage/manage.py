@@ -180,8 +180,8 @@ class LayoutManage(ptah.View):
 
 
 @view_config(
-    context=PtahManageRoute, wrapper = ptah.wrap_layout(),
-    renderer = 'ptah.manage:templates/manage.pt')
+    context=PtahManageRoute, wrapper=ptah.wrap_layout(),
+    renderer='ptah.manage:templates/manage.pt')
 
 class ManageView(ptah.View):
     """List ptah modules"""

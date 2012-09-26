@@ -5,7 +5,7 @@ from pyramid.interfaces import IView, IViewClassifier
 from pyramid.httpexceptions import HTTPNotFound
 
 
-@view_config('layout-preview.html')
+@view_config(name='layout-preview.html')
 def layoutPreview(context, request):
     view_name = request.GET.get('view', '')
 

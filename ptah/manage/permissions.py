@@ -29,7 +29,7 @@ class PermissionsView(ptah.View):
 
 
 @view_config(
-    'roles.html',
+    name='roles.html',
     context=PermissionsModule,
     wrapper=ptah.wrap_layout(),
     renderer='ptah.manage:templates/roles.pt')

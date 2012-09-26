@@ -247,14 +247,15 @@ class TestStatusMessages(PtahTestCase):
         self.init_ptah()
 
         from pyramid.request import Request
-        from pyramid.events import NewRequest
         from pyramid.testing import DummySession
-        from pyramid.config.factories import _set_request_properties
+        from pyramid.interfaces import IRequestExtensions
 
         req = Request(environ=self._environ)
         req.registry = self.registry
         req.session = DummySession()
-        _set_request_properties(NewRequest(req))
+
+        extensions = self.registry.getUtility(IRequestExtensions)
+        req._set_extensions(extensions)
 
         # add_message
         req.add_message('message')

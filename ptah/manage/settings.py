@@ -28,7 +28,7 @@ class SettingsWrapper(object):
 
 
 @view_config(
-    context=SettingsModule, wrapper = ptah.wrap_layout(),
+    context=SettingsModule, wrapper=ptah.wrap_layout(),
     renderer='ptah.manage:templates/settings.pt')
 
 class SettingsView(ptah.View):

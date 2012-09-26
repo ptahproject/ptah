@@ -32,7 +32,7 @@ class TestEvent(ptah.PtahTestCase):
         class TestEvent2(object):
             """ test event """
 
-        self.config.scan('ptah', ignore=('ptah.sockjs',))
+        self.config.scan('ptah')
         self.config.scan(self.__class__.__module__)
         self.assertRaises(ConfigurationConflictError, self.init_ptah)
 

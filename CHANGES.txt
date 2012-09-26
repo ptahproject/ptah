@@ -5,6 +5,8 @@ CHANGES
 0.6.0 (Unreleased)
 ==================
 
+- Pyramid 1.4 compatibility
+
 Features
 --------
 
