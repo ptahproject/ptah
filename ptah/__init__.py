@@ -9,7 +9,6 @@ except ImportError: # pragma: no cover
 
 # config
 from ptah import config
-from ptah.config import adapter
 from ptah.config import subscriber
 from ptah.config import get_cfg_storage
 from ptah.config import shutdown
