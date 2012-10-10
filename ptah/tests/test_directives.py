@@ -103,7 +103,7 @@ class TestSubscriberDirective(BaseTesting):
 class TestExtraDirective(BaseTesting):
 
     def test_action(self):
-        info = config.DirectiveInfo()
+        info = config.DirectiveInfo(0)
 
         action = config.Action(None, discriminator=('test', ))
 
@@ -115,4 +115,4 @@ class TestExtraDirective(BaseTesting):
         self.assertIsNotNone(hash(action))
         self.assertRaises(TypeError, info.attach, action)
         self.assertEqual('<Action "test">', repr(action))
-        self.assertIn('testMethod()\n', repr(info), '')
+        self.assertIn('test_action\n', repr(info), '')
