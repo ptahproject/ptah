@@ -3,7 +3,6 @@ python:
   - 2.6
   - 2.7
   - 3.2
-  - 3.3
 install:
   - pip install http://gevent.googlecode.com/files/gevent-1.0b3.tar.gz
   - python setup.py develop
