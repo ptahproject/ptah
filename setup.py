@@ -29,7 +29,7 @@ if sys.version_info[:2] == (2, 6):
 if sys.version_info[:2] in ((2,6),(2,7)):
     install_requires.extend(('simplejson',))
 
-tests_require = install_requires + ['nose', 'sphinx', 'Pygments']
+tests_require = install_requires + ['nose', 'mock', 'sphinx', 'Pygments']
 
 
 def read(f):
@@ -48,6 +48,7 @@ setup(name='ptah',
           "Programming Language :: Python :: 2.7",
           "Programming Language :: Python :: 3",
           "Programming Language :: Python :: 3.2",
+          "Programming Language :: Python :: 3.3",
           "Programming Language :: Python :: Implementation :: CPython",
           "Framework :: Pyramid",
           "Topic :: Internet :: WWW/HTTP",
