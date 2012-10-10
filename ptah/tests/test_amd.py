@@ -130,7 +130,7 @@ class TestAmdInit(ptah.PtahTestCase):
         self.registry[ID_AMD_SPEC] = \
             {'test': {'ptah': {'name':'test', 'path':'ptah:static/example.js'}}}
         resp = amd_init(self.request)
-        self.assertIn('"ptah": "http://example.com/_amd_test/t"', resp.text)
+        self.assertIn('"ptah": "http://example.com/_amd_test/test"', resp.text)
 
     def test_amd_init_with_spec_mustache(self):
         from ptah.amd import amd_init, ID_AMD_MODULE, ID_AMD_SPEC
@@ -141,7 +141,7 @@ class TestAmdInit(ptah.PtahTestCase):
                       {'name':'test', 'path':'ptah:static/example.js'}}}
         resp = amd_init(self.request)
         self.assertIn(
-            '"ptah-templates":"http://example.com/_amd_test/t"', resp.text)
+            '"ptah-templates":"http://example.com/_amd_test/test"', resp.text)
 
     def test_amd_mod_paths(self):
         from ptah.amd import amd_init
@@ -154,7 +154,7 @@ class TestAmdInit(ptah.PtahTestCase):
         resp = amd_init(self.request)
         self.assertIn('var ptah_amd_modules = {', resp.text)
         self.assertIn(
-            '"test-mod": "http://example.com/_tests/test"', resp.text)
+            '"test-mod": "http://example.com/_tests/test.js"', resp.text)
 
 
 class TestInitAmdSpec(ptah.PtahTestCase):

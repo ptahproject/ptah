@@ -160,7 +160,7 @@ amd_init_tmpl = """
 var ptah_amd_modules = {\n%(mods)s}
 %(exrta)s
 
-curl({paths: ptah_amd_modules})
+curl({dontAddFileExt:'.', paths: ptah_amd_modules})
 """
 
 @view_config(route_name='ptah-amd-spec')
@@ -199,7 +199,7 @@ def amd_init(request):
             else:
                 url = '%s'%request.static_url(path)
 
-            js.append('"%s": "%s"'%(name, url[:-3]))
+            js.append('"%s": "%s"'%(name, url))
 
     for name, url in list_bundles(request):
         info = spec.get(name)
@@ -207,7 +207,7 @@ def amd_init(request):
             url = request.route_url(
                 'ptah-amd-spec', specname=specname, name=info['name'])
 
-        js.append('"%s":"%s"'%(name, url[:-3]))
+        js.append('"%s":"%s"'%(name, url))
 
     options = {'ptah_host': request.application_url,
                'ptah_dt': {'short': 'm/d/yy h:MM TT',

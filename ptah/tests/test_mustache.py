@@ -118,7 +118,8 @@ class TestBundleRoute(ptah.PtahTestCase):
 
         res = amd_init(self.request)
         self.assertIn(
-            '"test-bundle":"http://example.com/_mustache/test-bundle"',res.text)
+            '"test-bundle":"http://example.com/_mustache/test-bundle.js"',
+            res.text)
 
     def test_build_bundle_toplevel_i18n(self):
         from ptah.mustache import bundle_view
