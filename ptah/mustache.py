@@ -96,7 +96,7 @@ def compile_template(name, path, node_path, cache_dir):
     cname = '%s.js'%tname
     iname = '%s.i18n'%tname
     if os.path.exists(cname) and \
-           (os.path.getmtime(tname) < os.path.getmtime(cname)):
+           (os.path.getmtime(tname) <= os.path.getmtime(cname)):
         with open(cname, 'rb') as f:
             tmpl = text_(f.read(), 'utf-8')
 

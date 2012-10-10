@@ -237,6 +237,9 @@ class TestBuildBundle(ptah.PtahTestCase):
         self.assertEqual('existing2', tmpl)
 
     def test_compile_existing_i18n(self):
+        """
+        Skip compilation if it is compiled already
+        """
         from ptah import mustache
 
         cfg = ptah.get_settings(ptah.CFG_ID_PTAH, self.registry)
