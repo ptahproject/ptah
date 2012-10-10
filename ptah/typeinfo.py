@@ -136,13 +136,13 @@ class TypeInformation(object):
         return types
 
 
-class type(object):
+class tinfo(object):
     """ Declare new type. This function has to be called within a content
     class declaration.
 
     .. code-block:: python
 
-        @ptah.type('My content')
+        @ptah.tinfo('My content')
         class MyContent(object):
             pass
 

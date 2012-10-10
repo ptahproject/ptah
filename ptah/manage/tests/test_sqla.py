@@ -39,7 +39,7 @@ class TestSqlaModule(PtahTestCase):
         if not table.exists():
             Base.metadata.create_all(tables=(table,))
 
-        @ptah.type('Test')
+        @ptah.tinfo('Test')
         class TestSqlaModuleContent(TestSqlaModuleBase):
             __tablename__ = 'test_sqla_content'
             __table_args__ = {'extend_existing': True}

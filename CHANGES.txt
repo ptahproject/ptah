@@ -9,6 +9,8 @@ CHANGES
 
 - Removed `ptah.adapter` decorator
 
+- Renamed `ptah.type` to `ptah.tinfo`
+
 Features
 --------
 

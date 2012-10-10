@@ -25,7 +25,7 @@ class TestUriIntrospect(ptah.PtahTestCase):
 class TestTypeIntrospect(ptah.PtahTestCase):
 
     def test_type_introspect(self):
-        @ptah.type('content1')
+        @ptah.tinfo('content1')
         class Content1(object):
             pass
 

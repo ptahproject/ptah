@@ -15,17 +15,17 @@ class TestTypeInfo(PtahTestCase):
     def tearDown(self):
         super(TestTypeInfo, self).tearDown()
 
-        from ptah import tinfo
+        from ptah import typeinfo
         t = []
-        for name, h in tinfo.phase_data:
+        for name, h in typeinfo.phase_data:
             if name !='test':
                 t.append((name, h))
-        tinfo.phase_data[:] = t
+        typeinfo.phase_data[:] = t
 
     def test_tinfo(self):
         import ptah
 
-        @ptah.type('mycontent', 'MyContent')
+        @ptah.tinfo('mycontent', 'MyContent')
         class Mycontent(object):
             pass
 
@@ -46,13 +46,13 @@ class TestTypeInfo(PtahTestCase):
     def test_tinfo_title(self):
         import ptah
 
-        @ptah.type('mycontent')
+        @ptah.tinfo('mycontent')
         class MyContent(object):
             pass
 
         self.assertEqual(MyContent.__type__.title, 'Mycontent')
 
-        @ptah.type('mycontent', 'MyContent')
+        @ptah.tinfo('mycontent', 'MyContent')
         class MyContent(object):
             pass
 
@@ -61,10 +61,10 @@ class TestTypeInfo(PtahTestCase):
     def test_tinfo_checks(self):
         import ptah
 
-        @ptah.type('mycontent', 'Content', permission=None)
+        @ptah.tinfo('mycontent', 'Content', permission=None)
         class MyContent(object):
             pass
-        @ptah.type('mycontainer', 'Container')
+        @ptah.tinfo('mycontainer', 'Container')
         class MyContainer(object):
             pass
         self.init_ptah()
@@ -85,10 +85,10 @@ class TestTypeInfo(PtahTestCase):
     def test_tinfo_list(self):
         import ptah
 
-        @ptah.type('mycontent', 'Content', permission=None)
+        @ptah.tinfo('mycontent', 'Content', permission=None)
         class MyContent(object):
             pass
-        @ptah.type('mycontainer', 'Container')
+        @ptah.tinfo('mycontainer', 'Container')
         class MyContainer(object):
             pass
         self.init_ptah()
@@ -113,11 +113,11 @@ class TestTypeInfo(PtahTestCase):
     def test_tinfo_list_filtered(self):
         import ptah
 
-        @ptah.type('mycontent', 'Content', permission=None)
+        @ptah.tinfo('mycontent', 'Content', permission=None)
         class MyContent(object):
             pass
 
-        @ptah.type('mycontainer', 'Container', filter_content_types=True)
+        @ptah.tinfo('mycontainer', 'Container', filter_content_types=True)
         class MyContainer(object):
             pass
         self.init_ptah()
@@ -132,10 +132,10 @@ class TestTypeInfo(PtahTestCase):
     def test_tinfo_list_filtered_callable(self):
         import ptah
 
-        @ptah.type('mycontent', 'Content', permission=None)
+        @ptah.tinfo('mycontent', 'Content', permission=None)
         class MyContent(object):
             pass
-        @ptah.type('mycontainer', 'Container', filter_content_types=True)
+        @ptah.tinfo('mycontainer', 'Container', filter_content_types=True)
         class MyContainer(object):
             pass
 
@@ -154,10 +154,10 @@ class TestTypeInfo(PtahTestCase):
     def test_tinfo_conflicts(self):
         import ptah
 
-        @ptah.type('mycontent2', 'MyContent')
+        @ptah.tinfo('mycontent2', 'MyContent')
         class MyContent(object):
             pass
-        @ptah.type('mycontent2', 'MyContent')
+        @ptah.tinfo('mycontent2', 'MyContent')
         class MyContent2(object):
             pass
 
@@ -166,7 +166,7 @@ class TestTypeInfo(PtahTestCase):
     def test_tinfo_create(self):
         import ptah
 
-        @ptah.type('mycontent', 'MyContent')
+        @ptah.tinfo('mycontent', 'MyContent')
         class MyContent(object):
 
             def __init__(self, title=''):
@@ -186,7 +186,7 @@ class TestTypeInfo(PtahTestCase):
 
         MySchema = ptah.form.Fieldset(form.TextField('test'))
 
-        @ptah.type('mycontent2', 'MyContent', fieldset=MySchema)
+        @ptah.tinfo('mycontent2', 'MyContent', fieldset=MySchema)
         class MyContent(object):
             pass
 
@@ -196,7 +196,7 @@ class TestTypeInfo(PtahTestCase):
     def test_tinfo_type_resolver(self):
         import ptah
 
-        @ptah.type('mycontent2', 'MyContent')
+        @ptah.tinfo('mycontent2', 'MyContent')
         class MyContent(object):
             pass
 
@@ -210,7 +210,7 @@ class TestTypeInfo(PtahTestCase):
     def test_add_method(self):
         import ptah
 
-        @ptah.type('mycontent2', 'MyContent')
+        @ptah.tinfo('mycontent2', 'MyContent')
         class MyContent(object):
             pass
 
@@ -237,7 +237,7 @@ class TestTypeInfo(PtahTestCase):
         self.assertIn(item, added)
 
     def test_phase2_err(self):
-        from ptah.tinfo import phase2
+        from ptah.typeinfo import phase2
 
         @phase2('test')
         def t(): pass
@@ -260,19 +260,20 @@ class TestSqlTypeInfo(PtahTestCase):
     def tearDown(self):
         super(TestSqlTypeInfo, self).tearDown()
 
-        from ptah import tinfo
+        from ptah import typeinfo
+
         t = []
-        for name, h in tinfo.phase_data:
+        for name, h in typeinfo.phase_data:
             if name !='test':
                 t.append((name, h))
-        tinfo.phase_data[:] = t
+        typeinfo.phase_data[:] = t
 
     def test_tinfo(self):
         import ptah
-        from ptah import tinfo
+        from ptah import typeinfo
         import sqlalchemy as sqla
 
-        @ptah.type('mycontent', 'MyContent')
+        @ptah.tinfo('mycontent', 'MyContent')
         class MyContentSql(ptah.get_base()):
 
             __tablename__ = 'tinfo_sql_test'
@@ -282,14 +283,14 @@ class TestSqlTypeInfo(PtahTestCase):
         self.init_ptah()
 
         ti = ptah.get_type('type:mycontent')
-        self.assertIs(ti.add_method, tinfo.sqla_add_method)
+        self.assertIs(ti.add_method, typeinfo.sqla_add_method)
 
     def test_custom_fieldset(self):
         import ptah
         from ptah import tinfo
         import sqlalchemy as sqla
 
-        @ptah.type('mycontent', 'MyContent')
+        @ptah.tinfo('mycontent', 'MyContent')
         class MyContentSql(ptah.get_base()):
 
             __tablename__ = 'tinfo_sql_test2'
@@ -307,7 +308,7 @@ class TestSqlTypeInfo(PtahTestCase):
         from ptah import tinfo
         import sqlalchemy as sqla
 
-        @ptah.type('mycontent', 'MyContent', fieldNames=['test'])
+        @ptah.tinfo('mycontent', 'MyContent', fieldNames=['test'])
         class MyContentSql(ptah.get_base()):
 
             __tablename__ = 'tinfo_sql_test21'
@@ -330,7 +331,7 @@ class TestSqlTypeInfo(PtahTestCase):
         def filter(n, names):
             return n != 'test'
 
-        @ptah.type('mycontent', 'MyContent', namesFilter=filter)
+        @ptah.tinfo('mycontent', 'MyContent', namesFilter=filter)
         class MyContentSql(ptah.get_base()):
 
             __tablename__ = 'tinfo_sql_test22'
@@ -350,7 +351,7 @@ class TestSqlTypeInfo(PtahTestCase):
         from ptah import tinfo
         import sqlalchemy as sqla
 
-        @ptah.type('mycontent', 'MyContent')
+        @ptah.tinfo('mycontent', 'MyContent')
         class MyContentSql(ptah.get_base()):
 
             __tablename__ = 'tinfo_sql_test3'
@@ -370,7 +371,7 @@ class TestSqlTypeInfo(PtahTestCase):
         import ptah
         import sqlalchemy as sqla
 
-        @ptah.type('mycontent', 'MyContent')
+        @ptah.tinfo('mycontent', 'MyContent')
         class MyContentSql(ptah.get_base()):
 
             __tablename__ = 'tinfo_sql_test4'
@@ -388,7 +389,7 @@ class TestSqlTypeInfo(PtahTestCase):
         import ptah
         import sqlalchemy as sqla
 
-        @ptah.type('mycontent', 'MyContent')
+        @ptah.tinfo('mycontent', 'MyContent')
         class MyContentSql(ptah.get_base()):
 
             __uri__ = 'test'
@@ -404,10 +405,11 @@ class TestSqlTypeInfo(PtahTestCase):
         import sqlalchemy as sqla
 
         def resolver(uri):
-            """"""
+            """ """
+
         ptah.resolver.register('mycontent', resolver)
 
-        @ptah.type('mycontent', 'MyContent')
+        @ptah.tinfo('mycontent', 'MyContent')
         class MyContentSql(ptah.get_base()):
             __tablename__ = 'tinfo_sql_test6'
 
@@ -420,7 +422,7 @@ class TestSqlTypeInfo(PtahTestCase):
         import ptah
         import sqlalchemy as sqla
 
-        @ptah.type('mycontent', 'MyContent')
+        @ptah.tinfo('mycontent', 'MyContent')
         class MyContentSql(ptah.get_base()):
             __tablename__ = 'tinfo_sql_test7'
 
@@ -449,7 +451,7 @@ class TestSqlTypeInfo(PtahTestCase):
 class TestUriProperty(TestCase):
 
     def test_uri_property(self):
-        from ptah.tinfo import UriProperty
+        from ptah.typeinfo import UriProperty
 
         class Test(object):
 
