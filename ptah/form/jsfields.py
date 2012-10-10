@@ -8,7 +8,6 @@ from ptah.form.field import field
 from ptah.form.fields import TextAreaField, TextField, DateTimeField
 
 
-@field('tinymce')
 @field('ckeditor')
 class CKEditorField(TextAreaField):
     """ CKEditor input widget. Field name is ``ckeditor``.

@@ -64,7 +64,7 @@ class TestManageCommand(ptah.PtahTestCase):
         self.assertIn('* custom: Custom Module (disabled: True)', val)
 
     def test_list_models(self):
-        @ptah.type(
+        @ptah.tinfo(
             'custom', title='Custom model',
             description = 'Custom model description')
 

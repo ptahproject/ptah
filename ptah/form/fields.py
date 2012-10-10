@@ -447,8 +447,8 @@ class BoolField(BaseChoiceField):
     """Boolean input widget. Field name is ``bool``."""
 
     vocabulary = vocabulary.SimpleVocabulary.from_items(
-        (True, 'true',  _('yes')),
-        (False, 'false',  _('no')))
+        (True, 'true',  'yes'),
+        (False, 'false',  'no'))
 
     tmpl_input = 'ptah.form:templates/fields/bool-input.pt'
 
