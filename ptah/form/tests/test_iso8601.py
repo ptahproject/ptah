@@ -1,6 +1,6 @@
 import datetime
-import unittest
 from ptah.form import iso8601
+from ptah.testing import TestCase
 
 
 class TestISO8601(unittest.TestCase):
