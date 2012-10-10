@@ -13,11 +13,10 @@ import venusian
 from venusian.advice import getFrameInfo
 
 ATTACH_ATTR = '__ptah_actions__'
-ID_ADAPTER = 'ptah.config:adapter'
 ID_SUBSCRIBER = 'ptah.config:subscriber'
 
 __all__ = ('initialize', 'get_cfg_storage', 'StopException',
-           'event', 'adapter', 'subscriber', 'shutdown', 'shutdown_handler',
+           'event', 'subscriber', 'shutdown', 'shutdown_handler',
            'Action', 'DirectiveInfo')
 
 log = logging.getLogger('ptah')
@@ -76,35 +75,6 @@ def pyramid_get_cfg_storage(config, id):
     return get_cfg_storage(id, config.registry)
 
 
-def adapter(*args, **kw):
-    """ Register adapter """
-    info = DirectiveInfo()
-
-    required = tuple(args)
-    name = kw.get('name', '')
-
-    def wrapper(func):
-        discr = (ID_ADAPTER, required, _getProvides(func), name)
-
-        intr = Introspectable(ID_ADAPTER, discr, 'Adapter', ID_ADAPTER)
-        intr['name'] = name
-        intr['required'] = required
-        intr['adapter'] = func
-        intr['codeinfo'] = info.codeinfo
-
-        def _register(cfg, name, func, required):
-            cfg.registry.registerAdapter(func, required, name=name)
-
-        info.attach(
-            Action(
-                _register, (name, func, required),
-                discriminator = discr, introspectables = (intr,))
-            )
-        return func
-
-    return wrapper
-
-
 def subscriber(*args):
     """ Register event subscriber. """
     info = DirectiveInfo(allowed_scope=('module', 'function call'))
@@ -129,16 +99,6 @@ def subscriber(*args):
         return func
 
     return wrapper
-
-
-def _getProvides(factory):
-    p = list(implementedBy(factory))
-    if len(p) == 1:
-        return p[0]
-    else:
-        raise TypeError(
-            "The adapter factory doesn't implement a single interface "
-            "and no provided interface was specified.")
 
 
 class Action(object):
