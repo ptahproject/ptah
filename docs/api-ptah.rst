@@ -35,14 +35,6 @@ Layout
 
   .. autofunction:: wrap_layout
 
-Library
-~~~~~~~
-
-  .. autofunction:: library
-  
-  .. autofunction:: include
-  
-  .. autofunction:: render_includes
 
 Settings
 ~~~~~~~~

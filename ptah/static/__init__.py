@@ -10,6 +10,10 @@ def includeme(config):
         'jquery-ui', 'ptah:static/jquery/jquery-ui-1.9.0.min.js',
         'JQuery UI Library', ('jquery',))
     config.register_amd_module(
+        'jquery-ui-css', 'ptah:static/jquery/jquery-ui-1.9.0.min.css',
+        'JQuery UI Library')
+
+    config.register_amd_module(
         'sockjs', 'ptah:static/lib/sockjs-0.3.2.min.js',
         'SockJS Client library')
     config.register_amd_module(
@@ -20,6 +24,15 @@ def includeme(config):
     config.register_amd_module(
         'bootstrap', 'ptah:static/bootstrap/bootstrap.min.js',
         'Twitter bootstrap javscript library', ('jquery',))
+    config.register_amd_module(
+        'bootstrap-css', 
+        'ptah:static/bootstrap/bootstrap.min.css',
+        'Twitter bootstrap javscript library')
+    config.register_amd_module(
+        'bootstrap-responsive-css',
+        'ptah:static/bootstrap/bootstrap-responsive.min.css',
+        'Twitter bootstrap javscript library (Responsive)')
+
     config.register_amd_module(
         'ckeditor', 'ptah:static/ckeditor/ckeditor.js',
         'CKEditor', ('jquery',))
@@ -42,27 +55,3 @@ def includeme(config):
     # templates
     config.register_mustache_bundle(
         'ptah-templates', 'ptah:templates/mustache/', i18n_domain='ptah')
-
-
-# jQuery library
-ptah.library(
-    'jquery-ui',
-    'ptah:static/jquery/jquery-ui-1.9.0.min.css',
-    type='css')
-
-# Bootstrap css
-ptah.library(
-    'bootstrap',
-    path='ptah:static/bootstrap/bootstrap.min.css',
-    type="css")
-
-# curl
-ptah.library(
-    'curl',
-    path='ptah:static/lib/curl.js',
-    type="js")
-
-ptah.library(
-    'curl-debug',
-    path='ptah:static/lib/curl-debug.js',
-    type="js")

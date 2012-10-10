@@ -7,9 +7,13 @@ CHANGES
 
 - Pyramid 1.4 compatibility
 
+- Renamed `ptah.type` to `ptah.tinfo`
+
 - Removed `ptah.adapter` decorator
 
-- Renamed `ptah.type` to `ptah.tinfo`
+- Removed `ptah.library` functionality. It is still possible to
+  load js and css with curl.js
+
 
 Features
 --------

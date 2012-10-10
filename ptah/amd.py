@@ -199,7 +199,10 @@ def amd_init(request):
             else:
                 url = '%s'%request.static_url(path)
 
-            js.append('"%s": "%s"'%(name, url))
+            if url.endswith('.css'):
+                js.append('"%s.css": "%s"'%(name, url))
+            else:
+                js.append('"%s": "%s"'%(name, url))                
 
     for name, url in list_bundles(request):
         info = spec.get(name)
@@ -258,6 +261,14 @@ def render_amd_includes(request, spec='', bundles=(), init=True):
             "<script>curl(['domReady!']).next(['ptah'], function(ptah) {ptah.init(ptah_amd_modules)})</script>")
 
     return '\n'.join(c_tmpls)
+
+
+def render_css_includes(request, css=()):
+    if isinstance(css, basestring):
+        css = (css,)
+
+    return ("<script>curl([%s],{paths:ptah_amd_modules})</script>" %
+            ','.join("'css!%s.css'"%c for c in css))
 
 
 def render_amd_container(request, name, **kw):

@@ -79,7 +79,7 @@ class AmdjsCommand(object):
     def extract_deps(self, mod):
         if mod['path']:
             path = self.resolver.resolve(mod['path']).abspath()
-            if os.path.isfile(path):
+            if os.path.isfile(path) and path.endswith('.js'):
                 text = open(path, 'rb').read()
                 p1 = text.find('define(')
                 if p1 >= 0:

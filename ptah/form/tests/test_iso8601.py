@@ -3,7 +3,7 @@ from ptah.form import iso8601
 from ptah.testing import TestCase
 
 
-class TestISO8601(unittest.TestCase):
+class TestISO8601(TestCase):
 
     def test_parse_datetime(self):
         """

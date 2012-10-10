@@ -44,11 +44,6 @@ from ptah.view import render_snippet
 from ptah.layout import layout
 from ptah.layout import wrap_layout
 
-# resource library
-from ptah.library import library
-from ptah.library import include
-from ptah.library import render_includes
-
 # settings
 from ptah.settings import get_settings
 from ptah.settings import register_settings
@@ -219,18 +214,14 @@ def includeme(cfg):
 
     # ptah.password directives
     from ptah import password
-    cfg.add_directive('ptah_password_changer', password_changer.pyramid)
+    cfg.add_directive(
+        'ptah_password_changer', password_changer.pyramid)
 
     # layout directive
     cfg.add_directive('ptah_layout', layout.pyramid)
 
     # snippet directive
     cfg.add_directive('ptah_snippet', snippet.pyramid)
-
-    # library request helpers
-    from ptah.library import request_include, request_render_includes
-    cfg.set_request_property(request_include, 'include_library', True)
-    cfg.set_request_property(request_render_includes, 'render_includes', True)
 
     # message request helpers
     from ptah.view import request_add_message, request_render_messages
@@ -251,23 +242,15 @@ def includeme(cfg):
     from ptah import migrate
     cfg.add_directive('ptah_migrate', migrate.ptah_migrate)
 
+    from ptah import amd
     # request `render_amd_includes`
-    from .amd import render_amd_includes
-    def get_amd_includes(request):
-        def f(*args, **kw):
-            return render_amd_includes(request, *args, **kw)
-        return f
+    cfg.add_request_method(amd.render_amd_includes, 'render_amd_includes')
 
-    cfg.set_request_property(get_amd_includes, 'render_amd_includes', True)
+    # request `render_css_includes`
+    cfg.add_request_method(amd.render_css_includes, 'render_css_includes')
 
     # request `render_amd_container`
-    from .amd import render_amd_container
-    def get_amd_container(request):
-        def f(*args, **kw):
-            return render_amd_container(request, *args, **kw)
-        return f
-
-    cfg.set_request_property(get_amd_container, 'render_amd_container', True)
+    cfg.add_request_method(amd.render_amd_container, 'render_amd_container')
 
     # amd
     from .amd import register_amd_module, register_amd_dir

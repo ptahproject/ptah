@@ -10,7 +10,6 @@ from pyramid.config.views import DefaultViewMapper
 import ptah.view
 from ptah import config
 from ptah.formatter import format
-from ptah.library import include, render_includes
 
 log = logging.getLogger('ptah.view')
 
@@ -46,12 +45,6 @@ class View(object):
             result = {}
 
         return result
-
-    def include(self, *args):
-        include(self.request, *args)
-
-    def render_includes(self):
-        return render_includes(self.request)
 
     def message(self, msg, type='info'):
         ptah.view.add_message(self.request, msg, type)

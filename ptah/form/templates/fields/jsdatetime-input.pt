@@ -1,5 +1,5 @@
 <script>
-  curl(['jquery-ui'], function() {$("#${context.id}-date" ).datepicker()})
+  curl(['jquery-ui','css!jquery-ui-css'], function() {$("#${context.id}-date" ).datepicker()})
 </script>
 
 <input id="" name="" class="" title="" lang="" disabled=""
