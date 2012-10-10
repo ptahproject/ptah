@@ -4,10 +4,10 @@ import ptah
 def includeme(config):
     # amd modules
     config.register_amd_module(
-        'jquery', 'ptah:static/jquery/jquery-1.7.2.min.js',
+        'jquery', 'ptah:static/jquery/jquery-1.8.2.min.js',
         'JQuery Library')
     config.register_amd_module(
-        'jquery-ui', 'ptah:static/jquery/jquery-ui-1.8.20.min.js',
+        'jquery-ui', 'ptah:static/jquery/jquery-ui-1.9.0.min.js',
         'JQuery UI Library', ('jquery',))
     config.register_amd_module(
         'sockjs', 'ptah:static/lib/sockjs-0.3.2.min.js',
@@ -47,7 +47,7 @@ def includeme(config):
 # jQuery library
 ptah.library(
     'jquery-ui',
-    'ptah:static/jquery/jquery-ui-1.8.20.css',
+    'ptah:static/jquery/jquery-ui-1.9.0.min.css',
     type='css')
 
 # Bootstrap css
@@ -59,7 +59,7 @@ ptah.library(
 # curl
 ptah.library(
     'curl',
-    path='ptah:static/lib/curl-0.6.4.js',
+    path='ptah:static/lib/curl.js',
     type="js")
 
 ptah.library(
