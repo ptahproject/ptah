@@ -118,38 +118,6 @@ ptah.register_settings(
         description = 'List of default assigned roles for all principals.',
         default = ()),
 
-    ptah.form.BoolField(
-        'amd-enabled',
-        title = 'AMD spec',
-        description = 'Status of amd spec support (true/false).',
-        default = False),
-
-    ptah.form.LinesField(
-        'amd-spec',
-        title = 'Amd spec files',
-        default = ()),
-
-    ptah.form.TextField(
-        'amd-dir',
-        title = 'Directory for javascript bundles',
-        default = ''),
-
-    ptah.form.TextField(
-        'mustache-cache',
-        title = 'Directory for compiled files',
-        default = ''),
-
-    ptah.form.LinesField(
-        'mustache-langs',
-        title = 'Mustache i18n languages',
-        default = []),
-
-    ptah.form.TextField(
-        'nodejs-path',
-        title = 'NodeJS path',
-        description = 'Path to nodejs executable.',
-        default = ''),
-
     title = _('Ptah settings'),
 )
 

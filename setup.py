@@ -11,6 +11,7 @@ install_requires = ['setuptools',
                     'Chameleon >= 2.6.1',
                     'pyramid >= 1.4.0a2',
                     'pyramid_tm',
+                    'pyramid_amdjs',
                     'zope.interface >= 4.0.1',
                     'zope.sqlalchemy >= 0.7.1',
                     'transaction >= 1.3.0',
@@ -66,14 +67,10 @@ setup(name='ptah',
       zip_safe=False,
       entry_points={
           'console_scripts': [
-              'ptah-amdjs = ptah.scripts.amd:main',
               'ptah-manage = ptah.scripts.manage:main',
               'ptah-migrate = ptah.scripts.migrate:main',
               'ptah-populate = ptah.scripts.populate:main',
               'ptah-settings = ptah.scripts.settings:main',
-              ],
-          'babel.extractors': [
-              'mustache = ptah.mustache:extract_i18n_mustache',
               ],
           'pyramid.scaffold': [
               'ptah_starter = ptah.scaffolds:PtahStarterProjectTemplate',

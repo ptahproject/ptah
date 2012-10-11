@@ -151,6 +151,8 @@ from ptah.util import json
 
 
 def includeme(cfg):
+    cfg.include('pyramid_amdjs')
+
     # auth
     from ptah.security import PtahAuthorizationPolicy
     from pyramid.compat import configparser
@@ -242,37 +244,8 @@ def includeme(cfg):
     from ptah import migrate
     cfg.add_directive('ptah_migrate', migrate.ptah_migrate)
 
-    from ptah import amd
-    # request `render_amd_includes`
-    cfg.add_request_method(amd.render_amd_includes, 'render_amd_includes')
-
-    # request `render_css_includes`
-    cfg.add_request_method(amd.render_css_includes, 'render_css_includes')
-
-    # request `render_amd_container`
-    cfg.add_request_method(amd.render_amd_container, 'render_amd_container')
-
-    # amd
-    from .amd import register_amd_module, register_amd_dir
-    cfg.add_directive('register_amd_module', register_amd_module)
-    cfg.add_directive('register_amd_dir', register_amd_dir)
-
-    # amd init
-    cfg.add_route('ptah-amd-init', '/_amd_{specname}.js')
-
-    # amd bundle route
-    cfg.add_route('ptah-amd-spec', '/_amd_{specname}/{name}')
-
     # ptah static assets
     cfg.add_static_view('_ptah/static', 'ptah:static/')
-
-    # mustache bundle
-    from .mustache import register_mustache_bundle
-
-    cfg.add_directive(
-        'register_mustache_bundle', register_mustache_bundle)
-    cfg.add_route(
-        'ptah-mustache-bundle', '/_mustache/{name}.js')
 
     # scan ptah
     cfg.scan('ptah')
@@ -280,7 +253,3 @@ def includeme(cfg):
 
     # translation
     cfg.add_translation_dirs('ptah:locale')
-
-    # init amd specs
-    from .amd import init_amd_spec
-    cfg.action('ptah.init_amd_spec', init_amd_spec, (cfg,), order=999999+1)

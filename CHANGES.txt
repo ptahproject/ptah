@@ -11,18 +11,7 @@ CHANGES
 
 - Removed `ptah.adapter` decorator
 
-- Removed `ptah.library` functionality. It is still possible to
-  load js and css with curl.js
-
-
-Features
---------
-
-- amd js
-
-- handlebars
-
-- handlebars i18n
+- Removed `ptah.library` functionality, pyramid_amdjs is used instead
 
 
 0.5.1 (2012-05-04)
