@@ -1,10 +1,10 @@
 define (
-    'ptah-pager', ['jquery', 'ptah', 'ptah-templates'],
+    'ptah-pager', ['jquery', 'pyramid', 'ptah-templates'],
 
-    function ($, ptah, templates) {
+    function ($, pyramid, templates) {
         "use strict";
 
-        return ptah.View.extend({
+        return pyramid.View.extend({
             templates: templates.pager
 
             , init: function() {
@@ -16,7 +16,7 @@ define (
                 this.left_neighbours = options.left_neighbours | 3
                 this.right_neighbours = options.right_neighbours | 3
 
-                this.events = new ptah.EventChannel('on_pager_')
+                this.events = new pyramid.EventChannel('on_pager_')
             }
 
             , set_size: function(size) {

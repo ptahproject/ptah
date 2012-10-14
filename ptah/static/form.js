@@ -1,12 +1,12 @@
 define (
-    'ptah-form', ['jquery', 'ptah', 'ptah-templates', 'bootstrap'],
+    'ptah-form', ['jquery', 'pyramid', 'ptah-templates', 'bootstrap'],
 
-    function($, ptah, templates) {
+    function($, pyramid, templates) {
         "use strict";
 
         var form = {}
 
-        form.Form = ptah.View.extend({
+        form.Form = pyramid.View.extend({
             __name__: 'ptah.Form',
 
             templates: templates.form
@@ -18,7 +18,7 @@ define (
 
                 var view = options ? options.parent : null
                 if (!view)
-                    view = connect instanceof ptah.View?connect:connect.parent
+                    view = connect instanceof pyramid.View?connect:connect.parent
 
                 this._super(view, $('body'), options)
             }
@@ -170,7 +170,7 @@ define (
         })
 
 
-        form.Window = ptah.View.extend({
+        form.Window = pyramid.View.extend({
             __name__: 'ptah.Window',
 
             data: null,

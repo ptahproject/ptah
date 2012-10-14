@@ -11,9 +11,6 @@ def includeme(config):
         'JQuery UI Library')
 
     config.add_amd_js(
-        'sockjs', 'ptah:static/lib/sockjs-0.3.2.min.js',
-        'SockJS Client library')
-    config.add_amd_js(
         'bootstrap', 'ptah:static/bootstrap/bootstrap.min.js',
         'Twitter bootstrap javscript library', ('jquery',))
     config.add_amd_css(
@@ -31,18 +28,16 @@ def includeme(config):
 
     # ptah
     config.add_amd_js(
-        'ptah', 'ptah:static/ptah.js', 'Ptah', ('handlebars','sockjs','jquery'))
-    config.add_amd_js(
         'ptah-date-format', 'ptah:static/date-format.js',
         require=('jquery', 'handlebars'))
 
     # ptah ui classes
     config.add_amd_js(
         'ptah-form', 'ptah:static/form.js',
-        require=('jquery', 'ptah', 'ptah-templates', 'bootstrap'))
+        require=('jquery', 'pyramid', 'ptah-templates', 'bootstrap'))
     config.add_amd_js(
         'ptah-pager', 'ptah:static/pager.js',
-        require=('jquery', 'ptah', 'ptah-templates'))
+        require=('jquery', 'pyramid', 'ptah-templates'))
 
     # templates
     config.add_mustache_bundle(
