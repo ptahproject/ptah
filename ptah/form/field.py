@@ -1,6 +1,7 @@
 from collections import OrderedDict
 from pyramid import renderers
 from pyramid.compat import string_types
+from pyramid_vlayer import render
 
 from ptah import config
 from ptah.util import json
@@ -272,6 +273,8 @@ class Field(object):
 
     ``missing``: Field value if value is not specified in bound value.
 
+    ``tmpl_widget``: The path to widget template.
+
     ``tmpl_input``: The path to input widget template. It should be
       compatible with pyramid renderers.
 
@@ -297,6 +300,7 @@ class Field(object):
     id = None
     klass = None
 
+    tmpl_widget = 'ptah-fields:widget'
     tmpl_input = None
     tmpl_display = None
 
@@ -401,14 +405,14 @@ class Field(object):
         else:
             tmpl = self.tmpl_input
 
-        params = {'view': self,
-                  'context': self,
-                  'request': request}
-
         if isinstance(tmpl, string_types):
-            return renderers.render(tmpl, params, request)
+            return render(request, tmpl, self, view=self)
         else:
-            return tmpl(**params)
+            return tmpl(view=self, context=self, request=request)
+
+    def render_widget(self, request):
+        """ render field widget """
+        return render(request, self.tmpl_widget, self, view=self)
 
     def __repr__(self):
         return '<%s %r>' % (self.__class__.__name__, self.name)

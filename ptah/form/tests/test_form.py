@@ -216,7 +216,7 @@ class TestForm(PtahTestCase):
     def test_form_render(self):
         from ptah import form
 
-        request = DummyRequest()
+        request = self.make_request()
 
         form_ob = form.Form(None, request)
         form_ob.fields = form.Fieldset(form.TextField('test'))
@@ -226,7 +226,7 @@ class TestForm(PtahTestCase):
 
     def test_form_render_view_config_renderer(self):
         from ptah import form
-        request = DummyRequest()
+        request = self.make_request()
 
         class CustomForm(form.Form):
             fields = form.Fieldset(form.TextField('test'))
@@ -242,7 +242,7 @@ class TestForm(PtahTestCase):
 
     def test_form_render_view_config(self):
         from ptah import form
-        request = DummyRequest()
+        request = self.make_request()
 
         class CustomForm(form.Form):
             fields = form.Fieldset(form.TextField('test'))

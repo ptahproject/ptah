@@ -13,6 +13,8 @@ CHANGES
 
 - Removed `ptah.library` functionality, pyramid_amdjs is used instead
 
+- Use pyramid_vlayer for templates
+
 
 0.5.1 (2012-05-04)
 ==================

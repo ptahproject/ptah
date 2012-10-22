@@ -12,11 +12,12 @@
     <tal:block repeat="widget fieldset['widgets']">
 
     </tal:block>
-    <tal:block tal:repeat="widget fieldset['widgets']"
-               tal:content="structure view.snippet('form-widget',widget)" />
+    <tal:block tal:repeat="widget fieldset['widgets']">
+      ${structure: widget.render_widget(request)}
+    </tal:block>
   </fieldset>
 
-  <tal:block content="structure view.snippet('form-actions')" />
+  <tal:block content="structure request.render_tmpl(view.tmpl_actions, view)" />
 
   <input type="hidden" tal:condition="context.csrf"
          name="${context.csrfname}" value="${context.token}" />

@@ -86,7 +86,7 @@ class TestSqlaModule(PtahTestCase):
     def test_sqla_view(self):
         from ptah.manage.sqla import SQLAModule, MainView
 
-        request = DummyRequest()
+        request = self.make_request()
 
         mod = SQLAModule(None, request)
 
@@ -96,7 +96,7 @@ class TestSqlaModule(PtahTestCase):
     def test_sqla_table_view(self):
         from ptah.manage.sqla import SQLAModule, TableView
 
-        request = DummyRequest()
+        request = self.make_request()
 
         mod = SQLAModule(None, request)
         table = mod['psqla-ptah_tokens']
@@ -110,7 +110,7 @@ class TestSqlaModule(PtahTestCase):
 
         ptah.get_session().add(TestSqlaModuleContent(title='test'))
 
-        request = DummyRequest()
+        request = self.make_request()
 
         mod = SQLAModule(None, request)
         table = mod['psqla-test_sqla_content']
@@ -150,7 +150,7 @@ class TestSqlaModule(PtahTestCase):
     def test_sqla_table_view_inheritance(self):
         from ptah.manage.sqla import SQLAModule, TableView
 
-        request = DummyRequest()
+        request = self.make_request()
 
         mod = SQLAModule(None, request)
         table = mod['psqla-ptah_tokens']
@@ -182,7 +182,7 @@ class TestSqlaModule(PtahTestCase):
     def test_sqla_table_addrec_basics(self):
         from ptah.manage.sqla import SQLAModule, AddRecord
 
-        request = DummyRequest()
+        request = self.make_request()
 
         mod = SQLAModule(None, request)
         table = mod['psqla-test_sqla_table']
@@ -204,7 +204,7 @@ class TestSqlaModule(PtahTestCase):
     def test_sqla_table_addrec_create(self):
         from ptah.manage.sqla import SQLAModule, AddRecord
 
-        request = DummyRequest()
+        request = self.make_request()
 
         mod = SQLAModule(None, request)
         table = mod['psqla-test_sqla_table']
@@ -237,7 +237,7 @@ class TestSqlaModule(PtahTestCase):
     def test_sqla_table_addrec_create_multi(self):
         from ptah.manage.sqla import SQLAModule, AddRecord
 
-        request = DummyRequest()
+        request = self.make_request()
 
         mod = SQLAModule(None, request)
         table = mod['psqla-test_sqla_table']
@@ -276,7 +276,7 @@ class TestSqlaModule(PtahTestCase):
 
         rec_id = rec.id
 
-        request = DummyRequest()
+        request = self.make_request()
 
         mod = SQLAModule(None, request)
         table = mod['psqla-test_sqla_table']
@@ -453,7 +453,7 @@ class TestSqlaModule(PtahTestCase):
 
         rec = table[rec_id]
 
-        form = EditRecord(rec, DummyRequest())
+        form = EditRecord(rec, self.make_request())
         form.update()
 
         self.assertNotIn('form.buttons.remove', form.render())

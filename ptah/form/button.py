@@ -3,7 +3,7 @@ import re
 import sys
 import binascii
 from ptah import view
-from pyramid import renderers
+from pyramid_vlayer import render
 from collections import OrderedDict
 
 AC_DEFAULT = 0
@@ -33,7 +33,7 @@ class Button(object):
     klass = 'btn'
     actype = ''
 
-    template = "ptah.form:templates/submit.pt"
+    template = 'ptah-form:submit'
 
     def __init__(self, name='submit', title=None, action=None, actionName=None,
                  actype=AC_DEFAULT, condition=None, **kw):
@@ -81,10 +81,7 @@ class Button(object):
         return self.params.get(self.name, None) is not None
 
     def render(self):
-        return renderers.render(
-            self.template,
-            {'context': self, 'request': self.request},
-            self.request)
+        return render(self.request, self.template, self)
 
 
 class Buttons(OrderedDict):

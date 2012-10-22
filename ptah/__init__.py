@@ -151,7 +151,9 @@ from ptah.util import json
 
 
 def includeme(cfg):
+    #cfg.include('ptahform')
     cfg.include('pyramid_amdjs')
+    cfg.include('pyramid_vlayer')
 
     # auth
     from ptah.security import PtahAuthorizationPolicy
@@ -246,6 +248,11 @@ def includeme(cfg):
 
     # ptah static assets
     cfg.add_static_view('_ptah/static', 'ptah:static/')
+
+    # template layers
+    cfg.add_vlayer('ptah-form', path='ptah:form/templates/')
+    cfg.add_vlayer('ptah-fields', path='ptah:form/templates/fields/')
+    cfg.add_vlayer('ptah-manage', path='ptah:manage/templates/')
 
     # scan ptah
     cfg.scan('ptah')

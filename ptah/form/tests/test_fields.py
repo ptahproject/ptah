@@ -6,12 +6,6 @@ from webob.multidict import MultiDict
 from pyramid.compat import text_type
 
 
-class DummyRequest(object):
-    def __init__(self):
-        self.params = {}
-        self.cookies = {}
-
-
 def invalid_exc(func, *arg, **kw):
     from ptah.form import Invalid
     try:
@@ -33,7 +27,7 @@ class TestInputField(PtahTestCase):
         return InputField(name, **kw)
 
     def test_fields_text(self):
-        request = DummyRequest()
+        request = self.make_request()
 
         field = self._makeOne('test')
         field = field.bind('', 'content', {})
@@ -53,7 +47,7 @@ class TestTextField(PtahTestCase):
         return form.TextField(name, **kw)
 
     def test_fields_text(self):
-        request = DummyRequest()
+        request = self.make_request()
 
         field = self._makeOne('test')
         field = field.bind('', 'content', {})
@@ -63,7 +57,7 @@ class TestTextField(PtahTestCase):
         self.assertEqual(field.deserialize('value'), 'value')
 
         self.assertEqual(strip(field.render(request)),
-                         '<input type="text" name="test" title="Test" value="content" id="test" class="text-widget" />')
+                         '<input type="text" id="test" name="test" class="text-widget" title="Test" value="content" />')
 
         field.mode = form.FORM_DISPLAY
         self.assertEqual(strip(field.render(request)),
@@ -75,7 +69,7 @@ class TestTextField(PtahTestCase):
         field.update(request)
 
         self.assertEqual(strip(field.render(request)),
-                         '<input type="text" name="test" title="Test" value="form" id="test" class="text-widget" />')
+                         '<input type="text" id="test" name="test" class="text-widget" title="Test" value="form" />')
 
         field.mode = form.FORM_DISPLAY
         self.assertEqual(strip(field.render(request)),
@@ -88,7 +82,7 @@ class TestIntegerField(PtahTestCase):
         return form.IntegerField(name, **kw)
 
     def test_fields_int(self):
-        request = DummyRequest()
+        request = self.make_request()
 
         field = self._makeOne('test')
         field = field.bind('', 10, {})
@@ -104,7 +98,7 @@ class TestIntegerField(PtahTestCase):
 
         self.assertEqual(
             strip(field.render(request)),
-            '<input type="text" name="test" title="Test" value="10" id="test" class="int-widget" />')
+            '<input type="text" id="test" name="test" class="int-widget" title="Test" value="10" />')
 
 
 class TestFloatField(PtahTestCase):
@@ -113,7 +107,7 @@ class TestFloatField(PtahTestCase):
         return form.FloatField(name, **kw)
 
     def test_fields_float(self):
-        request = DummyRequest()
+        request = self.make_request()
 
         field = self._makeOne('test')
         field = field.bind('', 10.34, {})
@@ -129,7 +123,7 @@ class TestFloatField(PtahTestCase):
 
         self.assertEqual(
             strip(field.render(request)),
-            '<input type="text" name="test" title="Test" value="10.34" id="test" class="float-widget" />')
+            '<input type="text" id="test" name="test" class="float-widget" title="Test" value="10.34" />')
 
 
 class TestDeciamlField(PtahTestCase):
@@ -138,7 +132,7 @@ class TestDeciamlField(PtahTestCase):
         return form.DecimalField(name, **kw)
 
     def test_fields_decimal(self):
-        request = DummyRequest()
+        request = self.make_request()
 
         field = self._makeOne('test')
         field = field.bind('', decimal.Decimal('10.34'), {})
@@ -154,7 +148,7 @@ class TestDeciamlField(PtahTestCase):
 
         self.assertEqual(
             strip(field.render(request)),
-            '<input type="text" name="test" title="Test" value="10.34" id="test" class="decimal-widget" />')
+            '<input type="text" id="test" name="test" class="decimal-widget" title="Test" value="10.34" />')
 
 
 class TestLinesField(PtahTestCase):
@@ -163,7 +157,7 @@ class TestLinesField(PtahTestCase):
         return form.LinesField(name, **kw)
 
     def test_fields_decimal(self):
-        request = DummyRequest()
+        request = self.make_request()
 
         field = self._makeOne('test')
         field = field.bind('', ['1','2','3'], {})
@@ -179,7 +173,7 @@ class TestLinesField(PtahTestCase):
 
         self.assertEqual(
             strip(field.render(request)),
-            '<textarea rows="5" name="test" title="Test" cols="40" id="test" class="textlines-widget">1 2 3</textarea>')
+            '<textarea id="test" name="test" class="textlines-widget" title="Test" cols="40" rows="5">1 2 3</textarea>')
 
 
 class TestVocabularyField(PtahTestCase):
@@ -296,7 +290,7 @@ class TestBaseChoiceField(PtahTestCase):
         return form.BaseChoiceField(name, **kw)
 
     def test_basechoice(self):
-        request = DummyRequest()
+        request = self.make_request()
 
         voc = form.SimpleVocabulary.from_items(
             (1, 'one', 'One'),
@@ -332,7 +326,7 @@ class TestBaseMultiChoiceField(PtahTestCase):
         return form.BaseMultiChoiceField(name, **kw)
 
     def test_basemultichoice(self):
-        request = DummyRequest()
+        request = self.make_request()
 
         self.assertRaises(ValueError, self._makeOne, 'test')
 
@@ -376,7 +370,7 @@ class TestChoiceField(PtahTestCase):
         return form.ChoiceField(name, **kw)
 
     def test_vocabulary_field(self):
-        request = DummyRequest()
+        request = self.make_request()
 
         voc = form.SimpleVocabulary.from_items(
             (1, 'one', 'One'),
@@ -433,7 +427,7 @@ class TestMultiChoiceField(PtahTestCase):
         return form.MultiChoiceField(name, **kw)
 
     def test_fields_decimal(self):
-        request = DummyRequest()
+        request = self.make_request()
 
         voc = form.SimpleVocabulary.from_items(
             (1, 'one', 'One'),
@@ -639,7 +633,7 @@ class TestFileField(PtahTestCase):
         return FileField(name, **kw)
 
     def test_fields_text(self):
-        request = DummyRequest()
+        request = self.make_request()
 
         field = self._makeOne('test')
         field = field.bind('', 'content', {})
@@ -665,7 +659,7 @@ class TestFileField(PtahTestCase):
         self.assertEqual(res['filename'], 'test.jpg')
 
     def test_fields_html5(self):
-        request = DummyRequest()
+        request = self.make_request()
 
         field = self._makeOne('test')
         field = field.bind('', 'content', {})

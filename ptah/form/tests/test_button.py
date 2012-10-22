@@ -57,7 +57,7 @@ class TestButton(PtahTestCase):
                           actype = form.AC_PRIMARY)
         params = {}
         context = object()
-        request = DummyRequest()
+        request = self.request
 
         widget = btn.bind('test.', params, context, request)
         self.assertEqual(

@@ -42,5 +42,5 @@
 <div class="span10">
   <h2>Enter uri</h2>
 
-  ${structure: view.snippet('form-view', view)}
+  ${structure: view.tmpl_view(request, view)}
 </div>

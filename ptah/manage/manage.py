@@ -152,15 +152,15 @@ class PtahManageRoute(object):
 
 ptah.layout.register(
     '', PtahManageRoute, root=PtahManageRoute, parent='ptah-manage',
-    renderer="ptah.manage:templates/ptah-layout.pt")
+    renderer="ptah-manage:ptah-layout.vl")
 
 ptah.layout.register(
     'ptah-page', PtahManageRoute, root=PtahManageRoute, parent='ptah-manage',
-    renderer="ptah.manage:templates/ptah-layout.pt")
+    renderer="ptah-manage:ptah-layout.vl")
 
 @ptah.layout(
     'ptah-manage', PtahManageRoute, root=PtahManageRoute,
-    renderer="ptah.manage:templates/ptah-manage.pt")
+    renderer="ptah-manage:ptah-manage.vl")
 
 class LayoutManage(ptah.View):
     """ Base layout for ptah manage """
@@ -181,7 +181,7 @@ class LayoutManage(ptah.View):
 
 @view_config(
     context=PtahManageRoute, wrapper=ptah.wrap_layout(),
-    renderer='ptah.manage:templates/manage.pt')
+    renderer='ptah-manage:manage.vl')
 
 class ManageView(ptah.View):
     """List ptah modules"""

@@ -23,7 +23,7 @@ class CKEditorField(TextAreaField):
     width = '400px'
     height = '300px'
 
-    tmpl_input = "ptah.form:templates/fields/ckeditor-input.pt"
+    tmpl_input = "ptah-fields:ckeditor"
 
 
 @field('date')
@@ -33,7 +33,7 @@ class JSDateField(TextField):
     klass = 'date-widget'
     value = ''
 
-    tmpl_input = "ptah.form:templates/fields/jsdate-input.pt"
+    tmpl_input = "ptah-fields:jsdate"
 
     def serialize(self, value):
         if value is null or value is None:
@@ -71,7 +71,7 @@ class JSDateTimeField(DateTimeField):
     date_part = null
     tzinfo = None
 
-    tmpl_input = "ptah.form:templates/fields/jsdatetime-input.pt"
+    tmpl_input = "ptah-fields:jsdatetime"
 
     def update(self, request):
         self.date_name = '%s.date' % self.name

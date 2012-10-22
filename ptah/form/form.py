@@ -1,12 +1,12 @@
 """Form implementation"""
 from collections import OrderedDict
 from webob.multidict import MultiDict
-from pyramid import security
 from pyramid.decorator import reify
-from pyramid.renderers import render, NullRendererHelper
+from pyramid.renderers import NullRendererHelper
 from pyramid.interfaces import IResponse
 from pyramid.httpexceptions import HTTPForbidden
 from pyramid.config.views import DefaultViewMapper
+from pyramid_vlayer import render
 
 import ptah
 from ptah.view import Message
@@ -16,7 +16,7 @@ from ptah.form.interfaces import _, Invalid, FORM_INPUT, FORM_DISPLAY, IForm
 
 
 @ptah.snippet('form-error', Message,
-              renderer='ptah.form:templates/form-error.pt')
+              renderer='ptah-form:form-error.vl')
 def formErrorMessage(context, request):
     """ form error renderer """
     errors = [err for err in context.message
@@ -173,10 +173,18 @@ class Form(ptah.View):
     csrf = False
     csrfname = 'csrf-token'
 
+    tmpl_view = 'ptah-form:view'
+    tmpl_actions = 'ptah-form:actions'
+
+    __name__ = ''
+    __parent__ = None
+
     __view_mapper__ = FormViewMapper
 
     def __init__(self, context, request):
-        super(Form, self).__init__(context, request)
+        self.context = context
+        self.request = request
+        self.__parent__ = context
 
         if self.buttons is None:
             self.buttons = Buttons()
@@ -258,7 +266,7 @@ class Form(ptah.View):
 
     def render(self):
         """ render form """
-        return self.snippet(FORM_VIEW, self)
+        return render(self.request, self.tmpl_view, self)
 
     def render_update(self):
         result = self.update()
@@ -290,31 +298,7 @@ class DisplayForm(Form):
     mode = FORM_DISPLAY
     params = MultiDict([])
 
+    tmpl_view = 'ptah-form:form-display'
+
     def form_params(self):
         return self.params
-
-
-FORM_VIEW = 'form-view'
-FORM_ACTIONS = 'form-actions'
-FORM_WIDGET = 'form-widget'
-FORM_DISPLAY_WIDGET = 'form-display-widget'
-
-ptah.snippet.register(
-    FORM_VIEW, Form,
-    renderer='ptah.form:templates/form.pt')
-
-ptah.snippet.register(
-    FORM_VIEW, DisplayForm,
-    renderer='ptah.form:templates/form-display.pt')
-
-ptah.snippet.register(
-    FORM_ACTIONS, Form,
-    renderer='ptah.form:templates/form-actions.pt')
-
-ptah.snippet.register(
-    FORM_WIDGET, Field,
-    renderer='ptah.form:templates/widget.pt')
-
-ptah.snippet.register(
-    FORM_DISPLAY_WIDGET, Field,
-    renderer='ptah.form:templates/widget-display.pt')

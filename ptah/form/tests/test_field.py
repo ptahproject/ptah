@@ -353,15 +353,17 @@ class TestField(PtahTestCase):
             def tmpl_display(self, **args):
                 return 'DISPLAY'
 
+        request = self.make_request()
+
         field = MyField('test')
-        widget = field.bind('field.', form.null, {})
-        widget.request = {}
+        widget = field.bind('field.', form.null, request)
+        widget.request = request
 
         widget.mode = form.FORM_INPUT
-        self.assertEqual(widget.render({}), 'INPUT')
+        self.assertEqual(widget.render(request), 'INPUT')
 
         widget.mode = form.FORM_DISPLAY
-        self.assertEqual(widget.render({}), 'DISPLAY')
+        self.assertEqual(widget.render(request), 'DISPLAY')
 
     def test_field_update_mode(self):
         from ptah import form

@@ -72,12 +72,6 @@ from ptah.form.form import Form
 from ptah.form.form import DisplayForm
 from ptah.form.form import FormWidgets
 
-# form snippets
-from ptah.form.form import FORM_VIEW
-from ptah.form.form import FORM_ACTIONS
-from ptah.form.form import FORM_WIDGET
-from ptah.form.form import FORM_DISPLAY_WIDGET
-
 # button
 from ptah.form.button import button
 from ptah.form.button import Button

@@ -13,4 +13,4 @@
   </div>
 </div>
 
-${structure: view.snippet('form-view', view)}
+${structure: view.tmpl_view(request, view)}

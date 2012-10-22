@@ -13,7 +13,7 @@ class PermissionsModule(ptah.manage.PtahModule):
 
 @view_config(
     context=PermissionsModule, wrapper=ptah.wrap_layout(),
-    renderer='ptah.manage:templates/permissions.pt')
+    renderer='ptah-manage:permissions.vl')
 class PermissionsView(ptah.View):
     """ Permissions module default view """
 
@@ -32,7 +32,7 @@ class PermissionsView(ptah.View):
     name='roles.html',
     context=PermissionsModule,
     wrapper=ptah.wrap_layout(),
-    renderer='ptah.manage:templates/roles.pt')
+    renderer='ptah-manage:roles.vl')
 
 class RolesView(ptah.View):
     """ Roles view for permissions manage module """

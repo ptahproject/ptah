@@ -5,6 +5,6 @@
   <fieldset tal:condition="context.widgets">
     <tal:block tal:repeat="widget context.widgets.values()"
                tal:content="structure
-                            view.snippet('form-display-widget',widget)" />
+                            request.render_tmpl('ptah-form:widget-display', widget)" />
   </fieldset>
 </form>

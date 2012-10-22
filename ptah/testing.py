@@ -12,6 +12,7 @@ from pyramid.view import render_view, render_view_to_response
 from pyramid.path import package_name
 from pyramid.authorization import ACLAuthorizationPolicy
 from pyramid.authentication import AuthTktAuthenticationPolicy
+from pyramid_vlayer.renderer import render
 
 if sys.version_info[:2] == (2, 6): # pragma: no cover
     import unittest2 as unittest
@@ -46,6 +47,13 @@ class PtahTestCase(TestCase):
             environ=self._environ
         request = testing.DummyRequest(environ=environ, **kwargs)
         request.request_iface = IRequest
+        
+        # render_tmpl
+        def m(*args, **kw):
+            return render(request, *args, **kw)
+
+        request.render_tmpl = m
+
         return request
 
     def init_ptah(self, *args, **kw):

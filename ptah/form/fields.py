@@ -11,7 +11,7 @@ from ptah.form.field import field, Field
 from ptah.form.interfaces import _, null, Invalid, ITerm
 
 
-class InputField(Field, ptah.View):
+class InputField(Field):
 
     title = None
     lang = None
@@ -25,8 +25,8 @@ class InputField(Field, ptah.View):
     size = None
     maxlength = None
 
-    tmpl_input = 'ptah.form:templates/fields/text-input.pt'
-    tmpl_display = 'ptah.form:templates/fields/text-display.pt'
+    tmpl_input = 'ptah-fields:text'
+    tmpl_display = 'ptah-fields:text-display'
 
     def serialize(self, value):
         return value
@@ -90,7 +90,7 @@ class VocabularyField(InputField):
 class BaseChoiceField(VocabularyField):
     """ choice field """
 
-    tmpl_display = 'ptah.form:templates/fields/basechoice-display.pt'
+    tmpl_display = 'ptah-fields:choice-display'
 
     def serialize(self, value):
         if value is null:
@@ -136,7 +136,7 @@ class BaseChoiceField(VocabularyField):
 class BaseMultiChoiceField(VocabularyField):
     """ multi choice field """
 
-    tmpl_display = 'ptah.form:templates/fields/basemultichoice-display.pt'
+    tmpl_display = 'ptah-fields:multichoice-display'
 
     def serialize(self, value):
         if value is null:
@@ -270,7 +270,7 @@ class TextAreaField(TextField):
     rows = 5
     cols = 40
 
-    tmpl_input = 'ptah.form:templates/fields/textarea-input.pt'
+    tmpl_input = 'ptah-fields:textarea'
 
 
 @field('file')
@@ -278,7 +278,7 @@ class FileField(TextField):
     """HTML File input widget. Field name is ``file``."""
 
     klass = 'input-file'
-    tmpl_input = 'ptah.form:templates/fields/file-input.pt'
+    tmpl_input = 'ptah-fields:file.vl'
 
     def extract(self, default=null):
         value = self.params.get(self.name, default)
@@ -344,8 +344,8 @@ class PasswordField(TextField):
 
     klass = 'password-widget'
 
-    tmpl_input = 'ptah.form:templates/fields/password-input.pt'
-    tmpl_display = 'ptah.form:templates/fields/password-display.pt'
+    tmpl_input = 'ptah-fields:password'
+    tmpl_display = 'ptah-fields:password-display'
 
 
 @field('multichoice')
@@ -353,13 +353,13 @@ class MultiChoiceField(BaseMultiChoiceField):
     """HTML Checkboxs input based widget. Field name is ``multichoice``."""
 
     klass = 'multichoice-widget'
-    tmpl_input = 'ptah.form:templates/fields/multichoice-input.pt'
+    tmpl_input = 'ptah-fields:multichoice'
 
 
 class DateField(TextField):
     """Simple date input field."""
 
-    tmpl_display = 'ptah.form:templates/fields/date-display.pt'
+    tmpl_display = 'ptah-fields:date-display'
 
     def serialize(self, value):
         if value is null:
@@ -397,7 +397,7 @@ class DateTimeField(TextField):
 
     default_tzinfo = iso8601.Utc()
 
-    tmpl_display = 'ptah.form:templates/fields/datetime-display.pt'
+    tmpl_display = 'ptah-fields:datetime-display'
 
     def serialize(self, value):
         if value is null or value is None or not value:
@@ -439,7 +439,7 @@ class RadioField(BaseChoiceField):
     """HTML Radio input widget. Field name is ``radio``."""
 
     klass = 'radio-widget'
-    tmpl_input = 'ptah.form:templates/fields/radio-input.pt'
+    tmpl_input = 'ptah-fields:radio'
 
 
 @field('bool')
@@ -450,7 +450,7 @@ class BoolField(BaseChoiceField):
         (True, 'true',  'yes'),
         (False, 'false',  'no'))
 
-    tmpl_input = 'ptah.form:templates/fields/bool-input.pt'
+    tmpl_input = 'ptah-fields:bool'
 
 
 @field('choice')
@@ -462,7 +462,7 @@ class ChoiceField(BaseChoiceField):
     multiple = None
     promptMessage = _('select a value ...')
 
-    tmpl_input = 'ptah.form:templates/fields/select-input.pt'
+    tmpl_input = 'ptah-fields:select'
 
     def update_items(self):
         super(ChoiceField, self).update_items()

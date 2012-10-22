@@ -38,7 +38,7 @@ def bootstrap(config_uri):
     threadlocal_manager.push(threadlocals)
 
     # logging config
-    def fileConfig(f, defaults):
+    def fileConfig(f, defaults): #pragma: no cover
         from logging.config import fileConfig
         return fileConfig(f, defaults, disable_existing_loggers = False)
 

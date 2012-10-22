@@ -29,7 +29,7 @@ class SettingsWrapper(object):
 
 @view_config(
     context=SettingsModule, wrapper=ptah.wrap_layout(),
-    renderer='ptah.manage:templates/settings.pt')
+    renderer='ptah-manage:settings.vl')
 
 class SettingsView(ptah.View):
     """ Settings manage module view """

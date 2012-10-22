@@ -72,7 +72,7 @@
 
       <tal:block
          condition="view.show_actions"
-         content="structure view.snippet('form-actions', view)" />
+         content="structure request.render_tmpl(view.tmpl_actions, view)" />
     </form>
   </div>
 </div>
