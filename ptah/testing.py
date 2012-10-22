@@ -47,7 +47,7 @@ class PtahTestCase(TestCase):
             environ=self._environ
         request = testing.DummyRequest(environ=environ, **kwargs)
         request.request_iface = IRequest
-        
+
         # render_tmpl
         def m(*args, **kw):
             return render(request, *args, **kw)
