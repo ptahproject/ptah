@@ -1,6 +1,5 @@
 from pyramid import testing
 from pyramid.exceptions import ConfigurationConflictError
-from ptah import config
 from ptah.testing import PtahTestCase
 
 

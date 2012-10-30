@@ -13,8 +13,6 @@ class TestPermission(PtahTestCase):
     _init_ptah = False
 
     def test_permission_register(self):
-        import ptah
-
         perm = ptah.Permission('perm', 'Permission', 'Test permission')
         self.init_ptah()
 
@@ -24,8 +22,6 @@ class TestPermission(PtahTestCase):
         self.assertTrue(ptah.get_permissions()['perm'] is perm)
 
     def test_permission_register_same_name(self):
-        import ptah
-
         ptah.Permission('perm', 'Permission1')
         ptah.Permission('perm', 'Permission2')
 
@@ -37,8 +33,6 @@ class TestACL(PtahTestCase):
     _init_ptah = False
 
     def test_acl_register(self):
-        import ptah
-
         pmap = ptah.ACL('map', 'ACL', 'Map')
         self.init_ptah()
 
@@ -48,16 +42,12 @@ class TestACL(PtahTestCase):
         self.assertTrue(ptah.get_acls()['map'] is pmap)
 
     def test_acl_register_same_name(self):
-        import ptah
-
         ptah.ACL('map', 'acl1')
         ptah.ACL('map', 'acl2')
 
         self.assertRaises(ConfigurationConflictError, self.init_ptah)
 
     def test_acl_allow(self):
-        import ptah
-
         role = ptah.Role('test', 'test')
 
         pmap = ptah.ACL('map', 'acl map')
@@ -70,8 +60,6 @@ class TestACL(PtahTestCase):
         self.assertEqual(pmap[0][2], set(('perm2', 'perm1')))
 
     def test_acl_allow_all(self):
-        import ptah
-
         role = ptah.Role('test', 'test')
 
         pmap = ptah.ACL('map', 'acl map')
@@ -85,8 +73,6 @@ class TestACL(PtahTestCase):
         self.assertEqual(pmap[0][2], ALL_PERMISSIONS)
 
     def test_acl_deny(self):
-        import ptah
-
         role = ptah.Role('test', 'test')
 
         pmap = ptah.ACL('map', 'acl map')
@@ -99,8 +85,6 @@ class TestACL(PtahTestCase):
         self.assertEqual(pmap[0][2], set(('perm2', 'perm1')))
 
     def test_acl_deny_all(self):
-        import ptah
-
         pmap = ptah.ACL('map', 'acl map')
         pmap.deny('role:test', 'perm1')
         pmap.deny('role:test', ALL_PERMISSIONS)
@@ -112,8 +96,6 @@ class TestACL(PtahTestCase):
         self.assertEqual(pmap[0][2], ALL_PERMISSIONS)
 
     def test_acl_order(self):
-        import ptah
-
         pmap = ptah.ACL('map', 'acl map')
         pmap.deny('role:test', 'perm1')
         pmap.allow('role:test', 'perm2')
@@ -130,8 +112,6 @@ class TestACL(PtahTestCase):
         self.assertEqual(pmap[3][1], 'role:test2')
 
     def test_acl_unset_allow(self):
-        import ptah
-
         role = ptah.Role('test', 'test')
 
         pmap = ptah.ACL('map', 'acl map')
@@ -146,8 +126,6 @@ class TestACL(PtahTestCase):
         self.assertEqual(pmap[0][2], set(('perm2',)))
 
     def test_acl_unset_role_allow(self):
-        import ptah
-
         role = ptah.Role('test', 'test')
 
         pmap = ptah.ACL('map', 'acl map')
@@ -165,8 +143,6 @@ class TestACL(PtahTestCase):
         self.assertEqual(pmap[1][2], set(('perm1',)))
 
     def test_acl_unset_deny(self):
-        import ptah
-
         role = ptah.Role('test', 'test')
 
         pmap = ptah.ACL('map', 'acl map')
@@ -181,8 +157,6 @@ class TestACL(PtahTestCase):
         self.assertEqual(pmap[0][2], set(('perm2',)))
 
     def test_acl_unset_role_deny(self):
-        import ptah
-
         role = ptah.Role('test', 'test')
 
         pmap = ptah.ACL('map', 'acl map')
@@ -200,8 +174,6 @@ class TestACL(PtahTestCase):
         self.assertEqual(pmap[1][2], set(('perm1',)))
 
     def test_acl_unset_all(self):
-        import ptah
-
         pmap = ptah.ACL('map', 'acl map')
         pmap.allow('role:test1', 'perm1', 'perm2')
         pmap.allow('role:test2', 'perm1')
@@ -212,8 +184,6 @@ class TestACL(PtahTestCase):
         self.assertEqual(len(pmap), 0)
 
     def test_acl_unset_role_all(self):
-        import ptah
-
         pmap = ptah.ACL('map', 'acl map')
         pmap.allow('role:test1', 'perm2')
         pmap.allow('role:test2', 'perm1')
@@ -235,8 +205,6 @@ class TestACLsProps(PtahTestCase):
     _init_ptah = False
 
     def test_acls(self):
-        import ptah
-
         acl1 = ptah.ACL('acl1', 'acl1')
         acl1.allow('role1', 'perm1', 'perm2')
 
@@ -275,8 +243,6 @@ class TestRole(PtahTestCase):
     _init_ptah = False
 
     def test_role_register(self):
-        import ptah
-
         role = ptah.Role('myrole', 'MyRole')
 
         self.assertTrue(role.id == 'role:myrole')
@@ -287,16 +253,12 @@ class TestRole(PtahTestCase):
         self.assertTrue(repr(role) == 'role:myrole')
 
     def test_role_register_conflict(self):
-        import ptah
-
         ptah.Role('myrole', 'MyRole1')
         ptah.Role('myrole', 'MyRole2')
 
         self.assertRaises(ConfigurationConflictError, self.init_ptah)
 
     def test_role_roles(self):
-        import ptah
-
         role = ptah.Role('myrole', 'MyRole')
         self.init_ptah()
 
@@ -304,7 +266,6 @@ class TestRole(PtahTestCase):
         self.assertTrue(ptah.get_roles()['myrole'] is role)
 
     def test_role_allow_permission(self):
-        import ptah
         from ptah import DEFAULT_ACL
 
         role = ptah.Role('myrole', 'MyRole')
@@ -318,7 +279,6 @@ class TestRole(PtahTestCase):
         self.assertTrue('perm2' in rec[2])
 
     def test_role_deny_permission(self):
-        import ptah
         from ptah import DEFAULT_ACL
 
         role = ptah.Role('myrole', 'MyRole')
@@ -332,7 +292,6 @@ class TestRole(PtahTestCase):
         self.assertTrue('perm2' in rec[2])
 
     def test_role_unset_allowed_permission(self):
-        import ptah
         from ptah import DEFAULT_ACL
 
         role = ptah.Role('myrole', 'MyRole')
@@ -344,7 +303,6 @@ class TestRole(PtahTestCase):
         self.assertEqual(len(DEFAULT_ACL), 0)
 
     def test_role_unset_denied_permission(self):
-        import ptah
         from ptah import DEFAULT_ACL
 
         role = ptah.Role('myrole', 'MyRole')
@@ -359,8 +317,6 @@ class TestRole(PtahTestCase):
 class TestDefaultRoles(PtahTestCase):
 
     def test_role_defaults(self):
-        import ptah
-
         roles = sorted(list(ptah.get_roles().keys()))[:3]
 
         self.assertTrue(['Authenticated', 'Everyone', 'Owner'] == roles)
@@ -729,9 +685,6 @@ class TestRolesProvider(PtahTestCase):
         self.assertIs(data['test2'], provider2)
 
     def test_roles_provider_conflict(self):
-        import ptah
-        from ptah.security import ID_ROLES_PROVIDER
-
         @ptah.roles_provider('test1')
         def provider1(context, uid, registry):
             """ """

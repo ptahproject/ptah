@@ -1,5 +1,4 @@
 import ptah
-from ptah import config
 from ptah.testing import PtahTestCase
 from pyramid.exceptions import ConfigurationConflictError
 
@@ -150,8 +149,6 @@ class TestUIAction(PtahTestCase):
                       category='test')
 
         self.init_ptah()
-
-        request = self.request
 
         actions = ptah.list_uiactions(Content(), self.request)
         self.assertEqual(len(actions), 0)

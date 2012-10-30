@@ -208,11 +208,11 @@ class TestVocabularyField(PtahTestCase):
             return voc
 
         field = VocabularyField('test', voc_factory=factory)
-        clone = field.bind('p.', None, None)
+        field.bind('p.', None, None)
         self.assertIsNone(data[-1])
 
         context = object()
-        clone = field.bind('p.', None, None, context)
+        field.bind('p.', None, None, context)
         self.assertIs(data[-1], context)
 
     def test_vocabulary_field(self):
@@ -707,8 +707,6 @@ class TestJSDateTimeField(PtahTestCase):
         self.assertEqual(f.time_part, '10:10 AM')
 
     def test_fields_jsdatetime_extract(self):
-        from datetime import datetime
-
         request = self.request
         field = self._makeOne('test')
 

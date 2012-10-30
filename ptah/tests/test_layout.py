@@ -1,7 +1,7 @@
 """ layout tests """
-import os, tempfile, shutil
+import tempfile, shutil
 from zope import interface
-from pyramid.compat import bytes_, text_
+from pyramid.compat import text_
 from pyramid.interfaces import IRequest
 from pyramid.interfaces import IRouteRequest
 
@@ -87,7 +87,7 @@ class TestLayout(PtahTestCase):
         self.assertTrue(layout is None)
 
     def test_layout_simple_chain_multi_level(self):
-        from ptah.layout import query_layout, LayoutRenderer
+        from ptah.layout import LayoutRenderer
         ptah.layout.register('test', parent='.',
                              renderer='ptah:tests/test-layout.pt')
         ptah.layout.register('', context=Root, parent=None,
@@ -140,7 +140,7 @@ class TestLayout(PtahTestCase):
         self.assertTrue('<div>View: test</div>' in text_(res))
 
     def test_layout_for_route(self):
-        from ptah.layout import query_layout, LayoutRenderer
+        from ptah.layout import query_layout
 
         self.config.add_route('test-route', '/test/', use_global_views=False)
         ptah.layout.register('test', route_name='test-route')

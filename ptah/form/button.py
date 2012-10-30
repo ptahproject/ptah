@@ -2,7 +2,6 @@
 import re
 import sys
 import binascii
-from ptah import view
 from pyramid_layer import render
 from collections import OrderedDict
 

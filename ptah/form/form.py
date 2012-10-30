@@ -11,7 +11,7 @@ from pyramid_layer import render, tmpl_filter
 import ptah
 from ptah.form.field import Field, Fieldset
 from ptah.form.button import Buttons, Actions
-from ptah.form.interfaces import _, Invalid, FORM_INPUT, FORM_DISPLAY, IForm
+from ptah.form.interfaces import Invalid, FORM_INPUT, FORM_DISPLAY
 
 
 @tmpl_filter('ptah-form:error')

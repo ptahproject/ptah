@@ -5,7 +5,6 @@ from __future__ import (absolute_import, division, print_function,
 import uuid
 from threading import local
 
-import sqlalchemy as sqla
 from sqlalchemy import orm
 from sqlalchemy.ext import declarative
 from sqlalchemy.ext.mutable import Mutable

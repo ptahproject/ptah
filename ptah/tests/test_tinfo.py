@@ -1,9 +1,7 @@
-import transaction
-import sqlalchemy as sqla
 from pyramid.httpexceptions import HTTPForbidden
 from pyramid.exceptions import ConfigurationError, ConfigurationConflictError
 
-from ptah import config, form
+from ptah import form
 from ptah.testing import PtahTestCase, TestCase
 
 
@@ -69,7 +67,6 @@ class TestTypeInfo(PtahTestCase):
             pass
         self.init_ptah()
 
-        content = MyContent()
         container = MyContainer()
 
         #
@@ -287,7 +284,6 @@ class TestSqlTypeInfo(PtahTestCase):
 
     def test_custom_fieldset(self):
         import ptah
-        from ptah import tinfo
         import sqlalchemy as sqla
 
         @ptah.tinfo('mycontent', 'MyContent')
@@ -305,7 +301,6 @@ class TestSqlTypeInfo(PtahTestCase):
 
     def test_custom_fieldset_fieldNames(self):
         import ptah
-        from ptah import tinfo
         import sqlalchemy as sqla
 
         @ptah.tinfo('mycontent', 'MyContent', fieldNames=['test'])
@@ -325,7 +320,6 @@ class TestSqlTypeInfo(PtahTestCase):
 
     def test_custom_fieldset_namesFilter(self):
         import ptah
-        from ptah import tinfo
         import sqlalchemy as sqla
 
         def filter(n, names):
@@ -348,7 +342,6 @@ class TestSqlTypeInfo(PtahTestCase):
 
     def test_sqla_add_method(self):
         import ptah
-        from ptah import tinfo
         import sqlalchemy as sqla
 
         @ptah.tinfo('mycontent', 'MyContent')

@@ -5,7 +5,6 @@ from pyramid.view import view_config
 from pyramid.httpexceptions import HTTPFound
 
 import ptah
-from ptah import view
 from ptah.manage.manage import PtahManageRoute
 
 

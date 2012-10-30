@@ -28,8 +28,8 @@ class TestCommand(PtahTestCase):
 
         self.init_ptah()
 
-        group1 = ptah.get_settings('group1', self.registry)
-        group2 = ptah.get_settings('group2', self.registry)
+        ptah.get_settings('group1', self.registry)
+        ptah.get_settings('group2', self.registry)
 
         # all
         sys.argv[1:] = ['-a', 'ptah.ini']

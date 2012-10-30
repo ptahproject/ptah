@@ -27,7 +27,6 @@ class TestPopulateDirective(ptah.PtahTestCase):
         self.assertEqual(data['step']['requires'], ['test-dep'])
 
     def test_step_pyramid_registration(self):
-        import ptah
 
         def step(registry):
             """ """

@@ -185,7 +185,7 @@ class layout(object):
 
           config.ptah_layout('page', renderer='..')
         """
-        l = layout(name, context, root, parent,
+        layout(name, context, root, parent,
                renderer, route_name, use_global_views, 3)(view, cfg)
 
     def __call__(self, view, cfg=None):

@@ -67,7 +67,7 @@ class populate(object):
 
           config.ptah_populate_step('ptah-create-db-schema', factory=..)
         """
-        l = populate(name, title, active, requires, 3)(factory, cfg)
+        populate(name, title, active, requires, 3)(factory, cfg)
 
     def __call__(self, factory, cfg=None):
         intr = self.intr

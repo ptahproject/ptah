@@ -3,7 +3,7 @@ import ptah
 from ptah import form, config
 from ptah.testing import TestCase, PtahTestCase
 from pyramid import testing
-from pyramid.compat import text_type, text_, bytes_
+from pyramid.compat import text_, bytes_
 from pyramid.exceptions import ConfigurationConflictError
 
 

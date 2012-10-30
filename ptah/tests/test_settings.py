@@ -2,8 +2,6 @@ import os
 import shutil
 import tempfile
 from pyramid.compat import bytes_
-from zope.interface.interface import InterfaceClass
-from zope.interface.interfaces import IObjectEvent
 
 import ptah
 from ptah.settings import Settings
@@ -277,7 +275,7 @@ class TestSettings(BaseTesting):
         self.assertEqual(group.__fields__['node2'].default, 30)
 
     def test_settings_load_rawdata_with_errors_in_rawdata(self):
-        group = self._create_default_group()
+        self._create_default_group()
 
         self.assertRaises(
             ptah.config.StopException,
@@ -355,7 +353,6 @@ class TestSettingsInitialization(BaseTesting):
 
         sm = self.config.registry
 
-        events = []
         err_tp = TypeError()
 
         def h1(ev):

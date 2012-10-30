@@ -1,4 +1,3 @@
-from ptah import config
 from ptah.testing import PtahTestCase
 from pyramid import testing
 

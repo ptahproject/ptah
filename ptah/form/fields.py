@@ -4,7 +4,6 @@ import datetime
 import decimal
 from pyramid.compat import NativeIO, text_type, PY3
 
-import ptah
 from ptah.form import iso8601
 from ptah.form import vocabulary
 from ptah.form.field import field, Field

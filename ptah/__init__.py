@@ -216,7 +216,6 @@ def includeme(cfg):
     cfg.add_directive('ptah_uri_resolver', resolver.pyramid)
 
     # ptah.password directives
-    from ptah import password
     cfg.add_directive(
         'ptah_password_changer', password_changer.pyramid)
 

@@ -1,6 +1,4 @@
 """ introspect module """
-import urllib
-from zope.interface import Interface
 from pyramid.view import view_config
 from pyramid.compat import url_unquote
 from pyramid_layer import RendererNotFound
@@ -93,4 +91,4 @@ def tmpl_subscriber(intr, request):
         obj = None
         klass = required[0]
 
-    return locals()
+    return dict(factoryInfo=factoryInfo, obj=obj, klass=klass)

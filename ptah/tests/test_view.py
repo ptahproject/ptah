@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
 """ view tests """
 from pyramid.compat import text_
-from zope.interface import providedBy
 
 import ptah
-from ptah import config, view
 from ptah.testing import PtahTestCase
 
 
@@ -78,8 +76,6 @@ class TestStatusMessages(PtahTestCase):
             '<div class="customMsg">message</div>')
 
     def test_messages_render_message(self):
-        from ptah import view
-
         self.config.add_layer(
             'ptah-message', 'test', path='ptah:tests/messages/')
         self.init_ptah()
@@ -93,8 +89,6 @@ class TestStatusMessages(PtahTestCase):
             '<div class="customMsg">message</div>')
 
     def test_messages_render_message_with_error(self):
-        from ptah import view
-
         self.config.add_layer('ptah-message', 'test',
                               path='ptah:tests/messages/')
 
@@ -130,7 +124,6 @@ class TestStatusMessages(PtahTestCase):
                           view.add_message, self.request, 'message', 'unknown')
 
     def test_messages_request_attr(self):
-        from ptah import view
         self.init_ptah()
 
         from pyramid.request import Request

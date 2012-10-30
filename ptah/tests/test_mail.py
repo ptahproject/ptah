@@ -1,5 +1,4 @@
-import ptah
-from ptah import view, mail
+from ptah import mail
 from pyramid.compat import bytes_
 from pyramid.testing import DummyRequest
 

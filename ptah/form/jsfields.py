@@ -2,7 +2,6 @@
 import datetime
 
 import ptah
-from ptah import view, formatter
 from ptah.form.interfaces import _, null, Invalid
 from ptah.form.field import field
 from ptah.form.fields import TextAreaField, TextField, DateTimeField
@@ -111,7 +110,7 @@ class JSDateTimeField(DateTimeField):
         if not time:
             return null
 
-        FORMAT = ptah.get_settings(ptah.CFG_ID_FORMAT, self.request.registry)
+        #FORMAT = ptah.get_settings(ptah.CFG_ID_FORMAT, self.request.registry)
         try:
             dt = datetime.datetime.strptime(
                 '%s %s' % (date, time), '%m/%d/%Y %H:%M')

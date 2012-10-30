@@ -1,4 +1,3 @@
-import ptah
 from ptah.testing import PtahTestCase
 from pyramid.testing import DummyRequest
 

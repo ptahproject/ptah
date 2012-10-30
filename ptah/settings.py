@@ -7,7 +7,6 @@ from collections import OrderedDict
 from zope import interface
 from zope.interface.interface import InterfaceClass
 from pyramid.compat import configparser
-from pyramid.interfaces import PHASE1_CONFIG
 
 import ptah
 from ptah import uri, form, config
@@ -85,8 +84,7 @@ def init_settings(pconfig, cfg=None, section=configparser.DEFAULTSECT):
       config.ptah_init_settings()
 
     """
-    registry = pconfig.registry
-    settings = config.get_cfg_storage(SETTINGS_OB_ID,pconfig.registry,Settings)
+    settings = config.get_cfg_storage(SETTINGS_OB_ID, pconfig.registry,Settings)
 
     if settings.initialized:
         raise RuntimeError(

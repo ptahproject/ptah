@@ -1,5 +1,5 @@
 """ assets libraries """
-import ptah
+
 
 def includeme(config):
     # amd modules

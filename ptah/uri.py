@@ -1,6 +1,5 @@
 """ uri resolver """
 import uuid
-import ptah
 from ptah import config
 
 ID_RESOLVER = 'ptah:resolver'

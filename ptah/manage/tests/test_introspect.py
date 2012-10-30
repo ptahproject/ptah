@@ -1,7 +1,6 @@
 import ptah
 from ptah.testing import PtahTestCase
 from pyramid.view import render_view_to_response
-from pyramid.testing import DummyRequest
 
 
 class TestIntrospectModule(PtahTestCase):
@@ -38,7 +37,7 @@ class TestIntrospectModule(PtahTestCase):
         self.assertIsInstance(package, Introspector)
 
     def test_view(self):
-        from ptah.manage.introspect import IntrospectModule, Introspector
+        from ptah.manage.introspect import IntrospectModule
         self.init_ptah()
 
         request = self.make_request()
@@ -51,7 +50,7 @@ class TestIntrospectModule(PtahTestCase):
           res.text)
 
     def test_intr_view(self):
-        from ptah.manage.introspect import IntrospectModule, Introspector
+        from ptah.manage.introspect import IntrospectModule
         self.init_ptah()
 
         request = self.make_request()
@@ -63,7 +62,7 @@ class TestIntrospectModule(PtahTestCase):
         self.assertIn('System super user', res.text)
 
     def test_intr_view_default(self):
-        from ptah.manage.introspect import IntrospectModule, Introspector
+        from ptah.manage.introspect import IntrospectModule
         self.init_ptah()
 
         request = self.make_request()

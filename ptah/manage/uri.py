@@ -1,12 +1,11 @@
 """ uri resolve """
 import inspect
 from pyramid.view import view_config
-from pyramid.httpexceptions import HTTPFound
 
 import ptah
-from ptah import form, config, manage
+from ptah import form, config
 from ptah.uri import ID_RESOLVER
-from ptah.manage.manage import PtahManageRoute, get_manage_url
+from ptah.manage.manage import PtahManageRoute
 
 
 @view_config(

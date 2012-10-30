@@ -1,5 +1,3 @@
-import sys
-from pyramid.router import Router
 from pyramid.config import Configurator
 
 import ptah

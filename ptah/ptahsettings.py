@@ -4,12 +4,10 @@ import logging
 import sqlalchemy
 import translationstring
 from email.utils import formataddr
-
-from pyramid.compat import bytes_
 from pyramid.events import ApplicationCreated
 
 import ptah
-from ptah import manage, settings
+from ptah import settings
 
 _ = translationstring.TranslationStringFactory('ptah')
 

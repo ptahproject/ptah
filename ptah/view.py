@@ -1,16 +1,9 @@
 """ base view class with access to various api's """
-import cgi
 import logging
-from zope.interface import Interface
 from pyramid.decorator import reify
-from pyramid.compat import string_types, escape
-from pyramid.renderers import RendererHelper
-from pyramid.config.views import DefaultViewMapper
-
+from pyramid.compat import escape
 from pyramid_layer import render, tmpl_filter
 
-import ptah.view
-from ptah import config
 from ptah.formatter import format
 
 log = logging.getLogger('ptah.view')

@@ -26,7 +26,7 @@ class TestUriIntrospect(ptah.PtahTestCase):
 class SubscribersIntrospect(ptah.PtahTestCase):
 
     def test_subscribers(self):
-        from ptah.manage.introspect import IntrospectModule, Introspector
+        from ptah.manage.introspect import IntrospectModule
 
         mod = IntrospectModule(None, self.request)
 
@@ -39,7 +39,7 @@ class SubscribersIntrospect(ptah.PtahTestCase):
 class FieldIntrospect(ptah.PtahTestCase):
 
     def test_fields(self):
-        from ptah.manage.introspect import IntrospectModule, Introspector
+        from ptah.manage.introspect import IntrospectModule
 
         mod = IntrospectModule(None, self.request)
 

@@ -1,5 +1,4 @@
 from collections import OrderedDict
-from pyramid import renderers
 from pyramid.compat import string_types
 from pyramid_layer import render
 
@@ -382,7 +381,7 @@ class Field(object):
         """ load field value from json """
         try:
             return json.loads(s)
-        except Exception as e:
+        except Exception:
             raise Invalid(self, 'Error in JSON format: {0}'.format(s))
 
     def validate(self, value):

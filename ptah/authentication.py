@@ -1,7 +1,6 @@
 from pyramid.security import authenticated_userid
 from pyramid.threadlocal import get_current_request
 
-import ptah
 from ptah import config
 from ptah.uri import resolve, resolver
 from ptah.util import tldata

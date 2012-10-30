@@ -1,13 +1,10 @@
 """ directives tests """
 import sys
 from pyramid import testing
-from pyramid.exceptions import ConfigurationConflictError
 
 from zope import interface
-from zope.interface.registry import Components
 from zope.interface.interfaces import IObjectEvent
 
-import ptah
 from ptah import config
 from ptah.testing import TestCase
 
@@ -83,7 +80,7 @@ class TestSubscriberDirective(BaseTesting):
         self.assertTrue(len(events) == 2)
 
     def test_subscriber_object(self):
-        from zope.interface.interfaces import IObjectEvent, ObjectEvent
+        from zope.interface.interfaces import ObjectEvent
 
         events = []
 

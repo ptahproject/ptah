@@ -1,5 +1,3 @@
-import transaction
-import sqlalchemy as sqla
 import ptah
 from ptah.testing import PtahTestCase
 
@@ -59,8 +57,8 @@ class TestSqlSession(PtahTestCase):
         err = None
 
         try:
-            with ptah.sa_session() as sa:
-                with ptah.sa_session() as sa:
+            with ptah.sa_session():
+                with ptah.sa_session():
                     pass
         except Exception as e:
             err = e

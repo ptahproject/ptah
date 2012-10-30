@@ -2,7 +2,6 @@ import os.path
 import logging
 import tempfile
 import threading
-import pkg_resources
 from pyramid.compat import text_type, bytes_
 
 try:

@@ -5,7 +5,7 @@ from ptah.testing import PtahTestCase
 class TestTimezoneField(PtahTestCase):
 
     def test_timezone_loads(self):
-        from ptah.form import null, TimezoneField
+        from ptah.form import TimezoneField
 
         typ = TimezoneField('test')
 

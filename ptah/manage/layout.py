@@ -1,4 +1,3 @@
-import inspect
 from zope.interface import providedBy
 from pyramid.view import view_config
 from pyramid.interfaces import IView, IViewClassifier

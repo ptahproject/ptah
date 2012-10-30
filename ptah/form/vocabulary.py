@@ -12,7 +12,6 @@
 #
 ##############################################################################
 """ vocabulary implementation from zope.schema """
-from zope import interface
 from zope.interface import implementer
 from ptah.form.interfaces import ITerm, IVocabulary
 

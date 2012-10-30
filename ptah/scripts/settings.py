@@ -37,7 +37,7 @@ def main(init=True):
 
     # bootstrap pyramid
     if init: # pragma: no cover
-        env = scripts.bootstrap(args.config)
+        scripts.bootstrap(args.config)
 
     cmd = SettingsCommand(args)
     cmd.run()

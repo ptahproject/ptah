@@ -8,7 +8,6 @@ from pyramid.view import render_view_to_response
 class TestSourceView(PtahTestCase):
 
     def test_source(self):
-        from ptah.manage.source import SourceView
         from ptah.manage.manage import PtahManageRoute
 
         ptah.auth_service.set_userid(ptah.SUPERUSER_URI)
@@ -20,7 +19,6 @@ class TestSourceView(PtahTestCase):
         self.assertEqual(res.headers['location'], '.')
 
     def test_source_view(self):
-        from ptah.manage.source import SourceView
         from ptah.manage.manage import PtahManageRoute
 
         ptah.auth_service.set_userid(ptah.SUPERUSER_URI)
@@ -32,7 +30,6 @@ class TestSourceView(PtahTestCase):
         self.assertIn('Source: ptah/config.py', res.text)
 
     def test_source_view_unknown(self):
-        from ptah.manage.source import SourceView
         from ptah.manage.manage import PtahManageRoute
 
         ptah.auth_service.set_userid(ptah.SUPERUSER_URI)

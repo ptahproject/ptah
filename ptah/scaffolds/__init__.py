@@ -1,4 +1,3 @@
-import os
 from pyramid.scaffolds.template import Template
 
 

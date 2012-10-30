@@ -1,17 +1,12 @@
 """ base class """
 import sys
-import sqlalchemy
 import transaction
-import pkg_resources
 from zope.interface import directlyProvides
 from pyramid import testing
-from pyramid.interfaces import \
-     IRequest, IAuthenticationPolicy, IAuthorizationPolicy
+from pyramid.interfaces import IRequest
 from pyramid.interfaces import IRouteRequest
-from pyramid.view import render_view, render_view_to_response
+from pyramid.view import render_view_to_response
 from pyramid.path import package_name
-from pyramid.authorization import ACLAuthorizationPolicy
-from pyramid.authentication import AuthTktAuthenticationPolicy
 from pyramid_layer.renderer import render
 
 if sys.version_info[:2] == (2, 6): # pragma: no cover
@@ -22,7 +17,6 @@ else:
     from unittest import TestCase
 
 import ptah
-from ptah import config
 
 
 class PtahTestCase(TestCase):
@@ -48,13 +42,13 @@ class PtahTestCase(TestCase):
         request = testing.DummyRequest(environ=environ, **kwargs)
         request.request_iface = IRequest
 
-        def m(*args, **kw):
+        def m1(*args, **kw):
             return render(request, *args, **kw)
-        request.render_tmpl = m
+        request.render_tmpl = m1
 
-        def m(*args, **kw):
+        def m2(*args, **kw):
             return ptah.add_message(request, *args, **kw)
-        request.add_message = m
+        request.add_message = m2
 
         return request
 
@@ -67,7 +61,6 @@ class PtahTestCase(TestCase):
 
         pkg = package_name(sys.modules[self.__class__.__module__])
         if pkg != 'ptah':
-            packages = []
             parts = self.__class__.__module__.split('.')
             for l in range(len(parts)):
                 pkg = '.'.join(parts[:l+1])

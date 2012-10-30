@@ -3,8 +3,6 @@ from __future__ import print_function
 import sys
 import argparse
 import textwrap
-from collections import OrderedDict
-from pyramid.compat import configparser, NativeIO
 
 import ptah
 from ptah import scripts
@@ -25,7 +23,7 @@ def main(init=True):
 
     # bootstrap pyramid
     if init: # pragma: no cover
-        env = scripts.bootstrap(args.config)
+        scripts.bootstrap(args.config)
 
     cmd = ManageCommand(args)
     cmd.run()

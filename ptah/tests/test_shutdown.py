@@ -26,7 +26,6 @@ class TestShutdownHandlers(TestCase):
         self.assertTrue(shutdownExecuted[0])
 
     def test_shutdown_exception_in_handler(self):
-        shutdownExecuted = []
 
         @config.shutdown_handler
         def shutdown():

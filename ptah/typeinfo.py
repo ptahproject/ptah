@@ -1,5 +1,5 @@
 """ type implementation """
-import sys, logging
+import logging
 import sqlalchemy as sqla
 from zope.interface import implementer
 from pyramid.compat import string_types

@@ -1,6 +1,6 @@
 import ptah
 import threading
-from datetime import datetime, timedelta
+from datetime import datetime
 from pyramid.interfaces import INewRequest
 
 _days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']

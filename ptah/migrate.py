@@ -1,7 +1,5 @@
 import os
 import logging
-import functools
-import pkg_resources
 import sqlalchemy as sqla
 
 import alembic.util
@@ -10,7 +8,7 @@ from alembic.migration import MigrationContext
 
 import ptah
 from ptah import config
-from pyramid.path import package_name, AssetResolver
+from pyramid.path import AssetResolver
 
 MIGRATION_ID = 'ptah:migrate'
 

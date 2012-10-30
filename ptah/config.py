@@ -3,10 +3,9 @@ import logging
 import signal
 import traceback
 from collections import defaultdict, namedtuple, OrderedDict
-from pyramid.compat import text_type, string_types, NativeIO
+from pyramid.compat import NativeIO
 from pyramid.registry import Introspectable
 from pyramid.threadlocal import get_current_registry
-from zope.interface import implementedBy
 from zope.interface.interfaces import IObjectEvent
 
 import venusian

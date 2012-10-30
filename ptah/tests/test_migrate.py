@@ -24,8 +24,6 @@ class TestRegisterMigration(ptah.PtahTestCase):
         self.assertEqual(st['test'], 'ptah.tests:migrations')
 
     def test_register_conflict(self):
-        from ptah.migrate import MIGRATION_ID
-
         ptah.register_migration(
             'test', 'ptah.tests:migrations', 'Ptah database migration')
         ptah.register_migration(
@@ -177,7 +175,7 @@ class TestUpdateVersions(BaseScript):
             'test', 'ptah.tests:migrations', force=True)
         self.init_ptah()
 
-        rev = revision('test', message='Test message')
+        revision('test', message='Test message')
 
         update_versions(self.registry)
 
@@ -210,7 +208,7 @@ class TestUpdateVersions(BaseScript):
         ptah.register_migration('test', 'ptah.tests:migrations')
         self.init_ptah()
 
-        rev = revision('test', message='Test message')
+        revision('test', message='Test message')
 
         session = ptah.get_session()
 
@@ -237,7 +235,7 @@ class TestUpgrade(BaseScript):
         self.init_ptah()
 
         rev1 = revision('test', message='Test message1')
-        rev2 = revision('test', message='Test message2')
+        revision('test', message='Test message2')
 
         upgrade('test:%s'%rev1)
 
@@ -252,7 +250,7 @@ class TestUpgrade(BaseScript):
             'test', 'ptah.tests:migrations', force=True)
         self.init_ptah()
 
-        rev1 = revision('test', message='Test message1')
+        revision('test', message='Test message1')
         rev2 = revision('test', message='Test message2')
 
         upgrade('test:head')
@@ -268,7 +266,7 @@ class TestUpgrade(BaseScript):
             'test', 'ptah.tests:migrations', force=True)
         self.init_ptah()
 
-        rev1 = revision('test', message='Test message1')
+        revision('test', message='Test message1')
         rev2 = revision('test', message='Test message2')
 
         upgrade('test')
@@ -284,7 +282,7 @@ class TestUpgrade(BaseScript):
             'test', 'ptah.tests:migrations', force=True)
         self.init_ptah()
 
-        rev1 = revision('test', message='Test message1')
+        revision('test', message='Test message1')
         rev2 = revision('test', message='Test message2')
 
         upgrade('test')
@@ -341,7 +339,7 @@ class TestUpgrade(BaseScript):
         self.assertIsNone(exc)
 
     def test_startup_check_version_exit(self):
-        from ptah.migrate import Version, revision, check_version
+        from ptah.migrate import revision, check_version
 
         ptah.register_migration(
             'test1', 'ptah.tests1:migrations')
@@ -349,8 +347,8 @@ class TestUpgrade(BaseScript):
             'test2', 'ptah.tests2:migrations')
         self.init_ptah()
 
-        rev1 = revision('test1', message='Test message1')
-        rev2 = revision('test2', message='Test message2')
+        revision('test1', message='Test message1')
+        revision('test2', message='Test message2')
 
         exc = None
         try:

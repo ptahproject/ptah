@@ -1,4 +1,3 @@
-import sqlalchemy
 from pyramid.compat import text_
 from pyramid.testing import DummyRequest
 from pyramid.httpexceptions import HTTPNotFound

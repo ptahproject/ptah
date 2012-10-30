@@ -1,13 +1,15 @@
-import transaction
 import sqlalchemy as sqla
 from webob.multidict import MultiDict
 from pyramid.testing import DummyRequest
-from pyramid.compat import url_quote_plus, text_type
+from pyramid.compat import text_type
 from pyramid.httpexceptions import HTTPFound
 from pyramid.view import render_view_to_response
 
 import ptah
 from ptah.testing import PtahTestCase
+
+
+TestSqlaModuleContent = None
 
 
 class TestSqlaModuleTable(ptah.get_base()):
@@ -33,7 +35,7 @@ class TestSqlaModule(PtahTestCase):
         global TestSqlaModuleContent
 
         Base = ptah.get_base()
-        Session = ptah.get_session()
+        ptah.get_session()
 
         table = Base.metadata.tables['test_sqla_table']
         if not table.exists():
@@ -84,7 +86,7 @@ class TestSqlaModule(PtahTestCase):
         self.assertRaises(KeyError, mod.__getitem__, 'unknown')
 
     def test_sqla_view(self):
-        from ptah.manage.sqla import SQLAModule, MainView
+        from ptah.manage.sqla import SQLAModule
 
         request = self.make_request()
 
@@ -94,7 +96,7 @@ class TestSqlaModule(PtahTestCase):
         self.assertEqual(res.status, '200 OK')
 
     def test_sqla_table_view(self):
-        from ptah.manage.sqla import SQLAModule, TableView
+        from ptah.manage.sqla import SQLAModule
 
         request = self.make_request()
 
@@ -106,7 +108,7 @@ class TestSqlaModule(PtahTestCase):
         self.assertIn('form.buttons.add', res.text)
 
     def test_sqla_table_view_model(self):
-        from ptah.manage.sqla import SQLAModule, TableView
+        from ptah.manage.sqla import SQLAModule
 
         ptah.get_session().add(TestSqlaModuleContent(title='test'))
 
@@ -121,34 +123,34 @@ class TestSqlaModule(PtahTestCase):
         self.assertNotIn('form.buttons.add', res)
 
     def test_sqla_table_view_model_nodes(self):
-        from ptah.manage.sqla import SQLAModule, TableView
+        from ptah.manage.sqla import SQLAModule
 
         rec = TestSqlaModuleContent(title='test')
         ptah.get_session().add(rec)
         ptah.get_session().flush()
 
-        uri = rec.__uri__
-        type_uri = rec.__type__.__uri__
+        #uri = rec.__uri__
+        #type_uri = rec.__type__.__uri__
 
         request = DummyRequest(params={'batch': 1})
 
         mod = SQLAModule(None, request)
         table = mod['psqla-ptah_nodes']
 
-        res = render_view_to_response(table, request, '', False).text
+        render_view_to_response(table, request, '', False).text
         #self.assertIn(url_quote_plus(uri), res)
         #self.assertIn(url_quote_plus(type_uri), res)
 
         request = DummyRequest(params={'batch': 'unknown'})
-        res = render_view_to_response(table, request, '', False).text
+        render_view_to_response(table, request, '', False).text
         #self.assertIn(url_quote_plus(uri), res)
 
         request = DummyRequest(params={'batch': '0'})
-        res = render_view_to_response(table, request, '', False).text
+        render_view_to_response(table, request, '', False).text
         #self.assertIn(url_quote_plus(uri), res)
 
     def test_sqla_table_view_inheritance(self):
-        from ptah.manage.sqla import SQLAModule, TableView
+        from ptah.manage.sqla import SQLAModule
 
         request = self.make_request()
 

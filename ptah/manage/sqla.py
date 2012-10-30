@@ -1,5 +1,4 @@
 """ sqla module """
-import urllib
 from sqlalchemy.orm.mapper import _mapper_registry
 from pyramid.view import view_config
 from pyramid.compat import url_quote_plus
@@ -7,7 +6,6 @@ from pyramid.decorator import reify
 from pyramid.httpexceptions import HTTPFound
 
 import ptah
-from ptah import form
 
 Session = ptah.get_session()
 

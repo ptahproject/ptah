@@ -3,6 +3,7 @@ import sys
 import shutil
 import tempfile
 import ptah
+from ptah.migrate import ScriptDirectory
 from ptah.scripts import migrate
 from pyramid.compat import NativeIO
 
@@ -30,11 +31,11 @@ class TestMigrateCommand(ptah.PtahTestCase):
         ptah.scripts.bootstrap = bootstrap
 
         # fix ScriptDirectory
-        from ptah import migrate
+        from ptah import migrate as migrate_mod
 
         self.dirs = dirs = {}
 
-        class ScriptDirectory(migrate.ScriptDirectory):
+        class ScriptDirectory(migrate_mod.ScriptDirectory):
 
             def __init__(self, pkg):
                 if pkg in dirs:
@@ -47,8 +48,8 @@ class TestMigrateCommand(ptah.PtahTestCase):
                     os.path.dirname(ptah.__file__), 'scripts')
                 self.versions = dir
 
-        self.orig_ScriptDirectory = migrate.ScriptDirectory
-        migrate.ScriptDirectory = ScriptDirectory
+        self.orig_ScriptDirectory = migrate_mod.ScriptDirectory
+        migrate_mod.ScriptDirectory = ScriptDirectory
 
     def tearDown(self):
         # reset bootstrap
@@ -62,8 +63,8 @@ class TestMigrateCommand(ptah.PtahTestCase):
         for dir in self.dirs.values():
             shutil.rmtree(dir)
 
-        from ptah import migrate
-        migrate.ScriptDirectory = self.orig_ScriptDirectory
+        from ptah import migrate as migrate_mod
+        migrate_mod.ScriptDirectory = self.orig_ScriptDirectory
 
         super(TestMigrateCommand, self).tearDown()
 
@@ -104,7 +105,7 @@ class TestMigrateCommand(ptah.PtahTestCase):
         self.init_ptah()
 
         rev1 = revision('test1')
-        rev2 = revision('test2')
+        revision('test2')
 
         sys.argv[:] = ['ptah-migrate', 'ptah.ini', 'upgrade', 'test1']
 
@@ -148,8 +149,6 @@ class TestMigrateCommand(ptah.PtahTestCase):
         self.assertEqual(versions['test2'], rev2)
 
     def test_revision(self):
-        from ptah.migrate import revision, Version
-
         ptah.register_migration('test', 'test:path', 'Test migration')
         self.init_ptah()
 
@@ -161,8 +160,6 @@ class TestMigrateCommand(ptah.PtahTestCase):
         self.assertIn('001.py', os.listdir(path))
 
     def test_revision_error(self):
-        from ptah.migrate import revision, Version
-
         ptah.register_migration('test', 'test:path', 'Test migration')
         self.init_ptah()
 
@@ -175,15 +172,15 @@ class TestMigrateCommand(ptah.PtahTestCase):
                       self.out.getvalue())
 
     def test_history(self):
-        from ptah.migrate import revision, upgrade, Version
+        from ptah.migrate import revision, upgrade
 
         ptah.register_migration('test1', 'test1:path', 'Test migration')
         ptah.register_migration('test2', 'test2:path', 'Test migration')
 
         self.init_ptah()
 
-        rev1 = revision('test1', message='test1 step')
-        rev2 = revision('test2', message='test2 step')
+        revision('test1', message='test1 step')
+        revision('test2', message='test2 step')
 
         upgrade('test1')
         upgrade('test2')
@@ -201,7 +198,7 @@ class TestMigrateCommand(ptah.PtahTestCase):
         self.assertIn('test2 step', self.out.getvalue())
 
     def test_current_one(self):
-        from ptah.migrate import revision, upgrade, Version
+        from ptah.migrate import revision, upgrade
 
         ptah.register_migration('test1', 'test1:path', 'Test migration')
         ptah.register_migration('test2', 'test2:path', 'Test migration')
@@ -209,7 +206,7 @@ class TestMigrateCommand(ptah.PtahTestCase):
         self.init_ptah()
 
         rev1 = revision('test1', message='test1 step')
-        rev2 = revision('test2', message='test2 step')
+        revision('test2', message='test2 step')
         upgrade('test1')
 
         sys.argv[:] = ['ptah-migrate', 'ptah.ini', 'current', 'test1']
@@ -220,7 +217,7 @@ class TestMigrateCommand(ptah.PtahTestCase):
                       self.out.getvalue())
 
     def test_current_all(self):
-        from ptah.migrate import revision, upgrade, Version
+        from ptah.migrate import revision, upgrade
 
         ptah.register_migration('test1', 'test1:path', 'Test migration')
         ptah.register_migration('test2', 'test2:path', 'Test migration')
@@ -228,7 +225,7 @@ class TestMigrateCommand(ptah.PtahTestCase):
         self.init_ptah()
 
         rev1 = revision('test1', message='test1 step')
-        rev2 = revision('test2', message='test2 step')
+        revision('test2', message='test2 step')
         upgrade('test1')
 
         sys.argv[:] = ['ptah-migrate', 'ptah.ini', 'current']
