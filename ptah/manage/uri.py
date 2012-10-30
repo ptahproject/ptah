@@ -11,7 +11,7 @@ from ptah.manage.manage import PtahManageRoute, get_manage_url
 
 @view_config(
     name='uri.html', context=PtahManageRoute, wrapper=ptah.wrap_layout(),
-    renderer='ptah-manage:uri.vl')
+    renderer='ptah-manage:uri.lt')
 
 class UriResolver(form.Form):
     """ Uri resolver form """
@@ -33,7 +33,7 @@ class UriResolver(form.Form):
     def show_handler(self):
         data, errors = self.extract()
         if errors:
-            self.message(errors, 'form-error')
+            self.add_error_message(errors)
         else:
             self.uri = data['uri']
 

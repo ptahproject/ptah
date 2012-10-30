@@ -1,7 +1,7 @@
 from collections import OrderedDict
 from pyramid import renderers
 from pyramid.compat import string_types
-from pyramid_vlayer import render
+from pyramid_layer import render
 
 from ptah import config
 from ptah.util import json

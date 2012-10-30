@@ -83,7 +83,7 @@ class Record(object):
 
 @view_config(
     context=SQLAModule, wrapper=ptah.wrap_layout(),
-    renderer='ptah-manage:sqla-index.vl')
+    renderer='ptah-manage:sqla-index.lt')
 
 class MainView(ptah.View):
     __doc__ = "sqlalchemy tables listing page."
@@ -146,7 +146,7 @@ def get_inheritance(table):
 
 @view_config(
     context=Table, wrapper=ptah.wrap_layout(),
-    renderer='ptah-manage:sqla-table.vl')
+    renderer='ptah-manage:sqla-table.lt')
 
 class TableView(ptah.form.Form):
     __doc__ = "List table records."
@@ -226,16 +226,17 @@ class TableView(ptah.form.Form):
             ids.append(id)
 
         if not ids:
-            self.message('Please select records for removing.', 'warning')
+            self.request.add_message(
+                'Please select records for removing.', 'warning')
             return
 
         self.table.delete(self.pcolumn.in_(ids)).execute()
-        self.message('Select records have been removed.')
+        self.request.add_message('Select records have been removed.')
 
 
 @view_config(
     context=Record, wrapper=ptah.wrap_layout(),
-    renderer='ptah-manage:sqla-edit.vl')
+    renderer='ptah-manage:sqla-edit.lt')
 
 class EditRecord(ptah.form.Form):
     __doc__ = "Edit table record."
@@ -277,12 +278,12 @@ class EditRecord(ptah.form.Form):
         data, errors = self.extract()
 
         if errors:
-            self.message(errors, 'form-error')
+            self.add_error_message(errors)
             return
 
         self.context.table.update(
             self.context.pcolumn == self.context.__name__, data).execute()
-        self.message('Table record has been modified.', 'success')
+        self.request.add_message('Table record has been modified.', 'success')
         return HTTPFound(location='..')
 
     @ptah.form.button('Remove', actype=ptah.form.AC_DANGER,
@@ -292,7 +293,7 @@ class EditRecord(ptah.form.Form):
 
         self.context.table.delete(
             self.context.pcolumn == self.context.__name__).execute()
-        self.message('Table record has been removed.')
+        self.request.add_message('Table record has been removed.')
         return HTTPFound(location='..')
 
 
@@ -319,16 +320,16 @@ class AddRecord(ptah.form.Form):
         data, errors = self.extract()
 
         if errors:
-            self.message(errors, 'form-error')
+            self.add_error_message(errors)
             return
 
         try:
             self.context.table.insert(values = data).execute()
         except Exception as e: # pragma: no cover
-            self.message(e, 'error')
+            self.request.add_message(e, 'error')
             return
 
-        self.message('Table record has been created.', 'success')
+        self.request.add_message('Table record has been created.', 'success')
         return HTTPFound(location='.')
 
     @ptah.form.button('Save & Create new',
@@ -337,16 +338,16 @@ class AddRecord(ptah.form.Form):
         data, errors = self.extract()
 
         if errors:
-            self.message(errors, 'form-error')
+            self.add_error_message(errors)
             return
 
         try:
             self.context.table.insert(values = data).execute()
         except Exception as e: # pragma: no cover
-            self.message(e, 'error')
+            self.request.add_message(e, 'error')
             return
 
-        self.message('Table record has been created.', 'success')
+        self.request.add_message('Table record has been created.', 'success')
 
     @ptah.form.button('Back')
     def cancel(self):

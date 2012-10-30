@@ -10,7 +10,7 @@ pyramid.default_locale_name = en
 pyramid.includes = 
     pyramid_debugtoolbar
 
-vlayer.custom = %(here)/custom/
+layer.custom = %(here)/custom/
 
 # sqlalchemy
 sqlalchemy.url = sqlite:///%(here)s/db.sqlite

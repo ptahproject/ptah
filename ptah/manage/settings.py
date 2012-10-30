@@ -29,7 +29,7 @@ class SettingsWrapper(object):
 
 @view_config(
     context=SettingsModule, wrapper=ptah.wrap_layout(),
-    renderer='ptah-manage:settings.vl')
+    renderer='ptah-manage:settings.lt')
 
 class SettingsView(ptah.View):
     """ Settings manage module view """
@@ -95,10 +95,10 @@ class EditForm(ptah.form.Form):
     def modify_handler(self):
         data, errors = self.extract()
         if errors: # pragma: no cover
-            self.message(errors, 'form-error')
+            self.add_error_message(errors)
             return
 
-        self.message("Settings have been modified.")
+        self.request.add_message("Settings have been modified.")
         self.context.group.updatedb(**data)
         return HTTPFound('../#{0}'.format(self.context.group.__name__))
 

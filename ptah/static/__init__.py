@@ -29,15 +29,15 @@ def includeme(config):
     # ptah
     config.add_amd_js(
         'ptah-date-format', 'ptah:static/date-format.js',
-        require=('jquery', 'handlebars'))
+        requires=('jquery', 'handlebars'))
 
     # ptah ui classes
     config.add_amd_js(
         'ptah-form', 'ptah:static/form.js',
-        require=('jquery', 'pyramid', 'ptah-templates', 'bootstrap'))
+        requires=('jquery', 'pyramid', 'ptah-templates', 'bootstrap'))
     config.add_amd_js(
         'ptah-pager', 'ptah:static/pager.js',
-        require=('jquery', 'pyramid', 'ptah-templates'))
+        requires=('jquery', 'pyramid', 'ptah-templates'))
 
     # templates
     config.add_mustache_bundle(

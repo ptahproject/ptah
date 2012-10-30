@@ -6,20 +6,18 @@ from pyramid.renderers import NullRendererHelper
 from pyramid.interfaces import IResponse
 from pyramid.httpexceptions import HTTPForbidden
 from pyramid.config.views import DefaultViewMapper
-from pyramid_vlayer import render
+from pyramid_layer import render, tmpl_filter
 
 import ptah
-from ptah.view import Message
 from ptah.form.field import Field, Fieldset
 from ptah.form.button import Buttons, Actions
 from ptah.form.interfaces import _, Invalid, FORM_INPUT, FORM_DISPLAY, IForm
 
 
-@ptah.snippet('form-error', Message,
-              renderer='ptah-form:form-error.vl')
-def formErrorMessage(context, request):
+@tmpl_filter('ptah-form:error')
+def form_error_message(context, request):
     """ form error renderer """
-    errors = [err for err in context.message
+    errors = [err for err in context
               if isinstance(err, Invalid) and err.field is None]
 
     return {'errors': errors}
@@ -219,6 +217,10 @@ class Form(ptah.View):
             return self.request.GET
         else:
             return self.params
+
+    def add_error_message(self, msg):
+        """ add form error message """
+        ptah.add_message(self.request, msg, 'ptah-form:error')
 
     def update_widgets(self):
         """ prepare form widgets """

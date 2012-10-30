@@ -2,7 +2,7 @@ import pytz
 import decimal, datetime
 
 from ptah import form
-from pyramid_vlayer import render
+from pyramid_layer import render
 
 TMPL = 'ptah-fields:widget'
 

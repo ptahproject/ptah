@@ -44,17 +44,6 @@ class TestView(PtahTestCase):
         view = ptah.View(Context(), self.request)
         self.assertEqual(view.snippet('test'), '')
 
-    def test_messages_View(self):
-        from ptah import view
-        self.init_ptah()
-
-        v = view.View(None, self.request)
-        v.message('message')
-
-        self.assertEqual(
-            v.render_messages(),
-            text_('<div class="alert alert-info">\n  <a class="close" data-dismiss="alert">×</a>\n  message\n</div>\n', 'utf-8'))
-
 
 class TestSnippet(PtahTestCase):
 
@@ -184,42 +173,46 @@ class TestStatusMessages(PtahTestCase):
     def test_messages_custom_msg(self):
         from ptah import view
 
-        @view.snippet('custom', view.Message)
-        def customMessage(context, request):
-            return '<div class="customMsg">{0}</div>'.format(context.message)
-
+        self.config.add_layer(
+            'ptah-message', 'test', path='ptah:tests/messages/')
         self.init_ptah()
 
         view.add_message(self.request, 'message', 'custom')
         self.assertEqual(
-            view.render_messages(self.request),
+            view.render_messages(self.request).strip(),
             '<div class="customMsg">message</div>')
 
     def test_messages_render_message(self):
         from ptah import view
 
-        @view.snippet('custom', view.Message)
-        def customMessage(context, request):
-            return '<div class="customMsg">{0}</div>'.format(context.message)
-
+        self.config.add_layer(
+            'ptah-message', 'test', path='ptah:tests/messages/')
         self.init_ptah()
 
         self.assertEqual(
-            ptah.render_message(self.request, 'message', 'custom'),
+            ptah.render_message(self.request, 'message', 'custom').strip(),
+            '<div class="customMsg">message</div>')
+        self.assertEqual(
+            ptah.render_message(
+                self.request, 'message', 'ptah-message:custom').strip(),
             '<div class="customMsg">message</div>')
 
     def test_messages_render_message_with_error(self):
         from ptah import view
 
-        @view.snippet('custom', view.Message)
+        self.config.add_layer('ptah-message', 'test',
+                              path='ptah:tests/messages/')
+
         def customMessage(context, request):
             raise ValueError()
 
+        self.config.add_tmpl_filter('ptah-message:custom', customMessage)
+
         self.init_ptah()
 
-        self.assertEqual(
-            ptah.render_message(self.request, 'message', 'custom'),
-            'message')
+        self.assertRaises(
+            ValueError,
+            ptah.render_message, self.request, 'message', 'custom')
 
     def test_messages_render(self):
         from ptah import view
@@ -235,12 +228,11 @@ class TestStatusMessages(PtahTestCase):
 
     def test_messages_unknown_type(self):
         from ptah import view
+        from pyramid_layer import RendererNotFound
         self.init_ptah()
 
-        view.add_message(self.request, 'message', 'unknown')
-        self.assertEqual(
-            view.render_messages(self.request),
-            text_('message','utf-8'))
+        self.assertRaises(RendererNotFound,
+                          view.add_message, self.request, 'message', 'unknown')
 
     def test_messages_request_attr(self):
         from ptah import view

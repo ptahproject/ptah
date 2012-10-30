@@ -1,4 +1,4 @@
 <div class="alert alert-error">
   <a class="close" data-dismiss="alert">×</a>
-  ${structure: message}
+  ${structure: context}
 </div>

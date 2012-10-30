@@ -278,7 +278,7 @@ class FileField(TextField):
     """HTML File input widget. Field name is ``file``."""
 
     klass = 'input-file'
-    tmpl_input = 'ptah-fields:file.vl'
+    tmpl_input = 'ptah-fields:file.lt'
 
     def extract(self, default=null):
         value = self.params.get(self.name, default)

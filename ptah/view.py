@@ -7,6 +7,8 @@ from pyramid.compat import string_types, escape
 from pyramid.renderers import RendererHelper
 from pyramid.config.views import DefaultViewMapper
 
+from pyramid_layer import render, tmpl_filter
+
 import ptah.view
 from ptah import config
 from ptah.formatter import format
@@ -45,9 +47,6 @@ class View(object):
             result = {}
 
         return result
-
-    def message(self, msg, type='info'):
-        ptah.view.add_message(self.request, msg, type)
 
     def render_messages(self):
         return ptah.view.render_messages(self.request)
@@ -243,27 +242,14 @@ def add_message(request, msg, type='info'):
     * error
 
     """
-    message = Message(msg, request)
-    try:
-        msg = request.registry.getMultiAdapter(
-            (message, request), ISnippet, type)
-    except Exception as e:
-        log = logging.getLogger('ptah.view')
-        log.exception(str(e))
-    request.session.flash(msg, 'status')
+    request.session.flash(render_message(request, msg, type), 'status')
 
 
 def render_message(request, msg, type='info'):
     """ Render message, return html """
-    message = Message(msg, request)
-    try:
-        msg = request.registry.getMultiAdapter(
-            (message, request), ISnippet, type)
-    except Exception as e:
-        log = logging.getLogger('ptah.view')
-        log.exception(str(e))
-
-    return msg
+    if ':' not in type:
+        type = 'ptah-message:%s'%type
+    return render(request, type, msg)
 
 
 def render_messages(request):
@@ -271,44 +257,10 @@ def render_messages(request):
     return ''.join(request.session.pop_flash('status'))
 
 
-class Message(object):
-    """ Message context """
+@tmpl_filter('ptah-message:error')
+def error_message(context, request):
+    if isinstance(context, Exception):
+        context = '%s: %s'%(
+            context.__class__.__name__, escape(str(context), True))
 
-    def __init__(self, message, request):
-        self.message = message
-        self.request = request
-
-
-snippet.register(
-    'info', Message, renderer='ptah.view:templates/msg-info.pt')
-
-snippet.register(
-    'success', Message, renderer='ptah.view:templates/msg-success.pt')
-
-snippet.register(
-    'warning', Message, renderer='ptah.view:templates/msg-warning.pt')
-
-
-@snippet('error', Message, renderer='ptah.view:templates/msg-error.pt')
-def errorMessage(context, request):
-    e = context.message
-
-    if isinstance(e, Exception):
-        message = '%s: %s'%(
-            e.__class__.__name__, escape(str(e), True))
-    else:
-        message = e
-
-    return {'message': message}
-
-
-# request attributes
-def request_add_message(request):
-    def wrp(*args, **kw):
-        return add_message(request, *args, **kw)
-    return wrp
-
-def request_render_messages(request):
-    def wrp(*args, **kw):
-        return render_messages(request, *args, **kw)
-    return wrp
+    return {'context': context}

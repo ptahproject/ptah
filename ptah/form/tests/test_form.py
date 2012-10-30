@@ -26,22 +26,22 @@ class TestFormErrors(PtahTestCase):
     def test_form_errors(self):
         import ptah
         from ptah.form import Invalid, TextField
-        from ptah.form.form import formErrorMessage
+        from ptah.form.form import form_error_message
         request = DummyRequest()
 
         err1 = Invalid(None, 'Error1')
         err2 = Invalid(None, 'Error2')
         err2.field = TextField('text')
 
-        msg = ptah.view.Message([err1, err2], request)
+        msg = [err1, err2]
 
-        errs = formErrorMessage(msg, request)['errors']
+        errs = form_error_message(msg, request)['errors']
         self.assertIn(err1, errs)
         self.assertNotIn(err2, errs)
 
-        ptah.view.add_message(request, [err1, err2], 'form-error')
+        ptah.add_message(request, [err1, err2], 'ptah-form:error')
 
-        res = ptah.view.render_messages(request)
+        res = ptah.render_messages(request)
         self.assertIn('Please fix indicated errors.', res)
 
 

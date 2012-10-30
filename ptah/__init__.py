@@ -151,9 +151,8 @@ from ptah.util import json
 
 
 def includeme(cfg):
-    #cfg.include('ptahform')
     cfg.include('pyramid_amdjs')
-    cfg.include('pyramid_vlayer')
+    cfg.include('pyramid_layer')
 
     # auth
     from ptah.security import PtahAuthorizationPolicy
@@ -228,9 +227,8 @@ def includeme(cfg):
     cfg.add_directive('ptah_snippet', snippet.pyramid)
 
     # message request helpers
-    from ptah.view import request_add_message, request_render_messages
-    cfg.set_request_property(request_add_message, 'add_message', True)
-    cfg.set_request_property(request_render_messages, 'render_messages', True)
+    cfg.add_request_method(add_message, 'add_message')
+    cfg.add_request_method(render_messages, 'render_messages')
 
     # populate
     def pyramid_populate(cfg):
@@ -250,9 +248,10 @@ def includeme(cfg):
     cfg.add_static_view('_ptah/static', 'ptah:static/')
 
     # template layers
-    cfg.add_vlayer('ptah-form', path='ptah:form/templates/')
-    cfg.add_vlayer('ptah-fields', path='ptah:form/templates/fields/')
-    cfg.add_vlayer('ptah-manage', path='ptah:manage/templates/')
+    cfg.add_layer('ptah-form', path='ptah:form/templates/')
+    cfg.add_layer('ptah-fields', path='ptah:form/templates/fields/')
+    cfg.add_layer('ptah-manage', path='ptah:manage/templates/')
+    cfg.add_layer('ptah-message', path='ptah:templates/messages/')
 
     # scan ptah
     cfg.scan('ptah')

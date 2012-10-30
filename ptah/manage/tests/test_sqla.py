@@ -219,7 +219,7 @@ class TestSqlaModule(PtahTestCase):
         self.assertIn('Please fix indicated errors',
                       ptah.view.render_messages(request))
 
-        request = DummyRequest(
+        request = self.make_request(
             POST={'form.buttons.create': 'Create',
                   'name': 'Test'})
 
@@ -242,7 +242,7 @@ class TestSqlaModule(PtahTestCase):
         mod = SQLAModule(None, request)
         table = mod['psqla-test_sqla_table']
 
-        request = DummyRequest(
+        request = self.make_request(
             POST={'form.buttons.createmulti': 'Create'})
 
         form = AddRecord(table, request)
@@ -252,7 +252,7 @@ class TestSqlaModule(PtahTestCase):
         self.assertIn('Please fix indicated errors',
                       ptah.view.render_messages(request))
 
-        request = DummyRequest(
+        request = self.make_request(
             POST={'form.buttons.createmulti': 'Create',
                   'name': 'Test multi'})
 
@@ -324,7 +324,7 @@ class TestSqlaModule(PtahTestCase):
         self.assertIn('Please fix indicated errors',
                       ptah.view.render_messages(request))
 
-        request = DummyRequest(
+        request = self.make_request(
             POST={'form.buttons.modify': 'Modify',
                   'name': 'Record modified'})
 
@@ -356,7 +356,7 @@ class TestSqlaModule(PtahTestCase):
 
         rec = table[rec_id]
 
-        request = DummyRequest(
+        request = self.make_request(
             POST={'form.buttons.remove': 'Remove'})
 
         form = EditRecord(rec, request)
@@ -400,7 +400,7 @@ class TestSqlaModule(PtahTestCase):
         mod = SQLAModule(None, DummyRequest())
         table = mod['psqla-test_sqla_table']
 
-        request = DummyRequest(
+        request = self.make_request(
             POST=MultiDict([('form.buttons.remove', 'Remove')]))
 
         form = TableView(table, request)
@@ -410,7 +410,7 @@ class TestSqlaModule(PtahTestCase):
         self.assertIn('lease select records for removing.',
                       ptah.view.render_messages(request))
 
-        request = DummyRequest(
+        request = self.make_request(
             POST=MultiDict([('form.buttons.remove', 'Remove'),
                             ('rowid', 'wrong')]))
 
@@ -421,7 +421,7 @@ class TestSqlaModule(PtahTestCase):
         #self.assertIn('Please select records for removing.',
         #              ptah.view.render_messages(request))
 
-        request = DummyRequest(
+        request = self.make_request(
             POST=MultiDict([('form.buttons.remove', 'Remove'),
                             ('rowid', rec_id),
                             ('csrf-token',
