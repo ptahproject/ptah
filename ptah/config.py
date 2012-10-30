@@ -13,7 +13,7 @@ import venusian
 from venusian.advice import getFrameInfo
 
 ATTACH_ATTR = '__ptah_actions__'
-ID_SUBSCRIBER = 'ptah.config:subscriber'
+ID_SUBSCRIBER = 'ptah:subscriber'
 
 __all__ = ('initialize', 'get_cfg_storage', 'StopException',
            'event', 'subscriber', 'shutdown', 'shutdown_handler',
@@ -83,7 +83,8 @@ def subscriber(*args):
         required = tuple(args)
         discr = (ID_SUBSCRIBER, func, required)
 
-        intr = Introspectable(ID_SUBSCRIBER, discr, 'Subscriber', ID_SUBSCRIBER)
+        intr = Introspectable(
+            ID_SUBSCRIBER, discr, 'Subscriber', 'ptah-subscriber')
         intr['required'] = required
         intr['handler'] = func
         intr['codeinfo'] = info.codeinfo

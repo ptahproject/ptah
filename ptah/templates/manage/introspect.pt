@@ -1,0 +1,15 @@
+<div class="page-header">
+  <h2>Introspection categories</h2>
+</div>
+
+<div class="row">
+  <div class="span12">
+    <ul>
+      <li tal:repeat="category view.categories">
+        <a href="${view.manage_url}/${category}/">
+          ${category}
+        </a>
+      </li>
+    </ul>
+  </div>
+</div>

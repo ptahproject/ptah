@@ -2,12 +2,12 @@
 import urllib
 from zope.interface import Interface
 from pyramid.view import view_config
-from pyramid.compat import string_types, url_unquote
-from pyramid.interfaces import IIntrospectable
+from pyramid.compat import url_unquote
+from pyramid_layer import RendererNotFound
 
 import ptah
-from ptah.view import ISnippet
 from ptah.manage import get_manage_url
+from ptah.form.field import PREVIEW_ID
 
 
 @ptah.manage.module('introspect')
@@ -36,30 +36,24 @@ class Introspector(object):
 
 @view_config(
     context=IntrospectModule, wrapper=ptah.wrap_layout(),
-    renderer='ptah.manage:templates/introspect.pt')
+    renderer='ptah-manage:introspect.lt')
 class MainView(ptah.View):
     __doc__ = 'Introspection module view.'
 
     def update(self):
+        registry = self.request.registry
+        self.categories = registry.introspector.categories()
         self.manage_url = '{0}/introspect'.format(get_manage_url(self.request))
-
-        self.renderers = sorted(
-            (self.request.registry.adapters.lookupAll(
-                (IIntrospectable, Interface), ISnippet)),
-            key = lambda item: item[1].view.title)
 
 
 @view_config(
     context=Introspector, wrapper=ptah.wrap_layout(),
-    renderer='ptah.manage:templates/introspect-intr.pt')
+    renderer='ptah-manage:introspect-intr.lt')
 class IntrospectorView(ptah.View):
 
     def update(self):
         name = self.context.name
         registry = self.request.registry
-
-        self.renderer = registry.adapters.lookup(
-            (IIntrospectable, Interface), ISnippet, name=name)
 
         self.intrs = sorted(
             (item['introspectable'] for item in
@@ -68,7 +62,35 @@ class IntrospectorView(ptah.View):
 
         self.manage_url = '{0}/introspect'.format(get_manage_url(self.request))
 
-        self.renderers = sorted(
-            (registry.adapters.lookupAll(
-                (IIntrospectable, Interface), ISnippet)),
-            key = lambda item: item[1].view.title)
+        self.categories = registry.introspector.categories()
+
+    def render_intr(self, intr):
+        try:
+            return self.request.render_tmpl(
+                'ptah-intr:%s'%intr.type_name, intr,
+                manage_url = self.manage_url, rst_to_html = ptah.rst_to_html)
+        except RendererNotFound:
+            return self.request.render_tmpl(
+                'ptah-intr:ptah-default', intr,
+                manage_url = self.manage_url, rst_to_html = ptah.rst_to_html)
+
+
+@ptah.tmpl_filter('ptah-intr:ptah-formfield')
+def tmpl_formfield(context, request):
+    return {'previews': ptah.config.get_cfg_storage(PREVIEW_ID)}
+
+
+@ptah.tmpl_filter('ptah-intr:ptah-subscriber')
+def tmpl_subscriber(intr, request):
+    handler = intr['handler']
+    required = intr['required']
+    factoryInfo = '%s.%s'%(intr['codeinfo'].module, handler.__name__)
+
+    if len(required) > 1: # pragma: no cover
+        obj = required[0]
+        klass = required[1]
+    else:
+        obj = None
+        klass = required[0]
+
+    return locals()

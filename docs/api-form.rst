@@ -154,15 +154,4 @@ Predefined fields
   .. autoclass:: JSDateTimeField
 
   .. autoclass:: TinymceField
-
-
-Form snippets
-~~~~~~~~~~~~~
-
-  .. py:data:: FORM_VIEW
-
-  .. py:data:: FORM_ACTIONS
-
-  .. py:data:: FORM_WIDGET
-
-  .. py:data:: FORM_DISPLAY_WIDGET
+ 

@@ -37,9 +37,6 @@ from ptah.view import add_message
 from ptah.view import render_message
 from ptah.view import render_messages
 
-from ptah.view import snippet
-from ptah.view import render_snippet
-
 # layouts
 from ptah.layout import layout
 from ptah.layout import wrap_layout
@@ -149,6 +146,9 @@ from ptah.migrate import register_migration
 # json
 from ptah.util import json
 
+# third party api
+from pyramid_layer import tmpl_filter
+
 
 def includeme(cfg):
     cfg.include('pyramid_amdjs')
@@ -223,9 +223,6 @@ def includeme(cfg):
     # layout directive
     cfg.add_directive('ptah_layout', layout.pyramid)
 
-    # snippet directive
-    cfg.add_directive('ptah_snippet', snippet.pyramid)
-
     # message request helpers
     cfg.add_request_method(add_message, 'add_message')
     cfg.add_request_method(render_messages, 'render_messages')
@@ -248,10 +245,13 @@ def includeme(cfg):
     cfg.add_static_view('_ptah/static', 'ptah:static/')
 
     # template layers
+    cfg.add_layer('ptah', path='ptah:templates/ptah/')
+    cfg.add_layer('ptah-manage', path='ptah:templates/manage/')
+    cfg.add_layer('ptah-message', path='ptah:templates/messages/')
+    cfg.add_layer('ptah-intr', path='ptah:templates/intr/')
+
     cfg.add_layer('ptah-form', path='ptah:form/templates/')
     cfg.add_layer('ptah-fields', path='ptah:form/templates/fields/')
-    cfg.add_layer('ptah-manage', path='ptah:manage/templates/')
-    cfg.add_layer('ptah-message', path='ptah:templates/messages/')
 
     # scan ptah
     cfg.scan('ptah')

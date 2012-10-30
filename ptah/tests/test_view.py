@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-""" snippet tests """
+""" view tests """
 from pyramid.compat import text_
 from zope.interface import providedBy
 
@@ -16,118 +16,13 @@ class TestView(PtahTestCase):
 
     _init_ptah = False
 
-    def test_snippet_app_root(self):
+    def test_view_app_root(self):
         view = ptah.View(Context(), self.request)
         self.assertEqual(view.application_url, 'http://example.com')
 
         view = ptah.View(Context(), self.request)
         self.request.application_url = 'http://example.com/'
         self.assertEqual(view.application_url, 'http://example.com')
-
-    def test_snippet_View(self):
-        def TestSnippet(request):
-            return 'test snippet'
-
-        ptah.snippet.register('test', Context, TestSnippet)
-        self.init_ptah()
-
-        view = ptah.View(Context(), self.request)
-        self.assertEqual(view.snippet('test'), 'test snippet')
-
-    def test_snippet_View_with_error(self):
-        def TestSnippet(request):
-            raise 'Error'
-
-        ptah.snippet.register('test', Context, TestSnippet)
-        self.init_ptah()
-
-        view = ptah.View(Context(), self.request)
-        self.assertEqual(view.snippet('test'), '')
-
-
-class TestSnippet(PtahTestCase):
-
-    _init_ptah = False
-
-    def test_snippet_register(self):
-        def TestSnippet(request):
-            return 'test snippet'
-
-        view.snippet.register('test', Context, TestSnippet)
-        self.init_ptah()
-
-        res = self.registry.adapters.lookup(
-            (providedBy(Context()), providedBy(self.request)),
-            view.ISnippet, 'test')
-
-        self.assertEqual(res(Context(), self.request), 'test snippet')
-
-    def test_snippet_register_render_snippet(self):
-        def TestSnippet(request):
-            return 'test snippet'
-
-        view.snippet.register('test', Context, TestSnippet)
-        self.init_ptah()
-
-        res = view.render_snippet('test', Context(), self.request)
-        self.assertEqual(res.strip(), 'test snippet')
-
-        self.assertRaises(
-            Exception,
-            view.render_snippet, 'unknown', Context(), self.request)
-
-    def test_snippet_register_declarative(self):
-        @view.snippet('pt')
-        class TestSnippet(view.View):
-
-            def __call__(self):
-                return 'test'
-
-        self.init_ptah()
-
-        res = self.registry.getMultiAdapter(
-            (Context(), self.request), view.ISnippet, 'pt')
-
-        self.assertEqual(res, 'test')
-
-    def test_snippet_register_pyramid(self):
-        from pyramid.config import Configurator
-
-        class TestSnippet(view.View):
-            def __call__(self):
-                return 'test'
-
-        config = Configurator(autocommit=True)
-        config.include('ptah')
-        config.ptah_snippet('pt', view=TestSnippet)
-
-        res = config.registry.getMultiAdapter(
-            (Context(), self.request), view.ISnippet, 'pt')
-        self.assertEqual(res, 'test')
-
-    def test_snippet_register_with_renderer(self):
-
-        @view.snippet('test', renderer='ptah:tests/test.pt')
-        class TestSnippet(view.View):
-            def __call__(self):
-                return None
-
-        self.init_ptah()
-
-        res = self.registry.getMultiAdapter(
-            (Context(), self.request), view.ISnippet, 'test')
-
-        self.assertEqual(res.strip(), '<div>My snippet</div>')
-
-    def test_snippet_register_without_class(self):
-        view.snippet.register(
-            'test', Context, renderer='ptah:tests/test.pt')
-        self.init_ptah()
-
-        res = self.registry.queryMultiAdapter(
-            (Context(), self.request), view.ISnippet, 'test')
-
-        self.assertEqual(res.strip(), '<div>My snippet</div>')
 
 
 class TestStatusMessages(PtahTestCase):

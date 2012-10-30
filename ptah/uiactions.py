@@ -80,7 +80,7 @@ def uiaction(context, id, title, description='',
     info = config.DirectiveInfo()
     discr = (ID_UIACTION, id, context, category)
     intr = ptah.config.Introspectable(
-        ID_UIACTION, discr, title, ID_UIACTION)
+        ID_UIACTION, discr, title, 'ptah-uiaction')
     intr['action'] = ac
     intr['codeinfo'] = info.codeinfo
 

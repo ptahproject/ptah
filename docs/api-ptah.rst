@@ -17,15 +17,6 @@ URI
   .. autoclass:: UriFactory
      :members: __call__
 
-Snippet
-~~~~~~~
-Snippet is very similar to pyramid view.
-It doesnt availble with pyramid traversing. It doesnt have security.
-
-  .. autoclass:: snippet()
-     :members: register
-
-  .. autofunction:: render_snippet
 
 Layout
 ~~~~~~

@@ -14,7 +14,7 @@ class TestIntrospectModule(PtahTestCase):
         from ptah.manage.manage import PtahManageRoute
         from ptah.manage.introspect import IntrospectModule
 
-        request = DummyRequest()
+        request = self.make_request()
 
         ptah.auth_service.set_userid('test')
         cfg = ptah.get_settings(ptah.CFG_ID_PTAH, self.registry)
@@ -29,7 +29,7 @@ class TestIntrospectModule(PtahTestCase):
         from ptah.manage.introspect import IntrospectModule, Introspector
         self.init_ptah()
 
-        request = DummyRequest()
+        request = self.make_request()
         mod = IntrospectModule(None, request)
 
         self.assertRaises(KeyError, mod.__getitem__, 'unknown')
@@ -41,11 +41,11 @@ class TestIntrospectModule(PtahTestCase):
         from ptah.manage.introspect import IntrospectModule, Introspector
         self.init_ptah()
 
-        request = DummyRequest()
+        request = self.make_request()
         mod = IntrospectModule(None, request)
 
         res = render_view_to_response(mod, request)
-        self.assertIn('Uri resolvers', res.text)
+        self.assertIn('ptah:resolver', res.text)
         self.assertIn(
           '<a href="http://example.com/ptah-manage/introspect/ptah:resolver/">',
           res.text)
@@ -54,10 +54,22 @@ class TestIntrospectModule(PtahTestCase):
         from ptah.manage.introspect import IntrospectModule, Introspector
         self.init_ptah()
 
-        request = DummyRequest()
+        request = self.make_request()
         mod = IntrospectModule(None, request)
 
         intr = mod['ptah:resolver']
 
         res = render_view_to_response(intr, request)
         self.assertIn('System super user', res.text)
+
+    def test_intr_view_default(self):
+        from ptah.manage.introspect import IntrospectModule, Introspector
+        self.init_ptah()
+
+        request = self.make_request()
+        mod = IntrospectModule(None, request)
+
+        intr = mod['ptah.form:field-preview']
+
+        res = render_view_to_response(intr, request)
+        self.assertIn('ptah.form:field-preview', res.text)

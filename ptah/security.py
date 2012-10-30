@@ -54,7 +54,7 @@ def Permission(name, title, description=''):
     permission.description = description
 
     discr = (ID_PERMISSION, name)
-    intr = config.Introspectable(ID_PERMISSION, discr, title, ID_PERMISSION)
+    intr = config.Introspectable(ID_PERMISSION, discr, title, 'ptah-permission')
     intr['permission'] = permission
     intr['module'] = info.module.__name__
     intr['codeinfo'] = info.codeinfo
@@ -93,7 +93,7 @@ class ACL(list):
 
         info = config.DirectiveInfo()
         discr = (ID_ACL, id)
-        intr = config.Introspectable(ID_ACL, discr, title, ID_ACL)
+        intr = config.Introspectable(ID_ACL, discr, title, 'ptah-aclmap')
         intr['acl'] = self
         intr['codeinfo'] = info.codeinfo
 
@@ -230,7 +230,7 @@ class Role(object):
         info = config.DirectiveInfo()
 
         discr = (ID_ROLE, name)
-        intr = config.Introspectable(ID_ROLE, discr, title, ID_ROLE)
+        intr = config.Introspectable(ID_ROLE, discr, title, 'ptah-role')
         intr['role'] = self
         intr['codeinfo'] = info.codeinfo
 

@@ -1,8 +1,0 @@
-<h4>
-  <a href="${manage_url}/source.html?pkg=${context['codeinfo'].module}#sl-${context['codeinfo'].lineno}">
-    ${context['type'].title}</a>
-  <small>${context['type'].__uri__}</small>
-</h4>
-<p tal:condition="context['type'].cls.__doc__">
-  ${structure: view.rst_to_html(context['type'].cls.__doc__)}
-</p>

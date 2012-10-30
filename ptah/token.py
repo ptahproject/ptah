@@ -9,7 +9,7 @@ from ptah.sqlautils import QueryFreezer
 
 __all__ = ['TokenType', 'service']
 
-ID_TOKEN_TYPE = 'ptah:token-type'
+ID_TOKEN_TYPE = 'ptah:tokentype'
 
 
 class TokenType(object):
@@ -29,7 +29,8 @@ class TokenType(object):
 
         info = config.DirectiveInfo()
         discr = (ID_TOKEN_TYPE, id)
-        intr = config.Introspectable(ID_TOKEN_TYPE, discr, title, ID_TOKEN_TYPE)
+        intr = config.Introspectable(
+            ID_TOKEN_TYPE, discr, title, 'ptah-tokentype')
         intr['ttype'] = self
         intr['codeinfo'] = info.codeinfo
 

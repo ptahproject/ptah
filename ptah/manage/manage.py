@@ -50,7 +50,8 @@ def module(name):
 
     def wrapper(cls):
         discr = (MANAGE_ID, name)
-        intr = config.Introspectable(MANAGE_ID, discr, cls.title, MANAGE_ID)
+        intr = config.Introspectable(
+            MANAGE_ID, discr, cls.title, 'ptah-managemodule')
         intr['name'] = name
         intr['factory'] = cls
         intr['codeinfo'] = info.codeinfo

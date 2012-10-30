@@ -20,7 +20,8 @@ def formatter(name):
     def wrapper(func):
         discr = (ID_FORMATTER, name)
 
-        intr = config.Introspectable(ID_FORMATTER, discr, name, ID_FORMATTER)
+        intr = config.Introspectable(
+            ID_FORMATTER, discr, name, 'ptah-formatter')
 
         intr['name'] = name
         intr['callable'] = func

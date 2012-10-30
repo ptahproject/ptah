@@ -53,7 +53,7 @@ def auth_checker(checker, __cfg=None, __depth=1):
     info = config.DirectiveInfo(__depth)
     discr = (AUTH_CHECKER_ID, hash(checker))
     intr = config.Introspectable(
-        AUTH_CHECKER_ID, discr, checker.__name__, AUTH_CHECKER_ID)
+        AUTH_CHECKER_ID, discr, checker.__name__, 'ptah-authchecker')
     intr['name'] = '{0}.{1}'.format(info.codeinfo.module, checker.__name__)
     intr['callable'] = checker
     intr['codeinfo'] = info.codeinfo
@@ -107,7 +107,7 @@ class auth_provider(object):
 
         self.discr = (AUTH_PROVIDER_ID, name)
         self.intr = config.Introspectable(
-            AUTH_PROVIDER_ID, self.discr, name, AUTH_PROVIDER_ID)
+            AUTH_PROVIDER_ID, self.discr, name, 'ptah-authprovider')
         self.intr['id'] = name
         self.intr['codeinfo'] = self.info.codeinfo
 

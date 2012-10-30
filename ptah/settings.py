@@ -152,7 +152,7 @@ def register_settings(name, *fields, **kw):
     info = config.DirectiveInfo()
     discr = (ID_SETTINGS_GROUP, name)
     intr = config.Introspectable(
-        ID_SETTINGS_GROUP, discr, group.__title__, ID_SETTINGS_GROUP)
+        ID_SETTINGS_GROUP, discr, group.__title__, 'ptah-settingsgroup')
     intr['name'] = name
     intr['group'] = group
     intr['codeinfo'] = info.codeinfo

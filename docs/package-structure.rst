@@ -51,7 +51,7 @@ ptah.manage is optional.
 ptah.view
 ---------
 
-contains the view, library facilitiy, snippet, layout, static resource 
+contains the view, library facilitiy, layout, static resource 
 registration, flash messages, formatters.  
 
 ptah.view is required.

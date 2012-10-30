@@ -1,0 +1,26 @@
+<h4>
+  <a href="${manage_url}/source.html?pkg=${context['codeinfo'].module}#sl-${context['codeinfo'].lineno}">
+    ${factoryInfo}
+  </a>
+</h4>
+<p tal:condition="context['handler'].__doc__">
+  ${context['handler'].__doc__}
+</p>
+<div tal:on-error="nothing">
+  listen to:
+  <div>
+    <tal:block condition="obj">
+      <tal:block tal:content="obj" />
+    </tal:block>
+    
+    <a tal:condition="event" href="../events.html?ev=${event.name}">
+      ${event.title}</a>
+    <tal:block tal:condition="not event" tal:content="info['klass']"/>
+  </div>
+  
+  <tal:block condition="factory.__doc__">
+    <br />
+    <em tal:content="factory.__doc__" />
+  </tal:block>
+</div>
+

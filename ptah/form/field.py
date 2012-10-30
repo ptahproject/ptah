@@ -30,7 +30,8 @@ class field(object):
         self.info = config.DirectiveInfo(__depth)
         self.discr = (FIELD_ID, name)
 
-        intr = config.Introspectable(FIELD_ID, self.discr, name, FIELD_ID)
+        intr = config.Introspectable(
+            FIELD_ID, self.discr, name, 'ptah-formfield')
         intr['name'] = name
         intr['codeinfo'] = self.info.codeinfo
         self.intr = intr
@@ -71,14 +72,15 @@ def fieldpreview(cls):
 
           widget = field.bind('preview.', form.null, {})
           widget.update(request)
-          return widget.snippet('form-widget', widget)
+          return pyramid_layer.rendder(request, 'ptah-fields:widget', widget)
 
     """
     info = config.DirectiveInfo()
 
     def wrapper(func):
         discr = (PREVIEW_ID, cls)
-        intr = config.Introspectable(PREVIEW_ID, discr, '', PREVIEW_ID)
+        intr = config.Introspectable(
+            PREVIEW_ID, discr, 'Field preview for "%s"'%cls, PREVIEW_ID)
         intr['field'] = cls
         intr['preview'] = func
 

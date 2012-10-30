@@ -67,7 +67,7 @@ class resolver(object):
         self.discr = (ID_RESOLVER, schema)
 
         self.intr = config.Introspectable(
-            ID_RESOLVER, self.discr, schema, ID_RESOLVER)
+            ID_RESOLVER, self.discr, schema, 'ptah-uriresolver')
         self.intr['schema'] = schema
         self.intr['codeinfo'] = self.info.codeinfo
 

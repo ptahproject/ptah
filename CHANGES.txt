@@ -13,7 +13,11 @@ CHANGES
 
 - Removed `ptah.library` functionality, pyramid_amdjs is used instead
 
+- Removed `ptah.snippet` functionality
+
 - Use pyramid_layer for templates
+
+- Use `pyramid_amdjs` for static resource management
 
 
 0.5.1 (2012-05-04)

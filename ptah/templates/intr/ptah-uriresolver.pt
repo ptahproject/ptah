@@ -7,5 +7,5 @@
     </small>
   </h4>
 
-  <p>${structure: view.rst_to_html(r.__doc__ or '')}</p>
+  <p>${structure: rst_to_html(r.__doc__ or '')}</p>
 </tal:block>

@@ -191,26 +191,6 @@ ptah_layout(...)
           wrapper=ptah.wrap_layout(),
           renderer = '...')
 
-  
-ptah_snippet(...)
-~~~~~~~~~~~~~~~~~
-    
-    Register snippet. Snippet is very similar to pyramid view.
-    It doesnt availble with pyramid traversing. It doesnt have
-    security.
-
-    :param name: Snippet name
-    :param context: Snippet context
-    :param view: View implementation
-    :param renderer: Pyramid renderer
-
-    .. code-block:: python
-
-       config = Configurator()
-       config.include('ptah')
-
-       config.ptah_snippet('test', view=snippet, renderer='.../test.pt')
-
 
 .. _ptah_populate_dir: 
 

@@ -32,7 +32,7 @@ class event(object):
 
         discr = (self.ID_EVENT, self.name)
         intr = config.Introspectable(
-            self.ID_EVENT, discr, self.description, self.title)
+            self.ID_EVENT, discr, self.title, 'ptah-event')
         intr['ev'] = self
         intr['name'] = self.name
         intr['codeinfo'] = self.info.codeinfo
