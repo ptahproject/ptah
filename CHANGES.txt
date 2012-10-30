@@ -19,6 +19,8 @@ CHANGES
 
 - Use `pyramid_amdjs` for static resource management
 
+- Bootstrap 2.2.0
+
 
 0.5.1 (2012-05-04)
 ==================
