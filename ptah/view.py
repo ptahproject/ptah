@@ -48,9 +48,6 @@ class View(object):
 
         return result
 
-    def render_messages(self):
-        return ptah.view.render_messages(self.request)
-
     def snippet(self, stype, context=None):
         if context is None:
             context = self.context
