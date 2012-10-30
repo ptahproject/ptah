@@ -161,7 +161,7 @@ class tinfo(object):
         # config actino and introspection info
         discr = (TYPES_DIR_ID, self.name)
         intr = config.Introspectable(
-            TYPES_DIR_ID, discr, self.name, TYPES_DIR_ID)
+            TYPES_DIR_ID, discr, self.name, 'ptah-type')
         intr['name'] = self.name
         intr['type'] = typeinfo
         intr['codeinfo'] = self.info.codeinfo
