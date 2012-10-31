@@ -49,6 +49,9 @@ class PtahTestCase(TestCase):
         def m2(*args, **kw):
             return ptah.add_message(request, *args, **kw)
         request.add_message = m2
+        def m21(*args, **kw): # pragma: no cover
+            return ptah.render_messages(request, *args, **kw)
+        request.render_messages = m21
 
         from pyramid_amdjs import amd
         def m3(*args, **kw): # pragma: no cover
