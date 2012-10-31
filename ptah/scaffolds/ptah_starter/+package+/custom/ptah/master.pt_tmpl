@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>{{package}}, made with Ptah!</title>
+    ${structure: request.init_amd()}
+    ${structure: request.include_js('bootstrap', 'bootstrap-css')}
+    <link type="text/css" rel="stylesheet"
+          href="${request.static_url('{{package}}:static/app.css')}" />
+    <link rel="shortcut icon"
+          href="${request.static_url('{{package}}:static/ico/favicon.ico')}" />
+  </head>
+<body>
+  <div class="navbar navbar-inverse navbar-fixed-top">
+    <div class="navbar-inner">
+      <div class="container">
+        <a class="brand" href="#">Project starter</a>
+        <ul class="nav">
+          <li class="active"><a href="${request.application_url}">Home</a></li>
+        </ul>
+
+        <ul class="nav pull-right" tal:condition="view.user">
+          <li>
+            <a href="${request.application_url}"
+               tal:content="view.user.name">:
+            </a>
+          </li>
+          <li class="active">
+            <a href="${request.application_url}/logout.html">Logout</a>
+          </li>
+        </ul>
+
+        <ul class="nav pull-right" tal:condition="not view.user">
+          <li>
+            <a href="${request.application_url}/join.html">Join</a>
+          </li>
+          <li>
+            <a href="${request.application_url}/login.html">Login</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  ${structure: wrapped_content}
+
+  <footer>
+    <p>&copy; Ptah Project 2011-2012</p>
+  </footer>
+</body>
+</html>

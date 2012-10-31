@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Ptah</title>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+
+    ${structure: request.init_amd()}
+    ${structure: request.include_js('bootstrap')}
+    ${structure: request.include_css('bootstrap-css')}
+  </head>
+  <body>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="brand" href="${view.manage_url}/">Ptah</a>
+
+          <ul class="nav" tal:condition="view.actions">
+            <li tal:repeat="item view.actions">
+              <a href="${item['url']}">${item['title']}</a>
+            </li>
+          </ul>
+
+          <ul class="nav pull-right" tal:condition="view.user">
+            <li>
+              <a href="${view.application_url}/"
+                 tal:content="view.user.name">:
+              </a>
+            </li>
+            <li class="active">
+              <a href="${view.application_url}/logout.html">Logout</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    ${structure: wrapped_content}
+
+    <footer>
+      <p>&copy; Ptah Project 2011-2012</p>
+    </footer>
+  </body>
+</html>

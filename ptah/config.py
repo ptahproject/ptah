@@ -201,13 +201,13 @@ class DirectiveInfo(object):
                 introspectables=action.introspectables,
                 order=action.order)
 
-        venusian.attach(data, callback, category='ptah', depth=depth+1)
-
         if cfg is not None:
             cfg.action(
                 action.discriminator,
                 self._runaction, (action, cfg),
                 introspectables=action.introspectables, order=action.order)
+        else:
+            venusian.attach(data, callback, category='ptah', depth=depth+1)
 
     def __repr__(self):
         filename, line, function, source, module = self.codeinfo

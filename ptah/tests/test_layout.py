@@ -102,7 +102,7 @@ class TestLayout(PtahTestCase):
         self.request.wrapped_response = self.request.response
 
         res = renderer(context, self.request).text
-        self.assertTrue('<html><div>View: test</div>\n</html>' in text_(res))
+        self.assertIn('<html><div>View: test</div>\n</html>', text_(res))
 
     def test_layout_chain_same_layer_id_on_different_levels(self):
         from ptah.layout import LayoutRenderer
@@ -121,7 +121,7 @@ class TestLayout(PtahTestCase):
         self.request.wrapped_response = self.request.response
 
         res = renderer(context2, self.request).body
-        self.assertEqual('<html><div>View: test</div>\n</html>\n', text_(res))
+        self.assertIn('<html><div>View: test</div>\n</html>\n', text_(res))
 
     def test_layout_chain_parent_notfound(self):
         ptah.layout.register('', context=Context, parent='page',

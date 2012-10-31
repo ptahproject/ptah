@@ -252,6 +252,18 @@ def includeme(cfg):
     cfg.add_layer('ptah-form', path='ptah:form/templates/')
     cfg.add_layer('ptah-fields', path='ptah:form/templates/fields/')
 
+    # ptah layouts
+    from ptah.view import MasterLayout
+    cfg.ptah_layout(
+        'master', renderer="ptah:master.lt", view=MasterLayout,
+        use_global_views=True)
+    cfg.ptah_layout(
+        'workspace', renderer="ptah:workspace.lt", parent='master',
+        use_global_views=True)
+    cfg.ptah_layout(
+        'content', renderer="ptah:content.lt", parent='workspace',
+        use_global_views=True)
+
     # scan ptah
     cfg.scan('ptah')
     cfg.include('ptah.static')

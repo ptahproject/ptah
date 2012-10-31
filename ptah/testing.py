@@ -50,6 +50,17 @@ class PtahTestCase(TestCase):
             return ptah.add_message(request, *args, **kw)
         request.add_message = m2
 
+        from pyramid_amdjs import amd
+        def m3(*args, **kw): # pragma: no cover
+            return amd.request_amd_init(request, *args, **kw)
+        request.init_amd = m3
+        def m4(*args, **kw): # pragma: no cover
+            return amd.request_includes(request, *args, **kw)
+        request.include_js = m4
+        def m5(*args, **kw): # pragma: no cover
+            return amd.request_css_includes(request, *args, **kw)
+        request.include_css = m5
+
         return request
 
     def init_ptah(self, *args, **kw):

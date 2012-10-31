@@ -145,3 +145,14 @@ class TestStatusMessages(PtahTestCase):
         self.assertEqual(
             res,
             text_('<div class="alert alert-info">\n  <a class="close" data-dismiss="alert">×</a>\n  message\n</div>\n','utf-8'))
+
+
+class TestMasterLayout(PtahTestCase):
+
+    def test_master_layout(self):
+        from ptah.view import MasterLayout
+
+        ml = MasterLayout(object(), self.request)
+        self.assertIsNone(ml.user)
+        self.assertEqual(ml.manage_url, 'http://example.com/ptah-manage')
+        self.assertEqual(ml.actions, [])

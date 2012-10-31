@@ -4,6 +4,7 @@ from pyramid.decorator import reify
 from pyramid.compat import escape
 from pyramid_layer import render, tmpl_filter
 
+import ptah
 from ptah.formatter import format
 
 log = logging.getLogger('ptah.view')
@@ -76,3 +77,19 @@ def error_message(context, request):
             context.__class__.__name__, escape(str(context), True))
 
     return {'context': context}
+
+
+class MasterLayout(View):
+
+    @reify
+    def user(self):
+        userid = ptah.auth_service.get_userid()
+        return ptah.resolve(userid)
+
+    @reify
+    def manage_url(self):
+        return ptah.manage.get_manage_url(self.request)
+
+    @reify
+    def actions(self):
+        return []
