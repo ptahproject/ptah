@@ -5,7 +5,6 @@ python:
   - 3.2
 install:
   - pip install git+git://github.com/fafhrd91/pyramid_amdjs.git
-  - pip install git+git://github.com/fafhrd91/pyramid_layer.git
   - python setup.py develop
 script: python setup.py test
 notifications:
