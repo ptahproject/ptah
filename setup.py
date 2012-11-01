@@ -4,7 +4,7 @@ import logging
 import multiprocessing  # atexit exception
 from setuptools import setup, find_packages
 
-version = '0.6.0dev'
+version = '0.8.0dev'
 
 install_requires = ['setuptools',
                     'alembic == 0.3.4',
