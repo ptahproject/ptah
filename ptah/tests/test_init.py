@@ -29,7 +29,7 @@ class TestPtahInit(TestCase):
                      'ptah_get_settings', 'ptah_auth_checker',
                      'ptah_auth_provider', 'ptah_principal_searcher',
                      'ptah_uri_resolver', 'ptah_password_changer',
-                     'ptah_layout', 'ptah_populate', 'ptah_populate_step'):
+                     'ptah_populate', 'ptah_populate_step'):
             self.assertTrue(hasattr(config, name))
 
         from pyramid.interfaces import \

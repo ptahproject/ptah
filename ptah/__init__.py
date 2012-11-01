@@ -1,5 +1,7 @@
 # ptah api
 
+from pyramid_layer import tmpl_filter, wrap_layout
+
 try:
     from collections import OrderedDict
 except ImportError: # pragma: no cover
@@ -36,10 +38,6 @@ from ptah.view import View
 from ptah.view import add_message
 from ptah.view import render_message
 from ptah.view import render_messages
-
-# layouts
-from ptah.layout import layout
-from ptah.layout import wrap_layout
 
 # settings
 from ptah.settings import get_settings
@@ -146,9 +144,6 @@ from ptah.migrate import register_migration
 # json
 from ptah.util import json
 
-# third party api
-from pyramid_layer import tmpl_filter
-
 
 def includeme(cfg):
     cfg.include('pyramid_amdjs')
@@ -219,9 +214,6 @@ def includeme(cfg):
     cfg.add_directive(
         'ptah_password_changer', password_changer.pyramid)
 
-    # layout directive
-    cfg.add_directive('ptah_layout', layout.pyramid)
-
     # message request helpers
     cfg.add_request_method(add_message, 'add_message')
     cfg.add_request_method(render_messages, 'render_messages')
@@ -254,15 +246,29 @@ def includeme(cfg):
 
     # ptah layouts
     from ptah.view import MasterLayout
-    cfg.ptah_layout(
-        'master', renderer="ptah:master.lt", view=MasterLayout,
-        use_global_views=True)
-    cfg.ptah_layout(
-        'workspace', renderer="ptah:workspace.lt", parent='master',
-        use_global_views=True)
-    cfg.ptah_layout(
-        'content', renderer="ptah:content.lt", parent='workspace',
-        use_global_views=True)
+    cfg.add_layout(
+        'master', renderer="ptah:master.lt", view=MasterLayout)
+    cfg.add_layout(
+        'workspace', renderer="ptah:workspace.lt", parent='master')
+    cfg.add_layout(
+        'content', renderer="ptah:content.lt", parent='workspace')
+
+    # ptah manage layouts
+    from ptah.manage.manage import PtahManageRoute, LayoutManage
+
+    cfg.add_layout(
+        '', PtahManageRoute, root=PtahManageRoute, parent='ptah-manage',
+        use_global_views=False, renderer="ptah-manage:ptah-layout.lt")
+
+    cfg.add_layout(
+        'ptah-page', PtahManageRoute, root=PtahManageRoute, 
+        parent='ptah-manage', use_global_views=False,
+        renderer="ptah-manage:ptah-layout.lt")
+
+    cfg.add_layout(
+        'ptah-manage', PtahManageRoute, root=PtahManageRoute,
+        use_global_views=False, renderer="ptah-manage:ptah-manage.lt",
+        view=LayoutManage)
 
     # scan ptah
     cfg.scan('ptah')

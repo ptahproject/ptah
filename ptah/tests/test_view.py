@@ -22,6 +22,10 @@ class TestView(PtahTestCase):
         self.request.application_url = 'http://example.com/'
         self.assertEqual(view.application_url, 'http://example.com')
 
+    def test_view_update(self):
+        view = ptah.View(Context(), self.request)
+        self.assertEqual(view.update(), {})
+
 
 class TestStatusMessages(PtahTestCase):
 

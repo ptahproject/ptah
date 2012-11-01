@@ -32,7 +32,7 @@ class TestLayoutPreview(ptah.PtahTestCase):
 
         self.config.add_view(
             name='', context=Context, wrapper=ptah.wrap_layout(), view=View,)
-        self.config.ptah_layout(
+        self.config.add_layout(
             '', parent='page', context=Context,
             renderer='ptah.manage:tests/test_layout.pt')
 
