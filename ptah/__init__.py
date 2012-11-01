@@ -261,7 +261,7 @@ def includeme(cfg):
         use_global_views=False, renderer="ptah-manage:ptah-layout.lt")
 
     cfg.add_layout(
-        'ptah-page', PtahManageRoute, root=PtahManageRoute, 
+        'ptah-page', PtahManageRoute, root=PtahManageRoute,
         parent='ptah-manage', use_global_views=False,
         renderer="ptah-manage:ptah-layout.lt")
 
