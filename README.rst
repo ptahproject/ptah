@@ -13,12 +13,14 @@ You can read the `ptah` documentation on-line at
 .. image :: https://secure.travis-ci.org/ptahproject/ptah.png 
   :target:  https://secure.travis-ci.org/ptahproject/ptah
 
+
 Requirements
 ------------
 
 - Python 2.6+ or Python 3.2+
 
 - virtualenv
+
 
 Note for Windows Users
 ----------------------
@@ -59,7 +61,7 @@ Let's generate a empty project using the `ptah_starter` scaffolding. You can sta
   /path/to/virtaulenv/myapp $ ../bin/pserve settings.ini --reload
 
 Open your browser to http://localhost:6543/ if you want examples that do more such as demonstrating editing models and authentication.  Check out the examples.
-  
+
 
 Examples
 --------
@@ -91,4 +93,3 @@ License
 -------
 
 Ptah is offered under the BSD3 license.
-

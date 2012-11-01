@@ -2,7 +2,7 @@
 CHANGES
 =======
 
-0.8.0 (Unreleased)
+0.8.0 (11-01-2012)
 ==================
 
 - Pyramid 1.4 compatibility
@@ -17,7 +17,7 @@ CHANGES
 
 - Removed `ptah.layout` functionality, moved to `pyramid_layer`
 
-- Use pyramid_layer for templates
+- Use `pyramid_layer` for templates
 
 - Use `pyramid_amdjs` for static resource management
 
