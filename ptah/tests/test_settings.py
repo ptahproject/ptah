@@ -1,4 +1,5 @@
 import os
+import pform
 import shutil
 import tempfile
 from pyramid.compat import bytes_
@@ -283,7 +284,7 @@ class TestSettings(BaseTesting):
             self.config, {10: 'value'})
 
     def test_settings_load_defaults_rawdata_with_errors_in_values(self):
-        node = ptah.form.LinesField(
+        node = pform.FloatField(
             'node1',
             default = ())
 

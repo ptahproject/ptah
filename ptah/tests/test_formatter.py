@@ -7,53 +7,10 @@ import ptah
 from ptah.testing import PtahTestCase
 
 
-class TestFormatterReg(PtahTestCase):
-
-    _init_ptah = False
-
-    def test_formatter_registration(self):
-        @ptah.formatter('simple')
-        def simple(v):
-            return 'simple-%s'%v
-
-        self.init_ptah()
-
-        self.assertEqual(ptah.format.simple('test'), 'simple-test')
-        self.assertIs(ptah.format.simple, simple)
-
-    def test_formatter_registration_duplicate(self):
-        @ptah.formatter('simple')
-        def simple1(v):
-            """ """
-
-        @ptah.formatter('simple')
-        def simple2(v):
-            """ """
-
-        self.assertRaises(ConfigurationConflictError, self.init_ptah)
-
-    def test_formatter_introspector(self):
-        @ptah.formatter('simple')
-        def simple(v):
-            """ doc """
-
-        from ptah.formatter import ID_FORMATTER
-        discr = (ID_FORMATTER, 'simple')
-
-        self.init_ptah()
-
-        intr = self.config.introspector.get(ID_FORMATTER, discr)
-
-        self.assertIsNotNone(intr)
-        self.assertEqual(intr['name'], 'simple')
-        self.assertEqual(intr['description'], ' doc ')
-        self.assertEqual(intr['callable'], simple)
-
-
 class TestFormatter(PtahTestCase):
 
     def test_datetime_formatter(self):
-        format = ptah.format
+        format = self.request.fmt
 
         # format only datetime
         self.assertEqual(format.datetime('text string'), 'text string')
@@ -70,7 +27,7 @@ class TestFormatter(PtahTestCase):
                          'Sunday, February 06, 2011 04:35:45 AM CST')
 
     def test_datetime_formatter2(self):
-        format = ptah.format
+        format = self.request.fmt
 
         # datetime without timezone
         dt = datetime(2011, 2, 6, 10, 35, 45, 80)
@@ -87,7 +44,7 @@ class TestFormatter(PtahTestCase):
                          'Feb 06, 2011 04:35 AM')
 
     def test_timedelta_formatter(self):
-        format = ptah.format
+        format = self.request.fmt
 
         # format only timedelta
         self.assertEqual(format.timedelta('text string'), 'text string')
@@ -110,7 +67,7 @@ class TestFormatter(PtahTestCase):
         self.assertEqual(format.timedelta(td), '10:05:45')
 
     def test_size_formatter(self):
-        format = ptah.format
+        format = self.request.fmt
 
         # format only timedelta
         self.assertEqual(format.size('text string'), 'text string')

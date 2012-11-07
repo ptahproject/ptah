@@ -43,7 +43,7 @@ class FieldIntrospect(ptah.PtahTestCase):
 
         mod = IntrospectModule(None, self.request)
 
-        intr = mod['ptah.form:field']
+        intr = mod['pform:field']
 
         res = render_view_to_response(intr, self.request)
-        self.assertIn('ptah.form:field', res.text)
+        self.assertIn('pform:field', res.text)

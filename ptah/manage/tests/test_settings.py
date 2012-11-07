@@ -97,4 +97,4 @@ class TestSettingsTTW(PtahTestCase):
         form.update()
         form.modify_handler()
         self.assertIn('Settings have been modified.',
-                      ptah.render_messages(self.request))
+                      self.request.render_messages())

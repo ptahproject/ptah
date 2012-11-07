@@ -1,6 +1,12 @@
 # ptah api
 
-from pyramid_layer import tmpl_filter, wrap_layout
+import pform as form
+from player import tmpl_filter, wrap_layout
+
+from ptah.jsfields import CKEditorField, JSDateField, JSDateTimeField
+form.JSDateField = JSDateField
+form.JSDateTimeField = JSDateTimeField
+form.CKEditorField = CKEditorField
 
 try:
     from collections import OrderedDict
@@ -35,9 +41,6 @@ from ptah.events import event
 
 # view api
 from ptah.view import View
-from ptah.view import add_message
-from ptah.view import render_message
-from ptah.view import render_messages
 
 # settings
 from ptah.settings import get_settings
@@ -96,9 +99,6 @@ CFG_ID_FORMAT = 'format'
 from ptah.password import pwd_tool
 from ptah.password import password_changer
 
-# formatter
-from ptah.formatter import format, formatter
-
 # mail templates
 from ptah import mail
 
@@ -127,9 +127,6 @@ from ptah.uiactions import list_uiactions
 # manage
 from ptah import manage
 
-# form api
-from ptah import form
-
 # populate
 POPULATE = False
 from ptah.populate import populate
@@ -146,8 +143,9 @@ from ptah.util import json
 
 
 def includeme(cfg):
+    cfg.include('pform')
+    cfg.include('player')
     cfg.include('pyramid_amdjs')
-    cfg.include('pyramid_layer')
 
     # auth
     from ptah.security import PtahAuthorizationPolicy
@@ -214,10 +212,6 @@ def includeme(cfg):
     cfg.add_directive(
         'ptah_password_changer', password_changer.pyramid)
 
-    # message request helpers
-    cfg.add_request_method(add_message, 'add_message')
-    cfg.add_request_method(render_messages, 'render_messages')
-
     # populate
     def pyramid_populate(cfg):
         from ptah.populate import Populate
@@ -238,7 +232,6 @@ def includeme(cfg):
     # template layers
     cfg.add_layer('ptah', path='ptah:templates/ptah/')
     cfg.add_layer('ptah-manage', path='ptah:templates/manage/')
-    cfg.add_layer('ptah-message', path='ptah:templates/messages/')
     cfg.add_layer('ptah-intr', path='ptah:templates/intr/')
 
     cfg.add_layer('ptah-form', path='ptah:form/templates/')
@@ -269,6 +262,12 @@ def includeme(cfg):
         'ptah-manage', PtahManageRoute, root=PtahManageRoute,
         use_global_views=False, renderer="ptah-manage:ptah-manage.lt",
         view=LayoutManage)
+
+    # ptah formatters
+    from ptah import formatter
+    cfg.add_formatter('datetime', formatter.datetime_formatter)
+    cfg.add_formatter('timedelta', formatter.timedelta_formatter)
+    cfg.add_formatter('size', formatter.size_formatter)
 
     # scan ptah
     cfg.scan('ptah')

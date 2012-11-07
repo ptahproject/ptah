@@ -1,11 +1,11 @@
 """ introspect module """
 from pyramid.view import view_config
 from pyramid.compat import url_unquote
-from pyramid_layer import RendererNotFound
+from player import RendererNotFound
 
 import ptah
 from ptah.manage import get_manage_url
-from ptah.form.field import PREVIEW_ID
+from pform.directives import ID_PREVIEW
 
 
 @ptah.manage.module('introspect')
@@ -73,9 +73,9 @@ class IntrospectorView(ptah.View):
                 manage_url = self.manage_url, rst_to_html = ptah.rst_to_html)
 
 
-@ptah.tmpl_filter('ptah-intr:ptah-formfield')
+@ptah.tmpl_filter('ptah-intr:pform-field')
 def tmpl_formfield(context, request):
-    return {'previews': ptah.config.get_cfg_storage(PREVIEW_ID)}
+    return {'previews': request.registry[ID_PREVIEW]}
 
 
 @ptah.tmpl_filter('ptah-intr:ptah-subscriber')

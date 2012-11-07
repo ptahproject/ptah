@@ -20,7 +20,7 @@ class TestPasswordSchema(PtahTestCase):
     def test_password_required(self):
         from ptah.password import PasswordSchema
 
-        pwdSchema = PasswordSchema.bind(params={})
+        pwdSchema = PasswordSchema.bind(self.request, params={})
 
         data, errors = pwdSchema.extract()
         self.assertEqual(len(errors), 2)
@@ -30,6 +30,7 @@ class TestPasswordSchema(PtahTestCase):
         from ptah.password import PasswordSchema
 
         pwdSchema = PasswordSchema.bind(
+            self.request,
             params={'password': '12345', 'confirm_password': '123456'})
         data, errors = pwdSchema.extract()
 
@@ -43,6 +44,7 @@ class TestPasswordSchema(PtahTestCase):
         from ptah.password import PasswordSchema
 
         pwdSchema = PasswordSchema.bind(
+            self.request,
             params={'password': '12345', 'confirm_password': '12345'})
         data, errors = pwdSchema.extract()
         self.assertEqual(len(errors), 0)

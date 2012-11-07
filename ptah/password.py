@@ -1,4 +1,5 @@
 """ password tool """
+import pform
 import translationstring
 from os import urandom
 from datetime import timedelta
@@ -209,7 +210,7 @@ class password_changer(object):
 def passwordValidator(field, value):
     """ password schema validator
     that uses password tool for additional checks"""
-    if value is not ptah.form.null:
+    if value is not pform.null:
         err = pwd_tool.validate(value)
         if err is not None:
             raise form.Invalid(field, err)

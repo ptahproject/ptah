@@ -1,5 +1,6 @@
 import sys
 import ptah
+import pform
 from ptah.scripts import settings
 from ptah.testing import PtahTestCase
 from pyramid.compat import NativeIO
@@ -10,7 +11,7 @@ class TestCommand(PtahTestCase):
     _init_ptah = False
 
     def test_settings_command(self):
-        field = ptah.form.TextField(
+        field = pform.TextField(
             'node',
             default = 'test')
 

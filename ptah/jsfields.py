@@ -1,13 +1,12 @@
 """ various fields """
-import datetime
-
 import ptah
-from ptah.form.interfaces import _, null, Invalid
-from ptah.form.field import field
-from ptah.form.fields import TextAreaField, TextField, DateTimeField
+import datetime
+import pform
+from pform.interfaces import _, null, Invalid
+from pform.fields import TextAreaField, TextField, DateTimeField
 
 
-@field('ckeditor')
+@pform.field('ckeditor')
 class CKEditorField(TextAreaField):
     """ CKEditor input widget. Field name is ``ckeditor``.
 
@@ -22,19 +21,19 @@ class CKEditorField(TextAreaField):
     width = '400px'
     height = '300px'
 
-    tmpl_input = "ptah-fields:ckeditor"
+    tmpl_input = "ptah:ckeditor"
 
 
-@field('date')
+@pform.field('date')
 class JSDateField(TextField):
     """Date input widget with JQuery Datepicker. Field name is ``date``."""
 
     klass = 'date-widget'
     value = ''
 
-    tmpl_input = "ptah-fields:jsdate"
+    tmpl_input = "ptah:jsdate"
 
-    def serialize(self, value):
+    def to_form(self, value):
         if value is null or value is None:
             return null
 
@@ -48,7 +47,7 @@ class JSDateField(TextField):
 
         return value.strftime('%m/%d/%Y')
 
-    def deserialize(self, value):
+    def to_field(self, value):
         if not value:
             return null
         try:
@@ -58,7 +57,7 @@ class JSDateField(TextField):
                 self, _('Invalid date', mapping={'val': value, 'err': e}))
 
 
-@field('datetime')
+@pform.field('datetime')
 class JSDateTimeField(DateTimeField):
     """DateTime input widget with JQuery Datepicker.
     Field name is ``datetime``."""
@@ -70,13 +69,13 @@ class JSDateTimeField(DateTimeField):
     date_part = null
     tzinfo = None
 
-    tmpl_input = "ptah-fields:jsdatetime"
+    tmpl_input = "ptah:jsdatetime"
 
-    def update(self, request):
+    def update(self):
         self.date_name = '%s.date' % self.name
         self.time_name = '%s.time' % self.name
 
-        super(JSDateTimeField, self).update(request)
+        super(JSDateTimeField, self).update()
 
         self.date_part = self.params.get(self.date_name, null)
         self.time_part = self.params.get(self.time_name, null)
@@ -87,7 +86,8 @@ class JSDateTimeField(DateTimeField):
             if self.date_part is null:
                 self.date_part = raw.strftime('%m/%d/%Y')
             if self.time_part is null:
-                FORMAT = ptah.get_settings(ptah.CFG_ID_FORMAT, request.registry)
+                FORMAT = ptah.get_settings(
+                    ptah.CFG_ID_FORMAT, self.request.registry)
                 self.time_part = raw.strftime(FORMAT['time_short'])
 
         if self.date_part is null:

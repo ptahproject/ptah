@@ -2,10 +2,18 @@
 CHANGES
 =======
 
-0.8.0 (11-01-2012)
+0.8.0 (Unreleased)
 ==================
 
 - Pyramid 1.4 compatibility
+
+- Removed `message` subsystem moved to `player`
+
+- Removed `ptah.layout` functionality, moved to `player`
+
+- Removed `ptah.form` functionality, moved to separate package
+
+- Removed `ptah.formatter` functionality, moved to separate package
 
 - Renamed `ptah.type` to `ptah.tinfo`
 
@@ -15,9 +23,7 @@ CHANGES
 
 - Removed `ptah.snippet` functionality
 
-- Removed `ptah.layout` functionality, moved to `pyramid_layer`
-
-- Use `pyramid_layer` for templates
+- Use `player` for templates
 
 - Use `pyramid_amdjs` for static resource management
 

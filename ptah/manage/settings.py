@@ -52,14 +52,14 @@ class SettingsView(ptah.View):
                 if getattr(field, 'tint', False):
                     value = '* * * * * * *'
                 else:
-                    value = field.dumps(group[field.name])
+                    value = ptah.json.dumps(group[field.name])
                 schema.append(
                     ({'name': '{0}.{1}'.format(name, field.name),
                       'type': field.__class__.__name__,
                       'value': value,
                       'title': field.title,
                       'description': field.description,
-                      'default': field.dumps(field.default)}))
+                      'default': ptah.json.dumps(field.default)}))
 
             data.append(
                 ({'title': title,

@@ -5,11 +5,7 @@ from pyramid.view import render_view_to_response
 
 class TestIntrospectModule(PtahTestCase):
 
-    _init_ptah = False
-
     def test_introspect_module(self):
-        self.init_ptah()
-
         from ptah.manage.manage import PtahManageRoute
         from ptah.manage.introspect import IntrospectModule
 
@@ -26,7 +22,6 @@ class TestIntrospectModule(PtahTestCase):
 
     def test_traversable(self):
         from ptah.manage.introspect import IntrospectModule, Introspector
-        self.init_ptah()
 
         request = self.make_request()
         mod = IntrospectModule(None, request)
@@ -38,7 +33,6 @@ class TestIntrospectModule(PtahTestCase):
 
     def test_view(self):
         from ptah.manage.introspect import IntrospectModule
-        self.init_ptah()
 
         request = self.make_request()
         mod = IntrospectModule(None, request)
@@ -51,7 +45,6 @@ class TestIntrospectModule(PtahTestCase):
 
     def test_intr_view(self):
         from ptah.manage.introspect import IntrospectModule
-        self.init_ptah()
 
         request = self.make_request()
         mod = IntrospectModule(None, request)
@@ -63,12 +56,11 @@ class TestIntrospectModule(PtahTestCase):
 
     def test_intr_view_default(self):
         from ptah.manage.introspect import IntrospectModule
-        self.init_ptah()
 
         request = self.make_request()
         mod = IntrospectModule(None, request)
 
-        intr = mod['ptah.form:field-preview']
+        intr = mod['pform:field-preview']
 
         res = render_view_to_response(intr, request)
-        self.assertIn('ptah.form:field-preview', res.text)
+        self.assertIn('pform:field-preview', res.text)
