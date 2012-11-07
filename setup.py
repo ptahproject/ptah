@@ -4,7 +4,7 @@ import logging
 import multiprocessing  # atexit exception
 from setuptools import setup, find_packages
 
-version = '0.8.0dev'
+version = '0.8.0'
 
 install_requires = ['setuptools',
                     'alembic >= 0.4.0',
@@ -13,7 +13,7 @@ install_requires = ['setuptools',
                     'pyramid_tm',
                     'pyramid_amdjs',
                     'pform',
-                    'player >= 0.2',
+                    'player',
                     'zope.interface >= 4.0.1',
                     'zope.sqlalchemy >= 0.7.1',
                     'transaction >= 1.3.0',
