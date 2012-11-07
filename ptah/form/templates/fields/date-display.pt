@@ -1,9 +1,0 @@
-<span class="uneditable-input">
-  <span id="" class=""
-        tal:attributes="id context.id;
-                        class context.klass;
-                        title context.title;
-                        lang context.lang;">
-    <tal:block condition="context.form_value" content="context.form_value" />
-  </span>
-</span>

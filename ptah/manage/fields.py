@@ -1,6 +1,6 @@
-""" ptah.form fields """
+""" pform fields """
 import ptah
-from ptah.form.field import FIELD_ID, PREVIEW_ID
+from pform.directives import ID_FIELD, ID_PREVIEW
 from pyramid.view import view_config
 
 
@@ -24,8 +24,8 @@ class FieldsView(ptah.View):
     def update(self):
         data = []
 
-        fields = ptah.get_cfg_storage(FIELD_ID)
-        previews = ptah.get_cfg_storage(PREVIEW_ID)
+        fields = self.request.registry[ID_FIELD]
+        previews = self.request.registry[ID_PREVIEW]
 
         for name, cls in fields.items():
             data.append({'name': name,

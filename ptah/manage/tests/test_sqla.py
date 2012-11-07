@@ -211,7 +211,7 @@ class TestSqlaModule(PtahTestCase):
         mod = SQLAModule(None, request)
         table = mod['psqla-test_sqla_table']
 
-        request = DummyRequest(
+        request = self.make_request(
             POST={'form.buttons.create': 'Create'})
 
         form = AddRecord(table, request)
@@ -219,7 +219,7 @@ class TestSqlaModule(PtahTestCase):
         form.update()
 
         self.assertIn('Please fix indicated errors',
-                      ptah.view.render_messages(request))
+                      request.render_messages())
 
         request = self.make_request(
             POST={'form.buttons.create': 'Create',
@@ -230,7 +230,7 @@ class TestSqlaModule(PtahTestCase):
         res = form.update()
 
         self.assertIn('Table record has been created.',
-                      ptah.view.render_messages(request))
+                      request.render_messages())
         self.assertIsInstance(res, HTTPFound)
 
         rec = ptah.get_session().query(TestSqlaModuleTable).first()
@@ -252,7 +252,7 @@ class TestSqlaModule(PtahTestCase):
         form.update()
 
         self.assertIn('Please fix indicated errors',
-                      ptah.view.render_messages(request))
+                      request.render_messages())
 
         request = self.make_request(
             POST={'form.buttons.createmulti': 'Create',
@@ -263,7 +263,7 @@ class TestSqlaModule(PtahTestCase):
         form.update()
 
         self.assertIn('Table record has been created.',
-                      ptah.view.render_messages(request))
+                      request.render_messages())
 
         rec = ptah.get_session().query(TestSqlaModuleTable).first()
         self.assertEqual(rec.name, 'Test multi')
@@ -316,7 +316,7 @@ class TestSqlaModule(PtahTestCase):
 
         rec = table[rec_id]
 
-        request = DummyRequest(
+        request = self.make_request(
             POST={'form.buttons.modify': 'Modify'})
 
         form = EditRecord(rec, request)
@@ -324,7 +324,7 @@ class TestSqlaModule(PtahTestCase):
         form.update()
 
         self.assertIn('Please fix indicated errors',
-                      ptah.view.render_messages(request))
+                      request.render_messages())
 
         request = self.make_request(
             POST={'form.buttons.modify': 'Modify',
@@ -335,7 +335,7 @@ class TestSqlaModule(PtahTestCase):
         res = form.update()
 
         self.assertIn('Table record has been modified.',
-                      ptah.view.render_messages(request))
+                      request.render_messages())
         self.assertIsInstance(res, HTTPFound)
         self.assertEqual(res.headers['location'], '..')
 
@@ -366,7 +366,7 @@ class TestSqlaModule(PtahTestCase):
         res = form.update()
 
         self.assertIn('Table record has been removed.',
-                      ptah.view.render_messages(request))
+                      request.render_messages())
         self.assertIsInstance(res, HTTPFound)
         self.assertEqual(res.headers['location'], '..')
 
@@ -399,7 +399,8 @@ class TestSqlaModule(PtahTestCase):
 
         rec_id = rec.id
 
-        mod = SQLAModule(None, DummyRequest())
+        request = self.make_request()
+        mod = SQLAModule(None, request)
         table = mod['psqla-test_sqla_table']
 
         request = self.make_request(
@@ -410,7 +411,7 @@ class TestSqlaModule(PtahTestCase):
         form.update()
 
         self.assertIn('lease select records for removing.',
-                      ptah.view.render_messages(request))
+                      request.render_messages())
 
         request = self.make_request(
             POST=MultiDict([('form.buttons.remove', 'Remove'),
@@ -421,7 +422,7 @@ class TestSqlaModule(PtahTestCase):
         form.update()
 
         #self.assertIn('Please select records for removing.',
-        #              ptah.view.render_messages(request))
+        #              request.render_messages())
 
         request = self.make_request(
             POST=MultiDict([('form.buttons.remove', 'Remove'),
@@ -434,7 +435,7 @@ class TestSqlaModule(PtahTestCase):
         form.update()
 
         self.assertIn('Select records have been removed.',
-                      ptah.view.render_messages(request))
+                      request.render_messages())
 
         rec = ptah.get_session().query(TestSqlaModuleTable).filter(
             TestSqlaModuleTable.id == rec_id).first()

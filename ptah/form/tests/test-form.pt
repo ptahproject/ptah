@@ -1,3 +1,0 @@
-<h1>Custom form</h1>
-
-${structure: view.render()}

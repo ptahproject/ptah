@@ -8,8 +8,10 @@ from zope import interface
 from zope.interface.interface import InterfaceClass
 from pyramid.compat import configparser
 
+import pform as form
+
 import ptah
-from ptah import uri, form, config
+from ptah import uri, config
 from ptah.sqlautils import JsonType
 from ptah.config import StopException
 
@@ -125,7 +127,7 @@ def register_settings(name, *fields, **kw):
     """Register settings group.
 
     :param name: Name of settings group
-    :param fields: List of :py:class:`ptah.form.Field` objects
+    :param fields: List of :py:class:`pform.Field` objects
 
     """
     iname = name
@@ -235,7 +237,8 @@ class Settings(object):
                 if group[fname] == field.default and not default:
                     continue
 
-                result['{0}.{1}'.format(name,fname)] = field.dumps(group[fname])
+                result['{0}.{1}'.format(name,fname)] = \
+                                    ptah.json.dumps(group[fname])
 
         return result
 
@@ -275,7 +278,15 @@ class Group(OrderedDict):
                 value = self.get(field.name)
             else:
                 try:
-                    value = field.loads(value)
+
+                    try:
+                        value = ptah.json.loads(value)
+                    except:
+                        if not value.startswith('"'):
+                            value = '"{0}"'.format(value)
+                        value = value.replace('\n', '\\n')
+                        value = ptah.json.loads(value)
+
                     field.validate(value)
 
                     if field.preparer is not None:
@@ -340,7 +351,7 @@ class Group(OrderedDict):
                     continue
 
                 rec = SettingRecord(name='{0}.{1}'.format(name, fname),
-                                    value = field.dumps(value))
+                                    value = ptah.json.dumps(value))
             else:
                 rec = SettingRecord(
                     name='{0}.{1}'.format(name, fname),

@@ -1,8 +1,0 @@
-<span tal:attributes="id context.id;
-                      class context.klass;
-                      title context.title;
-                      lang context.lang;">
-  <span tal:condition="context.form_value">
-    ${context.vocabulary.getTermByToken(context.form_value).title}
-  </span>
-</span>

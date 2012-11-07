@@ -1,6 +1,6 @@
 import ptah
 from ptah import form, config
-from ptah.form.field import PREVIEW_ID
+from pform.directives import ID_PREVIEW
 from ptah.manage import fieldpreviews
 from ptah.testing import PtahTestCase
 from pyramid.testing import DummyRequest
@@ -10,7 +10,7 @@ from pyramid.view import render_view_to_response
 class TestFieldPreviews(PtahTestCase):
 
     def test_multiChoicePreview(self):
-        previews = config.get_cfg_storage(PREVIEW_ID)
+        previews = self.registry[ID_PREVIEW]
         self.assertIs(previews[form.MultiChoiceField],
                       fieldpreviews.multiChoicePreview)
 
@@ -19,7 +19,7 @@ class TestFieldPreviews(PtahTestCase):
         self.assertIn('Multi choice field', html)
 
     def test_choicePreview(self):
-        previews = config.get_cfg_storage(PREVIEW_ID)
+        previews = self.registry[ID_PREVIEW]
         self.assertIs(previews[form.ChoiceField],
                       fieldpreviews.choicePreview)
 
@@ -28,7 +28,7 @@ class TestFieldPreviews(PtahTestCase):
         self.assertIn('Choice field', html)
 
     def test_boolPreview(self):
-        previews = config.get_cfg_storage(PREVIEW_ID)
+        previews = self.registry[ID_PREVIEW]
         self.assertIs(previews[form.BoolField],
                       fieldpreviews.boolPreview)
 
@@ -37,7 +37,7 @@ class TestFieldPreviews(PtahTestCase):
         self.assertIn('Boolean field', html)
 
     def test_radioPreview(self):
-        previews = config.get_cfg_storage(PREVIEW_ID)
+        previews = self.registry[ID_PREVIEW]
         self.assertIs(previews[form.RadioField],
                       fieldpreviews.radioPreview)
 
@@ -46,7 +46,7 @@ class TestFieldPreviews(PtahTestCase):
         self.assertIn('Radio field', html)
 
     def test_textareaPreview(self):
-        previews = config.get_cfg_storage(PREVIEW_ID)
+        previews = self.registry[ID_PREVIEW]
         self.assertIs(previews[form.TextAreaField],
                       fieldpreviews.textareaPreview)
 
@@ -55,7 +55,7 @@ class TestFieldPreviews(PtahTestCase):
         self.assertIn('TextArea field', html)
 
     def test_linesPreview(self):
-        previews = config.get_cfg_storage(PREVIEW_ID)
+        previews = self.registry[ID_PREVIEW]
         self.assertIs(previews[form.LinesField],
                       fieldpreviews.linesPreview)
 
@@ -64,7 +64,7 @@ class TestFieldPreviews(PtahTestCase):
         self.assertIn('Lines field', html)
 
     def test_textPreview(self):
-        previews = config.get_cfg_storage(PREVIEW_ID)
+        previews = self.registry[ID_PREVIEW]
         self.assertIs(previews[form.TextField],
                       fieldpreviews.textPreview)
 
@@ -73,7 +73,7 @@ class TestFieldPreviews(PtahTestCase):
         self.assertIn('Text field', html)
 
     def test_intPreview(self):
-        previews = config.get_cfg_storage(PREVIEW_ID)
+        previews = self.registry[ID_PREVIEW]
         self.assertIs(previews[form.IntegerField],
                       fieldpreviews.intPreview)
 
@@ -82,7 +82,7 @@ class TestFieldPreviews(PtahTestCase):
         self.assertIn('Integer field', html)
 
     def test_floatPreview(self):
-        previews = config.get_cfg_storage(PREVIEW_ID)
+        previews = self.registry[ID_PREVIEW]
         self.assertIs(previews[form.FloatField],
                       fieldpreviews.floatPreview)
 
@@ -91,7 +91,7 @@ class TestFieldPreviews(PtahTestCase):
         self.assertIn('Float field', html)
 
     def test_decimalPreview(self):
-        previews = config.get_cfg_storage(PREVIEW_ID)
+        previews = self.registry[ID_PREVIEW]
         self.assertIs(previews[form.DecimalField],
                       fieldpreviews.decimalPreview)
 
@@ -100,7 +100,7 @@ class TestFieldPreviews(PtahTestCase):
         self.assertIn('Decimal field', html)
 
     def test_passwordPreview(self):
-        previews = config.get_cfg_storage(PREVIEW_ID)
+        previews = self.registry[ID_PREVIEW]
         self.assertIs(previews[form.PasswordField],
                       fieldpreviews.passwordPreview)
 
@@ -109,7 +109,7 @@ class TestFieldPreviews(PtahTestCase):
         self.assertIn('Password field', html)
 
     def test_timezonePreview(self):
-        previews = config.get_cfg_storage(PREVIEW_ID)
+        previews = self.registry[ID_PREVIEW]
         self.assertIs(previews[form.TimezoneField],
                       fieldpreviews.timezonePreview)
 
@@ -144,9 +144,9 @@ class TestFieldsModule(PtahTestCase):
         res = render_view_to_response(mod, request, '', False)
         self.assertEqual(res.status, '200 OK')
 
-        from ptah.form.field import FIELD_ID
+        from pform.directives import ID_FIELD
 
-        fields = config.get_cfg_storage(FIELD_ID)
+        fields = self.registry[ID_FIELD]
 
         view = FieldsView(None, request)
         view.update()
