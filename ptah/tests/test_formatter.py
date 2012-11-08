@@ -1,7 +1,6 @@
 """ formatter tests """
 import pytz
 from datetime import datetime, timedelta
-from pyramid.exceptions import ConfigurationConflictError
 
 import ptah
 from ptah.testing import PtahTestCase

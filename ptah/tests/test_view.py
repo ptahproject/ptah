@@ -1,7 +1,4 @@
 # -*- coding: utf-8 -*-
-""" view tests """
-from pyramid.compat import text_
-
 import ptah
 from ptah.testing import PtahTestCase
 

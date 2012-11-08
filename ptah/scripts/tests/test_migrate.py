@@ -3,7 +3,6 @@ import sys
 import shutil
 import tempfile
 import ptah
-from ptah.migrate import ScriptDirectory
 from ptah.scripts import migrate
 from pyramid.compat import NativeIO
 

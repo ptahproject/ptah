@@ -1,5 +1,5 @@
 import logging
-import ptah
+import player
 from pyramid.view import view_config
 
 log = logging.getLogger(__name__)
@@ -7,7 +7,7 @@ log = logging.getLogger(__name__)
 
 @view_config(renderer='{{package}}:templates/homepage.pt',
              route_name='home',
-             wrapper=ptah.wrap_layout('content'))
+             wrapper=player.wrap_layout('content'))
 
 class HomepageView(object):
 

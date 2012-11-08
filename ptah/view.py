@@ -1,8 +1,6 @@
 """ base view class with access to various api's """
 import logging
 from pyramid.decorator import reify
-from pyramid.compat import escape
-from player import render, tmpl_filter
 
 import ptah
 

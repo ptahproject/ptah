@@ -38,6 +38,17 @@ class TestUIAction(PtahTestCase):
         actions = ptah.list_uiactions(Content(), self.request)
         self.assertEqual(actions[0]['url'], 'http://example.com/test.html')
 
+    def test_uiaction_url_no_request(self):
+
+        class Content(object):
+            __name__ = ''
+
+        ptah.uiaction(Content, 'action1', 'Action 1', action='test.html')
+        self.init_ptah()
+
+        actions = ptah.list_uiactions(Content(), registry=self.registry)
+        self.assertEqual(actions[0]['url'], '')
+
     def test_uiaction_absolute_url(self):
 
         class Content(object):

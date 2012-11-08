@@ -1,7 +1,5 @@
 import os
 import sys
-import logging
-import multiprocessing  # atexit exception
 from setuptools import setup, find_packages
 
 version = '0.8.0'
@@ -9,7 +7,7 @@ version = '0.8.0'
 install_requires = ['setuptools',
                     'alembic >= 0.4.0',
                     'Chameleon >= 2.6.1',
-                    'pyramid >= 1.4.0a2',
+                    'pyramid >= 1.4a2',
                     'pyramid_tm',
                     'pyramid_amdjs',
                     'pform',

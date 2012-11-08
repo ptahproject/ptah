@@ -1,9 +1,5 @@
-import decimal
 import pform
-from pform import iso8601
-from ptah.testing import TestCase, PtahTestCase
-from webob.multidict import MultiDict
-from pyramid.compat import text_type
+from ptah.testing import PtahTestCase
 
 
 def invalid_exc(func, *arg, **kw):

@@ -1,8 +1,6 @@
 import pform
 from pyramid.httpexceptions import HTTPForbidden
 from pyramid.exceptions import ConfigurationError, ConfigurationConflictError
-
-from ptah import form
 from ptah.testing import PtahTestCase, TestCase
 
 

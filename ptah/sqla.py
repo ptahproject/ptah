@@ -1,5 +1,4 @@
 """ sqlalchemy query wrapper """
-import ptah
 import pform
 import sqlalchemy as sqla
 

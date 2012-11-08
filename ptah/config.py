@@ -6,7 +6,6 @@ from collections import defaultdict, namedtuple, OrderedDict
 from pyramid.compat import NativeIO
 from pyramid.registry import Introspectable
 from pyramid.threadlocal import get_current_registry
-from zope.interface.interfaces import IObjectEvent
 
 import venusian
 from venusian.advice import getFrameInfo

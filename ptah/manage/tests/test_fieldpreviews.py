@@ -1,5 +1,5 @@
 import ptah
-from ptah import form, config
+from ptah import form
 from pform.directives import ID_PREVIEW
 from ptah.manage import fieldpreviews
 from ptah.testing import PtahTestCase

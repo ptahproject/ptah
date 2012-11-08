@@ -163,8 +163,9 @@ def includeme(cfg):
     cfg.include('pyramid_tm')
 
     # object events handler
+    from zope.interface.interfaces import IObjectEvent
     cfg.registry.registerHandler(
-        config.ObjectEventNotify(cfg.registry), (config.IObjectEvent,))
+        config.ObjectEventNotify(cfg.registry), (IObjectEvent,))
 
     # initialize settings
     from ptah import settings
