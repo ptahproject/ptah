@@ -1,3 +1,4 @@
+import pform
 import ptah
 from ptah.testing import PtahTestCase
 from pyramid.compat import text_
@@ -44,8 +45,8 @@ class TestSettingsTTW(PtahTestCase):
 
         ptah.register_settings(
             'test',
-            ptah.form.TextField('node1', default='test1'),
-            ptah.form.TextField('node2', default='test2', tint=True),
+            pform.TextField('node1', default='test1'),
+            pform.TextField('node2', default='test2', tint=True),
             title = 'Test settings')
 
         self.init_ptah()
@@ -68,8 +69,8 @@ class TestSettingsTTW(PtahTestCase):
 
         ptah.register_settings(
             'test',
-            ptah.form.TextField('node1', default='test1'),
-            ptah.form.TextField('node2', default='test2'),
+            pform.TextField('node1', default='test1'),
+            pform.TextField('node2', default='test2'),
             title = 'Test settings',
             ttw = True,
             ttw_skip_fields = ('node2',))

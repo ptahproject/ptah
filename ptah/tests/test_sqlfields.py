@@ -1,7 +1,7 @@
 import transaction
 import sqlalchemy as sqla
+import pform
 import ptah
-from ptah import form
 from ptah.testing import TestCase, PtahTestCase
 
 Session = ptah.get_session()
@@ -83,7 +83,7 @@ class TestSqlSchema(PtahTestCase):
     def test_sqlschema_custom(self):
         import ptah
 
-        field = form.TextField('name', title = 'Custom')
+        field = pform.TextField('name', title = 'Custom')
 
         class Test3(ptah.get_base()):
             __tablename__ = 'test3'
@@ -119,12 +119,12 @@ class TestSqlSchema(PtahTestCase):
             __tablename__ = 'test32'
             id = sqla.Column('id', sqla.Integer, primary_key=True)
             name = sqla.Column(sqla.Unicode(),
-                               info={'field_type': form.IntegerField})
+                               info={'field_type': pform.IntegerField})
 
         fieldset = ptah.generate_fieldset(Test32)
 
         m_field = fieldset['name']
-        self.assertIsInstance(m_field, form.IntegerField)
+        self.assertIsInstance(m_field, pform.IntegerField)
 
     def test_sqlschema_skip(self):
         import ptah

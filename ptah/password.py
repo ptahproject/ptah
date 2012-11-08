@@ -9,7 +9,7 @@ from base64 import urlsafe_b64encode, urlsafe_b64decode
 from pyramid.compat import bytes_
 
 import ptah
-from ptah import config, form, token
+from ptah import config, token
 
 _ = translationstring.TranslationStringFactory('ptah')
 
@@ -213,7 +213,7 @@ def passwordValidator(field, value):
     if value is not pform.null:
         err = pwd_tool.validate(value)
         if err is not None:
-            raise form.Invalid(field, err)
+            raise pform.Invalid(field, err)
 
 
 def passwordSchemaValidator(field, appstruct):
@@ -221,15 +221,15 @@ def passwordSchemaValidator(field, appstruct):
     equality of password and confirm_password"""
     if appstruct['password'] and appstruct['confirm_password']:
         if appstruct['password'] != appstruct['confirm_password']:
-            raise form.Invalid(
+            raise pform.Invalid(
                 field, _("Password and Confirm Password should be the same."))
 
         passwordValidator(field, appstruct['password'])
 
 
-PasswordSchema = form.Fieldset(
+PasswordSchema = pform.Fieldset(
 
-    form.FieldFactory(
+    pform.FieldFactory(
         'password',
         'password',
         title = _('Password'),
@@ -238,7 +238,7 @@ PasswordSchema = form.Fieldset(
                         'digits and letters in mixed case.'),
         default = ''),
 
-    form.FieldFactory(
+    pform.FieldFactory(
         'password',
         'confirm_password',
         title = _('Confirm password'),

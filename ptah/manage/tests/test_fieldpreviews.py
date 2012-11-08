@@ -1,5 +1,5 @@
 import ptah
-from ptah import form
+import pform
 from pform.directives import ID_PREVIEW
 from ptah.manage import fieldpreviews
 from ptah.testing import PtahTestCase
@@ -11,7 +11,7 @@ class TestFieldPreviews(PtahTestCase):
 
     def test_multiChoicePreview(self):
         previews = self.registry[ID_PREVIEW]
-        self.assertIs(previews[form.MultiChoiceField],
+        self.assertIs(previews[pform.MultiChoiceField],
                       fieldpreviews.multiChoicePreview)
 
         request = DummyRequest()
@@ -20,7 +20,7 @@ class TestFieldPreviews(PtahTestCase):
 
     def test_choicePreview(self):
         previews = self.registry[ID_PREVIEW]
-        self.assertIs(previews[form.ChoiceField],
+        self.assertIs(previews[pform.ChoiceField],
                       fieldpreviews.choicePreview)
 
         request = DummyRequest()
@@ -29,7 +29,7 @@ class TestFieldPreviews(PtahTestCase):
 
     def test_boolPreview(self):
         previews = self.registry[ID_PREVIEW]
-        self.assertIs(previews[form.BoolField],
+        self.assertIs(previews[pform.BoolField],
                       fieldpreviews.boolPreview)
 
         request = DummyRequest()
@@ -38,7 +38,7 @@ class TestFieldPreviews(PtahTestCase):
 
     def test_radioPreview(self):
         previews = self.registry[ID_PREVIEW]
-        self.assertIs(previews[form.RadioField],
+        self.assertIs(previews[pform.RadioField],
                       fieldpreviews.radioPreview)
 
         request = DummyRequest()
@@ -47,7 +47,7 @@ class TestFieldPreviews(PtahTestCase):
 
     def test_textareaPreview(self):
         previews = self.registry[ID_PREVIEW]
-        self.assertIs(previews[form.TextAreaField],
+        self.assertIs(previews[pform.TextAreaField],
                       fieldpreviews.textareaPreview)
 
         request = DummyRequest()
@@ -56,7 +56,7 @@ class TestFieldPreviews(PtahTestCase):
 
     def test_linesPreview(self):
         previews = self.registry[ID_PREVIEW]
-        self.assertIs(previews[form.LinesField],
+        self.assertIs(previews[pform.LinesField],
                       fieldpreviews.linesPreview)
 
         request = DummyRequest()
@@ -65,7 +65,7 @@ class TestFieldPreviews(PtahTestCase):
 
     def test_textPreview(self):
         previews = self.registry[ID_PREVIEW]
-        self.assertIs(previews[form.TextField],
+        self.assertIs(previews[pform.TextField],
                       fieldpreviews.textPreview)
 
         request = DummyRequest()
@@ -74,7 +74,7 @@ class TestFieldPreviews(PtahTestCase):
 
     def test_intPreview(self):
         previews = self.registry[ID_PREVIEW]
-        self.assertIs(previews[form.IntegerField],
+        self.assertIs(previews[pform.IntegerField],
                       fieldpreviews.intPreview)
 
         request = DummyRequest()
@@ -83,7 +83,7 @@ class TestFieldPreviews(PtahTestCase):
 
     def test_floatPreview(self):
         previews = self.registry[ID_PREVIEW]
-        self.assertIs(previews[form.FloatField],
+        self.assertIs(previews[pform.FloatField],
                       fieldpreviews.floatPreview)
 
         request = DummyRequest()
@@ -92,7 +92,7 @@ class TestFieldPreviews(PtahTestCase):
 
     def test_decimalPreview(self):
         previews = self.registry[ID_PREVIEW]
-        self.assertIs(previews[form.DecimalField],
+        self.assertIs(previews[pform.DecimalField],
                       fieldpreviews.decimalPreview)
 
         request = DummyRequest()
@@ -101,7 +101,7 @@ class TestFieldPreviews(PtahTestCase):
 
     def test_passwordPreview(self):
         previews = self.registry[ID_PREVIEW]
-        self.assertIs(previews[form.PasswordField],
+        self.assertIs(previews[pform.PasswordField],
                       fieldpreviews.passwordPreview)
 
         request = DummyRequest()
@@ -110,7 +110,7 @@ class TestFieldPreviews(PtahTestCase):
 
     def test_timezonePreview(self):
         previews = self.registry[ID_PREVIEW]
-        self.assertIs(previews[form.TimezoneField],
+        self.assertIs(previews[pform.TimezoneField],
                       fieldpreviews.timezonePreview)
 
         request = DummyRequest()

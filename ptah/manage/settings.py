@@ -1,4 +1,5 @@
 """ settings module """
+import pform
 import ptah
 from ptah.settings import ID_SETTINGS_GROUP
 from pyramid.decorator import reify
@@ -72,7 +73,7 @@ class SettingsView(ptah.View):
 
 
 @view_config(context=SettingsWrapper, wrapper=ptah.wrap_layout())
-class EditForm(ptah.form.Form):
+class EditForm(pform.Form):
     """ Settings group edit form """
 
     @reify
@@ -91,7 +92,7 @@ class EditForm(ptah.form.Form):
     def form_content(self):
         return self.context.group
 
-    @ptah.form.button('Modify', actype=ptah.form.AC_PRIMARY)
+    @pform.button('Modify', actype=pform.AC_PRIMARY)
     def modify_handler(self):
         data, errors = self.extract()
         if errors: # pragma: no cover
@@ -102,10 +103,10 @@ class EditForm(ptah.form.Form):
         self.context.group.updatedb(**data)
         return HTTPFound('../#{0}'.format(self.context.group.__name__))
 
-    #@ptah.form.button('Reset defaults', actype=ptah.form.AC_INFO)
+    #@pform.button('Reset defaults', actype=pform.AC_INFO)
     #def reset_handler(self):
     #    pass
 
-    @ptah.form.button('Back')
+    @pform.button('Back')
     def back_handler(self):
         return HTTPFound('..')

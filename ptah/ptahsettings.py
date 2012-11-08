@@ -3,6 +3,7 @@ import pytz
 import logging
 import sqlalchemy
 import translationstring
+import pform
 from email.utils import formataddr
 from pyramid.events import ApplicationCreated
 
@@ -17,13 +18,13 @@ log = logging.getLogger('ptah')
 ptah.register_settings(
     ptah.CFG_ID_PTAH,
 
-    ptah.form.BoolField(
+    pform.BoolField(
         'auth',
         title = _('Authentication policy'),
         description = _('Enable authentication policy.'),
         default = False),
 
-    ptah.form.TextField(
+    pform.TextField(
         'secret',
         title = _('Authentication policy secret'),
         description = _('The secret (a string) used for auth_tkt '
@@ -31,86 +32,86 @@ ptah.register_settings(
         default = '',
         tint = True),
 
-    ptah.form.TextField(
+    pform.TextField(
         'manage',
         title = 'Ptah manage id',
         default = 'ptah-manage'),
 
-    ptah.form.LinesField(
+    pform.LinesField(
         'managers',
         title = 'Manage login',
         description = 'List of user logins with access rights to '\
                             'ptah management ui.',
         default = ()),
 
-    ptah.form.TextField(
+    pform.TextField(
         'manager_role',
         title = 'Manager role',
         description = 'Specific role with access rights to ptah management ui.',
         default = ''),
 
-    ptah.form.LinesField(
+    pform.LinesField(
         'disable_modules',
         title = 'Hide Modules in Management UI',
         description = 'List of modules names to hide in manage ui',
         default = ()),
 
-    ptah.form.LinesField(
+    pform.LinesField(
         'enable_modules',
         title = 'Enable Modules in Management UI',
         description = 'List of modules names to enable in manage ui',
         default = ()),
 
-    ptah.form.LinesField(
+    pform.LinesField(
         'disable_models',
         title = 'Hide Models in Model Management UI',
         description = 'List of models to hide in model manage ui',
         default = ()),
 
-    ptah.form.TextField(
+    pform.TextField(
         'email_from_name',
         default = 'Site administrator'),
 
-    ptah.form.TextField(
+    pform.TextField(
         'email_from_address',
-        validator = ptah.form.Email(),
+        validator = pform.Email(),
         required = False,
         default = 'admin@localhost'),
 
-    ptah.form.ChoiceField(
+    pform.ChoiceField(
         'pwd_manager',
         title = 'Password manager',
         description = 'Available password managers '\
             '("plain", "ssha", "bcrypt")',
-        vocabulary = ptah.form.SimpleVocabulary.from_values(
+        vocabulary = pform.SimpleVocabulary.from_values(
             "plain", "ssha",),
         default = 'plain'),
 
-    ptah.form.IntegerField(
+    pform.IntegerField(
         'pwd_min_length',
         title = 'Length',
         description = 'Password minimium length.',
         default = 5),
 
-    ptah.form.BoolField(
+    pform.BoolField(
         'pwd_letters_digits',
         title = 'Letters and digits',
         description = 'Use letters and digits in password.',
         default = False),
 
-    ptah.form.BoolField(
+    pform.BoolField(
         'pwd_letters_mixed_case',
         title = 'Letters mixed case',
         description = 'Use letters in mixed case.',
         default = False),
 
-    ptah.form.LinesField(
+    pform.LinesField(
         'db_skip_tables',
         title = 'Skip table creation',
         description = 'Do not create listed tables during data population.',
         default = ()),
 
-    ptah.form.LinesField(
+    pform.LinesField(
         'default_roles',
         title = 'Default roles',
         description = 'List of default assigned roles for all principals.',
@@ -123,55 +124,55 @@ ptah.register_settings(
 ptah.register_settings(
     ptah.CFG_ID_FORMAT,
 
-    ptah.form.TimezoneField(
+    pform.TimezoneField(
         'timezone',
         default = pytz.timezone('US/Central'),
         title = _('Timezone'),
         description = _('Site wide timezone.')),
 
-    ptah.form.TextField(
+    pform.TextField(
         'date_short',
         default = '%m/%d/%y',
         title = _('Date'),
         description = _('Date short format')),
 
-    ptah.form.TextField(
+    pform.TextField(
         'date_medium',
         default = '%b %d, %Y',
         title = _('Date'),
         description = _('Date medium format')),
 
-    ptah.form.TextField(
+    pform.TextField(
         'date_long',
         default = '%B %d, %Y',
         title = _('Date'),
         description = _('Date long format')),
 
-    ptah.form.TextField(
+    pform.TextField(
         'date_full',
         default = '%A, %B %d, %Y',
         title = _('Date'),
         description = _('Date full format')),
 
-    ptah.form.TextField(
+    pform.TextField(
         'time_short',
         default = '%I:%M %p',
         title = _('Time'),
         description = _('Time short format')),
 
-    ptah.form.TextField(
+    pform.TextField(
         'time_medium',
         default = '%I:%M %p',
         title = _('Time'),
         description = _('Time medium format')),
 
-    ptah.form.TextField(
+    pform.TextField(
         'time_long',
         default = '%I:%M %p %z',
         title = _('Time'),
         description = _('Time long format')),
 
-    ptah.form.TextField(
+    pform.TextField(
         'time_full',
         default = '%I:%M:%S %p %Z',
         title = _('Time'),

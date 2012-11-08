@@ -1,4 +1,5 @@
 """ sqla module """
+import pform
 from sqlalchemy.orm.mapper import _mapper_registry
 from pyramid.view import view_config
 from pyramid.compat import url_quote_plus
@@ -146,7 +147,7 @@ def get_inheritance(table):
     context=Table, wrapper=ptah.wrap_layout(),
     renderer='ptah-manage:sqla-table.lt')
 
-class TableView(ptah.form.Form):
+class TableView(pform.Form):
     __doc__ = "List table records."
 
     csrf = True
@@ -211,11 +212,11 @@ class TableView(ptah.form.Form):
             val = "Can't show"
         return val[:100]
 
-    @ptah.form.button('Add', actype=ptah.form.AC_PRIMARY)
+    @pform.button('Add', actype=pform.AC_PRIMARY)
     def add(self):
         return HTTPFound(location='add.html')
 
-    @ptah.form.button('Remove', actype=ptah.form.AC_DANGER)
+    @pform.button('Remove', actype=pform.AC_DANGER)
     def remove(self):
         self.validate_csrf_token()
 
@@ -236,7 +237,7 @@ class TableView(ptah.form.Form):
     context=Record, wrapper=ptah.wrap_layout(),
     renderer='ptah-manage:sqla-edit.lt')
 
-class EditRecord(ptah.form.Form):
+class EditRecord(pform.Form):
     __doc__ = "Edit table record."
 
     csrf = True
@@ -267,11 +268,11 @@ class EditRecord(ptah.form.Form):
                 self.context.data, field.name, field.default)
         return data
 
-    @ptah.form.button('Cancel')
+    @pform.button('Cancel')
     def cancel_handler(self):
         return HTTPFound(location='..')
 
-    @ptah.form.button('Modify', actype=ptah.form.AC_PRIMARY)
+    @pform.button('Modify', actype=pform.AC_PRIMARY)
     def modify_handler(self):
         data, errors = self.extract()
 
@@ -284,7 +285,7 @@ class EditRecord(ptah.form.Form):
         self.request.add_message('Table record has been modified.', 'success')
         return HTTPFound(location='..')
 
-    @ptah.form.button('Remove', actype=ptah.form.AC_DANGER,
+    @pform.button('Remove', actype=pform.AC_DANGER,
                       condition=lambda form: form.show_remove)
     def remove_handler(self):
         self.validate_csrf_token()
@@ -298,7 +299,7 @@ class EditRecord(ptah.form.Form):
 
 @view_config(name='add.html', context=Table, wrapper=ptah.wrap_layout())
 
-class AddRecord(ptah.form.Form):
+class AddRecord(pform.Form):
     """ Add new table record. """
 
     csrf = True
@@ -313,7 +314,7 @@ class AddRecord(ptah.form.Form):
             [(cl.name, cl) for cl in self.context.table.columns],
             skipPrimaryKey = True)
 
-    @ptah.form.button('Create', actype=ptah.form.AC_PRIMARY)
+    @pform.button('Create', actype=pform.AC_PRIMARY)
     def create(self):
         data, errors = self.extract()
 
@@ -330,8 +331,8 @@ class AddRecord(ptah.form.Form):
         self.request.add_message('Table record has been created.', 'success')
         return HTTPFound(location='.')
 
-    @ptah.form.button('Save & Create new',
-                      name='createmulti', actype=ptah.form.AC_PRIMARY)
+    @pform.button('Save & Create new',
+                      name='createmulti', actype=pform.AC_PRIMARY)
     def create_multiple(self):
         data, errors = self.extract()
 
@@ -347,6 +348,6 @@ class AddRecord(ptah.form.Form):
 
         self.request.add_message('Table record has been created.', 'success')
 
-    @ptah.form.button('Back')
+    @pform.button('Back')
     def cancel(self):
         return HTTPFound(location='.')

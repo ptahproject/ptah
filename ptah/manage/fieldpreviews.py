@@ -157,7 +157,7 @@ def passwordPreview(request):
 
 @pform.fieldpreview(JSDateField)
 def jsdatePreview(request):
-    field = pform.JSDateField(
+    field = JSDateField(
         'JSDateField',
         title = 'jQuery Date field',
         description = 'jQuery Date field preview description',
@@ -170,7 +170,7 @@ def jsdatePreview(request):
 
 @pform.fieldpreview(JSDateTimeField)
 def jsdatetimePreview(request):
-    field = pform.JSDateTimeField(
+    field = JSDateTimeField(
         'JSDateTimeField',
         title = 'jQuery DateTime field',
         description = 'jQuery DateTime field preview description')
@@ -182,7 +182,7 @@ def jsdatetimePreview(request):
 
 @pform.fieldpreview(CKEditorField)
 def ckeditorPreview(request):
-    field = pform.CKEditorField(
+    field = CKEditorField(
         'CKEditorField',
         title = 'CKEditor field',
         description = 'CKEditor field preview description',

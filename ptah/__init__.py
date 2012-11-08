@@ -1,12 +1,6 @@
 # ptah api
 
-import pform as form
-from player import tmpl_filter, wrap_layout
-
-from ptah.jsfields import CKEditorField, JSDateField, JSDateTimeField
-form.JSDateField = JSDateField
-form.JSDateTimeField = JSDateTimeField
-form.CKEditorField = CKEditorField
+from player import wrap_layout
 
 try:
     from collections import OrderedDict
@@ -140,6 +134,11 @@ from ptah.migrate import register_migration
 
 # json
 from ptah.util import json
+
+# extra fields
+from ptah.jsfields import CKEditorField
+from ptah.jsfields import JSDateField
+from ptah.jsfields import JSDateTimeField
 
 
 def includeme(cfg):
