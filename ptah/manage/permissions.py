@@ -1,5 +1,6 @@
 """ security ptah module """
 import ptah
+import player
 from ptah.manage import get_manage_url
 from pyramid.view import view_config
 
@@ -12,8 +13,9 @@ class PermissionsModule(ptah.manage.PtahModule):
 
 
 @view_config(
-    context=PermissionsModule, wrapper=ptah.wrap_layout(),
-    renderer='ptah-manage:permissions.lt')
+    context=PermissionsModule,
+    renderer=player.layout('ptah-manage:permissions.lt'))
+
 class PermissionsView(ptah.View):
     """ Permissions module default view """
 
@@ -31,8 +33,7 @@ class PermissionsView(ptah.View):
 @view_config(
     name='roles.html',
     context=PermissionsModule,
-    wrapper=ptah.wrap_layout(),
-    renderer='ptah-manage:roles.lt')
+    renderer=player.layout('ptah-manage:roles.lt'))
 
 class RolesView(ptah.View):
     """ Roles view for permissions manage module """

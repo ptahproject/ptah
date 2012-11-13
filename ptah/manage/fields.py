@@ -1,5 +1,6 @@
 """ pform fields """
 import ptah
+import player
 from pform.directives import ID_FIELD, ID_PREVIEW
 from pyramid.view import view_config
 
@@ -15,8 +16,8 @@ class FieldsModule(ptah.manage.PtahModule):
 
 
 @view_config(
-    context=FieldsModule, wrapper=ptah.wrap_layout(),
-    renderer='ptah-manage:fields.lt')
+    context=FieldsModule,
+    renderer=player.layout('ptah-manage:fields.lt'))
 
 class FieldsView(ptah.View):
     """ Fields manage module view """

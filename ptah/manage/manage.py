@@ -1,3 +1,4 @@
+import player
 from pyramid.view import view_config
 from pyramid.interfaces import IRootFactory
 from pyramid.traversal import DefaultRootFactory
@@ -169,8 +170,8 @@ class LayoutManage(ptah.View):
 
 
 @view_config(
-    context=PtahManageRoute, wrapper=ptah.wrap_layout(),
-    renderer='ptah-manage:manage.lt')
+    context=PtahManageRoute,
+    renderer=player.layout('ptah-manage:manage.lt'))
 
 class ManageView(ptah.View):
     """List ptah modules"""

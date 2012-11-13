@@ -1,6 +1,6 @@
 # ptah api
 
-from player import wrap_layout
+from player import layout
 
 try:
     from collections import OrderedDict

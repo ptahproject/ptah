@@ -198,7 +198,7 @@ class TestSqlaModule(PtahTestCase):
             POST={'form.buttons.back': 'Back'})
 
         form = AddRecord(table, request)
-        res = form.update()
+        res = form.update_to_resp()
 
         self.assertIsInstance(res, HTTPFound)
         self.assertEqual(res.headers['location'], '.')
@@ -227,7 +227,7 @@ class TestSqlaModule(PtahTestCase):
 
         form = AddRecord(table, request)
         form.csrf = False
-        res = form.update()
+        res = form.update_to_resp()
 
         self.assertIn('Table record has been created.',
                       request.render_messages())
@@ -296,7 +296,7 @@ class TestSqlaModule(PtahTestCase):
             POST={'form.buttons.cancel': 'Cancel'})
 
         form = EditRecord(rec, request)
-        res = form.update()
+        res = form.update_to_resp()
 
         self.assertIsInstance(res, HTTPFound)
         self.assertEqual(res.headers['location'], '..')
@@ -332,7 +332,7 @@ class TestSqlaModule(PtahTestCase):
 
         form = EditRecord(rec, request)
         form.csrf = False
-        res = form.update()
+        res = form.update_to_resp()
 
         self.assertIn('Table record has been modified.',
                       request.render_messages())
@@ -363,7 +363,7 @@ class TestSqlaModule(PtahTestCase):
 
         form = EditRecord(rec, request)
         form.csrf = False
-        res = form.update()
+        res = form.update_to_resp()
 
         self.assertIn('Table record has been removed.',
                       request.render_messages())
@@ -384,7 +384,7 @@ class TestSqlaModule(PtahTestCase):
             POST={'form.buttons.add': 'Add'})
 
         form = TableView(table, request)
-        res = form.update()
+        res = form.update_to_resp()
 
         self.assertIsInstance(res, HTTPFound)
         self.assertEqual(res.headers['location'], 'add.html')

@@ -51,7 +51,7 @@ Several reasons exist for Layouts:
 
   * A layout is a view with a template.  This provides a encapsulated template and view.  Meaning a template which is used as a layout has its own view (methods, data, etc).
     
-  * The contract between layouts is a string.  Layouts can only be passed a ``wrapped_content`` string which is the result of rendering the "inner" block.
+  * The contract between layouts is a string.  Layouts can only be passed a ``content`` string which is the result of rendering the "inner" block.
     
   * Since layout's work from the "inside-out" there is a desirable side-effect, by the time the <HEAD> layout is rendered all static assets (CSS, JS) that are requirements for form elements or for your custom view will have been computed.  This is not possible to do generically with the ZPT/MACRO or the Jinja inheritance system.
 

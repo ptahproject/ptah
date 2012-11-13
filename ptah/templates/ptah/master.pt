@@ -34,7 +34,7 @@
       </div>
     </div>
 
-    ${structure: wrapped_content}
+    ${structure: content}
 
     <footer>
       <p>&copy; Ptah Project 2011-2012</p>

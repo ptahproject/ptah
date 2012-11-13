@@ -1,5 +1,6 @@
 """ settings module """
 import pform
+import player
 import ptah
 from ptah.settings import ID_SETTINGS_GROUP
 from pyramid.decorator import reify
@@ -29,8 +30,8 @@ class SettingsWrapper(object):
 
 
 @view_config(
-    context=SettingsModule, wrapper=ptah.wrap_layout(),
-    renderer='ptah-manage:settings.lt')
+    context=SettingsModule,
+    renderer=player.layout('ptah-manage:settings.lt'))
 
 class SettingsView(ptah.View):
     """ Settings manage module view """
@@ -72,7 +73,8 @@ class SettingsView(ptah.View):
         return {'data': sorted(data, key=lambda item: item['title'])}
 
 
-@view_config(context=SettingsWrapper, wrapper=ptah.wrap_layout())
+@view_config(context=SettingsWrapper, renderer=player.layout())
+
 class EditForm(pform.Form):
     """ Settings group edit form """
 

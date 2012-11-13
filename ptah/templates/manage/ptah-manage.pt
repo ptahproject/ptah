@@ -35,7 +35,7 @@
 
     <div style="margin-top: 60px;">
       <div class="container">
-        ${structure: wrapped_content}
+        ${structure: content}
       </div>
     </div>
   </body>

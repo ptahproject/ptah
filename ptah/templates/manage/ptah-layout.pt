@@ -1,2 +1,2 @@
 ${structure: request.render_messages()}
-${structure: wrapped_content}
+${structure: content}

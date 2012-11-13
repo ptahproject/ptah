@@ -2,6 +2,9 @@
 CHANGES
 =======
 
+- Use `player.layout` instead of `player.wrap_layout`
+
+
 0.8.0 (2012-11-08)
 ==================
 

@@ -1,6 +1,7 @@
 """ Source code view """
 import os.path
 import pkg_resources
+import player
 from pyramid.view import view_config
 from pyramid.httpexceptions import HTTPFound
 
@@ -9,8 +10,8 @@ from ptah.manage.manage import PtahManageRoute
 
 
 @view_config(
-    name='source.html', context=PtahManageRoute, wrapper=ptah.wrap_layout(),
-    renderer='ptah-manage:source.lt')
+    name='source.html', context=PtahManageRoute,
+    renderer=ptah.layout('ptah-manage:source.lt'))
 
 class SourceView(ptah.View):
     __doc__ = 'Source introspection page.'
