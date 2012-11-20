@@ -11,18 +11,6 @@ def includeme(config):
         'JQuery UI Library')
 
     config.add_amd_js(
-        'bootstrap', 'ptah:static/bootstrap/bootstrap.min.js',
-        'Twitter bootstrap javscript library', ('jquery',))
-    config.add_amd_css(
-        'bootstrap-css',
-        'ptah:static/bootstrap/bootstrap.min.css',
-        'Twitter bootstrap javscript library')
-    config.add_amd_css(
-        'bootstrap-responsive-css',
-        'ptah:static/bootstrap/bootstrap-responsive.min.css',
-        'Twitter bootstrap javscript library (Responsive)')
-
-    config.add_amd_js(
         'ckeditor', 'ptah:static/ckeditor/ckeditor.js',
         'CKEditor', ('jquery',))
 
