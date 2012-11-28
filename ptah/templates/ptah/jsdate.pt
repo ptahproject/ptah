@@ -4,17 +4,17 @@
 
 <input id="" type="text" name="" class="" title="" lang="" disabled=""
        readonly="" alt="" tabindex="" accesskey="" size="" maxlength=""
-       value=""
+       value="" tal:define="attrs context.get_html_attrs()"
        tal:attributes="id context.id;
                        name context.name;
-                       class context.klass;
-                       title context.title;
-                       lang context.lang;
                        value context.form_value;
-                       disabled context.disabled;
-                       tabindex context.tabindex;
-                       readonly context.readonly;
-                       alt context.alt;
-                       accesskey context.accesskey;
-                       size context.size;
-                       maxlength context.maxlength" />
+                       class attrs['class'];
+                       title attrs['title'];
+                       lang attrs['lang'];
+                       disabled attrs['disabled'];
+                       tabindex attrs['tabindex'];
+                       readonly attrs['readonly'];
+                       alt attrs['alt'];
+                       accesskey attrs['accesskey'];
+                       size attrs['size'];
+                       maxlength attrs['maxlength']" />

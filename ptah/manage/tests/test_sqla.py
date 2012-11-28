@@ -198,7 +198,7 @@ class TestSqlaModule(PtahTestCase):
             POST={'form.buttons.back': 'Back'})
 
         form = AddRecord(table, request)
-        res = form.update_to_resp()
+        res = form()
 
         self.assertIsInstance(res, HTTPFound)
         self.assertEqual(res.headers['location'], '.')
@@ -216,7 +216,7 @@ class TestSqlaModule(PtahTestCase):
 
         form = AddRecord(table, request)
         form.csrf = False
-        form.update()
+        form.update_form()
 
         self.assertIn('Please fix indicated errors',
                       request.render_messages())
@@ -227,7 +227,7 @@ class TestSqlaModule(PtahTestCase):
 
         form = AddRecord(table, request)
         form.csrf = False
-        res = form.update_to_resp()
+        res = form()
 
         self.assertIn('Table record has been created.',
                       request.render_messages())
@@ -249,7 +249,7 @@ class TestSqlaModule(PtahTestCase):
 
         form = AddRecord(table, request)
         form.csrf = False
-        form.update()
+        form.update_form()
 
         self.assertIn('Please fix indicated errors',
                       request.render_messages())
@@ -260,7 +260,7 @@ class TestSqlaModule(PtahTestCase):
 
         form = AddRecord(table, request)
         form.csrf = False
-        form.update()
+        form.update_form()
 
         self.assertIn('Table record has been created.',
                       request.render_messages())
@@ -286,7 +286,7 @@ class TestSqlaModule(PtahTestCase):
         rec = table[rec_id]
 
         form = EditRecord(rec, request)
-        form.update()
+        form.update_form()
 
         self.assertEqual(form.label, 'record 1')
         self.assertEqual(form.form_content(),
@@ -296,7 +296,7 @@ class TestSqlaModule(PtahTestCase):
             POST={'form.buttons.cancel': 'Cancel'})
 
         form = EditRecord(rec, request)
-        res = form.update_to_resp()
+        res = form()
 
         self.assertIsInstance(res, HTTPFound)
         self.assertEqual(res.headers['location'], '..')
@@ -321,7 +321,7 @@ class TestSqlaModule(PtahTestCase):
 
         form = EditRecord(rec, request)
         form.csrf = False
-        form.update()
+        form.update_form()
 
         self.assertIn('Please fix indicated errors',
                       request.render_messages())
@@ -332,7 +332,7 @@ class TestSqlaModule(PtahTestCase):
 
         form = EditRecord(rec, request)
         form.csrf = False
-        res = form.update_to_resp()
+        res = form()
 
         self.assertIn('Table record has been modified.',
                       request.render_messages())
@@ -363,7 +363,7 @@ class TestSqlaModule(PtahTestCase):
 
         form = EditRecord(rec, request)
         form.csrf = False
-        res = form.update_to_resp()
+        res = form()
 
         self.assertIn('Table record has been removed.',
                       request.render_messages())
@@ -384,7 +384,7 @@ class TestSqlaModule(PtahTestCase):
             POST={'form.buttons.add': 'Add'})
 
         form = TableView(table, request)
-        res = form.update_to_resp()
+        res = form()
 
         self.assertIsInstance(res, HTTPFound)
         self.assertEqual(res.headers['location'], 'add.html')
@@ -408,7 +408,7 @@ class TestSqlaModule(PtahTestCase):
 
         form = TableView(table, request)
         form.csrf = False
-        form.update()
+        form.update_form()
 
         self.assertIn('lease select records for removing.',
                       request.render_messages())
@@ -419,7 +419,7 @@ class TestSqlaModule(PtahTestCase):
 
         form = TableView(table, request)
         form.csrf = False
-        form.update()
+        form.update_form()
 
         #self.assertIn('Please select records for removing.',
         #              request.render_messages())
@@ -432,7 +432,7 @@ class TestSqlaModule(PtahTestCase):
 
         form = TableView(table, request)
         form.csrf = True
-        form.update()
+        form.update_form()
 
         self.assertIn('Select records have been removed.',
                       request.render_messages())

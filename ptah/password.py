@@ -213,7 +213,7 @@ def passwordValidator(field, value):
     if value is not pform.null:
         err = pwd_tool.validate(value)
         if err is not None:
-            raise pform.Invalid(field, err)
+            raise pform.Invalid(err, field)
 
 
 def passwordSchemaValidator(field, appstruct):
@@ -222,7 +222,7 @@ def passwordSchemaValidator(field, appstruct):
     if appstruct['password'] and appstruct['confirm_password']:
         if appstruct['password'] != appstruct['confirm_password']:
             raise pform.Invalid(
-                field, _("Password and Confirm Password should be the same."))
+                _("Password and Confirm Password should be the same."), field)
 
         passwordValidator(field, appstruct['password'])
 

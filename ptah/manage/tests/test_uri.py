@@ -31,7 +31,7 @@ class TestUriView(PtahTestCase):
             POST = {'form.buttons.show': 'Show', 'uri': 'ptah-auth:superuser'})
 
         view = UriResolver(None, request)
-        view.update()
+        view.update_form()
 
         self.assertEqual(view.data[0]['name'],
                          'ptah.authentication.superuser_resolver')

@@ -3,17 +3,18 @@
    id="" name="" class="" cols="" rows=""
    tabindex="" disabled="" readonly="" accesskey=""
    style="display: none"
+   tal:define="attrs context.get_html_attrs()"
    tal:attributes="id context.id;
                    name context.name;
-                   class context.klass;
-                   title context.title;
-                   lang context.lang;
-                   disabled context.disabled;
-                   tabindex context.tabindex;
-                   cols context.cols;
-                   rows context.rows;
-                   readonly context.readonly;
-                   accesskey context.accesskey;"
+                   class attrs['class'];
+                   title attrs['title'];
+                   lang attrs['lang'];
+                   disabled attrs['disabled'];
+                   tabindex attrs['tabindex'];
+                   cols attrs['cols'];
+                   rows attrs['rows'];
+                   readonly attrs['readonly'];
+                   accesskey attrs['accesskey'];"
    tal:content="context.form_value" />
 </div>
 

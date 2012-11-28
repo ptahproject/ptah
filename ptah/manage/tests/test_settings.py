@@ -95,7 +95,7 @@ class TestSettingsTTW(PtahTestCase):
         self.assertIsInstance(res, HTTPFound)
         self.assertEqual(res.headers['location'], '..')
 
-        form.update()
+        form.update_form()
         form.modify_handler()
         self.assertIn('Settings have been modified.',
                       self.request.render_messages())

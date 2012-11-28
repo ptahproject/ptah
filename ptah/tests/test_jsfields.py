@@ -1,5 +1,6 @@
 import pform
 from ptah.testing import PtahTestCase
+from pyramid.compat import text_type
 
 
 def invalid_exc(func, *arg, **kw):
@@ -9,7 +10,7 @@ def invalid_exc(func, *arg, **kw):
     except Invalid as e:
         return e
     else:
-        raise AssertionError('Invalid not raised') # pragma: no cover
+        raise AssertionError('Invalid not raised')
 
 
 def strip(str):
@@ -92,8 +93,7 @@ class TestJSDateField(PtahTestCase):
     def test_serialize_with_garbage(self):
         typ = self._makeOne()
         e = invalid_exc(typ.to_form, 'garbage')
-        self.assertEqual(e.msg.interpolate(),
-                         '"garbage" is not a date object')
+        self.assertEqual(text_type(e), '"garbage" is not a date object')
 
     def test_serialize_with_date(self):
         import datetime

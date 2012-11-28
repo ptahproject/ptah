@@ -154,7 +154,7 @@ class TableView(pform.Form):
     csrf = True
     page = ptah.Pagination(15)
 
-    def update(self):
+    def update_form(self):
         table = self.table = self.context.table
         self.primary = None
         self.pcolumn = None
@@ -176,7 +176,7 @@ class TableView(pform.Form):
             if cl.info.get('uri'):
                 self.uris.append(len(names)-1)
 
-        res = super(TableView, self).update()
+        res = super(TableView, self).update_form()
 
         request = self.request
         try:
@@ -253,14 +253,14 @@ class EditRecord(pform.Form):
             [(cl.name, cl) for cl in self.context.table.columns],
             skipPrimaryKey=True)
 
-    def update(self):
+    def update_form(self):
         self.inheritance = get_inheritance(self.context.table)
         if self.context.table.name == 'ptah_nodes' or self.inheritance:
             self.show_remove = False
         else:
             self.show_remove = True
 
-        return super(EditRecord, self).update()
+        return super(EditRecord, self).update_form()
 
     def form_content(self):
         data = {}
@@ -287,7 +287,7 @@ class EditRecord(pform.Form):
         return HTTPFound(location='..')
 
     @pform.button('Remove', actype=pform.AC_DANGER,
-                      condition=lambda form: form.show_remove)
+                  condition=lambda form: form.show_remove)
     def remove_handler(self):
         self.validate_csrf_token()
 

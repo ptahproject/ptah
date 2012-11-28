@@ -2,7 +2,7 @@ import os
 import pform
 import shutil
 import tempfile
-from pyramid.compat import bytes_
+from pyramid.compat import bytes_, text_type
 
 import ptah
 from ptah.settings import Settings
@@ -162,7 +162,7 @@ class TestSettings(BaseTesting):
 
     def test_settings_group_validation(self):
         def validator(node, appstruct):
-            raise pform.Invalid(node['node'], 'Error')
+            raise pform.Invalid('Error', node['node'])
 
         node = pform.TextField(
             'node',
@@ -177,14 +177,14 @@ class TestSettings(BaseTesting):
 
         data, err = group.extract({'group2.node': 'value'})
 
-        self.assertEqual(err.msg, {'group2': ['Error']})
+        self.assertEqual(err.msg, {'group2': text_type(['Error'])})
 
     def test_settings_group_multiple_validation(self):
         def validator1(fs, appstruct):
-            raise pform.Invalid(fs['node1'], 'Error1')
+            raise pform.Invalid('Error1', fs['node1'])
 
         def validator2(fs, appstruct):
-            raise pform.Invalid(fs['node2'], 'Error2')
+            raise pform.Invalid('Error2', fs['node2'])
 
         node1 = pform.TextField(
             'node1',
@@ -204,7 +204,7 @@ class TestSettings(BaseTesting):
             'group3.node1': 'value',
             'group3.node2': 'value'})
 
-        self.assertEqual(err.msg, {'group3': ['Error1', 'Error2']})
+        self.assertEqual(err.msg, {'group3': text_type(['Error1', 'Error2'])})
 
     def test_settings_export(self):
         field1 = pform.TextField(

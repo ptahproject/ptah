@@ -68,7 +68,7 @@
         </ul>
       </div>
 
-      <input type="hidden" name="${view.csrfname}" value="${view.token}" />
+      <input type="hidden" name="${view.csrf_name}" value="${view.csrf_token}" />
 
       <tal:block
          condition="view.show_actions"

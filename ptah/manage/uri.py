@@ -30,17 +30,11 @@ class UriResolver(pform.Form):
     def form_content(self):
         return {'uri': [self.request.GET.get('uri','')]}
 
-    @pform.button('Show', actype=pform.AC_PRIMARY)
-    def show_handler(self):
-        data, errors = self.extract()
-        if errors:
-            self.add_error_message(errors)
-        else:
-            self.uri = data['uri']
+    @pform.button2('Show', actype=pform.AC_PRIMARY)
+    def show_handler(self, data):
+        self.uri = data['uri']
 
     def update(self):
-        res = super(UriResolver, self).update()
-
         uri = self.uri
         if uri is None:
             uri = [self.request.GET.get('uri','')]
@@ -82,5 +76,3 @@ class UriResolver(pform.Form):
                             info['clsline'] = inspect.getsourcelines(cls)[-1]
 
                 data.append(info)
-
-        return res

@@ -41,9 +41,9 @@ class JSDateField(TextField):
             value = value.date()
 
         if not isinstance(value, datetime.date):
-            raise Invalid(self,
-                          _('"${val}" is not a date object',
-                            mapping={'val': value}))
+            raise Invalid(
+                _('"${val}" is not a date object'), self,
+                mapping={'val': value})
 
         return value.strftime('%m/%d/%Y')
 
@@ -52,9 +52,8 @@ class JSDateField(TextField):
             return null
         try:
             return datetime.datetime.strptime(value, '%m/%d/%Y').date()
-        except Exception as e:
-            raise Invalid(
-                self, _('Invalid date', mapping={'val': value, 'err': e}))
+        except Exception:
+            raise Invalid(_('Invalid date'), self)
 
 
 @pform.field('datetime')
