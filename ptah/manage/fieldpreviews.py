@@ -4,7 +4,7 @@ import decimal, datetime
 from ptah.jsfields import JSDateField, JSDateTimeField, CKEditorField
 
 
-vocabulary = pform.SimpleVocabulary.from_items(
+vocabulary = pform.Vocabulary(
     (1, 'one', 'One', 'One description'),
     (2, 'two', 'Two', 'Two description'),
     (3, 'three', 'Three', 'Three description'))

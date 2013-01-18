@@ -14,11 +14,6 @@ def includeme(config):
         'ckeditor', 'ptah:static/ckeditor/ckeditor.js',
         'CKEditor', ('jquery',))
 
-    # ptah
-    config.add_amd_js(
-        'ptah-date-format', 'ptah:static/date-format.js',
-        requires=('jquery', 'handlebars'))
-
     # ptah ui classes
     config.add_amd_js(
         'ptah-form', 'ptah:static/form.js',
@@ -28,5 +23,5 @@ def includeme(config):
         requires=('jquery', 'pyramid', 'ptah-templates'))
 
     # templates
-    config.add_mustache_bundle(
+    config.add_handlebars_bundle(
         'ptah-templates', 'ptah:templates/mustache/', i18n_domain='ptah')

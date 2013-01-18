@@ -83,7 +83,7 @@ ptah.register_settings(
         title = 'Password manager',
         description = 'Available password managers '\
             '("plain", "ssha", "bcrypt")',
-        vocabulary = pform.SimpleVocabulary.from_values(
+        vocabulary = pform.Vocabulary(
             "plain", "ssha",),
         default = 'plain'),
 

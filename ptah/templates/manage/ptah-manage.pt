@@ -4,8 +4,7 @@
     <title>Ptah Manage</title>
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
 
-    ${structure: request.init_amd()}
-    ${structure: request.include_css('bootstrap-css')}
+    ${structure: request.require('css!bootstrap-css')}
   </head>
   <body>
     <div class="navbar navbar-inverse navbar-fixed-top">
