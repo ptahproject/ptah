@@ -69,8 +69,8 @@ class TestSettingsTTW(PtahTestCase):
 
         ptah.register_settings(
             'test',
-            pform.TextField('node1', default='test1'),
-            pform.TextField('node2', default='test2'),
+            pform.TextField('node1', default='test1', required=False),
+            pform.TextField('node2', default='test2', required=False),
             title = 'Test settings',
             ttw = True,
             ttw_skip_fields = ('node2',))

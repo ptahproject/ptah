@@ -10,7 +10,7 @@ class TestRST(TestCase):
     def test_rst_py_domain(self):
         text = """ Test text :py:class:`ptahcms.Node` """
 
-        self.assertIn('span class="pre">ptahcms.Node</span>',
+        self.assertIn('Test text :py:class:`ptahcms.Node`',
                       rst.rst_to_html(text))
 
     def test_rst_error(self):

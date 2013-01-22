@@ -104,6 +104,9 @@ def build_sqla_fieldset(columns, skipPrimaryKey=False):
         if cl.primary_key and (typ == 'int'):
             kwargs['readonly'] = True
 
+        if 'title' not in kwargs:
+            kwargs['title'] = name.capitalize()
+
         if callable(typ):
             field = typ(name, **kwargs)
         else:
