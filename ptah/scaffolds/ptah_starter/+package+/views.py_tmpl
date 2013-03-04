@@ -5,9 +5,8 @@ from pyramid.view import view_config
 log = logging.getLogger(__name__)
 
 
-@view_config(renderer='{{package}}:templates/homepage.pt',
-             route_name='home',
-             wrapper=player.wrap_layout('content'))
+@view_config(route_name='home',
+             renderer=player.layout('{{package}}:homepage.lt', 'content'))
 
 class HomepageView(object):
 

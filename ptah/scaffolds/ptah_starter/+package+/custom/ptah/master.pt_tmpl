@@ -3,8 +3,7 @@
   <head>
     <meta charset="utf-8">
     <title>{{package}}, made with Ptah!</title>
-    ${structure: request.init_amd()}
-    ${structure: request.include_js('bootstrap', 'bootstrap-css')}
+    ${structure: request.require('css!bootstrap-css')}
     <link type="text/css" rel="stylesheet"
           href="${request.static_url('{{package}}:static/app.css')}" />
     <link rel="shortcut icon"
