@@ -40,6 +40,9 @@ def main(global_config, **settings):
     # override templates
     config.add_layers('{{package}}-custom', path='{{package}}:custom')
 
+    # templates
+    config.add_layer('{{package}}', path='{{package}}:templates')
+
     # Refer: Pyramid's _Configuration Decorations and Code Scanning_
     config.scan()
 
