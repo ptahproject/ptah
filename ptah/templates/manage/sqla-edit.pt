@@ -13,4 +13,4 @@
   </div>
 </div>
 
-${structure: view.tmpl_view(request, view)}
+${structure: request.render_tmpl(view.tmpl_view, view)}

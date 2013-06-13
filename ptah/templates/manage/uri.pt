@@ -42,5 +42,5 @@
 <div class="span10">
   <h2>Enter uri</h2>
 
-  ${structure: view.tmpl_view(request, view)}
+  ${structure: request.render_tmpl(view.tmpl_view, view)}
 </div>
