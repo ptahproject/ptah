@@ -97,7 +97,8 @@ def build_sqla_fieldset(columns, skipPrimaryKey=False):
 
         kwargs = {}
         for attr in ('missing', 'title', 'description',
-                     'vocabulary', 'validator'):
+                     'vocabulary', 'validator',
+                     'required', 'default'):
             if attr in cl.info:
                 kwargs[attr] = cl.info[attr]
 
