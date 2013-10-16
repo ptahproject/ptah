@@ -1,0 +1,16 @@
+<script>
+  curl(['jquery-ui','css!jquery-ui-css'], function() {$("#{{context.id}}-date" ).datepicker()})
+</script>
+
+<input id="{{'%s-date'%context.id}}"
+       name="{{context.date_name}}"
+       class="{{'input-small %s'%context.klass}}"
+       value="{{context.date_part}}" type="text" 
+       {{context.get_html_attrs()|xmlattr}} />
+
+<input id="{{'%s-time'%context.id}}"
+       name="{{context.time_name}}"
+       class="{{'input-mini %s'%context.klass}}"
+       value="{{context.time_part}}" type="text" 
+       {{context.get_html_attrs()|xmlattr}}  />
+
