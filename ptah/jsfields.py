@@ -16,7 +16,7 @@ class CKEditorField(TextAreaField):
     :param height: Height os widget, default is ``300px``
     """
 
-    klass = 'ckeditor-widget'
+    klass = 'ckeditor-widget form-control'
 
     width = '400px'
     height = '300px'
@@ -28,7 +28,7 @@ class CKEditorField(TextAreaField):
 class JSDateField(TextField):
     """Date input widget with JQuery Datepicker. Field name is ``date``."""
 
-    klass = 'date-widget'
+    klass = 'date-widget form-control'
     value = ''
 
     tmpl_input = "ptah:jsdate"
@@ -61,7 +61,7 @@ class JSDateTimeField(DateTimeField):
     """DateTime input widget with JQuery Datepicker.
     Field name is ``datetime``."""
 
-    klass = 'datetime-widget'
+    klass = 'datetime-widget form-control'
     value = ''
 
     time_part = null
