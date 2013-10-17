@@ -37,11 +37,8 @@ def main(global_config, **settings):
     # static assets
     config.add_static_view('_{{package}}', '{{package}}:static')
 
-    # override templates
-    config.add_layers('{{package}}-custom', path='{{package}}:custom')
-
     # templates
-    config.add_layer('{{package}}', path='{{package}}:templates')
+    config.add_layers('{{package}}', path='{{package}}:templates')
 
     # Refer: Pyramid's _Configuration Decorations and Code Scanning_
     config.scan()
