@@ -145,6 +145,7 @@ def includeme(cfg):
     cfg.include('pform')
     cfg.include('player')
     cfg.include('pyramid_amdjs')
+    cfg.include('pyramid_chameleon')
 
     # auth
     from ptah.security import PtahAuthorizationPolicy

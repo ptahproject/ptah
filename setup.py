@@ -7,6 +7,7 @@ version = '0.8.0'
 install_requires = ['setuptools',
                     'alembic >= 0.4.0',
                     'Chameleon >= 2.6.1',
+                    'pyramid_chameleon',
                     'pyramid >= 1.4a2',
                     'pyramid_tm',
                     'pyramid_amdjs >= 0.5.1',
