@@ -4,10 +4,22 @@ import translationstring
 from datetime import datetime, timedelta
 from pyramid.i18n import get_localizer
 from pyramid.compat import text_type
+from babel.dates import format_date
 
 import ptah
 
 _ = translationstring.TranslationStringFactory('ptah')
+
+def date_formatter(request, value, **kwargs):
+    """Date formatters
+    """
+    if not isinstance(value, datetime):
+        return value
+
+    if value.tzinfo is None:
+        value = value.replace(tzinfo=pytz.utc)
+
+    return text_type(format_date(value, **kwargs))
 
 
 def datetime_formatter(request, value, tp='medium'):
