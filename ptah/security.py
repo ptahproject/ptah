@@ -325,7 +325,18 @@ def get_local_roles(userid, request=None,
         if ILocalRolesAware.providedBy(location):
             local_roles = location.__local_roles__
             if local_roles:
+                user_props = getattr(ptah.resolve(userid), 'properties', dict())
+                user_roles = []
+
                 for r in local_roles.get(userid, ()):
+                    if r not in user_roles:
+                        user_roles.append(r)
+                for grp in user_props.get('groups', ()):
+                    for r in local_roles.get(grp, ()):
+                        if r not in roles:
+                            user_roles.append(r)
+
+                for r in user_roles:
                     if r not in roles:
                         roles[r] = Allow
 
