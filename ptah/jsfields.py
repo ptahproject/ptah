@@ -1,6 +1,7 @@
 """ various fields """
 import ptah
 import datetime
+import pytz
 import pform
 from pform.interfaces import _, null, Invalid
 from pform.fields import TextAreaField, TextField, DateTimeField
@@ -31,7 +32,8 @@ class JSDateField(TextField):
     klass = 'date-widget form-control'
     value = ''
 
-    tmpl_input = "ptah:jsdate"
+    html_type = 'date'
+    #tmpl_input = "ptah:jsdate"
 
     def to_form(self, value):
         if value is null or value is None:
@@ -45,13 +47,13 @@ class JSDateField(TextField):
                 _('"${val}" is not a date object'), self,
                 mapping={'val': value})
 
-        return value.strftime('%m/%d/%Y')
+        return value
 
     def to_field(self, value):
         if not value:
-            return null
+            return None
         try:
-            return datetime.datetime.strptime(value, '%m/%d/%Y').date()
+            return datetime.datetime.strptime(value, '%Y-%m-%d')
         except Exception:
             raise Invalid(_('Invalid date'), self)
 
