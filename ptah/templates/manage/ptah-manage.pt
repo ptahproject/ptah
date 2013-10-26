@@ -1,8 +1,8 @@
 <ol class="breadcrumb" tal:condition="view.breadcrumbs">
     <tal:block tal:repeat="item view.breadcrumbs">
-    <li><a href="${request.resource_url(item)}">${item.title if hasattr(item, 'title') else item.__name__}</a><span class="divider">/</span></li>
+    <li><a href="${request.resource_url(item)}">${item.title if hasattr(item, 'title') else item}</a><span class="divider">/</span></li>
     </tal:block>
-  <li class="active">${request.context.title if hasattr(request.context, 'title') else request.context.__name__}</li>
+  <li class="active">${request.context.title if hasattr(request.context, 'title') else request.context}</li>
 </ol>
 ${structure: content}
 

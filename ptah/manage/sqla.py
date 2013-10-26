@@ -50,6 +50,8 @@ class Table(object):
         self.table = table
         self.request = request
 
+        self.title = table.name
+
     def __getitem__(self, key):
         if key == 'add.html':
             raise KeyError(key)
