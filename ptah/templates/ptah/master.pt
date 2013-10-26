@@ -7,6 +7,9 @@
     ${structure: request.init_amd()}
     ${structure: request.include_js('bootstrap')}
     ${structure: request.include_css('bootstrap-css')}
+    <style type="text/css">
+        body {margin-top:50px;}
+    </style>
   </head>
   <body>
     <div class="navbar navbar-inverse navbar-fixed-top">
