@@ -1,4 +1,4 @@
-<div style="margin-top: 60px;">
+<div class="app-body">
   <div class="container">
     ${structure: content}
   </div>
