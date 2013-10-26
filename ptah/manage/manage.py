@@ -3,6 +3,7 @@ from pyramid.view import view_config
 from pyramid.interfaces import IRootFactory
 from pyramid.traversal import DefaultRootFactory
 from pyramid.httpexceptions import HTTPForbidden
+from pyramid.decorator import reify
 
 import ptah
 from ptah import config
@@ -117,12 +118,16 @@ class root(object):
     __name__ = None
     __parent__ = None
 
+    title = 'Home'
+
 
 class PtahManageRoute(object):
     """ ptah management route """
 
     __name__ = 'ptah-manage'
     __parent__ = root()
+
+    title = 'Manage'
 
     def __init__(self, request):
         self.request = request
@@ -154,6 +159,17 @@ class PtahManageRoute(object):
 
 class LayoutManage(ptah.View):
     """ Base layout for ptah manage """
+
+    @reify
+    def breadcrumbs(self):
+        parents = []
+        parent = self.request.context.__parent__
+
+        while parent:
+            parents.append(parent)
+            parent = parent.__parent__
+
+        return reversed(parents)
 
     def update(self):
         self.user = ptah.resolve(self.context.userid)

@@ -12,7 +12,7 @@
     <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container">
-          <a class="brand" href="${view.manage_url}/">Ptah</a>
+          <a class="brand" href="/">Ptah</a>
 
           <ul class="nav" tal:condition="view.actions">
             <li tal:repeat="item view.actions">

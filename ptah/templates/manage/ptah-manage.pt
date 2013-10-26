@@ -1,41 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <title>Ptah Manage</title>
-    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+<ol class="breadcrumb" tal:condition="view.breadcrumbs">
+    <tal:block tal:repeat="item view.breadcrumbs">
+    <li><a href="${request.resource_url(item)}">${item.title if hasattr(item, 'title') else item.__name__}</a><span class="divider">/</span></li>
+    </tal:block>
+  <li class="active">${request.context.title if hasattr(request.context, 'title') else request.context.__name__}</li>
+</ol>
+${structure: content}
 
-    ${structure: request.require('css!bootstrap-css')}
-  </head>
-  <body>
-    <div class="navbar navbar-inverse navbar-fixed-top">
-      <div class="navbar-inner">
-        <div class="container">
-          <a class="brand" href="${view.manage_url}/">Ptah Manage</a>
-
-          <ul class="nav" tal:condition="view.actions">
-            <li tal:repeat="item view.actions">
-              <a href="${item['url']}">${item['title']}</a>
-            </li>
-          </ul>
-
-          <ul class="nav pull-right" tal:condition="view.user">
-            <li>
-              <a href="${view.application_url}/"
-                 tal:content="view.user.name">:
-              </a>
-            </li>
-            <li class="active">
-              <a href="${view.application_url}/logout.html">Logout</a>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </div>
-
-    <div style="margin-top: 60px;">
-      <div class="container">
-        ${structure: content}
-      </div>
-    </div>
-  </body>
-</html>
