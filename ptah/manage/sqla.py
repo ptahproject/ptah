@@ -44,7 +44,7 @@ addMetadata(ptah.get_base().metadata, 'psqla', 'Pyramid sqla')
 class Table(object):
 
     def __init__(self, table, mod, request):
-        self.__name__ = table.name
+        self.__name__ = 'psqla-%s' % table.name
         self.__parent__ = mod
 
         self.table = table
@@ -206,8 +206,10 @@ class TableView(pform.Form):
     def val(self, val):
         try:
             if isinstance(val, str): # pragma: no cover
-                val = unicode(val, 'utf-8', 'ignore')
-            elif not isinstance(val, unicode):
+                val = str(val)
+            elif isinstance(val, bytes):
+                raise
+            elif not isinstance(val, str):
                 val = str(val)
         except: # pragma: no cover
             val = "Can't show"
