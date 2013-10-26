@@ -13,28 +13,35 @@
   <div class="navbar navbar-inverse navbar-fixed-top">
     <div class="navbar-inner">
       <div class="container">
-        <a class="brand" href="#">Project starter</a>
-        <ul class="nav">
-          <li class="active"><a href="${request.application_url}">Home</a></li>
+        <a class="brand" href="${view.application_url}">Project starter</a>
+
+
+        <ul class="nav" tal:condition="view.actions">
+          <li tal:repeat="item view.actions">
+            <a href="${item['url']}">${item['title']}</a>
+          </li>
         </ul>
 
         <ul class="nav pull-right" tal:condition="view.user">
           <li>
-            <a href="${request.application_url}"
+-              <a href="#"
                tal:content="view.user.name">:
             </a>
           </li>
-          <li class="active">
-            <a href="${request.application_url}/logout.html">Logout</a>
+          <li class="">
+            <a href="${view.manage_url}/">Manage</a>
+          </li>
+          <li class="">
+            <a href="${view.application_url}/logout.html">Logout</a>
           </li>
         </ul>
 
         <ul class="nav pull-right" tal:condition="not view.user">
           <li>
-            <a href="${request.application_url}/join.html">Join</a>
+            <a href="${view.application_url}/join.html">Join</a>
           </li>
           <li>
-            <a href="${request.application_url}/login.html">Login</a>
+            <a href="${view.application_url}/login.html">Login</a>
           </li>
         </ul>
       </div>
