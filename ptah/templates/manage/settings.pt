@@ -3,7 +3,7 @@
 </div>
 
 <div class="row" tal:repeat="group data">
-  <div class="span12">
+  <div class="span12 col-md-12">
     <h3>${group['title']}
       <small tal:condition="group['ttw']">
         <a href="./${group['name']}/" class="btn">Modify</a>
