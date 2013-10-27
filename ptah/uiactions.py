@@ -113,4 +113,4 @@ def list_uiactions(content, request=None, registry=None, category=''):
                   'description': action.description,
                   'data': action.data}))
 
-    return [ac for _w, ac in sorted(actions)]
+    return [ac for _w, ac in sorted(actions, key=lambda action: action[0])]
