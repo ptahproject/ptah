@@ -104,6 +104,19 @@ def textPreview(request):
     return widget.render_widget()
 
 
+@pform.fieldpreview(pform.FileField)
+def textPreview(request):
+    field = pform.FileField(
+        'FileField',
+        title = 'File field',
+        description = 'File field preview description',
+        default = 'Test file in file field.')
+
+    widget = field.bind(request, 'preview.', pform.null, {})
+    widget.update()
+    return widget.render_widget()
+
+
 @pform.fieldpreview(pform.IntegerField)
 def intPreview(request):
     field = pform.IntegerField(
