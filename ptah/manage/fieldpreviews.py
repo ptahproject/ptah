@@ -105,7 +105,7 @@ def textPreview(request):
 
 
 @pform.fieldpreview(pform.FileField)
-def textPreview(request):
+def filePreview(request):
     field = pform.FileField(
         'FileField',
         title = 'File field',
