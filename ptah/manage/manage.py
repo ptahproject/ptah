@@ -160,17 +160,6 @@ class PtahManageRoute(object):
 class LayoutManage(ptah.View):
     """ Base layout for ptah manage """
 
-    @reify
-    def breadcrumbs(self):
-        parents = []
-        parent = self.request.context.__parent__
-
-        while parent:
-            parents.append(parent)
-            parent = parent.__parent__
-
-        return reversed(parents)
-
     def update(self):
         self.user = ptah.resolve(self.context.userid)
         self.manage_url = get_manage_url(self.request)
