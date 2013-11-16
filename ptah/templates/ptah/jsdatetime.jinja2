@@ -1,16 +1,10 @@
-<script>
-  curl(['jquery-ui','css!jquery-ui-css'], function() {$("#{{context.id}}-date" ).datepicker()})
+<div class="input-group date" id="{{context.id}}">
+  <input class="{{context.klass}}" type="text" data-format="YYYY-MM-DD HH:mm"
+         {{context.get_html_attrs()|xmlattr}} />
+  <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span>
+</div>
+<script type="text/javascript">
+    $(function () {
+        $('#{{context.id}}').datetimepicker();
+    });
 </script>
-
-<input id="{{'%s-date'%context.id}}"
-       name="{{context.date_name}}"
-       class="{{'input-small %s'%context.klass}}"
-       value="{{context.date_part}}" type="text" 
-       {{context.get_html_attrs()|xmlattr}} />
-
-<input id="{{'%s-time'%context.id}}"
-       name="{{context.time_name}}"
-       class="{{'input-mini %s'%context.klass}}"
-       value="{{context.time_part}}" type="text" 
-       {{context.get_html_attrs()|xmlattr}}  />
-

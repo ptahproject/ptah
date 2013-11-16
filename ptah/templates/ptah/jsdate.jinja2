@@ -1,10 +1,13 @@
-<script>
-  curl(['jquery-ui','css!jquery-ui-css'], function() {$("#{{context.id}}" ).datepicker()})
+<div class='input-group date' id='{{context.id}}'>
+  <input class="{{context.klass}}" type="text"  data-format="YYYY-MM-DD"
+         {{context.get_html_attrs()|xmlattr}} />
+  <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span>
+  </span>
+</div>
+<script type="text/javascript">
+    $(function () {
+        $('#{{context.id}}').datetimepicker({
+            'pickTime': false
+        });
+    });
 </script>
-
-<input id="{{context.id}}"
-       name="{{context.name}}"
-       class="{{'input-small %s'%context.klass}}"
-       value="{{context.form_value}}" type="text" 
-       {{context.get_html_attrs()|xmlattr}} />
-
