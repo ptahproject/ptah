@@ -268,6 +268,7 @@ def includeme(cfg):
     # ptah formatters
     from ptah import formatter
     cfg.add_formatter('date', formatter.date_formatter)
+    cfg.add_formatter('time', formatter.time_formatter)
     cfg.add_formatter('datetime', formatter.datetime_formatter)
     cfg.add_formatter('timedelta', formatter.timedelta_formatter)
     cfg.add_formatter('size', formatter.size_formatter)
