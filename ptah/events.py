@@ -150,6 +150,16 @@ class PrincipalRegisteredEvent(PrincipalEvent):
     """ Principal registered event """
 
 
+@event('Principal modified event')
+class PrincipalModifiedEvent(PrincipalEvent):
+    """ Principal modified event """
+
+
+@event('Principal deleting event')
+class PrincipalDeletingEvent(PrincipalEvent):
+    """ Principal deleting event """
+
+
 # content events
 
 class ContentEvent(ObjectEvent):
