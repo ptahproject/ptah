@@ -252,6 +252,16 @@ class Authentication(object):
             if principal is not None:
                 return principal
 
+    def get_principal_byemail(self, email):
+        """ Return principal by email """
+        providers = config.get_cfg_storage(AUTH_PROVIDER_ID)
+
+        for pname, provider in providers.items():
+            principal = provider.get_principal_byemail(email)
+            print(principal)
+            if principal is not None:
+                return principal
+
 auth_service = Authentication()
 
 
