@@ -45,7 +45,9 @@ class MasterLayout(View):
 
     @reify
     def manage_url(self):
-        return ptah.manage.get_manage_url(self.request)
+        userid = ptah.auth_service.get_userid()
+        if ptah.manage.check_access(userid, self.request):
+            return ptah.manage.get_manage_url(self.request)
 
     @reify
     def actions(self):
