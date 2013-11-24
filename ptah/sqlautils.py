@@ -15,7 +15,7 @@ from ptah.util import json
 
 _base = declarative.declarative_base()
 _zte = ZopeTransactionExtension()
-_session = orm.scoped_session(orm.sessionmaker(extension=[_zte], expire_on_commit=False))
+_session = orm.scoped_session(orm.sessionmaker(extension=[_zte]))
 _session_maker = orm.sessionmaker()
 _sa_session = local()
 
@@ -30,7 +30,7 @@ def reset_session():
     global _zte, _session
 
     _zte = ZopeTransactionExtension()
-    _session = orm.scoped_session(orm.sessionmaker(extension=[_zte], expire_on_commit=False))
+    _session = orm.scoped_session(orm.sessionmaker(extension=[_zte]))
 
 
 class transaction(object):
