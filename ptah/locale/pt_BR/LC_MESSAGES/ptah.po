@@ -9,14 +9,16 @@ msgstr ""
 "Project-Id-Version: ptah 0.4.0dev\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2012-03-14 22:13-0300\n"
-"PO-Revision-Date: 2012-03-14 16:56-0300\n"
-"Last-Translator: Nando Florestan <nandoflorestan@gmail.com>\n"
+"PO-Revision-Date: 2013-12-09 23:25+0100\n"
+"Last-Translator: Marco Strobel <mail@strobel.ch>\n"
 "Language-Team: Portuguese <>\n"
-"Plural-Forms: nplurals=2; plural=(n!=1)\n"
+"Plural-Forms: nplurals=2; plural=(n!=1);\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 0.9.6\n"
+"X-Generator: Poedit 1.5.4\n"
+"Language: pt\n"
 
 #: ptah/password.py:149
 msgid "Password should contain both letters and digits."
@@ -36,11 +38,11 @@ msgstr "Senha"
 
 #: ptah/password.py:235
 msgid ""
-"Enter password. No spaces or special characters, should contain digits "
-"and letters in mixed case."
+"Enter password. No spaces or special characters, should contain digits and "
+"letters in mixed case."
 msgstr ""
-"Digite sua senha. Sem espaços ou caracteres especiais. Deve conter "
-"dígitos, maiúsculas e minúsculas."
+"Digite sua senha. Sem espaços ou caracteres especiais. Deve conter dígitos, "
+"maiúsculas e minúsculas."
 
 #: ptah/password.py:243
 msgid "Confirm password"
@@ -196,4 +198,3 @@ msgstr "Mais longo que o máximo ${max}"
 #: ptah/form/validator.py:196
 msgid "\"${val}\" is not one of ${choices}"
 msgstr "\"${val}\" não pertence a ${choices}"
-
