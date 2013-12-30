@@ -258,7 +258,6 @@ class Authentication(object):
 
         for pname, provider in providers.items():
             principal = provider.get_principal_byemail(email)
-            print(principal)
             if principal is not None:
                 return principal
 
