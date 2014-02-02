@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>{{view.site_title}}</title>
+    <title>${view.site_title}</title>
     ${structure: request.require('css!bootstrap-css')}
     <link type="text/css" rel="stylesheet"
           href="${request.static_url('{{package}}:static/app.css')}" />
