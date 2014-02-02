@@ -15,7 +15,7 @@
     <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container">
-          <a class="brand" href="${view.application_url}">${view.site_title}</a>
+          <a tal:condition="view.site_title" class="brand" href="${view.application_url}">${view.site_title}</a>
 
           <ul class="nav" tal:condition="view.actions">
             <li tal:repeat="item view.actions">
