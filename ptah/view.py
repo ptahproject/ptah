@@ -39,6 +39,11 @@ class View(object):
 class MasterLayout(View):
 
     @reify
+    def site_title(self):
+        PTAH = ptah.get_settings(ptah.CFG_ID_PTAH, self.request.registry)
+        return PTAH['site_title']
+
+    @reify
     def user(self):
         userid = ptah.auth_service.get_userid()
         return ptah.resolve(userid)

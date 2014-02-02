@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Ptah</title>
+    <title>${view.site_title}</title>
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
 
     ${structure: request.init_amd()}
@@ -15,7 +15,7 @@
     <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container">
-          <a class="brand" href="${view.application_url}">Ptah</a>
+          <a class="brand" href="${view.application_url}">${view.site_title}</a>
 
           <ul class="nav" tal:condition="view.actions">
             <li tal:repeat="item view.actions">
