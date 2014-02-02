@@ -51,7 +51,7 @@
 
     ${structure: content}
 
-    <footer>
+    <footer class="container">
       <p>&copy; Ptah Project 2011-2012</p>
     </footer>
   </body>
