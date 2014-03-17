@@ -12,7 +12,7 @@ from ptah.manage.manage import PtahManageRoute
 
 @view_config(
     name='uri.html', context=PtahManageRoute,
-    renderer=player.layout('ptah-manage:uri.lt'))
+    renderer=player.layout('ptah-manage:uri.lt', 'ptah-manage'))
 
 class UriResolver(pform.Form):
     """ Uri resolver form """

@@ -1,0 +1,8 @@
+<ol class="breadcrumb" tal:condition="view.breadcrumb">
+  <li tal:repeat="item view.breadcrumb">
+    <a href="${request.resource_url(item)}">${item.title if hasattr(item, 'title') else item.__name__}</a>
+  </li>
+  <li class="active">${request.context.title if hasattr(request.context, 'title') else request.context.__name__}</li>
+</ol>
+${structure: request.render_messages()}
+${structure: content}

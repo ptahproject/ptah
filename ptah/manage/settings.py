@@ -31,7 +31,7 @@ class SettingsWrapper(object):
 
 @view_config(
     context=SettingsModule,
-    renderer=player.layout('ptah-manage:settings.lt'))
+    renderer=player.layout('ptah-manage:settings.lt', 'ptah-manage'))
 
 class SettingsView(ptah.View):
     """ Settings manage module view """
@@ -73,7 +73,7 @@ class SettingsView(ptah.View):
         return {'data': sorted(data, key=lambda item: item['title'])}
 
 
-@view_config(context=SettingsWrapper, renderer=player.layout())
+@view_config(context=SettingsWrapper, renderer=player.layout('', 'ptah-manage'))
 
 class EditForm(pform.Form):
     """ Settings group edit form """

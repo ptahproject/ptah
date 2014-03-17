@@ -85,7 +85,7 @@ class Record(object):
 
 @view_config(
     context=SQLAModule,
-    renderer=player.layout('ptah-manage:sqla-index.lt'))
+    renderer=player.layout('ptah-manage:sqla-index.lt', 'ptah-manage'))
 
 class MainView(ptah.View):
     __doc__ = "sqlalchemy tables listing page."
@@ -148,7 +148,7 @@ def get_inheritance(table):
 
 @view_config(
     context=Table,
-    renderer=player.layout('ptah-manage:sqla-table.lt'))
+    renderer=player.layout('ptah-manage:sqla-table.lt', 'ptah-manage'))
 
 class TableView(pform.Form):
     __doc__ = "List table records."
@@ -240,7 +240,7 @@ class TableView(pform.Form):
 
 @view_config(
     context=Record,
-    renderer=player.layout('ptah-manage:sqla-edit.lt'))
+    renderer=player.layout('ptah-manage:sqla-edit.lt', 'ptah-manage'))
 
 class EditRecord(pform.Form):
     __doc__ = "Edit table record."
@@ -302,7 +302,9 @@ class EditRecord(pform.Form):
 
 
 
-@view_config(name='add.html', context=Table, renderer=player.layout())
+@view_config(
+    name='add.html', context=Table,
+    renderer=player.layout('', 'ptah-manage'))
 
 class AddRecord(pform.Form):
     """ Add new table record. """

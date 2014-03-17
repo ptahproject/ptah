@@ -160,23 +160,21 @@ class PtahManageRoute(object):
 class LayoutManage(ptah.View):
     """ Base layout for ptah manage """
 
-    def update(self):
-        self.user = ptah.resolve(self.context.userid)
-        self.manage_url = get_manage_url(self.request)
+    @reify
+    def breadcrumb(self):
+        parents = []
+        parent = getattr(self.request.context, '__parent__', None)
 
-        mod = self.request.context
-        while not isinstance(mod, PtahModule):
-            mod = getattr(mod, '__parent__', None)
-            if mod is None: # pragma: no cover
-                break
+        while parent:
+            parents.append(parent)
+            parent = getattr(parent, '__parent__', None)
 
-        self.module = mod
-        self.actions = ptah.list_uiactions(mod, self.request, MANAGE_ACTIONS)
+        return list(reversed(parents))
 
 
 @view_config(
     context=PtahManageRoute,
-    renderer=player.layout('ptah-manage:manage.lt'))
+    renderer=player.layout('ptah-manage:manage.lt', 'ptah-manage'))
 
 class ManageView(ptah.View):
     """List ptah modules"""

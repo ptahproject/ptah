@@ -252,18 +252,9 @@ def includeme(cfg):
     from ptah.manage.manage import PtahManageRoute, LayoutManage
 
     cfg.add_layout(
-        '', PtahManageRoute, root=PtahManageRoute, parent='ptah-manage',
-        use_global_views=False, renderer="ptah-manage:ptah-layout.lt")
-
-    cfg.add_layout(
-        'ptah-page', PtahManageRoute, root=PtahManageRoute,
-        parent='ptah-manage', use_global_views=False,
-        renderer="ptah-manage:ptah-layout.lt")
-
-    cfg.add_layout(
         'ptah-manage', PtahManageRoute, root=PtahManageRoute,
-        use_global_views=False, renderer="ptah-manage:ptah-manage.lt",
-        view=LayoutManage, parent='workspace')
+        use_global_views=False, renderer="ptah-manage:layout.lt",
+        view=LayoutManage, parent='master')
 
     # ptah formatters
     from ptah import formatter
