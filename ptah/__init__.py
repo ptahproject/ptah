@@ -239,22 +239,13 @@ def includeme(cfg):
     cfg.add_layer('ptah-form', path='ptah:form/templates/')
     cfg.add_layer('ptah-fields', path='ptah:form/templates/fields/')
 
-    # ptah layouts
-    from ptah.view import MasterLayout
-    cfg.add_layout(
-        'master', renderer="ptah:master.lt", view=MasterLayout)
-    cfg.add_layout(
-        'workspace', renderer="ptah:workspace.lt", parent='master')
-    cfg.add_layout(
-        'content', renderer="ptah:content.lt", parent='workspace')
-
     # ptah manage layouts
     from ptah.manage.manage import PtahManageRoute, LayoutManage
 
     cfg.add_layout(
         'ptah-manage', PtahManageRoute, root=PtahManageRoute,
         use_global_views=False, renderer="ptah-manage:layout.lt",
-        view=LayoutManage, parent='master')
+        view=LayoutManage, parent='ptah')
 
     # ptah formatters
     from ptah import formatter

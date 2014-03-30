@@ -40,6 +40,15 @@ def main(global_config, **settings):
     # templates
     config.add_layers('{{package}}', path='{{package}}:templates')
 
+    # layouts
+    from {{package}}.layouts import MasterLayout
+    cfg.add_layout(
+        'master', renderer='ptah:master.lt', view=MasterLayout)
+    cfg.add_layout(
+        'workspace', renderer='ptah:workspace.lt', parent='master')
+    cfg.add_layout(
+        'content', renderer='ptah:content.lt', parent='workspace')
+
     # Refer: Pyramid's _Configuration Decorations and Code Scanning_
     config.scan()
 
