@@ -33,7 +33,7 @@ class MasterLayout(ptah.View):
     def join_url(self):
         PTAHCROWD = ptah.get_settings('ptahcrowd', self.request.registry)
         if PTAHCROWD['join']:
-            return '%s/%s' % (self.application_url, PTAHCROWD['join-url'])
+            return '%s%s' % (self.application_url, PTAHCROWD['join-url'])
         else:
             return None
 
