@@ -1,6 +1,2 @@
-<div class="app-body">
-  <div class="container">
-    ${structure: request.render_messages()}
-    ${structure: content}
-  </div>
-</div>
+${structure: content}
+
