@@ -6,7 +6,7 @@ import ptah
 log = logging.getLogger(__name__)
 
 
-class MasterLayout(ptah.View):
+class Layout(ptah.View):
 
     @reify
     def site_title(self):

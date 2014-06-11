@@ -41,13 +41,11 @@ def main(global_config, **settings):
     config.add_layers('{{package}}', path='{{package}}:templates')
 
     # layouts
-    from {{package}}.layouts import MasterLayout
+    from {{package}}.layouts import Layout
     config.add_layout(
-        'master', renderer='ptah:master.lt', view=MasterLayout)
+        '{{package}}', renderer='{{package}}:layout.lt', view=Layout)
     config.add_layout(
-        'workspace', renderer='ptah:workspace.lt', parent='master')
-    config.add_layout(
-        'content', renderer='ptah:content.lt', parent='workspace')
+        'ptah', renderer='ptah:layout.lt', parent='{{package}}')
 
     # Refer: Pyramid's _Configuration Decorations and Code Scanning_
     config.scan()

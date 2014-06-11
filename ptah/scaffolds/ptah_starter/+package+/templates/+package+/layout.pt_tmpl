@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>${view.site_title}</title>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+
+    ${structure: request.init_amd()}
+    ${structure: request.include_js('jquery')}
+    ${structure: request.include_js('bootstrap3')}
+    ${structure: request.include_css('bootstrap3-css')}
+    ${structure: request.include_css('bootstrap3-navbar-css')}
+    <style type="text/css">
+        body {margin-top:70px;margin-bottom:50px;}
+        footer {margin-top: 30px;}
+    </style>
+  </head>
+  <body>
+    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+      <div class="container">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+          <a tal:condition="view.site_title" class="navbar-brand" href="${view.application_url}">${view.site_title}</a>
+        </div>
+      </div><!-- /.container -->
+    </nav>
+    <nav class="navbar navbar-default navbar-fixed-bottom">
+      <div class="container">
+        <div class="navbar-header">
+          <ul class="nav navbar-nav navbar-left">
+            <li tal:repeat="action view.actions" class="${'active' if '%s%s' % (request.application_url, request.path) == action.url else ''}">
+              <a href="${action.url}" data-toggle="tooltip" data-placement="top" title="${action.title}">
+                <span tal:condition="action.data.get('icon')">
+                  <span class="glyphicon glyphicon-${action.data.get('icon')}"></span>
+                  <span class="hidden-xs"> ${action.title}</span>
+                </span>
+                <span tal:condition="not action.data.get('icon')">${action.title}</span>
+              </a>
+            </li>
+          </ul>
+          <ul class="nav navbar-nav navbar-right">
+            <li tal:condition="not view.user and view.login_url" class="${'active' if '%s%s' % (request.application_url, request.path) == view.login_url else ''}">
+              <a href="${view.login_url}" data-toggle="tooltip" data-placement="top" title="Login">
+                <span class="glyphicon glyphicon-lock"></span>
+                <span>&#160;Login</span>
+              </a>
+            </li>
+            <li tal:condition="not view.user and view.join_url" class="${'active' if '%s%s' % (request.application_url, request.path) == view.join_url else ''}">
+              <a href="${view.join_url}" data-toggle="tooltip" data-placement="top" title="Join">
+                <span class="">Join</span>
+              </a>
+            </li>
+            <li tal:condition="view.user" class="dropdown pull-right">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" data-placement="top" title="Account">
+                <span class="glyphicon glyphicon-user"></span>
+                <span class="hidden-xs">&#160;Account</span>
+              </a>
+              <ul class="dropdown-menu">
+                <li class="dropdown-header">${view.user.name}</li>
+                <li>
+                  <a href="${request.route_url('ptah-resetpassword')}" i18n:translate="">Change password</a>
+                </li>
+                <li tal:condition="view.manage_url">
+                  <a href="${view.manage_url}/" i18n:translate="">Manage</a>
+                </li>
+                <li>
+                  <a href="${request.route_url('ptah-logout')}" i18n:translate="">Logout</a>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <div class="container">
+      ${structure: request.render_messages()}
+      ${structure: content}
+      <footer>
+        <p>&copy; Ptah Project 2011-2014</p>
+      </footer>
+    </div>
+  </body>
+</html>
