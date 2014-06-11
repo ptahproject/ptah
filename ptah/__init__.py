@@ -242,6 +242,7 @@ def includeme(cfg):
     # ptah manage layouts
     from ptah.manage.manage import PtahManageRoute, LayoutManage
 
+    cfg.add_layout('ptah', renderer='ptah:layout.lt')
     cfg.add_layout(
         'ptah-manage', PtahManageRoute, root=PtahManageRoute,
         use_global_views=False, renderer="ptah-manage:layout.lt",

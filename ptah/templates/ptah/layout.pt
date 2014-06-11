@@ -1,0 +1,3 @@
+${structure: request.render_messages()}
+${structure: content}
+
