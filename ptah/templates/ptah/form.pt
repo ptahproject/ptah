@@ -1,7 +1,0 @@
-<div class="page-header" tal:condition="view.label">
-  <h1>${view.label}</h1>
-</div>
-<p class="lead" tal:condition="view.description">${view.description}</p>
-
-${structure:request.render_tmpl(view.tmpl_view, view)}
-
