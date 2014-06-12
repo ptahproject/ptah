@@ -172,8 +172,8 @@ def passwordPreview(request):
 def jsdatePreview(request):
     field = JSDateField(
         'JSDateField',
-        title = 'jQuery Date field',
-        description = 'jQuery Date field preview description',
+        title = 'Bootstrap Date field',
+        description = 'Bootstrap Date field preview description',
         default = datetime.date.today())
 
     widget = field.bind(request, 'preview.', pform.null, {})
@@ -185,8 +185,8 @@ def jsdatePreview(request):
 def jsdatetimePreview(request):
     field = JSDateTimeField(
         'JSDateTimeField',
-        title = 'jQuery DateTime field',
-        description = 'jQuery DateTime field preview description')
+        title = 'Bootstrap DateTime field',
+        description = 'Bootstrap DateTime field preview description')
 
     widget = field.bind(request, 'preview.', datetime.datetime.now(), {})
     widget.update()

@@ -71,6 +71,21 @@ class JSDateTimeField(DateTimeField):
 
     tmpl_input = "ptah:jsdatetime"
 
+    def to_form(self, value):
+        if value is null or value is None or not value:
+            return null
+
+        if type(value) is datetime.date:  # cannot use isinstance; dt subs date
+            value = datetime.datetime.combine(value, datetime.time())
+
+        if not isinstance(value, datetime.datetime):
+            raise Invalid(self.error_msg, self, {'val': value})
+
+        if value.tzinfo is None:
+            value = value.replace(tzinfo=self.default_tzinfo)
+
+        return value.strftime('%Y-%m-%d %H:%M')
+
 #    def update(self):
 #        self.date_name = '%s.date' % self.name
 #        self.time_name = '%s.time' % self.name
