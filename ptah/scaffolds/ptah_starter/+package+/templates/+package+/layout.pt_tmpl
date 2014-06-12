@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>${view.site_title}</title>
+    <title>{{package}}</title>
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
 
     ${structure: request.init_amd()}
@@ -19,7 +19,7 @@
       <div class="container">
         <!-- Brand and toggle get grouped for better mobile display -->
         <div class="navbar-header">
-          <a tal:condition="view.site_title" class="navbar-brand" href="${view.application_url}">${view.site_title}</a>
+          <a class="navbar-brand" href="${view.application_url}">{{package}}</a>
         </div>
       </div><!-- /.container -->
     </nav>

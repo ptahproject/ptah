@@ -117,12 +117,6 @@ ptah.register_settings(
         description = 'List of default assigned roles for all principals.',
         default = ()),
 
-    pform.TextField(
-        name = 'site_title',
-        title = _('Site title'),
-        description = _('Title of your site.'),
-        default = 'Ptah'),
-
     title = _('Ptah settings'),
 )
 
