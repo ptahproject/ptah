@@ -11,6 +11,14 @@ def includeme(config):
         'JQuery UI Library')
 
     config.add_amd_js(
+        'bootstrap3-datetimepicker', 'ptah:static/bootstrap3/datetimepicker/js/bootstrap-datetimepicker.min.js',
+        'Bootstrap3 Datetimepicker', ('jquery', 'bootstrap3'))
+
+    config.add_amd_css(
+        'bootstrap3-datetimepicker-css', 'ptah:static/bootstrap3/datetimepicker/css/bootstrap-datetimepicker.min.css',
+        'Bootstrap3 Datetimepicker')
+
+    config.add_amd_js(
         'ckeditor', 'ptah:static/ckeditor/ckeditor.js',
         'CKEditor', ('jquery',))
 
