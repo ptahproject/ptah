@@ -20,19 +20,6 @@ class Layout(ptah.View):
             return ptah.manage.get_manage_url(self.request)
 
     @reify
-    def login_url(self):
-        PTAHCROWD = ptah.get_settings('ptahcrowd', self.request.registry)
-        return '%s%s' % (self.application_url, PTAHCROWD['login-url'])
-        
-    @reify
-    def join_url(self):
-        PTAHCROWD = ptah.get_settings('ptahcrowd', self.request.registry)
-        if PTAHCROWD['join']:
-            return '%s%s' % (self.application_url, PTAHCROWD['join-url'])
-        else:
-            return None
-
-    @reify
     def actions(self):
         return ptah.list_uiactions(self.request.context, self.request)
 

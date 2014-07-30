@@ -6,7 +6,6 @@ here = os.path.abspath(os.path.dirname(__file__))
 
 requires = [
     'ptah',
-    'ptahcrowd',
     'pyramid_debugtoolbar',
     'waitress',
     ]

@@ -8,7 +8,6 @@ pyramid.debug_routematch = false
 pyramid.debug_templates = true
 pyramid.default_locale_name = en
 pyramid.includes =
-    ptahcrowd
     pyramid_debugtoolbar
 
 # sqlalchemy
