@@ -19,31 +19,24 @@
       <div class="container">
         <!-- Brand and toggle get grouped for better mobile display -->
         <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
           <a class="navbar-brand" href="${view.application_url}">{{package}}</a>
         </div>
-      </div><!-- /.container -->
-    </nav>
-    <nav class="navbar navbar-default navbar-fixed-bottom">
-      <div class="container">
-        <div class="navbar-header">
-          <ul class="nav navbar-nav navbar-left">
-            <li tal:repeat="action view.actions" class="${'active' if '%s%s' % (request.application_url, request.path) == action.url else ''}">
-              <a href="${action.url}" data-toggle="tooltip" data-placement="top" title="${action.title}">
-                <span tal:condition="action.data.get('icon')">
-                  <span class="glyphicon glyphicon-${action.data.get('icon')}"></span>
-                  <span class="hidden-xs"> ${action.title}</span>
-                </span>
-                <span tal:condition="not action.data.get('icon')">${action.title}</span>
-              </a>
-            </li>
-          </ul>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
           <ul class="nav navbar-nav navbar-right">
-            <li tal:condition="view.manage_url">
-              <a href="${view.manage_url}/" i18n:translate="">Manage</a>
+            <li tal:condition="view.manage_url" class="${'active' if request.url.startswith(view.manage_url) else ''}">
+              <a href="${view.manage_url}" i18n:translate="">Manage</a>
             </li>
           </ul>
-        </div>
-      </div>
+        </div><!-- /.navbar-collapse -->
+      </div><!-- /.container-fluid -->
     </nav>
     <div class="container">
       ${structure: request.render_messages()}
