@@ -1,5 +1,15 @@
 <div class="jumbotron">
   <h1>Welcome to ${project}!</h1>
   <p>The ${project} application uses Ptah, a modern web publishing framework.</p>
-  <p><a class="btn btn-primary btn-lg" role="button" href="https://github.com/ptahproject/ptah">Learn more</a></p>
+  <p class="row">
+    <a class="btn btn-link btn-lg" role="button" href="https://groups.google.com/forum/#!forum/ptahproject">
+      <span class="glyphicon glyphicon-comment"></span> Mailing list
+    </a>
+    <a class="btn btn-link btn-lg" role="button" href="https://ptahproject.readthedocs.org">
+      <span class="glyphicon glyphicon-book"></span> Documentation
+    </a>
+    <a class="btn btn-link btn-lg" role="button" href="https://github.com/ptahproject/">
+      <span class="glyphicon glyphicon-wrench"></span> Github Project
+    </a>
+  </p>
 </div>
