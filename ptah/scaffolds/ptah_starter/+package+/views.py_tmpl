@@ -1,17 +1,14 @@
 import logging
-import player
+import ptah
 from pyramid.view import view_config
 
 log = logging.getLogger(__name__)
 
 
 @view_config(route_name='home',
-             renderer=player.layout('{{package}}:homepage.lt', '{{package}}'))
+             renderer=ptah.layout('{{package}}:homepage.lt', '{{package}}'))
 
-class HomepageView(object):
+class HomepageView(ptah.View):
 
-    def __init__(self, request):
-        self.request = request
-
-    def __call__(self):
-        return {}
+    def update(self):
+        return {'project': '{{project}}'}

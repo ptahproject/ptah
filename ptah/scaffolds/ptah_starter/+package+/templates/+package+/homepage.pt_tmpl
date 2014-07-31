@@ -1,6 +1,6 @@
 <div class="jumbotron">
-  <h1>Welcome to {{package}}!</h1>
-  <p>The {{package}} application uses Ptah, a modern web publishing framework.
+  <h1>Welcome to ${project}!</h1>
+  <p>The ${project} application uses Ptah, a modern web publishing framework.
   </p>
   <p>
     <a class="btn btn-primary btn-lg" href="/ptah-manage/" role="button">Goto Ptah Manage UI &raquo;</a>
