@@ -118,8 +118,6 @@ class root(object):
     __name__ = None
     __parent__ = None
 
-    title = 'Home'
-
 
 class PtahManageRoute(object):
     """ ptah management route """
@@ -161,13 +159,13 @@ class LayoutManage(ptah.View):
     """ Base layout for ptah manage """
 
     @reify
-    def breadcrumb(self):
+    def parents(self):
         parents = []
         parent = getattr(self.request.context, '__parent__', None)
 
-        while parent:
+        while parent.__parent__:
             parents.append(parent)
-            parent = getattr(parent, '__parent__', None)
+            parent = parent.__parent__
 
         return list(reversed(parents))
 
