@@ -3,16 +3,7 @@
   <head>
     <title>{{package}}</title>
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
-
-    ${structure: request.init_amd()}
-    ${structure: request.include_js('jquery')}
-    ${structure: request.include_js('bootstrap3')}
-    ${structure: request.include_css('bootstrap3-css')}
-    ${structure: request.include_css('bootstrap3-navbar-css')}
-    <style type="text/css">
-        body {margin-top:70px;margin-bottom:50px;}
-        footer {margin-top: 30px;}
-    </style>
+    ${request.require('jquery', 'bootstrap', 'css!bootstrap3-css', 'css!{{package}}-css')}
   </head>
   <body>
     <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
