@@ -42,7 +42,7 @@
       ${structure: request.render_messages()}
       ${structure: content}
       <footer>
-        <p>&copy; Ptah Project 2011-2014</p>
+        <p>copyright &copy; ptah project</p>
       </footer>
     </div>
   </body>
