@@ -1,6 +1,4 @@
-import ptah
 from pyramid.config import Configurator
-from pyramid.asset import abspath_from_asset_spec
 from pyramid.authentication import AuthTktAuthenticationPolicy
 from pyramid.session import UnencryptedCookieSessionFactoryConfig
 
