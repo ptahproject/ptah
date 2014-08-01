@@ -257,7 +257,6 @@ def includeme(cfg):
 
     # scan ptah
     cfg.scan('ptah')
-    cfg.include('ptah.static')
 
     # translation
     cfg.add_translation_dirs('ptah:locale')
