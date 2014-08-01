@@ -3,7 +3,7 @@
   <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
 </div>
 <script>
-  curl(['jquery', 'bootstrap3-datetimepicker'], function($){
+  curl(['jquery', 'bootstrap3-datetimepicker', 'css!bootstrap3-datetimepicker-css'], function($){
     $('#${context.id}').datetimepicker({
       pickTime: false,
       format: 'YYYY-MM-DD',
