@@ -34,12 +34,6 @@ def main(global_config, **settings):
     # static assets
     config.add_static_view('_{{package}}', '{{package}}:static')
 
-    # amdjs
-    config.add_amd_css(
-        '{{package}}-css',
-        '{{package}}:static/app.css',
-        'Styles for {{package}} project')
-
     # templates
     config.add_layers('{{package}}', path='{{package}}:templates')
 
@@ -52,5 +46,6 @@ def main(global_config, **settings):
 
     # Refer: Pyramid's _Configuration Decorations and Code Scanning_
     config.scan()
+    config.include('{{package}}.static')
 
     return config.make_wsgi_app()
