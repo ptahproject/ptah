@@ -131,13 +131,7 @@ class QueryFreezer(object):
         else:
             query, mapper, querycontext, stmt = q
 
-        conn = query._connection_from_session(
-            mapper=mapper,
-            clause=stmt,
-            close_with_result=True)
-
-        result = conn.execute(stmt, **params)
-        return query.instances(result, querycontext)
+        return query.params(**params).with_session(sa())
 
     def one(self, **params):
         ret = list(self.iter(**params))
