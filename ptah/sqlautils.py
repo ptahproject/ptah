@@ -119,17 +119,11 @@ class QueryFreezer(object):
         except AttributeError:
             sa.__ptah_cache__ = data = {}
 
-        q = data.get(self.id, None)
+        query = data.get(self.id, None)
 
-        if q is None:
+        if query is None:
             query = self.builder()
-            mapper = query._mapper_zero_or_none()
-            querycontext = query._compile_context()
-            querycontext.statement.use_labels = True
-            stmt = querycontext.statement
-            data[self.id] = (query, mapper, querycontext, stmt)
-        else:
-            query, mapper, querycontext, stmt = q
+            data[self.id] = query
 
         return query.params(**params).with_session(sa())
 
