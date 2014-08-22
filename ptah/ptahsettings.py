@@ -6,6 +6,7 @@ import translationstring
 import pform
 from email.utils import formataddr
 from pyramid.events import ApplicationCreated
+from pyramid_mailer.interfaces import IMailer
 
 import ptah
 from ptah import settings
@@ -184,6 +185,8 @@ ptah.register_settings(
 
 def set_mailer(cfg, mailer):
     def action(cfg, mailer):
+        if not mailer:
+            mailer = cfg.registry.queryUtility(IMailer).direct_delivery
         PTAH = ptah.get_settings(ptah.CFG_ID_PTAH, cfg.registry)
         PTAH['Mailer'] = mailer
 
