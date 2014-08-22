@@ -183,7 +183,7 @@ ptah.register_settings(
     )
 
 
-def set_mailer(cfg, mailer):
+def set_mailer(cfg, mailer=None):
     def action(cfg, mailer):
         if not mailer:
             mailer = cfg.registry.queryUtility(IMailer).direct_delivery
