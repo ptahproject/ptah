@@ -29,7 +29,7 @@ class MailGenerator(object):
         extra = list(self.context.get_headers())
         for key, val, encode in itertools.chain(self._headers.values(), extra):
             if encode:
-                message[key] = make_header(((val, charset),))
+                message[key] = make_header(((val, charset),)).encode()
             else:
                 message[key] = val
 
