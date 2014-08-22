@@ -206,7 +206,7 @@ class MailTemplate(object):
         message = self(**kw)
 
         if mailer is None:
-            mailer = self.cfg.get('Mailer')
+            mailer = self.cfg.get('mailer')
 
         if mailer is not None:
             mailer.send(message['from'], message['to'], message)

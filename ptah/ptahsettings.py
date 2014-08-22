@@ -188,7 +188,7 @@ def set_mailer(cfg, mailer):
         if not mailer:
             mailer = cfg.registry.queryUtility(IMailer).direct_delivery
         PTAH = ptah.get_settings(ptah.CFG_ID_PTAH, cfg.registry)
-        PTAH['Mailer'] = mailer
+        PTAH['mailer'] = mailer
 
     cfg.action('ptah.ptah_mailer', action, (cfg, mailer))
 
@@ -205,8 +205,8 @@ def initialized(ev):
     PTAH = ptah.get_settings(ptah.CFG_ID_PTAH, ev.registry)
 
     # mail
-    if PTAH.get('Mailer') is None:
-        PTAH['Mailer'] = DummyMailer()
+    if PTAH.get('mailer') is None:
+        PTAH['mailer'] = DummyMailer()
         PTAH['full_email_address'] = formataddr(
             (PTAH['email_from_name'], PTAH['email_from_address']))
 

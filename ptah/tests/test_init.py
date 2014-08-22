@@ -92,6 +92,6 @@ class TestDummyMailer(ptah.PtahTestCase):
 
         PTAH = ptah.get_settings(ptah.CFG_ID_PTAH, self.registry)
 
-        self.assertIsInstance(PTAH['Mailer'], DummyMailer)
+        self.assertIsInstance(PTAH['mailer'], DummyMailer)
 
-        PTAH['Mailer'].send('test@example.com', 'to@example.com', 'msg')
+        PTAH['mailer'].send('test@example.com', 'to@example.com', 'msg')
