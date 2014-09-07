@@ -1,0 +1,12 @@
+from ptah.testing import PtahTestCase
+
+
+class TestLayout(PtahTestCase):
+
+    def test_master_layout(self):
+        from {{package}}.layouts import Layout
+
+        ml = Layout(object(), self.request)
+        self.assertIsNone(ml.user)
+        self.assertEqual(ml.manage_url, 'http://example.com/ptah-manage/')
+        self.assertEqual(ml.actions, [])
