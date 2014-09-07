@@ -19,7 +19,7 @@ class TestJson(TestCase):
                 'str': 'string'}
 
         self.assertEqual(
-            util.json.dumps(data),
+            util.json.dumps(data, sort_keys=True),
             '{"date":"Sat, 01 Oct 2011 01:56:00 -0000","int":10,"str":"string"}')
 
         self.assertEqual(

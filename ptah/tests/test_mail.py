@@ -39,7 +39,7 @@ class TestMailTemplate(PtahTestCase):
         self.assertEqual(
             tmpl['Content-Transfer-Encoding'], 'base64')
         self.assertEqual(
-            tmpl['Subject'].encode(), '=?utf-8?q?Test_subject?=')
+            tmpl['Subject'].encode(), bytes_('=?utf-8?q?Test_subject?='))
         self.assertEqual(
             tmpl['Message-ID'], 'message id')
         self.assertEqual(
@@ -81,7 +81,7 @@ class TestMailTemplate(PtahTestCase):
         tmpl.add_header('X-Mailer', 'ptah', True)
 
         msg = tmpl()
-        self.assertEqual(msg['X-Mailer'].encode(), '=?utf-8?q?ptah?=')
+        self.assertEqual(msg['X-Mailer'].encode(), bytes_('=?utf-8?q?ptah?='))
 
     def test_mailtmpl_headers_gen(self):
         cls = self._make_one()
@@ -91,7 +91,7 @@ class TestMailTemplate(PtahTestCase):
         self.assertEqual(msg['X-Mailer'], 'ptah')
 
         msg = tmpl(**{'X-Mailer': ('ptah', True)})
-        self.assertEqual(str(msg['X-Mailer'].encode()), '=?utf-8?q?ptah?=')
+        self.assertEqual(msg['X-Mailer'].encode(), bytes_('=?utf-8?q?ptah?='))
 
     def test_mailtmpl_attachment(self):
         cls = self._make_one()
