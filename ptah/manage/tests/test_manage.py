@@ -387,7 +387,7 @@ class TestManageModule(PtahTestCase):
 
     def test_manage_layout(self):
         from ptah.manage.manage import \
-            module, PtahModule, LayoutManage
+            module, PtahModule, LayoutManage, root
 
         @module('test-module')
         class TestModule(PtahModule):
@@ -400,14 +400,11 @@ class TestManageModule(PtahTestCase):
 
         self.init_ptah()
 
-        mod = TestModule(None, self.request)
+        mod = TestModule(root, self.request)
         content = Content()
         content.__parent__ = mod
         self.request.context = content
 
-        layout = LayoutManage(mod, self.request)
-        layout.viewcontext = content
-        layout.context.userid = ''
-        layout.update()
+        layout = LayoutManage(self.request.context, self.request)
 
-        self.assertIs(layout.module, mod)
+        self.assertEqual(layout.parents, [mod])
