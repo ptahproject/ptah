@@ -24,6 +24,8 @@ class Version(ptah.get_base()):
 class ScriptDirectory(ScriptDirectory):
 
     file_template = "%(rev)s"
+    truncate_slug_length=40
+    sourceless=False
 
     def __init__(self, pkg):
         path = ptah.get_cfg_storage(MIGRATION_ID).get(pkg)
@@ -84,15 +86,18 @@ class MigrationContext(MigrationContext):
         log = logging.getLogger('ptah.alembic')
         self.impl.start_migrations()
 
-        for change, prev_rev, rev in \
+        for change, prev_rev, rev, doc in \
                 self._migrations_fn(self.get_current_rev(), self):
             if current_rev is False:
                 current_rev = prev_rev
                 if self.as_sql and not current_rev: # pragma: no cover
                     Version.__table__.create(checkfirst=True)
-
-            log.info("%s: running %s %s -> %s",
-                     self.pkg_name, change.__name__, prev_rev, rev)
+            if doc:
+                log.info("%s: running %s %s -> %s, %s",
+                    self.pkg_name, change.__name__, prev_rev, rev, doc)
+            else:
+                log.info("%s: running %s %s -> %s",
+                    self.pkg_name, change.__name__, prev_rev, rev)
             if self.as_sql: # pragma: no cover
                 self.impl.static_output(
                     "-- Running %s %s -> %s"%(change.__name__, prev_rev, rev))
