@@ -71,12 +71,6 @@ class AuthProvider(object):
     def get_principal_bylogin(self, login):
         """ return instance of :py:class:`ptah.interfaces.Principal` or None """
 
-    def get_principal_byusername(self, username):
-        """ return instance of :py:class:`ptah.interfaces.Principal` or None """
-
-    def get_principal_byemail(self, email):
-        """ return instance of :py:class:`ptah.interfaces.Principal` or None """
-
 
 def principal_searcher(term):
     """ Search users by term
