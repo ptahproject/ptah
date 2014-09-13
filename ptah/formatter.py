@@ -14,7 +14,6 @@ from babel.dates import (
     format_time,
     get_timezone
 )
-from pyramid.i18n import get_localizer
 from pyramid.compat import text_type
 
 import ptah
@@ -132,7 +131,7 @@ def timedelta_formatter(request, value, type='short'):
         ms = mins * 60
         secs = value.seconds - hs - ms
         frm = []
-        translate = get_localizer(request).translate
+        translate = request.localizer.translate
 
         if hours:
             frm.append(translate(
