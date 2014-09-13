@@ -3,7 +3,7 @@ import pform
 import player
 from sqlalchemy.orm.mapper import _mapper_registry
 from pyramid.view import view_config
-from pyramid.compat import url_quote_plus
+from pyramid.compat import url_quote_plus, text_type
 from pyramid.decorator import reify
 from pyramid.httpexceptions import HTTPFound
 
@@ -207,12 +207,7 @@ class TableView(pform.Form):
 
     def val(self, val):
         try:
-            if isinstance(val, str): # pragma: no cover
-                val = str(val)
-            elif isinstance(val, bytes):
-                raise
-            elif not isinstance(val, str):
-                val = str(val)
+            val = text_type(val)
         except: # pragma: no cover
             val = "Can't show"
         return val[:100]
