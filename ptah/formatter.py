@@ -1,40 +1,62 @@
 """ formatters """
 import pytz
 import translationstring
-from datetime import datetime, timedelta
+from datetime import (
+    date,
+    datetime,
+    time,
+    timedelta
+)
+from babel.core import default_locale
+from babel.dates import (
+    format_date,
+    format_datetime,
+    format_time,
+    get_timezone
+)
 from pyramid.i18n import get_localizer
 from pyramid.compat import text_type
-from babel.dates import format_date, format_time
 
 import ptah
 
 _ = translationstring.TranslationStringFactory('ptah')
 
-def date_formatter(request, value, **kwargs):
-    """Date formatters
+
+def date_formatter(request, value, format='medium', locale_name=None):
+    """Date formatter
     """
-    if not isinstance(value, datetime):
+    if not isinstance(value, datetime) and not isinstance(value, date):
         return value
 
-    if value.tzinfo is None:
-        value = value.replace(tzinfo=pytz.utc)
+    if not locale_name:
+        locale_name = request.localizer.locale_name
 
-    return text_type(format_date(value, **kwargs))
+    return text_type(format_date(value, format, locale_name))
 
 
-def time_formatter(request, value, **kwargs):
+def time_formatter(request, value, format='medium',
+                   tzname=None, locale_name=None):
     """Time formatters
     """
-    if not isinstance(value, datetime):
+    if not isinstance(value, datetime) and not isinstance(value, time):
         return value
+    tzinfo = None
 
-    if value.tzinfo is None:
-        value = value.replace(tzinfo=pytz.utc)
+    if tzname:
+        tzinfo = get_timezone(tzname)
 
-    return text_type(format_time(value, **kwargs))
+    if not tzinfo:
+        PTAH = ptah.get_settings(ptah.CFG_ID_PTAH, request.registry)
+        tzinfo = get_timezone(PTAH['timezone'])
+
+    if not locale_name:
+        locale_name = request.localizer.locale_name
+
+    return text_type(format_time(value, format, tzinfo, locale_name))
 
 
-def datetime_formatter(request, value, tp='medium'):
+def datetime_formatter(request, value, format='medium',
+                       tzname=None, locale_name=None):
     """DateTime formatter
 
     Short::
@@ -64,18 +86,19 @@ def datetime_formatter(request, value, tp='medium'):
     if not isinstance(value, datetime):
         return value
 
-    FORMAT = ptah.get_settings('format', request.registry)
+    tzinfo = None
 
-    tz = FORMAT['timezone']
-    if value.tzinfo is None:
-        value = datetime(value.year, value.month, value.day, value.hour,
-                         value.minute, value.second, value.microsecond,
-                         pytz.utc)
+    if tzname:
+        tzinfo = get_timezone(tzname)
 
-    value = value.astimezone(tz)
+    if not tzinfo:
+        PTAH = ptah.get_settings(ptah.CFG_ID_PTAH, request.registry)
+        tzinfo = get_timezone(PTAH['timezone'])
 
-    format = '%s %s' % (FORMAT['date_%s' % tp], FORMAT['time_%s' % tp])
-    return text_type(value.strftime(str(format)))
+    if not locale_name:
+        locale_name = request.localizer.locale_name
+
+    return text_type(format_datetime(value, format, tzinfo, locale_name))
 
 
 def timedelta_formatter(request, value, type='short'):

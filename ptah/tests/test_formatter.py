@@ -8,39 +8,88 @@ from ptah.testing import PtahTestCase
 
 class TestFormatter(PtahTestCase):
 
+    def test_date_formatter(self):
+        format = self.request.fmt
+
+        # format only datetime
+        self.assertEqual(format.date('text string'), 'text string')
+
+        dt = datetime(2011, 2, 6, 10, 35, 45, 80)
+        self.assertEqual(format.date(dt, 'short'),
+                         '2/6/11')
+        self.assertEqual(format.date(dt, 'medium'),
+                         'Feb 6, 2011')
+        self.assertEqual(format.date(dt, 'long'),
+                         'February 6, 2011')
+        self.assertEqual(format.date(dt, 'full'),
+                         'Sunday, February 6, 2011')
+
+    def test_date_formatter_locale(self):
+        format = self.request.fmt
+
+        dt = datetime(2011, 2, 6, 10, 35, 45, 80)
+        self.assertEqual(format.date(dt, 'full', 'es'),
+                         'domingo, 6 de febrero de 2011')
+
+    def test_time_formatter(self):
+        format = self.request.fmt
+
+        # format only datetime
+        self.assertEqual(format.time('text string'), 'text string')
+
+        dt = datetime(2011, 2, 6, 10, 35, 45, 80, pytz.UTC)
+        self.assertEqual(format.time(dt, 'short'),
+                         '10:35 AM')
+        self.assertEqual(format.time(dt, 'medium'),
+                         '10:35:45 AM')
+        self.assertEqual(format.time(dt, 'long'),
+                         '10:35:45 AM +0000')
+        self.assertEqual(format.time(dt, 'full'),
+                         '10:35:45 AM GMT+00:00')
+
+    def test_time_formatter_timezone(self):
+        format = self.request.fmt
+
+        dt = datetime(2011, 2, 6, 10, 35, 45, 80, pytz.UTC)
+        self.assertEqual(format.time(dt, 'long', 'US/Central'),
+                         '4:35:45 AM CST')
+
+    def test_time_formatter_locale(self):
+        format = self.request.fmt
+
+        dt = datetime(2011, 2, 6, 10, 35, 45, 80, pytz.UTC)
+        self.assertEqual(format.time(dt, 'full', locale_name='es'),
+                         '10:35:45 GMT+00:00')
+
     def test_datetime_formatter(self):
         format = self.request.fmt
 
         # format only datetime
         self.assertEqual(format.datetime('text string'), 'text string')
 
-        # default format
         dt = datetime(2011, 2, 6, 10, 35, 45, 80, pytz.UTC)
         self.assertEqual(format.datetime(dt, 'short'),
-                         '02/06/11 04:35 AM')
+                         '2/6/11, 10:35 AM')
         self.assertEqual(format.datetime(dt, 'medium'),
-                         'Feb 06, 2011 04:35 AM')
+                         'Feb 6, 2011, 10:35:45 AM')
         self.assertEqual(format.datetime(dt, 'long'),
-                         'February 06, 2011 04:35 AM -0600')
+                         'February 6, 2011 at 10:35:45 AM +0000')
         self.assertEqual(format.datetime(dt, 'full'),
-                         'Sunday, February 06, 2011 04:35:45 AM CST')
+                         'Sunday, February 6, 2011 at 10:35:45 AM GMT+00:00')
 
-    def test_datetime_formatter2(self):
+    def test_datetime_formatter_locale(self):
         format = self.request.fmt
 
-        # datetime without timezone
-        dt = datetime(2011, 2, 6, 10, 35, 45, 80)
-        self.assertEqual(format.datetime(dt, 'short'),
-                         '02/06/11 04:35 AM')
-
-        # different format
         dt = datetime(2011, 2, 6, 10, 35, 45, 80, pytz.UTC)
+        self.assertEqual(format.datetime(dt, 'long', locale_name='es'),
+                         '6 de febrero de 2011 10:35:45 +0000')
 
-        FORMAT = ptah.get_settings('format', self.registry)
-        FORMAT['date_short'] = '%b %d, %Y'
+    def test_datetime_formatter_timezone(self):
+        format = self.request.fmt
 
-        self.assertEqual(format.datetime(dt, 'short'),
-                         'Feb 06, 2011 04:35 AM')
+        dt = datetime(2011, 2, 6, 10, 35, 45, 80, pytz.UTC)
+        self.assertEqual(format.datetime(dt, 'long', 'US/Central'),
+                         'February 6, 2011 at 4:35:45 AM CST')
 
     def test_timedelta_formatter(self):
         format = self.request.fmt
