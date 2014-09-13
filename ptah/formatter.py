@@ -28,7 +28,7 @@ def date_formatter(request, value, format='medium', locale_name=None):
         return value
 
     if not locale_name:
-        locale_name = request.localizer.locale_name
+        locale_name = request.locale_name
 
     return text_type(format_date(value, format, locale_name))
 
@@ -49,7 +49,7 @@ def time_formatter(request, value, format='medium',
         tzinfo = get_timezone(PTAH['timezone'])
 
     if not locale_name:
-        locale_name = request.localizer.locale_name
+        locale_name = request.locale_name
 
     return text_type(format_time(value, format, tzinfo, locale_name))
 
@@ -95,7 +95,7 @@ def datetime_formatter(request, value, format='medium',
         tzinfo = get_timezone(PTAH['timezone'])
 
     if not locale_name:
-        locale_name = request.localizer.locale_name
+        locale_name = request.locale_name
 
     return text_type(format_datetime(value, format, tzinfo, locale_name))
 
