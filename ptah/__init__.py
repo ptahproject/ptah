@@ -87,7 +87,6 @@ from ptah.interfaces import NotFound, Forbidden
 
 # ptah settings ids
 CFG_ID_PTAH = 'ptah'
-CFG_ID_FORMAT = 'format'
 
 # password tool
 from ptah.password import pwd_tool

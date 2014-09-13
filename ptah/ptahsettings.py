@@ -118,69 +118,14 @@ ptah.register_settings(
         description = 'List of default assigned roles for all principals.',
         default = ()),
 
-    title = _('Ptah settings'),
-)
-
-
-ptah.register_settings(
-    ptah.CFG_ID_FORMAT,
-
     pform.TimezoneField(
         'timezone',
-        default = pytz.timezone('US/Central'),
+        default = 'UTC',
         title = _('Timezone'),
         description = _('Site wide timezone.')),
 
-    pform.TextField(
-        'date_short',
-        default = '%m/%d/%y',
-        title = _('Date'),
-        description = _('Date short format')),
-
-    pform.TextField(
-        'date_medium',
-        default = '%b %d, %Y',
-        title = _('Date'),
-        description = _('Date medium format')),
-
-    pform.TextField(
-        'date_long',
-        default = '%B %d, %Y',
-        title = _('Date'),
-        description = _('Date long format')),
-
-    pform.TextField(
-        'date_full',
-        default = '%A, %B %d, %Y',
-        title = _('Date'),
-        description = _('Date full format')),
-
-    pform.TextField(
-        'time_short',
-        default = '%I:%M %p',
-        title = _('Time'),
-        description = _('Time short format')),
-
-    pform.TextField(
-        'time_medium',
-        default = '%I:%M %p',
-        title = _('Time'),
-        description = _('Time medium format')),
-
-    pform.TextField(
-        'time_long',
-        default = '%I:%M %p %z',
-        title = _('Time'),
-        description = _('Time long format')),
-
-    pform.TextField(
-        'time_full',
-        default = '%I:%M:%S %p %Z',
-        title = _('Time'),
-        description = _('Time full format')),
-
-    title = 'Site formats',
-    )
+    title = _('Ptah settings'),
+)
 
 
 def set_mailer(cfg, mailer=None):
