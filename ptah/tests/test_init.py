@@ -85,7 +85,7 @@ class TestPtahInit(TestCase):
         self.assertIsInstance(err.exc, CustomException)
 
 
-class TestDummyMailer(ptah.PtahTestCase):
+class TestMailer(ptah.PtahTestCase):
 
     def test_dummy_mailer(self):
         from ptah.ptahsettings import DummyMailer
@@ -95,3 +95,16 @@ class TestDummyMailer(ptah.PtahTestCase):
         self.assertIsInstance(PTAH['mailer'], DummyMailer)
 
         PTAH['mailer'].send('test@example.com', 'to@example.com', 'msg')
+
+    def test_init_mailer(self):
+        from repoze.sendmail.interfaces import IMailDelivery
+
+        config = Configurator()
+
+        config.include('ptah')
+        config.ptah_init_mailer()
+        config.commit()
+
+        PTAH = ptah.get_settings(ptah.CFG_ID_PTAH, config.registry)
+
+        self.assertTrue(IMailDelivery.providedBy(PTAH['mailer']))
