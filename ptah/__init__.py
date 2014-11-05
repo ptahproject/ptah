@@ -7,6 +7,9 @@ except ImportError: # pragma: no cover
     from ordereddict import OrderedDict
     collections.OrderedDict = OrderedDict
 
+# form
+import pform as form
+
 # layer
 from player import add_message
 from player import tmpl_filter
