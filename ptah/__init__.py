@@ -7,7 +7,16 @@ except ImportError: # pragma: no cover
     from ordereddict import OrderedDict
     collections.OrderedDict = OrderedDict
 
+# layer
+from player import add_message
+from player import tmpl_filter
+from player import render
+from player import RendererNotFound
+
+# layout
 from player import layout
+from player import layout_config
+
 
 # config
 from ptah import config
