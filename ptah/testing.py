@@ -137,8 +137,17 @@ class PtahTestCase(TestCase):
         if hasattr(mod, ATTACH_ATTR):
             delattr(mod, ATTACH_ATTR)
 
-        testing.tearDown()
+        # remove tables
+        Base = get_base()
+        Base.metadata.clear()
+
+        # clear declarative test class registration
+        for cl in ptah.get_base().__subclasses__():
+            if (mod.__name__ == cl.__module__):
+                cl._decl_class_registry.clear()
+
         transaction.abort()
+        testing.tearDown()
 
     def render_route_view(self, context, request, route_name, view=''): # pragma: no cover
         directlyProvides(
