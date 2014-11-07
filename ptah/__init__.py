@@ -35,11 +35,8 @@ from ptah.uri import extract_uri_schema
 from ptah.uri import UriFactory
 
 # sqla
-from ptah.sqlautils import sa_session
 from ptah.sqlautils import get_base
 from ptah.sqlautils import get_session
-from ptah.sqlautils import get_session_maker
-from ptah.sqlautils import reset_session
 
 # events
 from ptah import events
@@ -117,7 +114,6 @@ from ptah.util import tldata
 from ptah.rst import rst_to_html
 
 # sqlalchemy utils
-from ptah.sqlautils import transaction
 from ptah.sqlautils import QueryFreezer
 from ptah.sqlautils import JsonDictType
 from ptah.sqlautils import JsonListType

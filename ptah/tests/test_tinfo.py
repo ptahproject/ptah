@@ -426,13 +426,13 @@ class TestSqlTypeInfo(PtahTestCase):
         id = None
         uri = None
 
-        with ptah.sa_session() as sa:
-            item = MyContentSql(test='title')
-            sa.add(item)
-            sa.flush()
+        sa = ptah.get_session()
+        item = MyContentSql(test='title')
+        sa.add(item)
+        sa.flush()
 
-            id = item.id
-            uri = item.__uri__
+        id = item.id
+        uri = item.__uri__
 
         self.assertEqual(uri, 'mycontent:%s'%id)
 

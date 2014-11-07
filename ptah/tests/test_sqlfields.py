@@ -4,8 +4,6 @@ import pform
 import ptah
 from ptah.testing import TestCase, PtahTestCase
 
-Session = ptah.get_session()
-
 
 class TestSqlSchema(PtahTestCase):
 
@@ -166,6 +164,7 @@ class TestQueryFreezer(PtahTestCase):
             id = sqla.Column('id', sqla.Integer, primary_key=True)
             name = sqla.Column(sqla.Unicode())
 
+        Session = ptah.get_session()
         ptah.get_base().metadata.create_all()
         transaction.commit()
 
@@ -201,6 +200,7 @@ class TestQueryFreezer(PtahTestCase):
             id = sqla.Column('id', sqla.Integer, primary_key=True)
             name = sqla.Column(sqla.Unicode())
 
+        Session = ptah.get_session()
         ptah.get_base().metadata.create_all()
         transaction.commit()
 
@@ -231,6 +231,7 @@ class TestQueryFreezer(PtahTestCase):
             id = sqla.Column('id', sqla.Integer, primary_key=True)
             name = sqla.Column(sqla.Unicode())
 
+        Session = ptah.get_session()
         ptah.get_base().metadata.create_all()
         transaction.commit()
 
@@ -255,7 +256,6 @@ class TestJsonDict(PtahTestCase):
 
     def test_jsondict(self):
         import ptah
-        ptah.reset_session()
 
         self.config.ptah_init_sql()
 

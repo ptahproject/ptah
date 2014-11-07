@@ -3,74 +3,23 @@ from __future__ import (absolute_import, division, print_function,
     unicode_literals)  # Avoid breaking Python 3
 
 import uuid
-from threading import local
 
 from sqlalchemy import orm
-from sqlalchemy.ext import declarative
 from sqlalchemy.ext.mutable import Mutable
 from sqlalchemy.types import TypeDecorator, TEXT
-from zope.sqlalchemy import ZopeTransactionExtension
+
+from pyramid_sqlalchemy import (
+    BaseObject,
+    metadata,
+    Session,
+)
 
 from ptah.util import json
-
-_base = declarative.declarative_base()
-_zte = ZopeTransactionExtension()
-_session = orm.scoped_session(orm.sessionmaker(extension=[_zte]))
-_session_maker = orm.sessionmaker()
-_sa_session = local()
 
 
 def get_base():
     """Return the central SQLAlchemy declarative base."""
-    return _base
-
-
-def reset_session():
-    """Reset sqla session"""
-    global _zte, _session
-
-    _zte = ZopeTransactionExtension()
-    _session = orm.scoped_session(orm.sessionmaker(extension=[_zte]))
-
-
-class transaction(object):
-
-    def __init__(self, sa):
-        self.sa = sa
-
-    def __enter__(self):
-        global _sa_session
-
-        t = getattr(_sa_session, 'transaction', None)
-        if t is not None:
-            raise RuntimeError("Nested transactions are not allowed")
-
-        _sa_session.sa = self.sa
-        _sa_session.transaction = self
-
-        return self.sa
-
-    def __exit__(self, type, value, traceback):
-        global _sa_session
-        _sa_session.sa = None
-        _sa_session.transaction = None
-
-        if type is None:
-            try:
-                self.sa.commit()
-            except:
-                self.sa.rollback()
-                raise
-        else:
-            self.sa.rollback()
-
-
-def sa_session():
-    return transaction(_session_maker())
-
-
-def get_session_maker():
-    return _session_maker
+    return BaseObject
 
 
 def get_session():
@@ -90,7 +39,7 @@ def get_session():
 
         ptah.get_session().configure(ext=[ptah._zte, ...])
     """
-    return getattr(_sa_session, 'sa', _session) or _session
+    return Session
 
 
 class QueryFreezer(object):

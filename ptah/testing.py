@@ -84,8 +84,6 @@ class PtahTestCase(TestCase):
 
         self.config.ptah_init_settings()
 
-        ptah.reset_session()
-
         if self._init_sqla:
             # create engine
             self.config.ptah_init_sql()
@@ -138,8 +136,8 @@ class PtahTestCase(TestCase):
             delattr(mod, ATTACH_ATTR)
 
         # remove tables
-        Base = get_base()
-        Base.metadata.clear()
+        Base = ptah.get_base()
+        Base.metadata.drop_all()
 
         # clear declarative test class registration
         for cl in ptah.get_base().__subclasses__():
@@ -147,6 +145,7 @@ class PtahTestCase(TestCase):
                 cl._decl_class_registry.clear()
 
         transaction.abort()
+        ptah.get_session().remove()
         testing.tearDown()
 
     def render_route_view(self, context, request, route_name, view=''): # pragma: no cover

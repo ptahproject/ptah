@@ -188,21 +188,7 @@ def enable_manage(cfg, name='ptah-manage', access_manager=None,
 
 
 def initialize_sql(cfg, prefix='sqlalchemy.'):
-    def action(cfg, cache):
-        PTAH = cfg.ptah_get_settings(ptah.CFG_ID_PTAH)
-        PTAH['sqlalchemy_cache'] = {}
-        PTAH['sqlalchemy_initialized'] = True
-
-    cache = {}
-    engine = sqlalchemy.engine_from_config(
-        cfg.registry.settings, prefix,
-        execution_options = {'compiled_cache': cache, 'echo': True})
-
-    ptah.get_session().configure(bind=engine)
-    ptah.get_session_maker().configure(bind=engine)
-    ptah.get_base().metadata.bind = engine
-
-    cfg.action('ptah.initalize_sql', action, (cfg, cache))
+    cfg.include('pyramid_sqlalchemy')
 
     # check_version
     from ptah import migrate
