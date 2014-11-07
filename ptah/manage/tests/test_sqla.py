@@ -23,10 +23,10 @@ class TestSqlaModuleTable(ptah.get_base()):
 class TestSqlaModuleBase(ptah.get_base()):
     __tablename__ = 'ptah_nodes'
     __table_args__ = {'extend_existing': True}
+    __mapper_args__ = {'polymorphic_identity': 'node'}
 
     id = sqla.Column(sqla.Integer(), primary_key=True)
     name = sqla.Column(sqla.Unicode(), default=text_type('123'))
-    title = sqla.Column(sqla.Unicode(), info={'uri':True})
 
 
 class TestSqlaModule(PtahTestCase):
@@ -37,20 +37,15 @@ class TestSqlaModule(PtahTestCase):
         Base = ptah.get_base()
         ptah.get_session()
 
-        table = Base.metadata.tables['test_sqla_table']
-        if not table.exists():
-            Base.metadata.create_all(tables=(table,))
-
         @ptah.tinfo('Test')
         class TestSqlaModuleContent(TestSqlaModuleBase):
             __tablename__ = 'test_sqla_content'
             __table_args__ = {'extend_existing': True}
-            __mapper_args__ = {'polymorphic_identity': 'nodes'}
+            __mapper_args__ = {'polymorphic_identity': 'content'}
 
             id = sqla.Column(
                 sqla.Integer(),
                 sqla.ForeignKey('ptah_nodes.id'), primary_key=True)
-            name = sqla.Column(sqla.Unicode())
             title = sqla.Column(sqla.Unicode())
 
         super(TestSqlaModule, self).setUp()
