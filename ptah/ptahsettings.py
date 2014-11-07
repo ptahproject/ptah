@@ -34,6 +34,13 @@ ptah.register_settings(
         tint = True),
 
     pform.TextField(
+        'hashalg',
+        title = _('Authentication policy hash algorithm'),
+        description = _('The hash algorithm used for auth_tkt '
+                        'cookie generation'),
+        default = 'sha512'),
+
+    pform.TextField(
         'manage',
         title = 'Ptah manage id',
         default = 'ptah-manage'),

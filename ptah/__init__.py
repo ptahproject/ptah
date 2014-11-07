@@ -162,7 +162,8 @@ def includeme(cfg):
 
     kwargs = {'wild_domain': False,
               'callback': get_local_roles,
-              'secret': cfg.registry.settings.get('ptah.secret','')}
+              'secret': cfg.registry.settings.get('ptah.secret', ''),
+              'hashalg': cfg.registry.settings.get('ptah.hashalg=', 'sha512')}
 
     cfg.set_authorization_policy(PtahAuthorizationPolicy())
     cfg.set_authentication_policy(AuthTktAuthenticationPolicy(**kwargs))
