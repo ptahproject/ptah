@@ -135,15 +135,6 @@ class PtahTestCase(TestCase):
         if hasattr(mod, ATTACH_ATTR):
             delattr(mod, ATTACH_ATTR)
 
-        # remove tables
-        Base = ptah.get_base()
-        Base.metadata.drop_all()
-
-        # clear declarative test class registration
-        for cl in ptah.get_base().__subclasses__():
-            if (mod.__name__ == cl.__module__):
-                cl._decl_class_registry.clear()
-
         transaction.abort()
         ptah.get_session().remove()
         testing.tearDown()
