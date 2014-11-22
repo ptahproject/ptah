@@ -24,6 +24,20 @@ def multiChoicePreview(request):
     return widget.render_widget()
 
 
+@ptah.form.fieldpreview(ptah.form.MultiSelectField)
+def multiSelectPreview(request):
+    field = ptah.form.MultiSelectField(
+        'MultiSelectField',
+        title = 'Multi select field',
+        description = 'Multi select field preview description',
+        default = [1,3],
+        vocabulary = vocabulary)
+
+    widget = field.bind(request, 'preview.', ptah.form.null, {})
+    widget.update()
+    return widget.render_widget()
+
+
 @ptah.form.fieldpreview(ptah.form.ChoiceField)
 def choicePreview(request):
     field = ptah.form.ChoiceField(
