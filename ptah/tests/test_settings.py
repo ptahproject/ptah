@@ -1,5 +1,5 @@
 import os
-import pform
+import ptah.form
 import shutil
 import tempfile
 from pyramid.compat import bytes_, text_type
@@ -31,7 +31,7 @@ class BaseTesting(PtahTestCase):
 class TestSettingsResolver(BaseTesting):
 
     def test_settings_uri_resolver(self):
-        node = pform.TextField(
+        node = ptah.form.TextField(
             'node',
             default = 'test')
 
@@ -52,7 +52,7 @@ class TestSettingsResolver(BaseTesting):
 class TestSettings(BaseTesting):
 
     def test_settings_no_default(self):
-        field = pform.TextField('node')
+        field = ptah.form.TextField('node')
 
         self.assertRaises(
             ptah.config.StopException,
@@ -63,7 +63,7 @@ class TestSettings(BaseTesting):
             )
 
     def test_settings_group_basics(self):
-        node = pform.TextField(
+        node = ptah.form.TextField(
             'node',
             default = 'test')
 
@@ -82,7 +82,7 @@ class TestSettings(BaseTesting):
         self.assertEqual(group.get('node'), '12345')
 
     def test_settings_group_uninitialized(self):
-        node = pform.TextField(
+        node = ptah.form.TextField(
             'node',
             default = 'test')
 
@@ -97,10 +97,10 @@ class TestSettings(BaseTesting):
         self.assertEqual(group.get('node'), 'test')
 
     def test_settings_group_extract(self):
-        node1 = pform.TextField(
+        node1 = ptah.form.TextField(
             'node1', default = 'test1')
 
-        node2 = pform.TextField(
+        node2 = ptah.form.TextField(
             'node2', default = 'test2')
 
         ptah.register_settings('group', node1, node2)
@@ -118,7 +118,7 @@ class TestSettings(BaseTesting):
         self.assertEqual(data['node2'], 'value')
 
     def test_settings_get_settings_pyramid(self):
-        node = pform.TextField(
+        node = ptah.form.TextField(
             'node',
             default = 'test')
 
@@ -136,7 +136,7 @@ class TestSettings(BaseTesting):
         self.assertIn(node, grp.__fields__.values())
 
     def test_settings_register_simple(self):
-        node = pform.TextField(
+        node = ptah.form.TextField(
             'node',
             default = 'test')
 
@@ -162,9 +162,9 @@ class TestSettings(BaseTesting):
 
     def test_settings_group_validation(self):
         def validator(node, appstruct):
-            raise pform.Invalid('Error', node['node'])
+            raise ptah.form.Invalid('Error', node['node'])
 
-        node = pform.TextField(
+        node = ptah.form.TextField(
             'node',
             default = 'test')
 
@@ -181,16 +181,16 @@ class TestSettings(BaseTesting):
 
     def test_settings_group_multiple_validation(self):
         def validator1(fs, appstruct):
-            raise pform.Invalid('Error1', fs['node1'])
+            raise ptah.form.Invalid('Error1', fs['node1'])
 
         def validator2(fs, appstruct):
-            raise pform.Invalid('Error2', fs['node2'])
+            raise ptah.form.Invalid('Error2', fs['node2'])
 
-        node1 = pform.TextField(
+        node1 = ptah.form.TextField(
             'node1',
             default = 'test')
 
-        node2 = pform.TextField(
+        node2 = ptah.form.TextField(
             'node2',
             default = 'test')
 
@@ -207,11 +207,11 @@ class TestSettings(BaseTesting):
         self.assertEqual(err.msg, {'group3': text_type(['Error1', 'Error2'])})
 
     def test_settings_export(self):
-        field1 = pform.TextField(
+        field1 = ptah.form.TextField(
             'node1',
             default = 'test')
 
-        field2 = pform.TextField(
+        field2 = ptah.form.TextField(
             'node2',
             default = 'test1')
 
@@ -238,11 +238,11 @@ class TestSettings(BaseTesting):
         self.assertEqual(data['group4.node2'], '"changed"')
 
     def _create_default_group(self):
-        node1 = pform.TextField(
+        node1 = ptah.form.TextField(
             'node1',
             default = 'default1')
 
-        node2 = pform.IntegerField(
+        node2 = ptah.form.IntegerField(
             'node2',
             default = 10)
 
@@ -284,7 +284,7 @@ class TestSettings(BaseTesting):
             self.config, {10: 'value'})
 
     def test_settings_load_defaults_rawdata_with_errors_in_values(self):
-        node = pform.FloatField(
+        node = ptah.form.FloatField(
             'node1',
             default = ())
 
@@ -382,11 +382,11 @@ class TestSettingsInitialization(BaseTesting):
     def test_settings_initialize_load_defaults(self):
         from ptah.settings import init_settings
 
-        node1 = pform.TextField(
+        node1 = ptah.form.TextField(
             'node1',
             default = 'default1')
 
-        node2 = pform.TextField(
+        node2 = ptah.form.TextField(
             'node2',
             default = 10)
 
@@ -402,7 +402,7 @@ class TestSettingsInitialization(BaseTesting):
     def test_settings_initialize_load_preparer(self):
         from ptah.settings import init_settings
 
-        node1 = pform.TextField(
+        node1 = ptah.form.TextField(
             'node',
             default = 'default1',
             preparer = lambda s: s.lower())
@@ -418,11 +418,11 @@ class TestSettingsInitialization(BaseTesting):
     def test_settings_initialize_load_partly_defaults(self):
         from ptah.settings import init_settings
 
-        node1 = pform.TextField(
+        node1 = ptah.form.TextField(
             'node1',
             default = 'default1')
 
-        node2 = pform.TextField(
+        node2 = ptah.form.TextField(
             'node2',
             default = 10)
 
@@ -443,11 +443,11 @@ class TestSettingsInitialization(BaseTesting):
         f.write(bytes_('[DEFAULT]\ngroup.node1 = value\n\n','ascii'))
         f.close()
 
-        node1 = pform.TextField(
+        node1 = ptah.form.TextField(
             'node1',
             default = 'default1')
 
-        node2 = pform.IntegerField(
+        node2 = ptah.form.IntegerField(
             'node2',
             default = 10)
 
@@ -465,11 +465,11 @@ class TestSettingsInitialization(BaseTesting):
 class TestDBSettingsBase(PtahTestCase):
 
     def _make_grp(self):
-        node1 = pform.TextField(
+        node1 = ptah.form.TextField(
             'node1',
             default = 'test')
 
-        node2 = pform.IntegerField(
+        node2 = ptah.form.IntegerField(
             'node2',
             default = 50)
 

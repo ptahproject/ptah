@@ -7,18 +7,9 @@ except ImportError: # pragma: no cover
     from ordereddict import OrderedDict
     collections.OrderedDict = OrderedDict
 
-# form
-import pform as form
-
-# layer
-from player import add_message
-from player import tmpl_filter
-from player import render
-from player import RendererNotFound
-
 # layout
-from player import layout
-from player import layout_config
+from ptah.renderer import layout
+from ptah.renderer import layout_config
 
 
 # config
@@ -149,8 +140,8 @@ from ptah.jsfields import JSDateTimeField
 
 
 def includeme(cfg):
-    cfg.include('pform')
-    cfg.include('player')
+    cfg.include('ptah.form')
+    cfg.include('ptah.renderer')
     cfg.include('pyramid_amdjs')
     cfg.include('pyramid_chameleon')
     cfg.include('pyramid_mailer')
@@ -265,7 +256,16 @@ def includeme(cfg):
     cfg.add_formatter('size', formatter.size_formatter)
 
     # scan ptah
-    cfg.scan('ptah')
+    cfg.scan('ptah.authentication')
+    cfg.scan('ptah.events')
+    cfg.scan('ptah.jsfields')
+    cfg.scan('ptah.manage')
+    cfg.scan('ptah.populate')
+    cfg.scan('ptah.ptahsettings')
+    cfg.scan('ptah.security')
+    cfg.scan('ptah.settings')
+    cfg.scan('ptah.typeinfo')
+    cfg.scan('ptah.uri')
 
     # translation
     cfg.add_translation_dirs('ptah:locale')

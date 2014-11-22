@@ -2,12 +2,12 @@
 import ptah
 import datetime
 import pytz
-import pform
-from pform.interfaces import _, null, Invalid
-from pform.fields import TextAreaField, DateField, DateTimeField
+import ptah.form
+from ptah.form.interfaces import _, null, Invalid
+from ptah.form.fields import TextAreaField, DateField, DateTimeField
 
 
-@pform.field('ckeditor')
+@ptah.form.field('ckeditor')
 class CKEditorField(TextAreaField):
     """ CKEditor input widget. Field name is ``ckeditor``.
 
@@ -25,7 +25,7 @@ class CKEditorField(TextAreaField):
     tmpl_input = "ptah:ckeditor"
 
 
-@pform.field('date')
+@ptah.form.field('date')
 class JSDateField(DateField):
     """Date input widget with Bootstrap Datepicker. Field name is ``date``."""
 
@@ -57,7 +57,7 @@ class JSDateField(DateField):
 #            raise Invalid(_('Invalid date'), self)
 
 
-@pform.field('datetime')
+@ptah.form.field('datetime')
 class JSDateTimeField(DateTimeField):
     """DateTime input widget with JQuery Datepicker.
     Field name is ``datetime``."""

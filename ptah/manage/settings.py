@@ -1,6 +1,6 @@
 """ settings module """
-import pform
-import player
+import ptah.form
+import ptah.renderer
 import ptah
 from ptah.settings import ID_SETTINGS_GROUP
 from pyramid.decorator import reify
@@ -31,7 +31,7 @@ class SettingsWrapper(object):
 
 @view_config(
     context=SettingsModule,
-    renderer=player.layout('ptah-manage:settings.lt', 'ptah-manage'))
+    renderer=ptah.renderer.layout('ptah-manage:settings.lt', 'ptah-manage'))
 
 class SettingsView(ptah.View):
     """ Settings manage module view """
@@ -73,9 +73,9 @@ class SettingsView(ptah.View):
         return {'data': sorted(data, key=lambda item: item['title'])}
 
 
-@view_config(context=SettingsWrapper, renderer=player.layout('', 'ptah-manage'))
+@view_config(context=SettingsWrapper, renderer=ptah.renderer.layout('', 'ptah-manage'))
 
-class EditForm(pform.Form):
+class EditForm(ptah.form.Form):
     """ Settings group edit form """
 
     @reify
@@ -94,7 +94,7 @@ class EditForm(pform.Form):
     def form_content(self):
         return self.context.group
 
-    @pform.button('Modify', actype=pform.AC_PRIMARY)
+    @ptah.form.button('Modify', actype=ptah.form.AC_PRIMARY)
     def modify_handler(self):
         data, errors = self.extract()
         if errors: # pragma: no cover
@@ -105,10 +105,10 @@ class EditForm(pform.Form):
         self.context.group.updatedb(**data)
         return HTTPFound('../#{0}'.format(self.context.group.__name__))
 
-    #@pform.button('Reset defaults', actype=pform.AC_INFO)
+    #@ptah.form.button('Reset defaults', actype=ptah.form.AC_INFO)
     #def reset_handler(self):
     #    pass
 
-    @pform.button('Back')
+    @ptah.form.button('Back')
     def back_handler(self):
         return HTTPFound('..')

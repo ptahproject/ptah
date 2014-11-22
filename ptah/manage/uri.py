@@ -1,7 +1,7 @@
 """ uri resolve """
 import inspect
-import pform
-import player
+import ptah.form
+import ptah.renderer
 from pyramid.view import view_config
 
 import ptah
@@ -12,13 +12,13 @@ from ptah.manage.manage import PtahManageRoute
 
 @view_config(
     name='uri.html', context=PtahManageRoute,
-    renderer=player.layout('ptah-manage:uri.lt', 'ptah-manage'))
+    renderer=ptah.renderer.layout('ptah-manage:uri.lt', 'ptah-manage'))
 
-class UriResolver(pform.Form):
+class UriResolver(ptah.form.Form):
     """ Uri resolver form """
 
-    fields = pform.Fieldset(
-        pform.LinesField(
+    fields = ptah.form.Fieldset(
+        ptah.form.LinesField(
             'uri',
             title = 'Uri',
             description = "List of uri's",
@@ -30,7 +30,7 @@ class UriResolver(pform.Form):
     def form_content(self):
         return {'uri': [self.request.GET.get('uri','')]}
 
-    @pform.button2('Show', actype=pform.AC_PRIMARY)
+    @ptah.form.button2('Show', actype=ptah.form.AC_PRIMARY)
     def show_handler(self, data):
         self.uri = data['uri']
 

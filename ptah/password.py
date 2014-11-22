@@ -1,5 +1,5 @@
 """ password tool """
-import pform
+import ptah.form
 import translationstring
 from os import urandom
 from datetime import timedelta
@@ -210,10 +210,10 @@ class password_changer(object):
 def passwordValidator(field, value):
     """ password schema validator
     that uses password tool for additional checks"""
-    if value is not pform.null:
+    if value is not ptah.form.null:
         err = pwd_tool.validate(value)
         if err is not None:
-            raise pform.Invalid(err, field)
+            raise ptah.form.Invalid(err, field)
 
 
 def passwordSchemaValidator(field, appstruct):
@@ -221,15 +221,15 @@ def passwordSchemaValidator(field, appstruct):
     equality of password and confirm_password"""
     if appstruct['password'] and appstruct['confirm_password']:
         if appstruct['password'] != appstruct['confirm_password']:
-            raise pform.Invalid(
+            raise ptah.form.Invalid(
                 _("Password and Confirm Password should be the same."), field)
 
         passwordValidator(field, appstruct['password'])
 
 
-PasswordSchema = pform.Fieldset(
+PasswordSchema = ptah.form.Fieldset(
 
-    pform.FieldFactory(
+    ptah.form.FieldFactory(
         'password',
         'password',
         title = _('Password'),
@@ -238,7 +238,7 @@ PasswordSchema = pform.Fieldset(
                         'digits and letters in mixed case.'),
         default = ''),
 
-    pform.FieldFactory(
+    ptah.form.FieldFactory(
         'password',
         'confirm_password',
         title = _('Confirm password'),

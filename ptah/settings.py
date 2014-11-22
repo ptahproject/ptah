@@ -8,7 +8,7 @@ from zope import interface
 from zope.interface.interface import InterfaceClass
 from pyramid.compat import configparser
 
-import pform as form
+import ptah.form as form
 
 import ptah
 from ptah import uri, config
@@ -127,7 +127,7 @@ def register_settings(name, *fields, **kw):
     """Register settings group.
 
     :param name: Name of settings group
-    :param fields: List of :py:class:`pform.Field` objects
+    :param fields: List of :py:class:`ptah.form.Field` objects
 
     """
     iname = name

@@ -1,10 +1,10 @@
-import pform
+import ptah.form
 from ptah.testing import PtahTestCase
 from pyramid.compat import text_type
 
 
 def invalid_exc(func, *arg, **kw):
-    from pform import Invalid
+    from ptah.form import Invalid
     try:
         func(*arg, **kw)
     except Invalid as e:
@@ -21,8 +21,8 @@ class TestJSDateTimeField(PtahTestCase):
 
     def test_serialize_null(self):
         typ = self._makeOne()
-        result = typ.to_form(pform.null)
-        self.assertEqual(result, pform.null)
+        result = typ.to_form(ptah.form.null)
+        self.assertEqual(result, ptah.form.null)
 
     def test_serialize_with_garbage(self):
         typ = self._makeOne()
@@ -58,13 +58,13 @@ class TestJSDateTimeField(PtahTestCase):
 
     def test_deserialize_null(self):
         typ = self._makeOne()
-        result = typ.to_field(pform.null)
-        self.assertEqual(result, pform.null)
+        result = typ.to_field(ptah.form.null)
+        self.assertEqual(result, ptah.form.null)
 
     def test_deserialize_empty(self):
         typ = self._makeOne()
         result = typ.to_field('')
-        self.assertEqual(result, pform.null)
+        self.assertEqual(result, ptah.form.null)
 
     def test_deserialize_success_date(self):
         import datetime
@@ -91,8 +91,8 @@ class TestJSDateField(PtahTestCase):
 
     def test_serialize_null(self):
         typ = self._makeOne()
-        result = typ.to_form(pform.null)
-        self.assertEqual(result, pform.null)
+        result = typ.to_form(ptah.form.null)
+        self.assertEqual(result, ptah.form.null)
 
     def test_serialize_with_garbage(self):
         typ = self._makeOne()
@@ -127,13 +127,13 @@ class TestJSDateField(PtahTestCase):
 
     def test_deserialize_null(self):
         typ = self._makeOne()
-        result = typ.to_field(pform.null)
-        self.assertEqual(result, pform.null)
+        result = typ.to_field(ptah.form.null)
+        self.assertEqual(result, ptah.form.null)
 
     def test_deserialize_empty(self):
         typ = self._makeOne()
         result = typ.to_field('')
-        self.assertEqual(result, pform.null)
+        self.assertEqual(result, ptah.form.null)
 
     def test_deserialize_success_date(self):
         import datetime

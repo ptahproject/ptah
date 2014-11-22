@@ -1,12 +1,12 @@
 """ introspect module """
-import player
-from player import RendererNotFound
+import ptah.renderer
+from ptah.renderer import RendererNotFound
 from pyramid.view import view_config
 from pyramid.compat import url_unquote
 
 import ptah
 from ptah.manage import get_manage_url
-from pform.directives import ID_PREVIEW
+from ptah.form.directives import ID_PREVIEW
 
 
 @ptah.manage.module('introspect')
@@ -35,7 +35,7 @@ class Introspector(object):
 
 @view_config(
     context=IntrospectModule,
-    renderer=player.layout('ptah-manage:introspect.lt', 'ptah-manage'))
+    renderer=ptah.renderer.layout('ptah-manage:introspect.lt', 'ptah-manage'))
 
 class MainView(ptah.View):
     __doc__ = 'Introspection module view.'
@@ -48,7 +48,7 @@ class MainView(ptah.View):
 
 @view_config(
     context=Introspector,
-    renderer=player.layout('ptah-manage:introspect-intr.lt', 'ptah-manage'))
+    renderer=ptah.renderer.layout('ptah-manage:introspect-intr.lt', 'ptah-manage'))
 
 class IntrospectorView(ptah.View):
 
@@ -76,12 +76,12 @@ class IntrospectorView(ptah.View):
                 manage_url = self.manage_url, rst_to_html = ptah.rst_to_html)
 
 
-@player.tmpl_filter('ptah-intr:pform-field')
+@ptah.renderer.tmpl_filter('ptah-intr:ptah.form-field')
 def tmpl_formfield(context, request):
     return {'previews': request.registry[ID_PREVIEW]}
 
 
-@player.tmpl_filter('ptah-intr:ptah-subscriber')
+@ptah.renderer.tmpl_filter('ptah-intr:ptah-subscriber')
 def tmpl_subscriber(intr, request):
     handler = intr['handler']
     required = intr['required']

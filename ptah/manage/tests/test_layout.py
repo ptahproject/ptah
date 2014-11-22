@@ -3,7 +3,7 @@ from pyramid.testing import DummyRequest
 from pyramid.httpexceptions import HTTPNotFound
 
 import ptah
-import player
+import ptah.renderer
 
 
 class TestLayoutPreview(ptah.PtahTestCase):
@@ -32,7 +32,7 @@ class TestLayoutPreview(ptah.PtahTestCase):
         self.init_ptah()
 
         self.config.add_view(
-            name='', context=Context, renderer=player.layout(), view=View)
+            name='', context=Context, renderer=ptah.renderer.layout(), view=View)
         self.config.add_layout(
             '', parent='page', context=Context,
             renderer='ptah.manage:tests/test_layout.pt')

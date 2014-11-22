@@ -1,7 +1,7 @@
 """ Source code view """
 import os.path
 import pkg_resources
-import player
+import ptah.renderer
 from pyramid.view import view_config
 from pyramid.httpexceptions import HTTPFound
 

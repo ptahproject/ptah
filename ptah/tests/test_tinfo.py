@@ -1,4 +1,4 @@
-import pform
+import ptah.form
 from pyramid.httpexceptions import HTTPForbidden
 from pyramid.exceptions import ConfigurationError, ConfigurationConflictError
 from ptah.testing import PtahTestCase, TestCase
@@ -180,7 +180,7 @@ class TestTypeInfo(PtahTestCase):
     def test_tinfo_fieldset(self):
         import ptah
 
-        MySchema = pform.Fieldset(pform.TextField('test'))
+        MySchema = ptah.form.Fieldset(ptah.form.TextField('test'))
 
         @ptah.tinfo('mycontent2', 'MyContent', fieldset=MySchema)
         class MyContent(object):

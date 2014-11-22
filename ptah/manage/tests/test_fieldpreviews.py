@@ -1,6 +1,6 @@
 import ptah
-import pform
-from pform.directives import ID_PREVIEW
+import ptah.form
+from ptah.form.directives import ID_PREVIEW
 from ptah.manage import fieldpreviews
 from ptah.testing import PtahTestCase
 from pyramid.testing import DummyRequest
@@ -11,7 +11,7 @@ class TestFieldPreviews(PtahTestCase):
 
     def test_multiChoicePreview(self):
         previews = self.registry[ID_PREVIEW]
-        self.assertIs(previews[pform.MultiChoiceField],
+        self.assertIs(previews[ptah.form.MultiChoiceField],
                       fieldpreviews.multiChoicePreview)
 
         request = DummyRequest()
@@ -20,7 +20,7 @@ class TestFieldPreviews(PtahTestCase):
 
     def test_choicePreview(self):
         previews = self.registry[ID_PREVIEW]
-        self.assertIs(previews[pform.ChoiceField],
+        self.assertIs(previews[ptah.form.ChoiceField],
                       fieldpreviews.choicePreview)
 
         request = DummyRequest()
@@ -29,7 +29,7 @@ class TestFieldPreviews(PtahTestCase):
 
     def test_boolPreview(self):
         previews = self.registry[ID_PREVIEW]
-        self.assertIs(previews[pform.BoolField],
+        self.assertIs(previews[ptah.form.BoolField],
                       fieldpreviews.boolPreview)
 
         request = DummyRequest()
@@ -38,7 +38,7 @@ class TestFieldPreviews(PtahTestCase):
 
     def test_radioPreview(self):
         previews = self.registry[ID_PREVIEW]
-        self.assertIs(previews[pform.RadioField],
+        self.assertIs(previews[ptah.form.RadioField],
                       fieldpreviews.radioPreview)
 
         request = DummyRequest()
@@ -47,7 +47,7 @@ class TestFieldPreviews(PtahTestCase):
 
     def test_textareaPreview(self):
         previews = self.registry[ID_PREVIEW]
-        self.assertIs(previews[pform.TextAreaField],
+        self.assertIs(previews[ptah.form.TextAreaField],
                       fieldpreviews.textareaPreview)
 
         request = DummyRequest()
@@ -56,7 +56,7 @@ class TestFieldPreviews(PtahTestCase):
 
     def test_linesPreview(self):
         previews = self.registry[ID_PREVIEW]
-        self.assertIs(previews[pform.LinesField],
+        self.assertIs(previews[ptah.form.LinesField],
                       fieldpreviews.linesPreview)
 
         request = DummyRequest()
@@ -65,7 +65,7 @@ class TestFieldPreviews(PtahTestCase):
 
     def test_textPreview(self):
         previews = self.registry[ID_PREVIEW]
-        self.assertIs(previews[pform.TextField],
+        self.assertIs(previews[ptah.form.TextField],
                       fieldpreviews.textPreview)
 
         request = DummyRequest()
@@ -74,7 +74,7 @@ class TestFieldPreviews(PtahTestCase):
 
     def test_intPreview(self):
         previews = self.registry[ID_PREVIEW]
-        self.assertIs(previews[pform.IntegerField],
+        self.assertIs(previews[ptah.form.IntegerField],
                       fieldpreviews.intPreview)
 
         request = DummyRequest()
@@ -83,7 +83,7 @@ class TestFieldPreviews(PtahTestCase):
 
     def test_floatPreview(self):
         previews = self.registry[ID_PREVIEW]
-        self.assertIs(previews[pform.FloatField],
+        self.assertIs(previews[ptah.form.FloatField],
                       fieldpreviews.floatPreview)
 
         request = DummyRequest()
@@ -92,7 +92,7 @@ class TestFieldPreviews(PtahTestCase):
 
     def test_decimalPreview(self):
         previews = self.registry[ID_PREVIEW]
-        self.assertIs(previews[pform.DecimalField],
+        self.assertIs(previews[ptah.form.DecimalField],
                       fieldpreviews.decimalPreview)
 
         request = DummyRequest()
@@ -101,7 +101,7 @@ class TestFieldPreviews(PtahTestCase):
 
     def test_passwordPreview(self):
         previews = self.registry[ID_PREVIEW]
-        self.assertIs(previews[pform.PasswordField],
+        self.assertIs(previews[ptah.form.PasswordField],
                       fieldpreviews.passwordPreview)
 
         request = DummyRequest()
@@ -110,7 +110,7 @@ class TestFieldPreviews(PtahTestCase):
 
     def test_timezonePreview(self):
         previews = self.registry[ID_PREVIEW]
-        self.assertIs(previews[pform.TimezoneField],
+        self.assertIs(previews[ptah.form.TimezoneField],
                       fieldpreviews.timezonePreview)
 
         request = DummyRequest()
@@ -144,7 +144,7 @@ class TestFieldsModule(PtahTestCase):
         res = render_view_to_response(mod, request, '', False)
         self.assertEqual(res.status, '200 OK')
 
-        from pform.directives import ID_FIELD
+        from ptah.form.directives import ID_FIELD
 
         fields = self.registry[ID_FIELD]
 

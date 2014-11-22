@@ -8,7 +8,7 @@ from pyramid.interfaces import IRouteRequest
 from pyramid.interfaces import IRequestExtensions
 from pyramid.view import render_view_to_response
 from pyramid.path import package_name
-from player.renderer import render
+from ptah.renderer.renderer import render
 
 if sys.version_info[:2] == (2, 6): # pragma: no cover
     import unittest2 as unittest
@@ -20,10 +20,15 @@ else:
 import ptah
 
 
+def strip(text):
+    return ' '.join([s.strip() for s in text.split('\n')])
+
+
 class PtahTestCase(TestCase):
 
     _init_ptah = True
     _init_sqla = True
+    _include = True
     _includes = ()
     _auto_commit = True
 
@@ -104,9 +109,10 @@ class PtahTestCase(TestCase):
         self.init_request_extensions(self.config.registry)
         self.registry = self.config.registry
 
-        self.config.include('pform')
-        self.config.include('player')
-        self.config.include('pyramid_amdjs')
+        if self._include:
+            self.config.include('ptah.form')
+            self.config.include('ptah.renderer')
+            self.config.include('pyramid_amdjs')
 
         self.request = self.make_request()
         def set_ext():

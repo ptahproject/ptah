@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import pform
+import ptah.form
 import ptah
 from ptah import config
 from ptah.testing import TestCase, PtahTestCase
@@ -36,7 +36,7 @@ class TestPasswordSchema(PtahTestCase):
         data, errors = pwdSchema.extract()
 
         self.assertEqual(len(errors), 1)
-        self.assertIsInstance(errors[0].field, pform.Fieldset)
+        self.assertIsInstance(errors[0].field, ptah.form.Fieldset)
         self.assertEqual(
             errors[0].msg[0],
             "Password and Confirm Password should be the same.")
@@ -61,7 +61,7 @@ class TestPasswordSchema(PtahTestCase):
         PasswordTool.validate = validatePassword
 
         self.assertRaises(
-            pform.Invalid, passwordValidator, None, 'pwd')
+            ptah.form.Invalid, passwordValidator, None, 'pwd')
 
         PasswordTool.validate = vp
 

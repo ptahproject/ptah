@@ -1,5 +1,5 @@
 """ sqlalchemy query wrapper """
-import pform
+import ptah.form
 import sqlalchemy as sqla
 
 
@@ -26,7 +26,7 @@ def generate_fieldset(model, fieldNames=None, namesFilter=None,
         generation.
     :param skipPrimaryKey: **default: True** Should PrimaryKey be omitted
         from fieldset generation.
-    :returns: a instance of :py:class:`pform.Fieldset`
+    :returns: a instance of :py:class:`ptah.form.Fieldset`
     """
     mapper = model.__mapper__
     order = get_columns_order(mapper)
@@ -62,12 +62,12 @@ mapping = {
 
 def build_sqla_fieldset(columns, skipPrimaryKey=False):
     """
-    Given a list of SQLAlchemy columns generate a pform.Fieldset.
+    Given a list of SQLAlchemy columns generate a ptah.form.Fieldset.
 
     :param columns: sequence of sqlachemy.schema.Column instances
     :param skipPrimaryKey: **default: False** boolean whether to include PK
       Columns in Fieldset generation.
-    :returns: a instance of :py:class:`pform.Fieldset`
+    :returns: a instance of :py:class:`ptah.form.Fieldset`
     """
     fields = []
 
@@ -112,7 +112,7 @@ def build_sqla_fieldset(columns, skipPrimaryKey=False):
         if callable(typ):
             field = typ(name, **kwargs)
         else:
-            field = pform.FieldFactory(typ, name, **kwargs)
+            field = ptah.form.FieldFactory(typ, name, **kwargs)
         fields.append(field)
 
-    return pform.Fieldset(*fields)
+    return ptah.form.Fieldset(*fields)
