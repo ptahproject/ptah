@@ -488,7 +488,7 @@ class ChoiceField(BaseChoiceField):
 
 
 @field('multiselect')
-class MultiSelectField(ChoiceField):
+class MultiSelectField(BaseMultiChoiceField):
     """HTML Multi Select input widget. Field name is ``multiselect``.
 
     Extra params:
@@ -497,7 +497,23 @@ class MultiSelectField(ChoiceField):
     """
 
     size = 5
+    html_attrs = BaseMultiChoiceField.html_attrs + ('multiple',)
+    klass = 'form-control select-widget'
     multiple = 'multiple'
+    tmpl_input = 'form:select'
+
+    def update_items(self):
+        super(MultiSelectField, self).update_items()
+
+        if not self.required:
+            self.items.insert(0, {
+                'id': self.id + '-novalue',
+                'name': self.name,
+                'value': self.no_value_token,
+                'label': self.prompt_message,
+                'checked': 'checked' if self.form_value is null else None,
+                'description': '',
+            })
 
 
 @field('timezone')
