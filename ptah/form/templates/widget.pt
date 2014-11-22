@@ -1,0 +1,18 @@
+<div class="${'control-group error form-group has-error' if context.error else 'control-group form-group'}">
+  <label class="control-label col-md-2"
+         for="${context.id}" title="${context.description}">
+    ${context.title}
+    <tal:block tal:condition="context.required"><small class="muted">*</small></tal:block>
+  </label>
+  <div class="controls col-md-10">
+    ${structure: context.render()}
+    <tal:block tal:condition="context.error">
+      <span class="help-inline help-block">${context.error}</span>
+    </tal:block>
+    <tal:block tal:condition="context.description">
+    <span class="help-block">
+      <small class="muted">${context.description}</small>
+    </span>
+    </tal:block>
+  </div>
+</div>

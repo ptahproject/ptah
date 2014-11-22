@@ -1,0 +1,11 @@
+<div tal:condition="not errors" class="alert alert-error alert-danger">
+  <a class="close" data-dismiss="alert">×</a>
+  Please fix indicated errors.
+</div>
+<div tal:condition="errors" class="alert alert-block alert-error alert-danger">
+  <a class="close" data-dismiss="alert">×</a>
+  <h4 class="alert-heading">Please fix indicated errors.</h4>
+  <ul>
+    <li tal:repeat="err errors">${err}</li>
+  </ul>
+</div>

@@ -1,0 +1,8 @@
+<select id="${context.id}" name="${context.name}"
+        class="${context.klass}" title="${context.title}"
+        tal:attributes="context.get_html_attrs()">
+    <option tal:repeat="item context.items" id="${item['id']}" value="${item['value']}"
+            selected="${'selected' if item['checked'] else None}">
+            ${item['label']}
+    </option>
+</select>

@@ -1,0 +1,24 @@
+<div class="clearfix"></div>
+
+<tal:block tal:define="options context.fields[context.key]">
+
+<tal:block tal:repeat="item options.vocabulary.by_value">
+  <div tal:define="field context.fields[item]"
+       class="${'control-group error' if field.error else ''}">
+    <label class="control-label"
+           for="${field.id}" title="${field.description}">
+      <small class="muted">
+        ${field.title} <tal:block tal:condition="field.required</tal:block>*</tal:block>
+      </small>
+      <input type="radio" tal:attributes="options.get_html_attrs(**item)">
+    </label>
+    <div class="controls">
+      ${structure:field.render()}
+        <span tal:condition="field.error" class="help-inline">${field.error|safe}</span>
+      <p class="help-block"></p>
+    </div>
+  </div>
+  <div class="clearfix"></div>
+</tal:block>
+
+</tal:block>

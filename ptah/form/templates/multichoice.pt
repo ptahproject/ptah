@@ -1,0 +1,18 @@
+<div tal:repeat="item context.items" class="${context.html_type}">
+  <label for="${item['id']}">
+    <input type="${context.html_type}" id="${item['id']}" name="${item['name']}"
+           class="${context.klass}" value="${item['value']}"
+           title="${context.title}"
+           tal:attributes="
+             lang getattr(context, 'lang', None);
+             disabled getattr(context, 'disabled', None);
+             tabindex getattr(context, 'tabindex', None);
+             readonly getattr(context, 'readonly', None);
+             alt getattr(context, 'alt', None);
+             accesskey getattr(context, 'accesskey', None);
+             size getattr(context, 'size', None);
+             checked item.get('checked', None);">
+    ${item['label']}
+  </label>
+  <span tal:condition="item.description" class="help-block"><small>${item['description']}</small></span>
+</div>

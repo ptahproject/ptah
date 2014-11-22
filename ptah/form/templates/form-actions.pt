@@ -1,0 +1,7 @@
+<tal:block tal:condition="context.actions">
+<div class="form-actions">
+  <tal:block tal:repeat="action context.actions.values()">
+    ${structure: action.render()}
+  </tal:block>
+</div>
+</tal:block>

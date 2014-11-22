@@ -1,0 +1,8 @@
+<div tal:repeat="item context.items" class="${context.html_type} ${'inline' if context.inline else ''}">
+  <label for="${item['id']}">
+    <input type="${context.html_type}"
+           tal:attributes="context.get_html_attrs(**item)">
+    ${item['label']}
+  </label>
+  <span tal:condition="item.description" class="help-block"><small>${item.description}</small></span>
+</div>

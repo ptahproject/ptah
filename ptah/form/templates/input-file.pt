@@ -1,0 +1,2 @@
+<input type="${context.html_type}" tal:attributes="context.get_html_attrs()">
+<div class="help-block"><small>${context.form_value}</small></div>

@@ -1,0 +1,46 @@
+<tal:block tal:condition="context.inline">
+  <div class="controls-row">
+    <tal:block tal:repeat="field context.fields.values()">
+      <small>${field.title}</small>
+
+      <tal:block tal:condition="field.error">
+        <span class="error">
+          ${structure:field.render()}
+        </span>
+      </tal:block>
+      <tal:block tal:condition="not field.error">
+        ${structure:field.render()}
+      </tal:block>
+    </tal:block>
+
+    <p tal:condition="context.error and not context.consolidate_errors" class="help-block">
+      <tal:block tal:repeat="field context.fields.values()">
+        <tal:block tal:condition="field.error">
+          <span class="text-error">
+            {{field.title|safe}}: {{field.error|safe}}
+          </span><br>
+        </tal:block>
+      </tal:block>
+    </p>
+  </div>
+</tal:block>
+<tal:block tal:condition="not context.inline">
+  <div class="clearfix"></div>
+
+  <tal:block tal:repeat="field context.fields.values()">
+  <div class="${'control-group error' if field.error else ''}">
+    <label class="control-label"
+           for="${field.id}" title="${field.description}">
+      <small class="muted">
+        ${field.title} <tal:block tal:condition="field.required">*</tal:block>
+      </small>
+    </label>
+    <div class="controls">
+      ${structure:field.render()}
+        <span tal:condition="field.error" class="help-inline">${field.error}</span>
+      <p class="help-block"></p>
+    </div>
+  </div>
+  <div class="clearfix"></div>
+  </tal:block>
+</tal:block>
