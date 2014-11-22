@@ -72,7 +72,13 @@ setup(name='ptah',
               'ptah-migrate = ptah.scripts.migrate:main',
               'ptah-populate = ptah.scripts.populate:main',
               'ptah-settings = ptah.scripts.settings:main',
+              'ptah-layers = ptah.renderer.script:main',
+              'ptah-amdjs = ptah.amdjs.script:main',
+              'ptah-static = ptah.amdjs.pstatic:main',
               ],
+          'babel.extractors': [
+              'handlebars = ptah.amdjs.handlebars:extract_i18n',
+          ],
           'pyramid.scaffold': [
               'ptah_starter = ptah.scaffolds:PtahStarterProjectTemplate',
               ],
