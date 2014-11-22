@@ -85,7 +85,6 @@ class PtahTestCase(TestCase):
         self.config.scan(self.__class__.__module__)
 
         self.config.commit()
-        self.config.autocommit = self._auto_commit
 
         self.config.ptah_init_settings()
 
@@ -104,7 +103,7 @@ class PtahTestCase(TestCase):
             ptah.manage.set_access_manager(trusted)
 
     def init_pyramid(self):
-        self.config = testing.setUp(settings=self._settings, autocommit=False)
+        self.config = testing.setUp(settings=self._settings, autocommit=self._auto_commit)
         self.config.get_routes_mapper()
         self.init_request_extensions(self.config.registry)
         self.registry = self.config.registry
@@ -112,9 +111,12 @@ class PtahTestCase(TestCase):
         if self._include:
             self.config.include('ptah.form')
             self.config.include('ptah.renderer')
-            self.config.include('pyramid_amdjs')
+            self.config.include('ptah.amdjs')
+            self.config.include('ptah.amdjs.static')
 
         self.request = self.make_request()
+        self.request.registry = self.registry
+
         def set_ext():
             self.request._set_extensions(
                 self.registry.getUtility(IRequestExtensions))

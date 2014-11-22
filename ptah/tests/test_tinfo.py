@@ -8,6 +8,7 @@ class TestTypeInfo(PtahTestCase):
 
     _init_auth = True
     _init_ptah = False
+    _auto_commit = False
 
     def tearDown(self):
         super(TestTypeInfo, self).tearDown()

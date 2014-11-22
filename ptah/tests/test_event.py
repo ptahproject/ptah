@@ -5,6 +5,7 @@ from pyramid.exceptions import ConfigurationConflictError
 class TestEvent(ptah.PtahTestCase):
 
     _init_ptah = False
+    _auto_commit = False
 
     def test_event_registration(self):
         import ptah

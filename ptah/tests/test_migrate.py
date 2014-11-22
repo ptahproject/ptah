@@ -10,6 +10,7 @@ ptah.register_migration('ptah', 'ptah:tests/migrations')
 class TestRegisterMigration(ptah.PtahTestCase):
 
     _init_ptah = False
+    _auto_commit = False
 
     def test_register(self):
         from ptah.migrate import MIGRATION_ID
@@ -75,6 +76,7 @@ class TestPyramidDirective(ptah.PtahTestCase):
 class TestScriptDirectory(ptah.PtahTestCase):
 
     _init_ptah = False
+    _auto_commit = False
 
     def test_unknown_package(self):
         self.init_ptah()
@@ -167,6 +169,7 @@ class TestRevision(BaseScript):
 class TestUpdateVersions(BaseScript):
 
     _init_ptah = False
+    _auto_commit = False
 
     def test_update_force(self):
         from ptah.migrate import Version, revision, update_versions
@@ -226,6 +229,7 @@ class TestUpdateVersions(BaseScript):
 class TestUpgrade(BaseScript):
 
     _init_ptah = False
+    _auto_commit = False
 
     def test_upgrade_to_rev(self):
         from ptah.migrate import Version, revision, upgrade

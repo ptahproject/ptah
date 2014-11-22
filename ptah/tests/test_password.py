@@ -122,6 +122,7 @@ class TestPasswordSettings(PtahTestCase):
 class TestPasswordChanger(PtahTestCase):
 
     _init_ptah = False
+    _auto_commit = False
 
     def test_password_changer_decl(self):
         import ptah
@@ -183,6 +184,7 @@ class TestPasswordChanger(PtahTestCase):
 class TestPasswordTool(PtahTestCase):
 
     _init_ptah = False
+    _auto_commit = False
 
     def test_password_encode(self):
         self.init_ptah()

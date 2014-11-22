@@ -6,6 +6,7 @@ from ptah.testing import PtahTestCase
 class TestUri(PtahTestCase):
 
     _init_ptah = False
+    _auto_commit = False
 
     def test_uri_registration(self):
         import ptah

@@ -8,6 +8,7 @@ from pyramid.exceptions import ConfigurationConflictError
 class TestPopulateDirective(ptah.PtahTestCase):
 
     _init_ptah = False
+    _auto_commit = False
 
     def test_step_registration(self):
         import ptah

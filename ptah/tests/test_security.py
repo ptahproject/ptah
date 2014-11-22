@@ -11,6 +11,7 @@ from ptah.testing import PtahTestCase
 class TestPermission(PtahTestCase):
 
     _init_ptah = False
+    _auto_commit = False
 
     def test_permission_register(self):
         perm = ptah.Permission('perm', 'Permission', 'Test permission')
@@ -31,6 +32,7 @@ class TestPermission(PtahTestCase):
 class TestACL(PtahTestCase):
 
     _init_ptah = False
+    _auto_commit = False
 
     def test_acl_register(self):
         pmap = ptah.ACL('map', 'ACL', 'Map')
@@ -203,6 +205,7 @@ class TestACL(PtahTestCase):
 class TestACLsProps(PtahTestCase):
 
     _init_ptah = False
+    _auto_commit = False
 
     def test_acls(self):
         acl1 = ptah.ACL('acl1', 'acl1')
@@ -241,6 +244,7 @@ class TestACLsProps(PtahTestCase):
 class TestRole(PtahTestCase):
 
     _init_ptah = False
+    _auto_commit = False
 
     def test_role_register(self):
         role = ptah.Role('myrole', 'MyRole')
@@ -662,6 +666,7 @@ class TestAauthorization(PtahTestCase):
 class TestRolesProvider(PtahTestCase):
 
     _init_ptah = False
+    _auto_commit = False
 
     def test_roles_provider(self):
         import ptah

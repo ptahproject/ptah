@@ -6,6 +6,7 @@ from pyramid.exceptions import ConfigurationConflictError
 class TestUIAction(PtahTestCase):
 
     _init_ptah = False
+    _auto_commit = False
 
     def test_uiaction(self):
         class Content(object):

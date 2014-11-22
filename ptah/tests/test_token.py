@@ -8,6 +8,7 @@ from ptah.testing import PtahTestCase
 class TestTokenType(PtahTestCase):
 
     _init_ptah = False
+    _auto_commit = False
 
     def test_token(self):
         from ptah import token
