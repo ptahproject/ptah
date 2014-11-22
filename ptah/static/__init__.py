@@ -21,8 +21,3 @@ def includeme(config):
     config.add_amd_js(
         'ckeditor', 'ptah:static/ckeditor/ckeditor.js',
         'CKEditor', ('jquery',))
-
-    config.add_amd_css(
-        'bootstrap3-navbar-css',
-        'ptah:static/bootstrap3/navbar.css',
-        'Twitter bootstrap navbar extension')
