@@ -12,35 +12,35 @@ def includeme(config):
     # bootstrap http://getbootstrap.com
     config.add_amd_js(
         'bootstrap',
-        'ptah:static/bootstrap-3.2.0/js/bootstrap.min.js',
+        'ptah:static/bootstrap/js/bootstrap.min.js',
         'Bootstrap Javascript Library',
         ('jquery',))
     config.add_amd_css(
         'bootstrap-css',
-        'ptah:static/bootstrap-3.2.0/css/bootstrap.min.css',
+        'ptah:static/bootstrap/css/bootstrap.min.css',
         'Bootstrap CSS Library')
     config.add_amd_css(
         'bootstrap-theme-css',
-        'ptah:static/bootstrap-3.2.0/css/bootstrap-theme.min.css',
+        'ptah:static/bootstrap/css/bootstrap-theme.min.css',
         'Bootstrap CSS Theme Library)')
 
     # moment http://momentjs.com
     config.add_amd_js(
         'moment',
-        #'ptah:static/moment-2.7.0/moment.min.js',
-        'ptah:static/moment-2.7.0/moment-with-langs.min.js',
+        #'ptah:static/moment/moment.min.js',
+        'ptah:static/moment/moment-with-langs.min.js',
         'Moment Javascript Date Library')
 
     # datetimepicker https://github.com/Eonasdan/bootstrap-datetimepicker
     config.add_amd_js(
         'bootstrap-datetimepicker',
-        'ptah:static/bootstrap-datetimepicker-3.0.0/js/bootstrap-datetimepicker.min.js',
+        'ptah:static/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js',
         'Bootstrap Datetimepicker Widget JS',
         ('moment', 'jquery', 'bootstrap'))
 
     config.add_amd_css(
         'bootstrap-datetimepicker-css',
-        'ptah:static/bootstrap-datetimepicker-3.0.0/css/bootstrap-datetimepicker.min.css',
+        'ptah:static/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css',
         'Bootstrap Datetimepicker Widget CSS')
 
     # ckeditor http://ckeditor.com
