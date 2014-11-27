@@ -5,7 +5,7 @@ from setuptools import setup, find_packages
 version = '0.8.0'
 
 install_requires = ['setuptools',
-                    'alembic >= 0.4.0',
+                    'alembic >= 0.4.0, < 0.7.0',
                     'Chameleon >= 2.6.1',
                     'pyramid_chameleon',
                     'pyramid >= 1.5',
