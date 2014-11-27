@@ -124,7 +124,7 @@ class TestFieldsModule(PtahTestCase):
         from ptah.manage.manage import PtahManageRoute
         from ptah.manage.fields import FieldsModule
 
-        request = DummyRequest()
+        request = self.request
 
         ptah.auth_service.set_userid('test')
         cfg = ptah.get_settings(ptah.CFG_ID_PTAH, self.registry)
@@ -137,7 +137,7 @@ class TestFieldsModule(PtahTestCase):
     def test_fields_view(self):
         from ptah.manage.fields import FieldsModule, FieldsView
 
-        request = DummyRequest()
+        request = self.request
 
         mod = FieldsModule(None, request)
 

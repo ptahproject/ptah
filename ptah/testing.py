@@ -7,6 +7,7 @@ from pyramid.interfaces import IRequest
 from pyramid.interfaces import IRouteRequest
 from pyramid.interfaces import IRequestExtensions
 from pyramid.view import render_view_to_response
+from pyramid.path import AssetResolver
 from pyramid.path import package_name
 from ptah.renderer.renderer import render
 
@@ -28,6 +29,7 @@ class PtahTestCase(TestCase):
 
     _init_ptah = True
     _init_sqla = True
+    _init_bowerstatic = True
     _include = True
     _includes = ()
     _auto_commit = True
@@ -87,6 +89,11 @@ class PtahTestCase(TestCase):
         self.config.commit()
 
         self.config.ptah_init_settings()
+
+        if self._init_bowerstatic:
+            resolver = AssetResolver().resolve('ptah:tests/bower_components')
+            directory = resolver.abspath()
+            self.config.init_bowerstatic(path=directory)
 
         if self._init_sqla:
             # create engine
