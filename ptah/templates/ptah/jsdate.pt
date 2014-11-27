@@ -2,12 +2,11 @@
   <input type="text" tal:attributes="context.get_html_attrs()" />
   <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
 </div>
+${request.include('eonasdan-bootstrap-datetimepicker')}
 <script>
-  curl(['jquery', 'bootstrap-datetimepicker', 'css!bootstrap-datetimepicker-css'], function($){
-    $('#picker-${context.id}').datetimepicker({
-      pickTime: false,
-      format: 'YYYY-MM-DD',
-      language: '${request.locale_name}'
-    });
+  $('#picker-${context.id}').datetimepicker({
+    pickTime: false,
+    format: 'YYYY-MM-DD',
+    language: '${request.locale_name}'
   });
 </script>

@@ -111,8 +111,7 @@ class PtahTestCase(TestCase):
         if self._include:
             self.config.include('ptah.form')
             self.config.include('ptah.renderer')
-            self.config.include('ptah.amdjs')
-            self.config.include('ptah.amdjs.static')
+            self.config.include('ptah.bowerstatic')
 
         self.request = self.make_request()
         self.request.registry = self.registry

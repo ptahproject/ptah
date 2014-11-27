@@ -3,13 +3,12 @@
     data-date- />
   <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
 </div>
+${request.include('eonasdan-bootstrap-datetimepicker')}
 <script>
-  curl(['jquery', 'bootstrap-datetimepicker', 'css!bootstrap-datetimepicker-css'], function($){
-    $(function () {
-      $('#picker-${context.id}').datetimepicker({
-        format: 'YYYY-MM-DD HH:mm',
-        language: '${request.locale_name}'
-      });
+  $(function () {
+    $('#picker-${context.id}').datetimepicker({
+      format: 'YYYY-MM-DD HH:mm',
+      language: '${request.locale_name}'
     });
   });
 </script>
