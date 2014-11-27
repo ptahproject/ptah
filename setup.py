@@ -32,8 +32,7 @@ if sys.version_info[:2] == (2, 6):
 if sys.version_info[:2] in ((2,6),(2,7)):
     install_requires.extend(('simplejson',))
 
-tests_require = install_requires + ['nose', 'mock', 'sphinx', 'Pygments',
-                                    'webtest']
+tests_require = install_requires + ['nose', 'mock', 'sphinx', 'Pygments']
 
 
 def read(f):
