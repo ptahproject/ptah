@@ -195,7 +195,12 @@ def enable_manage(cfg, name='ptah-manage', access_manager=None,
 
 
 def initialize_sql(cfg, prefix='sqlalchemy.'):
+    def action(cfg):
+        PTAH = cfg.ptah_get_settings(ptah.CFG_ID_PTAH)
+        PTAH['sqlalchemy_initialized'] = True
+
     cfg.include('pyramid_sqlalchemy')
+    cfg.action('ptah.initalize_sql', action, (cfg,))
 
     # check_version
     from ptah import migrate
