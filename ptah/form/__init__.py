@@ -131,4 +131,4 @@ def includeme(cfg):
     cfg.add_layer('form', path='ptah.form:templates/')
 
     # scan
-    cfg.scan()
+    #cfg.scan()
