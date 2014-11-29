@@ -3,7 +3,7 @@
   <head>
     <title>{{package}}</title>
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
-    ${request.require('jquery', 'bootstrap', 'css!bootstrap-css', 'css!{{package}}-css')}
+    ${request.include('{{package}}')}
   </head>
   <body>
     <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
