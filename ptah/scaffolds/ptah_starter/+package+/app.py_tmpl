@@ -33,7 +33,7 @@ def main(global_config, **settings):
 
     # static assets
     config.init_static_components()
-    config.add_static_component('{{package}}:static')
+    config.add_static_component('{{package}}:static', version='0.0')
     config.add_static_view('_{{package}}', '{{package}}:static')
 
     # templates
