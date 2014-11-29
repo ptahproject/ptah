@@ -1,3 +1,4 @@
+import logging
 from bowerstatic import (
     Bower,
     Error,
@@ -5,6 +6,8 @@ from bowerstatic import (
     PublisherTween,
 )
 from pyramid.path import AssetResolver
+
+log = logging.getLogger('ptah.static')
 
 
 class bowerstatic_tween_factory(object):
@@ -31,12 +34,16 @@ def init_static_components(config, name='components', path=None):
     components = config.registry.bower.components(name, directory)
     local = config.registry.bower.local_components('local', components)
 
+    log.info("Init static components: %s path: %s" % (name, path))
+
 
 def add_static_component(config, path, version=None):
     resolver = AssetResolver()
     directory = resolver.resolve(path).abspath()
     local = config.registry.bower._component_collections['local']
     local.component(directory, version)
+
+    log.info("Add static local component: %s version: %s" % (path, version))
 
 
 def include(request, path_or_resource):
