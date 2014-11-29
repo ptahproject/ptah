@@ -105,7 +105,7 @@ class TestRequestInclude(PtahTestCase):
             b'</script>', response.body)
 
     def test_include_error(self):
-        from simia.static import Error
+        from ptah.bowerstatic import Error
 
         self.config.init_static_components(
             name='testcomponents',
