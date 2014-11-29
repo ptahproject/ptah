@@ -1,0 +1,7 @@
+<html>
+  <head>
+    ${request.include('jquery')}
+  </head>
+  <body>
+  </body>
+</html>

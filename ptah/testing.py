@@ -91,9 +91,7 @@ class PtahTestCase(TestCase):
         self.config.ptah_init_settings()
 
         if self._init_bowerstatic:
-            resolver = AssetResolver().resolve('ptah:tests/bower_components')
-            directory = resolver.abspath()
-            self.config.init_bowerstatic(path=directory)
+            self.config.init_static_components()
 
         if self._init_sqla:
             # create engine
