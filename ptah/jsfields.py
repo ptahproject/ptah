@@ -59,7 +59,7 @@ class JSDateField(DateField):
 
 @ptah.form.field('datetime')
 class JSDateTimeField(DateTimeField):
-    """DateTime input widget with JQuery Datepicker.
+    """DateTime input widget with Bootstrap Datepicker.
     Field name is ``datetime``."""
 
     klass = 'datetime-widget form-control'
