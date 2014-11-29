@@ -7,9 +7,9 @@ from ptah.form.interfaces import _, null, Invalid
 from ptah.form.fields import TextAreaField, DateField, DateTimeField
 
 
-@ptah.form.field('ckeditor')
-class CKEditorField(TextAreaField):
-    """ CKEditor input widget. Field name is ``ckeditor``.
+@ptah.form.field('texteditor')
+class TextEditorField(TextAreaField):
+    """ TextEditor input widget. Field name is ``texteditor``.
 
     Extra params:
 
@@ -17,12 +17,12 @@ class CKEditorField(TextAreaField):
     :param height: Height os widget, default is ``300px``
     """
 
-    klass = 'ckeditor-widget form-control'
+    klass = 'texteditor-widget form-control'
 
     width = '400px'
     height = '300px'
 
-    tmpl_input = "ptah:ckeditor"
+    tmpl_input = "ptah:texteditor"
 
 
 @ptah.form.field('date')

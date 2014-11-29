@@ -134,7 +134,7 @@ from ptah.migrate import register_migration
 from ptah.util import json
 
 # extra fields
-from ptah.jsfields import CKEditorField
+from ptah.jsfields import TextEditorField
 from ptah.jsfields import JSDateField
 from ptah.jsfields import JSDateTimeField
 

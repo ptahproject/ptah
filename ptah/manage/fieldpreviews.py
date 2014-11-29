@@ -1,7 +1,7 @@
 import pytz
 import ptah.form
 import decimal, datetime
-from ptah.jsfields import JSDateField, JSDateTimeField, CKEditorField
+from ptah.jsfields import JSDateField, JSDateTimeField, TextEditorField
 
 
 vocabulary = ptah.form.Vocabulary(
@@ -207,13 +207,14 @@ def jsdatetimePreview(request):
     return widget.render_widget()
 
 
-@ptah.form.fieldpreview(CKEditorField)
-def ckeditorPreview(request):
-    field = CKEditorField(
-        'CKEditorField',
-        title = 'CKEditor field',
-        description = 'CKEditor field preview description',
-        default = 'Test text in ckeditor field.',
+@ptah.form.fieldpreview(TextEditorField)
+def textEditorPreview(request):
+    field = TextEditorField(
+        'TextEditorField',
+        title = 'Text edior field',
+        description = 'Text editor field preview description',
+        default = '<h2>Text editor</h2>'
+                  '<p>Test text in texteditor field.</p>',
         width = '200px')
 
     widget = field.bind(request, 'preview.', ptah.form.null, {})
