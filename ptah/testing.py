@@ -91,7 +91,7 @@ class PtahTestCase(TestCase):
         self.config.ptah_init_settings()
 
         if self._init_bowerstatic:
-            self.config.init_static_components()
+            self.config.init_static_components('ptah:static/bower_components')
 
         if self._init_sqla:
             # create engine

@@ -29,18 +29,19 @@ class TestStatic(PtahTestCase):
 
     def test_static_init_components(self):
 
-        self.config.init_static_components()
+        self.config.init_static_components(
+            'ptah:bowerstatic/tests/bower_components')
 
         self.assertIn('components',
                       self.config.registry.bower._component_collections)
         self.assertIn('local',
                       self.config.registry.bower._component_collections)
 
-    def test_static_init_custom_components(self):
+    def test_static_init_custom_name(self):
 
         self.config.init_static_components(
-            name='testcomponents',
-            path='ptah:bowerstatic/tests/bower_components')
+            'ptah:bowerstatic/tests/bower_components',
+            name='testcomponents')
 
         self.assertIn('testcomponents',
                       self.config.registry.bower._component_collections)
@@ -49,13 +50,22 @@ class TestStatic(PtahTestCase):
 
     def test_static_add_local_component(self):
 
-        self.config.init_static_components()
+        self.config.init_static_components(
+            'ptah:bowerstatic/tests/bower_components')
         self.config.add_static_component(
             'ptah:bowerstatic/tests/local_component')
 
         local = self.config.registry.bower._component_collections['local']
 
         self.assertIn('myapp', local._components)
+
+    def test_static_init_errors(self):
+        from ptah.bowerstatic import Error
+
+        self.assertRaises(Error, self.config.add_static_component,
+                          'ptah:bowerstatic/tests/local_component')
+
+        self.assertRaises(Error, self.request.include, 'jquery')
 
 
 class TestRequestInclude(PtahTestCase):
@@ -76,7 +86,8 @@ class TestRequestInclude(PtahTestCase):
 
         self.config.add_route('view', '/')
         self.config.add_view(view, route_name='view')
-        self.config.init_static_components()
+        self.config.init_static_components(
+            'ptah:bowerstatic/tests/bower_components')
 
         response = self._get_response()
 
@@ -95,7 +106,8 @@ class TestRequestInclude(PtahTestCase):
         self.config.add_view(
             view, route_name='view',
             renderer='ptah:bowerstatic/tests/templates/index.pt')
-        self.config.init_static_components()
+        self.config.init_static_components(
+            'ptah:bowerstatic/tests/bower_components')
 
         response = self._get_response()
 
@@ -108,30 +120,9 @@ class TestRequestInclude(PtahTestCase):
         from ptah.bowerstatic import Error
 
         self.config.init_static_components(
-            name='testcomponents',
-            path='ptah:bowerstatic/tests/bower_components')
+            'ptah:bowerstatic/tests/bower_components')
 
         self.assertRaises(Error, self.request.include, 'bootstrap')
-
-    def test_include_custom_components(self):
-        def view(request):
-            request.include('jquery')
-            return Response('<html><head></head><body></body></html>')
-
-        self.config.add_route('view', '/')
-        self.config.add_view(view, route_name='view')
-        self.config.init_static_components(
-            name='testcomponents',
-            path='ptah:bowerstatic/tests/bower_components')
-
-        response = self._get_response()
-
-        self.assertEquals(response.body, (
-            b'<html><head>'
-            b'<script type="text/javascript" '
-            b'src="/bowerstatic/testcomponents/jquery/2.1.1/dist/jquery.js">'
-            b'</script></head><body></body></html>'))
-
 
     def test_include_local_component(self):
         def view(request):
@@ -140,7 +131,8 @@ class TestRequestInclude(PtahTestCase):
 
         self.config.add_route('view', '/')
         self.config.add_view(view, route_name='view')
-        self.config.init_static_components()
+        self.config.init_static_components(
+            'ptah:bowerstatic/tests/bower_components')
         self.config.add_static_component(
             'ptah:bowerstatic/tests/local_component', '1.0.0')
 
