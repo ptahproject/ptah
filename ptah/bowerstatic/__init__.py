@@ -26,9 +26,7 @@ class bowerstatic_tween_factory(object):
         return publisher_handler(request)
 
 
-def init_static_components(config, name='components', path=None):
-    if not path:
-        path = 'ptah:bowerstatic/bower_components'
+def init_static_components(config, path, name='components'):
     resolver = AssetResolver()
     directory = resolver.resolve(path).abspath()
     components = config.registry.bower.components(name, directory)
@@ -40,14 +38,18 @@ def init_static_components(config, name='components', path=None):
 def add_static_component(config, path, version=None):
     resolver = AssetResolver()
     directory = resolver.resolve(path).abspath()
-    local = config.registry.bower._component_collections['local']
+    local = config.registry.bower._component_collections.get('local')
+    if not local:
+        raise Error("Static components not initialized.")
     local.component(directory, version)
 
     log.info("Add static local component: %s version: %s" % (path, version))
 
 
 def include(request, path_or_resource):
-    local = request.registry.bower._component_collections['local']
+    local = request.registry.bower._component_collections.get('local')
+    if not local:
+        raise Error("Static components not initialized.")
     include = local.includer(request.environ)
     include(path_or_resource)
 
