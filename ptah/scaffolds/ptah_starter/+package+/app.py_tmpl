@@ -32,8 +32,8 @@ def main(global_config, **settings):
     config.add_route('home', '/')
 
     # static assets
-    config.init_static_components('ptah:static/bower_components')
-    config.add_static_component('{{package}}:static', version='0.0')
+    config.add_bower_components('ptah:static/bower_components', local=True)
+    config.add_bower_component('{{package}}:static', version='0.0')
     config.add_static_view('_{{package}}', '{{package}}:static')
 
     # templates
