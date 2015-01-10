@@ -29,7 +29,7 @@ class PtahTestCase(TestCase):
 
     _init_ptah = True
     _init_sqla = True
-    _init_bowerstatic = True
+    _init_static = True
     _include = True
     _includes = ()
     _auto_commit = True
@@ -90,8 +90,8 @@ class PtahTestCase(TestCase):
 
         self.config.ptah_init_settings()
 
-        if self._init_bowerstatic:
-            self.config.init_static_components('ptah:static/bower_components')
+        if self._init_static:
+            self.config.add_bower_components('ptah:static/bower_components')
 
         if self._init_sqla:
             # create engine
@@ -116,7 +116,7 @@ class PtahTestCase(TestCase):
         if self._include:
             self.config.include('ptah.form')
             self.config.include('ptah.renderer')
-            self.config.include('ptah.bowerstatic')
+            self.config.include('djed.static')
 
         self.request = self.make_request()
         self.request.registry = self.registry
