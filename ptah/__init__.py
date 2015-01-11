@@ -227,9 +227,6 @@ def includeme(cfg):
     from ptah import migrate
     cfg.add_directive('ptah_migrate', migrate.ptah_migrate)
 
-    # ptah static assets
-    cfg.add_static_view('_ptah/static', 'ptah:static/')
-
     # template layers
     cfg.add_layer('ptah', path='ptah:templates/ptah/')
     cfg.add_layer('ptah-manage', path='ptah:templates/manage/')
