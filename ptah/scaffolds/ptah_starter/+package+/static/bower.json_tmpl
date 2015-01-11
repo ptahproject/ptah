@@ -6,7 +6,8 @@
   ],
   "license": "MIT",
   "main": [
-    "app.css"
+    "app.css",
+    "ico/favicon.ico"
   ],
   "ignore": [
     "**/.*",
