@@ -232,9 +232,6 @@ def includeme(cfg):
     cfg.add_layer('ptah-manage', path='ptah:templates/manage/')
     cfg.add_layer('ptah-intr', path='ptah:templates/intr/')
 
-    cfg.add_layer('ptah-form', path='ptah:form/templates/')
-    cfg.add_layer('ptah-fields', path='ptah:form/templates/fields/')
-
     # ptah manage layouts
     from ptah.manage.manage import PtahManageRoute, LayoutManage
 
