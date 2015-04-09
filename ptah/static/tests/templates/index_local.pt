@@ -1,0 +1,7 @@
+<html>
+  <head>
+    ${request.include('myapp')}
+  </head>
+  <body>
+  </body>
+</html>

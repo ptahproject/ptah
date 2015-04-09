@@ -16,7 +16,7 @@ CHANGES
 
 - Add `pform` as `ptah.form`
 
-- Use `djed.static` for static resources management
+- Use `bowerstatic` for static resources management
 
 - Move MasterLayout to scaffold
 

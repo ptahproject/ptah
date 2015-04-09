@@ -20,7 +20,7 @@ install_requires = ['setuptools',
                     'SQLAlchemy >= 0.7.2',
                     'pytz',
                     'babel',
-                    'djed.static',
+                    'bowerstatic',
                     ]
 
 if sys.version_info[:2] == (2, 6):

@@ -1,0 +1,7 @@
+<html>
+  <head>
+    ${request.include('anycomponent')}
+  </head>
+  <body>
+  </body>
+</html>

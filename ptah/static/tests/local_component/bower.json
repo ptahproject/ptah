@@ -1,0 +1,8 @@
+{
+  "name": "myapp",
+  "version": "1.0.0",
+  "main": "myapp.js",
+  "dependencies": {
+    "anycomponent": ">=1.0.0"
+  }
+}

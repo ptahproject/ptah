@@ -116,7 +116,7 @@ class PtahTestCase(TestCase):
         if self._include:
             self.config.include('ptah.form')
             self.config.include('ptah.renderer')
-            self.config.include('djed.static')
+            self.config.include('ptah.static')
 
         self.request = self.make_request()
         self.request.registry = self.registry
