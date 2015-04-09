@@ -250,7 +250,18 @@ def includeme(cfg):
     cfg.add_formatter('size', formatter.size_formatter)
 
     # scan ptah
-    cfg.scan('ptah')
+    cfg.scan('ptah.authentication')
+    cfg.scan('ptah.events')
+    cfg.scan('ptah.jsfields')
+    cfg.scan('ptah.mail')
+    cfg.scan('ptah.manage')
+    cfg.scan('ptah.password')
+    cfg.scan('ptah.populate')
+    cfg.scan('ptah.ptahsettings')
+    cfg.scan('ptah.security')
+    cfg.scan('ptah.settings')
+    cfg.scan('ptah.typeinfo')
+    cfg.scan('ptah.uri')
 
     # translation
     cfg.add_translation_dirs('ptah:locale')
