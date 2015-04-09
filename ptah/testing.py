@@ -166,6 +166,7 @@ class PtahTestCase(TestCase):
 
         if self._include:
             self.config.include('ptah.form')
+            self.config.include('ptah.message')
             self.config.include('ptah.renderer')
             self.config.include('ptah.static')
 

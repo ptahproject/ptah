@@ -1,6 +1,6 @@
 """ simple messages """
 from pyramid.compat import escape, string_types
-from ptah.renderer import render, tmpl_filter
+from ptah.renderer import render
 
 
 def add_message(request, msg, type='info'):
@@ -27,8 +27,6 @@ def render_messages(request):
     """ Render previously added messages """
     return ''.join(request.session.pop_flash('status'))
 
-
-@tmpl_filter('message:error')
 def error_message(context, request):
     """ Error message filter """
     if not isinstance(context, (set, list, tuple)):
@@ -42,3 +40,15 @@ def error_message(context, request):
         errors.append(err)
 
     return {'errors': errors}
+
+
+def includeme(config):
+    config.include('pyramid_chameleon')
+    config.include('ptah.renderer')
+
+    config.add_layer('message', path='ptah.message:templates/')
+
+    config.add_request_method(add_message, 'add_message')
+    config.add_request_method(render_messages, 'render_messages')
+
+    config.add_tmpl_filter('message:error', error_message)

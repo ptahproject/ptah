@@ -121,6 +121,7 @@ from ptah.form.iso8601 import parse_date
 
 def includeme(cfg):
     cfg.include('pyramid_chameleon')
+    cfg.include('ptah.message')
     cfg.include('ptah.renderer')
 
     # field

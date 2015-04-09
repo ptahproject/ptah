@@ -7,7 +7,8 @@ from pyramid.renderers import NullRendererHelper
 from pyramid.interfaces import IResponse
 from pyramid.httpexceptions import HTTPException, HTTPForbidden
 from pyramid.config.views import DefaultViewMapper
-from ptah.renderer import layout, render, tmpl_filter, add_message
+from ptah.renderer import layout, render, tmpl_filter
+from ptah.message import add_message
 
 from ptah.form.field import Field
 from ptah.form.fieldset import Fieldset

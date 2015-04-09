@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
-""" Unit tests for L{ptah.renderer.message} """
+""" Unit tests for L{ptah.message} """
 from pyramid.compat import text_
 
 from ptah.testing import BaseTestCase
-from ptah.renderer.message import add_message
-from ptah.renderer.message import render_messages
+from ptah.message import add_message
+from ptah.message import render_messages
 
 
 class TestStatusMessages(BaseTestCase):
 
-    _includes = ['ptah.renderer']
+    _includes = ['ptah.message']
 
     def test_messages_addmessage(self):
         add_message(self.request, 'message')
@@ -48,7 +48,7 @@ class TestStatusMessages(BaseTestCase):
 
     def test_messages_custom_msg(self):
         self.config.add_layer(
-            'message', 'test', path='ptah.renderer:tests/message/')
+            'message', 'test', path='ptah.message:tests/message/')
 
         add_message(self.request, 'message', 'custom')
         self.assertEqual(
@@ -57,7 +57,7 @@ class TestStatusMessages(BaseTestCase):
 
     def test_messages_custom_msg_different_type(self):
         self.config.add_layer(
-            'test', path='ptah.renderer:tests/message/')
+            'test', path='ptah.message:tests/message/')
 
         add_message(self.request, 'message', 'test:custom')
         self.assertEqual(
@@ -66,7 +66,7 @@ class TestStatusMessages(BaseTestCase):
 
     def test_messages_render_message_with_error(self):
         self.config.add_layer(
-            'message', 'test', path='ptah.renderer:tests/messages/')
+            'message', 'test', path='ptah.message:tests/messages/')
 
         def customMessage(context, request):
             raise ValueError()

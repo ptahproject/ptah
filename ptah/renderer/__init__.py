@@ -15,7 +15,6 @@ from ptah.renderer.layout_impl import layout
 from ptah.renderer.layout_impl import layout_config
 from ptah.renderer.renderer import render
 from ptah.renderer.renderer import RendererNotFound
-from ptah.renderer.message import add_message
 
 
 def includeme(cfg):
@@ -84,14 +83,6 @@ def includeme(cfg):
     from ptah.renderer import formatter
     cfg.add_directive('add_formatter', formatter.add_formatter)
     cfg.add_request_method(formatter.formatters, 'fmt', True, True)
-
-    # messages layer and request helpers
-    from ptah.renderer.message import render_messages
-
-    cfg.add_layer('message', path='ptah.renderer:templates/message/')
-
-    cfg.add_request_method(add_message, 'add_message')
-    cfg.add_request_method(render_messages, 'render_messages')
 
     # scan
     cfg.scan('ptah.renderer')

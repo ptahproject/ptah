@@ -141,6 +141,7 @@ from ptah.jsfields import JSDateTimeField
 
 def includeme(cfg):
     cfg.include('ptah.form')
+    cfg.include('ptah.message')
     cfg.include('ptah.renderer')
     cfg.include('ptah.static')
     cfg.include('pyramid_chameleon')
