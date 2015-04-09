@@ -11,12 +11,7 @@ from pyramid.path import AssetResolver
 from pyramid.path import package_name
 from ptah.renderer.renderer import render
 
-if sys.version_info[:2] == (2, 6): # pragma: no cover
-    import unittest2 as unittest
-    from unittest2 import TestCase
-else:
-    import unittest
-    from unittest import TestCase
+from unittest import TestCase
 
 import ptah
 

@@ -23,13 +23,7 @@ install_requires = ['setuptools',
                     'bowerstatic',
                     ]
 
-if sys.version_info[:2] == (2, 6):
-    install_requires.extend((
-            'argparse',
-            'ordereddict',
-            'unittest2'))
-
-if sys.version_info[:2] in ((2,6),(2,7)):
+if sys.version_info[:2] == (2,7):
     install_requires.extend(('simplejson',))
 
 tests_require = install_requires + ['nose', 'mock', 'sphinx', 'Pygments',
@@ -48,7 +42,6 @@ setup(name='ptah',
       classifiers=[
           "Intended Audience :: Developers",
           "Programming Language :: Python",
-          "Programming Language :: Python :: 2.6",
           "Programming Language :: Python :: 2.7",
           "Programming Language :: Python :: 3",
           "Programming Language :: Python :: 3.3",
