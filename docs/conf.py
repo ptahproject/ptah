@@ -12,6 +12,8 @@
 # All configuration values have a default value; values that are commented
 # out serve to show the default value.
 
+import datetime
+import pkg_resources
 
 # General configuration
 # ---------------------
@@ -32,12 +34,14 @@ master_doc = 'index'
 
 # General substitutions.
 project = 'ptah'
+thisyear = datetime.datetime.now().year
+copyright = '2011-%s, RUNYAGA, LLC' % thisyear
 
 # The default replacements for |version| and |release|, also used in various
 # other places throughout the built documents.
 #
 # The short X.Y version.
-version = '0.3'
+version = pkg_resources.get_distribution('ptah').version
 # The full version, including alpha/beta/rc tags.
 release = version
 
