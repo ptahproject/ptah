@@ -69,6 +69,7 @@ class BaseTestCase(TestCase):
         self.registry = self.config.registry
         self.request = self.make_request()
 
+        self.config.begin(self.request)
         self.config.scan(self.__class__.__module__)
 
     def tearDown(self):
