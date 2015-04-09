@@ -1,4 +1,4 @@
-from ptah.testing import TestCase, PtahTestCase
+from ptah.testing import TestCase, BaseTestCase
 
 
 def invalid_exc(func, *arg, **kw):
@@ -191,7 +191,10 @@ class TestLength(TestCase):
         e = invalid_exc(validator, None, 'ab')
         self.assertEqual(e.msg.interpolate(), 'Longer than maximum length 1')
 
-class TestOneOf(PtahTestCase):
+class TestOneOf(BaseTestCase):
+
+    _includes = ['ptah.form']
+
     def _makeOne(self, values):
         from ptah.form import OneOf
         return OneOf(values)

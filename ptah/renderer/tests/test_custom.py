@@ -1,25 +1,23 @@
 from pyramid.exceptions import ConfigurationError
 from ptah.renderer.layer import ID_LAYER
 
-from ptah.testing import PtahTestCase
+from ptah.testing import BaseTestCase
 
 
-class TestSettingsError(PtahTestCase):
+class TestSettingsError(BaseTestCase):
 
     _settings = {'layer.custom': 'unknown'}
-    _include = False
-    _init_ptah = False
 
     def test_custom(self):
         self.assertRaises(
             ConfigurationError, self.config.include, 'ptah.renderer')
 
 
-class TestSettingsCustom(PtahTestCase):
+class TestSettingsCustom(BaseTestCase):
 
+    _includes = ['ptah.renderer']
     _auto_commit = False
     _settings = {'layer.custom': 'ptah.renderer:tests/bundle/'}
-    _init_ptah = False
 
     def test_custom_dir(self):
         self.config.add_layer(

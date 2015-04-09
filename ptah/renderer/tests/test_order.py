@@ -1,13 +1,13 @@
 from ptah.renderer.layer import ID_LAYER
 
-from ptah.testing import PtahTestCase
+from ptah.testing import BaseTestCase
 
 
-class TestOrder(PtahTestCase):
+class TestOrder(BaseTestCase):
 
+    _includes = ['ptah.renderer']
     _auto_commit = False
     _settings = {'layer.order.test': 'l1 l2 l3'}
-    _init_ptah = False
 
     def test_custom_dir(self):
         self.config.add_layer(
@@ -23,11 +23,11 @@ class TestOrder(PtahTestCase):
         self.assertEqual('l2', storage['test'][1]['name'])
 
 
-class TestOrderUnknown(PtahTestCase):
+class TestOrderUnknown(BaseTestCase):
 
+    _includes = ['ptah.renderer']
     _auto_commit = False
     _settings = {'layer.order.test2': 'l1 l2 l3'}
-    _init_ptah = False
 
     def test_custom_dir(self):
         self.config.add_layer(

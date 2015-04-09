@@ -3,10 +3,12 @@ import ptah.form
 from pyramid.config import Configurator
 from pyramid.exceptions import ConfigurationConflictError
 
-from ptah.testing import PtahTestCase
+from ptah.testing import BaseTestCase
 
 
-class TestFieldset(PtahTestCase):
+class TestFieldset(BaseTestCase):
+
+    _includes = ['ptah.form']
 
     @mock.patch('ptah.form.directives.venusian')
     def test_declarative(self, m_venusian):

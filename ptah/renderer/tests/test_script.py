@@ -7,10 +7,12 @@ from pyramid.compat import NativeIO
 from ptah.renderer import script as layer
 from ptah.renderer.layer import ID_LAYER
 
-from ptah.testing import PtahTestCase
+from ptah.testing import BaseTestCase
 
 
-class TestPlayerCommand(PtahTestCase):
+class TestPlayerCommand(BaseTestCase):
+
+    _includes = ['ptah.renderer']
 
     def setUp(self):
         super(TestPlayerCommand, self).setUp()

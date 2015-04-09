@@ -1,8 +1,10 @@
 import ptah.renderer
-from ptah.testing import PtahTestCase
+from ptah.testing import BaseTestCase
 
 
-class TestRequestRenderers(PtahTestCase):
+class TestRequestRenderers(BaseTestCase):
+
+    _includes = ['ptah.renderer']
 
     def test_render_tmpl(self):
         self.config.add_layer(
@@ -88,7 +90,9 @@ class TestRequestRenderers(PtahTestCase):
             ValueError, render, 'test1:view.lt', {})
 
 
-class TestRender(PtahTestCase):
+class TestRender(BaseTestCase):
+
+    _includes = ['ptah.renderer']
 
     def setUp(self):
         super(TestRender, self).setUp()

@@ -2,13 +2,10 @@ import mock
 from pyramid.exceptions import ConfigurationError
 from pyramid.exceptions import ConfigurationConflictError
 
-from ptah.testing import PtahTestCase
+from ptah.testing import BaseTestCase
 
 
-class TestLayerDirective(PtahTestCase):
-
-    _include = False
-    _init_ptah = False
+class TestLayerDirective(BaseTestCase):
 
     def test_layer_directive(self):
         self.assertFalse(hasattr(self.config, 'add_layer'))
@@ -21,8 +18,9 @@ class TestLayerDirective(PtahTestCase):
         self.assertTrue(hasattr(self.config, 'add_tmpl_filter'))
 
 
-class TestLayer(PtahTestCase):
+class TestLayer(BaseTestCase):
 
+    _includes = ['ptah.renderer']
     _auto_commit = False
 
     def test_layer_registration(self):
@@ -90,7 +88,9 @@ class TestLayer(PtahTestCase):
             ConfigurationConflictError, self.config.commit)
 
 
-class TestTmplFilter(PtahTestCase):
+class TestTmplFilter(BaseTestCase):
+
+    _includes = ['ptah.renderer']
 
     def test_add_tmpl_filter_err(self):
         def _filter(context, request):

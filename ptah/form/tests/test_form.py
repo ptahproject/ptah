@@ -5,7 +5,7 @@ from pyramid.testing import DummyRequest
 from pyramid.httpexceptions import HTTPFound, HTTPForbidden
 
 import ptah.form
-from ptah.testing import PtahTestCase, TestCase
+from ptah.testing import BaseTestCase, TestCase
 
 
 class TestFormWidgets(TestCase):
@@ -41,7 +41,9 @@ class TestFormWidgets(TestCase):
         self.assertEqual(errors[1].msg, 'error2')
 
 
-class TestFormErrors(PtahTestCase):
+class TestFormErrors(BaseTestCase):
+
+    _includes = ['ptah.form']
 
     def test_form_errors(self):
         from ptah.form import Invalid, TextField
@@ -95,7 +97,9 @@ class TestFormErrors(PtahTestCase):
         self.assertIn('Please fix indicated errors.', res)
 
 
-class TestForm(PtahTestCase):
+class TestForm(BaseTestCase):
+
+    _includes = ['ptah.form']
 
     def test_ctor_kwargs(self):
         """ Pass keyword arguments to Form ctor """

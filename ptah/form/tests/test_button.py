@@ -1,7 +1,10 @@
-from ptah.testing import strip, PtahTestCase, TestCase
+from ptah.testing import strip, BaseTestCase, TestCase
 
 
-class TestButton(PtahTestCase):
+
+class TestButton(BaseTestCase):
+
+    _includes = ['ptah.form']
 
     def test_ctor(self):
         import ptah.form

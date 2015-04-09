@@ -1,8 +1,10 @@
 from pyramid.response import Response
-from base import BaseTestCase
+from ptah.testing import BaseTestCase
 
 
 class TestIncluder(BaseTestCase):
+
+    _includes = ['ptah.static']
 
     def test_components(self):
 

@@ -94,4 +94,4 @@ def includeme(cfg):
     cfg.add_request_method(render_messages, 'render_messages')
 
     # scan
-    #cfg.scan('ptah.renderer')
+    cfg.scan('ptah.renderer')

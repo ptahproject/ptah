@@ -1,9 +1,11 @@
 import pytz
 from datetime import datetime
-from ptah.testing import PtahTestCase
+from ptah.testing import BaseTestCase
 
 
-class TestTimezoneField(PtahTestCase):
+class TestTimezoneField(BaseTestCase):
+
+    _includes = ['ptah.form']
 
     def test_timezone_schema_to_form(self):
         from ptah.form import null, TimezoneField

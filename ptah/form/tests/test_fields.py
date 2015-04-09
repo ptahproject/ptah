@@ -6,7 +6,7 @@ from pyramid.compat import text_type, NativeIO
 import ptah.form
 from ptah.form import iso8601
 
-from ptah.testing import strip, PtahTestCase
+from ptah.testing import strip, BaseTestCase
 
 
 def invalid_exc(func, *arg, **kw):
@@ -19,7 +19,9 @@ def invalid_exc(func, *arg, **kw):
         raise AssertionError('Invalid not raised')
 
 
-class TestInputField(PtahTestCase):
+class TestInputField(BaseTestCase):
+
+    _includes = ['ptah.form']
 
     def _makeOne(self, name, **kw):
         from ptah.form.fields import InputField
@@ -40,7 +42,9 @@ class TestInputField(PtahTestCase):
         self.assertEqual(field.klass, 'form-control disabled')
 
 
-class TestTextField(PtahTestCase):
+class TestTextField(BaseTestCase):
+
+    _includes = ['ptah.form']
 
     def _makeOne(self, name, **kw):
         return ptah.form.TextField(name, title=name.capitalize(), **kw)
@@ -70,7 +74,9 @@ class TestTextField(PtahTestCase):
             res)
 
 
-class TestIntegerField(PtahTestCase):
+class TestIntegerField(BaseTestCase):
+
+    _includes = ['ptah.form']
 
     def _makeOne(self, name, **kw):
         return ptah.form.IntegerField(name, title=name.capitalize(), **kw)
@@ -95,7 +101,9 @@ class TestIntegerField(PtahTestCase):
             res)
 
 
-class TestFloatField(PtahTestCase):
+class TestFloatField(BaseTestCase):
+
+    _includes = ['ptah.form']
 
     def _makeOne(self, name, **kw):
         return ptah.form.FloatField(name, title=name.capitalize(), **kw)
@@ -120,7 +128,9 @@ class TestFloatField(PtahTestCase):
             res)
 
 
-class TestDeciamlField(PtahTestCase):
+class TestDeciamlField(BaseTestCase):
+
+    _includes = ['ptah.form']
 
     def _makeOne(self, name, **kw):
         return ptah.form.DecimalField(name, title=name.capitalize(), **kw)
@@ -145,7 +155,9 @@ class TestDeciamlField(PtahTestCase):
             res)
 
 
-class TestLinesField(PtahTestCase):
+class TestLinesField(BaseTestCase):
+
+    _includes = ['ptah.form']
 
     def _makeOne(self, name, **kw):
         return ptah.form.LinesField(name, title=name.capitalize(), **kw)
@@ -170,7 +182,9 @@ class TestLinesField(PtahTestCase):
             res)
 
 
-class TestVocabularyField(PtahTestCase):
+class TestVocabularyField(BaseTestCase):
+
+    _includes = ['ptah.form']
 
     def test_ctor(self):
         from ptah.form.fields import VocabularyField
@@ -336,7 +350,9 @@ class TestVocabularyField(PtahTestCase):
                            'value': 'three'}])
 
 
-class TestBaseChoiceField(PtahTestCase):
+class TestBaseChoiceField(BaseTestCase):
+
+    _includes = ['ptah.form']
 
     def _makeOne(self, name, **kw):
         return ptah.form.BaseChoiceField(name, **kw)
@@ -371,7 +387,9 @@ class TestBaseChoiceField(PtahTestCase):
         self.assertRaises(ptah.form.Invalid, field.to_field, ['one','five'])
 
 
-class TestBaseMultiChoiceField(PtahTestCase):
+class TestBaseMultiChoiceField(BaseTestCase):
+
+    _includes = ['ptah.form']
 
     def _makeOne(self, name, **kw):
         return ptah.form.BaseMultiChoiceField(name, **kw)
@@ -414,7 +432,9 @@ class TestBaseMultiChoiceField(PtahTestCase):
         self.assertEqual(field.extract(), ['one'])
 
 
-class TestChoiceField(PtahTestCase):
+class TestChoiceField(BaseTestCase):
+
+    _includes = ['ptah.form']
 
     def _makeOne(self, name, **kw):
         return ptah.form.ChoiceField(name, **kw)
@@ -471,7 +491,9 @@ class TestChoiceField(PtahTestCase):
                            'value': 'two'}])
 
 
-class TestMultiChoiceField(PtahTestCase):
+class TestMultiChoiceField(BaseTestCase):
+
+    _includes = ['ptah.form']
 
     def _makeOne(self, name, **kw):
         return ptah.form.MultiChoiceField(name, **kw)
@@ -489,7 +511,10 @@ class TestMultiChoiceField(PtahTestCase):
         field.update()
 
 
-class TestDateTime(PtahTestCase):
+class TestDateTime(BaseTestCase):
+
+    _includes = ['ptah.form']
+
     def _makeOne(self, name='test', *arg, **kw):
         return ptah.form.DateTimeField(name, request=self.request, *arg, **kw)
 
@@ -603,7 +628,9 @@ class TestDateTime(PtahTestCase):
         self.assertEqual(result.isoformat(), dt.isoformat())
 
 
-class TestDate(PtahTestCase):
+class TestDate(BaseTestCase):
+
+    _includes = ['ptah.form']
 
     def _makeOne(self, name='test', *arg, **kw):
         return ptah.form.DateField(name, request=self.request, *arg, **kw)
@@ -676,7 +703,9 @@ class TestDate(PtahTestCase):
         self.assertEqual(result.isoformat(), dt.date().isoformat())
 
 
-class TestFileField(PtahTestCase):
+class TestFileField(BaseTestCase):
+
+    _includes = ['ptah.form']
 
     def _makeOne(self, name, **kw):
         from ptah.form.fields import FileField
@@ -767,7 +796,9 @@ class TestFileField(PtahTestCase):
         self.assertEqual('Maximum file size exceeded.', cm.exception.msg)
 
 
-class TestOptionsField(PtahTestCase):
+class TestOptionsField(BaseTestCase):
+
+    _includes = ['ptah.form']
 
     def test_ctor(self):
         field = ptah.form.OptionsField(

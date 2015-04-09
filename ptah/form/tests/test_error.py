@@ -1,8 +1,10 @@
 """ Tests for L{ptah.form.interfaces.Invalid} """
-from ptah.testing import TestCase, PtahTestCase
+from ptah.testing import TestCase, BaseTestCase
 
 
-class TestInvalid(PtahTestCase):
+class TestInvalid(BaseTestCase):
+
+    _includes = ['ptah.form']
 
     def test_ctor_default(self):
         from ptah.form import Invalid

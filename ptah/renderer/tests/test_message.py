@@ -2,12 +2,14 @@
 """ Unit tests for L{ptah.renderer.message} """
 from pyramid.compat import text_
 
-from ptah.testing import PtahTestCase
+from ptah.testing import BaseTestCase
 from ptah.renderer.message import add_message
 from ptah.renderer.message import render_messages
 
 
-class TestStatusMessages(PtahTestCase):
+class TestStatusMessages(BaseTestCase):
+
+    _includes = ['ptah.renderer']
 
     def test_messages_addmessage(self):
         add_message(self.request, 'message')

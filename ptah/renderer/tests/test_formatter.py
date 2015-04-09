@@ -2,10 +2,12 @@
 from pyramid.config import Configurator
 from pyramid.exceptions import ConfigurationConflictError
 
-from ptah.testing import PtahTestCase
+from ptah.testing import BaseTestCase
 
 
-class TestFormatter(PtahTestCase):
+class TestFormatter(BaseTestCase):
+
+    _includes = ['ptah.renderer']
 
     def test_formatter_registration(self):
         def simple(request, v):

@@ -4,7 +4,7 @@ from zope import interface
 from pyramid.compat import text_
 from pyramid.interfaces import IRequest, IRouteRequest
 
-from ptah.testing import PtahTestCase
+from ptah.testing import BaseTestCase
 
 class View(object):
 
@@ -16,14 +16,16 @@ class View(object):
         return {}
 
 
-class TestLayout(PtahTestCase):
+class TestLayout(BaseTestCase):
+
+    _includes = ['ptah.renderer']
 
     def setUp(self):
-        PtahTestCase.setUp(self)
+        BaseTestCase.setUp(self)
         self.dir = tempfile.mkdtemp()
 
     def tearDown(self):
-        PtahTestCase.tearDown(self)
+        BaseTestCase.tearDown(self)
         shutil.rmtree(self.dir)
 
     def test_layout_register_simple(self):

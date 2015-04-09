@@ -1,8 +1,10 @@
 from pyramid.response import Response
-from base import BaseTestCase
+from ptah.testing import BaseTestCase
 
 
 class TestSettingsDefault(BaseTestCase):
+
+    _includes = ['ptah.static']
 
     def test_setup(self):
         request = self.make_request()
@@ -38,6 +40,7 @@ class TestSettingsDefault(BaseTestCase):
 
 class TestSettingsCustom(BaseTestCase):
 
+    _includes = ['ptah.static']
     _settings = {
         'ptah.static.publisher_signature': 'static',
         'ptah.static.components_name': 'lib',

@@ -1,6 +1,6 @@
 import mock
 import ptah.form
-from ptah.testing import TestCase, PtahTestCase
+from ptah.testing import TestCase, BaseTestCase
 
 
 class TestCompositeError(TestCase):
@@ -15,8 +15,10 @@ class TestCompositeError(TestCase):
         self.assertIn('CompositeError<: test>:\n{', repr(err))
 
 
-class TestCompositeField(PtahTestCase):
+class TestCompositeField(BaseTestCase):
     """ Tests for ptah.form.CompositeField """
+
+    _includes = ['ptah.form']
 
     def test_ctor(self):
         """ Composite field requires fields """

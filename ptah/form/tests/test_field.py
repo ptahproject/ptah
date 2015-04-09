@@ -1,7 +1,7 @@
 from pyramid.testing import DummyRequest
 
 import ptah.form
-from ptah.testing import PtahTestCase
+from ptah.testing import BaseTestCase
 
 
 field = ptah.form.TextField(
@@ -11,7 +11,9 @@ field1 = ptah.form.TextField(
     'test1', title = 'Test node')
 
 
-class TestField(PtahTestCase):
+class TestField(BaseTestCase):
+
+    _includes = ['ptah.form']
 
     def test_field_ctor(self):
         field = ptah.form.Field('test', **{'title': 'Title',
@@ -205,7 +207,9 @@ class TestField(PtahTestCase):
         self.assertIs(field.get_error('test'), err1)
 
 
-class TestFieldFactory(PtahTestCase):
+class TestFieldFactory(BaseTestCase):
+
+    _includes = ['ptah.form']
 
     def test_field_factory(self):
         class MyField(ptah.form.Field):

@@ -2,7 +2,7 @@
 Unit tests for L{ptah.form.fieldset}
 """
 import ptah.form
-from ptah.testing import PtahTestCase
+from ptah.testing import BaseTestCase
 
 
 field = ptah.form.TextField(
@@ -12,7 +12,9 @@ field1 = ptah.form.TextField(
     'test1', title = 'Test node')
 
 
-class TestFieldset(PtahTestCase):
+class TestFieldset(BaseTestCase):
+
+    _includes = ['ptah.form']
 
     def test_fieldset_name_title(self):
         fieldset = ptah.form.Fieldset(field)
@@ -268,7 +270,9 @@ class TestFieldset(PtahTestCase):
         self.assertEqual(len(errors), 1)
 
 
-class TestFieldsetErrors(PtahTestCase):
+class TestFieldsetErrors(BaseTestCase):
+
+    _includes = ['ptah.form']
 
     def test_fieldset_errors(self):
         err1 = ptah.form.Invalid('error1', field.bind(self.request,'','',{}))

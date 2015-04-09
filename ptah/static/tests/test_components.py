@@ -1,7 +1,9 @@
-from base import BaseTestCase
+from ptah.testing import BaseTestCase
 
 
 class TestComponents(BaseTestCase):
+
+    _includes = ['ptah.static']
 
     def test_add(self):
 
