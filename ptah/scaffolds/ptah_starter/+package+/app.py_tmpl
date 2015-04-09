@@ -32,7 +32,7 @@ def main(global_config, **settings):
     config.add_route('home', '/')
 
     # static assets
-    config.add_bower_components('ptah:static/bower_components', local=True)
+    config.add_bower_components('ptah:static/bower_components')
     config.add_bower_component('{{package}}:static', version='0.0')
 
     # templates
