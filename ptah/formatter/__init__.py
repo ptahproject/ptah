@@ -3,13 +3,13 @@ from ptah.formatter.config import (
     add_formatter,
     formatters,
 )
-from ptah.formatter.datetime import (
+from ptah.formatter.formatter import (
     date_formatter,
     datetime_formatter,
     time_formatter,
     timedelta_formatter,
+    size_formatter,
 )
-from ptah.formatter.size import size_formatter
 
 
 def includeme(config):
