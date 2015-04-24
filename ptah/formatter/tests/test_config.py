@@ -5,9 +5,9 @@ from pyramid.exceptions import ConfigurationConflictError
 from ptah.testing import BaseTestCase
 
 
-class TestFormatter(BaseTestCase):
+class TestFormatterConfig(BaseTestCase):
 
-    _includes = ['ptah.renderer']
+    _includes = ['ptah.formatter']
 
     def test_formatter_registration(self):
         def simple(request, v):
@@ -47,7 +47,7 @@ class TestFormatter(BaseTestCase):
             """ """
 
         config = Configurator()
-        config.include('ptah.renderer')
+        config.include('ptah.formatter')
 
         config.add_formatter('test', simple1)
         config.add_formatter('test', simple2)
@@ -60,7 +60,7 @@ class TestFormatter(BaseTestCase):
 
         self.config.add_formatter('simple', simple)
 
-        from ptah.renderer.formatter import ID_FORMATTER
+        from ptah.formatter.config import ID_FORMATTER
 
         discr = (ID_FORMATTER, 'simple')
         intr = self.config.introspector.get(ID_FORMATTER, discr)

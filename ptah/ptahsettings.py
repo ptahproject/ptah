@@ -125,12 +125,6 @@ ptah.register_settings(
         description = 'List of default assigned roles for all principals.',
         default = ()),
 
-    ptah.form.TimezoneField(
-        'timezone',
-        default = 'UTC',
-        title = _('Timezone'),
-        description = _('Site wide timezone.')),
-
     title = _('Ptah settings'),
 )
 

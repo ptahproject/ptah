@@ -1,6 +1,5 @@
-""" formatters """
+""" date/time formatters """
 import pytz
-import translationstring
 from datetime import (
     date,
     datetime,
@@ -15,10 +14,6 @@ from babel.dates import (
     get_timezone
 )
 from pyramid.compat import text_type
-
-import ptah
-
-_ = translationstring.TranslationStringFactory('ptah')
 
 
 def date_formatter(request, value, format='medium', locale_name=None):
@@ -45,8 +40,8 @@ def time_formatter(request, value, format='medium',
         tzinfo = get_timezone(tzname)
 
     if not tzinfo:
-        PTAH = ptah.get_settings(ptah.CFG_ID_PTAH, request.registry)
-        tzinfo = get_timezone(PTAH['timezone'])
+        settings = request.registry.settings
+        tzinfo = get_timezone(settings['ptah.timezone'])
 
     if not locale_name:
         locale_name = request.locale_name
@@ -91,8 +86,8 @@ def datetime_formatter(request, value, format='medium',
         tzinfo = get_timezone(tzname)
 
     if not tzinfo:
-        PTAH = ptah.get_settings(ptah.CFG_ID_PTAH, request.registry)
-        tzinfo = get_timezone(PTAH['timezone'])
+        settings = request.registry.settings
+        tzinfo = get_timezone(settings['ptah.timezone'])
 
     if not locale_name:
         locale_name = request.locale_name
@@ -154,49 +149,3 @@ def timedelta_formatter(request, value, type='short'):
 
     else:
         return str(value).split('.')[0]
-
-
-_size_types = {
-    'b': (1.0, 'B'),
-    'k': (1024.0, 'KB'),
-    'm': (1024.0*1024.0, 'MB'),
-    'g': (1024.0*1024.0*1024.0, 'GB'),
-}
-
-def size_formatter(request, value, type='k'):
-    """Size formatter
-
-    bytes::
-
-        >> v = 1024
-        >> request.fmt.size(v, 'b')
-        '1024 B'
-
-    kylobytes::
-
-        >> requst.fmt.size(v, 'k')
-        '1.00 KB'
-
-    megabytes::
-
-        >> request.fmt.size(1024*768, 'm')
-        '0.75 MB'
-
-        >> request.fmt.size(1024*768*768, 'm')
-        '576.00 MB'
-
-    terabytes::
-
-        >> request.fmt.size(1024*768*768, 'g')
-        '0.56 GB'
-
-    """
-    if not isinstance(value, (int, float)):
-        return value
-
-    f, t = _size_types.get(type, (1024.0, 'KB'))
-
-    if t == 'B':
-        return '%.0f %s' % (value / f, t)
-
-    return '%.2f %s' % (value / f, t)

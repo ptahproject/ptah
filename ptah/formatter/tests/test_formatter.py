@@ -3,10 +3,12 @@ import pytz
 from datetime import datetime, timedelta
 
 import ptah
-from ptah.testing import PtahTestCase
+from ptah.testing import BaseTestCase
 
 
-class TestFormatter(PtahTestCase):
+class TestFormatter(BaseTestCase):
+
+    _includes = ['ptah.formatter']
 
     def test_date_formatter(self):
         format = self.request.fmt

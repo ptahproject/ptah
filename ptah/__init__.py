@@ -141,6 +141,7 @@ from ptah.jsfields import JSDateTimeField
 
 def includeme(cfg):
     cfg.include('ptah.form')
+    cfg.include('ptah.formatter')
     cfg.include('ptah.message')
     cfg.include('ptah.renderer')
     cfg.include('ptah.static')
@@ -241,14 +242,6 @@ def includeme(cfg):
         'ptah-manage', PtahManageRoute, root=PtahManageRoute,
         use_global_views=False, renderer="ptah-manage:layout.lt",
         view=LayoutManage, parent='ptah')
-
-    # ptah formatters
-    from ptah import formatter
-    cfg.add_formatter('date', formatter.date_formatter)
-    cfg.add_formatter('time', formatter.time_formatter)
-    cfg.add_formatter('datetime', formatter.datetime_formatter)
-    cfg.add_formatter('timedelta', formatter.timedelta_formatter)
-    cfg.add_formatter('size', formatter.size_formatter)
 
     # scan ptah
     cfg.scan('ptah.authentication')

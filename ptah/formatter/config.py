@@ -1,13 +1,13 @@
-""" formatters """
+""" formatter config """
 from pyramid.registry import Introspectable
 
-ID_FORMATTER = 'ptah.renderer:formatter'
+ID_FORMATTER = 'ptah:formatter'
 
 
 def add_formatter(cfg, name, callable):
     discr = (ID_FORMATTER, name)
 
-    intr = Introspectable(ID_FORMATTER, discr, name, 'ptah.renderer-formatter')
+    intr = Introspectable(ID_FORMATTER, discr, name, 'ptah.formatter')
     intr['name'] = name
     intr['callable'] = callable
     intr['description'] = callable.__doc__
