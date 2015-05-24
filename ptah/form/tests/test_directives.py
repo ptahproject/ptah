@@ -1,4 +1,4 @@
-import mock
+from unittest import mock
 import ptah.form
 from pyramid.config import Configurator
 from pyramid.exceptions import ConfigurationConflictError

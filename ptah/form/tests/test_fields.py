@@ -1,4 +1,4 @@
-import mock
+from unittest import mock
 import decimal
 from webob.multidict import MultiDict
 from pyramid.compat import text_type, NativeIO

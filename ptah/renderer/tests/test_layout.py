@@ -1,5 +1,6 @@
 """ layout tests """
-import tempfile, shutil, mock
+import tempfile, shutil
+from unittest import mock
 from zope import interface
 from pyramid.compat import text_
 from pyramid.interfaces import IRequest, IRouteRequest

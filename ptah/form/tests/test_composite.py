@@ -1,4 +1,4 @@
-import mock
+from unittest import mock
 import ptah.form
 from ptah.testing import TestCase, BaseTestCase
 
