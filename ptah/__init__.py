@@ -1,12 +1,5 @@
 # ptah api
 
-try:
-    from collections import OrderedDict
-except ImportError: # pragma: no cover
-    import collections
-    from ordereddict import OrderedDict
-    collections.OrderedDict = OrderedDict
-
 # layout
 from ptah.renderer import layout
 from ptah.renderer import layout_config
