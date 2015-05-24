@@ -11,6 +11,7 @@ class TestSettingsDefault(BaseTestCase):
         bower = request.get_bower()
 
         self.assertEqual(bower.publisher_signature, 'bowerstatic')
+        self.assertEqual(bower.components_path, None)
         self.assertEqual(bower.components_name, 'components')
 
     def test_include_path(self):
@@ -43,6 +44,7 @@ class TestSettingsCustom(BaseTestCase):
     _includes = ['ptah.static']
     _settings = {
         'ptah.static.publisher_signature': 'static',
+        'ptah.static.components_path': 'ptah.static:tests/bower_components',
         'ptah.static.components_name': 'lib',
     }
 
@@ -51,6 +53,8 @@ class TestSettingsCustom(BaseTestCase):
         bower = request.get_bower()
 
         self.assertEqual(bower.publisher_signature, 'static')
+        self.assertEqual(bower.components_path,
+                         'ptah.static:tests/bower_components')
         self.assertEqual(bower.components_name, 'lib')
 
     def test_include_path(self):
@@ -61,8 +65,6 @@ class TestSettingsCustom(BaseTestCase):
 
         self.config.add_route('view', '/')
         self.config.add_view(view, route_name='view')
-        self.config.add_bower_components(
-            'ptah.static:tests/bower_components')
         self.config.add_bower_component(
             'ptah.static:tests/local_component', '1.0.0')
 
